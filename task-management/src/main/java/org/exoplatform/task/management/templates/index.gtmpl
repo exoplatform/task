@@ -1,0 +1,10 @@
+#{param name=tasks/}
+<form action="@{TaskManagement.createTask()}" method="POST">
+    <input type="text" name="taskInput" value="" placeholder="Input here to create new task"/>
+    <input type="submit" value="Create"/>
+</form>
+<ul>
+<%tasks.each {task -> %>
+    <li>${task.title}</li>
+<%}%>
+</ul>
