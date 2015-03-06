@@ -23,6 +23,39 @@ package org.exoplatform.task.domain;
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>
  */
 public class Status {
+
+    public static final Status TODO = new Status(1, "TODO");
+    public static final Status IN_PROGRESS = new Status(2, "In Progress");
+    public static final Status WAITING_ON = new Status(3, "Waiting on");
+    public static final Status DONE = new Status(4, "Done");
+
+    public static final Status[] STATUS = {TODO, IN_PROGRESS, WAITING_ON, DONE};
+
     private long id;
     private String name;
+
+    public Status() {
+
+    }
+
+    public Status(long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

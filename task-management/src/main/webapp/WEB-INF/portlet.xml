@@ -16,6 +16,7 @@
       <mime-type>text/html</mime-type>
       <portlet-mode>view</portlet-mode>
     </supports>
+    <resource-bundle>locale.portlet.taskManagement</resource-bundle>
     <portlet-info>
       <title>Task Management</title>
     </portlet-info>

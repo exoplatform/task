@@ -17,20 +17,30 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.exoplatform.task.service;
+package org.exoplatform.task.model;
 
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.model.GroupTask;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
-public interface TaskService {
-    void save(Task task);
-    Task findTaskById(long id);
-    List<Task> findAllTask();
+public class GroupTask {
+    private final String name;
+    private final List<Task> tasks;
 
-    List<GroupByService> getGroupByServices();
+    public GroupTask(String name, List<Task> tasks) {
+        this.name = name;
+        this.tasks = Collections.unmodifiableList(tasks);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public List<Task> getTasks() {
+        return tasks;
+    }
 }

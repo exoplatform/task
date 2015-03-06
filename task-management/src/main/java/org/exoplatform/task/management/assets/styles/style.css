@@ -1,0 +1,29 @@
+.task-management {
+    background: #fff;
+}
+.task-management h4 {
+    background: #eee;
+    padding: 5px;
+}
+.task-management .task {
+    padding: 10px;
+    margin: 10px;
+    border-bottom: dotted 1px #ccc;
+}
+.task-management .task label {
+    display: inline-block;
+}
+.task-management .task input[type="checkbox"],
+.task-management .task span.tag
+{
+    visibility: hidden;
+}
+.task-management .task:hover {
+    background: #F5F7FA;
+}
+.task-management .task input[type="checkbox"]:checked,
+.task-management .task:hover input[type="checkbox"],
+.task-management .task:hover span.tag
+{
+    visibility: visible;
+}

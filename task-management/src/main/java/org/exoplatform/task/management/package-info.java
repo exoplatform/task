@@ -21,12 +21,19 @@
 @Portlet
 @Bindings({
         @Binding(value = TaskParser.class, implementation = TaskParserImpl.class),
-        @Binding(value = TaskService.class, implementation = TaskServiceMemImpl.class, scope = Scope.SINGLETON)
+        @Binding(value = TaskService.class, implementation = TaskServiceMemImpl.class)
 })
+@Stylesheets({
+        @Stylesheet("styles/style.css")
+})
+@Assets("*")
 package org.exoplatform.task.management;
 
 import juzu.Application;
 import juzu.Scope;
+import juzu.plugin.asset.Assets;
+import juzu.plugin.asset.Stylesheet;
+import juzu.plugin.asset.Stylesheets;
 import juzu.plugin.binding.Binding;
 import juzu.plugin.binding.Bindings;
 import juzu.plugin.portlet.Portlet;

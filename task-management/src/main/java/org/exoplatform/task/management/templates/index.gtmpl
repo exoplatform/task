@@ -1,10 +1,64 @@
-#{param name=tasks/}
-<form action="@{TaskManagement.createTask()}" method="POST">
-    <input type="text" name="taskInput" value="" placeholder="Input here to create new task"/>
-    <input type="submit" value="Create"/>
-</form>
-<ul>
-<%tasks.each {task -> %>
-    <li>${task.title}</li>
+#{param name=groupTasks /}
+#{param name=groupByNames /}
+#{param name=orderByNames /}
+#{param name=currentGroupBy /}
+#{param name=currentOrderBy /}
+
+<div class="task-management">
+<div class="row-fluid">
+    <form action="@{TaskManagement.createTask()}" method="POST">
+        <input type="text" name="taskInput" value="" placeholder="Input here to create new task"/>
+        <input type="submit" value="Create"/>
+    </form>
+</div>
+<div class="row-fluid">
+    <div class="span12 text-right">
+        <form id="filter-form" class="form-inline" action="@{TaskManagement.changeViewState()}" method="POST">
+            <label>Group by:</label>
+            <select name="groupBy" class="span2" onchange="this.form.submit();">
+                <% groupByNames.each { name -> %>
+                    <option value="${name.key}" <% if(name.key == currentGroupBy) {print 'selected="selected"'}%>>${name.value}</option>
+                <%}%>
+            </select>
+            <label>Sort by:</label>
+            <select name="orderBy" class="span2" onchange="this.form.submit();">
+                <% orderByNames.each { name -> %>
+                    <option value="${name.key}" <% if(name.key == currentOrderBy) print 'selected="selected"'%>>${name.value}</option>
+                <%}%>
+            </select>
+        </form>
+    </div>
+</div>
+
+<% groupTasks.each {group -> %>
+    <div class="row-fluid">
+        <div class="span12">
+            <h4 class="text-center">${group.name}</h4>
+            <ul>
+                <% group.tasks.eachWithIndex { task, index -> %>
+                <li class="task">
+                    <div class="pull-left">
+                        <% if(task.status != null && task.status.id == 4){%>
+                            <i class="icon-ok">&nbsp;</i>
+                            <del>${task.title}<del>
+                        <% } else {%>
+                            <input id="checkbox-task-${group}-${index}" type="checkbox"/>
+                            <label for="checkbox-task-${group}-${index}">${task.title}<label>
+                        <% }%>
+                    </div>
+                    <div class="pull-right">
+                        <%if(task.tags != null) { task.tags.eachWithIndex { tag, i ->%>
+                        <span class="tag"><%if(i > 0) { print ", "}%>[${tag}]</span>
+                        <%}}%>
+                        <% if(task.dueDate != null) { %>
+                            <span class="duedate">${task.dueDate}</span>
+                        <%}%>
+                    </div>
+                    <div class="clearfix"></div>
+                </li>
+                <%}%>
+            </ul>
+        </div>
+    </div>
 <%}%>
-</ul>
+</div>

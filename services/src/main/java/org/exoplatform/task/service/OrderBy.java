@@ -19,18 +19,15 @@
 
 package org.exoplatform.task.service;
 
-import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.model.GroupTask;
-
-import java.util.List;
-
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
-public interface TaskService {
-    void save(Task task);
-    Task findTaskById(long id);
-    List<Task> findAllTask();
+public class OrderBy {
+    public final String field;
+    public final boolean isDesc;
 
-    List<GroupByService> getGroupByServices();
+    public OrderBy(String field, boolean isDesc) {
+        this.field = field;
+        this.isDesc = isDesc;
+    }
 }

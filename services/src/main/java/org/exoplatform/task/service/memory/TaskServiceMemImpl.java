@@ -19,37 +19,89 @@
 
 package org.exoplatform.task.service.memory;
 
+import org.exoplatform.task.domain.Priority;
 import org.exoplatform.task.domain.Project;
+import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.service.TaskParser;
-import org.exoplatform.task.service.TaskService;
+import org.exoplatform.task.model.GroupTask;
+import org.exoplatform.task.service.*;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import javax.inject.Singleton;
+import java.util.*;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
+@Singleton
 public class TaskServiceMemImpl implements TaskService {
     private final List<Task> tasks = new LinkedList<Task>();
 
     @Inject
     private TaskParser parser;
 
-    public TaskServiceMemImpl() {
+    private final List<GroupByService> groupByServices;
 
+    public TaskServiceMemImpl() {
+        this.groupByServices = new ArrayList<GroupByService>();
+        this.groupByServices.add(new GroupByStatus(this));
+        this.groupByServices.add(new GroupByProject(this));
+        this.groupByServices.add(new GroupByTag(this));
     }
 
     @PostConstruct
     public void initData() {
-        this.save(parser.parse("Task 1"));
-        this.save(parser.parse("Task 2"));
-        this.save(parser.parse("Task 3"));
-        this.save(parser.parse("Task 4"));
-        this.save(parser.parse("Task 5"));
+        //. Init some demo task for display in list
+        TaskBuilder builder = new TaskBuilder();
+
+        //. status TODO
+        builder.withStatus(Status.TODO);
+        builder.withTitle("choose audio track");
+        builder.addTag("tag1");
+        builder.addTag("tag2");
+        builder.addTag("tag3");
+        builder.withDueDate(new Date());
+        this.save(builder.build());
+        builder = new TaskBuilder();
+
+        Project project = new Project(1, "Management project");
+        builder.withTitle("choose speaker voice");
+        builder.addProject(project)
+                .withPriority(Priority.LOW);
+        this.save(builder.build());
+        builder = new TaskBuilder();
+
+        builder.withTitle("choose speaker place");
+        builder.addProject(project).withPriority(Priority.HIGH);
+        this.save(builder.build());
+        builder = new TaskBuilder();
+
+        builder.withTitle("record demo");
+        builder.addProject(project).withPriority(Priority.MEDIUM);
+        this.save(builder.build());
+        builder = new TaskBuilder();
+
+        //. Status: In Progress
+        builder.withStatus(Status.IN_PROGRESS);
+        builder.withTitle("draft script");
+        this.save(builder.build());
+        builder.withTitle("record quick and dirty screencast");
+        this.save(builder.build());
+
+        //. Status: Waiting on
+        builder.withStatus(Status.WAITING_ON);
+        builder.withTitle("check competitor");
+        this.save(builder.build());
+        builder.withTitle("submit script to agency");
+        this.save(builder.build());
+
+        //. Status: DONE
+        builder.withStatus(Status.DONE);
+        builder.withTitle("negotiation and contract");
+        this.save(builder.build());
+        builder.withTitle("contract agencies");
+        this.save(builder.build());
     }
 
     @Override
@@ -77,27 +129,7 @@ public class TaskServiceMemImpl implements TaskService {
     }
 
     @Override
-    public List<Task> findTaskByProject(Project project) {
-        List<Task> ts = new LinkedList<Task>();
-        for(Task t : tasks) {
-            for(Project p : t.getProjects()) {
-                if(p.getId() == project.getId()) {
-                    ts.add(t);
-                    break;
-                }
-            }
-        }
-        return ts;
-    }
-
-    @Override
-    public List<Task> findTaskByTag(String tag) {
-        List<Task> ts = new LinkedList<Task>();
-        for(Task t : tasks) {
-            if(t.getTags().contains(tag)) {
-                ts.add(t);
-            }
-        }
-        return ts;
+    public List<GroupByService> getGroupByServices() {
+        return Collections.unmodifiableList(this.groupByServices);
     }
 }
