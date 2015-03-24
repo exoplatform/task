@@ -32,6 +32,7 @@
       <outputDirectory>/</outputDirectory>
       <outputFileNameMapping>${artifact.artifactId}${dashClassifier?}.${artifact.extension}</outputFileNameMapping>
       <includes>
+        <include>org.exoplatform.addons.task:task-management-config</include>
         <include>org.exoplatform.addons.task:task-management</include>
       </includes>
     </dependencySet>

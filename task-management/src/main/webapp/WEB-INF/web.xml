@@ -18,6 +18,9 @@
     <param-value>guice</param-value>
   </context-param>
 
-  <absolute-ordering/>
+  <listener>
+    <listener-class>org.exoplatform.container.web.PortalContainerConfigOwner</listener-class>
+  </listener>
 
+  <absolute-ordering/>
 </web-app>

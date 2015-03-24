@@ -44,6 +44,7 @@
     <module>domains</module>
     <module>services</module>
     <module>task-management</module>
+    <module>config</module>
     <module>packaging</module>
   </modules>
 
@@ -72,6 +73,11 @@
         <groupId>org.exoplatform.addons.task</groupId>
         <artifactId>task-management</artifactId>
         <type>war</type>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.exoplatform.addons.task</groupId>
+        <artifactId>task-management-config</artifactId>
         <version>${project.version}</version>
       </dependency>
 
