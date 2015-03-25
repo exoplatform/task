@@ -71,6 +71,13 @@
       <scope>provided</scope>
     </dependency>
 
+    <!-- Liquibase -->
+    <dependency>
+      <groupId>org.liquibase</groupId>
+      <artifactId>liquibase-core</artifactId>
+      <version>3.3.2</version>
+    </dependency>
+
     <!-- Groovy is shipped with GateIn -->
     <dependency>
       <groupId>org.codehaus.groovy</groupId>
