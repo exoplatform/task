@@ -1,13 +1,13 @@
 
-package org.exoplatform.task.domain;
+package org.exoplatform.task.test;
+
+import junit.framework.TestCase;
+import org.exoplatform.task.domain.Project;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-
 import java.util.List;
-
-import junit.framework.TestCase;
 
 public class EntityManagerTest extends TestCase {
     private EntityManagerFactory entityManagerFactory;

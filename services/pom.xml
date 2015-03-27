@@ -21,38 +21,54 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-      <groupId>org.exoplatform.addons.task</groupId>
-      <artifactId>task-management-parent</artifactId>
-      <version>1.0.x-SNAPSHOT</version>
-    </parent>
-    <artifactId>services</artifactId>
-    <packaging>jar</packaging>
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.exoplatform.addons.task</groupId>
+    <artifactId>task-management-parent</artifactId>
+    <version>1.0.x-SNAPSHOT</version>
+  </parent>
+  <artifactId>task-management-services</artifactId>
+  <packaging>jar</packaging>
 
-    <name>Task Management - Services</name>
+  <name>Task Management - Services</name>
 
-    <dependencies>
-      <dependency>
-        <groupId>org.exoplatform.addons.task</groupId>
-        <artifactId>domains</artifactId>
-      </dependency>
+  <properties>
+    <hibernate.version>4.1.12.Final</hibernate.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
 
-      <dependency>
-        <groupId>javax.inject</groupId>
-        <artifactId>javax.inject</artifactId>
-        <scope>provided</scope>
-      </dependency>
+  <!-- JPA -->
+  <dependencies>
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-entitymanager</artifactId>
+      <version>${hibernate.version}</version>
+    </dependency>
 
-      <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-        <scope>test</scope>
-      </dependency>
-    </dependencies>
+    <dependency>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- TEST -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <version>1.2.145</version>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
 
   <build>
     <plugins>
-     </plugins>
+    </plugins>
   </build>
 </project>

@@ -35,11 +35,8 @@
   <dependencies>
     <dependency>
       <groupId>org.exoplatform.addons.task</groupId>
-      <artifactId>domains</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.exoplatform.addons.task</groupId>
-      <artifactId>services</artifactId>
+      <artifactId>task-management-services</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <!-- Juzu -->
