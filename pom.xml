@@ -28,7 +28,7 @@
   </parent>
   <groupId>org.exoplatform.addons.task</groupId>
   <artifactId>task-management-parent</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.0.x-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Task management parent POM</name>
   <description>Task management add-on parent POM</description>
