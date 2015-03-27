@@ -19,12 +19,26 @@
 
 package org.exoplatform.task.domain;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>
  */
+@Entity
 public class Project {
+    @Id
+    @GeneratedValue
     private long id;
     private String name;
+    
+    @OneToMany(mappedBy = "project")
+    private Set<Task> tasks = new HashSet<Task>();
 
     public Project() {}
 
@@ -47,5 +61,13 @@ public class Project {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Set<Task> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(Set<Task> tasks) {
+        this.tasks = tasks;
     }
 }

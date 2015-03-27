@@ -18,6 +18,19 @@
  */
 
 package org.exoplatform.task.domain;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -26,24 +39,36 @@ import java.util.Set;
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>
  */
+@Entity
 public class Task {
+    @Id
+    @GeneratedValue
     private long id;
     private String title;
     private String description;
 
+    @Enumerated
     private Priority priority;
     private String context;
     private String assignee;
-
+    @ManyToOne(fetch=FetchType.EAGER)
     private Status status;
+    @ElementCollection
+    @CollectionTable(name="Tags", joinColumns=@JoinColumn(name="task_id"))
+    @Column(name="tag")
     private Set<String> tags;
-    private Set<Project> projects;
+    @ManyToOne
+    @JoinColumn(name="project_id")
+    private Project project;
 
     private String createdBy;
+    @Temporal(TemporalType.TIMESTAMP)
     private Date createdTime;
 
     private long duration;
+    @Temporal(TemporalType.TIMESTAMP)
     private Date startDate;
+    @Temporal(TemporalType.TIMESTAMP)
     private Date dueDate;
 
     public long getId() {
@@ -157,18 +182,11 @@ public class Task {
         this.dueDate = dueDate;
     }
 
-    public Set<Project> getProjects() {
-        return projects != null ? Collections.unmodifiableSet(projects) : Collections.<Project>emptySet();
+    public Project getProject() {
+        return project;
     }
 
-    public void setProjects(Set<Project> projects) {
-        this.projects = projects;
-    }
-
-    public void addProject(Project project) {
-        if(this.projects == null) {
-            this.projects = new HashSet<Project>();
-        }
-        this.projects.add(project);
+    public void setProject(Project project) {
+        this.project = project;
     }
 }

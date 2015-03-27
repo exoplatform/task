@@ -38,7 +38,7 @@ public class TaskBuilder {
 
     private Status status;
     private Set<String> tags;
-    private Set<Project> projects;
+    private Project project;
 
     private String createdBy;
     private Date createdTime = new Date();
@@ -57,7 +57,7 @@ public class TaskBuilder {
         task.setAssignee(assignee);
         task.setStatus(status);
         task.setTags(tags);
-        task.setProjects(projects);
+        task.setProject(project);
         task.setCreatedBy(createdBy);
         task.setCreatedTime(createdTime);
         task.setDuration(duration);
@@ -108,11 +108,8 @@ public class TaskBuilder {
         return this;
     }
 
-    public TaskBuilder addProject(Project project) {
-        if(this.projects == null) {
-            this.projects = new HashSet<Project>();
-        }
-        this.projects.add(project);
+    public TaskBuilder withProject(Project project) {
+        this.project = project;
         return this;
     }
 

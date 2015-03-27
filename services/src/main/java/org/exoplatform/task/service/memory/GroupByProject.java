@@ -45,14 +45,8 @@ public class GroupByProject extends AbstractGroupBy<Project> {
     protected Map<Project, List<Task>> getMaps() {
         Map<Project, List<Task>> maps = new HashMap<Project, List<Task>>();
         for(Task task : taskService.findAllTask()) {
-            Set<Project> projects = task.getProjects();
-            if(projects == null || projects.isEmpty()) {
-                this.put(maps, null, task);
-            } else {
-                for(Project project : projects) {
-                    this.put(maps, project, task);
-                }
-            }
+            Project project = task.getProject();
+            this.put(maps, project, task);
         }
         return maps;
     }

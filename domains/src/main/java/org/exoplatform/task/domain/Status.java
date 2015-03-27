@@ -19,9 +19,14 @@
 
 package org.exoplatform.task.domain;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>
  */
+@Entity
 public class Status {
 
     public static final Status TODO = new Status(1, "TODO");
@@ -31,6 +36,8 @@ public class Status {
 
     public static final Status[] STATUS = {TODO, IN_PROGRESS, WAITING_ON, DONE};
 
+    @Id
+    @GeneratedValue
     private long id;
     private String name;
 

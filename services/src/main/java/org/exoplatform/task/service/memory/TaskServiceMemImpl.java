@@ -67,18 +67,18 @@ public class TaskServiceMemImpl implements TaskService {
 
         Project project = new Project(1, "Management project");
         builder.withTitle("choose speaker voice");
-        builder.addProject(project)
+        builder.withProject(project)
                 .withPriority(Priority.LOW);
         this.save(builder.build());
         builder = new TaskBuilder();
 
         builder.withTitle("choose speaker place");
-        builder.addProject(project).withPriority(Priority.HIGH);
+        builder.withProject(project).withPriority(Priority.HIGH);
         this.save(builder.build());
         builder = new TaskBuilder();
 
         builder.withTitle("record demo");
-        builder.addProject(project).withPriority(Priority.MEDIUM);
+        builder.withProject(project).withPriority(Priority.MEDIUM);
         this.save(builder.build());
         builder = new TaskBuilder();
 
