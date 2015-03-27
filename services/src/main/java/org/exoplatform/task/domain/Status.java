@@ -20,8 +20,11 @@
 package org.exoplatform.task.domain;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>
@@ -37,9 +40,11 @@ public class Status {
     public static final Status[] STATUS = {TODO, IN_PROGRESS, WAITING_ON, DONE};
 
     @Id
-    @GeneratedValue
     private long id;
     private String name;
+
+    @OneToMany(mappedBy="status")
+    private Set<Task> tasks = new HashSet<Task>();   
 
     public Status() {
 
@@ -64,5 +69,13 @@ public class Status {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Set<Task> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(Set<Task> tasks) {
+        this.tasks = tasks;
     }
 }

@@ -19,6 +19,7 @@
 
 package org.exoplatform.task.domain;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -36,7 +37,7 @@ public class Project {
     private long id;
     private String name;
     
-    @OneToMany(mappedBy = "project")
+    @OneToMany(mappedBy = "project", cascade=CascadeType.ALL, orphanRemoval=true)
     private Set<Task> tasks = new HashSet<Task>();
 
     public Project() {}

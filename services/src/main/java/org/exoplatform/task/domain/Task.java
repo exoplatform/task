@@ -33,30 +33,38 @@ public class Task {
     @Id
     @GeneratedValue
     private long id;
+    
     private String title;
     private String description;
 
     @Enumerated
     private Priority priority;
+    
     private String context;
     private String assignee;
-    @ManyToOne(fetch=FetchType.EAGER)
+    
+    @ManyToOne(cascade=CascadeType.PERSIST)
     private Status status;
+    
     @ElementCollection
     @CollectionTable(name="Tags", joinColumns=@JoinColumn(name="task_id"))
     @Column(name="tag")
     private Set<String> tags;
+    
     @ManyToOne
     @JoinColumn(name="project_id")
     private Project project;
 
     private String createdBy;
+    
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdTime;
 
     private long duration;
+    
     @Temporal(TemporalType.TIMESTAMP)
     private Date startDate;
+    
     @Temporal(TemporalType.TIMESTAMP)
     private Date dueDate;
 
