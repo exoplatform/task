@@ -57,7 +57,7 @@
       <column name="TITLE" type="VARCHAR(50)">
         <constraints nullable="false"/>
       </column>
-      <column name="DESCRIPTION" type="VARCHAR(100000)">
+      <column name="DESCRIPTION" type="VARCHAR(10000)">
         <constraints nullable="true"/>
       </column>
       <column name="CONTEXT" type="VARCHAR(255)">
