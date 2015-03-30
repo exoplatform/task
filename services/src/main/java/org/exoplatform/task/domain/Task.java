@@ -30,160 +30,162 @@ import java.util.Set;
  */
 @Entity
 public class Task {
-    @Id
-    @GeneratedValue
-    private long id;
-    
-    private String title;
-    private String description;
+  @Id
+  @GeneratedValue
+  private long        id;
 
-    @Enumerated
-    private Priority priority;
-    
-    private String context;
-    private String assignee;
-    
-    @ManyToOne(cascade=CascadeType.PERSIST)
-    private Status status;
-    
-    @ElementCollection
-    @CollectionTable(name="Tags", joinColumns=@JoinColumn(name="task_id"))
-    @Column(name="tag")
-    private Set<String> tags;
-    
-    @ManyToOne
-    @JoinColumn(name="project_id")
-    private Project project;
+  private String      title;
 
-    private String createdBy;
-    
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createdTime;
+  private String      description;
 
-    private long duration;
-    
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date startDate;
-    
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date dueDate;
+  @Enumerated
+  private Priority    priority;
 
-    public long getId() {
-        return id;
+  private String      context;
+
+  private String      assignee;
+
+  @ManyToOne(cascade = CascadeType.PERSIST)
+  private Status      status;
+
+  @ElementCollection
+  @CollectionTable(name = "Tags", joinColumns = @JoinColumn(name = "task_id"))
+  @Column(name = "tag")
+  private Set<String> tags;
+
+  @ManyToOne
+  @JoinColumn(name = "project_id")
+  private Project     project;
+
+  private String      createdBy;
+
+  @Temporal(TemporalType.TIMESTAMP)
+  private Date        createdTime;
+
+  private long        duration;
+
+  @Temporal(TemporalType.TIMESTAMP)
+  private Date        startDate;
+
+  @Temporal(TemporalType.TIMESTAMP)
+  private Date        dueDate;
+
+  public long getId() {
+    return id;
+  }
+
+  public void setId(long id) {
+    this.id = id;
+  }
+
+  public String getTitle() {
+    return title;
+  }
+
+  public void setTitle(String title) {
+    this.title = title;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public Priority getPriority() {
+    return priority;
+  }
+
+  public void setPriority(Priority priority) {
+    this.priority = priority;
+  }
+
+  public String getContext() {
+    return context;
+  }
+
+  public void setContext(String context) {
+    this.context = context;
+  }
+
+  public String getAssignee() {
+    return assignee;
+  }
+
+  public void setAssignee(String assignee) {
+    this.assignee = assignee;
+  }
+
+  public Status getStatus() {
+    return status;
+  }
+
+  public void setStatus(Status status) {
+    this.status = status;
+  }
+
+  public Set<String> getTags() {
+    return tags != null ? Collections.unmodifiableSet(tags) : Collections.<String> emptySet();
+  }
+
+  public void setTags(Set<String> tags) {
+    this.tags = tags;
+  }
+
+  public void addTag(String tag) {
+    if (this.tags == null) {
+      this.tags = new HashSet<String>();
     }
+    this.tags.add(tag);
+  }
 
-    public void setId(long id) {
-        this.id = id;
-    }
+  public String getCreatedBy() {
+    return createdBy;
+  }
 
-    public String getTitle() {
-        return title;
-    }
+  public void setCreatedBy(String createdBy) {
+    this.createdBy = createdBy;
+  }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+  public Date getCreatedTime() {
+    return createdTime;
+  }
 
-    public String getDescription() {
-        return description;
-    }
+  public void setCreatedTime(Date createdTime) {
+    this.createdTime = createdTime;
+  }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+  public long getDuration() {
+    return duration;
+  }
 
-    public Priority getPriority() {
-        return priority;
-    }
+  public void setDuration(long duration) {
+    this.duration = duration;
+  }
 
-    public void setPriority(Priority priority) {
-        this.priority = priority;
-    }
+  public Date getStartDate() {
+    return startDate;
+  }
 
-    public String getContext() {
-        return context;
-    }
+  public void setStartDate(Date startDate) {
+    this.startDate = startDate;
+  }
 
-    public void setContext(String context) {
-        this.context = context;
-    }
+  public Date getDueDate() {
+    return dueDate;
+  }
 
-    public String getAssignee() {
-        return assignee;
-    }
+  public void setDueDate(Date dueDate) {
+    this.dueDate = dueDate;
+  }
 
-    public void setAssignee(String assignee) {
-        this.assignee = assignee;
-    }
+  public Project getProject() {
+    return project;
+  }
 
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
-    public Set<String> getTags(){
-        return tags != null ? Collections.unmodifiableSet(tags) : Collections.<String>emptySet();
-    }
-
-    public void setTags(Set<String> tags) {
-        this.tags = tags;
-    }
-
-    public void addTag(String tag) {
-        if(this.tags == null) {
-            this.tags = new HashSet<String>();
-        }
-        this.tags.add(tag);
-    }
-
-    public String getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public Date getCreatedTime() {
-        return createdTime;
-    }
-
-    public void setCreatedTime(Date createdTime) {
-        this.createdTime = createdTime;
-    }
-
-    public long getDuration() {
-        return duration;
-    }
-
-    public void setDuration(long duration) {
-        this.duration = duration;
-    }
-
-    public Date getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
-    }
-
-    public Date getDueDate() {
-        return dueDate;
-    }
-
-    public void setDueDate(Date dueDate) {
-        this.dueDate = dueDate;
-    }
-
-    public Project getProject() {
-        return project;
-    }
-
-    public void setProject(Project project) {
-        this.project = project;
-    }
+  public void setProject(Project project) {
+    this.project = project;
+  }
 }

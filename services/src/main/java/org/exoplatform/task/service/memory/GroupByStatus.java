@@ -19,18 +19,21 @@
 
 package org.exoplatform.task.service.memory;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.model.GroupTask;
-import org.exoplatform.task.service.OrderBy;
-
-import java.util.*;
+import org.exoplatform.task.service.TaskService;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
 public class GroupByStatus extends AbstractGroupBy<Status> {
-    public GroupByStatus(TaskServiceMemImpl serviceMem) {
+    public GroupByStatus(TaskService serviceMem) {
         super(serviceMem);
     }
 

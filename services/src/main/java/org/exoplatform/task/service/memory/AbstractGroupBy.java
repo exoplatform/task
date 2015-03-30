@@ -23,6 +23,8 @@ import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.model.GroupTask;
 import org.exoplatform.task.service.GroupByService;
 import org.exoplatform.task.service.OrderBy;
+import org.exoplatform.task.service.TaskService;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -33,9 +35,9 @@ import java.util.Map;
  */
 public abstract class AbstractGroupBy<T> implements GroupByService {
 
-    protected final TaskServiceMemImpl taskService;
+    protected final TaskService taskService;
 
-    protected AbstractGroupBy(TaskServiceMemImpl taskService) {
+    protected AbstractGroupBy(TaskService taskService) {
         this.taskService = taskService;
     }
 

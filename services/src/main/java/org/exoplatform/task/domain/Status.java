@@ -32,50 +32,54 @@ import java.util.Set;
 @Entity
 public class Status {
 
-    public static final Status TODO = new Status(1, "TODO");
-    public static final Status IN_PROGRESS = new Status(2, "In Progress");
-    public static final Status WAITING_ON = new Status(3, "Waiting on");
-    public static final Status DONE = new Status(4, "Done");
+  public static final Status   TODO        = new Status(1, "TODO");
 
-    public static final Status[] STATUS = {TODO, IN_PROGRESS, WAITING_ON, DONE};
+  public static final Status   IN_PROGRESS = new Status(2, "In Progress");
 
-    @Id
-    private long id;
-    private String name;
+  public static final Status   WAITING_ON  = new Status(3, "Waiting on");
 
-    @OneToMany(mappedBy="status")
-    private Set<Task> tasks = new HashSet<Task>();   
+  public static final Status   DONE        = new Status(4, "Done");
 
-    public Status() {
+  public static final Status[] STATUS      = { TODO, IN_PROGRESS, WAITING_ON, DONE };
 
-    }
+  @Id
+  private long                 id;
 
-    public Status(long id, String name) {
-        this.id = id;
-        this.name = name;
-    }
+  private String               name;
 
-    public long getId() {
-        return id;
-    }
+  @OneToMany(mappedBy = "status")
+  private Set<Task>            tasks       = new HashSet<Task>();
 
-    public void setId(long id) {
-        this.id = id;
-    }
+  public Status() {
 
-    public String getName() {
-        return name;
-    }
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public Status(long id, String name) {
+    this.id = id;
+    this.name = name;
+  }
 
-    public Set<Task> getTasks() {
-        return tasks;
-    }
+  public long getId() {
+    return id;
+  }
 
-    public void setTasks(Set<Task> tasks) {
-        this.tasks = tasks;
-    }
+  public void setId(long id) {
+    this.id = id;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public Set<Task> getTasks() {
+    return tasks;
+  }
+
+  public void setTasks(Set<Task> tasks) {
+    this.tasks = tasks;
+  }
 }

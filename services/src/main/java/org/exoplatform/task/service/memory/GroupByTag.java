@@ -19,15 +19,20 @@
 
 package org.exoplatform.task.service.memory;
 
-import org.exoplatform.task.domain.Task;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import java.util.*;
+import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.service.TaskService;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
 public class GroupByTag extends AbstractGroupBy<String> {
-    public GroupByTag(TaskServiceMemImpl taskService) {
+    public GroupByTag(TaskService taskService) {
         super(taskService);
     }
 

@@ -32,42 +32,44 @@ import java.util.Set;
  */
 @Entity
 public class Project {
-    @Id
-    @GeneratedValue
-    private long id;
-    private String name;
-    
-    @OneToMany(mappedBy = "project", cascade=CascadeType.ALL, orphanRemoval=true)
-    private Set<Task> tasks = new HashSet<Task>();
+  @Id
+  @GeneratedValue
+  private long      id;
 
-    public Project() {}
+  private String    name;
 
-    public Project(long id, String name) {
-        this.id = id;
-        this.name = name;
-    }
+  @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+  private Set<Task> tasks = new HashSet<Task>();
 
-    public long getId() {
-        return id;
-    }
+  public Project() {
+  }
 
-    public void setId(long id) {
-        this.id = id;
-    }
+  public Project(long id, String name) {
+    this.id = id;
+    this.name = name;
+  }
 
-    public String getName() {
-        return name;
-    }
+  public long getId() {
+    return id;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public void setId(long id) {
+    this.id = id;
+  }
 
-    public Set<Task> getTasks() {
-        return tasks;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public void setTasks(Set<Task> tasks) {
-        this.tasks = tasks;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public Set<Task> getTasks() {
+    return tasks;
+  }
+
+  public void setTasks(Set<Task> tasks) {
+    this.tasks = tasks;
+  }
 }
