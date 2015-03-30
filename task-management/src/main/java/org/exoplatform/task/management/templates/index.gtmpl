@@ -4,7 +4,8 @@
 #{param name=currentGroupBy /}
 #{param name=currentOrderBy /}
 
-<div class="task-management">
+<div id="taskManagement" class="row-fluid">
+<div id="taskListcontainer" class="task-management span6">
 <div class="row-fluid">
     <form action="@{TaskManagement.createTask()}" method="POST">
         <input type="text" name="taskInput" value="" placeholder="Input here to create new task"/>
@@ -29,21 +30,20 @@
         </form>
     </div>
 </div>
-
 <% groupTasks.each {group -> %>
     <div class="row-fluid">
         <div class="span12">
             <h4 class="text-center">${group.name}</h4>
             <ul>
                 <% group.tasks.eachWithIndex { task, index -> %>
-                <li class="task">
+                <li class="task" task-id="${task.id}">
                     <div class="pull-left">
                         <% if(task.status != null && task.status.id == 4){%>
-                            <i class="icon-ok">&nbsp;</i>
+                            <i class="uiIconTick">&nbsp;</i>
                             <del>${task.title}<del>
                         <% } else {%>
                             <input id="checkbox-task-${group}-${index}" type="checkbox"/>
-                            <label for="checkbox-task-${group}-${index}">${task.title}<label>
+                            <a href="#">${task.title}</a>
                         <% }%>
                     </div>
                     <div class="pull-right">
@@ -61,4 +61,8 @@
         </div>
     </div>
 <%}%>
+</div>
+<div id="taskDetailContainer" class="span6">
+    Task container here
+</div>
 </div>

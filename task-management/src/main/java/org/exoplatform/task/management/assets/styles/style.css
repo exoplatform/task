@@ -1,4 +1,4 @@
-.task-management {
+#taskManagement {
     background: #fff;
 }
 .task-management h4 {
@@ -26,4 +26,62 @@
 .task-management .task:hover span.tag
 {
     visibility: visible;
+}
+.task-detail .icon {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    border: solid 4px #666;
+    background-color: #fff;
+    cursor: pointer;
+}
+.task-detail .icon.icon-completed,
+.task-detail .icon:hover {
+    margin-top: 0px;
+    background: #fff url("../images/completed.png") no-repeat top left;
+}
+.task-detail .icon.icon-completed {
+    vertical-align: middle;
+}
+.task-detail .icon.icon-completed:hover {
+    background-image: none;
+}
+.task-description .editable-inline,
+.task-description .editable-input,
+.task-description .editable-input textarea,
+.task-description .editableform {
+    width: 100%;
+}
+.task-description .editable[data-name="description"] {
+    display: block;
+    height: 72px;
+    border: solid 1px #ccc;
+    padding: 3px 10px;
+    margin: 3px 0px 30px;
+    border-radius: 3px;
+}
+.task-info-row {
+    margin: 10px 0;
+}
+.task-action-buttons.open .dropdown-toggle {
+    background-color: transparent !important;
+    box-shadow: none !important;
+    border: solid 1px #ccc;
+}
+.task-action-buttons .dropdown-toggle:hover {
+    border: solid 1px #ccc;
+}
+.task-action-buttons .dropdown-toggle {
+    border: solid 1px transparent;
+    background: transparent;
+    box-shadow: none;
+}
+.editable-click, a.editable-click {
+    display: inline-block;
+    padding: 5px 20px 5px 5px;
+    border: solid 1px transparent;
+    color: #333;
+}
+a.editable-click:hover {
+    border: solid 1px #ddd;
 }

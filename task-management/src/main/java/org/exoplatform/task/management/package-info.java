@@ -23,17 +23,23 @@
         @Binding(value = TaskParser.class, implementation = TaskParserImpl.class),
         @Binding(value = TaskService.class, implementation = TaskServiceMemImpl.class)
 })
-@Stylesheets({
-        @Stylesheet("styles/style.css")
+@Scripts({
+        @Script(id = "jquery", value = "libs/jquery-1.11.2.js"),
+        @Script(id = "boostrap-tooltip", value = "libs/xeditable/js/bootstrap-tooltip.js", depends = {"jquery"}),
+        @Script(id = "boostrap-popover", value = "libs/xeditable/js/bootstrap-popover.js", depends = {"jquery", "boostrap-tooltip"}),
+        @Script(id = "boostrap-datepicker", value = "libs/xeditable/js/bootstrap-datepicker.js", depends = {"jquery"}),
+        @Script(id = "edit-inline-js", value = "libs/xeditable/js/bootstrap-editable.js", depends = {"jquery", "boostrap-popover", "boostrap-datepicker"}),
+        @Script(id = "task-managemen-js", value = "javascripts/task-management.js", depends = {"edit-inline-js"})
 })
-@Assets("*")
+@Stylesheets({
+        @Stylesheet(id = "style.css", value = "styles/style.css"),
+        @Stylesheet(id = "edit-inline-css", value = "libs/xeditable/css/bootstrap-editable.css", depends = {})
+})
+@Assets({"*"})
 package org.exoplatform.task.management;
 
 import juzu.Application;
-import juzu.Scope;
-import juzu.plugin.asset.Assets;
-import juzu.plugin.asset.Stylesheet;
-import juzu.plugin.asset.Stylesheets;
+import juzu.plugin.asset.*;
 import juzu.plugin.binding.Binding;
 import juzu.plugin.binding.Bindings;
 import juzu.plugin.portlet.Portlet;

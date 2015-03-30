@@ -17,21 +17,36 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.exoplatform.task.service;
+package org.exoplatform.task.management.controller;
 
-import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.model.GroupTask;
-
-import java.util.List;
+import juzu.MimeType;
+import juzu.Resource;
+import juzu.Response;
+import juzu.plugin.ajax.Ajax;
+import org.exoplatform.task.domain.Status;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
-public interface TaskService {
-    void save(Task task);
-    Task findTaskById(long id);
-    List<Task> findAllTask();
-
-    void remove(Task task);
-    List<GroupByService> getGroupByServices();
+public class StatusController {
+    @Resource
+    @Ajax
+    @MimeType.JSON
+    public Response getAllStatus() {
+        try {
+            JSONArray array = new JSONArray();
+            for (Status status : Status.STATUS) {
+                JSONObject json = new JSONObject();
+                json.put("value", status.getId());
+                json.put("text", status.getName());
+                array.put(json);
+            }
+            return Response.ok(array.toString());
+        } catch (JSONException ex) {
+            return Response.status(500).body("JSONException while create reporting");
+        }
+    }
 }

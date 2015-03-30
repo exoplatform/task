@@ -110,6 +110,9 @@ public class TaskServiceMemImpl implements TaskService {
         if(index != -1) {
             tasks.remove(index);
         }
+        if(task.getId() == 0) {
+            task.setId(tasks.size() + 1);
+        }
         tasks.add(task);
     }
 
@@ -131,5 +134,9 @@ public class TaskServiceMemImpl implements TaskService {
     @Override
     public List<GroupByService> getGroupByServices() {
         return Collections.unmodifiableList(this.groupByServices);
+    }
+
+    public void remove(Task task) {
+        this.tasks.remove(task);
     }
 }
