@@ -19,19 +19,18 @@
   
 package org.exoplatform.task.service.jpa;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.service.GroupByService;
 import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.service.memory.GroupByProject;
 import org.exoplatform.task.service.memory.GroupByStatus;
 import org.exoplatform.task.service.memory.GroupByTag;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TaskServiceJPAImpl implements TaskService {
 
@@ -78,6 +77,11 @@ public class TaskServiceJPAImpl implements TaskService {
     List<Task> tasks = entityManager.createQuery("from Task", Task.class).getResultList();
     end(entityManager);
     return tasks;
+  }
+
+  @Override
+  public void remove(Task task) {
+
   }
 
   @Override
