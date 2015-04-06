@@ -6,16 +6,20 @@
   <persistence-unit name="org.exoplatform.task" transaction-type="RESOURCE_LOCAL">
     <provider>org.hibernate.ejb.HibernatePersistence</provider>
 
+    <class>org.exoplatform.task.domain.Project</class>
+    <class>org.exoplatform.task.domain.Priority</class>
+    <class>org.exoplatform.task.domain.Task</class>
+    <class>org.exoplatform.task.domain.Status</class>
+
+    <!-- Test on H2 DB -->
     <properties>
-      <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />
-      <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/plf?autoReconnect=true" />
-      <property name="javax.persistence.jdbc.user" value="root" />
+      <property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />
+      <property name="javax.persistence.jdbc.url" value="jdbc:h2:target/h2" />
+      <property name="javax.persistence.jdbc.user" value="sa" />
       <property name="javax.persistence.jdbc.password" value="" />
 
-      <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
       <property name="hibernate.show_sql" value="true" />
-      <property name="hibernate.hbm2ddl.auto" value="create" />
-
     </properties>
+
   </persistence-unit>
 </persistence>

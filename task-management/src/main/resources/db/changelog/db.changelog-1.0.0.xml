@@ -6,19 +6,16 @@
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
   <!-- Managing both DB that use sequences and db that use auto increment -->
-  <property name="autoIncrement" value="true" dbms="mysql,mssql,sybase,db2,hsqldb"/>
+  <property name="autoIncrement" value="true" dbms="mysql,mssql,h2,sybase,db2,hsqldb"/>
   <property name="autoIncrement" value="false" dbms="oracle,postgresql"/>
 
   <!-- Definition of TASK_PROJECTS table -->
-  <changeSet author="tclement@exoplatform.com" id="create-projects-table">
+  <changeSet author="tclement@exoplatform.com" id="1.0.0-1">
     <createTable tableName="TASK_PROJECTS">
-      <column name="PROJECT_ID" type="INTEGER" autoIncrement="${autoIncrement}">
+      <column name="PROJECT_ID" type="BIGINT" autoIncrement="${autoIncrement}">
         <constraints nullable="false" primaryKey="true" primaryKeyName="PK_TASK_PROJECTS" unique="true"/>
       </column>
       <column name="NAME" type="VARCHAR(50)">
-        <constraints nullable="false"/>
-      </column>
-      <column name="CREATOR" type="VARCHAR(50)">
         <constraints nullable="false"/>
       </column>
     </createTable>
@@ -28,9 +25,9 @@
   </changeSet>
 
   <!-- Definition of TASK_STATUS table -->
-  <changeSet author="tclement@exoplatform.com" id="create-status-table">
+  <changeSet author="tclement@exoplatform.com" id="1.0.0-2">
     <createTable tableName="TASK_STATUS">
-      <column name="STATUS_ID" type="INTEGER" autoIncrement="${autoIncrement}">
+      <column name="STATUS_ID" type="BIGINT" autoIncrement="${autoIncrement}">
         <constraints nullable="false" primaryKey="true" primaryKeyName="PK_TASK_STATUS" unique="true"/>
       </column>
       <column name="NAME" type="VARCHAR(50)">
@@ -39,7 +36,7 @@
       <column name="RANK" type="INTEGER">
         <constraints nullable="false"/>
       </column>
-      <column name="PROJECT" type="INTEGER">
+      <column name="PROJECT" type="BIGINT">
         <constraints foreignKeyName="FK_TASK_STATUS_TASK_PROJECTS_01" references="TASK_PROJECTS(PROJECT_ID)" nullable="false"/>
       </column>
     </createTable>
@@ -49,9 +46,9 @@
   </changeSet>
 
   <!-- Definition of TASK_TASKS table -->
-  <changeSet author="tclement@exoplatform.com" id="create-tasks-table">
+  <changeSet author="tclement@exoplatform.com" id="1.0.0-3">
     <createTable tableName="TASK_TASKS">
-      <column name="TASK_ID" type="INTEGER" autoIncrement="${autoIncrement}">
+      <column name="TASK_ID" type="BIGINT" autoIncrement="${autoIncrement}">
         <constraints primaryKey="true" primaryKeyName="PK_TASK_TASKS" nullable="false" unique="true"/>
       </column>
       <column name="TITLE" type="VARCHAR(50)">
@@ -66,7 +63,7 @@
       <column name="ASSIGNEE" type="VARCHAR(50)">
         <constraints nullable="false"/>
       </column>
-      <column name="STATUS" type="INTEGER">
+      <column name="STATUS" type="BIGINT">
         <constraints foreignKeyName="FK_TASK_TASKS_TASK_STATUS_01" references="TASK_STATUS(STATUS_ID)" nullable="false"/>
       </column>
       <column name="CREATOR" type="VARCHAR(50)">
@@ -89,5 +86,17 @@
   <changeSet author="tclement@exoplatform.com" id="create-task-sequence" dbms="oracle,postgresql">
     <createSequence sequenceName="SEQ_TASK_TASKS_TASK_ID" startValue="1"/>
   </changeSet>
+
+  <!-- Definition of TASK_TAGS table -->
+  <!--<changeSet author="tclement@exoplatform.com" id="1.0.0-4">
+    <createTable tableName="TASK_TAGS">
+      <column name="TASK_ID" type="BIGINT">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="PK_TASK_STATUS" unique="true"/>
+      </column>
+      <column name="NAME" type="VARCHAR(50)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>-->
 
 </databaseChangeLog>

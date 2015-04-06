@@ -29,9 +29,11 @@ import java.util.Set;
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>
  */
 @Entity
+@Table(name = "TASK_TASKS")
 public class Task {
   @Id
   @GeneratedValue
+  @Column(name = "TASK_ID")
   private long        id;
 
   private String      title;
@@ -49,8 +51,7 @@ public class Task {
   private Status      status;
 
   @ElementCollection
-  @CollectionTable(name = "Tags", joinColumns = @JoinColumn(name = "task_id"))
-  @Column(name = "tag")
+  @CollectionTable(name = "Tags")
   private Set<String> tags;
 
   @ManyToOne

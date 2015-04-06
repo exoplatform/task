@@ -148,6 +148,33 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.liquibase</groupId>
+        <artifactId>liquibase-maven-plugin</artifactId>
+        <version>3.3.2</version>
+        <configuration>
+          <!-- $ mvn liquibase:update -->
+          <driver>com.mysql.jdbc.Driver</driver>
+          <url>jdbc:mysql://localhost:3306/plf?autoReconnect=true</url>
+          <username>root</username>
+          <password></password>
+          <!-- $ mvn liquibase:diff -->
+          <referenceDriver>com.mysql.jdbc.Driver</referenceDriver>
+          <referenceUrl>jdbc:mysql://localhost:3306/plf?autoReconnect=true</referenceUrl>
+          <referenceUsername>root</referenceUsername>
+          <referencePassword></referencePassword>
+          <!-- db.changelog file -->
+          <changeLogFile>src/main/resources/db/changelog/db.changelog-1.0.0.xml</changeLogFile>
+        </configuration>
+        <!--<executions>
+          <execution>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>update</goal>
+            </goals>
+          </execution>
+        </executions>-->
+      </plugin>
     </plugins>
   </build>
 </project>

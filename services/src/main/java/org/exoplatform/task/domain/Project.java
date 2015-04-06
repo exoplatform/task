@@ -19,11 +19,7 @@
 
 package org.exoplatform.task.domain;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -31,9 +27,11 @@ import java.util.Set;
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>
  */
 @Entity
+@Table(name = "TASK_PROJECTS")
 public class Project {
   @Id
   @GeneratedValue
+  @Column(name = "PROJECT_ID")
   private long      id;
 
   private String    name;

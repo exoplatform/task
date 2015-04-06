@@ -19,9 +19,7 @@
 
 package org.exoplatform.task.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -30,6 +28,7 @@ import java.util.Set;
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>
  */
 @Entity
+@Table(name = "TASK_STATUS")
 public class Status {
 
   public static final Status   TODO        = new Status(1, "TODO");
@@ -43,6 +42,8 @@ public class Status {
   public static final Status[] STATUS      = { TODO, IN_PROGRESS, WAITING_ON, DONE };
 
   @Id
+  @GeneratedValue
+  @Column(name = "TASK_ID")
   private long                 id;
 
   private String               name;
