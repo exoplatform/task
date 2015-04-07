@@ -37,14 +37,30 @@ public class Project {
   private String    name;
 
   @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
-  private Set<Task> tasks = new HashSet<Task>();
+  private Set<Status> status = new HashSet<Status>();
+
+  @ElementCollection
+  @CollectionTable(name = "TASK_PROJECT_MANAGER")
+  private Set<String> manager = new HashSet<String>();
+
+  @ElementCollection
+  @CollectionTable(name = "TASK_PROJECT_PARTICIPATOR")
+  private Set<String> participator = new HashSet<String>();
 
   public Project() {
   }
 
+  //TO REMOVE after removing the TaskServiceMemImpl
   public Project(long id, String name) {
     this.id = id;
     this.name = name;
+  }
+
+  public Project(String name, Set<Status> status, Set<String> manager, Set<String> participator) {
+    this.name = name;
+    this.status = status;
+    this.manager = manager;
+    this.participator = participator;
   }
 
   public long getId() {
@@ -63,11 +79,27 @@ public class Project {
     this.name = name;
   }
 
-  public Set<Task> getTasks() {
-    return tasks;
+  public Set<Status> getStatus() {
+    return status;
   }
 
-  public void setTasks(Set<Task> tasks) {
-    this.tasks = tasks;
+  public void setStatus(Set<Status> status) {
+    this.status = status;
+  }
+
+  public Set<String> getParticipator() {
+    return participator;
+  }
+
+  public void setParticipator(Set<String> participator) {
+    this.participator = participator;
+  }
+
+  public Set<String> getManager() {
+    return manager;
+  }
+
+  public void setManager(Set<String> manager) {
+    this.manager = manager;
   }
 }

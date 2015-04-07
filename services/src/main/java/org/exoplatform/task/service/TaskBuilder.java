@@ -29,102 +29,105 @@ import java.util.Set;
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
 public class TaskBuilder {
-    private String title;
-    private String description;
+  private String title;
+  private String description;
 
-    private Priority priority = Priority.UNDEFINED;
-    private String context;
-    private String assignee;
+  private Priority priority = Priority.UNDEFINED;
+  private String context;
+  private String assignee;
+  private Set<String> coworker;
 
-    private Status status;
-    private Set<String> tags;
-    private Project project;
+  private Status status;
+  private Set<String> tags;
 
-    private String createdBy;
-    private Date createdTime = new Date();
+  private String createdBy;
+  private Date createdTime = new Date();
 
-    private long duration;
-    private Date startDate;
-    private Date dueDate;
+  private long duration;
+  private Date startDate;
+  private Date dueDate;
 
-    public Task build() {
-        Task task = new Task();
+  public Task build() {
+    Task task = new Task();
 
-        task.setTitle(title);
-        task.setDescription(description);
-        task.setPriority(priority);
-        task.setContext(context);
-        task.setAssignee(assignee);
-        task.setStatus(status);
-        task.setTags(tags);
-        task.setProject(project);
-        task.setCreatedBy(createdBy);
-        task.setCreatedTime(createdTime);
-        task.setDuration(duration);
-        task.setStartDate(startDate);
-        task.setDueDate(dueDate);
+    task.setTitle(title);
+    task.setDescription(description);
+    task.setPriority(priority);
+    task.setContext(context);
+    task.setAssignee(assignee);
+    task.setCoworker(coworker);
+    task.setStatus(status);
+    task.setTags(tags);
+    task.setCreatedBy(createdBy);
+    task.setCreatedTime(createdTime);
+    task.setDuration(duration);
+    task.setStartDate(startDate);
+    task.setDueDate(dueDate);
 
-        return task;
+    return task;
+  }
+
+  public TaskBuilder withTitle(String title) {
+    this.title = title;
+    return this;
+  }
+  public TaskBuilder withDescription(String description) {
+    this.description = description;
+    return this;
+  }
+  public TaskBuilder withPriority(Priority priority) {
+    this.priority = priority;
+    return this;
+  }
+
+  public TaskBuilder withAssignee(String assignee) {
+    this.assignee = assignee;
+    return this;
+  }
+
+  public TaskBuilder addCoworker(String coworker) {
+    if (this.coworker == null) {
+      this.coworker = new HashSet<String>();
     }
+    this.coworker.add(coworker);
+    return this;
+  }
 
-    public TaskBuilder withTitle(String title) {
-        this.title = title;
-        return this;
-    }
-    public TaskBuilder withDescription(String description) {
-        this.description = description;
-        return this;
-    }
-    public TaskBuilder withPriority(Priority priority) {
-        this.priority = priority;
-        return this;
-    }
+  public TaskBuilder withContext(String context) {
+    this.context = context;
+    return this;
+  }
 
-    public TaskBuilder withAssignee(String assignee) {
-        this.assignee = assignee;
-        return this;
-    }
+  public TaskBuilder withDueDate(Date date) {
+    this.dueDate = date;
+    return this;
+  }
 
-    public TaskBuilder withContext(String context) {
-        this.context = context;
-        return this;
-    }
+  public TaskBuilder withStatus(Status status) {
+    this.status = status;
+    return this;
+  }
 
-    public TaskBuilder withDueDate(Date date) {
-        this.dueDate = date;
-        return this;
+  public TaskBuilder addTag(String tag) {
+    if(this.tags == null) {
+      this.tags = new HashSet<String>();
     }
+    this.tags.add(tag);
+    return this;
+  }
 
-    public TaskBuilder withStatus(Status status) {
-        this.status = status;
-        return this;
-    }
+  public TaskBuilder withCreatedBy(String username) {
+    this.createdBy = username;
+    return this;
+  }
 
-    public TaskBuilder addTag(String tag) {
-        if(this.tags == null) {
-            this.tags = new HashSet<String>();
-        }
-        this.tags.add(tag);
-        return this;
-    }
+  public TaskBuilder withDuration(long duration) {
+    this.duration = duration;
+    return this;
+  }
 
-    public TaskBuilder withProject(Project project) {
-        this.project = project;
-        return this;
-    }
-
-    public TaskBuilder withCreatedBy(String username) {
-        this.createdBy = username;
-        return this;
-    }
-
-    public TaskBuilder withDuration(long duration) {
-        this.duration = duration;
-        return this;
-    }
-
-    public TaskBuilder withStartDate(Date date) {
-        this.startDate = date;
-        return this;
-    }
+  public TaskBuilder withStartDate(Date date) {
+    this.startDate = date;
+    return this;
+  }
 }

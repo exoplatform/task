@@ -47,16 +47,16 @@ public class Task {
 
   private String      assignee;
 
-  @ManyToOne(cascade = CascadeType.PERSIST)
+  @ManyToOne
   private Status      status;
 
   @ElementCollection
-  @CollectionTable(name = "Tags")
-  private Set<String> tags;
+  @CollectionTable(name = "TASK_TASK_COWORKER")
+  private Set<String> coworker = new HashSet<String>();
 
-  @ManyToOne
-  @JoinColumn(name = "project_id")
-  private Project     project;
+  @ElementCollection
+  @CollectionTable(name = "TASK_TAGS")
+  private Set<String> tags = new HashSet<String>();
 
   private String      createdBy;
 
@@ -70,6 +70,11 @@ public class Task {
 
   @Temporal(TemporalType.TIMESTAMP)
   private Date        dueDate;
+
+  public Task() {
+  }
+
+
 
   public long getId() {
     return id;
@@ -182,11 +187,11 @@ public class Task {
     this.dueDate = dueDate;
   }
 
-  public Project getProject() {
-    return project;
+  public Set<String> getCoworker() {
+    return coworker;
   }
 
-  public void setProject(Project project) {
-    this.project = project;
+  public void setCoworker(Set<String> coworker) {
+    this.coworker = coworker;
   }
 }

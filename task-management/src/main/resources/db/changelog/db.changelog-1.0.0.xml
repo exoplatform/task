@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <databaseChangeLog
-        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
   <!-- Managing both DB that use sequences and db that use auto increment -->
@@ -22,6 +22,30 @@
   </changeSet>
   <changeSet author="tclement@exoplatform.com" id="create-projects-sequence" dbms="oracle,postgresql">
     <createSequence sequenceName="SEQ_TASK_PROJECTS_PROJECT_ID" startValue="1"/>
+  </changeSet>
+
+  <!-- Definition of TASK_PROJECT_MANAGER table -->
+  <changeSet author="tclement@exoplatform.com" id="1.0.0-5">
+    <createTable tableName="TASK_PROJECT_MANAGER">
+      <column name="PROJECT_ID" type="BIGINT">
+        <constraints foreignKeyName="FK_TASK_PROJECT_MANAGER_TASK_PROJECTS_01" references="TASK_PROJECTS(PROJECT_ID)" nullable="false"/>
+      </column>
+      <column name="MANAGER" type="VARCHAR(50)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+
+  <!-- Definition of TASK_PROJECT_PARTICIPATOR table -->
+  <changeSet author="tclement@exoplatform.com" id="1.0.0-6">
+    <createTable tableName="TASK_PROJECT_PARTICIPATOR">
+      <column name="PROJECT_ID" type="BIGINT">
+        <constraints foreignKeyName="FK_TASK_PROJECT_PARTICIPATOR_TASK_PROJECTS_01" references="TASK_PROJECTS(PROJECT_ID)" nullable="false"/>
+      </column>
+      <column name="PARTICIPATOR" type="VARCHAR(50)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
   </changeSet>
 
   <!-- Definition of TASK_STATUS table -->
@@ -87,16 +111,28 @@
     <createSequence sequenceName="SEQ_TASK_TASKS_TASK_ID" startValue="1"/>
   </changeSet>
 
+  <!-- Definition of TASK_TASK_COWORKER table -->
+  <changeSet author="tclement@exoplatform.com" id="1.0.0-7">
+    <createTable tableName="TASK_TASK_COWORKER">
+      <column name="TASK_ID" type="BIGINT">
+        <constraints foreignKeyName="FK_TASK_TASK_COWORKER_TASK_TASKS_01" references="TASK_STATUS(STATUS_ID)" nullable="false"/>
+      </column>
+      <column name="COWORKER" type="VARCHAR(50)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+
   <!-- Definition of TASK_TAGS table -->
-  <!--<changeSet author="tclement@exoplatform.com" id="1.0.0-4">
+  <changeSet author="tclement@exoplatform.com" id="1.0.0-4">
     <createTable tableName="TASK_TAGS">
       <column name="TASK_ID" type="BIGINT">
-        <constraints nullable="false" primaryKey="true" primaryKeyName="PK_TASK_STATUS" unique="true"/>
+        <constraints foreignKeyName="FK_TASK_TAGS_TASK_TASKS_01" references="TASK_STATUS(STATUS_ID)" nullable="false"/>
       </column>
       <column name="NAME" type="VARCHAR(50)">
         <constraints nullable="false"/>
       </column>
     </createTable>
-  </changeSet>-->
+  </changeSet>
 
 </databaseChangeLog>

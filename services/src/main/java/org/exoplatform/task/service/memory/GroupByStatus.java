@@ -67,9 +67,6 @@ public class GroupByStatus extends AbstractGroupBy<Status> {
         });
         for(Task task : taskService.findAllTask()) {
             Status status = task.getStatus();
-            if(status == null) {
-                status = Status.TODO;
-            }
 
             List<Task> list = maps.get(status);
             if(list == null) {

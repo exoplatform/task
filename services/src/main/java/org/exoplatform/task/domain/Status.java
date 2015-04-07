@@ -31,6 +31,7 @@ import java.util.Set;
 @Table(name = "TASK_STATUS")
 public class Status {
 
+
   public static final Status   TODO        = new Status(1, "TODO");
 
   public static final Status   IN_PROGRESS = new Status(2, "In Progress");
@@ -41,23 +42,37 @@ public class Status {
 
   public static final Status[] STATUS      = { TODO, IN_PROGRESS, WAITING_ON, DONE };
 
+
   @Id
   @GeneratedValue
   @Column(name = "TASK_ID")
-  private long                 id;
+  private long id;
 
-  private String               name;
+  private String name;
 
-  @OneToMany(mappedBy = "status")
-  private Set<Task>            tasks       = new HashSet<Task>();
+  private Integer rank;
+
+  @OneToMany(mappedBy = "status", cascade = CascadeType.ALL, orphanRemoval = true)
+  private Set<Task> tasks = new HashSet<Task>();
+
+  @ManyToOne
+  private Project project;
 
   public Status() {
 
   }
 
+  //TO REMOVE after removing the TaskServiceMemImpl
   public Status(long id, String name) {
     this.id = id;
     this.name = name;
+  }
+
+  public Status(String name, Integer rank, Set<Task> tasks, Project project) {
+    this.name = name;
+    this.rank = rank;
+    this.tasks = tasks;
+    this.project = project;
   }
 
   public long getId() {
@@ -82,5 +97,21 @@ public class Status {
 
   public void setTasks(Set<Task> tasks) {
     this.tasks = tasks;
+  }
+
+  public Integer getRank() {
+    return rank;
+  }
+
+  public void setRank(Integer rank) {
+    this.rank = rank;
+  }
+
+  public Project getProject() {
+    return project;
+  }
+
+  public void setProject(Project project) {
+    this.project = project;
   }
 }
