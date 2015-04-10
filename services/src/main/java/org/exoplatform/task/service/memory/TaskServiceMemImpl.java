@@ -27,6 +27,9 @@ import org.exoplatform.task.service.GroupByService;
 import org.exoplatform.task.service.TaskBuilder;
 import org.exoplatform.task.service.TaskParser;
 import org.exoplatform.task.service.TaskService;
+import org.exoplatform.task.service.impl.GroupByProject;
+import org.exoplatform.task.service.impl.GroupByStatus;
+import org.exoplatform.task.service.impl.GroupByTag;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;

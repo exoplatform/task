@@ -5,7 +5,7 @@
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
          version="3.0">
   <display-name>task-management</display-name>
-  
+
   <!-- Run mode: prod, dev or live -->
   <context-param>
     <param-name>juzu.run_mode</param-name>
@@ -43,8 +43,15 @@
     <param-value>production</param-value>
   </context-param>
 
+  <!-- TODO Fix the issue: Caused by: org.hsqldb.HsqlException: user lacks privilege or object not found: TASK0_.CREATEDB4_5_
   <listener>
     <listener-class>liquibase.integration.servlet.LiquibaseServletListener</listener-class>
+  </listener>
+  -->
+
+  <!-- JPA Entity Manager -->
+  <listener>
+    <listener-class>org.exoplatform.task.factory.ExoEntityManagerFactory</listener-class>
   </listener>
 
   <resource-ref>

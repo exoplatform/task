@@ -1,93 +1,101 @@
-/*
- * Copyright (C) 2015 eXo Platform SAS.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
-  
+/* 
+* Copyright (C) 2003-2015 eXo Platform SAS.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Lesser General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU Lesser General Public License for more details.
+*
+* You should have received a copy of the GNU Lesser General Public License
+* along with this program. If not, see http://www.gnu.org/licenses/ .
+*/
 package org.exoplatform.task.service.jpa;
 
+import org.exoplatform.task.dao.TaskDAO;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.service.GroupByService;
 import org.exoplatform.task.service.TaskService;
-import org.exoplatform.task.service.memory.GroupByProject;
-import org.exoplatform.task.service.memory.GroupByStatus;
-import org.exoplatform.task.service.memory.GroupByTag;
+import org.exoplatform.task.service.impl.GroupByProject;
+import org.exoplatform.task.service.impl.GroupByStatus;
+import org.exoplatform.task.service.impl.GroupByTag;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.logging.Logger;
 
+/**
+ * Created by The eXo Platform SAS
+ * Author : Thibault Clement
+ * tclement@exoplatform.com
+ * 4/8/15
+ */
+@Singleton
 public class TaskServiceJPAImpl implements TaskService {
 
-  private EntityManagerFactory factory = Persistence.createEntityManagerFactory("org.exoplatform.task");
-  
+  private static final Logger LOG = Logger.getLogger("TaskServiceJPATestImpl");
   private final List<GroupByService> groupByServices;
 
+  @Inject
+  private TaskDAO taskDAO;
+
   public TaskServiceJPAImpl() {
-      this.groupByServices = new ArrayList<GroupByService>();
-      this.groupByServices.add(new GroupByStatus(this));
-      this.groupByServices.add(new GroupByProject(this));
-      this.groupByServices.add(new GroupByTag(this));
+    this.groupByServices = new ArrayList<GroupByService>();
+    this.groupByServices.add(new GroupByStatus(this));
+    this.groupByServices.add(new GroupByProject(this));
+    this.groupByServices.add(new GroupByTag(this));
   }
-  
+
   @Override
   public void save(Task task) {
-    EntityManager entityManager = begin();
-    entityManager.persist(task);
-    end(entityManager);
+    taskDAO.beginTransaction();
+    taskDAO.update(task);
+    taskDAO.commitAndCloseTransaction();
   }
 
-  void end(EntityManager entityManager) {
-    entityManager.getTransaction().commit();
-    entityManager.close();
-  }
-
-  EntityManager begin() {
-    EntityManager entityManager = factory.createEntityManager();
-    entityManager.getTransaction().begin();
-    return entityManager;
+  //To add in interface
+  public void update(Task task) {
+    taskDAO.beginTransaction();
+    Task persistedTask = taskDAO.find(task.getId());
+    persistedTask.setTitle(task.getTitle());
+    //TO DO: add all set methods...
+    taskDAO.update(persistedTask);
+    taskDAO.commitAndCloseTransaction();
   }
 
   @Override
   public Task findTaskById(long id) {
-    EntityManager entityManager = begin();
-    Task task = entityManager.find(Task.class, id);
-    end(entityManager);
+    taskDAO.beginTransaction();
+    Task task = taskDAO.find(id);
+    taskDAO.closeTransaction();
     return task;
   }
 
   @Override
   public List<Task> findAllTask() {
-    EntityManager entityManager = begin();
-    List<Task> tasks = entityManager.createQuery("from Task", Task.class).getResultList();
-    end(entityManager);
+    taskDAO.beginTransaction();
+    List<Task> tasks = taskDAO.findAll();
+    taskDAO.closeTransaction();
     return tasks;
   }
 
   @Override
   public void remove(Task task) {
-
+    taskDAO.beginTransaction();
+    taskDAO.delete(task);
+    taskDAO.commitAndCloseTransaction();
   }
 
   @Override
   public List<GroupByService> getGroupByServices() {
-    // TODO Auto-generated method stub
-    return null;
+    return Collections.unmodifiableList(this.groupByServices);
   }
-  
 }
+

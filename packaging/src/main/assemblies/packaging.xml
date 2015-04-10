@@ -35,6 +35,7 @@
         <include>org.exoplatform.addons.task:task-management-config</include>
         <include>org.exoplatform.addons.task:task-management-services</include>
         <include>org.exoplatform.addons.task:task-management</include>
+        <include>org.hibernate:hibernate-entitymanager</include>
       </includes>
     </dependencySet>
   </dependencySets>

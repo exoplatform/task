@@ -33,6 +33,7 @@
   <name>Task management parent POM</name>
   <description>Task management add-on parent POM</description>
 
+
   <scm>
     <connection>scm:git:git://github.com/exo-addons/task.git</connection>
     <developerConnection>scm:git:git@github.com:exo-addons/task.git</developerConnection>
@@ -50,7 +51,8 @@
   <properties>
     <maven.compiler.target>1.6</maven.compiler.target>
     <maven.compiler.source>1.6</maven.compiler.source>
-
+    <hibernate.version>4.1.12.Final</hibernate.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <juzu.version>1.0.0-cr2-SNAPSHOT</juzu.version>
     <groovy.version>1.7.6</groovy.version>
     <junit.version>4.10</junit.version>

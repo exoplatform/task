@@ -60,7 +60,7 @@
       <column name="RANK" type="INTEGER">
         <constraints nullable="false"/>
       </column>
-      <column name="PROJECT" type="BIGINT">
+      <column name="PROJECT_ID" type="BIGINT">
         <constraints foreignKeyName="FK_TASK_STATUS_TASK_PROJECTS_01" references="TASK_PROJECTS(PROJECT_ID)" nullable="false"/>
       </column>
     </createTable>
@@ -81,13 +81,16 @@
       <column name="DESCRIPTION" type="VARCHAR(10000)">
         <constraints nullable="true"/>
       </column>
+      <column name="PRIORITY" type="VARCHAR(10)">
+        <constraints nullable="true"/>
+      </column>
       <column name="CONTEXT" type="VARCHAR(255)">
         <constraints nullable="true"/>
       </column>
       <column name="ASSIGNEE" type="VARCHAR(50)">
         <constraints nullable="false"/>
       </column>
-      <column name="STATUS" type="BIGINT">
+      <column name="STATUS_ID" type="BIGINT">
         <constraints foreignKeyName="FK_TASK_TASKS_TASK_STATUS_01" references="TASK_STATUS(STATUS_ID)" nullable="false"/>
       </column>
       <column name="CREATOR" type="VARCHAR(50)">
@@ -115,7 +118,7 @@
   <changeSet author="tclement@exoplatform.com" id="1.0.0-7">
     <createTable tableName="TASK_TASK_COWORKER">
       <column name="TASK_ID" type="BIGINT">
-        <constraints foreignKeyName="FK_TASK_TASK_COWORKER_TASK_TASKS_01" references="TASK_STATUS(STATUS_ID)" nullable="false"/>
+        <constraints foreignKeyName="FK_TASK_TASK_COWORKER_TASK_TASKS_01" references="TASK_TASKS(TASK_ID)" nullable="false"/>
       </column>
       <column name="COWORKER" type="VARCHAR(50)">
         <constraints nullable="false"/>
@@ -127,7 +130,7 @@
   <changeSet author="tclement@exoplatform.com" id="1.0.0-4">
     <createTable tableName="TASK_TAGS">
       <column name="TASK_ID" type="BIGINT">
-        <constraints foreignKeyName="FK_TASK_TAGS_TASK_TASKS_01" references="TASK_STATUS(STATUS_ID)" nullable="false"/>
+        <constraints foreignKeyName="FK_TASK_TAGS_TASK_TASKS_01" references="TASK_TASKS(TASK_ID)" nullable="false"/>
       </column>
       <column name="NAME" type="VARCHAR(50)">
         <constraints nullable="false"/>

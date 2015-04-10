@@ -20,6 +20,7 @@ import java.util.List;
 public class EntityManagerTest {
 
   private EntityManagerFactory entityManagerFactory;
+  private EntityManager entityManager;
   private static Connection conn;
   private static Liquibase liquibase;
 
@@ -27,8 +28,8 @@ public class EntityManagerTest {
   public static void createTable() throws SQLException,
       ClassNotFoundException, LiquibaseException {
 
-    Class.forName("org.h2.Driver");
-    conn = DriverManager.getConnection("jdbc:h2:target/h2", "sa", "");
+    Class.forName("com.mysql.jdbc.Driver");
+    conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/plf?autoReconnect=true", "root", "");
 
     Database database = DatabaseFactory.getInstance()
         .findCorrectDatabaseImplementation(new JdbcConnection(conn));
@@ -41,18 +42,23 @@ public class EntityManagerTest {
 
   @AfterClass
   public static void removeTable() throws LiquibaseException, SQLException {
-    liquibase.rollback(1000, null);
+    //liquibase.rollback(1000, null);
     conn.close();
   }
 
   @Before
   public void initEntityManager() throws Exception {
     entityManagerFactory = Persistence.createEntityManagerFactory("org.exoplatform.task");
+    entityManager = entityManagerFactory.createEntityManager();
+    // Start transaction
+    entityManager.getTransaction().begin();
   }
 
 
   @After
   public void closeEntityManager() throws Exception {
+    // Close Transaction
+    entityManager.close();
     entityManagerFactory.close();
   }
 
@@ -67,23 +73,14 @@ public class EntityManagerTest {
     project.setName("test project");
 
     // Add some tasks in DB
-    EntityManager entityManager = entityManagerFactory.createEntityManager();
-    // Start transaction
-    entityManager.getTransaction().begin();
-
     entityManager.persist(project);
 
     // Commit
     entityManager.getTransaction().commit();
-    // Close Transaction
-    entityManager.close();
 
-    // Get Task and display them
-    entityManager = entityManagerFactory.createEntityManager();
     // Queries all projects from DB
     List<Project> result = entityManager.createQuery("from Project", Project.class).getResultList();
     Assert.assertEquals(project.getName(), result.get(0).getName());
-    entityManager.close();
   }
 
 }

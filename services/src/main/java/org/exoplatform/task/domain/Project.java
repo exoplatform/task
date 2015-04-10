@@ -29,6 +29,9 @@ import java.util.Set;
 @Entity
 @Table(name = "TASK_PROJECTS")
 public class Project {
+
+  public static final Project   INCOMING        = new Project(1, "INCOMING");
+
   @Id
   @GeneratedValue
   @Column(name = "PROJECT_ID")
@@ -40,11 +43,13 @@ public class Project {
   private Set<Status> status = new HashSet<Status>();
 
   @ElementCollection
-  @CollectionTable(name = "TASK_PROJECT_MANAGER")
+  @CollectionTable(name = "TASK_PROJECT_MANAGER",
+      joinColumns = @JoinColumn(name = "PROJECT_ID"))
   private Set<String> manager = new HashSet<String>();
 
   @ElementCollection
-  @CollectionTable(name = "TASK_PROJECT_PARTICIPATOR")
+  @CollectionTable(name = "TASK_PROJECT_PARTICIPATOR",
+      joinColumns = @JoinColumn(name = "PROJECT_ID"))
   private Set<String> participator = new HashSet<String>();
 
   public Project() {

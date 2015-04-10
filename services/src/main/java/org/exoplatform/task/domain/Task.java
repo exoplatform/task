@@ -48,14 +48,17 @@ public class Task {
   private String      assignee;
 
   @ManyToOne
+  @JoinColumn(name = "STATUS_ID")
   private Status      status;
 
   @ElementCollection
-  @CollectionTable(name = "TASK_TASK_COWORKER")
+  @CollectionTable(name = "TASK_TASK_COWORKER",
+      joinColumns = @JoinColumn(name = "TASK_ID"))
   private Set<String> coworker = new HashSet<String>();
 
   @ElementCollection
-  @CollectionTable(name = "TASK_TAGS")
+  @CollectionTable(name = "TASK_TAGS",
+      joinColumns = @JoinColumn(name = "TASK_ID"))
   private Set<String> tags = new HashSet<String>();
 
   private String      createdBy;

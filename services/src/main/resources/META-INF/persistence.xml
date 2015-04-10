@@ -5,16 +5,22 @@
 
   <persistence-unit name="org.exoplatform.task" transaction-type="RESOURCE_LOCAL">
     <provider>org.hibernate.ejb.HibernatePersistence</provider>
+    <non-jta-data-source>java:comp/env/exo-jcr_portal</non-jta-data-source>
+    <!--<jta-data-source>java:comp/env/exo-jcr_portal</jta-data-source>-->
 
     <properties>
-      <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />
-      <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/plf?autoReconnect=true" />
-      <property name="javax.persistence.jdbc.user" value="root" />
-      <property name="javax.persistence.jdbc.password" value="" />
 
-      <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
-      <property name="hibernate.show_sql" value="true" />
+      <!--<property name="hibernate.dialect" value="org.hibernate.dialect.HSQLDialect" />
+      <property name="hibernate.show_sql" value="true" />-->
       <property name="hibernate.hbm2ddl.auto" value="create" />
+
+      <!-- JTA -->
+      <!--
+      <property name="jta.UserTransaction" value="java:comp/env/UserTransaction" />
+      <property name="hibernate.transaction.factory_class" value="org.hibernate.transaction.JTATransactionFactory" />
+      <property name="hibernate.transaction.manager_lookup_class" value="org.hibernate.transaction.JBossTSStandaloneTransactionManagerLookup" />
+      -->
+
 
     </properties>
   </persistence-unit>

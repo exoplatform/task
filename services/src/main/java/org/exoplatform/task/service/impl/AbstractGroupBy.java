@@ -17,55 +17,43 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.exoplatform.task.service.memory;
+package org.exoplatform.task.service.impl;
 
-import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.model.GroupTask;
+import org.exoplatform.task.service.GroupByService;
+import org.exoplatform.task.service.OrderBy;
 import org.exoplatform.task.service.TaskService;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
-public class GroupByProject extends AbstractGroupBy<Project> {
+public abstract class AbstractGroupBy<T> implements GroupByService {
 
-    public GroupByProject(TaskService taskService) {
-        super(taskService);
+    protected final TaskService taskService;
+
+    protected AbstractGroupBy(TaskService taskService) {
+        this.taskService = taskService;
     }
 
     @Override
-    protected String getTitle(Project key) {
-        if(key == null) {
-            return "Personal task";
+    public List<GroupTask> getGroupTasks(List<OrderBy> orders) {
+        Map<T, List<Task>> maps = this.getMaps();
+        List<GroupTask> groupTasks = new ArrayList<GroupTask>();
+        for(Map.Entry<T, List<Task>> entry : maps.entrySet()) {
+            String name = this.getTitle(entry.getKey());
+            List<Task> tasks = entry.getValue();
+            Collections.sort(tasks, new TaskComparator(orders));
+            groupTasks.add(new GroupTask(name, tasks));
         }
-        return key.getName();
+        return groupTasks;
     }
 
-    @Override
-    protected Map<Project, List<Task>> getMaps() {
-        Map<Project, List<Task>> maps = new HashMap<Project, List<Task>>();
-        for(Task task : taskService.findAllTask()) {
-            Project project = task.getStatus().getProject();
-            this.put(maps, project, task);
-        }
-        return maps;
-    }
-
-    protected void put(Map<Project, List<Task>> maps, Project project, Task task) {
-        List<Task> list = maps.get(project);
-        if(list == null) {
-            list = new ArrayList<Task>();
-            maps.put(project, list);
-        }
-        list.add(task);
-    }
-
-    @Override
-    public String getName() {
-        return "project";
-    }
+    protected abstract String getTitle(T key);
+    protected abstract Map<T, List<Task>> getMaps();
 }

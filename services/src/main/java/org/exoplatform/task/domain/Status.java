@@ -32,6 +32,8 @@ import java.util.Set;
 public class Status {
 
 
+  public static final Status   INCOMING    = new Status(0, "INCOMING", 1, null, new Project(1, "INCOMING"));
+
   public static final Status   TODO        = new Status(1, "TODO");
 
   public static final Status   IN_PROGRESS = new Status(2, "In Progress");
@@ -45,7 +47,7 @@ public class Status {
 
   @Id
   @GeneratedValue
-  @Column(name = "TASK_ID")
+  @Column(name = "STATUS_ID")
   private long id;
 
   private String name;
@@ -56,6 +58,7 @@ public class Status {
   private Set<Task> tasks = new HashSet<Task>();
 
   @ManyToOne
+  @JoinColumn(name = "PROJECT_ID")
   private Project project;
 
   public Status() {
@@ -66,6 +69,13 @@ public class Status {
   public Status(long id, String name) {
     this.id = id;
     this.name = name;
+  }
+  public Status(long id, String name, Integer rank, Set<Task> tasks, Project project) {
+    this.id = id;
+    this.name = name;
+    this.rank = rank;
+    this.tasks = tasks;
+    this.project = project;
   }
 
   public Status(String name, Integer rank, Set<Task> tasks, Project project) {
