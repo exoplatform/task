@@ -28,8 +28,8 @@ public class EntityManagerTest {
   public static void createTable() throws SQLException,
       ClassNotFoundException, LiquibaseException {
 
-    Class.forName("com.mysql.jdbc.Driver");
-    conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/plf?autoReconnect=true", "root", "");
+    Class.forName("org.h2.Driver");
+    conn = DriverManager.getConnection("jdbc:h2:target/h2-db", "sa", "");
 
     Database database = DatabaseFactory.getInstance()
         .findCorrectDatabaseImplementation(new JdbcConnection(conn));

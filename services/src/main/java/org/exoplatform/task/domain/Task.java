@@ -52,7 +52,7 @@ public class Task {
   private Status      status;
 
   @ElementCollection
-  @CollectionTable(name = "TASK_TASK_COWORKER",
+  @CollectionTable(name = "TASK_TASK_COWORKERS",
       joinColumns = @JoinColumn(name = "TASK_ID"))
   private Set<String> coworker = new HashSet<String>();
 
@@ -61,17 +61,21 @@ public class Task {
       joinColumns = @JoinColumn(name = "TASK_ID"))
   private Set<String> tags = new HashSet<String>();
 
+  @Column(name = "CREATED_BY")
   private String      createdBy;
 
   @Temporal(TemporalType.TIMESTAMP)
+  @Column(name = "CREATED_TIME")
   private Date        createdTime;
 
   private long        duration;
 
   @Temporal(TemporalType.TIMESTAMP)
+  @Column(name = "START_DATE")
   private Date        startDate;
 
   @Temporal(TemporalType.TIMESTAMP)
+  @Column(name = "DUE_DATE")
   private Date        dueDate;
 
   public Task() {

@@ -26,7 +26,7 @@
 
   <!-- Definition of TASK_PROJECT_MANAGER table -->
   <changeSet author="tclement@exoplatform.com" id="1.0.0-5">
-    <createTable tableName="TASK_PROJECT_MANAGER">
+    <createTable tableName="TASK_PROJECT_MANAGERS">
       <column name="PROJECT_ID" type="BIGINT">
         <constraints foreignKeyName="FK_TASK_PROJECT_MANAGER_TASK_PROJECTS_01" references="TASK_PROJECTS(PROJECT_ID)" nullable="false"/>
       </column>
@@ -38,7 +38,7 @@
 
   <!-- Definition of TASK_PROJECT_PARTICIPATOR table -->
   <changeSet author="tclement@exoplatform.com" id="1.0.0-6">
-    <createTable tableName="TASK_PROJECT_PARTICIPATOR">
+    <createTable tableName="TASK_PROJECT_PARTICIPATORS">
       <column name="PROJECT_ID" type="BIGINT">
         <constraints foreignKeyName="FK_TASK_PROJECT_PARTICIPATOR_TASK_PROJECTS_01" references="TASK_PROJECTS(PROJECT_ID)" nullable="false"/>
       </column>
@@ -91,9 +91,9 @@
         <constraints nullable="false"/>
       </column>
       <column name="STATUS_ID" type="BIGINT">
-        <constraints foreignKeyName="FK_TASK_TASKS_TASK_STATUS_01" references="TASK_STATUS(STATUS_ID)" nullable="false"/>
+        <constraints foreignKeyName="FK_TASK_TASKS_TASK_STATUS_01" references="TASK_STATUS(STATUS_ID)" nullable="true"/>
       </column>
-      <column name="CREATOR" type="VARCHAR(50)">
+      <column name="CREATED_BY" type="VARCHAR(50)">
         <constraints nullable="false"/>
       </column>
       <column name="CREATED_TIME" type="TIMESTAMP">
@@ -116,7 +116,7 @@
 
   <!-- Definition of TASK_TASK_COWORKER table -->
   <changeSet author="tclement@exoplatform.com" id="1.0.0-7">
-    <createTable tableName="TASK_TASK_COWORKER">
+    <createTable tableName="TASK_TASK_COWORKERS">
       <column name="TASK_ID" type="BIGINT">
         <constraints foreignKeyName="FK_TASK_TASK_COWORKER_TASK_TASKS_01" references="TASK_TASKS(TASK_ID)" nullable="false"/>
       </column>
@@ -132,7 +132,7 @@
       <column name="TASK_ID" type="BIGINT">
         <constraints foreignKeyName="FK_TASK_TAGS_TASK_TASKS_01" references="TASK_TASKS(TASK_ID)" nullable="false"/>
       </column>
-      <column name="NAME" type="VARCHAR(50)">
+      <column name="TAGS" type="VARCHAR(50)">
         <constraints nullable="false"/>
       </column>
     </createTable>

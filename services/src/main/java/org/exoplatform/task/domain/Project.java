@@ -43,12 +43,12 @@ public class Project {
   private Set<Status> status = new HashSet<Status>();
 
   @ElementCollection
-  @CollectionTable(name = "TASK_PROJECT_MANAGER",
+  @CollectionTable(name = "TASK_PROJECT_MANAGERS",
       joinColumns = @JoinColumn(name = "PROJECT_ID"))
   private Set<String> manager = new HashSet<String>();
 
   @ElementCollection
-  @CollectionTable(name = "TASK_PROJECT_PARTICIPATOR",
+  @CollectionTable(name = "TASK_PROJECT_PARTICIPATORS",
       joinColumns = @JoinColumn(name = "PROJECT_ID"))
   private Set<String> participator = new HashSet<String>();
 
