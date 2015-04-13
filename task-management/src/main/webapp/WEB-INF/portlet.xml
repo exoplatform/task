@@ -18,7 +18,7 @@
     </supports>
     <resource-bundle>locale.portlet.taskManagement</resource-bundle>
     <portlet-info>
-      <title>Task Management</title>
+      <title>Tasks</title>
     </portlet-info>
   </portlet>
 </portlet-app>

@@ -27,10 +27,10 @@
   <priority>1</priority>
   <page-nodes>
     <node>
-      <uri>taskManagement</uri>
-      <name>taskManagement</name>
+      <uri>tasks</uri>
+      <name>tasks</name>
       <label>#{addon.task.navigation.node.label}</label>
-      <page-reference>portal::intranet::taskManagement</page-reference>
+      <page-reference>portal::intranet::tasks</page-reference>
     </node>
   </page-nodes>
 </node-navigation>

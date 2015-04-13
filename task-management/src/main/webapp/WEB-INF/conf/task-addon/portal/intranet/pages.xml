@@ -23,8 +23,8 @@
             
 <page-set>
    <page>
-      <name>taskManagement</name>
-      <title>Task Management</title>
+      <name>tasks</name>
+      <title>Tasks</title>
       <access-permissions>*:/platform/users</access-permissions>
       <edit-permission>*:/platform/administrators</edit-permission>
       <show-max-window>false</show-max-window>
