@@ -59,8 +59,7 @@ public class GenericDAOImpl<E, ID extends Serializable> implements GenericDAO<E,
   //
   // *****************************
 
-  @Override
-  public void createEntityManager() {
+  private void createEntityManager() {
     entityManager = entityManagerFactory.createEntityManager();
   }
 
@@ -173,6 +172,14 @@ public class GenericDAOImpl<E, ID extends Serializable> implements GenericDAO<E,
 
   @Override
   public void deleteAll(List<E> entities) {
+    for (E entity : entities) {
+      entityManager.remove(entity);
+    }
+  }
+
+  @Override
+  public void deleteAll() {
+    List<E> entities = findAll();
     for (E entity : entities) {
       entityManager.remove(entity);
     }

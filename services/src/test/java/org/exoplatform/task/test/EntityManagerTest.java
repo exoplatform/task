@@ -1,19 +1,12 @@
 package org.exoplatform.task.test;
 
-import liquibase.Liquibase;
-import liquibase.database.Database;
-import liquibase.database.DatabaseFactory;
-import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
-import liquibase.resource.FileSystemResourceAccessor;
 import org.exoplatform.task.domain.Project;
 import org.junit.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -21,29 +14,16 @@ public class EntityManagerTest {
 
   private EntityManagerFactory entityManagerFactory;
   private EntityManager entityManager;
-  private static Connection conn;
-  private static Liquibase liquibase;
 
   @BeforeClass
   public static void createTable() throws SQLException,
       ClassNotFoundException, LiquibaseException {
-
-    Class.forName("org.h2.Driver");
-    conn = DriverManager.getConnection("jdbc:h2:target/h2-db", "sa", "");
-
-    Database database = DatabaseFactory.getInstance()
-        .findCorrectDatabaseImplementation(new JdbcConnection(conn));
-
-    liquibase = new Liquibase("../task-management/src/main/resources/db/changelog/db.changelog-1.0.0.xml",
-        new FileSystemResourceAccessor(), database);
-    liquibase.update((String)null);
-
+    TestUtils.initH2DB();
   }
 
   @AfterClass
   public static void removeTable() throws LiquibaseException, SQLException {
-    //liquibase.rollback(1000, null);
-    conn.close();
+    TestUtils.closeDB();
   }
 
   @Before

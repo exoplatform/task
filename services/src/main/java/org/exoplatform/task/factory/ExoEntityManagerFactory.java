@@ -55,6 +55,8 @@ public class ExoEntityManagerFactory implements ServletContextListener {
     return entityManagerFactory;
   }
 
-
+  public static void setEntityManagerFactory(EntityManagerFactory entityManagerFactory) {
+    ExoEntityManagerFactory.entityManagerFactory = entityManagerFactory;
+  }
 }
 
