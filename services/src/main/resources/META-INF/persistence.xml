@@ -14,7 +14,7 @@
       <property name="hibernate.show_sql" value="true" />
       <property name="hibernate.hbm2ddl.auto" value="create" />
       -->
-      
+
       <!-- JTA -->
       <!--
       <property name="jta.UserTransaction" value="java:comp/env/UserTransaction" />

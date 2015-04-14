@@ -88,16 +88,16 @@
         <constraints nullable="true"/>
       </column>
       <column name="ASSIGNEE" type="VARCHAR(50)">
-        <constraints nullable="false"/>
+        <constraints nullable="true"/>
       </column>
       <column name="STATUS_ID" type="BIGINT">
         <constraints foreignKeyName="FK_TASK_TASKS_TASK_STATUS_01" references="TASK_STATUS(STATUS_ID)" nullable="true"/>
       </column>
       <column name="CREATED_BY" type="VARCHAR(50)">
-        <constraints nullable="false"/>
+        <constraints nullable="true"/>
       </column>
       <column name="CREATED_TIME" type="TIMESTAMP">
-        <constraints nullable="false"/>
+        <constraints nullable="true"/>
       </column>
       <column name="DURATION" type="INTEGER">
         <constraints nullable="true"/>

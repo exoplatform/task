@@ -35,25 +35,25 @@ import java.util.Map;
  */
 public abstract class AbstractGroupBy<T> implements GroupByService {
 
-    protected final TaskService taskService;
+  protected final TaskService taskService;
 
-    protected AbstractGroupBy(TaskService taskService) {
-        this.taskService = taskService;
+  protected AbstractGroupBy(TaskService taskService) {
+    this.taskService = taskService;
+  }
+
+  @Override
+  public List<GroupTask> getGroupTasks(List<OrderBy> orders) {
+    Map<T, List<Task>> maps = this.getMaps();
+    List<GroupTask> groupTasks = new ArrayList<GroupTask>();
+    for(Map.Entry<T, List<Task>> entry : maps.entrySet()) {
+      String name = this.getTitle(entry.getKey());
+      List<Task> tasks = entry.getValue();
+      Collections.sort(tasks, new TaskComparator(orders));
+      groupTasks.add(new GroupTask(name, tasks));
     }
+    return groupTasks;
+  }
 
-    @Override
-    public List<GroupTask> getGroupTasks(List<OrderBy> orders) {
-        Map<T, List<Task>> maps = this.getMaps();
-        List<GroupTask> groupTasks = new ArrayList<GroupTask>();
-        for(Map.Entry<T, List<Task>> entry : maps.entrySet()) {
-            String name = this.getTitle(entry.getKey());
-            List<Task> tasks = entry.getValue();
-            Collections.sort(tasks, new TaskComparator(orders));
-            groupTasks.add(new GroupTask(name, tasks));
-        }
-        return groupTasks;
-    }
-
-    protected abstract String getTitle(T key);
-    protected abstract Map<T, List<Task>> getMaps();
+  protected abstract String getTitle(T key);
+  protected abstract Map<T, List<Task>> getMaps();
 }

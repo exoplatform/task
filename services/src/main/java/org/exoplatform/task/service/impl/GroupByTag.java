@@ -28,42 +28,42 @@ import java.util.*;
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
 public class GroupByTag extends AbstractGroupBy<String> {
-    public GroupByTag(TaskService taskService) {
-        super(taskService);
-    }
+  public GroupByTag(TaskService taskService) {
+    super(taskService);
+  }
 
-    @Override
-    protected String getTitle(String key) {
-        return key == null ? "not tagged" : key;
-    }
+  @Override
+  protected String getTitle(String key) {
+    return key == null ? "not tagged" : key;
+  }
 
-    @Override
-    protected Map<String, List<Task>> getMaps() {
-        Map<String, List<Task>> maps = new HashMap<String, List<Task>>();
-        for(Task task : taskService.findAllTask()) {
-            Set<String> tags = task.getTags();
-            if(tags == null || tags.isEmpty()) {
-                this.put(maps, null, task);
-            } else {
-                for(String tag : tags) {
-                    this.put(maps, tag, task);
-                }
-            }
+  @Override
+  protected Map<String, List<Task>> getMaps() {
+    Map<String, List<Task>> maps = new HashMap<String, List<Task>>();
+    for(Task task : taskService.findAllTask()) {
+      Set<String> tags = task.getTags();
+      if(tags == null || tags.isEmpty()) {
+        this.put(maps, null, task);
+      } else {
+        for(String tag : tags) {
+          this.put(maps, tag, task);
         }
-        return maps;
+      }
     }
+    return maps;
+  }
 
-    protected void put(Map<String, List<Task>> maps, String tag, Task task) {
-        List<Task> list = maps.get(tag);
-        if(list == null) {
-            list = new ArrayList<Task>();
-            maps.put(tag, list);
-        }
-        list.add(task);
+  protected void put(Map<String, List<Task>> maps, String tag, Task task) {
+    List<Task> list = maps.get(tag);
+    if(list == null) {
+      list = new ArrayList<Task>();
+      maps.put(tag, list);
     }
+    list.add(task);
+  }
 
-    @Override
-    public String getName() {
-        return "tag";
-    }
+  @Override
+  public String getName() {
+    return "tag";
+  }
 }

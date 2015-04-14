@@ -27,6 +27,6 @@ import java.util.List;
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
 public interface GroupByService {
-    String getName();
-    List<GroupTask> getGroupTasks(List<OrderBy> orderBies);
+  String getName();
+  List<GroupTask> getGroupTasks(List<OrderBy> orderBies);
 }

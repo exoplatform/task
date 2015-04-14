@@ -32,21 +32,21 @@ import org.json.JSONObject;
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
 public class StatusController {
-    @Resource
-    @Ajax
-    @MimeType.JSON
-    public Response getAllStatus() {
-        try {
-            JSONArray array = new JSONArray();
-            for (Status status : Status.STATUS) {
-                JSONObject json = new JSONObject();
-                json.put("value", status.getId());
-                json.put("text", status.getName());
-                array.put(json);
-            }
-            return Response.ok(array.toString());
-        } catch (JSONException ex) {
-            return Response.status(500).body("JSONException while create reporting");
-        }
+  @Resource
+  @Ajax
+  @MimeType.JSON
+  public Response getAllStatus() {
+    try {
+      JSONArray array = new JSONArray();
+      for (Status status : Status.STATUS) {
+        JSONObject json = new JSONObject();
+        json.put("value", status.getId());
+        json.put("text", status.getName());
+        array.put(json);
+      }
+      return Response.ok(array.toString());
+    } catch (JSONException ex) {
+      return Response.status(500).body("JSONException while create reporting");
     }
+  }
 }

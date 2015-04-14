@@ -29,15 +29,15 @@ import java.util.regex.Pattern;
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
 public class TaskTagParserPlugin implements TaskParserPlugin {
-    @Override
-    public String parse(String input, TaskBuilder builder) {
-        Pattern p = Pattern.compile("(\\s)(#)([0-9a-zA-Z_]+)");
-        Matcher m = p.matcher(input);
-        while(m.find()) {
-            builder.addTag(m.group(3));
-        }
-
-        String in = input.replaceAll("\\s#[0-9a-zA-Z_]+\\s*", " ").trim();
-        return in;
+  @Override
+  public String parse(String input, TaskBuilder builder) {
+    Pattern p = Pattern.compile("(\\s)(#)([0-9a-zA-Z_]+)");
+    Matcher m = p.matcher(input);
+    while(m.find()) {
+      builder.addTag(m.group(3));
     }
+
+    String in = input.replaceAll("\\s#[0-9a-zA-Z_]+\\s*", " ").trim();
+    return in;
+  }
 }

@@ -19,11 +19,9 @@
 
 package org.exoplatform.task.service;
 
-import org.exoplatform.task.service.TaskBuilder;
-
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
 public interface TaskParserPlugin {
-    String parse(String input, TaskBuilder builder);
+  String parse(String input, TaskBuilder builder);
 }

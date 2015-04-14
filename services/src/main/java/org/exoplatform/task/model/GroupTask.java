@@ -28,19 +28,19 @@ import java.util.List;
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
 public class GroupTask {
-    private final String name;
-    private final List<Task> tasks;
+  private final String name;
+  private final List<Task> tasks;
 
-    public GroupTask(String name, List<Task> tasks) {
-        this.name = name;
-        this.tasks = Collections.unmodifiableList(tasks);
-    }
+  public GroupTask(String name, List<Task> tasks) {
+    this.name = name;
+    this.tasks = Collections.unmodifiableList(tasks);
+  }
 
-    public String getName() {
-        return name;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public List<Task> getTasks() {
-        return tasks;
-    }
+  public List<Task> getTasks() {
+    return tasks;
+  }
 }

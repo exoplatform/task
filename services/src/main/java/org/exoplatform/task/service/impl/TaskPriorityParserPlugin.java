@@ -23,6 +23,7 @@ import org.exoplatform.task.domain.Priority;
 import org.exoplatform.task.service.TaskBuilder;
 import org.exoplatform.task.service.TaskParserPlugin;
 
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,20 +31,23 @@ import java.util.regex.Pattern;
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
 public class TaskPriorityParserPlugin implements TaskParserPlugin {
-    @Override
-    public String parse(String input, TaskBuilder builder) {
-        Pattern p = Pattern.compile("(\\s)(!)([a-zA-Z]+)");
-        Matcher m = p.matcher(input);
-        while(m.find()) {
-            String priority = m.group(3);
-            try {
-                builder.withPriority(Priority.valueOf(priority.toUpperCase()));
-            } catch (IllegalArgumentException ex) {
-                ex.printStackTrace();
-            }
-        }
 
-        String in = input.replaceAll("\\s![a-zA-Z]+\\s*", " ").trim();
-        return in;
+  private static final Logger LOG = Logger.getLogger("TaskPriorityParserPlugin");
+
+  @Override
+  public String parse(String input, TaskBuilder builder) {
+    Pattern p = Pattern.compile("(\\s)(!)([a-zA-Z]+)");
+    Matcher m = p.matcher(input);
+    while(m.find()) {
+      String priority = m.group(3);
+      try {
+        builder.withPriority(Priority.valueOf(priority.toUpperCase()));
+      } catch (IllegalArgumentException ex) {
+        LOG.severe(ex.getStackTrace().toString());
+      }
     }
+
+    String in = input.replaceAll("\\s![a-zA-Z]+\\s*", " ").trim();
+    return in;
+  }
 }

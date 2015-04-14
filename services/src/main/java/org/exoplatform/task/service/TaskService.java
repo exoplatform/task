@@ -20,7 +20,6 @@
 package org.exoplatform.task.service;
 
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.model.GroupTask;
 
 import java.util.List;
 
@@ -28,10 +27,10 @@ import java.util.List;
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
 public interface TaskService {
-    void save(Task task);
-    Task findTaskById(long id);
-    List<Task> findAllTask();
+  void save(Task task);
+  Task findTaskById(long id);
+  List<Task> findAllTask();
 
-    void remove(Task task);
-    List<GroupByService> getGroupByServices();
+  void remove(Task task);
+  List<GroupByService> getGroupByServices();
 }

@@ -44,10 +44,10 @@
   </context-param>
 
   <!-- TODO Fix the issue: Caused by: org.hsqldb.HsqlException: user lacks privilege or object not found: TASK0_.CREATEDB4_5_
+  -->
   <listener>
     <listener-class>liquibase.integration.servlet.LiquibaseServletListener</listener-class>
   </listener>
-  -->
 
   <!-- JPA Entity Manager -->
   <listener>

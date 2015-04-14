@@ -30,20 +30,20 @@ import java.util.ServiceLoader;
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
 public class TaskParserImpl implements TaskParser {
-    @Override
-    public Task parse(String input) {
-        if(input == null) {
-            return null;
-        }
-
-        TaskBuilder builder = new TaskBuilder();
-        ServiceLoader<TaskParserPlugin> parsers = ServiceLoader.load(TaskParserPlugin.class, this.getClass().getClassLoader());
-        String in = input;
-        for(TaskParserPlugin parser : parsers) {
-            in = parser.parse(in, builder);
-        }
-        builder.withTitle(in);
-
-        return builder.build();
+  @Override
+  public Task parse(String input) {
+    if(input == null) {
+      return null;
     }
+
+    TaskBuilder builder = new TaskBuilder();
+    ServiceLoader<TaskParserPlugin> parsers = ServiceLoader.load(TaskParserPlugin.class, this.getClass().getClassLoader());
+    String in = input;
+    for(TaskParserPlugin parser : parsers) {
+      in = parser.parse(in, builder);
+    }
+    builder.withTitle(in);
+
+    return builder.build();
+  }
 }

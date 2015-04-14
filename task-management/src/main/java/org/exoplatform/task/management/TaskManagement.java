@@ -35,73 +35,77 @@ import java.util.*;
  */
 public class TaskManagement {
 
-    @Inject
-    TaskService taskService;
+  @Inject
+  TaskService taskService;
 
-    @Inject
-    TaskParser taskParser;
+  @Inject
+  TaskParser taskParser;
 
-    @Inject
-    @Path("index.gtmpl")
-    org.exoplatform.task.management.templates.index index;
+  @Inject
+  @Path("index.gtmpl")
+  org.exoplatform.task.management.templates.index index;
 
-    @Inject
-    ResourceBundle bundle;
+  @Inject
+  ResourceBundle bundle;
 
-    @View
-    public Response.Content index(String groupBy, String orderBy) {
-        List<GroupByService> groupByServices = taskService.getGroupByServices();
-        GroupByService current = null;
-        List<Map.Entry<String, String>> groupByNames = new ArrayList<Map.Entry<String, String>>(groupByServices.size());
-        for(GroupByService g : groupByServices) {
-            if(g.getName().equalsIgnoreCase(groupBy)) {
-                current = g;
-            }
-            try {
-                groupByNames.add(new AbstractMap.SimpleEntry<String, String>(g.getName(),bundle.getString("label." + g.getName())));
-            } catch (MissingResourceException ex) {
-                groupByNames.add(new AbstractMap.SimpleEntry<String, String>(g.getName(), g.getName()));
-            }
-        }
-        if(current == null) {
-            current = groupByServices.get(0);
-        }
-
-        List<OrderBy> orders = new ArrayList<OrderBy>();
-        if(orderBy != null) {
-            orders.add(new OrderBy(orderBy, false));
-        }
-
-        List<Map.Entry<String, String>> orderByNames = new ArrayList<Map.Entry<String, String>>();
-        for(String name : new String[] {"title", "duedate", "priority"}) {
-            try {
-                orderByNames.add(new AbstractMap.SimpleEntry<String, String>(name, bundle.getString("label." + name)));
-            } catch (MissingResourceException ex) {
-                orderByNames.add(new AbstractMap.SimpleEntry<String, String>(name, name));
-            }
-        }
-
-        return index.with()
-                .groupByNames(groupByNames)
-                .orderByNames(orderByNames)
-                .currentGroupBy(groupBy != null ? groupBy : "")
-                .currentOrderBy(orderBy != null ? orderBy : "")
-                .groupTasks(current.getGroupTasks(orders))
-                .ok();
+  @View
+  public Response.Content index(String groupBy, String orderBy) {
+    List<GroupByService> groupByServices = taskService.getGroupByServices();
+    GroupByService current = null;
+    List<Map.Entry<String, String>> groupByNames = new ArrayList<Map.Entry<String, String>>(groupByServices.size());
+    for(GroupByService g : groupByServices) {
+      if(g.getName().equalsIgnoreCase(groupBy)) {
+        current = g;
+      }
+      try {
+        groupByNames.add(
+            new AbstractMap.SimpleEntry<String, String>(g.getName(),bundle.getString("label." + g.getName()))
+        );
+      } catch (MissingResourceException ex) {
+        groupByNames.add(new AbstractMap.SimpleEntry<String, String>(g.getName(), g.getName()));
+      }
+    }
+    if(current == null) {
+      current = groupByServices.get(0);
     }
 
-    @Action
-    public Response changeViewState(String groupBy, String orderBy) {
-        return TaskManagement_.index(groupBy, orderBy);
+    List<OrderBy> orders = new ArrayList<OrderBy>();
+    if(orderBy != null) {
+      orders.add(new OrderBy(orderBy, false));
     }
 
-    @Action
-    public Response createTask(String taskInput, String groupBy, String orderBy) {
-        if(taskInput != null && !taskInput.isEmpty()) {
-            this.taskService.save(taskParser.parse(taskInput));
-        } else {
-
-        }
-        return TaskManagement_.index(groupBy, orderBy);
+    List<Map.Entry<String, String>> orderByNames = new ArrayList<Map.Entry<String, String>>();
+    for(String name : new String[] {"title", "duedate", "priority"}) {
+      try {
+        orderByNames.add(
+            new AbstractMap.SimpleEntry<String, String>(name, bundle.getString("label." + name))
+        );
+      } catch (MissingResourceException ex) {
+        orderByNames.add(new AbstractMap.SimpleEntry<String, String>(name, name));
+      }
     }
+
+    return index.with()
+        .groupByNames(groupByNames)
+        .orderByNames(orderByNames)
+        .currentGroupBy(groupBy != null ? groupBy : "")
+        .currentOrderBy(orderBy != null ? orderBy : "")
+        .groupTasks(current.getGroupTasks(orders))
+        .ok();
+  }
+
+  @Action
+  public Response changeViewState(String groupBy, String orderBy) {
+    return TaskManagement_.index(groupBy, orderBy);
+  }
+
+  @Action
+  public Response createTask(String taskInput, String groupBy, String orderBy) {
+    if(taskInput != null && !taskInput.isEmpty()) {
+      this.taskService.save(taskParser.parse(taskInput));
+    } else {
+
+    }
+    return TaskManagement_.index(groupBy, orderBy);
+  }
 }

@@ -29,16 +29,16 @@ import java.util.regex.Pattern;
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
 public class TaskAssigneeParserPlugin implements TaskParserPlugin {
-    @Override
-    public String parse(String input, TaskBuilder builder) {
-        Pattern p = Pattern.compile("(\\s)(@)([a-zA-Z]+)");
-        Matcher m = p.matcher(input);
-        while(m.find()) {
-            String assignee = m.group(3);
-            builder.withAssignee(assignee.trim());
-        }
-
-        String in = input.replaceAll("\\s@[a-zA-Z]+\\s*", " ").trim();
-        return in;
+  @Override
+  public String parse(String input, TaskBuilder builder) {
+    Pattern p = Pattern.compile("(\\s)(@)([a-zA-Z]+)");
+    Matcher m = p.matcher(input);
+    while(m.find()) {
+      String assignee = m.group(3);
+      builder.withAssignee(assignee.trim());
     }
+
+    String in = input.replaceAll("\\s@[a-zA-Z]+\\s*", " ").trim();
+    return in;
+  }
 }

@@ -23,11 +23,11 @@ package org.exoplatform.task.service;
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
 public class OrderBy {
-    public final String field;
-    public final boolean isDesc;
+  public final String field;
+  public final boolean isDesc;
 
-    public OrderBy(String field, boolean isDesc) {
-        this.field = field;
-        this.isDesc = isDesc;
-    }
+  public OrderBy(String field, boolean isDesc) {
+    this.field = field;
+    this.isDesc = isDesc;
+  }
 }

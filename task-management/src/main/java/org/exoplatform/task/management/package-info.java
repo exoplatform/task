@@ -34,16 +34,21 @@
 })
 @Scripts({
     @Script(id = "jquery", value = "jquery/1.11.2/jquery.js"),
-    @Script(id = "bootstrap-tooltip", value = "javascripts/bootstrap/bootstrap-tooltip.js", depends = {"jquery"}),
-    @Script(id = "bootstrap-popover", value = "javascripts/bootstrap/bootstrap-popover.js", depends = {"jquery", "bootstrap-tooltip"}),
-    @Script(id = "bootstrap-datepicker", value = "bootstrap-datepicker/1.4.0/js/bootstrap-datepicker.js", depends = {"jquery"}),
-    @Script(id = "edit-inline-js", value = "x-editable-bootstrap/1.5.1/js/bootstrap-editable.js", depends = {"jquery", "bootstrap-popover", "bootstrap-datepicker"}),
-    @Script(id = "task-management-js", value = "javascripts/task-management.js", depends = {"edit-inline-js"})
+    @Script(id = "bootstrap-tooltip", value = "javascripts/bootstrap/bootstrap-tooltip.js",
+        depends = {"jquery"}),
+    @Script(id = "bootstrap-popover", value = "javascripts/bootstrap/bootstrap-popover.js",
+        depends = {"jquery", "bootstrap-tooltip"}),
+    @Script(id = "bootstrap-datepicker", value = "bootstrap-datepicker/1.4.0/js/bootstrap-datepicker.js",
+        depends = {"jquery"}),
+    @Script(id = "edit-inline-js", value = "x-editable-bootstrap/1.5.1/js/bootstrap-editable.js",
+        depends = {"jquery", "bootstrap-popover", "bootstrap-datepicker"}),
+    @Script(id = "task-management-js", value = "javascripts/task-management.js",
+        depends = {"edit-inline-js"})
 })
 @Stylesheets({
     @Stylesheet(id = "style.css", value = "styles/style.css"),
     @Stylesheet(id = "bootstrap-datepicker.css", value = "bootstrap-datepicker/1.4.0/css/bootstrap-datepicker.css"),
-    @Stylesheet(id = "edit-inline-css", value = "x-editable-bootstrap/1.5.1/css/bootstrap-editable.css", depends = {})
+    @Stylesheet(id = "edit-inline-css", value = "x-editable-bootstrap/1.5.1/css/bootstrap-editable.css")
 })
 @Assets({"*"})
 package org.exoplatform.task.management;
