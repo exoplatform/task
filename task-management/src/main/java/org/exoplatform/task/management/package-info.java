@@ -27,17 +27,23 @@
     @Binding(value = StatusDAO.class, implementation = StatusDAOImpl.class)
 
 })
+@WebJars({
+    @WebJar("jquery"),
+    @WebJar("x-editable-bootstrap"),
+    @WebJar("bootstrap-datepicker")
+})
 @Scripts({
-    @Script(id = "jquery", value = "libs/jquery-1.11.2.js"),
-    @Script(id = "boostrap-tooltip", value = "libs/xeditable/js/bootstrap-tooltip.js", depends = {"jquery"}),
-    @Script(id = "boostrap-popover", value = "libs/xeditable/js/bootstrap-popover.js", depends = {"jquery", "boostrap-tooltip"}),
-    @Script(id = "boostrap-datepicker", value = "libs/xeditable/js/bootstrap-datepicker.js", depends = {"jquery"}),
-    @Script(id = "edit-inline-js", value = "libs/xeditable/js/bootstrap-editable.js", depends = {"jquery", "boostrap-popover", "boostrap-datepicker"}),
-    @Script(id = "task-managemen-js", value = "javascripts/task-management.js", depends = {"edit-inline-js"})
+    @Script(id = "jquery", value = "jquery/1.11.2/jquery.js"),
+    @Script(id = "bootstrap-tooltip", value = "javascripts/bootstrap/bootstrap-tooltip.js", depends = {"jquery"}),
+    @Script(id = "bootstrap-popover", value = "javascripts/bootstrap/bootstrap-popover.js", depends = {"jquery", "bootstrap-tooltip"}),
+    @Script(id = "bootstrap-datepicker", value = "bootstrap-datepicker/1.4.0/js/bootstrap-datepicker.js", depends = {"jquery"}),
+    @Script(id = "edit-inline-js", value = "x-editable-bootstrap/1.5.1/js/bootstrap-editable.js", depends = {"jquery", "bootstrap-popover", "bootstrap-datepicker"}),
+    @Script(id = "task-management-js", value = "javascripts/task-management.js", depends = {"edit-inline-js"})
 })
 @Stylesheets({
     @Stylesheet(id = "style.css", value = "styles/style.css"),
-    @Stylesheet(id = "edit-inline-css", value = "libs/xeditable/css/bootstrap-editable.css", depends = {})
+    @Stylesheet(id = "bootstrap-datepicker.css", value = "bootstrap-datepicker/1.4.0/css/bootstrap-datepicker.css"),
+    @Stylesheet(id = "edit-inline-css", value = "x-editable-bootstrap/1.5.1/css/bootstrap-editable.css", depends = {})
 })
 @Assets({"*"})
 package org.exoplatform.task.management;
@@ -47,6 +53,8 @@ import juzu.plugin.asset.*;
 import juzu.plugin.binding.Binding;
 import juzu.plugin.binding.Bindings;
 import juzu.plugin.portlet.Portlet;
+import juzu.plugin.webjars.WebJar;
+import juzu.plugin.webjars.WebJars;
 import org.exoplatform.task.dao.ProjectDAO;
 import org.exoplatform.task.dao.StatusDAO;
 import org.exoplatform.task.dao.TaskDAO;

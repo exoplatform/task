@@ -67,6 +67,28 @@
       <artifactId>juzu-plugins-portlet</artifactId>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.juzu</groupId>
+      <artifactId>juzu-plugins-webjars</artifactId>
+      <version>1.0.0-cr1</version>
+    </dependency>
+
+    <!-- JS libraries -->
+    <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>jquery</artifactId>
+      <version>1.11.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>x-editable-bootstrap</artifactId>
+      <version>1.5.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>bootstrap-datepicker</artifactId>
+      <version>1.4.0</version>
+    </dependency>
 
     <!-- Liquibase -->
     <dependency>
@@ -148,6 +170,7 @@
           </execution>
         </executions>
       </plugin>
+      <!-- Liquibase Plugin -->
       <plugin>
         <groupId>org.liquibase</groupId>
         <artifactId>liquibase-maven-plugin</artifactId>
