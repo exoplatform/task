@@ -1,4 +1,6 @@
 #{param name=task/}
+#{param name=assigneeName/}
+#{param name=coWokerDisplayName/}
 
 <div class="task-detail" task-id="${task.id}">
     <div class="row-fluid task-info-row">
@@ -18,13 +20,26 @@
         <a href="#" class="close"><i class="uiIconClose"></i></a>
     </div>
     <div class="row-fluid task-info-row">
-        <div class="span5">
+        <div class="span6">
             <a href="#"><i class="uiIconClock"></i></a>
             <a class="editable" href="#" data-name="dueDate" data-type="date" data-format="yyyy-mm-dd" data-viewformat="M dd, yyyy">${task.dueDate != null ? task.dueDate : ''}</a>
         </div>
-        <div class="span4">${task.assignee == null ? 'unassigned' : task.assignee}</div>
-        <div class="span3">
+        <div class="span6">
             <a class="editable task-status" href="#" data-source="@{StatusController.getAllStatus()}" data-inputclass="input-small" data-name="status" data-type="select" data-title="Select status" data-val="${task.status != null ?  task.status.id: '1'}"></a>
+        </div>
+    </div>
+    <div class="row-fluid task-assign">
+        <div class="span6">
+            <span>Assign to:</span><a class="editable" href="#" data-name="assignee" data-type="select2" data-inputclass="input-small" data-value="${task.assignee == null ? '' : task.assignee}">${assigneeName}</a>
+        </div>
+        <div class="span6">
+            <%
+                def coWorkers = "";
+                if(task.coworker != null && task.coworker.size() > 0) {
+                    coWorkers = task.coworker.join(',');
+                }
+            %>
+            <span>Co-Worker:</span><a class="editable" href="#" data-name="coworker" data-type="select2" data-inputclass="input-small" data-value="${coWorkers}">${coWokerDisplayName}</a>
         </div>
     </div>
     <div class="row-fluid task-info-row task-description">

@@ -6,6 +6,7 @@ jQuery(document).ready(function($) {
         $('#taskDetailContainer').jzAjax('TaskController.saveTaskInfo()',{
             data: data,
             method: 'POST',
+            traditional: true,
             success: function(response) {
                 d.resolve();
             },
@@ -34,11 +35,47 @@ jQuery(document).ready(function($) {
                 editOptions.showbuttons = 'bottom';
                 editOptions.emptytext = "Description";
             }
-            if(dataType == 'select2') {
-                editOptions.inputclass = 'input-large';
-                editOptions.select2 = {
-                    tags: ['html', 'javascript', 'css', 'ajax'],
-                        tokenSeparators: [",", " "]
+            if(fieldName == 'assignee' || fieldName == 'coworker') {
+                var findUserURL = $this.jzURL('UserController.findUser');
+                var getDisplayNameURL = $this.jzURL('UserController.getDisplayNameOfUser');
+                //editOptions.source = findUserURL;
+                editOptions.showbuttons = true;
+                editOptions.emptytext = "Unassigned";
+                editOptions.source = findUserURL;
+                editOptions.select2= {
+                    multiple: (fieldName == 'coworker'),
+                    allowClear: true,
+                    placeholder: 'Select an user',
+                    tokenSeparators:[","],
+                    minimumInputLength: 1,
+                    initSelection: function (element, callback) {
+                        return $.get(getDisplayNameURL, { usernames: element.val() }, function (data) {
+                            callback((fieldName == 'coworker') ? data : data[0]);
+                        });
+                    }
+                };
+
+                //. This is workaround for issue of xEditable: https://github.com/vitalets/x-editable/issues/431
+                if(fieldName == 'coworker') {
+                    editOptions.display = function (value, sourceData) {
+                        //display checklist as comma-separated values
+                        if (!value || !value.length) {
+                            $(this).empty();
+                            return;
+                        }
+                        if (value && value.length > 0) {
+                            //. Temporary display username in text field. It will be replace with displayName after ajax Get success
+                            $(this).html(value.join(', '));
+                            var $this = $(this);
+                            $.get(getDisplayNameURL, { usernames: value.join(',') }, function (data) {
+                                var html = [];
+                                $.each(data, function (i, v) {
+                                    html.push($.fn.editableutils.escape(v.text));
+                                });
+                                $this.html(html.join(', '));
+                            });
+                        }
+                    };
                 }
             }
             if(fieldName == 'dueDate') {
@@ -52,7 +89,15 @@ jQuery(document).ready(function($) {
                 //editOptions.source = allStatusURL;
                 editOptions.value = currentStatus;
             }
+            if(fieldName == 'coworker') {
+                $this.on('shown', function(e) {
+                    var $a = $(e.target);
+                    var val = $a.attr('data-value');
+                    if(val != '') {
 
+                    }
+                });
+            }
             $this.editable(editOptions);
         });
     };

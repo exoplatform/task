@@ -24,13 +24,15 @@
     @Binding(value = TaskService.class, implementation = TaskServiceJPAImpl.class),
     @Binding(value = TaskDAO.class, implementation = TaskDAOImpl.class),
     @Binding(value = ProjectDAO.class, implementation = ProjectDAOImpl.class),
-    @Binding(value = StatusDAO.class, implementation = StatusDAOImpl.class)
+    @Binding(value = StatusDAO.class, implementation = StatusDAOImpl.class),
+    @Binding(OrganizationService.class)
 
 })
 @WebJars({
     @WebJar("jquery"),
     @WebJar("x-editable-bootstrap"),
-    @WebJar("bootstrap-datepicker")
+    @WebJar("bootstrap-datepicker"),
+    @WebJar("select2")
 })
 @Scripts({
     @Script(id = "jquery", value = "jquery/1.11.2/jquery.js"),
@@ -40,15 +42,17 @@
         depends = {"jquery", "bootstrap-tooltip"}),
     @Script(id = "bootstrap-datepicker", value = "bootstrap-datepicker/1.4.0/js/bootstrap-datepicker.js",
         depends = {"jquery"}),
-    @Script(id = "edit-inline-js", value = "x-editable-bootstrap/1.5.1/js/bootstrap-editable.js",
-        depends = {"jquery", "bootstrap-popover", "bootstrap-datepicker"}),
+    @Script(id = "select2", value = "select2/3.5.2/select2.js", depends = {"jquery"}),
+    @Script(id = "edit-inline-js", value = "x-editable-bootstrap/1.4.6/js/bootstrap-editable.js",
+        depends = {"jquery", "bootstrap-popover", "bootstrap-datepicker", "select2"}),
     @Script(id = "task-management-js", value = "javascripts/task-management.js",
         depends = {"edit-inline-js"})
 })
 @Stylesheets({
     @Stylesheet(id = "style.css", value = "styles/style.css"),
     @Stylesheet(id = "bootstrap-datepicker.css", value = "bootstrap-datepicker/1.4.0/css/bootstrap-datepicker.css"),
-    @Stylesheet(id = "edit-inline-css", value = "x-editable-bootstrap/1.5.1/css/bootstrap-editable.css")
+    @Stylesheet(id = "select2-css", value = "select2/3.5.2/select2.css"),
+    @Stylesheet(id = "edit-inline-css", value = "x-editable-bootstrap/1.4.6/css/bootstrap-editable.css")
 })
 @Assets({"*"})
 package org.exoplatform.task.management;
@@ -60,6 +64,7 @@ import juzu.plugin.binding.Bindings;
 import juzu.plugin.portlet.Portlet;
 import juzu.plugin.webjars.WebJar;
 import juzu.plugin.webjars.WebJars;
+import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.task.dao.ProjectDAO;
 import org.exoplatform.task.dao.StatusDAO;
 import org.exoplatform.task.dao.TaskDAO;

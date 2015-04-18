@@ -53,7 +53,7 @@
     <maven.compiler.source>1.6</maven.compiler.source>
     <hibernate.version>4.1.12.Final</hibernate.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <juzu.version>1.0.0-cr2-SNAPSHOT</juzu.version>
+    <juzu.version>1.0.x-SNAPSHOT</juzu.version>
     <groovy.version>1.7.6</groovy.version>
     <junit.version>4.10</junit.version>
   </properties>
@@ -101,6 +101,12 @@
         <groupId>org.juzu</groupId>
         <artifactId>juzu-plugins-webjars</artifactId>
         <version>${juzu.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.exoplatform.core</groupId>
+        <artifactId>exo.core.component.organization.api</artifactId>
+        <version>2.5.x-SNAPSHOT</version>
       </dependency>
 
       <!-- Groovy -->

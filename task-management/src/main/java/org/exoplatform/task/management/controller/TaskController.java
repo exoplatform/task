@@ -24,8 +24,11 @@ import juzu.Path;
 import juzu.Resource;
 import juzu.Response;
 import juzu.plugin.ajax.Ajax;
+import org.exoplatform.services.organization.OrganizationService;
+import org.exoplatform.services.organization.User;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.management.util.UserUtils;
 import org.exoplatform.task.service.TaskBuilder;
 import org.exoplatform.task.service.TaskService;
 import org.json.JSONException;
@@ -35,7 +38,10 @@ import javax.inject.Inject;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
@@ -46,6 +52,9 @@ public class TaskController {
   TaskService taskService;
 
   @Inject
+  OrganizationService orgService;
+
+  @Inject
   @Path("detail.gtmpl")
   org.exoplatform.task.management.templates.detail detail;
 
@@ -53,8 +62,38 @@ public class TaskController {
   @Ajax
   @MimeType.HTML
   public Response detail(Long id) {
+    Task task = taskService.findTaskById(id);
+    StringBuilder coWorkerDisplayName = new StringBuilder();
+    if(task.getCoworker() != null && task.getCoworker().size() > 0) {
+      for(String userName : task.getCoworker()) {
+        try {
+          User user = orgService.getUserHandler().findUserByName(userName);
+          if(user != null) {
+            if(coWorkerDisplayName.length() > 0) {
+              coWorkerDisplayName.append(", ");
+            }
+            coWorkerDisplayName.append(UserUtils.getDisplayName(user));
+          }
+        } catch (Exception ex) {
+        }
+      }
+    }
+
+    String assignee = "";
+    if(task.getAssignee() != null) {
+      try {
+        User user = orgService.getUserHandler().findUserByName(task.getAssignee());
+        if(user != null) {
+          assignee = UserUtils.getDisplayName(user);
+        }
+      } catch (Exception ex) {
+        return Response.status(500).body(ex.getMessage());
+      }
+    }
     return detail.with()
-        .task(taskService.findTaskById(id))
+        .task(task)
+        .assigneeName(assignee)
+        .coWokerDisplayName(coWorkerDisplayName.toString())
         .ok();
   }
 
@@ -111,29 +150,31 @@ public class TaskController {
   @Resource
   @Ajax
   @MimeType("text/plain")
-  public Response saveTaskInfo(Long taskId, String name, String value) {
+  public Response saveTaskInfo(Long taskId, String name, String[] value) {
+    String val = value != null && value.length > 0 ? value[0] : null;
+
     Task task = taskService.findTaskById(taskId);
     if(task == null) {
       return Response.notFound("Task not found with ID: " + taskId);
     }
     if("title".equalsIgnoreCase(name)) {
-      task.setTitle(value);
+      task.setTitle(val);
     } else if("dueDate".equalsIgnoreCase(name)) {
-      if(value == null || value.trim().isEmpty()) {
+      if(value == null || val.trim().isEmpty()) {
         task.setDueDate(null);
       } else {
         DateFormat df = new SimpleDateFormat("YYYY-MM-dd");
         try {
-          Date date = df.parse(value);
+          Date date = df.parse(val);
           task.setDueDate(date);
         } catch (ParseException ex) {
-          return Response.status(406).body("Can not parse date time value: " + value);
+          return Response.status(406).body("Can not parse date time value: " + val);
         }
       }
     } else if("status".equalsIgnoreCase(name)) {
       //TODO: load status from ID
       try {
-        int status = Integer.parseInt(value);
+        int status = Integer.parseInt(val);
         for(Status s : Status.STATUS) {
           if(s.getId() == status) {
             task.setStatus(s);
@@ -141,10 +182,18 @@ public class TaskController {
           }
         }
       } catch (NumberFormatException ex) {
-        return Response.status(406).body("Status is unacceptable: " + value);
+        return Response.status(406).body("Status is unacceptable: " + val);
       }
     } else if("description".equalsIgnoreCase(name)) {
-      task.setDescription(value);
+      task.setDescription(val);
+    } else if("assignee".equalsIgnoreCase(name)) {
+      task.setAssignee(val);
+    } else if("coworker".equalsIgnoreCase(name)) {
+      Set<String> coworker = new HashSet<String>();
+      for(String v : value) {
+        coworker.add(v);
+      }
+      task.setCoworker(coworker);
     } else {
       return Response.status(406).body("Field name: " + name + " is not supported");
     }
