@@ -30,6 +30,7 @@ import java.util.ServiceLoader;
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
 public class TaskParserImpl implements TaskParser {
+
   @Override
   public Task parse(String input) {
     if(input == null) {

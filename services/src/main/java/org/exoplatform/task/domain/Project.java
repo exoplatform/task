@@ -30,8 +30,6 @@ import java.util.Set;
 @Table(name = "TASK_PROJECTS")
 public class Project {
 
-  public static final Project   INCOMING        = new Project(1, "INCOMING");
-
   @Id
   @GeneratedValue
   @Column(name = "PROJECT_ID")
@@ -53,12 +51,6 @@ public class Project {
   private Set<String> participator = new HashSet<String>();
 
   public Project() {
-  }
-
-  //TO REMOVE after removing the TaskServiceMemImpl
-  public Project(long id, String name) {
-    this.id = id;
-    this.name = name;
   }
 
   public Project(String name, Set<Status> status, Set<String> manager, Set<String> participator) {

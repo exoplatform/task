@@ -31,8 +31,7 @@ import java.util.Set;
 @Table(name = "TASK_STATUS")
 public class Status {
 
-
-  public static final Status   INCOMING    = new Status(0, "INCOMING", 1, null, new Project(1, "INCOMING"));
+  public static final Status   INCOMING    = new Status(0, "INCOMING");
 
   public static final Status   TODO        = new Status(1, "TODO");
 
