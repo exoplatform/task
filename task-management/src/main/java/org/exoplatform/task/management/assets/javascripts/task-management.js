@@ -85,18 +85,31 @@ jQuery(document).ready(function($) {
             if(fieldName == 'status') {
                 //var allStatusURL = $this.jzURL('StatusController.getAllStatus');
                 var currentStatus = $this.attr('data-val');
-                //console.log(allStatusURL);
                 //editOptions.source = allStatusURL;
                 editOptions.value = currentStatus;
             }
-            if(fieldName == 'coworker') {
-                $this.on('shown', function(e) {
-                    var $a = $(e.target);
-                    var val = $a.attr('data-value');
-                    if(val != '') {
-
+            if(fieldName == 'tags') {
+                editOptions.showbuttons = true;
+                editOptions.emptytext = "No Tags";
+                editOptions.display = function(value, sourceData, response) {
+                    if(value && value.length > 0) {
+                        var html = [];
+                        $.each(value, function(i, v) {
+                            if(typeof v == 'string') {
+                                html.push('<span class="badgeDefault badgePrimary">' + v + '</span>');
+                            } else {
+                                html.push('<span class="badgeDefault badgePrimary">' + v.text + '</span>');
+                            }
+                        });
+                        $(this).html(html.join(' '));
+                    } else {
+                        $(this).empty();
                     }
-                });
+                };
+                editOptions.select2 = {
+                    tags: [],
+                    tokenSeparators: [',']
+                };
             }
             $this.editable(editOptions);
         });

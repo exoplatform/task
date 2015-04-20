@@ -194,6 +194,12 @@ public class TaskController {
         coworker.add(v);
       }
       task.setCoworker(coworker);
+    } else if("tags".equalsIgnoreCase(name)) {
+      Set<String> tags = new HashSet<String>();
+      for(String t : value) {
+        tags.add(t);
+      }
+      task.setTags(tags);
     } else {
       return Response.status(406).body("Field name: " + name + " is not supported");
     }

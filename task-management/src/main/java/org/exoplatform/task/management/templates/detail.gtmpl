@@ -47,10 +47,6 @@
     </div>
     <div class="row-fluid task-info-row">
         <i class="uiIconTagMini"></i>
-        <% if(task.tags != null && task.tags.size() > 0) { task.tags.each { tag -> %>
-            <span class="tag">${tag}</span>
-        <%}} else {
-            print 'there is no tags'
-        }%>
+        <a class="editable" href="#" data-name="tags" data-type="select2" data-inputclass="input-large" data-value="${task.tags != null && task.tags.size() > 0 ? task.tags.join(',') : ''}">${task.tags != null && task.tags.size() > 0 ? task.tags.join(', ') : ''}</a>
     </div>
 </div>
