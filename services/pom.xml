@@ -33,7 +33,7 @@
   <name>Task Management - Services</name>
 
   <!-- JPA -->
-  <dependencies>
+  <dependencies>  
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-entitymanager</artifactId>
@@ -58,6 +58,11 @@
       <version>4.16.4.Final</version>
     </dependency>
 
+    <dependency>
+      <groupId>org.exoplatform.social</groupId>
+      <artifactId>social-component-core</artifactId>
+    </dependency>    
+    
     <!-- TEST -->
     <dependency>
       <groupId>junit</groupId>

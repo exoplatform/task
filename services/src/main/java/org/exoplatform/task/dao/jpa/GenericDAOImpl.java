@@ -16,19 +16,19 @@
 */
 package org.exoplatform.task.dao.jpa;
 
-import org.exoplatform.task.dao.GenericDAO;
-import org.exoplatform.task.factory.ExoEntityManagerFactory;
-
-import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
 import java.util.logging.Logger;
+
+import org.exoplatform.task.dao.GenericDAO;
+import org.exoplatform.task.factory.ExoEntityManagerFactory;
 
 /**
  * Created by The eXo Platform SAS
@@ -44,8 +44,7 @@ public class GenericDAOImpl<E, ID extends Serializable> implements GenericDAO<E,
   protected EntityManagerFactory entityManagerFactory;
   protected static EntityManager entityManager;
 
-  @PostConstruct
-  public void initDAO() {
+  public GenericDAOImpl() {
     //In case of no EE container (Tomcat) we cannot rely on @PersistenceContext to initialize the EntityManager
     //We will use our own EntityManagerFactory
     entityManagerFactory = ExoEntityManagerFactory.getEntityManagerFactory();

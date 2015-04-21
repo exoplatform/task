@@ -46,7 +46,8 @@ public class TaskServiceJPAImpl implements TaskService {
   @Inject
   private TaskDAO taskDAO;
 
-  public TaskServiceJPAImpl() {
+  public TaskServiceJPAImpl(TaskDAO taskDAO) {
+    this.taskDAO = taskDAO;
     this.groupByServices = new ArrayList<GroupByService>();
     this.groupByServices.add(new GroupByStatus(this));
     this.groupByServices.add(new GroupByProject(this));

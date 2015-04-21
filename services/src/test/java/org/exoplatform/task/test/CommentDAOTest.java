@@ -62,8 +62,6 @@ public class CommentDAOTest {
   public void initDAOs() {
     taskDAO = new TaskDAOImpl();
     commentDAO = new CommentDAOImpl();
-    ((CommentDAOImpl)commentDAO).initDAO();
-    ((TaskDAOImpl)taskDAO).initDAO();
   }
 
   @After

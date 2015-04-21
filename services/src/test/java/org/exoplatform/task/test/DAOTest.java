@@ -54,9 +54,6 @@ public class DAOTest {
     taskDAO = new TaskDAOImpl();
     projectDAO = new ProjectDAOImpl();
     statusDAO = new StatusDAOImpl();
-    taskDAO.initDAO();
-    projectDAO.initDAO();
-    statusDAO.initDAO();
   }
 
   @After

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.exoplatform.org/xml/ns/kernel_1_2.xsd http://www.exoplatform.org/xml/ns/kernel_1_2.xsd"
+               xmlns="http://www.exoplatform.org/xml/ns/kernel_1_2.xsd">
+
+  <component>
+    <key>org.exoplatform.task.service.jpa.TaskService</key>
+    <type>org.exoplatform.task.service.jpa.TaskServiceJPAImpl</type>
+  </component>
+  
+  <component>
+    <key>org.exoplatform.task.dao.TaskDAO</key>
+    <type>org.exoplatform.task.dao.jpa.TaskDAOImpl</type>
+  </component>
+  
+  <component>
+    <key>org.exoplatform.task.dao.ProjectDAO</key>
+    <type>org.exoplatform.task.dao.jpa.ProjectDAOImpl</type>
+  </component>
+  
+  <component>
+    <key>org.exoplatform.task.dao.StatusDAO</key>
+    <type>org.exoplatform.task.dao.jpa.StatusDAOImpl</type>
+  </component>
+
+  <component>
+    <key>org.exoplatform.task.service</key>
+    <type>org.exoplatform.task.service.impl.TaskParserImpl</type>
+  </component>    
+  
+  <external-component-plugins>
+    <target-component>org.exoplatform.social.core.manager.ActivityManager</target-component>
+    <component-plugin>
+      <name>ActivityTaskCreationListener</name>
+      <set-method>addActivityEventListener</set-method>
+      <type>org.exoplatform.task.integration.ActivityTaskCreationListener</type>
+    </component-plugin>
+    <component-plugin>
+      <name>TaskProcessor</name>
+      <set-method>addProcessorPlugin</set-method>
+      <type>org.exoplatform.task.integration.ActivityTaskProcessor</type>
+      <init-params>
+        <value-param>
+          <name>priority</name>
+          <description>priority of this processor (lower are executed first)</description>
+          <value>4</value>
+        </value-param>
+      </init-params>
+    </component-plugin>
+  </external-component-plugins>
+  
+</configuration>

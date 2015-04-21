@@ -20,11 +20,8 @@
 @Application(defaultController = TaskManagement.class)
 @Portlet
 @Bindings({
-    @Binding(value = TaskParser.class, implementation = TaskParserImpl.class),
-    @Binding(value = TaskService.class, implementation = TaskServiceJPAImpl.class),
-    @Binding(value = TaskDAO.class, implementation = TaskDAOImpl.class),
-    @Binding(value = ProjectDAO.class, implementation = ProjectDAOImpl.class),
-    @Binding(value = StatusDAO.class, implementation = StatusDAOImpl.class),
+    @Binding(value = TaskParser.class),
+    @Binding(value = TaskService.class),
     @Binding(OrganizationService.class)
 
 })
