@@ -6,22 +6,7 @@
   <component>
     <key>org.exoplatform.task.service.jpa.TaskService</key>
     <type>org.exoplatform.task.service.jpa.TaskServiceJPAImpl</type>
-  </component>
-  
-  <component>
-    <key>org.exoplatform.task.dao.TaskDAO</key>
-    <type>org.exoplatform.task.dao.jpa.TaskDAOImpl</type>
-  </component>
-  
-  <component>
-    <key>org.exoplatform.task.dao.ProjectDAO</key>
-    <type>org.exoplatform.task.dao.jpa.ProjectDAOImpl</type>
-  </component>
-  
-  <component>
-    <key>org.exoplatform.task.dao.StatusDAO</key>
-    <type>org.exoplatform.task.dao.jpa.StatusDAOImpl</type>
-  </component>
+  </component> 
 
   <component>
     <key>org.exoplatform.task.service</key>

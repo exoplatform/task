@@ -16,8 +16,9 @@
 */
 package org.exoplatform.task.dao.jpa;
 
-import org.exoplatform.task.dao.ProjectDAO;
+import org.exoplatform.task.dao.ProjectHandler;
 import org.exoplatform.task.domain.Project;
+import org.exoplatform.task.service.jpa.TaskServiceJPAImpl;
 
 /**
  * Created by The eXo Platform SAS
@@ -25,6 +26,10 @@ import org.exoplatform.task.domain.Project;
  * tclement@exoplatform.com
  * 4/10/15
  */
-public class ProjectDAOImpl extends GenericDAOImpl<Project, Long> implements ProjectDAO {
+public class ProjectDAOImpl extends GenericDAOImpl<Project, Long> implements ProjectHandler {
+
+  public ProjectDAOImpl(TaskServiceJPAImpl taskServiceJPAImpl) {
+    super(taskServiceJPAImpl);
+  }
 }
 

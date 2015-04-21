@@ -1,14 +1,19 @@
 package org.exoplatform.task.test;
 
-import liquibase.exception.LiquibaseException;
-import org.exoplatform.task.domain.Project;
-import org.junit.*;
+import java.sql.SQLException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import java.sql.SQLException;
-import java.util.List;
+
+import liquibase.exception.LiquibaseException;
+
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 public class EntityManagerTest {
 
@@ -46,21 +51,4 @@ public class EntityManagerTest {
   public void testEntityManagerFactoryNotNull() {
     Assert.assertNotNull(entityManagerFactory);
   }
-
-  @Test
-  public void testCreationTask() {
-    Project project = new Project();
-    project.setName("test project");
-
-    // Add some tasks in DB
-    entityManager.persist(project);
-
-    // Commit
-    entityManager.getTransaction().commit();
-
-    // Queries all projects from DB
-    List<Project> result = entityManager.createQuery("from Project", Project.class).getResultList();
-    Assert.assertEquals(project.getName(), result.get(0).getName());
-  }
-
 }

@@ -16,19 +16,18 @@
 */
 package org.exoplatform.task.dao.jpa;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
-
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
 import java.util.logging.Logger;
 
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+
 import org.exoplatform.task.dao.GenericDAO;
-import org.exoplatform.task.factory.ExoEntityManagerFactory;
+import org.exoplatform.task.service.jpa.TaskServiceJPAImpl;
 
 /**
  * Created by The eXo Platform SAS
@@ -39,51 +38,37 @@ import org.exoplatform.task.factory.ExoEntityManagerFactory;
 public class GenericDAOImpl<E, ID extends Serializable> implements GenericDAO<E, ID> {
 
   private static final Logger LOG = Logger.getLogger("GenericDAOImpl");
+
   protected Class entityClass;
 
   protected EntityManagerFactory entityManagerFactory;
-  protected static EntityManager entityManager;
 
-  public GenericDAOImpl() {
-    //In case of no EE container (Tomcat) we cannot rely on @PersistenceContext to initialize the EntityManager
-    //We will use our own EntityManagerFactory
-    entityManagerFactory = ExoEntityManagerFactory.getEntityManagerFactory();
+  protected TaskServiceJPAImpl taskService;
+
+  public GenericDAOImpl(TaskServiceJPAImpl taskServiceJPAImpl) {
+    taskService = taskServiceJPAImpl;
     ParameterizedType genericSuperclass = (ParameterizedType) getClass().getGenericSuperclass();
     this.entityClass = (Class) genericSuperclass.getActualTypeArguments()[0];
   }
 
-  // *****************************
-  //
-  // Transaction management
-  //
-  // *****************************
-
-  private void createEntityManager() {
-    if(entityManager == null) {
-      entityManager = entityManagerFactory.createEntityManager();
-    }
-  }
-
   @Override
   public void beginTransaction() {
-    createEntityManager();
-    entityManager.getTransaction().begin();
+    taskService.getEntityManager().getTransaction().begin();
   }
 
   @Override
   public void commit() {
-    entityManager.getTransaction().commit();
+    taskService.getEntityManager().getTransaction().commit();
   }
 
   @Override
   public void rollback() {
-    entityManager.getTransaction().rollback();
+    taskService.getEntityManager().getTransaction().rollback();
   }
 
   @Override
   public void closeTransaction() {
-    entityManager.close();
-    entityManager = null;
+    taskService.getEntityManager().close();
   }
 
   @Override
@@ -94,13 +79,12 @@ public class GenericDAOImpl<E, ID extends Serializable> implements GenericDAO<E,
 
   @Override
   public void flush() {
-    entityManager.flush();
+    taskService.getEntityManager().flush();
   }
 
   @Override
   public void joinTransaction() {
-    createEntityManager();
-    entityManager.joinTransaction();
+    taskService.getEntityManager().joinTransaction();
   }
 
 
@@ -112,7 +96,7 @@ public class GenericDAOImpl<E, ID extends Serializable> implements GenericDAO<E,
 
   @Override
   public Long count() {
-    CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+    CriteriaBuilder cb = taskService.getEntityManager().getCriteriaBuilder();
     CriteriaQuery<Long> query = cb.createQuery(Long.class);
 
     Root<E> entity = query.from(entityClass);
@@ -120,17 +104,20 @@ public class GenericDAOImpl<E, ID extends Serializable> implements GenericDAO<E,
     //Selecting the count
     query.select(cb.count(entity));
 
-    return entityManager.createQuery(query).getSingleResult();
+    return taskService.getEntityManager().createQuery(query).getSingleResult();
   }
 
   @Override
   public E find(ID id) {
-    return (E) entityManager.find(entityClass, id);
+    return (E) taskService.getEntityManager().find(entityClass, id);
   }
 
   @Override
   public List<E> findAll() {
-    CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+    ParameterizedType genericSuperclass = (ParameterizedType) getClass().getGenericSuperclass();
+    this.entityClass = (Class) genericSuperclass.getActualTypeArguments()[0];
+
+    CriteriaBuilder cb = taskService.getEntityManager().getCriteriaBuilder();
     CriteriaQuery<E> query = cb.createQuery(entityClass);
 
     Root<E> entity = query.from(entityClass);
@@ -138,44 +125,44 @@ public class GenericDAOImpl<E, ID extends Serializable> implements GenericDAO<E,
     //Selecting the entity
     query.select(entity);
 
-    return entityManager.createQuery(query).getResultList();
+    return taskService.getEntityManager().createQuery(query).getResultList();
   }
 
   @Override
   public E create(E entity) {
-    entityManager.persist(entity);
+    taskService.getEntityManager().persist(entity);
     return entity;
   }
 
   @Override
   public void createAll(List<E> entities) {
     for (E entity : entities) {
-      entityManager.persist(entity);
+      taskService.getEntityManager().persist(entity);
     }
   }
 
   @Override
   public E update(E entity) {
-    entityManager.merge(entity);
+    taskService.getEntityManager().merge(entity);
     return entity;
   }
 
   @Override
   public void updateAll(List<E> entities) {
     for (E entity : entities) {
-      entityManager.merge(entity);
+      taskService.getEntityManager().merge(entity);
     }
   }
 
   @Override
   public void delete(E entity) {
-    entityManager.remove(entity);
+    taskService.getEntityManager().remove(entity);
   }
 
   @Override
   public void deleteAll(List<E> entities) {
     for (E entity : entities) {
-      entityManager.remove(entity);
+      taskService.getEntityManager().remove(entity);
     }
   }
 
@@ -183,7 +170,7 @@ public class GenericDAOImpl<E, ID extends Serializable> implements GenericDAO<E,
   public void deleteAll() {
     List<E> entities = findAll();
     for (E entity : entities) {
-      entityManager.remove(entity);
+      taskService.getEntityManager().remove(entity);
     }
   }
 }

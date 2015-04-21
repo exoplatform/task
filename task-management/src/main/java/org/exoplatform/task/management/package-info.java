@@ -22,8 +22,7 @@
 @Bindings({
     @Binding(value = TaskParser.class),
     @Binding(value = TaskService.class),
-    @Binding(OrganizationService.class)
-
+    @Binding(value = OrganizationService.class)
 })
 @WebJars({
     @WebJar("jquery"),
@@ -55,20 +54,18 @@
 package org.exoplatform.task.management;
 
 import juzu.Application;
-import juzu.plugin.asset.*;
+import juzu.plugin.asset.Assets;
+import juzu.plugin.asset.Script;
+import juzu.plugin.asset.Scripts;
+import juzu.plugin.asset.Stylesheet;
+import juzu.plugin.asset.Stylesheets;
 import juzu.plugin.binding.Binding;
 import juzu.plugin.binding.Bindings;
 import juzu.plugin.portlet.Portlet;
 import juzu.plugin.webjars.WebJar;
 import juzu.plugin.webjars.WebJars;
-import org.exoplatform.services.organization.OrganizationService;
-import org.exoplatform.task.dao.ProjectDAO;
-import org.exoplatform.task.dao.StatusDAO;
-import org.exoplatform.task.dao.TaskDAO;
-import org.exoplatform.task.dao.jpa.ProjectDAOImpl;
-import org.exoplatform.task.dao.jpa.StatusDAOImpl;
-import org.exoplatform.task.dao.jpa.TaskDAOImpl;
+
 import org.exoplatform.task.service.TaskParser;
 import org.exoplatform.task.service.TaskService;
-import org.exoplatform.task.service.impl.TaskParserImpl;
-import org.exoplatform.task.service.jpa.TaskServiceJPAImpl;
+import org.exoplatform.services.organization.OrganizationService;
+

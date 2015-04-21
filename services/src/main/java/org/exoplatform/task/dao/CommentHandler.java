@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
-public interface CommentDAO extends GenericDAO<Comment, Long> {
+public interface CommentHandler extends GenericDAO<Comment, Long> {
   /**
    * Count number comments of Task
    * @param task

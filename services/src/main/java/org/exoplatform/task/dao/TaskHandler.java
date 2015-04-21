@@ -21,12 +21,10 @@ import org.exoplatform.task.domain.Task;
 import java.util.List;
 
 /**
- * Created by The eXo Platform SAS
- * Author : Thibault Clement
- * tclement@exoplatform.com
- * 4/7/15
+ * @author <a href="trongtt@exoplatform.com">Trong Tran</a>
+ * @version $Revision$
  */
-public interface TaskDAO extends GenericDAO<Task, Long> {
+public interface TaskHandler extends GenericDAO<Task, Long> {
 
   List<Task> findByProject(Long projectId);
 

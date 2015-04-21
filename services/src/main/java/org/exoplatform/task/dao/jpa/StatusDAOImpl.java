@@ -16,8 +16,9 @@
 */
 package org.exoplatform.task.dao.jpa;
 
-import org.exoplatform.task.dao.StatusDAO;
+import org.exoplatform.task.dao.StatusHandler;
 import org.exoplatform.task.domain.Status;
+import org.exoplatform.task.service.jpa.TaskServiceJPAImpl;
 
 /**
  * Created by The eXo Platform SAS
@@ -25,6 +26,10 @@ import org.exoplatform.task.domain.Status;
  * tclement@exoplatform.com
  * 4/10/15
  */
-public class StatusDAOImpl extends GenericDAOImpl<Status, Long> implements StatusDAO {
+public class StatusDAOImpl extends GenericDAOImpl<Status, Long> implements StatusHandler {
+
+  public StatusDAOImpl(TaskServiceJPAImpl taskServiceJPAImpl) {
+    super(taskServiceJPAImpl);
+  }
 }
 

@@ -16,8 +16,9 @@
 */
 package org.exoplatform.task.dao.jpa;
 
-import org.exoplatform.task.dao.TaskDAO;
+import org.exoplatform.task.dao.TaskHandler;
 import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.service.jpa.TaskServiceJPAImpl;
 
 import java.util.List;
 
@@ -27,10 +28,10 @@ import java.util.List;
  * tclement@exoplatform.com
  * 4/8/15
  */
-public class TaskDAOImpl extends GenericDAOImpl<Task, Long> implements TaskDAO {
+public class TaskDAOImpl extends GenericDAOImpl<Task, Long> implements TaskHandler {
 
-  public TaskDAOImpl() {
-    super();
+  public TaskDAOImpl(TaskServiceJPAImpl taskServiceJPAImpl) {
+    super(taskServiceJPAImpl);
   }
 
   @Override

@@ -27,7 +27,7 @@ public class ActivityTaskProcessor extends BaseActivityProcessorPlugin {
   private final String taskUrl = " <a href='/portal/intranet/tasks'>";
   
   public ActivityTaskProcessor(InitParams params, WebAppController controller) {
-    super(params);    
+    super(params);
   }
 
   public void processActivity(ExoSocialActivity activity) {

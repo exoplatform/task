@@ -22,34 +22,37 @@
 
 package org.exoplatform.task.test;
 
+import java.sql.SQLException;
+import java.util.Date;
+import java.util.List;
+
+import javax.persistence.Persistence;
+
 import junit.framework.Assert;
 import liquibase.exception.LiquibaseException;
-import org.exoplatform.task.dao.CommentDAO;
-import org.exoplatform.task.dao.TaskDAO;
-import org.exoplatform.task.dao.jpa.CommentDAOImpl;
-import org.exoplatform.task.dao.jpa.TaskDAOImpl;
-import org.exoplatform.task.domain.Comment;
-import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.factory.ExoEntityManagerFactory;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.persistence.Persistence;
-import java.sql.SQLException;
-import java.util.Date;
-import java.util.List;
+import org.exoplatform.task.dao.CommentHandler;
+import org.exoplatform.task.dao.TaskHandler;
+import org.exoplatform.task.domain.Comment;
+import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.factory.ExoEntityManagerFactory;
+import org.exoplatform.task.service.jpa.TaskServiceJPAImpl;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
-public class CommentDAOTest {
+public class TestCommentDAO {
 
-  private CommentDAO commentDAO;
-  private TaskDAO taskDAO;
+  private CommentHandler commentDAO;
+  private TaskHandler taskDAO;
 
   private final String username = "root";
+  private TaskServiceJPAImpl taskService;
 
   @BeforeClass
   public static void createTable() throws SQLException,
@@ -60,22 +63,25 @@ public class CommentDAOTest {
 
   @Before
   public void initDAOs() {
-    taskDAO = new TaskDAOImpl();
-    commentDAO = new CommentDAOImpl();
+    taskService = new TaskServiceJPAImpl();
+    taskDAO = taskService.getTaskHandler();
+    commentDAO = taskService.getCommentHandler();
+
+    //
+    taskService.startRequest(null);
   }
 
   @After
   public void cleanData() {
-    taskDAO.beginTransaction();
     commentDAO.deleteAll();
     taskDAO.deleteAll();
-    taskDAO.commitAndCloseTransaction();
+
+    //
+    taskService.endRequest(null);
   }
 
   @Test
   public void testCreateComment() {
-    taskDAO.beginTransaction();
-
     Task task = newDefaultSimpleTask();
     taskDAO.create(task);
 
@@ -90,14 +96,10 @@ public class CommentDAOTest {
     comment = comments.get(0);
     Assert.assertEquals(username, comment.getAuthor());
     Assert.assertEquals(task.getId(), comment.getTask().getId());
-
-    taskDAO.commitAndCloseTransaction();
   }
 
   @Test
   public void testUpdateComment() {
-    taskDAO.beginTransaction();
-
     // Create Task
     Task task = newDefaultSimpleTask();
     taskDAO.create(task);
@@ -121,14 +123,10 @@ public class CommentDAOTest {
 
     comment = commentDAO.find(id);
     Assert.assertEquals("New comment content", comment.getComment());
-
-    taskDAO.commitAndCloseTransaction();
   }
 
   @Test
   public void testDeleteComment() {
-    taskDAO.beginTransaction();
-
     // Create Task
     Task task = newDefaultSimpleTask();
     taskDAO.create(task);
@@ -151,14 +149,10 @@ public class CommentDAOTest {
 
     comment = commentDAO.find(id);
     Assert.assertNull(comment);
-
-    taskDAO.commitAndCloseTransaction();
   }
 
   @Test
   public void testCountComments() {
-    taskDAO.beginTransaction();
-
     // Create Task
     Task task = newDefaultSimpleTask();
     taskDAO.create(task);
@@ -178,14 +172,10 @@ public class CommentDAOTest {
     long count = commentDAO.count(task);
 
     Assert.assertEquals(number, count);
-
-    taskDAO.commitAndCloseTransaction();
   }
 
   @Test
   public void testLoadCommentWithLimit() {
-    taskDAO.beginTransaction();
-
     // Create Task
     Task task = newDefaultSimpleTask();
     taskDAO.create(task);
@@ -213,8 +203,6 @@ public class CommentDAOTest {
 
     comments = commentDAO.findCommentsOfTask(task, 8, 5);
     Assert.assertEquals(2, comments.size());
-
-    taskDAO.commitAndCloseTransaction();
   }
 
   private Task newDefaultSimpleTask() {

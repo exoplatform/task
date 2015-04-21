@@ -17,8 +17,6 @@
 package org.exoplatform.task.test;
 
 import java.sql.SQLException;
-import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 
 import javax.persistence.Persistence;
@@ -32,87 +30,70 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import org.exoplatform.task.dao.ProjectHandler;
-import org.exoplatform.task.dao.StatusHandler;
 import org.exoplatform.task.dao.TaskHandler;
+import org.exoplatform.task.domain.Priority;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.factory.ExoEntityManagerFactory;
+import org.exoplatform.task.service.TaskParser;
+import org.exoplatform.task.service.impl.TaskParserImpl;
 import org.exoplatform.task.service.jpa.TaskServiceJPAImpl;
 
 /**
- * Created by The eXo Platform SAS
- * Author : Thibault Clement
- * tclement@exoplatform.com
- * 4/13/15
+ * @author <a href="trongtt@exoplatform.com">Trong Tran</a>
+ * @version $Revision$
  */
-public class DAOTest {
+public class TestTaskDAO {
 
-  private TaskHandler taskDAO;
-  private ProjectHandler projectDAO;
-  private StatusHandler statusDAO;
+  private TaskHandler tDAO;
   private TaskServiceJPAImpl taskService;
+  private TaskParser parser = new TaskParserImpl();
 
   @BeforeClass
-  public static void createTable() throws SQLException,
+  public static void init() throws SQLException,
       ClassNotFoundException, LiquibaseException {
     TestUtils.initH2DB();
     ExoEntityManagerFactory.setEntityManagerFactory(Persistence.createEntityManagerFactory("org.exoplatform.task"));
   }
+  
+  @AfterClass
+  public static void destroy() throws LiquibaseException, SQLException {
+    TestUtils.closeDB();
+  }
 
   @Before
-  public void initDAOs() {
+  public void setup() {
     taskService = new TaskServiceJPAImpl();
-
-    taskDAO = taskService.getTaskHandler();
-    projectDAO = taskService.getProjectHandler();
-    statusDAO = taskService.getStatusHandler();
+    tDAO = taskService.getTaskHandler();
 
     //
     taskService.startRequest(null);
   }
 
   @After
-  public void cleanTables() {
-    taskDAO.deleteAll();
-    statusDAO.deleteAll();
-    projectDAO.deleteAll();
-
+  public void tearDown() {
     //
     taskService.endRequest(null);
   }
 
-  @AfterClass
-  public static void removeTables() throws LiquibaseException, SQLException {
-    TestUtils.closeDB();
-  }
-
   @Test
-  public void testDAONotNull() {
-    Assert.assertNotNull(taskDAO);
-  }
+  public void testTaskCreation() {
+    Task task = parser.parse("Testing task creation");
+    tDAO.create(task);
 
-  @Test
-  public void testAddNewTask() {
-    List<Task> tasks = taskDAO.findAll();
-    Assert.assertEquals(0, tasks.size());
+    List<Task> list = tDAO.findAll();
+    Assert.assertEquals(1, list.size());
 
-    Task task = newDefaultSimpleTask();
-    HashSet<String> tags = new HashSet<String>();
-    tags.add("my label");
-    task.setTags(tags);
-    taskDAO.create(task);
+    //
+    task = parser.parse("There is an important meeting tomorrow !high");
+    tDAO.create(task);
+    list = tDAO.findAll();
+    Assert.assertEquals(2, list.size());
 
-    tasks = taskDAO.findAll();
-    Assert.assertEquals(1, tasks.size());
-  }
-
-  private Task newDefaultSimpleTask() {
-    Task task = new Task();
-    task.setTitle("Default task");
-    task.setAssignee("root");
-    task.setCreatedBy("root");
-    task.setCreatedTime(new Date());
-    return task;
+    //
+    task = tDAO.find(task.getId());
+    Assert.assertNotNull(task);
+    Assert.assertEquals("There is an important meeting tomorrow", task.getTitle());
+    Assert.assertEquals(Priority.HIGH, task.getPriority());
   }
 }
 

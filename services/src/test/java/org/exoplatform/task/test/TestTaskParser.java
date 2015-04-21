@@ -44,12 +44,12 @@ public class TestTaskParser {
   public void testParserHighPriority() {
     Task task = creator.parse("Test task !High tomorrow");
     Assert.assertNotNull(task);
-    Assert.assertEquals("", "Test task tomorrow", task.getTitle());
+    Assert.assertEquals("Test task tomorrow", task.getTitle());
     Assert.assertEquals("Priority must be high", Priority.HIGH, task.getPriority());
 
     task = creator.parse("Test task !HIGH tomorrow");
     Assert.assertNotNull(task);
-    Assert.assertEquals("", "Test task tomorrow", task.getTitle());
+    Assert.assertEquals("Test task tomorrow", task.getTitle());
     Assert.assertEquals("Priority must be High", Priority.HIGH, task.getPriority());
 
     task = creator.parse("Test task !higH tomorrow");
@@ -57,6 +57,7 @@ public class TestTaskParser {
     Assert.assertEquals("", "Test task tomorrow", task.getTitle());
     Assert.assertEquals("Priority must be High", Priority.HIGH, task.getPriority());
 
+    
     task = creator.parse("Test task !Low tomorrow !higH");
     Assert.assertNotNull(task);
     Assert.assertEquals("", "Test task tomorrow", task.getTitle());
