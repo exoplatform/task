@@ -138,4 +138,25 @@
     </createTable>
   </changeSet>
 
+  <!-- Definition of TASK_COMMENTS table -->
+  <changeSet author="tuyennt@exoplatform.com" id="1.0.0-1">
+    <createTable tableName="TASK_COMMENTS">
+      <column name="COMMENT_ID" type="BIGINT" autoIncrement="${autoIncrement}">
+        <constraints primaryKey="true" primaryKeyName="PK_TASK_COMMENTS" nullable="false" unique="true"/>
+      </column>
+      <column name="AUTHOR" type="VARCHAR(100)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="COMMENT" type="VARCHAR(10000)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="CREATED_TIME" type="TIMESTAMP">
+        <constraints nullable="true"/>
+      </column>
+      <column name="TASK_ID" type="BIGINT">
+        <constraints nullable="false" foreignKeyName="FK_COMMENT_TASK" references="TASK_TASKS(TASK_ID)"/>
+      </column>
+    </createTable>
+  </changeSet>
+
 </databaseChangeLog>
