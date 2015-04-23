@@ -54,6 +54,7 @@
     <hibernate.version>4.1.12.Final</hibernate.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <juzu.version>1.0.x-SNAPSHOT</juzu.version>
+    <platform.version>4.2.x-SNAPSHOT</platform.version>
     <groovy.version>1.7.6</groovy.version>
     <junit.version>4.10</junit.version>
   </properties>
@@ -112,6 +113,18 @@
         <groupId>org.exoplatform.social</groupId>
         <artifactId>social-component-core</artifactId>
         <version>4.2.x-SNAPSHOT</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.exoplatform.social</groupId>
+        <artifactId>social-component-core</artifactId>
+        <version>${platform.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.exoplatform.commons</groupId>
+        <artifactId>commons-juzu</artifactId>
+        <version>${platform.version}</version>
       </dependency>
 
       <!-- Groovy -->

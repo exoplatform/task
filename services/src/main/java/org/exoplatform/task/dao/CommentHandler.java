@@ -36,8 +36,8 @@ public interface CommentHandler extends GenericDAO<Comment, Long> {
   long count(Task task);
 
   /**
-   * Load list comments of a task. The List comments will be sorted by createdTime inverse.
-   * (Last comment will be at first)
+   * Load list comments of a task. The List comments will be sorted by createdTime.
+   * (Last comment will be at last)
    * @param task - Task object
    * @param start - The first row to select.
    * @param limit - The limit row to select. If limit <= 0, the start param will be ignore and all comment will be loaded.

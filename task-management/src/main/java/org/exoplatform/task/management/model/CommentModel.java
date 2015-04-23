@@ -17,26 +17,49 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.exoplatform.task.service;
+package org.exoplatform.task.management.model;
 
-import org.exoplatform.task.dao.CommentHandler;
-import org.exoplatform.task.dao.ProjectHandler;
-import org.exoplatform.task.dao.StatusHandler;
-import org.exoplatform.task.dao.TaskHandler;
+import org.exoplatform.task.domain.Comment;
+import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.model.User;
 
-import java.util.List;
+import java.util.Date;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
-public interface TaskService {
-  public ProjectHandler getProjectHandler();
+public class CommentModel {
+  private final Comment comment;
+  private final User author;
+  private final String formattedComment;
 
-  public TaskHandler getTaskHandler();
+  public CommentModel(Comment cmt, User author, String formattedComment) {
+    this.comment = cmt;
+    this.author = author;
+    this.formattedComment = formattedComment;
+  }
 
-  public CommentHandler getCommentHandler();
+  public User getAuthor() {
+    return this.author;
+  }
 
-  public StatusHandler getStatusHandler();
+  public Date getCreatedTime() {
+    return comment.getCreatedTime();
+  }
 
-  List<GroupByService> getGroupByServices();
+  public String getComment() {
+    return comment.getComment();
+  }
+
+  public long getId() {
+    return comment.getId();
+  }
+
+  public Task getTask() {
+    return comment.getTask();
+  }
+
+  public String getFormattedComment() {
+    return formattedComment;
+  }
 }

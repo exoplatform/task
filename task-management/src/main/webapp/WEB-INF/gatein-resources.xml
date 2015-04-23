@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<gatein-resources xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.gatein.org/xml/ns/gatein_resources_1_3 http://www.gatein.org/xml/ns/gatein_resources_1_3"
+	xmlns="http://www.gatein.org/xml/ns/gatein_resources_1_3">
+
+  <module>
+    <name>bootstrap_tooltip</name>
+    <script>
+      <adapter>
+        (function() {
+        var oldJQuery = window.jQuery;
+        window.jQuery = $;
+        <include>/WEB-INF/classes/org/exoplatform/task/management/assets/javascripts/bootstrap/bootstrap-tooltip.js</include>
+        window.jQuery = oldJQuery;
+        return $;
+        })();
+      </adapter>
+    </script>
+    <depends>
+      <module>jquery</module>
+    </depends>
+  </module>
+  <module>
+    <name>bootstrap_popover</name>
+    <script>
+      <adapter>
+        (function() {
+        var oldJQuery = window.jQuery;
+        window.jQuery = $;
+        <include>/WEB-INF/classes/org/exoplatform/task/management/assets/javascripts/bootstrap/bootstrap-popover.js</include>
+        window.jQuery = oldJQuery;
+        return $;
+        })();
+      </adapter>
+    </script>
+    <depends>
+      <module>jquery</module>
+    </depends>
+    <depends>
+      <module>bootstrap_tooltip</module>
+    </depends>
+  </module>
+  <module>
+    <name>bootstrap_datepicker</name>
+    <script>
+      <adapter>
+        (function() {
+        var oldJQuery = window.jQuery;
+        window.jQuery = $;
+        <include>/WEB-INF/classes/org/exoplatform/task/management/assets/bootstrap-datepicker/1.4.0/js/bootstrap-datepicker.js</include>
+        window.jQuery = oldJQuery;
+        return $;
+        })();
+      </adapter>
+    </script>
+    <depends>
+      <module>jquery</module>
+    </depends>
+  </module>
+  <module>
+    <name>select2</name>
+    <script>
+      <adapter>
+        (function() {
+        <include>/WEB-INF/classes/org/exoplatform/task/management/assets/select2/3.5.2/select2.js</include>
+        return jQuery;
+        })();
+      </adapter>
+    </script>
+    <depends>
+      <module>jquery</module>
+      <as>jQuery</as>
+    </depends>
+  </module>
+  <module>
+    <name>edit_inline_js</name>
+    <script>
+      <adapter>
+        (function() {
+          var oldJQuery = window.jQuery;
+          window.jQuery = $;
+          <include>/WEB-INF/classes/org/exoplatform/task/management/assets/x-editable-bootstrap/1.4.6/js/bootstrap-editable.js</include>
+          window.jQuery = oldJQuery;
+          return $;
+        })();
+      </adapter>
+    </script>
+    <depends>
+      <module>jquery</module>
+    </depends>
+    <depends>
+      <module>bootstrap_tooltip</module>
+    </depends>
+    <depends>
+      <module>bootstrap_popover</module>
+    </depends>
+    <depends>
+      <module>bootstrap_datepicker</module>
+    </depends>
+    <depends>
+      <module>select2</module>
+    </depends>
+  </module>
+</gatein-resources>
+

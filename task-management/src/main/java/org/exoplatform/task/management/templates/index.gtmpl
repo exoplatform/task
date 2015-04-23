@@ -5,7 +5,7 @@
 #{param name=currentOrderBy /}
 
 <div id="taskManagement" class="row-fluid">
-<div id="taskListcontainer" class="task-management span6">
+<div id="taskListcontainer" class="task-management span12">
 <div class="row-fluid">
     <form action="@{TaskManagement.createTask()}" method="POST">
         <input type="text" name="taskInput" value="" placeholder="Input here to create new task"/>
@@ -62,7 +62,7 @@
     </div>
 <%}%>
 </div>
-<div id="taskDetailContainer" class="span6">
-    Task container here
+<div id="taskDetailContainer" class="span6" style="display: none">
+
 </div>
 </div>

@@ -59,10 +59,16 @@
     </dependency>
 
     <dependency>
+      <groupId>org.exoplatform.core</groupId>
+      <artifactId>exo.core.component.organization.api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
       <groupId>org.exoplatform.social</groupId>
       <artifactId>social-component-core</artifactId>
-    </dependency>    
-    
+      <scope>provided</scope>
+    </dependency>
     <!-- TEST -->
     <dependency>
       <groupId>junit</groupId>

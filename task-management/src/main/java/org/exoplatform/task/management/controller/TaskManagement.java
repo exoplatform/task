@@ -17,12 +17,13 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.exoplatform.task.management;
+package org.exoplatform.task.management.controller;
 
 import juzu.Action;
 import juzu.Path;
 import juzu.Response;
 import juzu.View;
+import juzu.impl.common.Tools;
 import org.exoplatform.task.service.GroupByService;
 import org.exoplatform.task.service.OrderBy;
 import org.exoplatform.task.service.TaskParser;
@@ -91,7 +92,7 @@ public class TaskManagement {
         .currentGroupBy(groupBy != null ? groupBy : "")
         .currentOrderBy(orderBy != null ? orderBy : "")
         .groupTasks(current.getGroupTasks(orders))
-        .ok();
+        .ok().withCharset(Tools.UTF_8);
   }
 
   @Action
@@ -102,7 +103,7 @@ public class TaskManagement {
   @Action
   public Response createTask(String taskInput, String groupBy, String orderBy) {
     if(taskInput != null && !taskInput.isEmpty()) {
-      this.taskService.save(taskParser.parse(taskInput));
+      this.taskService.getTaskHandler().create(taskParser.parse(taskInput));
     } else {
 
     }

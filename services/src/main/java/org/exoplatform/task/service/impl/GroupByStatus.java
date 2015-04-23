@@ -65,7 +65,7 @@ public class GroupByStatus extends AbstractGroupBy<Status> {
         return Long.compare(o1.getId(), o2.getId());
       }
     });
-    for(Task task : taskService.findAllTask()) {
+    for(Task task : taskService.getTaskHandler().findAll()) {
       Status status = task.getStatus();
 
       if(status == null) {

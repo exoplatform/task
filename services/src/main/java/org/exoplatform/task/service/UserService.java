@@ -19,24 +19,12 @@
 
 package org.exoplatform.task.service;
 
-import org.exoplatform.task.dao.CommentHandler;
-import org.exoplatform.task.dao.ProjectHandler;
-import org.exoplatform.task.dao.StatusHandler;
-import org.exoplatform.task.dao.TaskHandler;
-
-import java.util.List;
+import org.exoplatform.task.model.User;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
-public interface TaskService {
-  public ProjectHandler getProjectHandler();
+public interface UserService {
 
-  public TaskHandler getTaskHandler();
-
-  public CommentHandler getCommentHandler();
-
-  public StatusHandler getStatusHandler();
-
-  List<GroupByService> getGroupByServices();
+  User loadUser(String username);
 }

@@ -23,14 +23,21 @@ import juzu.MimeType;
 import juzu.Path;
 import juzu.Resource;
 import juzu.Response;
-import juzu.plugin.ajax.Ajax;
+import juzu.impl.common.Tools;
+import juzu.request.SecurityContext;
+import org.exoplatform.commons.juzu.ajax.Ajax;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
+import org.exoplatform.task.dao.CommentHandler;
+import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.management.model.CommentModel;
+import org.exoplatform.task.management.util.CommentUtils;
 import org.exoplatform.task.management.util.UserUtils;
 import org.exoplatform.task.service.TaskBuilder;
 import org.exoplatform.task.service.TaskService;
+import org.exoplatform.task.service.UserService;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -38,10 +45,7 @@ import javax.inject.Inject;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
@@ -55,14 +59,21 @@ public class TaskController {
   OrganizationService orgService;
 
   @Inject
+  UserService userService;
+
+  @Inject
   @Path("detail.gtmpl")
   org.exoplatform.task.management.templates.detail detail;
+
+  @Inject
+  @Path("comments.gtmpl")
+  org.exoplatform.task.management.templates.comments comments;
 
   @Resource
   @Ajax
   @MimeType.HTML
-  public Response detail(Long id) {
-    Task task = taskService.findTaskById(id);
+  public Response detail(Long id, SecurityContext securityContext) {
+    Task task = taskService.getTaskHandler().find(id);
     StringBuilder coWorkerDisplayName = new StringBuilder();
     if(task.getCoworker() != null && task.getCoworker().size() > 0) {
       for(String userName : task.getCoworker()) {
@@ -90,18 +101,33 @@ public class TaskController {
         return Response.status(500).body(ex.getMessage());
       }
     }
+
+    long commentCount = taskService.getCommentHandler().count(task);
+
+    List<Comment> cmts = taskService.getCommentHandler().findCommentsOfTask(task, 0, 2);
+    List<CommentModel> comments = new ArrayList<CommentModel>(cmts.size());
+    for(Comment c : cmts) {
+      org.exoplatform.task.model.User u = userService.loadUser(c.getAuthor());
+      comments.add(new CommentModel(c, u, CommentUtils.formatMention(c.getComment(), userService)));
+    }
+
+    org.exoplatform.task.model.User currentUser = userService.loadUser(securityContext.getRemoteUser());
+
     return detail.with()
         .task(task)
         .assigneeName(assignee)
         .coWokerDisplayName(coWorkerDisplayName.toString())
-        .ok();
+        .commentCount(commentCount)
+        .comments(comments)
+        .currentUser(currentUser)
+        .ok().withCharset(Tools.UTF_8);
   }
 
   @Resource
   @Ajax
   @MimeType.JSON
   public Response clone(Long id) {
-    Task task = taskService.findTaskById(id);
+    Task task = taskService.getTaskHandler().find(id);
     if(task == null) {
       return Response.notFound("Can not find task with ID: " + id);
     }
@@ -119,7 +145,7 @@ public class TaskController {
         .build();
     newTask.setCoworker(task.getCoworker());
     newTask.setTags(task.getTags());
-    taskService.save(newTask);
+    taskService.getTaskHandler().create(newTask);
     try {
       JSONObject json = new JSONObject();
       json.put("id", newTask.getId());
@@ -133,11 +159,11 @@ public class TaskController {
   @Ajax
   @MimeType.JSON
   public Response delete(Long id) {
-    Task task = taskService.findTaskById(id);
+    Task task = taskService.getTaskHandler().find(id);
     if(task == null) {
       return Response.notFound("Can not find task with ID: " + id);
     }
-    taskService.remove(task);
+    taskService.getTaskHandler().delete(task);
     try {
       JSONObject json = new JSONObject();
       json.put("id", task.getId());
@@ -153,7 +179,7 @@ public class TaskController {
   public Response saveTaskInfo(Long taskId, String name, String[] value) {
     String val = value != null && value.length > 0 ? value[0] : null;
 
-    Task task = taskService.findTaskById(taskId);
+    Task task = taskService.getTaskHandler().find(taskId);
     if(task == null) {
       return Response.notFound("Task not found with ID: " + taskId);
     }
@@ -204,7 +230,7 @@ public class TaskController {
       return Response.status(406).body("Field name: " + name + " is not supported");
     }
 
-    taskService.save(task);
+    taskService.getTaskHandler().update(task);
     return Response.ok("Update successfully");
   }
 
@@ -212,7 +238,7 @@ public class TaskController {
   @Ajax
   @MimeType("text/plain")
   public Response updateTaskStatus(Long taskId, int status) {
-    Task task = taskService.findTaskById(taskId);
+    Task task = taskService.getTaskHandler().find(taskId);
     if(task == null) {
       return Response.notFound("Task not found with ID: " + taskId);
     }
@@ -222,7 +248,92 @@ public class TaskController {
         break;
       }
     }
-    taskService.save(task);
+    taskService.getTaskHandler().update(task);
     return Response.ok("Update successfully");
+  }
+
+  @Resource
+  @Ajax
+  @MimeType.JSON
+  public Response comment(Long taskId, String comment, SecurityContext securityContext) {
+    String currentUser = securityContext.getRemoteUser();
+    if (currentUser == null || currentUser.isEmpty()) {
+      return Response.status(401);
+    }
+
+    Task task = taskService.getTaskHandler().find(taskId);
+    if (task == null) {
+      return Response.status(404).body("There is no task with ID: " + taskId);
+    }
+
+    Comment cmt = new Comment();
+    cmt.setTask(task);
+    cmt.setAuthor(currentUser);
+    cmt.setComment(comment);
+    cmt.setCreatedTime(new Date());
+
+    cmt = taskService.getCommentHandler().create(cmt);
+
+    //TODO:
+    CommentModel model = new CommentModel(cmt, userService.loadUser(cmt.getAuthor()), CommentUtils.formatMention(cmt.getComment(), userService));
+
+    DateFormat df = new SimpleDateFormat("MMM dd, yyyy HH:mm");
+    try {
+      JSONObject json = new JSONObject();
+      json.put("id", model.getId());
+      JSONObject user = new JSONObject();
+      user.put("username", model.getAuthor().getUsername());
+      user.put("displayName", model.getAuthor().getDisplayName());
+      user.put("avatar", model.getAuthor().getAvatar());
+      json.put("author", user);
+      json.put("comment", model.getComment());
+      json.put("formattedComment", model.getFormattedComment());
+      json.put("createdTime", model.getCreatedTime().getTime());
+      json.put("createdTimeString", df.format(model.getCreatedTime()));
+      return Response.ok(json.toString()).withCharset(Tools.UTF_8);
+    } catch (JSONException ex) {
+      return Response.status(500).body(ex.getMessage());
+    }
+  }
+
+  @Resource
+  @Ajax
+  @MimeType.HTML
+  public Response loadAllComments(Long taskId, SecurityContext securityContext) {
+    Task task = taskService.getTaskHandler().find(taskId);
+    if(task == null) {
+      return Response.notFound("Task does not exist with ID: " + taskId);
+    }
+    CommentHandler commentDAO = taskService.getCommentHandler();
+    long commentCount = commentDAO.count(task);
+
+    List<Comment> cmts = commentDAO.findCommentsOfTask(task, 0, -1);
+    List<CommentModel> listComments = new ArrayList<CommentModel>(cmts.size());
+    for(Comment cmt : cmts) {
+      org.exoplatform.task.model.User u = userService.loadUser(cmt.getAuthor());
+      listComments.add(new CommentModel(cmt, u, CommentUtils.formatMention(cmt.getComment(), userService)));
+    }
+
+    org.exoplatform.task.model.User currentUser = userService.loadUser(securityContext.getRemoteUser());
+
+    return comments.with()
+            .commentCount(commentCount)
+            .comments(listComments)
+            .currentUser(currentUser)
+            .ok()
+            .withCharset(Tools.UTF_8);
+  }
+
+  @Resource
+  @Ajax
+  @MimeType("text/plain")
+  public Response deleteComment(Long commentId) {
+    CommentHandler commentDAO = taskService.getCommentHandler();
+    Comment comment = commentDAO.find(commentId);
+    if(comment == null) {
+      return Response.notFound("Comment is not exists with ID: " + commentId);
+    }
+    commentDAO.delete(comment);
+    return Response.ok("Delete comment successfully!");
   }
 }

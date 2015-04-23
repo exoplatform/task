@@ -27,6 +27,9 @@
 {
     visibility: visible;
 }
+.task-detail {
+    padding-right: 7px;
+}
 .task-detail .icon {
     display: inline-block;
     width: 24px;
@@ -84,4 +87,16 @@
 }
 a.editable-click:hover {
     border: solid 1px #ddd;
+}
+#taskCommentButton {
+    margin-top: 10px;
+}
+.comment .comment-action {
+    width: 16px;
+}
+.comment .action-link {
+    visibility: hidden;
+}
+.comment:hover .action-link {
+    visibility: visible;
 }

@@ -1,3 +1,5 @@
+// TODO: Move juzu-ajax, mentionsPlugin module into task management project if need
+require(['SHARED/jquery', 'SHARED/edit_inline_js', 'SHARED/juzu-ajax', 'SHARED/mentionsPlugin'], function(jQuery) {
 jQuery(document).ready(function($) {
     var saveTaskDetailFunction = function(params) {
         var d = new $.Deferred;
@@ -11,7 +13,6 @@ jQuery(document).ready(function($) {
                 d.resolve();
             },
             error: function(jqXHR, textStatus, errorThrown ) {
-                alert('update failure, http status: ' + textStatus);
                 d.reject('update failure, http status: ' + textStatus);
             }
         });
@@ -119,16 +120,40 @@ jQuery(document).ready(function($) {
     var $taskDetailContainer = $('#taskDetailContainer');
     $taskDetailContainer.hide();
     $taskListcontainer.removeClass('span6').addClass('span12');
+
+    var currentTask = 0;
     $taskListcontainer.on('click', 'li.task', function(e){
         var $li = $(e.target || e.srcElement).closest('li.task');
         var taskId = $li.attr('task-id');
-        $taskDetailContainer.jzLoad('TaskController.detail()', {id: taskId}, function(html){
-            $taskDetailContainer.show();
-            $taskListcontainer.removeClass('span12').addClass('span6');
-            initEditInline(taskId);
-            return false;
-        });
+        if (taskId != currentTask || $taskDetailContainer.is(':hidden')) {
+            $taskDetailContainer.jzLoad('TaskController.detail()', {id: taskId}, function(html) {
+                $taskDetailContainer.show();
+                $taskListcontainer.removeClass('span12').addClass('span6');
+                initEditInline(taskId);
+                currentTask = taskId;
+                $taskDetailContainer.find('textarea').exoMentions({
+                    onDataRequest:function (mode, query, callback) {
+                        var _this = this;
+                        $taskDetailContainer.jzAjax('UserController.findUsersToMention()', {
+                            data: {query: query},
+                            success: function(data) {
+                                callback.call(_this, data);
+                            }
+                        });
+                    },
+                    idAction : 'taskCommentButton',
+                    elasticStyle : {
+                        maxHeight : '52px',
+                        minHeight : '22px',
+                        marginButton: '4px',
+                        enableMargin: false
+                    }
+                });
+                return false;
+            });
+        }
     });
+
     $taskDetailContainer.on('click', 'a.close', function(e) {
         $taskDetailContainer.html('');
         $taskDetailContainer.hide();
@@ -154,7 +179,6 @@ jQuery(document).ready(function($) {
         $a.jzAjax('TaskController.clone()', {
             data: {id: taskId},
             success: function(response) {
-                console.log(response);
                 window.location.reload();
             }
         });
@@ -165,9 +189,77 @@ jQuery(document).ready(function($) {
         $a.jzAjax('TaskController.delete()', {
             data: {id: taskId},
             success: function(response) {
-                console.log(response);
                 window.location.reload();
             }
         });
     });
+
+    $taskDetailContainer.on('submit', '.comment-form form', function(e) {
+        e.preventDefault();
+        var $form = $(e.target).closest('form');
+        var $listComments = $form.closest('.task-detail').find('.list-comments');
+        var taskId = $form.closest('.task-detail').attr('task-id');
+        var comment = $.trim($form.find('textarea').val());
+        if (comment == '') {
+            alert('Please fill your comment!');
+            return false;
+        }
+        var postCommentURL = $form.jzURL('TaskController.comment');
+        $.post(postCommentURL, { taskId: taskId, comment: comment}, function(data) {
+            var html = [];
+            html.push('<li class="comment media">');
+            html.push('    <a class="pull-left avatarXSmall" href="#">');
+            html.push('     <img class="media-object" src="'+ data.author.avatar +'" alt="'+ data.author.displayName +'">');
+            html.push('    </a>');
+            html.push('    <div class="media-body">');
+            html.push('    <div class="pull-right">');
+            html.push('        <span class="muted">'+data.createdTimeString+'</span>');
+            html.push('        <span class="comment-action">');
+            html.push('            <a href="#" class="action-link delete-comment" commen-id="'+data.id+'"><i class="uiIconLightGray uiIconTrashMini"></i></a>');
+            html.push('        </span>');
+            html.push('    </div>');
+            html.push('    <h6 class="media-heading"><a href="#">'+data.author.displayName+'</a></h6>');
+            html.push('<div>');
+            html.push(      data.formattedComment);
+            html.push('</div>');
+            html.push('</div>');
+            html.push('</li>');
+            var $html = $(html.join("\n"));
+            $listComments.append($html);
+            $listComments.find('li.no-comment').remove();
+        },'json');
+
+        return false;
+    });
+
+    $taskDetailContainer.on('click', 'a.delete-comment', function(e) {
+        e.preventDefault();
+        var $a = $(e.target).closest('a');
+        var commentId = $a.attr('commen-id');
+        var deleteURL = $a.jzURL('TaskController.deleteComment');
+        $.ajax({
+            url: deleteURL,
+            data: {commentId: commentId},
+            type: 'POST',
+            success: function(data) {
+                $a.closest('li.comment').remove();
+            },
+            error: function() {
+                alert('Error while delete comment, please try again.');
+            }
+        });
+    });
+
+    $taskDetailContainer.on('click', 'a.load-all-comments', function(e) {
+        e.preventDefault();
+        var $a = $(e.target).closest('a');
+        var $taskContainer = $a.closest('.task-detail');
+        var taskId = $taskContainer.attr('task-id');
+        var getAllCommentsURL = $a.jzURL('TaskController.loadAllComments');
+        var $commentList = $taskContainer.find('ul.list-comments');
+        $commentList.jzLoad(getAllCommentsURL, {taskId: taskId}, function(data) {
+            $a.remove();
+        });
+    });
+});
 });

@@ -29,6 +29,7 @@ import org.exoplatform.task.service.jpa.TaskServiceJPAImpl;
 
 import javax.persistence.Query;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -57,6 +58,10 @@ public class CommentDAOImpl extends GenericDAOImpl<Comment, Long> implements Com
       query.setMaxResults(limit);
     }
     List<Comment> comments = query.getResultList();
+
+    //TODO: should re-order by java code or by query
+    Collections.reverse(comments);
+
     return comments;
   }
 }

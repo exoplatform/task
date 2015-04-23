@@ -17,26 +17,45 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.exoplatform.task.service;
-
-import org.exoplatform.task.dao.CommentHandler;
-import org.exoplatform.task.dao.ProjectHandler;
-import org.exoplatform.task.dao.StatusHandler;
-import org.exoplatform.task.dao.TaskHandler;
-
-import java.util.List;
+package org.exoplatform.task.model;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
-public interface TaskService {
-  public ProjectHandler getProjectHandler();
+public class User {
+  private String username;
+  private String displayName;
+  private String avatar;
 
-  public TaskHandler getTaskHandler();
+  public User() {}
 
-  public CommentHandler getCommentHandler();
+  public User(String username, String displayName, String avatar) {
+    this.username = username;
+    this.displayName = displayName;
+    this.avatar = avatar;
+  }
 
-  public StatusHandler getStatusHandler();
+  public String getUsername() {
+    return username;
+  }
 
-  List<GroupByService> getGroupByServices();
+  public void setUsername(String username) {
+    this.username = username;
+  }
+
+  public String getDisplayName() {
+    return displayName;
+  }
+
+  public void setDisplayName(String displayName) {
+    this.displayName = displayName;
+  }
+
+  public String getAvatar() {
+    return avatar;
+  }
+
+  public void setAvatar(String avatar) {
+    this.avatar = avatar;
+  }
 }

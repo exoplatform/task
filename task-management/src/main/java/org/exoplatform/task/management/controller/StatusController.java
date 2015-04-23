@@ -22,7 +22,7 @@ package org.exoplatform.task.management.controller;
 import juzu.MimeType;
 import juzu.Resource;
 import juzu.Response;
-import juzu.plugin.ajax.Ajax;
+import org.exoplatform.commons.juzu.ajax.Ajax;
 import org.exoplatform.task.domain.Status;
 import org.json.JSONArray;
 import org.json.JSONException;

@@ -49,7 +49,7 @@ public class GroupByProject extends AbstractGroupBy<Project> {
   @Override
   protected Map<Project, List<Task>> getMaps() {
     Map<Project, List<Task>> maps = new HashMap<Project, List<Task>>();
-    for(Task task : taskService.findAllTask()) {
+    for(Task task : taskService.getTaskHandler().findAll()) {
       Status status = task.getStatus();
       if(status == null) {
         status = Status.INCOMING;

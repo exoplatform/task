@@ -65,7 +65,7 @@ public class ActivityTaskCreationListener extends ActivityListenerPlugin {
       if (idx >=0 && idx + 2 < comment.length() - 1) {
         Task task = parser.parse(comment.substring(idx + 2, comment.length() - 4));
         task.setDescription(LinkProvider.getSingleActivityUrl(activity.getId()));
-        taskService.save(task);
+        taskService.getTaskHandler().create(task);
       }
     }
   }

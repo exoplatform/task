@@ -31,7 +31,6 @@ import org.exoplatform.task.dao.jpa.CommentDAOImpl;
 import org.exoplatform.task.dao.jpa.ProjectDAOImpl;
 import org.exoplatform.task.dao.jpa.StatusDAOImpl;
 import org.exoplatform.task.dao.jpa.TaskDAOImpl;
-import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.factory.ExoEntityManagerFactory;
 import org.exoplatform.task.service.GroupByService;
 import org.exoplatform.task.service.TaskService;
@@ -53,7 +52,7 @@ public class TaskServiceJPAImpl extends AbstractTaskService implements TaskServi
   private final List<GroupByService> groupByServices;
 
   private ThreadLocal<EntityManager> entityManager = new ThreadLocal<EntityManager>();
-  
+
   public TaskServiceJPAImpl() {
     pHandler = new ProjectDAOImpl(this);
     tHandler = new TaskDAOImpl(this);
@@ -68,36 +67,6 @@ public class TaskServiceJPAImpl extends AbstractTaskService implements TaskServi
 
   public EntityManager getEntityManager() {
     return entityManager.get();
-  }
-  
-  @Override
-  public void save(Task task) {
-    tHandler.update(task);
-  }
-
-  //To add in interface
-  public void update(Task task) {
-    Task persistedTask = tHandler.find(task.getId());
-    persistedTask.setTitle(task.getTitle());
-    //TO DO: add all set methods...
-    tHandler.update(persistedTask);
-  }
-
-  @Override
-  public Task findTaskById(long id) {
-    Task task = tHandler.find(id);
-    return task;
-  }
-
-  @Override
-  public List<Task> findAllTask() {
-    List<Task> tasks = tHandler.findAll();
-    return tasks;
-  }
-
-  @Override
-  public void remove(Task task) {
-    tHandler.delete(task);
   }
 
   @Override
@@ -120,7 +89,7 @@ public class TaskServiceJPAImpl extends AbstractTaskService implements TaskServi
       getEntityManager().getTransaction().commit();
       getEntityManager().close();
       entityManager.set(null);
-    }      
+    }
   }
 }
 

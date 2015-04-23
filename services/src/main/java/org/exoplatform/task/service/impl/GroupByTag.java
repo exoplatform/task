@@ -40,7 +40,7 @@ public class GroupByTag extends AbstractGroupBy<String> {
   @Override
   protected Map<String, List<Task>> getMaps() {
     Map<String, List<Task>> maps = new HashMap<String, List<Task>>();
-    for(Task task : taskService.findAllTask()) {
+    for(Task task : taskService.getTaskHandler().findAll()) {
       Set<String> tags = task.getTags();
       if(tags == null || tags.isEmpty()) {
         this.put(maps, null, task);

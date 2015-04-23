@@ -108,6 +108,18 @@
       <scope>provided</scope>
     </dependency>
 
+    <dependency>
+      <groupId>org.exoplatform.social</groupId>
+      <artifactId>social-component-core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.exoplatform.commons</groupId>
+      <artifactId>commons-juzu</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
     <!-- Groovy is shipped with GateIn -->
     <dependency>
       <groupId>org.codehaus.groovy</groupId>
