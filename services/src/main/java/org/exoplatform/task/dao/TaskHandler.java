@@ -30,6 +30,8 @@ public interface TaskHandler extends GenericDAO<Task, Long> {
 
   List<Task> findByUser(String user);
 
+  List<Task> findAllByMembership(String user, List<String> memberships);
+
   List<Task> findByTag(String tag);
 
   List<Task> findByTags(List<String> tags);

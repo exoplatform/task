@@ -30,6 +30,17 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "TASK_TASKS")
+@NamedQueries({
+    @NamedQuery(name = "Task.findByMemberships",
+        query = "SELECT ta FROM Task ta LEFT JOIN ta.coworker coworkers " +
+            "WHERE ta.assignee = :userName " +
+            "OR ta.createdBy = :userName " +
+            "OR coworkers = :userName " +
+            "OR ta.status IN (SELECT st.id FROM Status st " +
+            "WHERE project IN (SELECT pr1.id FROM Project pr1 LEFT JOIN pr1.manager managers WHERE managers IN :memberships) " +
+            "OR project IN (SELECT pr2.id FROM Project pr2 LEFT JOIN pr2.participator participators WHERE participators IN :memberships) " +
+            ") "),
+})
 public class Task {
   @Id
   @GeneratedValue

@@ -109,11 +109,6 @@
         <artifactId>exo.core.component.organization.api</artifactId>
         <version>2.5.x-SNAPSHOT</version>
       </dependency>
-      <dependency>
-        <groupId>org.exoplatform.social</groupId>
-        <artifactId>social-component-core</artifactId>
-        <version>4.2.x-SNAPSHOT</version>
-      </dependency>
 
       <dependency>
         <groupId>org.exoplatform.social</groupId>

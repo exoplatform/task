@@ -20,6 +20,8 @@ import org.exoplatform.task.dao.TaskHandler;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.service.jpa.TaskServiceJPAImpl;
 
+import javax.persistence.Query;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -41,7 +43,21 @@ public class TaskDAOImpl extends GenericDAOImpl<Task, Long> implements TaskHandl
 
   @Override
   public List<Task> findByUser(String user) {
-    return null;
+
+    List<String> memberships = new ArrayList<String>();
+    memberships.add(user);
+
+    return  findAllByMembership(user, memberships);
+  }
+
+  @Override
+  public List<Task> findAllByMembership(String user, List<String> memberships) {
+
+    Query query = taskService.getEntityManager().createNamedQuery("Task.findByMemberships", Task.class);
+    query.setParameter("userName", user);
+    query.setParameter("memberships", memberships);
+
+    return query.getResultList();
   }
 
   @Override
