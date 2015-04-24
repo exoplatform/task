@@ -12,41 +12,6 @@ import java.util.List;
 public interface GenericDAO<E, ID extends Serializable> {
 
   /**
-   * Start a transaction.
-   */
-  void beginTransaction();
-
-  /**
-   * Commit the modification done in the transaction.
-   */
-  void commit();
-
-  /**
-   * Rollback the modification done in the transaction.
-   */
-  void rollback();
-
-  /**
-   * Close the transaction.
-   */
-  void closeTransaction();
-
-  /**
-   * Commit the modification and close the transaction.
-   */
-  void commitAndCloseTransaction();
-
-  /**
-   * Flush changes in the persistence context to the datasource.
-   */
-  void flush();
-
-  /**
-   * Join an existing transaction
-   */
-  void joinTransaction();
-
-  /**
    * Get the number of entities with the specified type and id from the datasource.
    *
    * @return the entity, null if none is found

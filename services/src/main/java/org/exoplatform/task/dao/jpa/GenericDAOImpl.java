@@ -16,18 +16,17 @@
 */
 package org.exoplatform.task.dao.jpa;
 
-import java.io.Serializable;
-import java.lang.reflect.ParameterizedType;
-import java.util.List;
-import java.util.logging.Logger;
+import org.exoplatform.task.dao.GenericDAO;
+import org.exoplatform.task.service.jpa.TaskServiceJPAImpl;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-
-import org.exoplatform.task.dao.GenericDAO;
-import org.exoplatform.task.service.jpa.TaskServiceJPAImpl;
+import java.io.Serializable;
+import java.lang.reflect.ParameterizedType;
+import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Created by The eXo Platform SAS
@@ -50,49 +49,6 @@ public class GenericDAOImpl<E, ID extends Serializable> implements GenericDAO<E,
     ParameterizedType genericSuperclass = (ParameterizedType) getClass().getGenericSuperclass();
     this.entityClass = (Class) genericSuperclass.getActualTypeArguments()[0];
   }
-
-  @Override
-  public void beginTransaction() {
-    taskService.getEntityManager().getTransaction().begin();
-  }
-
-  @Override
-  public void commit() {
-    taskService.getEntityManager().getTransaction().commit();
-  }
-
-  @Override
-  public void rollback() {
-    taskService.getEntityManager().getTransaction().rollback();
-  }
-
-  @Override
-  public void closeTransaction() {
-    taskService.getEntityManager().close();
-  }
-
-  @Override
-  public void commitAndCloseTransaction() {
-    commit();
-    closeTransaction();
-  }
-
-  @Override
-  public void flush() {
-    taskService.getEntityManager().flush();
-  }
-
-  @Override
-  public void joinTransaction() {
-    taskService.getEntityManager().joinTransaction();
-  }
-
-
-  // *****************************
-  //
-  // Access Object Methods
-  //
-  // *****************************
 
   @Override
   public Long count() {
