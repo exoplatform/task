@@ -20,7 +20,9 @@
 package org.exoplatform.task.domain;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -28,6 +30,10 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "TASK_PROJECTS")
+@NamedQueries({
+    @NamedQuery(name = "getRootProjects", query = "SELECT p FROM Project p WHERE p.parent.id = 0 OR p.parent is null"),
+    @NamedQuery(name = "findSubProjects", query = "SELECT p FROM Project p WHERE p.parent.id = :projectId")
+})
 public class Project {
 
   @Id
@@ -36,6 +42,10 @@ public class Project {
   private long      id;
 
   private String    name;
+
+  private String    description;
+
+  private String    color;
 
   @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
   private Set<Status> status = new HashSet<Status>();
@@ -50,11 +60,23 @@ public class Project {
       joinColumns = @JoinColumn(name = "PROJECT_ID"))
   private Set<String> participator = new HashSet<String>();
 
+  @Temporal(TemporalType.DATE)
+  @Column(name = "DUE_DATE")
+  private Date dueDate;
+
+  @ManyToOne(optional = true, fetch = FetchType.LAZY)
+  @JoinColumn(name = "PARENT_PROJECT_ID", nullable = true)
+  private Project parent;
+
+  @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
+  private List<Project> children;
+
   public Project() {
   }
 
-  public Project(String name, Set<Status> status, Set<String> manager, Set<String> participator) {
+  public Project(String name, String description, Set<Status> status, Set<String> manager, Set<String> participator) {
     this.name = name;
+    this.description = description;
     this.status = status;
     this.manager = manager;
     this.participator = participator;
@@ -98,5 +120,45 @@ public class Project {
 
   public void setManager(Set<String> manager) {
     this.manager = manager;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public Date getDueDate() {
+    return dueDate;
+  }
+
+  public void setDueDate(Date dueDate) {
+    this.dueDate = dueDate;
+  }
+
+  public String getColor() {
+    return color;
+  }
+
+  public void setColor(String color) {
+    this.color = color;
+  }
+
+  public Project getParent() {
+    return parent;
+  }
+
+  public void setParent(Project parent) {
+    this.parent = parent;
+  }
+
+  public List<Project> getChildren() {
+    return children;
+  }
+
+  public void setChildren(List<Project> children) {
+    this.children = children;
   }
 }

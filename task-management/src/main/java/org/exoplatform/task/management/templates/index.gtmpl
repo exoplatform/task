@@ -3,66 +3,103 @@
 #{param name=orderByNames /}
 #{param name=currentGroupBy /}
 #{param name=currentOrderBy /}
+#{param name=projects/}
 
 <div id="taskManagement" class="row-fluid">
-<div id="taskListcontainer" class="task-management span12">
-<div class="row-fluid">
-    <form action="@{TaskManagement.createTask()}" method="POST">
-        <input type="text" name="taskInput" value="" placeholder="Input here to create new task"/>
-        <input type="submit" value="Create"/>
-    </form>
-</div>
-<div class="row-fluid">
-    <div class="span12 text-right">
-        <form id="filter-form" class="form-inline" action="@{TaskManagement.changeViewState()}" method="POST">
-            <label>Group by:</label>
-            <select name="groupBy" class="span2" onchange="this.form.submit();">
-                <% groupByNames.each { name -> %>
-                    <option value="${name.key}" <% if(name.key == currentGroupBy) {print 'selected="selected"'}%>>${name.value}</option>
-                <%}%>
-            </select>
-            <label>Sort by:</label>
-            <select name="orderBy" class="span2" onchange="this.form.submit();">
-                <% orderByNames.each { name -> %>
-                    <option value="${name.key}" <% if(name.key == currentOrderBy) print 'selected="selected"'%>>${name.value}</option>
-                <%}%>
-            </select>
-        </form>
+    <div class="leftPanel span2">
+        <ul class="left-menu nav nav-pills nav-stacked">
+            <li>
+                <a href="#">Incomming</a>
+            </li>
+            <li>
+                <a href="#">To Do</a>
+            </li>
+            <li class="dropdown">
+                <a class="dropdown-toggle pull-right"
+                   data-toggle="dropdown"
+                   href="#">
+                    <b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a class="new-project" data-projectId="0" href="#">Add project</a></li>
+                    <li><a href="#">Show Hidden projects</a></li>
+                </ul>
+                <a href="#">Projects</a>
+
+                #{include path=listProjects.gtmpl /}
+            </li>
+            <li>
+                <a class="menu-item" href="#">Label</a>
+            </li>
+        </ul>
     </div>
-</div>
-<% groupTasks.each {group -> %>
-    <div class="row-fluid">
-        <div class="span12">
-            <h4 class="text-center">${group.name}</h4>
-            <ul>
-                <% group.tasks.eachWithIndex { task, index -> %>
-                <li class="task" task-id="${task.id}">
-                    <div class="pull-left">
-                        <% if(task.status != null && task.status.id == 4){%>
-                            <i class="uiIconTick">&nbsp;</i>
-                            <del>${task.title}<del>
-                        <% } else {%>
-                            <input id="checkbox-task-${group}-${index}" type="checkbox"/>
-                            <a href="#">${task.title}</a>
-                        <% }%>
+    <div class="centerPanel span10">
+        <div id="centerPanel" class="task-management span12">
+            <div class="row-fluid">
+                <form action="@{TaskManagement.createTask()}" method="POST">
+                    <input type="text" name="taskInput" value="" placeholder="Input here to create new task"/>
+                    <input type="submit" value="Create"/>
+                </form>
+            </div>
+            <div id="taskListcontainer">
+                <div class="row-fluid">
+                    <div class="span12 text-right">
+                        <form id="filter-form" class="form-inline" action="@{TaskManagement.changeViewState()}" method="POST">
+                            <label>Group by:</label>
+                            <select name="groupBy" class="span2" onchange="this.form.submit();">
+                                <% groupByNames.each { name -> %>
+                                <option value="${name.key}" <% if(name.key == currentGroupBy) {print 'selected="selected"'}%>>${name.value}</option>
+                                <%}%>
+                            </select>
+                            <label>Sort by:</label>
+                            <select name="orderBy" class="span2" onchange="this.form.submit();">
+                                <% orderByNames.each { name -> %>
+                                <option value="${name.key}" <% if(name.key == currentOrderBy) print 'selected="selected"'%>>${name.value}</option>
+                                <%}%>
+                            </select>
+                        </form>
                     </div>
-                    <div class="pull-right">
-                        <%if(task.tags != null) { task.tags.eachWithIndex { tag, i ->%>
-                        <span class="tag"><%if(i > 0) { print ", "}%>[${tag}]</span>
-                        <%}}%>
-                        <% if(task.dueDate != null) { %>
-                            <span class="duedate">${task.dueDate}</span>
-                        <%}%>
+                </div>
+                <% groupTasks.each {group -> %>
+                <div class="row-fluid">
+                    <div class="span12">
+                        <h4 class="text-center">${group.name}</h4>
+                        <ul>
+                            <% group.tasks.eachWithIndex { task, index -> %>
+                            <li class="task" task-id="${task.id}">
+                                <div class="pull-left">
+                                    <% if(task.status != null && task.status.id == 4){%>
+                                    <i class="uiIconTick">&nbsp;</i>
+                                    <del>${task.title}<del>
+                                            <% } else {%>
+                                        <input id="checkbox-task-${group}-${index}" type="checkbox"/>
+                                        <a href="#">${task.title}</a>
+                                            <% }%>
+                                </div>
+                                <div class="pull-right">
+                                    <%if(task.tags != null) { task.tags.eachWithIndex { tag, i ->%>
+                                    <span class="tag"><%if(i > 0) { print ", "}%>[${tag}]</span>
+                                    <%}}%>
+                                    <% if(task.dueDate != null) { %>
+                                    <span class="duedate">${task.dueDate}</span>
+                                    <%}%>
+                                </div>
+                                <div class="clearfix"></div>
+                            </li>
+                            <%}%>
+                        </ul>
                     </div>
-                    <div class="clearfix"></div>
-                </li>
+                </div>
                 <%}%>
-            </ul>
+            </div>
         </div>
     </div>
-<%}%>
-</div>
-<div id="taskDetailContainer" class="span6" style="display: none">
-
-</div>
+    <div class="rightPanel span5" style="display: none">
+        <div class="control pull-right">
+            <a href="#" class="close"><i class="uiIconClose"></i></a>
+        </div>
+        <div class="rightPanelContent row-fluid">
+            <!-- Content at right will be load dynamically by ajax -->
+        </div>
+    </div>
 </div>

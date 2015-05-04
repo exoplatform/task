@@ -77,7 +77,7 @@ public class TestProjectDAO {
   public void testProjectCreation() {
     List<Project> all;
 
-    Project p1 = new Project("Test project 1", null, null, null);
+    Project p1 = new Project("Test project 1", null, null, null, null);
     pDAO.create(p1);
     all = pDAO.findAll();
     Assert.assertEquals(1, all.size());
@@ -86,12 +86,28 @@ public class TestProjectDAO {
     all = pDAO.findAll();
     Assert.assertEquals(1, all.size());
     Assert.assertEquals("Test project 1", p1.getName());
-    Project p2 = new Project("Test project 2", null, null, null);
+    Project p2 = new Project("Test project 2", null, null, null, null);
     pDAO.create(p2);
 
     all = pDAO.findAll();
     Assert.assertEquals(2, all.size());
     Assert.assertEquals(p1.getId() + 1, p2.getId());
+  }
+
+  @Test
+  public void testFindSubProject() {
+    Project parent = new Project("Parent project", null, null, null, null);
+    pDAO.create(parent);
+
+    Project child = new Project("Child project", null, null, null, null);
+    child.setParent(parent);
+    pDAO.create(child);
+
+    List<Project> projects = pDAO.findSubProjects(parent);
+    Assert.assertEquals(1, projects.size());
+
+    projects = pDAO.findSubProjects(null);
+    Assert.assertTrue(projects.size() >= 1);
   }
 }
 

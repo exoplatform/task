@@ -159,4 +159,26 @@
     </createTable>
   </changeSet>
 
+  <changeSet author="tuyennt@exoplatform.com" id="1.0.0-2">
+    <addColumn tableName="TASK_PROJECTS">
+      <column name="DESCRIPTION" type="VARCHAR(1000)">
+        <constraints nullable="true"/>
+      </column>
+    </addColumn>
+    <addColumn tableName="TASK_PROJECTS">
+      <column name="COLOR" type="VARCHAR(100)">
+        <constraints nullable="true"/>
+      </column>
+    </addColumn>
+    <addColumn tableName="TASK_PROJECTS">
+      <column name="DUE_DATE" type="DATE">
+        <constraints nullable="true"/>
+      </column>
+    </addColumn>
+    <addColumn tableName="TASK_PROJECTS">
+      <column name="PARENT_PROJECT_ID" type="BIGINT">
+        <constraints nullable="true"/>
+      </column>
+    </addColumn>
+  </changeSet>
 </databaseChangeLog>

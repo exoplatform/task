@@ -20,6 +20,10 @@ import org.exoplatform.task.dao.ProjectHandler;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.service.jpa.TaskServiceJPAImpl;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+import java.util.List;
+
 /**
  * Created by The eXo Platform SAS
  * Author : Thibault Clement
@@ -30,6 +34,16 @@ public class ProjectDAOImpl extends GenericDAOImpl<Project, Long> implements Pro
 
   public ProjectDAOImpl(TaskServiceJPAImpl taskServiceJPAImpl) {
     super(taskServiceJPAImpl);
+  }
+
+  @Override
+  public List<Project> findSubProjects(Project project) {
+    EntityManager em = taskService.getEntityManager();
+    Query query = em.createNamedQuery(project != null ? "findSubProjects" : "getRootProjects");
+    if(project != null) {
+      query.setParameter("projectId", project.getId());
+    }
+    return query.getResultList();
   }
 }
 

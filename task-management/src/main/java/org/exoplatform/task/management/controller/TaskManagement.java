@@ -24,6 +24,7 @@ import juzu.Path;
 import juzu.Response;
 import juzu.View;
 import juzu.impl.common.Tools;
+import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.service.GroupByService;
 import org.exoplatform.task.service.OrderBy;
 import org.exoplatform.task.service.TaskParser;
@@ -86,12 +87,15 @@ public class TaskManagement {
       }
     }
 
+    List<Project> projects = taskService.getProjectHandler().findSubProjects(null);
+
     return index.with()
         .groupByNames(groupByNames)
         .orderByNames(orderByNames)
         .currentGroupBy(groupBy != null ? groupBy : "")
         .currentOrderBy(orderBy != null ? orderBy : "")
         .groupTasks(current.getGroupTasks(orders))
+        .projects(projects)
         .ok().withCharset(Tools.UTF_8);
   }
 

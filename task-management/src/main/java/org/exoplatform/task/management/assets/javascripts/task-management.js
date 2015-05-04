@@ -1,6 +1,25 @@
 // TODO: Move juzu-ajax, mentionsPlugin module into task management project if need
 require(['SHARED/jquery', 'SHARED/edit_inline_js', 'SHARED/juzu-ajax', 'SHARED/mentionsPlugin'], function(jQuery) {
 jQuery(document).ready(function($) {
+    var $taskManagement = $('#taskManagement');
+    var $leftPanel = $('#taskManagement > .leftPanel');
+    var $centerPanel = $('#taskManagement > .centerPanel');
+    var $rightPanel = $('#taskManagement > .rightPanel');
+    var $rightPanelContent = $rightPanel.find('.rightPanelContent');
+
+    $.fn.editableform.buttons = '<button type="submit" class="btn btn-primary editable-submit"><i class="uiIconTick icon-white"></i></button>'+
+        '<button type="button" class="btn editable-cancel"><i class="uiIconClose"></i></button>';
+
+    var showRightPanel = function() {
+        $centerPanel.removeClass('span10').addClass('span5');
+        $rightPanel.show();
+    };
+    var hideRightPanel = function() {
+        $rightPanelContent.html('');
+        $rightPanel.hide();
+        $centerPanel.removeClass('span5').addClass('span10');
+    };
+
     var saveTaskDetailFunction = function(params) {
         var d = new $.Deferred;
         var data = params;
@@ -13,7 +32,7 @@ jQuery(document).ready(function($) {
                 d.resolve();
             },
             error: function(jqXHR, textStatus, errorThrown ) {
-                d.reject('update failure, http status: ' + textStatus);
+                d.reject('update failure: ' + jqXHR.responseText);
             }
         });
         return d.promise();
@@ -116,25 +135,23 @@ jQuery(document).ready(function($) {
         });
     };
 
-    var $taskListcontainer = $('#taskListcontainer');
-    var $taskDetailContainer = $('#taskDetailContainer');
-    $taskDetailContainer.hide();
-    $taskListcontainer.removeClass('span6').addClass('span12');
+    $rightPanel.on('click', '.control a.close', function(e) {
+        hideRightPanel();
+        return false;
+    });
 
-    var currentTask = 0;
-    $taskListcontainer.on('click', 'li.task', function(e){
+    $centerPanel.on('click', 'li.task', function(e) {
         var $li = $(e.target || e.srcElement).closest('li.task');
         var taskId = $li.attr('task-id');
-        if (taskId != currentTask || $taskDetailContainer.is(':hidden')) {
-            $taskDetailContainer.jzLoad('TaskController.detail()', {id: taskId}, function(html) {
-                $taskDetailContainer.show();
-                $taskListcontainer.removeClass('span12').addClass('span6');
+        var currentTask = $rightPanelContent.find('.task-detail').attr('task-id');
+        if (taskId != currentTask || $rightPanel.is(':hidden')) {
+            $rightPanelContent.jzLoad('TaskController.detail()', {id: taskId}, function(html) {
+                showRightPanel();
                 initEditInline(taskId);
-                currentTask = taskId;
-                $taskDetailContainer.find('textarea').exoMentions({
+                $rightPanelContent.find('textarea').exoMentions({
                     onDataRequest:function (mode, query, callback) {
                         var _this = this;
-                        $taskDetailContainer.jzAjax('UserController.findUsersToMention()', {
+                        $('#taskDetailContainer').jzAjax('UserController.findUsersToMention()', {
                             data: {query: query},
                             success: function(data) {
                                 callback.call(_this, data);
@@ -154,16 +171,11 @@ jQuery(document).ready(function($) {
         }
     });
 
-    $taskDetailContainer.on('click', 'a.close', function(e) {
-        $taskDetailContainer.html('');
-        $taskDetailContainer.hide();
-        $taskListcontainer.removeClass('span6').addClass('span12');
-    });
-    $taskDetailContainer.on('click', 'a.status-icon', function(e){
+    $rightPanel.on('click', 'a.status-icon', function(e){
         e.preventDefault();
         var $a = $(e.target || e.srcElement).closest('a');
         var isCompleted = $a.hasClass('icon-completed');
-        var taskId = $taskDetailContainer.find('.task-detail').attr('task-id');
+        var taskId = $('#taskDetailContainer').find('.task-detail').attr('task-id');
         var statusToUpdate = isCompleted ? 1 : 4; // 1 = TODO, 4 = Done
         var data = {taskId: taskId, status: statusToUpdate};
         $a.jzAjax('TaskController.updateTaskStatus()', {
@@ -173,7 +185,7 @@ jQuery(document).ready(function($) {
             }
         });
     });
-    $taskDetailContainer.on('click', 'a.action-clone-task', function(e){
+    $rightPanel.on('click', 'a.action-clone-task', function(e){
         var $a = $(e.target).closest('a');
         var taskId = $a.closest('.task-detail').attr('task-id');
         $a.jzAjax('TaskController.clone()', {
@@ -183,7 +195,7 @@ jQuery(document).ready(function($) {
             }
         });
     });
-    $taskDetailContainer.on('click', 'a.action-delete-task', function(e){
+    $rightPanel.on('click', 'a.action-delete-task', function(e){
         var $a = $(e.target).closest('a');
         var taskId = $a.closest('.task-detail').attr('task-id');
         $a.jzAjax('TaskController.delete()', {
@@ -194,7 +206,7 @@ jQuery(document).ready(function($) {
         });
     });
 
-    $taskDetailContainer.on('submit', '.comment-form form', function(e) {
+    $rightPanel.on('submit', '.comment-form form', function(e) {
         e.preventDefault();
         var $form = $(e.target).closest('form');
         var $listComments = $form.closest('.task-detail').find('.list-comments');
@@ -232,7 +244,7 @@ jQuery(document).ready(function($) {
         return false;
     });
 
-    $taskDetailContainer.on('click', 'a.delete-comment', function(e) {
+    $rightPanel.on('click', 'a.delete-comment', function(e) {
         e.preventDefault();
         var $a = $(e.target).closest('a');
         var commentId = $a.attr('commen-id');
@@ -250,7 +262,7 @@ jQuery(document).ready(function($) {
         });
     });
 
-    $taskDetailContainer.on('click', 'a.load-all-comments', function(e) {
+    $rightPanel.on('click', 'a.load-all-comments', function(e) {
         e.preventDefault();
         var $a = $(e.target).closest('a');
         var $taskContainer = $a.closest('.task-detail');
@@ -260,6 +272,182 @@ jQuery(document).ready(function($) {
         $commentList.jzLoad(getAllCommentsURL, {taskId: taskId}, function(data) {
             $a.remove();
         });
+    });
+
+    $leftPanel.on('click', 'a.new-project', function(e) {
+        var parentId = $(e.target).closest('a').attr('data-projectId');
+        $rightPanelContent.jzLoad('ProjectController.projectForm()', {parentId: parentId}, showRightPanel);
+        return true;
+    });
+    $rightPanel.on('submit', 'form.create-project-form', function(e) {
+        var $form = $(e.target).closest('form');
+        var name = $form.find('input[name="name"]').val();
+        var description = $form.find('textarea[name="description"]').val();
+        var parentId = $form.find('input[name="parentId"]').val();
+
+        if(name == '') {
+            alert('Please input the project name');
+            return false;
+        }
+
+        var createURL = $rightPanel.jzURL('ProjectController.createProject');
+        var $listProject = $leftPanel.find('ul.list-projects');
+        $.ajax({
+            type: 'POST',
+            url: createURL,
+            data: {name: name, description: description, parentId: parentId},
+            success: function(data) {
+                // Reload project tree;
+                var $div = $('<div></div>').hide();
+                $listProject.parent().append($div);
+                $div.jzLoad('ProjectController.projectTree()', {current: 0}, function(content) {
+                    $div.remove();
+                    $listProject.html($(content).html());
+
+                    $listProject.find('a.project-name[data-id="'+data.id+'"]').click();
+                });
+            },
+            error: function() {
+                alert('error while create new project. Please try again.')
+            }
+        });
+
+        return false;
+    });
+
+
+
+    var saveProjectDetailFunction = function(params) {
+        var d = new $.Deferred;
+        var data = params;
+        data.projectId = params.pk;
+        $rightPanel.jzAjax('ProjectController.saveProjectInfo()',{
+            data: data,
+            method: 'POST',
+            traditional: true,
+            success: function(response) {
+                d.resolve();
+                //
+                if (params.name == 'name') {
+                    $leftPanel
+                        .find('li.project-item a.project-name[data-id="'+ data.projectId +'"]')
+                        .html(data.value);
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown ) {
+                d.reject('update failure: ' + jqXHR.responseText);
+            }
+        });
+        return d.promise();
+    };
+    var initEditInlineForProject = function(projectId) {
+        var $project = $rightPanel.find('.projectDetail');
+        $project.find('.editable').each(function(){
+            var $this = $(this);
+            var dataType = $this.attr('data-type');
+            var fieldName = $this.attr('data-name');
+            var editOptions = {
+                mode: 'inline',
+                showbuttons: false,
+                pk: projectId,
+                url: saveProjectDetailFunction
+            };
+
+            if(dataType == 'textarea') {
+                editOptions.showbuttons = 'bottom';
+                editOptions.emptytext = "Description";
+            }
+            if(fieldName == 'manager' || fieldName == 'participator') {
+                var findUserURL = $this.jzURL('UserController.findUser');
+                var getDisplayNameURL = $this.jzURL('UserController.getDisplayNameOfUser');
+                editOptions.showbuttons = true;
+                editOptions.emptytext = (fieldName == 'manager' ? "No Manager" : "No Participator");
+                editOptions.source = findUserURL;
+                editOptions.select2= {
+                    multiple: true,
+                    allowClear: true,
+                    placeholder: 'Select an user',
+                    tokenSeparators:[","],
+                    minimumInputLength: 1,
+                    initSelection: function (element, callback) {
+                        return $.get(getDisplayNameURL, { usernames: element.val() }, function (data) {
+                            callback(data);
+                        });
+                    }
+                };
+
+                //. This is workaround for issue of xEditable: https://github.com/vitalets/x-editable/issues/431
+                editOptions.display = function (value, sourceData) {
+                    //display checklist as comma-separated values
+                    if (!value || !value.length) {
+                        $(this).empty();
+                        return;
+                    }
+                    if (value && value.length > 0) {
+                        //. Temporary display username in text field. It will be replace with displayName after ajax Get success
+                        $(this).html(value.join(', '));
+                        var $this = $(this);
+                        $.get(getDisplayNameURL, { usernames: value.join(',') }, function (data) {
+                            var html = [];
+                            $.each(data, function (i, v) {
+                                html.push($.fn.editableutils.escape(v.text));
+                            });
+                            $this.html(html.join(', '));
+                        });
+                    }
+                };
+            }
+            if(fieldName == 'dueDate') {
+                editOptions.emptytext = "no Duedate";
+                editOptions.mode = 'popup';
+            }
+            $this.editable(editOptions);
+        });
+    };
+
+    $leftPanel.on('click', 'li.project-item a.project-name', function(e) {
+        var $a = $(e.target).closest('a');
+        var projectId = $a.data('id');
+        var currentProject = $rightPanelContent.find('.projectDetail').attr('data-projectId');
+        if (currentProject != projectId || $rightPanel.is(':hidden')) {
+
+            //TODO: Load list task of this project
+
+            // Show project summary at right panel
+            $rightPanelContent.jzLoad('ProjectController.projectDetail()', {id: projectId}, function() {
+                $a.closest('ul.list-projects[parentid="0"]').find('li.active').removeClass('active');
+                $a.closest('li').addClass('active');
+                showRightPanel();
+                initEditInlineForProject(projectId);
+            });
+        }
+        return false;
+    });
+
+    $rightPanel.on('click', 'a.action-delete-project', function(e) {
+        var $projectDetail = $(e.target).closest('.projectDetail');
+        var projectId = $projectDetail.attr('data-projectId');
+        var deleteProjectURL = $projectDetail.jzURL('ProjectController.deleteProject');
+        var projectName = $projectDetail.find('a.editable[data-name="name"]').html();
+        var confirmed = confirm('Are you sure you want to delete project: ' + projectName);
+        if (confirmed) {
+            $.ajax({
+                type: 'POST',
+                url: deleteProjectURL,
+                data: {projectId: projectId},
+                success: function (resp) {
+                    $projectDetail.remove();
+                    hideRightPanel();
+                    $leftPanel
+                        .find('li.project-item a.project-name[data-id="' + projectId + '"]')
+                        .closest('li.project-item').remove();
+                },
+                error: function () {
+                    alert('Delete project failure, please try again.')
+                }
+            });
+        }
+        return true;
     });
 });
 });

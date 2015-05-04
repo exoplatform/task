@@ -55,7 +55,7 @@
 .task-description .editableform {
     width: 100%;
 }
-.task-description .editable[data-name="description"] {
+.editable[data-type="textarea"] {
     display: block;
     height: 72px;
     border: solid 1px #ccc;
@@ -66,15 +66,15 @@
 .task-info-row {
     margin: 10px 0;
 }
-.task-action-buttons.open .dropdown-toggle {
+#taskManagement .open button.dropdown-toggle {
     background-color: transparent !important;
     box-shadow: none !important;
     border: solid 1px #ccc;
 }
-.task-action-buttons .dropdown-toggle:hover {
+#taskManagement button.dropdown-toggle:hover {
     border: solid 1px #ccc;
 }
-.task-action-buttons .dropdown-toggle {
+#taskManagement .dropdown-toggle {
     border: solid 1px transparent;
     background: transparent;
     box-shadow: none;
@@ -99,4 +99,47 @@ a.editable-click:hover {
 }
 .comment:hover .action-link {
     visibility: visible;
+}
+.leftPanel ul.nav li a {
+    border-radius: 0;
+    margin: 0;
+}
+.leftPanel ul.left-menu.nav > li {
+    margin: 3px 0;
+}
+.leftPanel ul.left-menu.nav > li > a {
+    background: #eee;
+}
+.leftPanel ul.left-menu.nav li.dropdown > ul.dropdown-menu {
+    top: 30px;
+    left: calc(100% - 30px);
+}
+.leftPanel ul.left-menu.nav li.dropdown b.caret {
+    float: right;
+}
+.leftPanel ul.list-projects.nav li.dropdown > a > b.caret {
+    visibility: hidden;
+}
+.leftPanel ul.list-projects.nav li.dropdown:hover > a > b.caret {
+    visibility: visible;
+}
+.leftPanel ul.left-menu.nav > li.active a {
+    background: #0088cc;
+}
+.leftPanel ul.left-menu.nav > li > ul.list-projects {
+    margin: 0;
+}
+.leftPanel ul.left-menu.nav > li > ul.list-projects > li > a {
+    padding-left: 5px;
+    margin: 0;
+}
+.project-description .editable-inline,
+.project-description .editable-input,
+.project-description .editable-input textarea,
+.project-description .editableform {
+    width: 100%;
+}
+ul.list-projects {
+    margin-bottom: 0px;
+    padding-left: 7px;
 }

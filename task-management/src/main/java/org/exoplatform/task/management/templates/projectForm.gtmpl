@@ -1,0 +1,25 @@
+#{param name=parentId/}
+
+<div class="span12">
+    <h6>Create new project</h6>
+    <form class="create-project-form">
+        <div class="control-group">
+            <label class="control-label" for="inputName">Name</label>
+            <div class="controls">
+                <input type="text" class="span12" id="inputName" name="name" placeholder="Untitled Project">
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputDesciption">Description</label>
+            <div class="controls">
+                <textarea id="inputDesciption" class="span12" name="description" placeholder="Enter description"></textarea>
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="controls text-right">
+                <input type="hidden" name="parentId" value="${parentId}"/>
+                <button type="submit" class="btn">Create</button>
+            </div>
+        </div>
+    </form>
+</div>

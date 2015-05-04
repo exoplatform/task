@@ -5,22 +5,19 @@
 #{param name=comments/}
 #{param name=currentUser/}
 
-<div class="task-detail" task-id="${task.id}">
+<div id="taskDetailContainer" class="task-detail" task-id="${task.id}">
     <div class="row-fluid task-info-row">
         <a href="#" class="icon status-icon ${task.status != null &&  task.status.id == 4 ? "icon-completed" : ""}">&nbsp;</a>
         <a class="editable" href="#" data-name="title" data-type="text">${task.title}</a>
 
-            <div class="btn-group task-action-buttons">
-                <button class="btn dropdown-toggle" data-toggle="dropdown"><i class="uiIconMiniArrowDown uiIconLightGray"></i></button>
-                <ul class="dropdown-menu">
-                    <li><a href="#" class="action-clone-task">Clone</a></li>
-                    <li><a href="#">Watch</a></li>
-                    <li><a href="#" class="action-delete-task">Delete</a></li>
-                </ul>
-            </div><!-- /btn-group -->
-
-
-        <a href="#" class="close"><i class="uiIconClose"></i></a>
+        <div class="btn-group task-action-buttons">
+            <button class="btn dropdown-toggle" data-toggle="dropdown"><i class="uiIconMiniArrowDown uiIconLightGray"></i></button>
+            <ul class="dropdown-menu">
+                <li><a href="#" class="action-clone-task">Clone</a></li>
+                <li><a href="#">Watch</a></li>
+                <li><a href="#" class="action-delete-task">Delete</a></li>
+            </ul>
+        </div><!-- /btn-group -->
     </div>
     <div class="row-fluid task-info-row">
         <div class="span6">
