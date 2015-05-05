@@ -181,4 +181,12 @@
       </column>
     </addColumn>
   </changeSet>
+
+  <changeSet author="tuyennt@exoplatform.com" id="1.0.0-3">
+    <addColumn tableName="TASK_TASKS">
+      <column name="PROJECT_ID" type="BIGINT">
+        <constraints nullable="true"/>
+      </column>
+    </addColumn>
+  </changeSet>
 </databaseChangeLog>

@@ -40,6 +40,8 @@ import java.util.Set;
             "WHERE project IN (SELECT pr1.id FROM Project pr1 LEFT JOIN pr1.manager managers WHERE managers IN :memberships) " +
             "OR project IN (SELECT pr2.id FROM Project pr2 LEFT JOIN pr2.participator participators WHERE participators IN :memberships) " +
             ") "),
+    @NamedQuery(name = "Task.findTaskByProject",
+            query = "SELECT t FROM Task t WHERE t.project.id = :projectId")
 })
 public class Task {
   @Id
@@ -88,6 +90,10 @@ public class Task {
   @Temporal(TemporalType.TIMESTAMP)
   @Column(name = "DUE_DATE")
   private Date        dueDate;
+
+  @ManyToOne
+  @JoinColumn(name = "PROJECT_ID")
+  private Project project;
 
   public Task() {
   }
@@ -211,5 +217,13 @@ public class Task {
 
   public void setCoworker(Set<String> coworker) {
     this.coworker = coworker;
+  }
+
+  public Project getProject() {
+    return project;
+  }
+
+  public void setProject(Project project) {
+    this.project = project;
   }
 }

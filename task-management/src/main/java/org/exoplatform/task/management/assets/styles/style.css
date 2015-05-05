@@ -5,25 +5,25 @@
     background: #eee;
     padding: 5px;
 }
-.task-management .task {
-    padding: 10px;
-    margin: 10px;
+#taskManagement .task {
+    padding: 10px 0;
+    margin: 10px 0;
     border-bottom: dotted 1px #ccc;
 }
-.task-management .task label {
+#taskManagement .task label {
     display: inline-block;
 }
-.task-management .task input[type="checkbox"],
-.task-management .task span.tag
+#taskManagement .task input[type="checkbox"],
+#taskManagement .task span.tag
 {
     visibility: hidden;
 }
-.task-management .task:hover {
+#taskManagement .task:hover {
     background: #F5F7FA;
 }
-.task-management .task input[type="checkbox"]:checked,
-.task-management .task:hover input[type="checkbox"],
-.task-management .task:hover span.tag
+#taskManagement .task input[type="checkbox"]:checked,
+#taskManagement .task:hover input[type="checkbox"],
+#taskManagement .task:hover span.tag
 {
     visibility: visible;
 }
@@ -143,3 +143,40 @@ ul.list-projects {
     margin-bottom: 0px;
     padding-left: 7px;
 }
+
+.projectListView .header {
+    background: #eee;
+    padding: 5px 0 0;
+}
+.projectListView > .header {
+    margin-bottom: 20px;
+}
+.projectListView .header h2 {
+    margin: 0 0 0 5px;
+    font-size: 19px;
+    line-height: 100%;
+    padding-top: 5px;
+}
+
+.projectListView .input-block-level,
+.projectListView .input-block-level:focus {
+    border: none;
+    border-bottom: solid 1px #ccc;
+    border-radius: 0;
+    outline: none;
+    box-shadow: none;
+}
+.form-search.relative {
+    position: relative;
+    margin-bottom: 5px;
+    margin-right: 5px;
+}
+.form-search.relative .uiIconEcmsSearchMini {
+    position: absolute;
+    left: 8px;
+    top: 8px;
+}
+.form-search.relative input[type="text"] {
+    padding-left: 25px;
+}
+

@@ -23,13 +23,16 @@ import juzu.MimeType;
 import juzu.Path;
 import juzu.Resource;
 import juzu.Response;
+import juzu.HttpMethod;
 import juzu.impl.common.Tools;
 import juzu.request.SecurityContext;
 import org.exoplatform.commons.juzu.ajax.Ajax;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.task.dao.CommentHandler;
+import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.domain.Comment;
+import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.management.model.CommentModel;
@@ -62,12 +65,19 @@ public class TaskController {
   UserService userService;
 
   @Inject
+  ResourceBundle bundle;
+
+  @Inject
   @Path("detail.gtmpl")
   org.exoplatform.task.management.templates.detail detail;
 
   @Inject
   @Path("comments.gtmpl")
   org.exoplatform.task.management.templates.comments comments;
+
+  @Inject
+  @Path("projectTaskListView.gtmpl")
+  org.exoplatform.task.management.templates.projectTaskListView taskListView;
 
   @Resource
   @Ajax
@@ -335,5 +345,57 @@ public class TaskController {
     }
     commentDAO.delete(comment);
     return Response.ok("Delete comment successfully!");
+  }
+
+  @Resource
+  @Ajax
+  @MimeType.HTML
+  public Response listTasks(Long projectId, String keyword) {
+    Project project = taskService.getProjectHandler().find(projectId);
+    if(project == null) {
+      return Response.notFound("Project not found with ID: " + projectId);
+    }
+
+    TaskQuery taskQuery = new TaskQuery();
+    taskQuery.setProjectId(project.getId());
+    taskQuery.setKeyword(keyword);
+    List<Task> tasks = taskService.getTaskHandler().findTaskByQuery(taskQuery);
+
+    return taskListView
+            .with()
+            .project(project)
+            .tasks(tasks)
+            .keyword(keyword == null ? "" : keyword)
+            .ok()
+            .withCharset(Tools.UTF_8);
+  }
+
+  @Resource(method = HttpMethod.POST)
+  @Ajax
+  @MimeType.HTML
+  public Response createTask(Long projectId, String taskTitle) {
+    Project project = taskService.getProjectHandler().find(projectId);
+    if(project == null) {
+      return Response.notFound("Project not found with ID: " + projectId);
+    }
+
+    if(taskTitle == null || taskTitle.isEmpty()) {
+      return Response.content(406, "Task title must not be null or empty");
+    }
+
+    Task task = new Task();
+    task.setTitle(taskTitle);
+    task.setProject(project);
+    taskService.getTaskHandler().create(task);
+
+    List<Task> tasks = taskService.getTaskHandler().findByProject(project.getId());
+
+    return taskListView
+            .with()
+            .project(project)
+            .tasks(tasks)
+            .keyword("")
+            .ok()
+            .withCharset(Tools.UTF_8);
   }
 }

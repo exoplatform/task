@@ -23,6 +23,7 @@ import javax.persistence.Persistence;
 
 import liquibase.exception.LiquibaseException;
 
+import org.exoplatform.task.dao.TaskQuery;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -94,6 +95,60 @@ public class TestTaskDAO {
     Assert.assertNotNull(task);
     Assert.assertEquals("There is an important meeting tomorrow", task.getTitle());
     Assert.assertEquals(Priority.HIGH, task.getPriority());
+  }
+
+  @Test
+  public void testFindTaskByQuery() {
+    Task task = newTaskInstance("Test find task by query", "description of find task by query", "root");
+    tDAO.create(task);
+
+    TaskQuery query = new TaskQuery();
+    query.setTitle("task");
+    List<Task> tasks = tDAO.findTaskByQuery(query);
+    Assert.assertTrue(tasks.size() > 0);
+
+    query = new TaskQuery();
+    query.setTitle("testFindTaskByQuery0123456789");
+    tasks = tDAO.findTaskByQuery(query);
+    Assert.assertEquals(0, tasks.size());
+
+    query = new TaskQuery();
+    query.setDescription("description of find task by query");
+    tasks = tDAO.findTaskByQuery(query);
+    Assert.assertTrue(tasks.size() > 0);
+
+    query = new TaskQuery();
+    query.setDescription("testFindTaskByQuery0123456789");
+    tasks = tDAO.findTaskByQuery(query);
+    Assert.assertEquals(0, tasks.size());
+
+    query = new TaskQuery();
+    query.setAssignee("root");
+    tasks = tDAO.findTaskByQuery(query);
+    Assert.assertTrue(tasks.size() > 0);
+
+    query = new TaskQuery();
+    query.setAssignee("testFindTaskByQuery0123456789");
+    tasks = tDAO.findTaskByQuery(query);
+    Assert.assertEquals(0, tasks.size());
+
+    query = new TaskQuery();
+    query.setKeyword("find task by query");
+    tasks = tDAO.findTaskByQuery(query);
+    Assert.assertTrue(tasks.size() > 0);
+
+    query = new TaskQuery();
+    query.setKeyword("testFindTaskByQuery0123456789");
+    tasks = tDAO.findTaskByQuery(query);
+    Assert.assertEquals(0, tasks.size());
+  }
+
+  private Task newTaskInstance(String taskTitle, String description, String assignee) {
+    Task task = new Task();
+    task.setTitle(taskTitle);
+    task.setDescription(description);
+    task.setAssignee(assignee);
+    return task;
   }
 }
 

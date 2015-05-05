@@ -1,0 +1,69 @@
+#{param name=project /}
+#{param name=tasks /}
+#{param name=keyword /}
+
+<div class="row-fluid projectListView" data-projectId="${project.id}">
+    <div class="row-fluid header">
+        <div class="span12">
+            <div class="pull-right">
+                <form class="form-search relative" action="#" onsubmit="javascript:void(0)">
+                    <i class="uiIconEcmsSearchMini"></i>
+                    <input type="text" name="keyword" value="${keyword}" class="span12 search-query">
+                </form>
+            </div>
+            <h2>${project.name}</h2>
+        </div>
+    </div>
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="panel taskList">
+                <div class="header">
+                    <a href="#">+ New task</a>
+                </div>
+                <div class="body relative">
+                    <ul>
+                        <li>
+                            <form action="#" method="GET" class="form-create-task">
+                                <input class="input-block-level" type="text" name="taskTitle" placeholder="Enter to create new task">
+                            </form>
+                        </li>
+                        <% tasks.eachWithIndex { task, index -> %>
+                        <li class="task" task-id="${task.id}">
+                            <div class="pull-left">
+                                <% if(task.status != null && task.status.id == 4){%>
+                                <i class="uiIconTick">&nbsp;</i>
+                                <del>${task.title}<del>
+                                        <% } else {%>
+                                            <input type="checkbox"/>
+                                            <a href="#">${task.title}</a>
+                                        <% }%>
+                            </div>
+                            <div class="pull-right">
+                                <%if(task.tags != null) { task.tags.eachWithIndex { tag, i ->%>
+                                <span class="tag"><%if(i > 0) { print ", "}%>[${tag}]</span>
+                                <%}}%>
+                                <% if(task.dueDate != null) { %>
+                                <span class="duedate">${task.dueDate}</span>
+                                <%}%>
+                            </div>
+                            <div class="clearfix"></div>
+                        </li>
+                        <%}%>
+                    </ul>
+                    <% if (tasks == null || tasks.size() == 0) {%>
+                        <% if (keyword == null || keyword.isEmpty()) {%>
+                            <div class="notask-description">
+                                This your personal project. You can share it for work collaboration.
+                            </div>
+                        <% } else {%>
+                            <div class="notask-description">
+                                There is no task match with your keyword.
+                            </div>
+                        <% }%>
+                    <%}%>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

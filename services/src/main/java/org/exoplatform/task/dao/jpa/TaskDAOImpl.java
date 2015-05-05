@@ -17,11 +17,16 @@
 package org.exoplatform.task.dao.jpa;
 
 import org.exoplatform.task.dao.TaskHandler;
+import org.exoplatform.task.dao.TaskQuery;
+import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.service.jpa.TaskServiceJPAImpl;
 
+import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.persistence.criteria.*;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -38,7 +43,10 @@ public class TaskDAOImpl extends GenericDAOImpl<Task, Long> implements TaskHandl
 
   @Override
   public List<Task> findByProject(Long projectId) {
-    return null;
+    EntityManager em = taskService.getEntityManager();
+    Query query = em.createNamedQuery("Task.findTaskByProject", Task.class);
+    query.setParameter("projectId", projectId);
+    return query.getResultList();
   }
 
   @Override
@@ -68,6 +76,61 @@ public class TaskDAOImpl extends GenericDAOImpl<Task, Long> implements TaskHandl
   @Override
   public List<Task> findByTags(List<String> tags) {
     return null;
+  }
+
+  @Override
+  public List<Task> findTaskByQuery(TaskQuery query) {
+    EntityManager em = taskService.getEntityManager();
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+    CriteriaQuery<Task> q = cb.createQuery(Task.class);
+
+    Root<Task> task = q.from(Task.class);
+    q.select(task);
+
+    List<Predicate> predicates = new ArrayList<Predicate>();
+
+    if(query.getTaskId() > 0) {
+      predicates.add(cb.equal(task.get("id"), query.getTaskId()));
+    }
+
+    if (query.getTitle() != null && !query.getTitle().isEmpty()) {
+      predicates.add(cb.like(task.<String>get("title"), "%" + query.getTitle() + "%"));
+    }
+
+    if (query.getDescription() != null && !query.getDescription().isEmpty()) {
+      predicates.add(cb.like(task.<String>get("description"), '%' + query.getDescription() + '%'));
+    }
+
+    if (query.getAssignee() != null && !query.getAssignee().isEmpty()) {
+      predicates.add(cb.like(task.<String>get("assignee"), '%' + query.getAssignee() + '%'));
+    }
+
+    if(query.getProjectId() > 0) {
+      Join<Task, Project> project = task.join("project");
+      predicates.add(cb.equal(project.get("id"), query.getProjectId()));
+    }
+
+    if(query.getKeyword() != null && !query.getKeyword().isEmpty()) {
+      String keyword = "%" + query.getKeyword() + "%";
+      predicates.add(
+              cb.or(
+                  cb.like(task.<String>get("title"), keyword),
+                  cb.like(task.<String>get("description"), keyword),
+                  cb.like(task.<String>get("assignee"), keyword)
+              )
+      );
+    }
+
+    if(predicates.size() > 0) {
+      Iterator<Predicate> it = predicates.iterator();
+      Predicate p = it.next();
+      while(it.hasNext()) {
+        p = cb.and(p, it.next());
+      }
+      q.where(p);
+    }
+
+    return em.createQuery(q).getResultList();
   }
 }
 
