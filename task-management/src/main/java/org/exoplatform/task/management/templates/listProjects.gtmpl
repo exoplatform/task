@@ -11,7 +11,7 @@ def displayListProjectItem(project) { %>
         <ul class="dropdown-menu project-menu">
             <li><a href="#">Add task</a></li>
             <li><a href="#">Share</a></li>
-            <li><a href="#">Clone</a></li>
+            <li><a class="clone-project" data-projectId="${project.id}" href="#">Clone</a></li>
             <li><a href="#">Delete</a></li>
             <li><a href="#">Hide</a></li>
             <li><a class="new-project" data-projectId="${project.id}" href="#">Add project</a></li>

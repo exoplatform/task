@@ -1,5 +1,5 @@
 // TODO: Move juzu-ajax, mentionsPlugin module into task management project if need
-require(['SHARED/jquery', 'SHARED/edit_inline_js', 'SHARED/juzu-ajax', 'SHARED/mentionsPlugin'], function(jQuery) {
+require(['SHARED/jquery', 'SHARED/edit_inline_js', 'SHARED/juzu-ajax', 'SHARED/mentionsPlugin', 'SHARED/bts_modal'], function(jQuery) {
 jQuery(document).ready(function($) {
     var $taskManagement = $('#taskManagement');
     var $leftPanel = $('#taskManagement > .leftPanel');
@@ -280,6 +280,49 @@ jQuery(document).ready(function($) {
         $rightPanelContent.jzLoad('ProjectController.projectForm()', {parentId: parentId}, showRightPanel);
         return true;
     });
+    
+    var $cloneProject = $('.confirmCloneProject');
+    function showCloneProject(pId, projectName) {
+    	$cloneProject.find('.pId').val(pId);
+    	var msg = $cloneProject.find('.msg');
+    	msg.html(msg.attr('data-msg').replace('{}', projectName));
+        $cloneProject.modal({'backdrop': false});
+    }
+    
+    $leftPanel.on('click', 'a.clone-project', function(e) {
+    	var pId = $(e.target).closest('a').attr('data-projectId');    	    	
+    	var projectName = $(this).closest('.project-item').find('.project-name').html();
+    	
+    	//
+    	showCloneProject(pId, projectName);    	
+    });
+    
+    $rightPanel.on('click', '.projectDetail .action-clone-project', function() {
+    	var $detail = $(this).closest('.projectDetail');
+    	var pId = $detail.attr('data-projectId');
+    	var projectName = $detail.find('.projectName').html();
+    	
+    	showCloneProject(pId, projectName);
+    });
+    
+    $cloneProject.find('.btn-primary').click(function(e) {
+    	var pId = $cloneProject.find('.pId').val();
+    	var cloneTask = $cloneProject.find('.cloneTask').is(':checked');
+        
+        var cloneURL = $rightPanel.jzURL('ProjectController.cloneProject');
+        $.ajax({
+            type: 'POST',
+            url: cloneURL,
+            data: {'id': pId, 'cloneTask': cloneTask},
+            success: function(data) {
+                window.location.reload();
+            },
+            error: function() {
+                alert('error while create new project. Please try again.')
+            }
+        });
+    });
+    
     $rightPanel.on('submit', 'form.create-project-form', function(e) {
         var $form = $(e.target).closest('form');
         var name = $form.find('input[name="name"]').val();
@@ -315,8 +358,6 @@ jQuery(document).ready(function($) {
 
         return false;
     });
-
-
 
     var saveProjectDetailFunction = function(params) {
         var d = new $.Deferred;

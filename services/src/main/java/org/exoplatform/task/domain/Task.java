@@ -20,6 +20,9 @@
 package org.exoplatform.task.domain;
 
 import javax.persistence.*;
+
+import org.exoplatform.task.service.TaskBuilder;
+
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -97,8 +100,6 @@ public class Task {
 
   public Task() {
   }
-
-
 
   public long getId() {
     return id;
@@ -225,5 +226,21 @@ public class Task {
 
   public void setProject(Project project) {
     this.project = project;
+  }
+    
+  public Task clone() {
+    Task newTask = new TaskBuilder().withTitle("[Clone] " + this.getTitle())
+                                    .withAssignee(this.getAssignee())
+                                    .withContext(this.getContext())
+                                    .withCreatedBy(this.getCreatedBy())
+                                    .withDescription(this.getDescription())
+                                    .withDueDate(this.getDueDate())
+                                    .withPriority(this.getPriority())
+                                    .withStartDate(this.getStartDate())
+                                    .withDuration(this.getDuration())                    
+                                    .build();
+    newTask.setCoworker(new HashSet<String>(this.getCoworker()));
+    newTask.setTags(new HashSet<String>(this.getTags()));
+    return newTask;
   }
 }

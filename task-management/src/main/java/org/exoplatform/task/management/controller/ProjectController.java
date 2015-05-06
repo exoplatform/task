@@ -25,6 +25,7 @@ import juzu.Resource;
 import juzu.Response;
 import juzu.impl.common.Tools;
 import juzu.request.SecurityContext;
+
 import org.exoplatform.commons.juzu.ajax.Ajax;
 import org.exoplatform.task.dao.ProjectHandler;
 import org.exoplatform.task.dao.StatusHandler;
@@ -37,6 +38,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.inject.Inject;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -91,22 +93,43 @@ public class ProjectController {
     Set<String> managers = new HashSet<String>();
     managers.add(currentUser);
 
-    Set<Status> statuses = new HashSet<Status>();
-
-    Project project = new Project(name, description, statuses, managers, Collections.<String>emptySet());
+    Project project = createProject(parentId, name, description, Collections.<Status>emptySet(), managers, 
+                                    Collections.<String>emptySet());
+    if (project == null) {
+      return Response.content(406, "Can not find project id for parentID = " + parentId);
+    }
+    createDefaultStatus(project);
+    
+    JSONObject result = new JSONObject();
+    try {
+      result.put("id", project.getId());
+      result.put("name", project.getName());
+      result.put("color", "transparent");
+    } catch (JSONException ex) {
+      return Response.status(500).body(ex.getMessage());
+    }
+    return Response.ok(result.toString()).withCharset(Tools.UTF_8);
+  }
+  
+  private Project createProject(Long parentId, String name, String description, Set<Status> status, 
+                                Set<String> managers, Set<String> participators) {
+    Project project = new Project(name, description, status, managers, participators);
 
     //
     if (parentId != null && parentId > 0) {
       Project parent = taskService.getProjectHandler().find(parentId);
       if (parent == null) {
-        return Response.content(406, "Can not find project id for parentID = " + parentId);
+        return null;
       }
       // TODO: copy all permission from parent project to current project
       project.setParent(parent);
     }
 
-    project = taskService.getProjectHandler().create(project);
-
+    project = taskService.getProjectHandler().create(project);    
+    return project;
+  }
+  
+  private void createDefaultStatus(Project project) {
     StatusHandler statusHandler = taskService.getStatusHandler();
 
     //. Create status for project
@@ -127,16 +150,27 @@ public class ProjectController {
     status.setRank(3);
     status.setProject(project);
     statusHandler.create(status);
+  }
+   
+  @Resource
+  @Ajax
+  @MimeType.JSON
+  public Response cloneProject(Long id, String cloneTask, SecurityContext securityContext) {
+    Project project = taskService.getProjectHandler().cloneProject(id, Boolean.parseBoolean(cloneTask)); 
 
     JSONObject result = new JSONObject();
-    try {
-      result.put("id", project.getId());
-      result.put("name", project.getName());
-      result.put("color", "transparent");
-    } catch (JSONException ex) {
-      return Response.status(500).body(ex.getMessage());
+    if (project != null) {
+      try {
+        result.put("id", project.getId());
+        result.put("name", project.getName());
+        result.put("color", project.getColor());
+      } catch (JSONException ex) {
+        return Response.status(500).body(ex.getMessage());
+      }
+      return Response.ok(result.toString()).withCharset(Tools.UTF_8);      
+    } else {
+      return Response.status(404).body("Can not clone, no projectId " + id); 
     }
-    return Response.ok(result.toString()).withCharset(Tools.UTF_8);
   }
 
   @Resource

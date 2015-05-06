@@ -10,4 +10,6 @@ import java.util.List;
  */
 public interface ProjectHandler extends GenericDAO<Project, Long> {
   List<Project> findSubProjects(Project project);
+  
+  Project cloneProject(Long projectId, boolean cloneTask);
 }

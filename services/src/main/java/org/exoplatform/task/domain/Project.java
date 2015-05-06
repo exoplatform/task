@@ -20,8 +20,10 @@
 package org.exoplatform.task.domain;
 
 import javax.persistence.*;
+
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -69,7 +71,7 @@ public class Project {
   private Project parent;
 
   @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
-  private List<Project> children;
+  private List<Project> children = new LinkedList<Project>();
 
   public Project() {
   }
@@ -160,5 +162,40 @@ public class Project {
 
   public void setChildren(List<Project> children) {
     this.children = children;
+  }
+  
+  public Project clone(boolean cloneTask) {
+    Project project = new Project("[CLONE] " + this.getName(), this.getDescription(), new HashSet<Status>(), new HashSet<String>(this.getManager()), 
+         new HashSet<String>(this.getParticipator()));
+    
+    project.setColor(this.getColor());
+    project.setDueDate(this.getDueDate());
+    project.setParent(this.getParent());
+
+    if (this.getStatus() != null) {
+      for (Status st : this.getStatus()) {
+        Status cloned;
+        if (Status.DONE.getName().equals(st.getName())) {
+          cloned = st.clone(false);
+        } else {
+          cloned = st.clone(cloneTask);
+        }
+        project.getStatus().add(cloned);
+        cloned.setProject(project);
+        for (Task t : cloned.getTasks()) {
+          t.setProject(project);
+        }
+      }
+    }
+    
+    if (this.getChildren() != null) {
+      for (Project p : this.getChildren()) {
+        Project cloned = p.clone(cloneTask);
+        project.getChildren().add(cloned);
+        cloned.setParent(project);
+      }
+    }
+    
+    return project;
   }
 }

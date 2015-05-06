@@ -18,10 +18,12 @@ package org.exoplatform.task.dao.jpa;
 
 import org.exoplatform.task.dao.ProjectHandler;
 import org.exoplatform.task.domain.Project;
+import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.service.jpa.TaskServiceJPAImpl;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+
 import java.util.List;
 
 /**
@@ -45,5 +47,17 @@ public class ProjectDAOImpl extends GenericDAOImpl<Project, Long> implements Pro
     }
     return query.getResultList();
   }
+
+  @Override
+  public Project cloneProject(Long projectId, boolean cloneTask) {
+    Project orgProject = find(projectId);
+    
+    if (orgProject != null) {
+      Project project = orgProject.clone(cloneTask);
+      return create(project);
+    } else {
+      return null;
+    }
+  }    
 }
 

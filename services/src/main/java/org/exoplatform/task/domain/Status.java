@@ -61,7 +61,6 @@ public class Status {
   private Project project;
 
   public Status() {
-
   }
 
   //TO REMOVE after removing the TaskServiceMemImpl
@@ -122,5 +121,20 @@ public class Status {
 
   public void setProject(Project project) {
     this.project = project;
+  }
+  
+  public Status clone(boolean cloneTask) {
+    Status status = new Status(this.getName(), this.getRank(), new HashSet<Task>(), null);
+    
+    if (cloneTask) {
+      if (this.getTasks() != null) {
+        for (Task t : this.getTasks()) {
+          Task cloned = t.clone();
+          status.getTasks().add(cloned);
+          cloned.setStatus(status);
+        }
+      }
+    }
+    return status;
   }
 }
