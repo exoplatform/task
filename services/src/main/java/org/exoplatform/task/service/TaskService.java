@@ -37,6 +37,4 @@ public interface TaskService {
   public CommentHandler getCommentHandler();
 
   public StatusHandler getStatusHandler();
-
-  List<GroupByService> getGroupByServices();
 }

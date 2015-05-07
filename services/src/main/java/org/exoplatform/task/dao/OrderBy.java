@@ -17,16 +17,37 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.exoplatform.task.service;
-
-import org.exoplatform.task.model.GroupTask;
-
-import java.util.List;
+package org.exoplatform.task.dao;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
-public interface GroupByService {
-  String getName();
-  List<GroupTask> getGroupTasks(List<OrderBy> orderBies);
+public class OrderBy {
+  private final String fieldName;
+  private final boolean ascending;
+
+  public OrderBy(String fieldName, boolean ascending) {
+    this.fieldName = fieldName;
+    this.ascending = ascending;
+  }
+
+  public String getFieldName() {
+    return fieldName;
+  }
+
+  public boolean isAscending() {
+    return this.ascending;
+  }
+
+  public static class DESC extends OrderBy {
+    public DESC(String propertyName) {
+      super(propertyName, false);
+    }
+  }
+
+  public static class ASC extends OrderBy {
+    public ASC(String fieldName) {
+      super(fieldName, true);
+    }
+  }
 }

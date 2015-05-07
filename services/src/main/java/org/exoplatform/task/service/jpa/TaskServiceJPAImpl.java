@@ -32,12 +32,8 @@ import org.exoplatform.task.dao.jpa.ProjectDAOImpl;
 import org.exoplatform.task.dao.jpa.StatusDAOImpl;
 import org.exoplatform.task.dao.jpa.TaskDAOImpl;
 import org.exoplatform.task.factory.ExoEntityManagerFactory;
-import org.exoplatform.task.service.GroupByService;
 import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.service.impl.AbstractTaskService;
-import org.exoplatform.task.service.impl.GroupByProject;
-import org.exoplatform.task.service.impl.GroupByStatus;
-import org.exoplatform.task.service.impl.GroupByTag;
 
 /**
  * Created by The eXo Platform SAS
@@ -49,7 +45,6 @@ import org.exoplatform.task.service.impl.GroupByTag;
 public class TaskServiceJPAImpl extends AbstractTaskService implements TaskService, ComponentRequestLifecycle {
 
   private static final Logger LOG = Logger.getLogger("TaskServiceJPATestImpl");
-  private final List<GroupByService> groupByServices;
 
   private ThreadLocal<EntityManager> entityManager = new ThreadLocal<EntityManager>();
 
@@ -58,20 +53,10 @@ public class TaskServiceJPAImpl extends AbstractTaskService implements TaskServi
     tHandler = new TaskDAOImpl(this);
     cHandler = new CommentDAOImpl(this);
     sHandler = new StatusDAOImpl(this);
-    
-    this.groupByServices = new ArrayList<GroupByService>();
-    this.groupByServices.add(new GroupByStatus(this));
-    this.groupByServices.add(new GroupByProject(this));
-    this.groupByServices.add(new GroupByTag(this));
   }
 
   public EntityManager getEntityManager() {
     return entityManager.get();
-  }
-
-  @Override
-  public List<GroupByService> getGroupByServices() {
-    return Collections.unmodifiableList(this.groupByServices);
   }
 
   @Override

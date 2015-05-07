@@ -447,24 +447,28 @@ jQuery(document).ready(function($) {
         });
     };
 
-    $leftPanel.on('click', 'li.project-item a.project-name', function(e) {
+    $leftPanel.on('click', 'a.project-name', function(e) {
         var $a = $(e.target).closest('a');
         var projectId = $a.data('id');
-        var currentProject = $rightPanelContent.find('.projectDetail').attr('data-projectId');
+        var currentProject = $rightPanelContent.find('.projectListView').attr('data-projectId');
         if (currentProject != projectId || $rightPanel.is(':hidden')) {
 
             $centerPanelContent.jzLoad('TaskController.listTasks()', {projectId: projectId}, function() {
-                $a.closest('ul.list-projects[parentid="0"]').find('li.active').removeClass('active');
+                $a.closest('.leftPanel > ul').find('li.active').removeClass('active');
                 $a.closest('li').addClass('active');
             });
 
             // Show project summary at right panel
-            $rightPanelContent.jzLoad('ProjectController.projectDetail()', {id: projectId}, function() {
-                $a.closest('ul.list-projects[parentid="0"]').find('li.active').removeClass('active');
-                $a.closest('li').addClass('active');
-                showRightPanel();
-                initEditInlineForProject(projectId);
-            });
+            if(projectId > 0) {
+                $rightPanelContent.jzLoad('ProjectController.projectDetail()', {id: projectId}, function () {
+                    $a.closest('ul.list-projects[parentid="0"]').find('li.active').removeClass('active');
+                    $a.closest('li').addClass('active');
+                    showRightPanel();
+                    initEditInlineForProject(projectId);
+                });
+            } else {
+                hideRightPanel();
+            }
         }
         return false;
     });
@@ -495,13 +499,21 @@ jQuery(document).ready(function($) {
         return true;
     });
 
+    $centerPanel.on('click', 'a.btn-add-task', function(e) {
+        var $projectListView =  $(e.target).closest('.projectListView');
+        $projectListView.find('.taskList li.item-add-new-task').show(500, function() {
+            $projectListView.find('form.form-create-task input').focus();
+        });
+        return false;
+    });
+
     $centerPanel.on('submit', 'form.form-create-task', function(e) {
         var $form = $(e.target).closest('form');
         var projectId = $form.closest('.projectListView').attr('data-projectId');
-        var taskTitle = $form.find('input[name="taskTitle"]').val();
+        var taskInput = $form.find('input[name="taskTitle"]').val();
         $form.jzAjax('TaskController.createTask()', {
             method: 'POST',
-            data: {projectId: projectId, taskTitle: taskTitle},
+            data: {projectId: projectId, taskInput: taskInput},
             success: function(html) {
                 $centerPanelContent.html(html);
             }
@@ -509,13 +521,38 @@ jQuery(document).ready(function($) {
         return false;
     });
 
+    var submitFilter = function(e) {
+        var $projectListView =  $(e.target).closest('.projectListView');
+        var projectId = $projectListView.attr('data-projectId');
+        var groupBy = $projectListView.find('select[name="groupBy"]').val();
+        if(groupBy == undefined) {
+            groupBy = '';
+        }
+        var orderBy = $projectListView.find('select[name="orderBy"]').val();
+        if(orderBy == undefined) {
+            orderBy = '';
+        }
+        var keyword = $projectListView.closest('.projectListView').find('input[name="keyword"]').val();
+        $centerPanelContent.jzLoad('TaskController.listTasks()',
+            {
+                projectId: projectId,
+                keyword: keyword,
+                groupBy: groupBy,
+                orderBy: orderBy
+            },
+            function() {
+                hideRightPanel();
+            }
+        );
+    };
+
     $centerPanel.on('submit', '.projectListView form.form-search', function(e) {
-        var $form = $(e.target).closest('form');
-        var keyword = $form.find('input[name="keyword"]').val();
-        var projectId = $form.closest('.projectListView').attr('data-projectId');
-        $centerPanelContent.jzLoad('TaskController.listTasks()', {projectId: projectId, keyword: keyword}, function() {
-            hideRightPanel();
-        });
+        submitFilter(e);
+        return false;
+    });
+
+    $centerPanel.on('change', '.taskList form.filter-form select', function(e) {
+        submitFilter(e);
         return false;
     });
 });

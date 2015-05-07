@@ -16,6 +16,7 @@
 */
 package org.exoplatform.task.dao.jpa;
 
+import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.dao.TaskHandler;
 import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.domain.Project;
@@ -130,7 +131,36 @@ public class TaskDAOImpl extends GenericDAOImpl<Task, Long> implements TaskHandl
       q.where(p);
     }
 
+    if(query.getOrderBy() != null && !query.getOrderBy().isEmpty()) {
+      List<OrderBy> orderBies = query.getOrderBy();
+      Order[] orders = new Order[orderBies.size()];
+      for(int i = 0; i < orders.length; i++) {
+        OrderBy orderBy = orderBies.get(i);
+        Path p = task.get(orderBy.getFieldName());
+        orders[i] = orderBy.isAscending() ? cb.asc(p) : cb.desc(p);
+      }
+      q.orderBy(orders);
+    }
+
     return em.createQuery(q).getResultList();
+  }
+
+  @Override
+  public List<Task> getIncomingTask(String username, OrderBy orderBy) {
+    StringBuilder jql = new StringBuilder();
+    jql.append("SELECT ta FROM Task ta LEFT JOIN ta.coworker cowoker ")
+            .append("WHERE (ta.project.id is null or ta.project.id = 0) ")
+            .append("AND (ta.assignee = :userName OR ta.createdBy = :userName OR cowoker = :userName)");
+
+    if(orderBy != null && !orderBy.getFieldName().isEmpty()) {
+      jql.append(" ORDER BY ta.").append(orderBy.getFieldName()).append(" ").append(orderBy.isAscending() ? "ASC" : " DESC");
+    }
+
+    return taskService
+            .getEntityManager()
+            .createQuery(jql.toString(), Task.class)
+            .setParameter("userName", username)
+            .getResultList();
   }
 }
 

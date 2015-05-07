@@ -24,9 +24,9 @@ import juzu.Path;
 import juzu.Response;
 import juzu.View;
 import juzu.impl.common.Tools;
+import juzu.request.SecurityContext;
 import org.exoplatform.task.domain.Project;
-import org.exoplatform.task.service.GroupByService;
-import org.exoplatform.task.service.OrderBy;
+import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.service.TaskParser;
 import org.exoplatform.task.service.TaskService;
 import javax.inject.Inject;
@@ -51,57 +51,31 @@ public class TaskManagement {
   ResourceBundle bundle;
 
   @View
-  public Response.Content index(String groupBy, String orderBy) {
-    List<GroupByService> groupByServices = taskService.getGroupByServices();
-    GroupByService current = null;
-    List<Map.Entry<String, String>> groupByNames = new ArrayList<Map.Entry<String, String>>(groupByServices.size());
-    for(GroupByService g : groupByServices) {
-      if(g.getName().equalsIgnoreCase(groupBy)) {
-        current = g;
-      }
-      try {
-        groupByNames.add(
-            new AbstractMap.SimpleEntry<String, String>(g.getName(),bundle.getString("label." + g.getName()))
-        );
-      } catch (MissingResourceException ex) {
-        groupByNames.add(new AbstractMap.SimpleEntry<String, String>(g.getName(), g.getName()));
-      }
-    }
-    if(current == null) {
-      current = groupByServices.get(0);
-    }
+  public Response.Content index(SecurityContext securityContext) {
+    //TODO: should check if username is null?
+    String username = securityContext.getRemoteUser();
+    List<Task> tasks = taskService.getTaskHandler().getIncomingTask(username, null);
 
-    List<OrderBy> orders = new ArrayList<OrderBy>();
-    if(orderBy != null) {
-      orders.add(new OrderBy(orderBy, false));
-    }
-
-    List<Map.Entry<String, String>> orderByNames = new ArrayList<Map.Entry<String, String>>();
-    for(String name : new String[] {"title", "duedate", "priority"}) {
-      try {
-        orderByNames.add(
-            new AbstractMap.SimpleEntry<String, String>(name, bundle.getString("label." + name))
-        );
-      } catch (MissingResourceException ex) {
-        orderByNames.add(new AbstractMap.SimpleEntry<String, String>(name, name));
-      }
-    }
+    Map<String, List<Task>> groupTasks = new HashMap<String, List<Task>>();
+    groupTasks.put("", tasks);
 
     List<Project> projects = taskService.getProjectHandler().findSubProjects(null);
 
     return index.with()
-        .groupByNames(groupByNames)
-        .orderByNames(orderByNames)
-        .currentGroupBy(groupBy != null ? groupBy : "")
-        .currentOrderBy(orderBy != null ? orderBy : "")
-        .groupTasks(current.getGroupTasks(orders))
+        .currentProjectId(-1)
+        .project(null)
+        .tasks(tasks)
+        .groupTasks(groupTasks)
+        .keyword("")
+        .groupBy("")
+        .orderBy("")
         .projects(projects)
         .ok().withCharset(Tools.UTF_8);
   }
 
   @Action
   public Response changeViewState(String groupBy, String orderBy) {
-    return TaskManagement_.index(groupBy, orderBy);
+    return TaskManagement_.index();
   }
 
   @Action
@@ -111,6 +85,6 @@ public class TaskManagement {
     } else {
 
     }
-    return TaskManagement_.index(groupBy, orderBy);
+    return TaskManagement_.index();
   }
 }

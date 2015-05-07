@@ -38,5 +38,7 @@ public interface TaskHandler extends GenericDAO<Task, Long> {
 
   List<Task> findTaskByQuery(TaskQuery query);
 
+  List<Task> getIncomingTask(String username, OrderBy orderBy);
+
 }
 

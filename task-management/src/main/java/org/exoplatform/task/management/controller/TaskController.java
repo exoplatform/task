@@ -30,6 +30,7 @@ import org.exoplatform.commons.juzu.ajax.Ajax;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.task.dao.CommentHandler;
+import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Project;
@@ -39,6 +40,7 @@ import org.exoplatform.task.management.model.CommentModel;
 import org.exoplatform.task.management.util.CommentUtils;
 import org.exoplatform.task.management.util.UserUtils;
 import org.exoplatform.task.service.TaskBuilder;
+import org.exoplatform.task.service.TaskParser;
 import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.service.UserService;
 import org.json.JSONException;
@@ -54,9 +56,14 @@ import java.util.*;
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
 public class TaskController {
+  public static final int INCOMING_PROJECT_ID = -1;
+
 
   @Inject
   TaskService taskService;
+
+  @Inject
+  TaskParser taskParser;
 
   @Inject
   OrganizationService orgService;
@@ -350,22 +357,52 @@ public class TaskController {
   @Resource
   @Ajax
   @MimeType.HTML
-  public Response listTasks(Long projectId, String keyword) {
-    Project project = taskService.getProjectHandler().find(projectId);
-    if(project == null) {
-      return Response.notFound("Project not found with ID: " + projectId);
+  public Response listTasks(Long projectId, String keyword, String groupBy, String orderBy,
+                            SecurityContext securityContext) {
+    Project project = null;
+    List<Task> tasks;
+
+    //TODO: if username is NULL?
+    String username = securityContext.getRemoteUser();
+
+    OrderBy order = null;
+    if(orderBy != null && !orderBy.trim().isEmpty()) {
+      order = "title".equals(orderBy) ? new OrderBy.ASC(orderBy) : new OrderBy.DESC(orderBy);
     }
 
-    TaskQuery taskQuery = new TaskQuery();
-    taskQuery.setProjectId(project.getId());
-    taskQuery.setKeyword(keyword);
-    List<Task> tasks = taskService.getTaskHandler().findTaskByQuery(taskQuery);
+    if(projectId == INCOMING_PROJECT_ID) {
+      tasks = taskService.getTaskHandler().getIncomingTask(username, order);
+    } else {
+      project = taskService.getProjectHandler().find(projectId);
+      if(project == null) {
+        return Response.notFound("Project not found with ID: " + projectId);
+      }
+      TaskQuery taskQuery = new TaskQuery();
+      taskQuery.setProjectId(project.getId());
+      taskQuery.setKeyword(keyword);
+      taskQuery.setOrderBy(order == null ? null : Arrays.asList(order));
+      tasks = taskService.getTaskHandler().findTaskByQuery(taskQuery);
+    }
+
+    //
+    Map<String, List<Task>> groupTasks = new HashMap<String, List<Task>>();
+    if(groupBy != null && !groupBy.isEmpty()) {
+      groupTasks = groupTasks(tasks, groupBy);
+    }
+
+    if(groupTasks.isEmpty()) {
+      groupTasks.put("", tasks);
+    }
 
     return taskListView
             .with()
+            .currentProjectId(projectId)
             .project(project)
             .tasks(tasks)
+            .groupTasks(groupTasks)
             .keyword(keyword == null ? "" : keyword)
+            .groupBy(groupBy == null ? "" : groupBy)
+            .orderBy(orderBy == null ? "" : orderBy)
             .ok()
             .withCharset(Tools.UTF_8);
   }
@@ -373,29 +410,66 @@ public class TaskController {
   @Resource(method = HttpMethod.POST)
   @Ajax
   @MimeType.HTML
-  public Response createTask(Long projectId, String taskTitle) {
-    Project project = taskService.getProjectHandler().find(projectId);
-    if(project == null) {
-      return Response.notFound("Project not found with ID: " + projectId);
+  public Response createTask(Long projectId, String taskInput, SecurityContext securityContext) {
+    Project project = null;
+
+    if(projectId > 0) {
+      project = taskService.getProjectHandler().find(projectId);
+      if (project == null) {
+        return Response.notFound("Project not found with ID: " + projectId);
+      }
     }
 
-    if(taskTitle == null || taskTitle.isEmpty()) {
-      return Response.content(406, "Task title must not be null or empty");
+    if(taskInput == null || taskInput.isEmpty()) {
+      return Response.content(406, "Task input must not be null or empty");
     }
 
-    Task task = new Task();
-    task.setTitle(taskTitle);
+    Task task = taskParser.parse(taskInput);
     task.setProject(project);
+    task.setCreatedBy(securityContext.getRemoteUser());
     taskService.getTaskHandler().create(task);
 
-    List<Task> tasks = taskService.getTaskHandler().findByProject(project.getId());
+    return listTasks(projectId, "", "", "", securityContext);
+  }
 
-    return taskListView
-            .with()
-            .project(project)
-            .tasks(tasks)
-            .keyword("")
-            .ok()
-            .withCharset(Tools.UTF_8);
+
+  public static Map<String, List<Task>> groupTasks(List<Task> tasks, String groupBy) {
+    Map<String, List<Task>> maps = new HashMap<String, List<Task>>();
+    for(Task task : tasks) {
+      for (String key : getGroupName(task, groupBy)) {
+        List<Task> list = maps.get(key);
+        if(list == null) {
+          list = new LinkedList<Task>();
+          maps.put(key, list);
+        }
+        list.add(task);
+      }
+    }
+    return maps;
+  }
+
+  private static String[] getGroupName(Task task, String groupBy) {
+    if("project".equalsIgnoreCase(groupBy)) {
+      Project p = task.getProject();
+      if(p == null) {
+        return new String[] {"No Project"};
+      } else {
+        return new String[] {p.getName()};
+      }
+    } else if("status".equalsIgnoreCase(groupBy)) {
+      Status s = task.getStatus();
+      if(s == null) {
+        return new String[] {"TODO"};
+      } else {
+        return new String[] {s.getName()};
+      }
+    } else if("tag".equalsIgnoreCase(groupBy)) {
+      Set<String> tags = task.getTags();
+      return tags == null || tags.size() == 0 ? new String[] {"Un tagged"} : tags.toArray(new String[0]);
+    } else if ("assignee".equalsIgnoreCase(groupBy)) {
+      String assignee = task.getAssignee();
+      return new String[] {assignee != null ? assignee : "Unassigned"};
+    }
+    return new String[0];
   }
 }

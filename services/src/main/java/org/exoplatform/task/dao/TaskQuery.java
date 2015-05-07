@@ -19,6 +19,9 @@
 
 package org.exoplatform.task.dao;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
@@ -29,6 +32,8 @@ public class TaskQuery {
   private long projectId = 0;
   private String assignee = null;
   private String keyword = null;
+
+  private List<OrderBy> orderBy = new ArrayList<OrderBy>();
 
   public long getTaskId() {
     return taskId;
@@ -76,5 +81,13 @@ public class TaskQuery {
 
   public void setKeyword(String keyword) {
     this.keyword = keyword;
+  }
+
+  public List<OrderBy> getOrderBy() {
+    return orderBy;
+  }
+
+  public void setOrderBy(List<OrderBy> orderBy) {
+    this.orderBy = orderBy;
   }
 }

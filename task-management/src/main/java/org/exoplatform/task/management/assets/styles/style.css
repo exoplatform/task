@@ -1,3 +1,4 @@
+.clearfix {clear: both}
 #taskManagement {
     background: #fff;
 }
@@ -179,4 +180,11 @@ ul.list-projects {
 .form-search.relative input[type="text"] {
     padding-left: 25px;
 }
-
+.panel .header {
+    height: 30px;
+}
+.taskList h4 {
+    background: #eee;
+    margin-top: 10px;
+    padding: 7px 0 5px;
+}

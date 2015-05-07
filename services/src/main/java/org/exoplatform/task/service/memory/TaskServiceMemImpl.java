@@ -24,13 +24,8 @@ import org.exoplatform.task.dao.ProjectHandler;
 import org.exoplatform.task.dao.StatusHandler;
 import org.exoplatform.task.dao.TaskHandler;
 import org.exoplatform.task.domain.*;
-import org.exoplatform.task.service.GroupByService;
 import org.exoplatform.task.service.TaskParser;
 import org.exoplatform.task.service.TaskService;
-import org.exoplatform.task.service.impl.GroupByProject;
-import org.exoplatform.task.service.impl.GroupByStatus;
-import org.exoplatform.task.service.impl.GroupByTag;
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.*;
@@ -45,13 +40,8 @@ public class TaskServiceMemImpl implements TaskService {
   @Inject
   private TaskParser parser;
 
-  private final List<GroupByService> groupByServices;
-
   public TaskServiceMemImpl() {
-    this.groupByServices = new ArrayList<GroupByService>();
-    this.groupByServices.add(new GroupByStatus(this));
-    this.groupByServices.add(new GroupByProject(this));
-    this.groupByServices.add(new GroupByTag(this));
+
   }
 
   /*@PostConstruct
@@ -118,11 +108,6 @@ public class TaskServiceMemImpl implements TaskService {
     builder.withTitle("contract agencies");
     this.save(builder.build());
   }*/
-
-  @Override
-  public List<GroupByService> getGroupByServices() {
-    return Collections.unmodifiableList(this.groupByServices);
-  }
 
   @Override
   public ProjectHandler getProjectHandler() {

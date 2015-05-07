@@ -24,6 +24,7 @@ import javax.persistence.Persistence;
 import liquibase.exception.LiquibaseException;
 
 import org.exoplatform.task.dao.TaskQuery;
+import org.exoplatform.task.domain.Project;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -48,6 +49,8 @@ public class TestTaskDAO {
   private TaskHandler tDAO;
   private TaskServiceJPAImpl taskService;
   private TaskParser parser = new TaskParserImpl();
+
+  private final String username = "root";
 
   @BeforeClass
   public static void init() throws SQLException,
@@ -143,12 +146,48 @@ public class TestTaskDAO {
     Assert.assertEquals(0, tasks.size());
   }
 
+  @Test
+  public void testGetIncomingTask() {
+    Project project = new Project();
+    project.setName("Project1");
+    taskService.getProjectHandler().create(project);
+
+    Task task1 = newTaskInstance("Task 1", "", username);
+    tDAO.create(task1);
+
+    Task task2 = newTaskInstance("Task 2", "", username);
+    task2.setProject(project);
+    tDAO.create(task2);
+
+    List<Task> tasks = tDAO.getIncomingTask(username, null);
+    assertContain(tasks, task1.getId());
+    assertNotContain(tasks, task2.getId());
+
+  }
+
   private Task newTaskInstance(String taskTitle, String description, String assignee) {
     Task task = new Task();
     task.setTitle(taskTitle);
     task.setDescription(description);
     task.setAssignee(assignee);
     return task;
+  }
+
+  private void assertContain(List<Task> tasks, Long taskId) {
+    for(Task t : tasks) {
+      if(t.getId() == taskId) {
+        return;
+      }
+    }
+    Assert.fail("Task with ID " + taskId  + " should exist on the list");
+  }
+
+  private void assertNotContain(List<Task> tasks, Long taskId) {
+    for(Task t : tasks) {
+      if(t.getId() == taskId) {
+        Assert.fail("Task with ID " + taskId  + " should not exist on the list");
+      }
+    }
   }
 }
 

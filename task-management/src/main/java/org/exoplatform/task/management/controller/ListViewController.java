@@ -17,17 +17,24 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.exoplatform.task.service;
+package org.exoplatform.task.management.controller;
+
+import juzu.MimeType;
+import juzu.Resource;
+import juzu.Response;
+import org.exoplatform.commons.juzu.ajax.Ajax;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
-public class OrderBy {
-  public final String field;
-  public final boolean isDesc;
+public class ListViewController {
 
-  public OrderBy(String field, boolean isDesc) {
-    this.field = field;
-    this.isDesc = isDesc;
+
+
+  @Resource
+  @Ajax
+  @MimeType.HTML
+  public Response listView() {
+    return Response.ok();
   }
 }
