@@ -6,7 +6,7 @@
 #{param name=groupBy /}
 #{param name=orderBy /}
 
-<div class="row-fluid projectListView" data-projectId="${currentProjectId}">
+<div class="row-fluid projectListView" data-projectid="${currentProjectId}">
     <div class="row-fluid header">
         <div class="span12">
             <div class="pull-right">
@@ -30,7 +30,11 @@
                             <select name="groupBy" class="span3"">
                                 <option value="">None</option>
                                 <option value="status" ${groupBy == "status" ? "selected = \"selected\"" : ""}>Status</option>
+                                <% if (currentProjectId != -2) {%>
                                 <option value="assignee" ${groupBy == "assignee" ? "selected = \"selected\"" : ""}>Assignee</option>
+                                <% } else { %>
+                                <option value="project" ${groupBy == "project" ? "selected = \"selected\"" : ""}>Project</option>
+                                <% } %>
                                 <option value="tag" ${groupBy == "tag" ? "selected = \"selected\"" : ""}>Tags</option>
                             </select>
                             <label>Sort by:</label>

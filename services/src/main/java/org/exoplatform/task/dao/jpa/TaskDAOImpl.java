@@ -162,5 +162,23 @@ public class TaskDAOImpl extends GenericDAOImpl<Task, Long> implements TaskHandl
             .setParameter("userName", username)
             .getResultList();
   }
+
+  @Override
+  public List<Task> getToDoTask(String username, OrderBy orderBy) {
+    StringBuilder jql = new StringBuilder();
+    jql.append("SELECT ta FROM Task ta ")
+            .append("WHERE ta.assignee = :userName ")
+            .append("AND ta.completed != TRUE");
+
+    if(orderBy != null && !orderBy.getFieldName().isEmpty()) {
+      jql.append(" ORDER BY ta.").append(orderBy.getFieldName()).append(" ").append(orderBy.isAscending() ? "ASC" : " DESC");
+    }
+
+    return taskService
+            .getEntityManager()
+            .createQuery(jql.toString(), Task.class)
+            .setParameter("userName", username)
+            .getResultList();
+  }
 }
 

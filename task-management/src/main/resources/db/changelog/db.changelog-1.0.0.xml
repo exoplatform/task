@@ -189,4 +189,12 @@
       </column>
     </addColumn>
   </changeSet>
+
+  <changeSet author="tuyennt@exoplatform.com" id="1.0.0-4">
+    <addColumn tableName="TASK_TASKS">
+      <column name="COMPLETED" type="TINYINT" defaultValue="0">
+        <constraints nullable="true"/>
+      </column>
+    </addColumn>
+  </changeSet>
 </databaseChangeLog>

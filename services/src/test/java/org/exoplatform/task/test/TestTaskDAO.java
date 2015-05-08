@@ -75,6 +75,8 @@ public class TestTaskDAO {
 
   @After
   public void tearDown() {
+    tDAO.deleteAll();
+
     //
     taskService.endRequest(null);
   }
@@ -165,11 +167,46 @@ public class TestTaskDAO {
 
   }
 
+  @Test
+  public void testGetTodoTask() {
+    Project project = new Project();
+    project.setName("Project1");
+    taskService.getProjectHandler().create(project);
+
+    Task task1 = newTaskInstance("Task 1", "", null);
+    tDAO.create(task1);
+
+    Task task2 = newTaskInstance("Task 2", "", null);
+    task2.setProject(project);
+    tDAO.create(task2);
+
+    Task task3 = newTaskInstance("Task 3", "", username);
+    tDAO.create(task3);
+
+    Task task4 = newTaskInstance("Task 4", "", username);
+    task4.setProject(project);
+    tDAO.create(task4);
+
+    Task task5 = newTaskInstance("Task 4", "", username);
+    task5.setProject(project);
+    task5.setCompleted(true);
+    tDAO.create(task5);
+
+    List<Task> tasks = tDAO.getToDoTask(username, null);
+
+    assertContain(tasks, task3.getId());
+    assertContain(tasks, task4.getId());
+    assertNotContain(tasks, task1.getId());
+    assertNotContain(tasks, task2.getId());
+    assertNotContain(tasks, task5.getId());
+  }
+
   private Task newTaskInstance(String taskTitle, String description, String assignee) {
     Task task = new Task();
     task.setTitle(taskTitle);
     task.setDescription(description);
     task.setAssignee(assignee);
+    task.setCreatedBy(username);
     return task;
   }
 

@@ -57,6 +57,7 @@ import java.util.*;
  */
 public class TaskController {
   public static final int INCOMING_PROJECT_ID = -1;
+  public static final int TODO_PROJECT_ID = -2;
 
 
   @Inject
@@ -372,6 +373,8 @@ public class TaskController {
 
     if(projectId == INCOMING_PROJECT_ID) {
       tasks = taskService.getTaskHandler().getIncomingTask(username, order);
+    } else if (projectId == TODO_PROJECT_ID) {
+      tasks = taskService.getTaskHandler().getToDoTask(username, order);
     } else {
       project = taskService.getProjectHandler().find(projectId);
       if(project == null) {
@@ -424,9 +427,16 @@ public class TaskController {
       return Response.content(406, "Task input must not be null or empty");
     }
 
+    String username = securityContext.getRemoteUser();
+
     Task task = taskParser.parse(taskInput);
     task.setProject(project);
-    task.setCreatedBy(securityContext.getRemoteUser());
+    task.setCreatedBy(username);
+
+    if (TODO_PROJECT_ID == projectId) {
+      task.setAssignee(username);
+    }
+
     taskService.getTaskHandler().create(task);
 
     return listTasks(projectId, "", "", "", securityContext);

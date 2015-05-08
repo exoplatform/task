@@ -450,8 +450,8 @@ jQuery(document).ready(function($) {
     $leftPanel.on('click', 'a.project-name', function(e) {
         var $a = $(e.target).closest('a');
         var projectId = $a.data('id');
-        var currentProject = $rightPanelContent.find('.projectListView').attr('data-projectId');
-        if (currentProject != projectId || $rightPanel.is(':hidden')) {
+        var currentProject = $centerPanel.find('.projectListView').attr('data-projectId');
+        if (currentProject != projectId || ($rightPanel.is(':hidden') && projectId > 0)) {
 
             $centerPanelContent.jzLoad('TaskController.listTasks()', {projectId: projectId}, function() {
                 $a.closest('.leftPanel > ul').find('li.active').removeClass('active');

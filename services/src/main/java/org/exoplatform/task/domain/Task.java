@@ -67,6 +67,8 @@ public class Task {
   @JoinColumn(name = "STATUS_ID")
   private Status      status;
 
+  private boolean completed = false;
+
   @ElementCollection
   @CollectionTable(name = "TASK_TASK_COWORKERS",
       joinColumns = @JoinColumn(name = "TASK_ID"))
@@ -155,6 +157,14 @@ public class Task {
 
   public void setStatus(Status status) {
     this.status = status;
+  }
+
+  public boolean isCompleted() {
+    return completed;
+  }
+
+  public void setCompleted(boolean completed) {
+    this.completed = completed;
   }
 
   public Set<String> getTags() {
