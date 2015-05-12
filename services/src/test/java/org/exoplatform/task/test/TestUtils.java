@@ -66,7 +66,7 @@ public class TestUtils {
   }
 
   public static void closeDB() throws LiquibaseException, SQLException {
-    //liquibase.rollback(1000, null);
+    liquibase.rollback(1000, null);
     conn.close();
   }
 }
