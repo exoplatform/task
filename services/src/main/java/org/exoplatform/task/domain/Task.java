@@ -44,7 +44,7 @@ import java.util.Set;
             "OR project IN (SELECT pr2.id FROM Project pr2 LEFT JOIN pr2.participator participators WHERE participators IN :memberships) " +
             ") "),
     @NamedQuery(name = "Task.findTaskByProject",
-            query = "SELECT t FROM Task t WHERE t.project.id = :projectId")
+            query = "SELECT t FROM Task t WHERE t.status.project.id = :projectId")
 })
 public class Task {
   @Id
@@ -95,10 +95,6 @@ public class Task {
   @Temporal(TemporalType.TIMESTAMP)
   @Column(name = "DUE_DATE")
   private Date        dueDate;
-
-  @ManyToOne
-  @JoinColumn(name = "PROJECT_ID")
-  private Project project;
 
   public Task() {
   }
@@ -228,14 +224,6 @@ public class Task {
 
   public void setCoworker(Set<String> coworker) {
     this.coworker = coworker;
-  }
-
-  public Project getProject() {
-    return project;
-  }
-
-  public void setProject(Project project) {
-    this.project = project;
   }
     
   public Task clone() {

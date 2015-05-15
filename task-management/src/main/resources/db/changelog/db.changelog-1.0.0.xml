@@ -120,10 +120,6 @@
       <column name="DUE_DATE" type="DATE">
         <constraints nullable="true"/>
       </column>
-      <!-- TODO Remove the project_id column -->
-      <column name="PROJECT_ID" type="BIGINT">
-        <constraints nullable="true"/>
-      </column>
       <column name="COMPLETED" type="BIT" defaultValue="0">
         <constraints nullable="true"/>
       </column>

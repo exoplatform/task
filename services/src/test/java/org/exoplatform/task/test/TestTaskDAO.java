@@ -16,29 +16,22 @@
 */
 package org.exoplatform.task.test;
 
-import java.sql.SQLException;
-import java.util.List;
-
-import javax.persistence.Persistence;
-
 import liquibase.exception.LiquibaseException;
-
-import org.exoplatform.task.dao.TaskQuery;
-import org.exoplatform.task.domain.Project;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 import org.exoplatform.task.dao.TaskHandler;
+import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.domain.Priority;
+import org.exoplatform.task.domain.Project;
+import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.factory.ExoEntityManagerFactory;
 import org.exoplatform.task.service.TaskParser;
 import org.exoplatform.task.service.impl.TaskParserImpl;
 import org.exoplatform.task.service.jpa.TaskServiceJPAImpl;
+import org.junit.*;
+
+import javax.persistence.Persistence;
+import java.sql.SQLException;
+import java.util.List;
 
 /**
  * @author <a href="trongtt@exoplatform.com">Trong Tran</a>
@@ -152,13 +145,16 @@ public class TestTaskDAO {
   public void testGetIncomingTask() {
     Project project = new Project();
     project.setName("Project1");
+    Status status = newStatusInstance("TO DO", 1);
+    status.setProject(project);
+    project.getStatus().add(status);
     taskService.getProjectHandler().create(project);
 
     Task task1 = newTaskInstance("Task 1", "", username);
     tDAO.create(task1);
 
     Task task2 = newTaskInstance("Task 2", "", username);
-    task2.setProject(project);
+    task2.setStatus(status);
     tDAO.create(task2);
 
     List<Task> tasks = tDAO.getIncomingTask(username, null);
@@ -171,24 +167,27 @@ public class TestTaskDAO {
   public void testGetTodoTask() {
     Project project = new Project();
     project.setName("Project1");
+    Status status = newStatusInstance("TO DO", 1);
+    status.setProject(project);
+    project.getStatus().add(status);
     taskService.getProjectHandler().create(project);
 
     Task task1 = newTaskInstance("Task 1", "", null);
     tDAO.create(task1);
 
     Task task2 = newTaskInstance("Task 2", "", null);
-    task2.setProject(project);
+    task2.setStatus(status);
     tDAO.create(task2);
 
     Task task3 = newTaskInstance("Task 3", "", username);
     tDAO.create(task3);
 
     Task task4 = newTaskInstance("Task 4", "", username);
-    task4.setProject(project);
+    task4.setStatus(status);
     tDAO.create(task4);
 
     Task task5 = newTaskInstance("Task 4", "", username);
-    task5.setProject(project);
+    task5.setStatus(status);
     task5.setCompleted(true);
     tDAO.create(task5);
 
@@ -208,6 +207,13 @@ public class TestTaskDAO {
     task.setAssignee(assignee);
     task.setCreatedBy(username);
     return task;
+  }
+
+  private Status newStatusInstance(String name, int rank) {
+    Status status = new Status();
+    status.setName(name);
+    status.setRank(rank);
+    return status;
   }
 
   private void assertContain(List<Task> tasks, Long taskId) {

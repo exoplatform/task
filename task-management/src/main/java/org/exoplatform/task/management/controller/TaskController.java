@@ -414,14 +414,6 @@ public class TaskController {
   @Ajax
   @MimeType.HTML
   public Response createTask(Long projectId, String taskInput, SecurityContext securityContext) {
-    Project project = null;
-
-    if(projectId > 0) {
-      project = taskService.getProjectHandler().find(projectId);
-      if (project == null) {
-        return Response.notFound("Project not found with ID: " + projectId);
-      }
-    }
 
     if(taskInput == null || taskInput.isEmpty()) {
       return Response.content(406, "Task input must not be null or empty");
@@ -430,7 +422,18 @@ public class TaskController {
     String username = securityContext.getRemoteUser();
 
     Task task = taskParser.parse(taskInput);
-    task.setProject(project);
+
+    Project project = null;
+
+    if(projectId > 0) {
+      project = taskService.getProjectHandler().find(projectId);
+      if (project == null) {
+        return Response.notFound("Project not found with ID: " + projectId);
+      }
+      Status status = taskService.getStatusHandler().findLowestRankStatusByProject(projectId);
+      task.setStatus(status);
+    }
+
     task.setCreatedBy(username);
 
     if (TODO_PROJECT_ID == projectId) {
@@ -460,11 +463,11 @@ public class TaskController {
 
   private static String[] getGroupName(Task task, String groupBy) {
     if("project".equalsIgnoreCase(groupBy)) {
-      Project p = task.getProject();
-      if(p == null) {
+      Status s = task.getStatus();
+      if(s == null) {
         return new String[] {"No Project"};
       } else {
-        return new String[] {p.getName()};
+        return new String[] {s.getProject().getName()};
       }
     } else if("status".equalsIgnoreCase(groupBy)) {
       Status s = task.getStatus();

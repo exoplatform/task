@@ -59,7 +59,11 @@ public class TaskManagement {
     Map<String, List<Task>> groupTasks = new HashMap<String, List<Task>>();
     groupTasks.put("", tasks);
 
-    List<Project> projects = taskService.getProjectHandler().findSubProjects(null);
+    //TODO Get all memberships of user
+    List<String> memberships = new ArrayList<String>();
+    memberships.add(username);
+
+    List<Project> projects = taskService.getProjectHandler().findSubProjectsByMemberships(null, memberships);
 
     return index.with()
         .currentProjectId(-1)

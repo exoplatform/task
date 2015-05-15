@@ -19,7 +19,6 @@ package org.exoplatform.task.dao.jpa;
 import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.dao.TaskHandler;
 import org.exoplatform.task.dao.TaskQuery;
-import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.service.jpa.TaskServiceJPAImpl;
 
@@ -107,8 +106,7 @@ public class TaskDAOImpl extends GenericDAOImpl<Task, Long> implements TaskHandl
     }
 
     if(query.getProjectId() > 0) {
-      Join<Task, Project> project = task.join("project");
-      predicates.add(cb.equal(project.get("id"), query.getProjectId()));
+      predicates.add(cb.equal(task.get("status").get("project").get("id"), query.getProjectId()));
     }
 
     if(query.getKeyword() != null && !query.getKeyword().isEmpty()) {
@@ -149,7 +147,7 @@ public class TaskDAOImpl extends GenericDAOImpl<Task, Long> implements TaskHandl
   public List<Task> getIncomingTask(String username, OrderBy orderBy) {
     StringBuilder jql = new StringBuilder();
     jql.append("SELECT ta FROM Task ta LEFT JOIN ta.coworker cowoker ")
-            .append("WHERE (ta.project.id is null or ta.project.id = 0) ")
+            .append("WHERE (ta.status.id is null or ta.status.id = 0) ")
             .append("AND (ta.assignee = :userName OR ta.createdBy = :userName OR cowoker = :userName)");
 
     if(orderBy != null && !orderBy.getFieldName().isEmpty()) {

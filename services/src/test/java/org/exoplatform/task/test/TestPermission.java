@@ -177,6 +177,9 @@ public class TestPermission {
     Assert.assertEquals(2, tDAO.findByUser(user1).size());
     Assert.assertEquals(1, tDAO.findByUser(user2).size());
     Assert.assertEquals(0, tDAO.findByUser("John Doe").size());
+    //Only user2 is manager of a project
+    Assert.assertEquals(0, pDAO.findAllByMemberships(getMembershipsUser(user1)).size());
+    Assert.assertEquals(1, pDAO.findAllByMemberships(getMembershipsUser(user2)).size());
   }
 
   @Test
@@ -220,6 +223,15 @@ public class TestPermission {
     Assert.assertEquals(2, tDAO.findByUser(user1).size());
     Assert.assertEquals(1, tDAO.findByUser(user2).size());
     Assert.assertEquals(0, tDAO.findByUser("John Doe").size());
+    //Only user2 is member of a project
+    Assert.assertEquals(0, pDAO.findAllByMemberships(getMembershipsUser(user1)).size());
+    Assert.assertEquals(1, pDAO.findAllByMemberships(getMembershipsUser(user2)).size());
+  }
+
+  private List<String> getMembershipsUser(String user) {
+    List<String> memberships = new ArrayList<String>();
+    memberships.add(user);
+    return memberships;
   }
 
 }

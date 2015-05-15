@@ -34,7 +34,24 @@ import java.util.Set;
 @Table(name = "TASK_PROJECTS")
 @NamedQueries({
     @NamedQuery(name = "getRootProjects", query = "SELECT p FROM Project p WHERE p.parent.id = 0 OR p.parent is null"),
-    @NamedQuery(name = "findSubProjects", query = "SELECT p FROM Project p WHERE p.parent.id = :projectId")
+    @NamedQuery(name = "findSubProjects", query = "SELECT p FROM Project p WHERE p.parent.id = :projectId"),
+    @NamedQuery(name = "Project.findAllByMembership",
+        query = "SELECT p FROM Project p " +
+        "  LEFT JOIN p.manager managers " +
+        "  LEFT JOIN p.participator participators " +
+        "WHERE managers in :memberships OR participators in :memberships"),
+    @NamedQuery(name = "Project.findRootProjectsByMemberships",
+        query = "SELECT p FROM Project p " +
+            "  LEFT JOIN p.manager managers " +
+            "  LEFT JOIN p.participator participators " +
+            "WHERE (managers in :memberships OR participators in :memberships) " +
+            "AND (p.parent.id = 0 OR p.parent is null)"),
+    @NamedQuery(name = "Project.findSubProjectsByMemberships",
+        query = "SELECT p FROM Project p " +
+            "  LEFT JOIN p.manager managers " +
+            "  LEFT JOIN p.participator participators " +
+            "WHERE (managers in :memberships OR participators in :memberships) " +
+            "AND p.parent.id = :projectId")
 })
 public class Project {
 
@@ -182,9 +199,6 @@ public class Project {
         }
         project.getStatus().add(cloned);
         cloned.setProject(project);
-        for (Task t : cloned.getTasks()) {
-          t.setProject(project);
-        }
       }
     }
     

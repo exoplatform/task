@@ -29,6 +29,10 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "TASK_STATUS")
+@NamedQueries({
+    @NamedQuery(name = "Status.findLowestRankStatusByProject",
+        query = "SELECT s FROM Status s WHERE s.rank = (SELECT MIN(s2.rank) FROM Status s2 WHERE s2.project.id = :projectId) AND s.project.id = :projectId)")
+})
 public class Status {
 
   public static final Status   INCOMING    = new Status(0, "INCOMING");

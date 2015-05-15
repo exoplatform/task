@@ -7,4 +7,7 @@ import org.exoplatform.task.domain.Status;
  * @version $Revision$
  */
 public interface StatusHandler extends GenericDAO<Status, Long> {
+
+  Status findLowestRankStatusByProject(Long projectId);
+
 }

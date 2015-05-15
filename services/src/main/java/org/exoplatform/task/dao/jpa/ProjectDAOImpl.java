@@ -18,13 +18,12 @@ package org.exoplatform.task.dao.jpa;
 
 import org.exoplatform.task.dao.ProjectHandler;
 import org.exoplatform.task.domain.Project;
-import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.service.jpa.TaskServiceJPAImpl;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Created by The eXo Platform SAS
@@ -33,6 +32,8 @@ import java.util.List;
  * 4/10/15
  */
 public class ProjectDAOImpl extends GenericDAOImpl<Project, Long> implements ProjectHandler {
+
+  private static final Logger LOG = Logger.getLogger("ProjectDAOImpl");
 
   public ProjectDAOImpl(TaskServiceJPAImpl taskServiceJPAImpl) {
     super(taskServiceJPAImpl);
@@ -49,6 +50,18 @@ public class ProjectDAOImpl extends GenericDAOImpl<Project, Long> implements Pro
   }
 
   @Override
+  public List<Project> findSubProjectsByMemberships(Project project, List<String> memberships) {
+    LOG.info("####### Get projects for user: "+memberships.toString());
+    EntityManager em = taskService.getEntityManager();
+    Query query = em.createNamedQuery(project != null ? "Project.findSubProjectsByMemberships" : "Project.findRootProjectsByMemberships");
+    if(project != null) {
+      query.setParameter("projectId", project.getId());
+    }
+    query.setParameter("memberships", memberships);
+    return query.getResultList();
+  }
+
+  @Override
   public Project cloneProject(Long projectId, boolean cloneTask) {
     Project orgProject = find(projectId);
     
@@ -58,6 +71,14 @@ public class ProjectDAOImpl extends GenericDAOImpl<Project, Long> implements Pro
     } else {
       return null;
     }
-  }    
+  }
+
+  @Override
+  public List<Project> findAllByMemberships(List<String> memberships) {
+    Query query = taskService.getEntityManager().createNamedQuery("Project.findAllByMembership", Project.class);
+    query.setParameter("memberships", memberships);
+
+    return query.getResultList();
+  }
 }
 
