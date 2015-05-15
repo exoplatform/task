@@ -18,14 +18,26 @@
       <column name="NAME" type="VARCHAR(50)">
         <constraints nullable="false"/>
       </column>
+      <column name="DESCRIPTION" type="VARCHAR(1000)">
+        <constraints nullable="true"/>
+      </column>
+      <column name="COLOR" type="VARCHAR(100)">
+        <constraints nullable="true"/>
+      </column>
+      <column name="DUE_DATE" type="DATE">
+        <constraints nullable="true"/>
+      </column>
+      <column name="PARENT_PROJECT_ID" type="BIGINT">
+        <constraints nullable="true"/>
+      </column>
     </createTable>
   </changeSet>
-  <changeSet author="tclement@exoplatform.com" id="create-projects-sequence" dbms="oracle,postgresql">
+  <changeSet author="tclement@exoplatform.com" id="1.0.0-2" dbms="oracle,postgresql">
     <createSequence sequenceName="SEQ_TASK_PROJECTS_PROJECT_ID" startValue="1"/>
   </changeSet>
 
   <!-- Definition of TASK_PROJECT_MANAGER table -->
-  <changeSet author="tclement@exoplatform.com" id="1.0.0-5">
+  <changeSet author="tclement@exoplatform.com" id="1.0.0-3">
     <createTable tableName="TASK_PROJECT_MANAGERS">
       <column name="PROJECT_ID" type="BIGINT">
         <constraints foreignKeyName="FK_TASK_PROJECT_MANAGER_TASK_PROJECTS_01" references="TASK_PROJECTS(PROJECT_ID)" nullable="false"/>
@@ -37,7 +49,7 @@
   </changeSet>
 
   <!-- Definition of TASK_PROJECT_PARTICIPATOR table -->
-  <changeSet author="tclement@exoplatform.com" id="1.0.0-6">
+  <changeSet author="tclement@exoplatform.com" id="1.0.0-4">
     <createTable tableName="TASK_PROJECT_PARTICIPATORS">
       <column name="PROJECT_ID" type="BIGINT">
         <constraints foreignKeyName="FK_TASK_PROJECT_PARTICIPATOR_TASK_PROJECTS_01" references="TASK_PROJECTS(PROJECT_ID)" nullable="false"/>
@@ -49,7 +61,7 @@
   </changeSet>
 
   <!-- Definition of TASK_STATUS table -->
-  <changeSet author="tclement@exoplatform.com" id="1.0.0-2">
+  <changeSet author="tclement@exoplatform.com" id="1.0.0-5">
     <createTable tableName="TASK_STATUS">
       <column name="STATUS_ID" type="BIGINT" autoIncrement="${autoIncrement}">
         <constraints nullable="false" primaryKey="true" primaryKeyName="PK_TASK_STATUS" unique="true"/>
@@ -65,12 +77,12 @@
       </column>
     </createTable>
   </changeSet>
-  <changeSet author="tclement@exoplatform.com" id="create-status-sequence" dbms="oracle,postgresql">
+  <changeSet author="tclement@exoplatform.com" id="1.0.0-6" dbms="oracle,postgresql">
     <createSequence sequenceName="SEQ_TASK_STATUS_STATUS_ID" startValue="1"/>
   </changeSet>
 
   <!-- Definition of TASK_TASKS table -->
-  <changeSet author="tclement@exoplatform.com" id="1.0.0-3">
+  <changeSet author="tclement@exoplatform.com" id="1.0.0-7">
     <createTable tableName="TASK_TASKS">
       <column name="TASK_ID" type="BIGINT" autoIncrement="${autoIncrement}">
         <constraints primaryKey="true" primaryKeyName="PK_TASK_TASKS" nullable="false" unique="true"/>
@@ -108,14 +120,21 @@
       <column name="DUE_DATE" type="DATE">
         <constraints nullable="true"/>
       </column>
+      <!-- TODO Remove the project_id column -->
+      <column name="PROJECT_ID" type="BIGINT">
+        <constraints nullable="true"/>
+      </column>
+      <column name="COMPLETED" type="BIT" defaultValue="0">
+        <constraints nullable="true"/>
+      </column>
     </createTable>
   </changeSet>
-  <changeSet author="tclement@exoplatform.com" id="create-task-sequence" dbms="oracle,postgresql">
+  <changeSet author="tclement@exoplatform.com" id="1.0.0-8" dbms="oracle,postgresql">
     <createSequence sequenceName="SEQ_TASK_TASKS_TASK_ID" startValue="1"/>
   </changeSet>
 
   <!-- Definition of TASK_TASK_COWORKER table -->
-  <changeSet author="tclement@exoplatform.com" id="1.0.0-7">
+  <changeSet author="tclement@exoplatform.com" id="1.0.0-9">
     <createTable tableName="TASK_TASK_COWORKERS">
       <column name="TASK_ID" type="BIGINT">
         <constraints foreignKeyName="FK_TASK_TASK_COWORKER_TASK_TASKS_01" references="TASK_TASKS(TASK_ID)" nullable="false"/>
@@ -127,7 +146,7 @@
   </changeSet>
 
   <!-- Definition of TASK_TAGS table -->
-  <changeSet author="tclement@exoplatform.com" id="1.0.0-4">
+  <changeSet author="tclement@exoplatform.com" id="1.0.0-10">
     <createTable tableName="TASK_TAGS">
       <column name="TASK_ID" type="BIGINT">
         <constraints foreignKeyName="FK_TASK_TAGS_TASK_TASKS_01" references="TASK_TASKS(TASK_ID)" nullable="false"/>
@@ -139,7 +158,7 @@
   </changeSet>
 
   <!-- Definition of TASK_COMMENTS table -->
-  <changeSet author="tuyennt@exoplatform.com" id="1.0.0-1">
+  <changeSet author="tuyennt@exoplatform.com" id="1.0.0-11">
     <createTable tableName="TASK_COMMENTS">
       <column name="COMMENT_ID" type="BIGINT" autoIncrement="${autoIncrement}">
         <constraints primaryKey="true" primaryKeyName="PK_TASK_COMMENTS" nullable="false" unique="true"/>
@@ -159,42 +178,4 @@
     </createTable>
   </changeSet>
 
-  <changeSet author="tuyennt@exoplatform.com" id="1.0.0-2">
-    <addColumn tableName="TASK_PROJECTS">
-      <column name="DESCRIPTION" type="VARCHAR(1000)">
-        <constraints nullable="true"/>
-      </column>
-    </addColumn>
-    <addColumn tableName="TASK_PROJECTS">
-      <column name="COLOR" type="VARCHAR(100)">
-        <constraints nullable="true"/>
-      </column>
-    </addColumn>
-    <addColumn tableName="TASK_PROJECTS">
-      <column name="DUE_DATE" type="DATE">
-        <constraints nullable="true"/>
-      </column>
-    </addColumn>
-    <addColumn tableName="TASK_PROJECTS">
-      <column name="PARENT_PROJECT_ID" type="BIGINT">
-        <constraints nullable="true"/>
-      </column>
-    </addColumn>
-  </changeSet>
-
-  <changeSet author="tuyennt@exoplatform.com" id="1.0.0-3">
-    <addColumn tableName="TASK_TASKS">
-      <column name="PROJECT_ID" type="BIGINT">
-        <constraints nullable="true"/>
-      </column>
-    </addColumn>
-  </changeSet>
-
-  <changeSet author="tuyennt@exoplatform.com" id="1.0.0-4">
-    <addColumn tableName="TASK_TASKS">
-      <column name="COMPLETED" type="TINYINT" defaultValue="0">
-        <constraints nullable="true"/>
-      </column>
-    </addColumn>
-  </changeSet>
 </databaseChangeLog>
