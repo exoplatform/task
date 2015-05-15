@@ -46,6 +46,7 @@
     <module>task-management</module>
     <module>config</module>
     <module>packaging</module>
+    <module>injector</module>
   </modules>
 
   <properties>
