@@ -96,6 +96,9 @@ public class Task {
   @Column(name = "DUE_DATE")
   private Date        dueDate;
 
+  @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
+  private Set<Comment> comments = new HashSet<Comment>();
+
   public Task() {
   }
 
@@ -225,7 +228,15 @@ public class Task {
   public void setCoworker(Set<String> coworker) {
     this.coworker = coworker;
   }
-    
+
+  public Set<Comment> getComments() {
+    return comments;
+  }
+
+  public void setComments(Set<Comment> comments) {
+    this.comments = comments;
+  }
+
   public Task clone() {
     Task newTask = new TaskBuilder().withTitle("[Clone] " + this.getTitle())
                                     .withAssignee(this.getAssignee())
