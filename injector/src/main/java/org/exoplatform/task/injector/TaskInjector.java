@@ -55,6 +55,9 @@ public class TaskInjector extends DataInjector {
   private static final String NUMBER_COMMENTS = "nbComPerTask";
   private static final int DEFAULT_NUMBER_COMMENTS = 2;
 
+  private static final String PERCENTAGE_COMPLETED = "perCompleted";
+  private static final int DEFAULT_PERCENTAGE_COMPLETED = 70;
+
   private static final String TASK_TYPE = "type"; // [user,space]
   private static final String USER_TASK_TYPE = "user";
   private static final String SPACE_TASK_TYPE = "space";
@@ -86,23 +89,19 @@ public class TaskInjector extends DataInjector {
   private int nbProject;
 
   private int nbTasks;
-
   private int nbIncomingTasks;
 
   private int nbTags;
-
   private int nbComments;
+  private int perCompleted;
 
   private String taskType;
 
   private String namePrefix;
-
   private int nameSuffix;
-
   private String suffixPattern;
 
   private int userFrom;
-
   private int userTo;
 
   public TaskInjector() {
@@ -119,6 +118,7 @@ public class TaskInjector extends DataInjector {
     nbTasks = getIntegerParam(params, NUMBER_TASKS, DEFAULT_NUMBER_TASKS);
     nbTags = getIntegerParam(params,NUMBER_TAGS, DEFAULT_NUMBER_TAGS);
     nbComments = getIntegerParam(params, NUMBER_COMMENTS, DEFAULT_NUMBER_COMMENTS);
+    perCompleted = getIntegerParam(params, PERCENTAGE_COMPLETED, DEFAULT_PERCENTAGE_COMPLETED);
     nbIncomingTasks = getIntegerParam(params, NUMBER_INCOMING_TASKS, DEFAULT_NUMBER_INCOMING_TASKS);
     taskType = getStringParam(params, TASK_TYPE, DEFAULT_TASK_TYPE);
     if (!USER_TASK_TYPE.equals(taskType) && !SPACE_TASK_TYPE.equals(taskType)) {
@@ -289,6 +289,10 @@ public class TaskInjector extends DataInjector {
       comments.add(comment);
     }
     task.setComments(comments);
+    //Set tasks as completed
+    if (random.nextInt(100) < perCompleted) {
+      task.setCompleted(true);
+    }
     return task;
   }
 
