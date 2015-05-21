@@ -56,7 +56,7 @@ public class Task {
 
   private String      description;
 
-  @Enumerated
+  @Enumerated(EnumType.STRING)
   private Priority    priority;
 
   private String      context;

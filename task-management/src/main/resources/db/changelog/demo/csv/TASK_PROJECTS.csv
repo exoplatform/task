@@ -1,0 +1,6 @@
+NAME,DESCRIPTION,COLOR,DUE_DATE,PARENT_PROJECT_ID
+Product Launch,Launch the new eXo Platform version,NULL,2015-12-01 00:00:00,NULL
+"Marketing Video","Create an amazing video to promote eXo Platform 4.3",NULL,"2015-12-01 00:00:00",1
+"New Feature","All my personal tasks",NULL,"2016-03-15 00:00:00",NULL
+"Social Media","Organize social media campaign",NULL,"2015-12-01 00:00:00",1
+Personal,"My personal list to remember",NULL,"2015-12-01 00:00:00",NULL

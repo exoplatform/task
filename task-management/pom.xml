@@ -205,7 +205,7 @@
           <referenceUsername>root</referenceUsername>
           <referencePassword></referencePassword>
           <!-- db.changelog file -->
-          <changeLogFile>src/main/resources/db/changelog/db.changelog-1.0.0.xml</changeLogFile>
+          <changeLogFile>src/main/resources/db/changelog/db.changelog-master.xml</changeLogFile>
         </configuration>
         <!--<executions>
           <execution>
