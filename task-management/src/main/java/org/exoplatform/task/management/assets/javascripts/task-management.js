@@ -172,19 +172,19 @@ jQuery(document).ready(function($) {
         }
     });
 
-    $rightPanel.on('click', 'a.status-icon', function(e){
+    $rightPanel.on('click', 'a.task-completed-field', function(e){
         e.preventDefault();
         var $a = $(e.target || e.srcElement).closest('a');
         var isCompleted = $a.hasClass('icon-completed');
-        var taskId = $('#taskDetailContainer').find('.task-detail').attr('task-id');
-        var statusToUpdate = isCompleted ? 1 : 4; // 1 = TODO, 4 = Done
-        var data = {taskId: taskId, status: statusToUpdate};
-        $a.jzAjax('TaskController.updateTaskStatus()', {
+        var taskId = $a.closest('.task-detail').attr('task-id');
+        var data = {taskId: taskId, completed: !isCompleted};
+        $a.jzAjax('TaskController.updateCompleted()', {
             data: data,
             success: function(message) {
                 $a.toggleClass('icon-completed');
             }
         });
+        return false;
     });
     $rightPanel.on('click', 'a.action-clone-task', function(e){
         var $a = $(e.target).closest('a');

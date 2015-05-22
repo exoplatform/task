@@ -216,15 +216,28 @@ public class TaskController {
         }
       }
     } else if("status".equalsIgnoreCase(name)) {
-      //TODO: load status from ID
       try {
-        int status = Integer.parseInt(val);
-        for(Status s : Status.STATUS) {
-          if(s.getId() == status) {
-            task.setStatus(s);
+        Long statusId = Long.parseLong(val);
+        Status status = taskService.getStatusHandler().find(statusId);
+        if(status == null) {
+          return Response.notFound("Status does not exist with ID: " + val);
+        }
+        task.setStatus(status);
+
+        // Task is completed if this status is last one
+        boolean isLast = true;
+        for(Status s : status.getProject().getStatus()) {
+          if (s.getId() != status.getId() && s.getRank() > status.getRank()) {
+            isLast = false;
             break;
           }
         }
+        if(isLast) {
+          task.setCompleted(true);
+        } else {
+          task.setCompleted(false);
+        }
+
       } catch (NumberFormatException ex) {
         return Response.status(406).body("Status is unacceptable: " + val);
       }
@@ -255,17 +268,12 @@ public class TaskController {
   @Resource
   @Ajax
   @MimeType("text/plain")
-  public Response updateTaskStatus(Long taskId, int status) {
+  public Response updateCompleted(Long taskId, Boolean completed) {
     Task task = taskService.getTaskHandler().find(taskId);
     if(task == null) {
       return Response.notFound("Task not found with ID: " + taskId);
     }
-    for(Status s : Status.STATUS) {
-      if(s.getId() == status) {
-        task.setStatus(s);
-        break;
-      }
-    }
+    task.setCompleted(completed);
     taskService.getTaskHandler().update(task);
     return Response.ok("Update successfully");
   }

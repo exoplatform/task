@@ -191,12 +191,7 @@ public class Project {
 
     if (this.getStatus() != null) {
       for (Status st : this.getStatus()) {
-        Status cloned;
-        if (Status.DONE.getName().equals(st.getName())) {
-          cloned = st.clone(false);
-        } else {
-          cloned = st.clone(cloneTask);
-        }
+        Status cloned = st.clone(cloneTask);
         project.getStatus().add(cloned);
         cloned.setProject(project);
       }

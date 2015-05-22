@@ -34,20 +34,6 @@ import java.util.Set;
         query = "SELECT s FROM Status s WHERE s.rank = (SELECT MIN(s2.rank) FROM Status s2 WHERE s2.project.id = :projectId) AND s.project.id = :projectId)")
 })
 public class Status {
-
-  public static final Status   INCOMING    = new Status(0, "INCOMING");
-
-  public static final Status   TODO        = new Status(1, "TODO");
-
-  public static final Status   IN_PROGRESS = new Status(2, "In Progress");
-
-  public static final Status   WAITING_ON  = new Status(3, "Waiting on");
-
-  public static final Status   DONE        = new Status(4, "Done");
-
-  public static final Status[] STATUS      = { TODO, IN_PROGRESS, WAITING_ON, DONE };
-
-
   @Id
   @GeneratedValue
   @Column(name = "STATUS_ID")
@@ -133,6 +119,7 @@ public class Status {
     if (cloneTask) {
       if (this.getTasks() != null) {
         for (Task t : this.getTasks()) {
+          if(t.isCompleted()) continue;
           Task cloned = t.clone();
           status.getTasks().add(cloned);
           cloned.setStatus(status);

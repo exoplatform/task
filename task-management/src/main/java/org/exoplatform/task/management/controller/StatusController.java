@@ -23,22 +23,52 @@ import juzu.MimeType;
 import juzu.Resource;
 import juzu.Response;
 import org.exoplatform.commons.juzu.ajax.Ajax;
+import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
+import org.exoplatform.task.service.TaskService;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import javax.inject.Inject;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
 public class StatusController {
+
+  @Inject
+  TaskService taskService;
+
   @Resource
   @Ajax
   @MimeType.JSON
-  public Response getAllStatus() {
+  public Response getAllStatus(Long projectId) {
+    Project project = taskService.getProjectHandler().find(projectId);
+    if(project == null) {
+      return Response.notFound("Project does not exist with ID: " + projectId);
+    }
     try {
       JSONArray array = new JSONArray();
-      for (Status status : Status.STATUS) {
+      List<Status> statuses = new LinkedList<Status>(project.getStatus());
+      Collections.sort(statuses, new Comparator<Status>() {
+        @Override
+        public int compare(Status o1, Status o2) {
+          if(o1.getRank() == null) {
+            return o2.getRank() == null ? 0 : -1;
+          } else if(o2.getRank() == null) {
+            return 1;
+          }
+
+          return o1.getRank().compareTo(o2.getRank());
+        }
+      });
+      for (Status status : statuses) {
         JSONObject json = new JSONObject();
         json.put("value", status.getId());
         json.put("text", status.getName());

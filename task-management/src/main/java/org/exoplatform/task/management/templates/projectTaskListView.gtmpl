@@ -81,7 +81,7 @@
                                     <% group.value.eachWithIndex { task, index -> %>
                                     <li class="task" task-id="${task.id}">
                                         <div class="pull-left">
-                                            <% if(task.status != null && task.status.id == 4){%>
+                                            <% if(task.completed){%>
                                             <i class="uiIconTick">&nbsp;</i>
                                             <del>${task.title}<del>
                                                     <% } else {%>

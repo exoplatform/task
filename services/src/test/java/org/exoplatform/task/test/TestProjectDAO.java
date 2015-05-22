@@ -100,7 +100,7 @@ public class TestProjectDAO {
   @Test
   public void testCloneProject() {
     Task t = createTask("my task");
-    Status st = createStatus(Status.TODO.getName(), t);
+    Status st = createStatus("TODO", t);
     Project p1 = createProject("Test project 1", st);
     pDAO.create(p1);    
     
