@@ -178,7 +178,7 @@ public class TaskInjector extends DataInjector {
       //Loop on number of projects
       for (int j = 0; j < nbProject; j++) {
         //Create project
-        Project project = createProject(userName);
+        Project project = createProject(userName, j);
         //Add default status to the project
         List<Status> statuses = createStatus(project);
         Status randomStatus;
@@ -186,7 +186,7 @@ public class TaskInjector extends DataInjector {
 
         //Loop on number of tasks per project
         for (int k = 0; k < nbTasks; k++) {
-          Task task = createTask(userName);
+          Task task = createTask(userName, project.getName(), k);
           //Add a random status to task
           randomStatus = statuses.get(random.nextInt(3));
           task.setStatus(randomStatus);
@@ -198,20 +198,8 @@ public class TaskInjector extends DataInjector {
       //Create Incoming Task (not attached to project) of the user
       List<Task> tasks = new ArrayList<Task>();
       for (int j = 0; j < nbIncomingTasks; j++) {
-        Task task = createTask(userName);
-        task.setTitle(randomWords(1));
-        task.setDescription(randomWords(20));
-        task.setCreatedBy(userName);
-        task.setAssignee(userName);
+        Task task = createTask(userName, "Incoming-"+userName, j);
         task.setCompleted(false);
-        task.setCreatedTime(new Date());
-        //Add tags to Task
-        Set<String> tags = new HashSet<String>();
-        for (int k = 0; k < nbTags; k++) {
-          String tag = randomWords(1);
-          tags.add(tag);
-        }
-        task.setTags(tags);
         tasks.add(task);
       }
       taskService.getTaskHandler().createAll(tasks);
@@ -238,7 +226,7 @@ public class TaskInjector extends DataInjector {
       //Loop on number of projects
       for (int j = 0; j < nbProject; j++) {
         //Create project
-        Project project = createProject(manager);
+        Project project = createProject(manager, j);
         //Add space member, member of the project
         Set<String> members = new HashSet<String>();
         members.add(member);
@@ -250,7 +238,7 @@ public class TaskInjector extends DataInjector {
 
         //Loop on number of tasks per project
         for (int k = 0; k < nbTasks; k++) {
-          Task task = createTask(manager);
+          Task task = createTask(manager, project.getName(), k);
           //Add a random status to task
           randomStatus = statuses.get(random.nextInt(3));
           task.setStatus(randomStatus);
@@ -263,18 +251,17 @@ public class TaskInjector extends DataInjector {
 
   }
 
-  private Task createTask(String username) {
+  private Task createTask(String username, String project, int numtask) {
     Task task = new Task();
-    task.setTitle(randomWords(2));
+    task.setTitle("Task-"+project+"-"+numtask);
     task.setDescription(randomWords(20));
     task.setCreatedBy(username);
     task.setAssignee(username);
-    task.setCompleted(false);
     task.setCreatedTime(new Date());
     //Add tags to Task
     Set<String> tags = new HashSet<String>();
     for (int k = 0; k < nbTags; k++) {
-      String tag = randomWords(1);
+      String tag = randomWords(1)+k;
       tags.add(tag);
     }
     task.setTags(tags);
@@ -296,9 +283,9 @@ public class TaskInjector extends DataInjector {
     return task;
   }
 
-  private Project createProject(String username) {
+  private Project createProject(String username, int numProject) {
     Project project = new Project();
-    project.setName(randomWords(3));
+    project.setName("Project-"+username+"-"+numProject);
     project.setDescription(randomWords(20));
 
     //Add current user as manager of the project
