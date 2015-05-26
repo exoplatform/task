@@ -12,7 +12,7 @@
   <!-- Definition of TASK_PROJECTS table -->
   <changeSet author="tclement@exoplatform.com" id="1.0.0-1">
     <createTable tableName="TASK_PROJECTS">
-      <column name="PROJECT_ID" type="BIGINT" autoIncrement="${autoIncrement}">
+      <column name="PROJECT_ID" type="BIGINT" autoIncrement="${autoIncrement}" startWith="1">
         <constraints nullable="false" primaryKey="true" primaryKeyName="PK_TASK_PROJECTS" unique="true"/>
       </column>
       <column name="NAME" type="VARCHAR(50)">
@@ -24,7 +24,7 @@
       <column name="COLOR" type="VARCHAR(100)">
         <constraints nullable="true"/>
       </column>
-      <column name="DUE_DATE" type="DATE">
+      <column name="DUE_DATE" type="TIMESTAMP">
         <constraints nullable="true"/>
       </column>
       <column name="PARENT_PROJECT_ID" type="BIGINT">
@@ -63,7 +63,7 @@
   <!-- Definition of TASK_STATUS table -->
   <changeSet author="tclement@exoplatform.com" id="1.0.0-5">
     <createTable tableName="TASK_STATUS">
-      <column name="STATUS_ID" type="BIGINT" autoIncrement="${autoIncrement}">
+      <column name="STATUS_ID" type="BIGINT" autoIncrement="${autoIncrement}" startWith="1">
         <constraints nullable="false" primaryKey="true" primaryKeyName="PK_TASK_STATUS" unique="true"/>
       </column>
       <column name="NAME" type="VARCHAR(50)">
@@ -84,7 +84,7 @@
   <!-- Definition of TASK_TASKS table -->
   <changeSet author="tclement@exoplatform.com" id="1.0.0-7">
     <createTable tableName="TASK_TASKS">
-      <column name="TASK_ID" type="BIGINT" autoIncrement="${autoIncrement}">
+      <column name="TASK_ID" type="BIGINT" autoIncrement="${autoIncrement}" startWith="1">
         <constraints primaryKey="true" primaryKeyName="PK_TASK_TASKS" nullable="false" unique="true"/>
       </column>
       <column name="TITLE" type="VARCHAR(50)">
@@ -114,10 +114,10 @@
       <column name="DURATION" type="INTEGER">
         <constraints nullable="true"/>
       </column>
-      <column name="START_DATE" type="DATE">
+      <column name="START_DATE" type="TIMESTAMP">
         <constraints nullable="true"/>
       </column>
-      <column name="DUE_DATE" type="DATE">
+      <column name="DUE_DATE" type="TIMESTAMP">
         <constraints nullable="true"/>
       </column>
       <column name="COMPLETED" type="BIT" defaultValue="0">
@@ -156,7 +156,7 @@
   <!-- Definition of TASK_COMMENTS table -->
   <changeSet author="tuyennt@exoplatform.com" id="1.0.0-11">
     <createTable tableName="TASK_COMMENTS">
-      <column name="COMMENT_ID" type="BIGINT" autoIncrement="${autoIncrement}">
+      <column name="COMMENT_ID" type="BIGINT" autoIncrement="${autoIncrement}" startWith="1">
         <constraints primaryKey="true" primaryKeyName="PK_TASK_COMMENTS" nullable="false" unique="true"/>
       </column>
       <column name="AUTHOR" type="VARCHAR(100)">

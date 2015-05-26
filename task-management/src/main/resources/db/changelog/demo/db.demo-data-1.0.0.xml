@@ -13,7 +13,7 @@
         file="csv/TASK_PROJECTS.csv"
         relativeToChangelogFile="true"
         tableName="TASK_PROJECTS">
-      <column name="DUE_DATE" header="DUE_DATE" type="DATE"/>
+      <column name="DUE_DATE" header="DUE_DATE" type="TIMESTAMP"/>
     </loadData>
   </changeSet>
 
@@ -55,8 +55,8 @@
         file="csv/TASK_TASKS.csv"
         relativeToChangelogFile="true"
         tableName="TASK_TASKS">
-      <column name="START_DATE" header="START_DATE" type="DATE"/>
-      <column name="DUE_DATE" header="DUE_DATE" type="DATE"/>
+      <column name="START_DATE" header="START_DATE" type="TIMESTAMP"/>
+      <column name="DUE_DATE" header="DUE_DATE" type="TIMESTAMP"/>
       <column name="COMPLETED" type="BOOLEAN" />
     </loadData>
   </changeSet>
