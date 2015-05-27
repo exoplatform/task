@@ -16,15 +16,6 @@
 */
 package org.exoplatform.task.service.jpa;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.logging.Logger;
-
-import javax.inject.Singleton;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.component.ComponentRequestLifecycle;
 import org.exoplatform.task.dao.jpa.CommentDAOImpl;
@@ -34,6 +25,11 @@ import org.exoplatform.task.dao.jpa.TaskDAOImpl;
 import org.exoplatform.task.factory.ExoEntityManagerFactory;
 import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.service.impl.AbstractTaskService;
+
+import javax.inject.Singleton;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import java.util.logging.Logger;
 
 /**
  * Created by The eXo Platform SAS
@@ -65,6 +61,7 @@ public class TaskServiceJPAImpl extends AbstractTaskService implements TaskServi
     entityManager.set(entityManagerFactory.createEntityManager());
     if (!getEntityManager().getTransaction().isActive()) {
       getEntityManager().getTransaction().begin();
+      LOG.info("Task management JPA Transaction begin");
     }
   }
 
@@ -73,6 +70,7 @@ public class TaskServiceJPAImpl extends AbstractTaskService implements TaskServi
     if (getEntityManager() != null && getEntityManager().getTransaction().isActive()) {
       getEntityManager().getTransaction().commit();
       getEntityManager().close();
+      LOG.info("Task management JPA Transaction close");
       entityManager.set(null);
     }
   }
