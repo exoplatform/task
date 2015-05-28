@@ -18,6 +18,8 @@ package org.exoplatform.task.service.jpa;
 
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.component.ComponentRequestLifecycle;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.exoplatform.task.dao.jpa.CommentDAOImpl;
 import org.exoplatform.task.dao.jpa.ProjectDAOImpl;
 import org.exoplatform.task.dao.jpa.StatusDAOImpl;
@@ -29,7 +31,6 @@ import org.exoplatform.task.service.impl.AbstractTaskService;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import java.util.logging.Logger;
 
 /**
  * Created by The eXo Platform SAS
@@ -40,7 +41,7 @@ import java.util.logging.Logger;
 @Singleton
 public class TaskServiceJPAImpl extends AbstractTaskService implements TaskService, ComponentRequestLifecycle {
 
-  private static final Logger LOG = Logger.getLogger("TaskServiceJPATestImpl");
+  private static final Log LOG = ExoLogger.getLogger("TaskServiceJPATestImpl");
 
   private ThreadLocal<EntityManager> entityManager = new ThreadLocal<EntityManager>();
 

@@ -42,6 +42,8 @@ Each parameter is optional because they all have a default value.
 |to|The end of the range|10 |
 |prefix|Define the user prefix|"bench.space" if type = "space", "bench.user" otherwise |
 |suffix|Define the user suffix (How many digit after prefix)|4 |
+|taskPrefix|Define the Task prefix|Task |
+|projectPrefix|Define the Project prefix|Project |
 
 #### Sample
 

@@ -67,6 +67,12 @@ public class TaskInjector extends DataInjector {
   private static final String DEFAULT_USER_PREFIX = "bench.user";
   private static final String DEFAULT_SPACE_PREFIX = "bench.space";
 
+  private static final String TASK_PREFIX = "taskPrefix";
+  private static final String DEFAULT_TASK_PREFIX = "Task";
+
+  private static final String PROJECT_PREFIX = "projectPrefix";
+  private static final String DEFAULT_PROJECT_PREFIX = "Project";
+
   private static final String NAME_SUFFIX = "suffix";
   private static final int DEFAULT_SUFFIX = 4;
 
@@ -101,6 +107,9 @@ public class TaskInjector extends DataInjector {
   private int nameSuffix;
   private String suffixPattern;
 
+  private String taskPrefix;
+  private String projectPrefix;
+
   private int userFrom;
   private int userTo;
 
@@ -127,6 +136,8 @@ public class TaskInjector extends DataInjector {
     }
     namePrefix = (USER_TASK_TYPE.equals(taskType)) ? getStringParam(params, NAME_PREFIX, DEFAULT_USER_PREFIX) : getStringParam(params, NAME_PREFIX, DEFAULT_SPACE_PREFIX);
     nameSuffix = getIntegerParam(params, NAME_SUFFIX, DEFAULT_SUFFIX);
+    taskPrefix = getStringParam(params, TASK_PREFIX, DEFAULT_TASK_PREFIX);
+    projectPrefix = getStringParam(params, PROJECT_PREFIX, DEFAULT_PROJECT_PREFIX);
     userFrom = getIntegerParam(params, USER_FROM, DEFAULT_USER_FROM);
     userTo = getIntegerParam(params, USER_TO, DEFAULT_USER_TO);
   }
@@ -253,7 +264,7 @@ public class TaskInjector extends DataInjector {
 
   private Task createTask(String username, String project, int numtask) {
     Task task = new Task();
-    task.setTitle("Task-"+project+"-"+numtask);
+    task.setTitle(taskPrefix+"-"+numtask);
     task.setDescription(randomWords(20));
     task.setCreatedBy(username);
     task.setAssignee(username);
@@ -285,7 +296,7 @@ public class TaskInjector extends DataInjector {
 
   private Project createProject(String username, int numProject) {
     Project project = new Project();
-    project.setName("Project-"+username+"-"+numProject);
+    project.setName(projectPrefix+"-"+username+"-"+numProject);
     project.setDescription(randomWords(20));
 
     //Add current user as manager of the project
