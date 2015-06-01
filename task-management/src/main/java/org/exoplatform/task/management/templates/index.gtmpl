@@ -12,7 +12,7 @@
 	    <div class="leftPanel uiAccordion span3">
 	        <ul class="left-menu">
 	            <li class="accordion-heading active">
-	                <a class="project-name" data-id="-1" href="@{TaskManagement.index()}">Incomming</a>
+	                <a class="project-name" data-id="-1" href="@{TaskManagement.index()}">Incomming&nbsp;<span class="badgeDefault badgePrimary mini top">1</span></a>
 	            </li>
 	            <li class="accordion-heading">
 	                <a class="project-name" data-id="-2" href="#">To Do</a>
@@ -24,17 +24,20 @@
 		                   href="#">
 		                    <i class="uiIconLightGray uiIconSimplePlusMini"></i>
 		                </a>
-		                <ul class="dropdown-menu">
-		                    <li><a class="new-project" data-projectId="0" href="#">Add project</a></li>
-		                    <li><a href="#">Show Hidden projects</a></li>
-		                </ul>
-		                <a href="#">Projects</a>
+		                <div class="dropdown-menu">
+		                	<span class="arrowLeft"></span>
+		                	<ul class="uiDropdownMenu">
+			                    <li><a class="new-project" data-projectId="0" href="#">Add project</a></li>
+			                    <li><a href="#">Show Hidden projects</a></li>
+			                </ul>
+			            </div>
+		                <a class="project-name" href="#">Projects</a>
 					</div>
 	
 	                #{include path=listProjects.gtmpl /}
 	            </li>
 	            <li class="accordion-heading">
-	                <a class="menu-item" href="#">Label</a>
+	                <a class="project-name" href="#">Label</a>
 	            </li>
 	        </ul>
 	    </div>

@@ -1,44 +1,55 @@
 #{param name=projects/}
 
 <%
-def displayListProjectItem(project) { %>
+def displayListProjectItem(project, level) {
+	def hasChildClass = (project.children != null && project.children.size() > 0) ? 'has-child' : '';
+	def indent = (level - 1) * 20; 
+%>
     <li class="dropdown project-item">
-        <div class="sub-item">
+        <div class="sub-item" style="padding-left: <%=indent%>px">
 	        <a class="dropdown-toggle pull-right"
 	           data-toggle="dropdown"
 	           href="#">
-	            <b class="caret"></b>
+	            <i class="uiIconRightMenu uiIconLightGray"></i>
 	        </a>
-	        <ul class="dropdown-menu project-menu">
-	            <li><a href="#">Add task</a></li>
-	            <li><a href="#">Share</a></li>
-	            <li><a class="clone-project" data-projectId="${project.id}" href="#">Clone</a></li>
-	            <li><a href="#">Delete</a></li>
-	            <li><a href="#">Hide</a></li>
-	            <li><a class="new-project" data-projectId="${project.id}" href="#">Add project</a></li>
-	        </ul>
-	        <a href="#" class="orange colorPie"><span class=""></span></a>
+	        <div class="dropdown-menu">
+	        	<span class="arrowLeft"></span>
+	        	<ul class="uiDropdownMenu project-menu">
+		            <li><a href="#">Add task</a></li>
+		            <li><a href="#">Share</a></li>
+		            <li><a class="clone-project" data-projectId="${project.id}" href="#">Clone</a></li>
+		            <li><a href="#">Delete</a></li>
+		            <li><a href="#">Hide</a></li>
+		            <li><a class="new-project" data-projectId="${project.id}" href="#">Add project</a></li>
+		        </ul>
+		    </div>
+	        <a href="#" class="Orange colorPie"><span class=""></span></a>
 	        <a href="#" class="project-name" data-id="${project.id}"><i class="uiIconLightGray uiIconArrowRight"></i>${project.name}</a>
 		</div>
         <% if (project.children != null && project.children.size() > 0) {
-            displayListProjects(project.children, project.getId());
+            displayListProjects(project.children, project.getId(), level);
         }%>
     </li>
 <% }
 
 
-def displayListProjects(projects, parentId) { %>
+def displayListProjects(projects, parentId, level) { %>
     <ul class="list-projects" parentId="${parentId}">
         <%if(projects.size() == 0) {%>
         <li class="no-project">
             No project
         </li>
-        <%} else { projects.each { project ->
-            displayListProjectItem(project)
-        }}%>
+        <%} else {
+        	level++; 
+        	projects.each { project ->
+            	displayListProjectItem(project, level)
+        	}
+        	level--;
+        }
+        %>
     </ul>
 <%}%>
 
 <%
-    displayListProjects(projects, 0)
+    displayListProjects(projects, 0, 0)
 %>
