@@ -34,6 +34,9 @@
 @Scripts({
         @Script(id = "task-management-js", value = "javascripts/task-management.js")
 })
+@Less({
+	@Stylesheet(id = "style-less", value = "less/style.less")
+})
 @Stylesheets({
     @Stylesheet(id = "style.css", value = "styles/style.css"),
     @Stylesheet(id = "bootstrap-datepicker.css", value = "bootstrap-datepicker/1.4.0/css/bootstrap-datepicker.css"),
@@ -45,6 +48,7 @@ package org.exoplatform.task.management;
 
 import juzu.Application;
 import juzu.plugin.asset.*;
+import juzu.plugin.less4j.Less;
 import juzu.plugin.portlet.Portlet;
 import juzu.plugin.binding.Bindings;
 import juzu.plugin.binding.Binding;

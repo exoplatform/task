@@ -12,13 +12,13 @@ jQuery(document).ready(function($) {
         '<button type="button" class="btn editable-cancel"><i class="uiIconClose"></i></button>';
 
     var showRightPanel = function() {
-        $centerPanel.removeClass('span10').addClass('span5');
+        $centerPanel.removeClass('span9').addClass('span4');
         $rightPanel.show();
     };
     var hideRightPanel = function() {
         $rightPanelContent.html('');
         $rightPanel.hide();
-        $centerPanel.removeClass('span5').addClass('span10');
+        $centerPanel.removeClass('span4').addClass('span9');
     };
 
     var saveTaskDetailFunction = function(params) {

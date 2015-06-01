@@ -1,0 +1,190 @@
+.clearfix {clear: both}
+
+.task-management h4 {
+    background: #eee;
+    padding: 5px;
+}
+#taskManagement .task {
+    padding: 10px 0;
+    margin: 10px 0;
+    border-bottom: dotted 1px #ccc;
+}
+#taskManagement .task label {
+    display: inline-block;
+}
+#taskManagement .task input[type="checkbox"],
+#taskManagement .task span.tag
+{
+    visibility: hidden;
+}
+#taskManagement .task:hover {
+    background: #F5F7FA;
+}
+#taskManagement .task input[type="checkbox"]:checked,
+#taskManagement .task:hover input[type="checkbox"],
+#taskManagement .task:hover span.tag
+{
+    visibility: visible;
+}
+.task-detail {
+    padding-right: 7px;
+}
+.task-detail .icon {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    border: solid 4px #666;
+    background-color: #fff;
+    cursor: pointer;
+}
+.task-detail .icon.icon-completed,
+.task-detail .icon:hover {
+    margin-top: 0px;
+    background: #fff url("../images/completed.png") no-repeat top left;
+}
+.task-detail .icon.icon-completed {
+    vertical-align: middle;
+}
+.task-detail .icon.icon-completed:hover {
+    background-image: none;
+}
+.task-description .editable-inline,
+.task-description .editable-input,
+.task-description .editable-input textarea,
+.task-description .editableform {
+    width: 100%;
+}
+.editable[data-type="textarea"] {
+    display: block;
+    height: 72px;
+    border: solid 1px #ccc;
+    padding: 3px 10px;
+    margin: 3px 0px 30px;
+    border-radius: 3px;
+}
+.task-info-row {
+    margin: 10px 0;
+}
+#taskManagement .open button.dropdown-toggle {
+    background-color: transparent !important;
+    box-shadow: none !important;
+    border: solid 1px #ccc;
+}
+#taskManagement button.dropdown-toggle:hover {
+    border: solid 1px #ccc;
+}
+#taskManagement .dropdown-toggle {
+    border: solid 1px transparent;
+    background: transparent;
+    box-shadow: none;
+}
+.editable-click, a.editable-click {
+    display: inline-block;
+    padding: 5px 20px 5px 5px;
+    border: solid 1px transparent;
+    color: #333;
+}
+a.editable-click:hover {
+    border: solid 1px #ddd;
+}
+#taskCommentButton {
+    margin-top: 10px;
+}
+.comment .comment-action {
+    width: 16px;
+}
+.comment .action-link {
+    visibility: hidden;
+}
+.comment:hover .action-link {
+    visibility: visible;
+}
+.leftPanel ul.nav li a {
+    border-radius: 0;
+    margin: 0;
+}
+.leftPanel ul.left-menu.nav > li {
+    margin: 3px 0;
+}
+.leftPanel ul.left-menu.nav > li > a {
+    background: #eee;
+}
+.leftPanel ul.left-menu.nav li.dropdown > ul.dropdown-menu {
+    top: 30px;
+    left: calc(100% - 30px);
+}
+.leftPanel ul.left-menu.nav li.dropdown b.caret {
+    float: right;
+}
+.leftPanel ul.list-projects.nav li.dropdown > a > b.caret {
+    visibility: hidden;
+}
+.leftPanel ul.list-projects.nav li.dropdown:hover > a > b.caret {
+    visibility: visible;
+}
+.leftPanel ul.left-menu.nav > li.active a {
+    background: #0088cc;
+}
+.leftPanel ul.left-menu.nav > li > ul.list-projects {
+    margin: 0;
+}
+.leftPanel ul.left-menu.nav > li > ul.list-projects > li > a {
+    padding-left: 5px;
+    margin: 0;
+}
+.project-description .editable-inline,
+.project-description .editable-input,
+.project-description .editable-input textarea,
+.project-description .editableform {
+    width: 100%;
+}
+
+
+.projectListView .header {
+    background: #eee;
+    padding: 5px 0 0;
+}
+.projectListView > .header {
+    margin-bottom: 20px;
+}
+.projectListView .header h2 {
+    margin: 0 0 0 5px;
+    font-size: 19px;
+    line-height: 100%;
+    padding-top: 5px;
+}
+
+.projectListView .input-block-level,
+.projectListView .input-block-level:focus {
+    border: none;
+    border-bottom: solid 1px #ccc;
+    border-radius: 0;
+    outline: none;
+    box-shadow: none;
+}
+.form-search.relative {
+    position: relative;
+    margin-bottom: 5px;
+    margin-right: 5px;
+}
+.form-search.relative .uiIconEcmsSearchMini {
+    position: absolute;
+    left: 8px;
+    top: 8px;
+}
+.form-search.relative input[type="text"] {
+    padding-left: 25px;
+}
+.panel .header {
+    height: 30px;
+}
+.taskList h4 {
+    background: #eee;
+    margin-top: 10px;
+    padding: 7px 0 5px;
+}
+
+
+.taskMngCont {
+	margin: 20px;
+}

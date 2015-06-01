@@ -3,21 +3,23 @@
 <%
 def displayListProjectItem(project) { %>
     <li class="dropdown project-item">
-        <a class="dropdown-toggle pull-right"
-           data-toggle="dropdown"
-           href="#">
-            <b class="caret"></b>
-        </a>
-        <ul class="dropdown-menu project-menu">
-            <li><a href="#">Add task</a></li>
-            <li><a href="#">Share</a></li>
-            <li><a class="clone-project" data-projectId="${project.id}" href="#">Clone</a></li>
-            <li><a href="#">Delete</a></li>
-            <li><a href="#">Hide</a></li>
-            <li><a class="new-project" data-projectId="${project.id}" href="#">Add project</a></li>
-        </ul>
-        <a href="#" class="project-name" data-id="${project.id}" style="border-left: solid ${project.color == null ? 'transparent' : project.color} 10px">${project.name}</a>
-
+        <div class="sub-item">
+	        <a class="dropdown-toggle pull-right"
+	           data-toggle="dropdown"
+	           href="#">
+	            <b class="caret"></b>
+	        </a>
+	        <ul class="dropdown-menu project-menu">
+	            <li><a href="#">Add task</a></li>
+	            <li><a href="#">Share</a></li>
+	            <li><a class="clone-project" data-projectId="${project.id}" href="#">Clone</a></li>
+	            <li><a href="#">Delete</a></li>
+	            <li><a href="#">Hide</a></li>
+	            <li><a class="new-project" data-projectId="${project.id}" href="#">Add project</a></li>
+	        </ul>
+	        <a href="#" class="orange colorPie"><span class=""></span></a>
+	        <a href="#" class="project-name" data-id="${project.id}"><i class="uiIconLightGray uiIconArrowRight"></i>${project.name}</a>
+		</div>
         <% if (project.children != null && project.children.size() > 0) {
             displayListProjects(project.children, project.getId());
         }%>
@@ -26,7 +28,7 @@ def displayListProjectItem(project) { %>
 
 
 def displayListProjects(projects, parentId) { %>
-    <ul class="list-projects nav nav-pills nav-stacked" parentId="${parentId}">
+    <ul class="list-projects" parentId="${parentId}">
         <%if(projects.size() == 0) {%>
         <li class="no-project">
             No project
