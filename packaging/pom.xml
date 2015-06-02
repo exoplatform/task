@@ -35,10 +35,6 @@
   <dependencies>
     <dependency>
       <groupId>org.exoplatform.addons.task</groupId>
-      <artifactId>task-management-config</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.exoplatform.addons.task</groupId>
       <artifactId>task-management</artifactId>
       <type>war</type>
     </dependency>
