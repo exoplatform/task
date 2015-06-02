@@ -46,7 +46,7 @@
                 #{include path=projectTaskListView.gtmpl /}
             </div>
 	    </div>
-	    <div class="rightPanel span5" style="display: none">
+	    <div class="rightPanel span4" style="display: none">
 	        <div class="control pull-right">
 	            <a href="#" class="close"><i class="uiIconClose"></i></a>
 	        </div>
