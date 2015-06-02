@@ -24,11 +24,11 @@
 		                   href="#">
 		                    <i class="uiIconLightGray uiIconSimplePlusMini"></i>
 		                </a>
-		                <div class="dropdown-menu uiDropdownWithIcon">
+		                <div class="dropdown-menu uiDropdownWithIcon" style="left: 100%;">
 		                	<span class="arrowLeft"></span>
 		                	<ul class="uiDropdownMenu">
-			                    <li><a class="new-project" data-projectId="0" href="#">Add project</a></li>
-			                    <li><a href="#">Show Hidden projects</a></li>
+			                    <li><a class="new-project" data-projectId="0" href="#"><i class="uiIconAddProject uiIconLightGray"></i>Add project</a></li>
+			                    <li><a href="#"><i class="uiIconShowProject uiIconLightGray"></i>Show Hidden projects</a></li>
 			                </ul>
 			            </div>
 		                <a class="project-name" href="#">Projects</a>

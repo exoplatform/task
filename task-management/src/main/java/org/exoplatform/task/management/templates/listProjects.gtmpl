@@ -12,15 +12,50 @@ def displayListProjectItem(project, level) {
 	           href="#">
 	            <i class="uiIconRightMenu uiIconLightGray"></i>
 	        </a>
-	        <div class="dropdown-menu uiDropdownWithIcon">
+	        <div class="dropdown-menu uiDropdownWithIcon" style="left: 100%;">
 	        	<span class="arrowLeft"></span>
 	        	<ul class="uiDropdownMenu project-menu">
-		            <li><a href="#">Add task</a></li>
-		            <li><a href="#">Share</a></li>
-		            <li><a class="clone-project" data-projectId="${project.id}" href="#">Clone</a></li>
-		            <li><a href="#">Delete</a></li>
-		            <li><a href="#">Hide</a></li>
-		            <li><a class="new-project" data-projectId="${project.id}" href="#">Add project</a></li>
+		            <li><a href="#"><i class="uiIconEditMini uiIconLightGray"></i>Add task</a></li>
+		            <li><a href="#"><i class="uiIconShare uiIconLightGray"></i>Share</a></li>
+		            <li><a class="clone-project" data-projectId="${project.id}" href="#"><i class="uiIconCloneNode uiIconLightGray"></i>Clone</a></li>
+		            <li><a href="#"><i class="uiIconTrash uiIconLightGray"></i>Delete</a></li>
+		            <li><a href="#"><i class="uiIconHide uiIconLightGray"></i>Hide</a></li>
+		            <li><a class="new-project" data-projectId="${project.id}" href="#"><i class="uiIconAddProject uiIconLightGray"></i>Add project</a></li>
+		            <li class="noColor">No Color</li>
+		            <li class="calendarTableColor">
+						<div>
+							<a class="asparagus colorCell" href="#" style="display: block;"><i class="iconCheckBox"></i></a>
+							<a class="munsell_blue colorCell" href="#" style="display: block;"><i class=""></i></a>
+							<a class="navy_blue colorCell" href="#" style="display: block;"><i class=""></i></a>
+							<a class="purple colorCell" href="#" style="display: block;"><i class=""></i></a>
+							<a class="red colorCell" href="#" style="display: block;"><i class=""></i></a>
+							<a class="brown colorCell" href="#" style="display: block;"><i class=""></i></a>
+						</div>
+						<div>
+							<a class="laurel_green colorCell" href="#" style="display: block;"><i class=""></i></a>
+							<a class="sky_blue colorCell" href="#" style="display: block;"><i class=""></i></a>
+							<a class="blue_gray colorCell" href="#" style="display: block;"><i class=""></i></a>
+							<a class="light_purple colorCell" href="#" style="display: block;"><i class=""></i></a>
+							<a class="hot_pink colorCell" href="#" style="display: block;"><i class=""></i></a>
+							<a class="light_brown colorCell" href="#" style="display: block;"><i class=""></i></a>
+						</div>
+						<div>
+							<a class="moss_green colorCell" href="#" style="display: block;"><i class=""></i></a>
+							<a class="powder_blue colorCell" href="#" style="display: block;"><i class=""></i></a>
+							<a class="light_blue colorCell" href="#" style="display: block;"><i class=""></i></a>
+							<a class="pink colorCell" href="#" style="display: block;"><i class=""></i></a>
+							<a class="Orange colorCell" href="#" style="display: block;"><i class=""></i></a>
+							<a class="gray colorCell" href="#" style="display: block;"><i class=""></i></a>
+						</div>
+						<div>
+							<a class="green colorCell" href="#" style="display: block;"><i class=""></i></a>
+							<a class="baby_blue colorCell" href="#" style="display: block;"><i class=""></i></a>
+							<a class="light_gray colorCell" href="#" style="display: block;"><i class=""></i></a>
+							<a class="beige colorCell" href="#" style="display: block;"><i class=""></i></a>
+							<a class="yellow colorCell" href="#" style="display: block;"><i class=""></i></a>
+							<a class="plum colorCell" href="#" style="display: block;"><i class=""></i></a>
+						</div>
+					</li>
 		        </ul>
 		    </div>
 	        <a href="#" class="Orange colorPie"><span class=""></span></a>
