@@ -12,7 +12,7 @@ def displayListProjectItem(project, level) {
 	           href="#">
 	            <i class="uiIconRightMenu uiIconLightGray"></i>
 	        </a>
-	        <div class="dropdown-menu">
+	        <div class="dropdown-menu uiDropdownWithIcon">
 	        	<span class="arrowLeft"></span>
 	        	<ul class="uiDropdownMenu project-menu">
 		            <li><a href="#">Add task</a></li>
