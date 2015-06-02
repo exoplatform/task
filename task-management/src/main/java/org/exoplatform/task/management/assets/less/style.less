@@ -129,8 +129,7 @@ a.editable-click:hover {
 
 
 .projectListView .header {
-    background: #eee;
-    padding: 5px 0 0;
+    padding: 10px;
 }
 .projectListView > .header {
     margin-bottom: 20px;
@@ -163,16 +162,135 @@ a.editable-click:hover {
 .form-search.relative input[type="text"] {
     padding-left: 25px;
 }
-.panel .header {
-    height: 30px;
-}
-.taskList h4 {
-    background: #eee;
-    margin-top: 10px;
-    padding: 7px 0 5px;
+.taskList {
+    .header {
+        height: 30px;
+    }
+    h4 {
+        background: #eee;
+        margin-top: 10px;
+        padding: 7px 0 5px;
+    }
 }
 
 
 .taskMngCont {
 	margin: 20px;
+}
+
+/* Projects Area */
+#taskManagement {
+    .centerPanel.uiBox {
+        .title {
+            padding: 5px;
+            line-height: 28px;
+            .label-title {
+                font-size: 18px;
+                font-weight: bold;
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+            .uiSearchInput input[type="text"] {
+                min-height: 28px;
+                height: 28px;
+                float: right;
+            }
+            .uiSearchInput .advancedSearch,
+            .uiSearchInput .AdvancedSearch {
+                top: 1px;
+            }
+            .settingActionButtons {
+                margin-left: 5px;
+                .actionIcon {
+                    margin-top: 1px;
+                    float: left;
+                }
+            }
+        }
+    }
+}
+
+.table-project{
+    display: table;
+    width: 100%;
+    .row-item {
+        display: table-row;
+        border-bottom: 1px solid #f0f0f0;
+        &.heading {
+            background-color: #f0f0f0;
+            font-weight: bold;
+            color: #2f5e92;
+        }
+        &.group {
+            border-bottom: none;
+            > .column-item {
+                padding: 0;
+            }
+            .table-project {
+                margin-bottom: 30px;
+            }
+        }
+        .text-time {
+            height: 26px;
+            line-height: 26px;
+        }
+        > .column-item {
+            &.column-checkbox > .uiCheckbox,
+            &.column-action > .arrow-link,
+            &.column-time > .actionIcon {
+                display: none;
+            }
+        }
+        &:hover {
+            background-color: #d0e6fb;
+            > .column-title {
+                font-weight: bold;
+            }
+            &.group {
+                background: none;
+            }
+            > .column-item {
+                &.column-checkbox > .uiCheckbox,
+                &.column-action > .arrow-link,
+                &.column-time > .actionIcon {
+                    display: inline-block;
+                }
+                &.column-time > .text-time {
+                    display: none;
+                }
+            }
+        }
+    }
+    .row-group {
+        display: table-row-group;
+        margin-bottom: 30px;
+    }
+    .column-item {
+        display: table-cell;
+        padding: 8px 4px;
+        vertical-align: middle;
+        position: relative;
+        .project-color {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 5px;
+        }
+        &:first-child{
+            padding-left: 8px;
+        }
+        &:last-child{
+            padding-right: 8px;
+        }
+    }
+    .column-checkbox {
+        width: 24px;
+    }
+    .column-time {
+        text-align: right;
+    }
+    .column-action {
+        width: 16px;
+    }
 }

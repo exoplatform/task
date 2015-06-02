@@ -12,13 +12,21 @@ jQuery(document).ready(function($) {
         '<button type="button" class="btn editable-cancel"><i class="uiIconClose"></i></button>';
 
     var showRightPanel = function() {
+<<<<<<< Updated upstream
         $centerPanel.removeClass('span9').addClass('span4');
+=======
+        $centerPanel.removeClass('span9').addClass('span5');
+>>>>>>> Stashed changes
         $rightPanel.show();
     };
     var hideRightPanel = function() {
         $rightPanelContent.html('');
         $rightPanel.hide();
+<<<<<<< Updated upstream
         $centerPanel.removeClass('span4').addClass('span9');
+=======
+        $centerPanel.removeClass('span5').addClass('span9');
+>>>>>>> Stashed changes
     };
 
     var saveTaskDetailFunction = function(params) {
