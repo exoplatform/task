@@ -505,8 +505,22 @@ $(document).ready(function() {
         submitFilter(e);
         return false;
     });
-
+    //show hide the search box for responsive
+    $centerPanel.on('click', '.action-search' ,function() {
+        $(this).css('display','none');
+         $(this).parents('.uiHeaderBar').addClass('toggle');
+        return false;
+    });
+    $centerPanel.on('click', '.action-close' ,function() {
+        $(this).css('display','none');
+        $(this).prev().css('display','inline-block');
+         $(this).parents('.uiHeaderBar').removeClass('toggle');
+        return false;
+    });
+   
+     //hide the popover when there are no project in left panel
     $('.add-new-project').on('click',function() {
         $(this).parent().find('.popover').css('display','none');
     });
+  });
 });

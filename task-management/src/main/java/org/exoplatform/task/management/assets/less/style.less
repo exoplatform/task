@@ -130,6 +130,16 @@ a.editable-click:hover {
 
 .projectListView .header {
     padding: 10px;
+    .input-field {
+        position: relative;
+        .popover  {
+             left: 0;
+             top: 43px;
+             .arrow {
+                left: 12%;
+             }
+        }
+    }
 }
 .projectListView > .header {
     margin-bottom: 20px;
@@ -178,11 +188,16 @@ a.editable-click:hover {
                 font-weight: bold;
                 padding-left: 10px;
                 padding-right: 10px;
+                  max-width: 280px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
             }
             .uiSearchInput input[type="text"] {
                 min-height: 28px;
                 height: 28px;
                 float: right;
+                max-width: 210px;
             }
             .uiSearchInput .advancedSearch,
             .uiSearchInput .AdvancedSearch {
@@ -204,10 +219,8 @@ a.editable-click:hover {
     width: 100%;
     .row-item {
         display: table-row;
-        //border-bottom: 1px solid #f0f0f0;
+        cursor: pointer;
         &.heading {
-            //background-color: #f0f0f0!important;
-            //color: #2f5e92;
             font-weight: bold;
             .column-item {
                 > * {
@@ -250,9 +263,9 @@ a.editable-click:hover {
         position: relative;
         .project-color {
             position: absolute;
-            left: 0;
+            left: 1px;
             top: 0;
-            height: 100%;
+            bottom: 1px;
             width: 5px;
         }
         &:first-child{
@@ -264,6 +277,9 @@ a.editable-click:hover {
     }
     .column-checkbox {
         width: 24px;
+        .status-task {
+            margin-left: 4px;
+        }
     }
     .column-time {
         text-align: right;
@@ -313,4 +329,71 @@ a.editable-click:hover {
     width: 100%;
     margin: 10px 0 0;
   }
+}
+// responsive center panel
+
+.advancedSearch-action {
+    display: none;
+}
+
+.centerPanel {
+    .uiSearchInput.searchWithIcon {
+        display: block;
+    }
+    &.span5 {
+        .settingActionButtons {
+             .advancedSearch-action  {
+                display: inline-block;
+            }
+        }
+        .uiSearchInput   {
+            display: none;
+        }
+        .uiHeaderBar.toggle {
+             .uiSearchInput{
+                display: block;
+             }
+            .alignBtnGroup  {
+                float: left;
+                width: auto;
+            }
+        }
+    }
+}
+
+#taskManagement .centerPanel.span5 .title .label-title {
+    max-width: 130px;
+
+}
+
+#taskManagement .centerPanel.span9 {
+    .uiHeaderBar.toggle {
+        .label-title  {
+            display: block;
+        }
+    }
+}
+
+.uiHeaderBar.toggle {
+   .label-title , .action-search  {
+        display: none;
+    }
+    .action-close {
+        display: inline-block!important;
+    }
+}
+
+.table-project {
+    .column-item {
+        .actionIcon {            
+           padding: 0 2px;
+           margin: 2px 0;
+           .uiIconArrowRight {
+            background-position: -39px -120px;
+           }
+           .uiIconClock {
+                background-position: -160px -81px;
+            }
+        }
+    }
 }

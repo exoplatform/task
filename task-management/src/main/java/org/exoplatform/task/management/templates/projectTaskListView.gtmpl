@@ -8,19 +8,22 @@
 
 <div class="projectListView" data-projectid="${currentProjectId}">
     <div class="title">
-        <div class="uiHeaderBar">
+        <div class="uiHeaderBar clearfix">
             <div class="settingActionButtons pull-right">
+                <span class="advancedSearch-action pull-left">
+                   <a href="javascript:void(0)" class="action-search actionIcon "> <i class="uiIconSearch uiIconLightGray"></i></a>
+                   <a href="javascript:void(0)" class="action-close  " style="display:none"> <i class="uiIconClose uiIconLightGray" ></i></a>
+                </span>
+                <a class="actionIcon" href="#"><i class="uiIcon uiIconFilter"></i></a>
                 <a class="actionIcon" href="#"><i class="uiIcon uiIconLink"></i></a>
-                <a class="actionIcon" href="#"><i class="uiIcon uiIconLink"></i></a>
+
             </div>
-            <div class="pull-right">
+            <div class="pull-right search-container">
                 <form class="UIForm" action="#" onsubmit="javascript:void(0)">
-                    <div class="uiSearchForm uiSearchInput pull-right searchWithIcon">
-                        <div class="advancedSearch">
-                            <i class="uiIconEcmsSearchMini"></i>
-                        </div>
-                        <input type="text" name="keyword" value="${keyword}" placeholder="Search" class="span12">
-                    </div>
+                    <div class="uiSearchForm uiSearchInput searchWithIcon">
+                         <a title="" class="advancedSearch" rel="tooltip" data-placement="bottom" href="javascript:void(0)" data-original-title="Search"><i class="uiIconSearch uiIconLightGray"></i></a>
+                         <input type="text"  name="keyword" value="${keyword}" placeholder="Search" >
+                     </div>
                 </form>
             </div>
             <div class="label-title pull-left">${currentProjectId > 0 ? project.name : "Incoming"}</div>
@@ -42,7 +45,7 @@
                 <div class="header ">
                     <div class="clearfix">
                         <div class="header-left pull-left">
-                            <a href="#" class="btn btn-primary btn-add-task">+ New task</a>
+                            <a href="#" class="btn btn-primary btn-add-task"><i class="uiIconSimplePlusMini"></i> New task</a>
                         </div>
                         <div class="header-right pull-right">
                             <% if (tasks.size() > 2) { %>
@@ -72,6 +75,10 @@
                     </div>
                     <div class="input-field">
                         <input type="text" placeholder="Untiled Task" />
+                        <div style="display: block" class="popover fade bottom in" role="tooltip">
+                            <div class="arrow"></div>
+                            <div class="popover-content">Click Here to create your first task.</div>
+                        </div>
                     </div>
                 </div><!-- /.header -->
                 <div class="body relative">
@@ -84,6 +91,9 @@
                                 <span class="uiCheckbox inline-block-hide">
                                     <input type="checkbox" class="checkbox">
                                     <span></span>
+                                </span>
+                                 <span class="status-task inline-block-show">
+                                    <i class="uiIconColorWarningInBlue"></i>
                                 </span>
                             </div>
                             <div class="column-item column-title">Review website designs</div>
@@ -100,6 +110,9 @@
                                     <input type="checkbox" class="checkbox">
                                     <span></span>
                                 </span>
+                                 <span class="status-task inline-block-show">
+                                    <i class="uiIconColorWarningInBlue"></i>
+                                </span>
                             </div>
                             <div class="column-item column-title">finalize battlecards review</div>
                             <div class="column-item column-time">
@@ -114,6 +127,9 @@
                                 <span class="uiCheckbox inline-block-hide">
                                     <input type="checkbox" class="checkbox">
                                     <span></span>
+                                </span> 
+                                <span class="status-task inline-block-show">
+                                    <i class="uiIconColorWarningInRed"></i>
                                 </span>
                             </div>
                             <div class="column-item column-title">Write card</div>
@@ -129,6 +145,9 @@
                                 <span class="uiCheckbox inline-block-hide">
                                     <input type="checkbox" class="checkbox">
                                     <span></span>
+                                </span>
+                                 <span class="status-task inline-block-show">
+                                    <i class="uiIconColorWarningInBlue"></i>
                                 </span>
                             </div>
                             <div class="column-item column-title">finalize battlecards review</div>
@@ -145,6 +164,9 @@
                                     <input type="checkbox" class="checkbox">
                                     <span></span>
                                 </span>
+                                 <span class="status-task inline-block-show">
+                                    <i class="uiIconColorWarningInBlue"></i>
+                                </span>
                             </div>
                             <div class="column-item column-title">Review website designs</div>
                             <div class="column-item column-time">
@@ -159,6 +181,9 @@
                                 <span class="uiCheckbox inline-block-hide">
                                     <input type="checkbox" class="checkbox">
                                     <span></span>
+                                </span>
+                                <span class="status-task inline-block-show">
+                                    <i class="uiIconColorWarningInRed"></i>
                                 </span>
                             </div>
                             <div class="column-item column-title">finalize battlecards review</div>
@@ -175,6 +200,9 @@
                                     <input type="checkbox" class="checkbox">
                                     <span></span>
                                 </span>
+                                <span class="status-task inline-block-show">
+                                    <i class="uiIconColorWarningInRed"></i>
+                                </span>
                             </div>
                             <div class="column-item column-title">Write card</div>
                             <div class="column-item column-time">
@@ -189,6 +217,9 @@
                                 <span class="uiCheckbox inline-block-hide">
                                     <input type="checkbox" class="checkbox">
                                     <span></span>
+                                </span>
+                                 <span class="status-task inline-block-show">
+                                    <i class="uiIconColorWarningInBlue"></i>
                                 </span>
                             </div>
                             <div class="column-item column-title">finalize battlecards review</div>
@@ -220,6 +251,7 @@
                                                     <input type="checkbox" class="checkbox">
                                                     <span></span>
                                                 </span>
+
                                             </div>
                                             <div class="column-item column-title">Review website designs</div>
                                             <div class="column-item column-time">
@@ -234,6 +266,9 @@
                                                 <span class="uiCheckbox inline-block-hide">
                                                     <input type="checkbox" class="checkbox">
                                                     <span></span>
+                                                </span>
+                                                 <span class="status-task inline-block-show">
+                                                    <i class="uiIconColorWarningInBlue"></i>
                                                 </span>
                                             </div>
                                             <div class="column-item column-title">finalize battlecards review</div>
@@ -250,6 +285,9 @@
                                                     <input type="checkbox" class="checkbox">
                                                     <span></span>
                                                 </span>
+                                                <span class="status-task inline-block-show">
+                                                    <i class="uiIconColorWarningInBlue"></i>
+                                                </span>
                                             </div>
                                             <div class="column-item column-title">Write card</div>
                                             <div class="column-item column-time">
@@ -264,6 +302,9 @@
                                                 <span class="uiCheckbox inline-block-hide">
                                                     <input type="checkbox" class="checkbox">
                                                     <span></span>
+                                                </span>
+                                                <span class="status-task inline-block-show">
+                                                    <i class="uiIconColorWarningInBlue"></i>
                                                 </span>
                                             </div>
                                             <div class="column-item column-title">finalize battlecards review</div>
@@ -296,6 +337,9 @@
                                                     <input type="checkbox" class="checkbox">
                                                     <span></span>
                                                 </span>
+                                                <span class="status-task inline-block-show">
+                                                    <i class="uiIconColorWarningInBlue"></i>
+                                                </span>
                                             </div>
                                             <div class="column-item column-title">Draft scripts</div>
                                             <div class="column-item column-time">
@@ -310,6 +354,9 @@
                                                 <span class="uiCheckbox inline-block-hide">
                                                     <input type="checkbox" class="checkbox">
                                                     <span></span>
+                                                </span>
+                                                <span class="status-task inline-block-show">
+                                                    <i class="uiIconColorWarningInBlue"></i>
                                                 </span>
                                             </div>
                                             <div class="column-item column-title">record quick and dirty screencast</div>
@@ -342,6 +389,9 @@
                                                     <input type="checkbox" class="checkbox">
                                                     <span></span>
                                                 </span>
+                                                <span class="status-task inline-block-show">
+                                                    <i class="uiIconColorWarningInBlue"></i>
+                                                </span>
                                             </div>
                                             <div class="column-item column-title">negocication and contract</div>
                                             <div class="column-item column-time">
@@ -356,6 +406,9 @@
                                                 <span class="uiCheckbox inline-block-hide">
                                                     <input type="checkbox" class="checkbox">
                                                     <span></span>
+                                                </span>
+                                                <span class="status-task inline-block-show">
+                                                    <i class="uiIconColorWarningInBlue"></i>
                                                 </span>
                                             </div>
                                             <div class="column-item column-title">Contact agencies</div>
@@ -387,6 +440,9 @@
                                                     <input type="checkbox" class="checkbox">
                                                     <span></span>
                                                 </span>
+                                                <span class="status-task inline-block-show">
+                                                    <i class="uiIconColorWarningInBlue"></i>
+                                                </span>
                                             </div>
                                             <div class="column-item column-title">check competitors</div>
                                             <div class="column-item column-time">
@@ -401,6 +457,9 @@
                                                 <span class="uiCheckbox inline-block-hide">
                                                     <input type="checkbox" class="checkbox">
                                                     <span></span>
+                                                </span>
+                                                <span class="status-task inline-block-show">
+                                                    <i class="uiIconColorWarningInBlue"></i>
                                                 </span>
                                             </div>
                                             <div class="column-item column-title">a task overdue where date appears in red</div>
