@@ -21,6 +21,9 @@ package org.exoplatform.task.domain;
 
 import javax.persistence.*;
 
+import org.exoplatform.services.security.Identity;
+import org.exoplatform.services.security.MembershipEntry;
+
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -44,7 +47,7 @@ import java.util.Set;
         query = "SELECT p FROM Project p " +
             "  LEFT JOIN p.manager managers " +
             "  LEFT JOIN p.participator participators " +
-            "WHERE (managers in :memberships OR participators in :memberships) " +
+            "WHERE (managers in (:memberships) OR participators in (:memberships)) " +
             "AND (p.parent.id = 0 OR p.parent is null)"),
     @NamedQuery(name = "Project.findSubProjectsByMemberships",
         query = "SELECT p FROM Project p " +
@@ -207,4 +210,60 @@ public class Project {
     
     return project;
   }
+  
+  public boolean canView(Identity user) {
+    Set<String> permissions = new HashSet<String>(getParticipator());
+    permissions.addAll(getManager());
+
+    return hasPermission(user, permissions);
+  }
+
+  public boolean canEdit(Identity user) {
+    return hasPermission(user, getManager());
+  }
+
+  private boolean hasPermission(Identity user, Set<String> permissions) {
+    if (permissions.contains(user.getUserId())) {
+      return true;
+    } else {
+      Set<MembershipEntry> memberships = new HashSet<MembershipEntry>();
+      for (String per : permissions) {
+        MembershipEntry entry = MembershipEntry.parse(per);
+        if (entry != null) {
+          memberships.add(entry);
+        }
+      }
+      
+      for (MembershipEntry entry :  user.getMemberships()) {
+        if (memberships.contains(entry)) {
+          return true;
+        }
+      }
+    }    
+    
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + (int) (getId() ^ (getId() >>> 32));
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (!(obj instanceof Project))
+      return false;
+    Project other = (Project) obj;
+    if (getId() != other.getId())
+      return false;
+    return true;
+  }
+  
 }

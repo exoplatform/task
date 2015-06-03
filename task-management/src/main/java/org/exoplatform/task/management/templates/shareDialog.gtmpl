@@ -1,0 +1,47 @@
+#{param name=managers /}
+#{param name=participants /}
+#{param name=pid /}
+
+<!-- share-project -->
+<div class="sharePrjDialog modal hide fade" data-projectId="${pid}" tabindex="-1" role="dialog" aria-labelledby="shareProjectLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="shareProjectLabel">&{popup.shareProject}</h3>
+  </div>
+  <div class="modal-body">
+  	<table>
+  		<tr>
+  			<th>&{label.permission}</th>
+  			<th>&{label.userOrGroup}</th>
+  		</tr>
+  		<tr>
+  			<td><h4>&{label.manager}</h4>&{label.manager.description}</td>
+  			<td class="manager">
+  				<ul class="managerList">
+  					<%for (def man : managers) {%>
+  					<li><span class="permission">${man}</span> <a class="remove">remove</a></li>
+  					<%}%>
+  				</ul>
+  				<button class="openUserSelector">&{label.user}</button>
+  				<button class="openGroupSelector">&{label.group}</button>
+  			</td>
+  		</tr>
+  		<tr>
+  			<td><h4>&{label.participant}</h4>&{label.participant.description}</td>
+  			<td class="participant">
+  				<ul class="participantList">
+  					<%for (def par : participants) {%>
+  					<li><span class="permission">${par}</span> <a class="remove">remove</a></li>
+  					<%}%>
+  				</ul>
+  				<button class="openUserSelector">&{label.user}</button>
+  				<button class="openGroupSelector">&{label.group}</button>
+  			</td>
+  		</tr>
+  	</table>	    
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">&{popup.close}</button>
+  </div>
+  <div class="selectorDialog"></div>
+</div>

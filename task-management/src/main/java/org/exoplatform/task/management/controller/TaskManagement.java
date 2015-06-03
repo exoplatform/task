@@ -49,6 +49,9 @@ public class TaskManagement {
 
   @Inject
   ResourceBundle bundle;
+  
+  @Inject
+  ProjectController projectController;
 
   @View
   public Response.Content index(SecurityContext securityContext) {
@@ -59,11 +62,7 @@ public class TaskManagement {
     Map<String, List<Task>> groupTasks = new HashMap<String, List<Task>>();
     groupTasks.put("", tasks);
 
-    //TODO Get all memberships of user
-    List<String> memberships = new ArrayList<String>();
-    memberships.add(username);
-
-    List<Project> projects = taskService.getProjectHandler().findSubProjectsByMemberships(null, memberships);
+    List<Project> projects = projectController.getProjectTree();
 
     return index.with()
         .currentProjectId(-1)

@@ -1,12 +1,16 @@
 #{param name=projects/}
 
 <%
+import org.exoplatform.services.security.ConversationState;
+    
 def displayListProjectItem(project, level) {
+   def identity = ConversationState.getCurrent().getIdentity();
 	def hasChildClass = (project.children != null && project.children.size() > 0) ? 'has-child' : '';
 	def indent = (level - 1) * 20; 
 %>
     <li class="dropdown project-item">
         <div class="sub-item" style="padding-left: <%=indent%>px">
+        <%if (project.canEdit(identity)) { %>
 	        <a class="dropdown-toggle pull-right"
 	           data-toggle="dropdown"
 	           href="#">
@@ -14,9 +18,9 @@ def displayListProjectItem(project, level) {
 	        </a>
 	        <div class="dropdown-menu uiDropdownWithIcon" style="left: 100%;">
 	        	<span class="arrowLeft"></span>
-	        	<ul class="uiDropdownMenu project-menu">
+	        	<ul class="uiDropdownMenu project-menu" data-projectId="${project.id}">
 		            <li><a href="#"><i class="uiIconEditMini uiIconLightGray"></i>Add task</a></li>
-		            <li><a href="#"><i class="uiIconShare uiIconLightGray"></i>Share</a></li>
+		            <li><a href="#" class="share-project"><i class="uiIconShare uiIconLightGray"></i>Share</a></li>
 		            <li><a class="clone-project" data-projectId="${project.id}" href="#"><i class="uiIconCloneNode uiIconLightGray"></i>Clone</a></li>
 		            <li><a href="#"><i class="uiIconTrash uiIconLightGray"></i>Delete</a></li>
 		            <li><a href="#"><i class="uiIconHide uiIconLightGray"></i>Hide</a></li>
@@ -58,8 +62,11 @@ def displayListProjectItem(project, level) {
 					</li>
 		        </ul>
 		    </div>
+		    <%}%>
 	        <a href="#" class="Orange colorPie"><span class=""></span></a>
-	        <a href="#" class="project-name" data-id="${project.id}"><i class="uiIconLightGray uiIconArrowRight"></i>${project.name}</a>
+	        <a href="#" class="project-name" data-id="${project.id}" data-canEdit="<%=project.canEdit(identity)%>" data-canView="<%=project.canView(identity)%>">
+	        		<i class="uiIconLightGray uiIconArrowRight"></i>${project.name}
+	        </a>
 		</div>
         <% if (project.children != null && project.children.size() > 0) {
             displayListProjects(project.children, project.getId(), level);

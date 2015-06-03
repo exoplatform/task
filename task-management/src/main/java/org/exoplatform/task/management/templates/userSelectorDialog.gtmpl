@@ -1,0 +1,19 @@
+#{param name=users /}
+#{param name=type /}
+
+<div class="userSelectorDialog modal hide fade" style="display:block" data-type="${type}" tabindex="-1" role="dialog" aria-labelledby="userSelectorLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" aria-hidden="true">×</button>
+    <h3 id="userSelectorLabel">&{popup.selectUser}</h3>
+  </div>
+  <div class="modal-body">
+  	<ul>
+  		<%for (def u in users) { %>
+  		<li><input type="checkbox" class="chkUser" value="${u}"/>${u}</li>
+  		<%} %>
+  	</ul>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-primary addUser" aria-hidden="true">&{popup.add}</button>
+  </div>
+</div>

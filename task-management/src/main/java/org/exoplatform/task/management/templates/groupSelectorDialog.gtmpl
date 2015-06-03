@@ -1,0 +1,38 @@
+#{param name=groups /}
+#{param name=membershipTypes /}
+#{param name=type /}
+
+<style>
+	.grp {
+		float: left;
+	}	
+	.msType {
+		margin-left: 400px;
+	}
+	.selected {
+		font-weight: bold;
+	}	
+</style>
+
+<div class="groupSelectorDialog modal hide fade" data-type="${type}" tabindex="-1" role="dialog" aria-labelledby="selectGroupLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" aria-hidden="true">×</button>
+    <h3 id="selectGroupLabel">&{popup.selectGroup}</h3>
+  </div>
+  <div class="modal-body">
+  	  <ul class="grp">
+  	  	<%for (def g in groups) { %>
+  	  	<li class="grpItem" data-groupId="${g}">${g}</li>
+  	  	<%} %>
+  	  </ul>
+  	  
+  	  <ul class="msType">
+  	  	<%for (def mst in membershipTypes) { %>
+  	  	<li class="msItem" data-msType="${mst}">${mst}</li>
+  	  	<%} %>
+  	  </ul>
+  </div>
+  <div class="modal-footer">
+    <button class="btn close" aria-hidden="true">&{popup.close}</button>
+  </div>
+</div>

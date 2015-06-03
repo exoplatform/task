@@ -1,26 +1,49 @@
 // TODO: Move juzu-ajax, mentionsPlugin module into task management project if need
-require(['SHARED/jquery', 'SHARED/edit_inline_js', 'SHARED/juzu-ajax', 'SHARED/mentionsPlugin', 'SHARED/bts_modal'], function(jQuery) {
-jQuery(document).ready(function($) {
+require(['project-menu', 'SHARED/jquery', 'SHARED/edit_inline_js', 'SHARED/juzu-ajax', 'SHARED/mentionsPlugin', 'SHARED/bts_modal'], function(pMenu, $) {
+  var taApp = {};
+
+  taApp.getUI = function() {
     var $taskManagement = $('#taskManagement');
     var $leftPanel = $('#taskManagement > .leftPanel');
     var $centerPanel = $('#taskManagement > .centerPanel');
     var $rightPanel = $('#taskManagement > .rightPanel');
     var $rightPanelContent = $rightPanel.find('.rightPanelContent');
     var $centerPanelContent = $centerPanel.find('.centerPanelContent');
+    
+    return {
+      '$taskManagement' : $taskManagement,
+      '$leftPanel' : $leftPanel,
+      '$centerPanel' : $centerPanel,
+      '$rightPanel' : $rightPanel,
+      '$rightPanelContent' : $rightPanelContent,
+      '$centerPanelContent' : $centerPanelContent
+    };
+  }
+
+  taApp.showRightPanel = function($centerPanel, $rightPanel) {
+    $centerPanel.removeClass('span9').addClass('span5');
+    $rightPanel.show();
+  };
+  taApp.hideRightPanel = function($centerPanel, $rightPanel, $rightPanelContent) {
+    $rightPanelContent.html('');
+    $rightPanel.hide();
+    $centerPanel.removeClass('span5').addClass('span9');
+  };
+    
+$(document).ready(function() {
+    var ui = taApp.getUI();
+    var $taskManagement = ui.$taskManagement;
+    var $leftPanel = ui.$leftPanel;
+    var $centerPanel = ui.$centerPanel;
+    var $rightPanel = ui.$rightPanel;
+    var $rightPanelContent = ui.$rightPanelContent;
+    var $centerPanelContent = ui.$centerPanelContent;
+    
+    pMenu.init(taApp);
 
     $.fn.editableform.buttons = '<button type="submit" class="btn btn-primary editable-submit"><i class="uiIconTick icon-white"></i></button>'+
         '<button type="button" class="btn editable-cancel"><i class="uiIconClose"></i></button>';
-
-    var showRightPanel = function() {
-        $centerPanel.removeClass('span9').addClass('span5');
-        $rightPanel.show();
-    };
-    var hideRightPanel = function() {
-        $rightPanelContent.html('');
-        $rightPanel.hide();
-        $centerPanel.removeClass('span5').addClass('span9');
-    };
-
+    
     var saveTaskDetailFunction = function(params) {
         var d = new $.Deferred;
         var data = params;
@@ -137,7 +160,7 @@ jQuery(document).ready(function($) {
     };
 
     $rightPanel.on('click', '.control a.close', function(e) {
-        hideRightPanel();
+        taApp.hideRightPanel($centerPanel, $rightPanel, $rightPanelContent);
         return false;
     });
 
@@ -147,7 +170,7 @@ jQuery(document).ready(function($) {
         var currentTask = $rightPanelContent.find('.task-detail').attr('task-id');
         if (taskId != currentTask || $rightPanel.is(':hidden')) {
             $rightPanelContent.jzLoad('TaskController.detail()', {id: taskId}, function(html) {
-                showRightPanel();
+                taApp.showRightPanel($centerPanel, $rightPanel);
                 initEditInline(taskId);
                 $rightPanelContent.find('textarea').exoMentions({
                     onDataRequest:function (mode, query, callback) {
@@ -275,54 +298,6 @@ jQuery(document).ready(function($) {
         });
     });
 
-    $leftPanel.on('click', 'a.new-project', function(e) {
-        var parentId = $(e.target).closest('a').attr('data-projectId');
-        $rightPanelContent.jzLoad('ProjectController.projectForm()', {parentId: parentId}, showRightPanel);
-        return true;
-    });
-    
-    var $cloneProject = $('.confirmCloneProject');
-    function showCloneProject(pId, projectName) {
-    	$cloneProject.find('.pId').val(pId);
-    	var msg = $cloneProject.find('.msg');
-    	msg.html(msg.attr('data-msg').replace('{}', projectName));
-        $cloneProject.modal({'backdrop': false});
-    }
-    
-    $leftPanel.on('click', 'a.clone-project', function(e) {
-    	var pId = $(e.target).closest('a').attr('data-projectId');    	    	
-    	var projectName = $(this).closest('.project-item').find('.project-name').html();
-    	
-    	//
-    	showCloneProject(pId, projectName);    	
-    });
-    
-    $rightPanel.on('click', '.projectDetail .action-clone-project', function() {
-    	var $detail = $(this).closest('.projectDetail');
-    	var pId = $detail.attr('data-projectId');
-    	var projectName = $detail.find('.projectName').html();
-    	
-    	showCloneProject(pId, projectName);
-    });
-    
-    $cloneProject.find('.btn-primary').click(function(e) {
-    	var pId = $cloneProject.find('.pId').val();
-    	var cloneTask = $cloneProject.find('.cloneTask').is(':checked');
-        
-        var cloneURL = $rightPanel.jzURL('ProjectController.cloneProject');
-        $.ajax({
-            type: 'POST',
-            url: cloneURL,
-            data: {'id': pId, 'cloneTask': cloneTask},
-            success: function(data) {
-                window.location.reload();
-            },
-            error: function() {
-                alert('error while create new project. Please try again.')
-            }
-        });
-    });
-    
     $rightPanel.on('submit', 'form.create-project-form', function(e) {
         var $form = $(e.target).closest('form');
         var name = $form.find('input[name="name"]').val();
@@ -452,51 +427,26 @@ jQuery(document).ready(function($) {
         var projectId = $a.data('id');
         var currentProject = $centerPanel.find('.projectListView').attr('data-projectId');
         if (currentProject != projectId || ($rightPanel.is(':hidden') && projectId > 0)) {
-
-            $centerPanelContent.jzLoad('TaskController.listTasks()', {projectId: projectId}, function() {
+            if ($a.data('canview')) {
+              $centerPanelContent.jzLoad('TaskController.listTasks()', {projectId: projectId}, function() {
                 $a.closest('.leftPanel > ul').find('li.active').removeClass('active');
                 $a.closest('li').addClass('active');
-            });
+              });              
+            }
 
             // Show project summary at right panel
-            if(projectId > 0) {
+            if(projectId > 0 && $a.data('canedit')) {
                 $rightPanelContent.jzLoad('ProjectController.projectDetail()', {id: projectId}, function () {
                     $a.closest('ul.list-projects[parentid="0"]').find('li.active').removeClass('active');
                     $a.closest('li').addClass('active');
-                    showRightPanel();
+                    taApp.showRightPanel($centerPanel, $rightPanel);
                     initEditInlineForProject(projectId);
                 });
             } else {
-                hideRightPanel();
+                taApp.hideRightPanel($centerPanel, $rightPanel, $rightPanelContent);
             }
         }
         return false;
-    });
-
-    $rightPanel.on('click', 'a.action-delete-project', function(e) {
-        var $projectDetail = $(e.target).closest('.projectDetail');
-        var projectId = $projectDetail.attr('data-projectId');
-        var deleteProjectURL = $projectDetail.jzURL('ProjectController.deleteProject');
-        var projectName = $projectDetail.find('a.editable[data-name="name"]').html();
-        var confirmed = confirm('Are you sure you want to delete project: ' + projectName);
-        if (confirmed) {
-            $.ajax({
-                type: 'POST',
-                url: deleteProjectURL,
-                data: {projectId: projectId},
-                success: function (resp) {
-                    $projectDetail.remove();
-                    hideRightPanel();
-                    $leftPanel
-                        .find('li.project-item a.project-name[data-id="' + projectId + '"]')
-                        .closest('li.project-item').remove();
-                },
-                error: function () {
-                    alert('Delete project failure, please try again.')
-                }
-            });
-        }
-        return true;
     });
 
     $centerPanel.on('click', 'a.btn-add-task', function(e) {
@@ -541,7 +491,7 @@ jQuery(document).ready(function($) {
                 orderBy: orderBy
             },
             function() {
-                hideRightPanel();
+                taApp.hideRightPanel($centerPanel, $rightPanel, $rightPanelContent);
             }
         );
     };
@@ -555,5 +505,5 @@ jQuery(document).ready(function($) {
         submitFilter(e);
         return false;
     });
-});
+});  
 });

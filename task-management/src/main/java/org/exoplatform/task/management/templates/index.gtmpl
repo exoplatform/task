@@ -56,10 +56,11 @@
 	    </div>
 	    
 	    <!-- Modal -->
-	    <div class="confirmCloneProject modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	    <div class="modalPlace"></div>
+	    <div class="confirmCloneProject modal hide fade" tabindex="-1" role="dialog" aria-labelledby="cloneProjectLabel" aria-hidden="true">
 		  <div class="modal-header">
 		    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-		    <h3 id="myModalLabel">&{popup.confirm}</h3>
+		    <h3 id="cloneProjectLabel">&{popup.confirm}</h3>
 		  </div>
 		  <div class="modal-body">
 		    <p class="msg" data-msg="&{popup.msg.cloneProject}"></p>
