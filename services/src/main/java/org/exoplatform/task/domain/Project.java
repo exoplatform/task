@@ -58,7 +58,9 @@ import java.util.Set;
 })
 public class Project {
 
-  @Id
+  private static final String PREFIX = "Copy of ";
+
+  @Id 
   @GeneratedValue
   @Column(name = "PROJECT_ID")
   private long      id;
@@ -185,8 +187,8 @@ public class Project {
   }
   
   public Project clone(boolean cloneTask) {
-    Project project = new Project("[CLONE] " + this.getName(), this.getDescription(), new HashSet<Status>(), new HashSet<String>(this.getManager()), 
-         new HashSet<String>(this.getParticipator()));
+    Project project = new Project(PREFIX + this.getName(), this.getDescription(), new HashSet<Status>(), 
+                                  new HashSet<String>(this.getManager()), new HashSet<String>(this.getParticipator()));
     
     project.setColor(this.getColor());
     project.setDueDate(this.getDueDate());

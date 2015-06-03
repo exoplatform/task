@@ -238,7 +238,7 @@ public class Task {
   }
 
   public Task clone() {
-    Task newTask = new TaskBuilder().withTitle("[Clone] " + this.getTitle())
+    Task newTask = new TaskBuilder().withTitle(this.getTitle())
                                     .withAssignee(this.getAssignee())
                                     .withContext(this.getContext())
                                     .withCreatedBy(this.getCreatedBy())
