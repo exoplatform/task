@@ -23,115 +23,255 @@
                     </div>
                 </form>
             </div>
-            <div class="label-title">${currentProjectId > 0 ? project.name : "Incoming"}</div>
+            <div class="label-title pull-left">${currentProjectId > 0 ? project.name : "Incoming"}</div>
+            <div class="alignBtnGroup center">
+                <ul class="btn-group ">
+                    <li class="btn active">
+                        <a href="javascript:void(0);" >List</a>
+                    </li>
+                    <li class="btn ">
+                        <a href="javascript:void(0);">Board</a>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
     <div class="row-fluid">
         <div class="span12">
             <div class="taskList">
-                <div class="header">
-                    <div class="header-left pull-left">
-                        <a href="#" class="btn btn-primary btn-add-task">+ New task</a>
+                <div class="header ">
+                    <div class="clearfix">
+                        <div class="header-left pull-left">
+                            <a href="#" class="btn btn-primary btn-add-task">+ New task</a>
+                        </div>
+                        <div class="header-right pull-right">
+                            <% if (tasks.size() > 2) { %>
+                            <form class="filter-form form-inline" action="#" method="GET">
+                                <label>Group by:</label>
+                                <select name="groupBy" class="span3"">
+                                    <option value="">None</option>
+                                    <option value="status" ${groupBy == "status" ? "selected = \"selected\"" : ""}>Status</option>
+                                    <% if (currentProjectId != -2) {%>
+                                    <option value="assignee" ${groupBy == "assignee" ? "selected = \"selected\"" : ""}>Assignee</option>
+                                    <% } else { %>
+                                    <option value="project" ${groupBy == "project" ? "selected = \"selected\"" : ""}>Project</option>
+                                    <% } %>
+                                    <option value="tag" ${groupBy == "tag" ? "selected = \"selected\"" : ""}>Tags</option>
+                                </select>
+                                <label>Sort by:</label>
+                                <select name="orderBy" class="span3">
+                                    <option value="">None</option>
+                                    <option value="title" ${orderBy == 'title' ? "selected = \"selected\"" : ""}>Title</option>
+                                    <option value="priority" ${orderBy == 'priority' ? "selected = \"selected\"" : ""}>Priority</option>
+                                    <option value="dueDate" ${orderBy == 'dueDate' ? "selected = \"selected\"" : ""}>Due date</option>
+                                    <option value="createdTime" ${orderBy == 'createdTime' ? "selected = \"selected\"" : ""}>Created time</option>
+                                </select>
+                            </form>
+                            <%}%>
+                        </div>
                     </div>
-                    <div class="header-right">
-                        <% if (tasks.size() > 2) { %>
-                        <form class="filter-form form-inline" action="#" method="GET">
-                            <label>Group by:</label>
-                            <select name="groupBy" class="span3"">
-                                <option value="">None</option>
-                                <option value="status" ${groupBy == "status" ? "selected = \"selected\"" : ""}>Status</option>
-                                <% if (currentProjectId != -2) {%>
-                                <option value="assignee" ${groupBy == "assignee" ? "selected = \"selected\"" : ""}>Assignee</option>
-                                <% } else { %>
-                                <option value="project" ${groupBy == "project" ? "selected = \"selected\"" : ""}>Project</option>
-                                <% } %>
-                                <option value="tag" ${groupBy == "tag" ? "selected = \"selected\"" : ""}>Tags</option>
-                            </select>
-                            <label>Sort by:</label>
-                            <select name="orderBy" class="span3">
-                                <option value="">None</option>
-                                <option value="title" ${orderBy == 'title' ? "selected = \"selected\"" : ""}>Title</option>
-                                <option value="priority" ${orderBy == 'priority' ? "selected = \"selected\"" : ""}>Priority</option>
-                                <option value="dueDate" ${orderBy == 'dueDate' ? "selected = \"selected\"" : ""}>Due date</option>
-                                <option value="createdTime" ${orderBy == 'createdTime' ? "selected = \"selected\"" : ""}>Created time</option>
-                            </select>
-                        </form>
-                        <%}%>
+                    <div class="input-field">
+                        <input type="text" placeholder="Untiled Task" />
                     </div>
-                    <div class="clearfix"></div>
                 </div><!-- /.header -->
                 <div class="body relative">
 
+                    <!-- The default list -->
+                    <ul class="table-project">
+                        <li class="row-item row-odd hover-action-reveal has-border">
+                            <div class="column-item column-checkbox">
+                                <span class="project-color Tomato"></span>
+                                <span class="uiCheckbox inline-block-hide">
+                                    <input type="checkbox" class="checkbox">
+                                    <span></span>
+                                </span>
+                            </div>
+                            <div class="column-item column-title">Review website designs</div>
+                            <div class="column-item column-time">
+                                <span class="text-time inline-block-show">Yesterday</span>
+                                <a class="actionIcon inline-block-hide" href="#"><i class="uiIcon uiIconClock"></i></a>
+                            </div>
+                            <div class="column-item column-action"><a class="actionIcon inline-block-hide" href="#"><i class="uiIcon uiIconArrowRight"></i></a></div>
+                        </li>
+                        <li class="row-item row-even hover-action-reveal has-border selected">
+                            <div class="column-item  column-checkbox">
+                                <span class="project-color Turquoise"></span>
+                                <span class="uiCheckbox inline-block-hide">
+                                    <input type="checkbox" class="checkbox">
+                                    <span></span>
+                                </span>
+                            </div>
+                            <div class="column-item column-title">finalize battlecards review</div>
+                            <div class="column-item column-time">
+                                <span class="text-time inline-block-show">Today</span>
+                                <a class="actionIcon inline-block-hide" href="#"><i class="uiIcon uiIconClock"></i></a>
+                            </div>
+                            <div class="column-item column-action"><a class="actionIcon inline-block-hide" href="#"><i class="uiIcon uiIconArrowRight"></i></a></div>
+                        </li>
+                        <li class="row-item row-odd hover-action-reveal has-border">
+                            <div class="column-item column-checkbox">
+                                <span class="project-color Yellow"></span>
+                                <span class="uiCheckbox inline-block-hide">
+                                    <input type="checkbox" class="checkbox">
+                                    <span></span>
+                                </span>
+                            </div>
+                            <div class="column-item column-title">Write card</div>
+                            <div class="column-item column-time">
+                                <span class="text-time inline-block-show">Yesterday</span>
+                                <a class="actionIcon inline-block-hide" href="#"><i class="uiIcon uiIconClock"></i></a>
+                            </div>
+                            <div class="column-item column-action"><a class="actionIcon inline-block-hide" href="#"><i class="uiIcon uiIconArrowRight"></i></a></div>
+                        </li>
+                        <li class="row-item row-even hover-action-reveal has-border">
+                            <div class="column-item  column-checkbox">
+                                <span class="project-color SkyBlue"></span>
+                                <span class="uiCheckbox inline-block-hide">
+                                    <input type="checkbox" class="checkbox">
+                                    <span></span>
+                                </span>
+                            </div>
+                            <div class="column-item column-title">finalize battlecards review</div>
+                            <div class="column-item column-time">
+                                <span class="text-time inline-block-show">Today</span>
+                                <a class="actionIcon inline-block-hide" href="#"><i class="uiIcon uiIconClock"></i></a>
+                            </div>
+                            <div class="column-item column-action"><a class="actionIcon inline-block-hide" href="#"><i class="uiIcon uiIconArrowRight"></i></a></div>
+                        </li>
+                        <li class="row-item row-odd hover-action-reveal has-border">
+                            <div class="column-item column-checkbox">
+                                <span class="project-color Tomato"></span>
+                                <span class="uiCheckbox inline-block-hide">
+                                    <input type="checkbox" class="checkbox">
+                                    <span></span>
+                                </span>
+                            </div>
+                            <div class="column-item column-title">Review website designs</div>
+                            <div class="column-item column-time">
+                                <span class="text-time inline-block-show">Yesterday</span>
+                                <a class="actionIcon inline-block-hide" href="#"><i class="uiIcon uiIconClock"></i></a>
+                            </div>
+                            <div class="column-item column-action"><a class="actionIcon inline-block-hide" href="#"><i class="uiIcon uiIconArrowRight"></i></a></div>
+                        </li>
+                        <li class="row-item row-even hover-action-reveal has-border">
+                            <div class="column-item  column-checkbox">
+                                <span class="project-color Turquoise"></span>
+                                <span class="uiCheckbox inline-block-hide">
+                                    <input type="checkbox" class="checkbox">
+                                    <span></span>
+                                </span>
+                            </div>
+                            <div class="column-item column-title">finalize battlecards review</div>
+                            <div class="column-item column-time">
+                                <span class="text-time inline-block-show">Today</span>
+                                <a class="actionIcon inline-block-hide" href="#"><i class="uiIcon uiIconClock"></i></a>
+                            </div>
+                            <div class="column-item column-action"><a class="actionIcon inline-block-hide" href="#"><i class="uiIcon uiIconArrowRight"></i></a></div>
+                        </li>
+                        <li class="row-item row-odd hover-action-reveal has-border">
+                            <div class="column-item column-checkbox">
+                                <span class="project-color Yellow"></span>
+                                <span class="uiCheckbox inline-block-hide">
+                                    <input type="checkbox" class="checkbox">
+                                    <span></span>
+                                </span>
+                            </div>
+                            <div class="column-item column-title">Write card</div>
+                            <div class="column-item column-time">
+                                <span class="text-time inline-block-show">Yesterday</span>
+                                <a class="actionIcon inline-block-hide" href="#"><i class="uiIcon uiIconClock"></i></a>
+                            </div>
+                            <div class="column-item column-action"><a class="actionIcon inline-block-hide" href="#"><i class="uiIcon uiIconArrowRight"></i></a></div>
+                        </li>
+                        <li class="row-item row-even hover-action-reveal has-border">
+                            <div class="column-item  column-checkbox">
+                                <span class="project-color SkyBlue"></span>
+                                <span class="uiCheckbox inline-block-hide">
+                                    <input type="checkbox" class="checkbox">
+                                    <span></span>
+                                </span>
+                            </div>
+                            <div class="column-item column-title">finalize battlecards review</div>
+                            <div class="column-item column-time">
+                                <span class="text-time inline-block-show">Today</span>
+                                <a class="actionIcon inline-block-hide" href="#"><i class="uiIcon uiIconClock"></i></a>
+                            </div>
+                            <div class="column-item column-action"><a class="actionIcon inline-block-hide" href="#"><i class="uiIcon uiIconArrowRight"></i></a></div>
+                        </li>
+                    </ul>
+                    <br>
+                    <!-- The case has collapse -->
                     <div class="table-project">
                         <div class="row-group">
-                            <div class="row-item heading">
+                            <div class="row-item heading primaryBackground">
                                 <div class="column-item">
                                     <a href="#"><i class="uiIcon uiIconArrowDown"></i></a>
-                                    <span class="group-name">Cathy Williams</span> <span class="amount-item">(4)</span>
+                                    <img width="26px" height="26px" src="https://4x1dwq.by3301.livefilestore.com/y2p-nJbH6EVP8wZfF6DOYlJWEqK7H-8tsZW1_To1fT7RqACrXu2PM5GGfg-XDALuiK2xS_x5-vD2CXkBD530wkxPqNCpg8znWP8d-iXn6PcXKZn9-nu1LznNXiKzp1elryA/icon-lion.png" alt="Avatar Sample">
+                                    <a href="javascript:void(0)"><span class="group-name">Cathy Williams</span> <span class="amount-item">(4)</span></a>
                                 </div>
                             </div>
                             <div class="row-item group">
                                 <div class="column-item">
                                     <ul class="table-project">
-                                        <li class="row-item row-odd">
+                                        <li class="row-item row-odd hover-action-reveal has-border selected">
                                             <div class="column-item column-checkbox">
                                                 <span class="project-color Tomato"></span>
-                                                <span class="uiCheckbox">
+                                                <span class="uiCheckbox inline-block-hide">
                                                     <input type="checkbox" class="checkbox">
                                                     <span></span>
                                                 </span>
                                             </div>
                                             <div class="column-item column-title">Review website designs</div>
                                             <div class="column-item column-time">
-                                                <span class="text-time">Yesterday</span>
-                                                <a class="actionIcon" href="#"><i class="uiIcon uiIconClock"></i></a>
+                                                <span class="text-time inline-block-show">Yesterday</span>
+                                                <a class="actionIcon inline-block-hide" href="#"><i class="uiIcon uiIconClock"></i></a>
                                             </div>
-                                            <div class="column-item column-action"><a class="arrow-link" href="#"><i class="uiIcon uiIconArrowRight"></i></a></div>
+                                            <div class="column-item column-action"><a class="actionIcon inline-block-hide" href="#"><i class="uiIcon uiIconArrowRight"></i></a></div>
                                         </li>
-                                        <li class="row-item row-even">
+                                        <li class="row-item row-even hover-action-reveal has-border">
                                             <div class="column-item  column-checkbox">
                                                 <span class="project-color Turquoise"></span>
-                                                <span class="uiCheckbox">
+                                                <span class="uiCheckbox inline-block-hide">
                                                     <input type="checkbox" class="checkbox">
                                                     <span></span>
                                                 </span>
                                             </div>
                                             <div class="column-item column-title">finalize battlecards review</div>
                                             <div class="column-item column-time">
-                                                <span class="text-time">Today</span>
-                                                <a class="actionIcon" href="#"><i class="uiIcon uiIconClock"></i></a>
+                                                <span class="text-time inline-block-show">Today</span>
+                                                <a class="actionIcon inline-block-hide" href="#"><i class="uiIcon uiIconClock"></i></a>
                                             </div>
-                                            <div class="column-item column-action"><a class="arrow-link" href="#"><i class="uiIcon uiIconArrowRight"></i></a></div>
+                                            <div class="column-item column-action"><a class="actionIcon inline-block-hide" href="#"><i class="uiIcon uiIconArrowRight"></i></a></div>
                                         </li>
-                                        <li class="row-item row-odd">
+                                        <li class="row-item row-odd hover-action-reveal has-border">
                                             <div class="column-item column-checkbox">
                                                 <span class="project-color Yellow"></span>
-                                                <span class="uiCheckbox">
+                                                <span class="uiCheckbox inline-block-hide">
                                                     <input type="checkbox" class="checkbox">
                                                     <span></span>
                                                 </span>
                                             </div>
                                             <div class="column-item column-title">Write card</div>
                                             <div class="column-item column-time">
-                                                <span class="text-time">Yesterday</span>
-                                                <a class="actionIcon" href="#"><i class="uiIcon uiIconClock"></i></a>
+                                                <span class="text-time inline-block-show">Yesterday</span>
+                                                <a class="actionIcon inline-block-hide" href="#"><i class="uiIcon uiIconClock"></i></a>
                                             </div>
-                                            <div class="column-item column-action"><a class="arrow-link" href="#"><i class="uiIcon uiIconArrowRight"></i></a></div>
+                                            <div class="column-item column-action"><a class="actionIcon inline-block-hide" href="#"><i class="uiIcon uiIconArrowRight"></i></a></div>
                                         </li>
-                                        <li class="row-item row-even">
+                                        <li class="row-item row-even hover-action-reveal has-border">
                                             <div class="column-item  column-checkbox">
                                                 <span class="project-color SkyBlue"></span>
-                                                <span class="uiCheckbox">
+                                                <span class="uiCheckbox inline-block-hide">
                                                     <input type="checkbox" class="checkbox">
                                                     <span></span>
                                                 </span>
                                             </div>
                                             <div class="column-item column-title">finalize battlecards review</div>
                                             <div class="column-item column-time">
-                                                <span class="text-time">Today</span>
-                                                <a class="actionIcon" href="#"><i class="uiIcon uiIconClock"></i></a>
+                                                <span class="text-time inline-block-show">Today</span>
+                                                <a class="actionIcon inline-block-hide" href="#"><i class="uiIcon uiIconClock"></i></a>
                                             </div>
-                                            <div class="column-item column-action"><a class="arrow-link" href="#"><i class="uiIcon uiIconArrowRight"></i></a></div>
+                                            <div class="column-item column-action"><a class="actionIcon inline-block-hide" href="#"><i class="uiIcon uiIconArrowRight"></i></a></div>
                                         </li>
                                     </ul>
                                 </div>
@@ -139,44 +279,45 @@
                         </div><!-- /.row-group -->
 
                         <div class="row-group">
-                            <div class="row-item heading">
+                            <div class="row-item heading primaryBackground">
                                 <div class="column-item">
                                     <a href="#"><i class="uiIcon uiIconArrowDown"></i></a>
-                                    <span class="group-name">Jame Davids</span> <span class="amount-item">(4)</span>
+                                    <img width="26px" height="26px" src="https://4x1dwq.by3301.livefilestore.com/y2p-nJbH6EVP8wZfF6DOYlJWEqK7H-8tsZW1_To1fT7RqACrXu2PM5GGfg-XDALuiK2xS_x5-vD2CXkBD530wkxPqNCpg8znWP8d-iXn6PcXKZn9-nu1LznNXiKzp1elryA/icon-lion.png" alt="Avatar Sample">
+                                    <a href="javascript:void(0)"><span class="group-name">Jame Davids</span> <span class="amount-item">(4)</span></a>
                                 </div>
                             </div>
                             <div class="row-item group">
                                 <div class="column-item">
                                     <ul class="table-project">
-                                        <li class="row-item row-odd">
+                                        <li class="row-item row-odd select hover-action-reveal has-border">
                                             <div class="column-item column-checkbox">
                                                 <span class="project-color OrangeRed"></span>
-                                                <span class="uiCheckbox">
+                                                <span class="uiCheckbox inline-block-hide">
                                                     <input type="checkbox" class="checkbox">
                                                     <span></span>
                                                 </span>
                                             </div>
                                             <div class="column-item column-title">Draft scripts</div>
                                             <div class="column-item column-time">
-                                                <span class="text-time">Yesterday</span>
-                                                <a class="actionIcon" href="#"><i class="uiIcon uiIconClock"></i></a>
+                                                <span class="text-time inline-block-show">Yesterday</span>
+                                                <a class="actionIcon inline-block-hide" href="#"><i class="uiIcon uiIconClock"></i></a>
                                             </div>
-                                            <div class="column-item column-action"><a class="arrow-link" href="#"><i class="uiIcon uiIconArrowRight"></i></a></div>
+                                            <div class="column-item column-action"><a class="actionIcon inline-block-hide" href="#"><i class="uiIcon uiIconArrowRight"></i></a></div>
                                         </li>
-                                        <li class="row-item row-even">
+                                        <li class="row-item row-even hover-action-reveal has-border">
                                             <div class="column-item  column-checkbox">
                                                 <span class="project-color Orchid"></span>
-                                                <span class="uiCheckbox">
+                                                <span class="uiCheckbox inline-block-hide">
                                                     <input type="checkbox" class="checkbox">
                                                     <span></span>
                                                 </span>
                                             </div>
                                             <div class="column-item column-title">record quick and dirty screencast</div>
                                             <div class="column-item column-time">
-                                                <span class="text-time">jan 20</span>
-                                                <a class="actionIcon" href="#"><i class="uiIcon uiIconClock"></i></a>
+                                                <span class="text-time inline-block-show">jan 20</span>
+                                                <a class="actionIcon inline-block-hide" href="#"><i class="uiIcon uiIconClock"></i></a>
                                             </div>
-                                            <div class="column-item column-action"><a class="arrow-link" href="#"><i class="uiIcon uiIconArrowRight"></i></a></div>
+                                            <div class="column-item column-action"><a class="actionIcon inline-block-hide" href="#"><i class="uiIcon uiIconArrowRight"></i></a></div>
                                         </li>
                                     </ul>
                                 </div>
@@ -184,44 +325,45 @@
                         </div><!-- /.row-group -->
 
                         <div class="row-group">
-                            <div class="row-item heading">
+                            <div class="row-item heading primaryBackground">
                                 <div class="column-item">
                                     <a href="#"><i class="uiIcon uiIconArrowDown"></i></a>
-                                    <span class="group-name">John Smith</span> <span class="amount-item">(2)</span>
+                                    <img width="26px" height="26px" src="https://4x1dwq.by3301.livefilestore.com/y2p-nJbH6EVP8wZfF6DOYlJWEqK7H-8tsZW1_To1fT7RqACrXu2PM5GGfg-XDALuiK2xS_x5-vD2CXkBD530wkxPqNCpg8znWP8d-iXn6PcXKZn9-nu1LznNXiKzp1elryA/icon-lion.png" alt="Avatar Sample">
+                                    <a href="javascript:void(0)"><span class="group-name">John Smith</span> <span class="amount-item">(2)</span></a>
                                 </div>
                             </div>
                             <div class="row-item group">
                                 <div class="column-item">
                                     <ul class="table-project">
-                                        <li class="row-item row-odd">
+                                        <li class="row-item row-odd hover-action-reveal has-border">
                                             <div class="column-item column-checkbox">
                                                 <span class="project-color RoyalBlue"></span>
-                                                <span class="uiCheckbox">
+                                                <span class="uiCheckbox inline-block-hide">
                                                     <input type="checkbox" class="checkbox">
                                                     <span></span>
                                                 </span>
                                             </div>
                                             <div class="column-item column-title">negocication and contract</div>
                                             <div class="column-item column-time">
-                                                <span class="text-time">Yesterday</span>
-                                                <a class="actionIcon" href="#"><i class="uiIcon uiIconClock"></i></a>
+                                                <span class="text-time inline-block-show">Yesterday</span>
+                                                <a class="actionIcon inline-block-hide" href="#"><i class="uiIcon uiIconClock"></i></a>
                                             </div>
-                                            <div class="column-item column-action"><a class="arrow-link" href="#"><i class="uiIcon uiIconArrowRight"></i></a></div>
+                                            <div class="column-item column-action"><a class="actionIcon inline-block-hide" href="#"><i class="uiIcon uiIconArrowRight"></i></a></div>
                                         </li>
-                                        <li class="row-item row-even">
+                                        <li class="row-item row-even hover-action-reveal has-border">
                                             <div class="column-item  column-checkbox">
                                                 <span class="project-color SeaGreen"></span>
-                                                <span class="uiCheckbox">
+                                                <span class="uiCheckbox inline-block-hide">
                                                     <input type="checkbox" class="checkbox">
                                                     <span></span>
                                                 </span>
                                             </div>
                                             <div class="column-item column-title">Contact agencies</div>
                                             <div class="column-item column-time">
-                                                <span class="text-time">Today</span>
-                                                <a class="actionIcon" href="#"><i class="uiIcon uiIconClock"></i></a>
+                                                <span class="text-time inline-block-show">Today</span>
+                                                <a class="actionIcon inline-block-hide" href="#"><i class="uiIcon uiIconClock"></i></a>
                                             </div>
-                                            <div class="column-item column-action"><a class="arrow-link" href="#"><i class="uiIcon uiIconArrowRight"></i></a></div>
+                                            <div class="column-item column-action"><a class="actionIcon inline-block-hide" href="#"><i class="uiIcon uiIconArrowRight"></i></a></div>
                                         </li>
                                     </ul>
                                 </div>
@@ -229,44 +371,44 @@
                         </div><!-- /.row-group -->
 
                         <div class="row-group">
-                            <div class="row-item heading">
+                            <div class="row-item heading primaryBackground">
                                 <div class="column-item">
                                     <a href="#"><i class="uiIcon uiIconArrowDown"></i></a>
-                                    <span class="group-name">Unassinged</span> <span class="amount-item">(2)</span>
+                                    <a href="javascript:void(0)"><span class="group-name">Unassinged</span> <span class="amount-item">(2)</span></a>
                                 </div>
                             </div>
                             <div class="row-item group">
                                 <div class="column-item">
                                     <ul class="table-project">
-                                        <li class="row-item row-odd">
+                                        <li class="row-item row-odd hover-action-reveal has-border">
                                             <div class="column-item column-checkbox">
                                                 <span class="project-color Pink"></span>
-                                                <span class="uiCheckbox">
+                                                <span class="uiCheckbox inline-block-hide">
                                                     <input type="checkbox" class="checkbox">
                                                     <span></span>
                                                 </span>
                                             </div>
                                             <div class="column-item column-title">check competitors</div>
                                             <div class="column-item column-time">
-                                                <span class="text-time">Yesterday</span>
-                                                <a class="actionIcon" href="#"><i class="uiIcon uiIconClock"></i></a>
+                                                <span class="text-time inline-block-show">Yesterday</span>
+                                                <a class="actionIcon inline-block-hide" href="#"><i class="uiIcon uiIconClock"></i></a>
                                             </div>
-                                            <div class="column-item column-action"><a class="arrow-link" href="#"><i class="uiIcon uiIconArrowRight"></i></a></div>
+                                            <div class="column-item column-action"><a class="actionIcon inline-block-hide" href="#"><i class="uiIcon uiIconArrowRight"></i></a></div>
                                         </li>
-                                        <li class="row-item row-even">
+                                        <li class="row-item row-even hover-action-reveal has-border">
                                             <div class="column-item  column-checkbox">
                                                 <span class="project-color SaddleBrown"></span>
-                                                <span class="uiCheckbox">
+                                                <span class="uiCheckbox inline-block-hide">
                                                     <input type="checkbox" class="checkbox">
                                                     <span></span>
                                                 </span>
                                             </div>
                                             <div class="column-item column-title">a task overdue where date appears in red</div>
                                             <div class="column-item column-time">
-                                                <span class="text-time">Today</span>
-                                                <a class="actionIcon" href="#"><i class="uiIcon uiIconClock"></i></a>
+                                                <span class="text-time inline-block-show">Today</span>
+                                                <a class="actionIcon inline-block-hide" href="#"><i class="uiIcon uiIconClock"></i></a>
                                             </div>
-                                            <div class="column-item column-action"><a class="arrow-link" href="#"><i class="uiIcon uiIconArrowRight"></i></a></div>
+                                            <div class="column-item column-action"><a class="actionIcon inline-block-hide" href="#"><i class="uiIcon uiIconArrowRight"></i></a></div>
                                         </li>
                                     </ul>
                                 </div>

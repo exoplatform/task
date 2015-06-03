@@ -19,11 +19,16 @@
 	            </li>
 	            <li class="accordion-heading dropdown">
 	                <div class="item">
-		                <a class="dropdown-toggle actionIconSmall pull-right"
+		                <a class="dropdown-toggle actionIconSmall add-new-project pull-right"
 		                   data-toggle="dropdown"
 		                   href="#">
 		                    <i class="uiIconLightGray uiIconSimplePlusMini"></i>
+
 		                </a>
+                        <div role="tooltip" class="popover fade bottom in" style="display: block" >
+                            <div class="arrow" ></div>
+                            <div class="popover-content">Click Here to create your first project.</div>
+                        </div>
 		                <div class="dropdown-menu uiDropdownWithIcon" style="left: 100%;">
 		                	<span class="arrowLeft"></span>
 		                	<ul class="uiDropdownMenu">

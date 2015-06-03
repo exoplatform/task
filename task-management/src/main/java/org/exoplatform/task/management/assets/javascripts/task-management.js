@@ -505,5 +505,8 @@ $(document).ready(function() {
         submitFilter(e);
         return false;
     });
-});  
+
+    $('.add-new-project').on('click',function() {
+        $(this).parent().find('.popover').css('display','none');
+    });
 });

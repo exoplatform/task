@@ -162,17 +162,6 @@ a.editable-click:hover {
 .form-search.relative input[type="text"] {
     padding-left: 25px;
 }
-.taskList {
-    .header {
-        height: 30px;
-    }
-    h4 {
-        background: #eee;
-        margin-top: 10px;
-        padding: 7px 0 5px;
-    }
-}
-
 
 .taskMngCont {
 	margin: 20px;
@@ -215,11 +204,16 @@ a.editable-click:hover {
     width: 100%;
     .row-item {
         display: table-row;
-        border-bottom: 1px solid #f0f0f0;
+        //border-bottom: 1px solid #f0f0f0;
         &.heading {
-            background-color: #f0f0f0;
+            //background-color: #f0f0f0!important;
+            //color: #2f5e92;
             font-weight: bold;
-            color: #2f5e92;
+            .column-item {
+                > * {
+                    vertical-align: middle;
+                }
+            }
         }
         &.group {
             border-bottom: none;
@@ -234,30 +228,14 @@ a.editable-click:hover {
             height: 26px;
             line-height: 26px;
         }
-        > .column-item {
-            &.column-checkbox > .uiCheckbox,
-            &.column-action > .arrow-link,
-            &.column-time > .actionIcon {
-                display: none;
-            }
-        }
-        &:hover {
-            background-color: #d0e6fb;
-            > .column-title {
-                font-weight: bold;
-            }
+        &:hover,&.selected {
             &.group {
                 background: none;
             }
-            > .column-item {
-                &.column-checkbox > .uiCheckbox,
-                &.column-action > .arrow-link,
-                &.column-time > .actionIcon {
-                    display: inline-block;
-                }
-                &.column-time > .text-time {
-                    display: none;
-                }
+        }
+        &.selected {
+            .column-title {
+                font-weight: bold;
             }
         }
     }
@@ -267,7 +245,7 @@ a.editable-click:hover {
     }
     .column-item {
         display: table-cell;
-        padding: 8px 4px;
+        padding: 4px;
         vertical-align: middle;
         position: relative;
         .project-color {
@@ -278,7 +256,7 @@ a.editable-click:hover {
             width: 5px;
         }
         &:first-child{
-            padding-left: 8px;
+            padding-left: 13px;
         }
         &:last-child{
             padding-right: 8px;
@@ -291,6 +269,48 @@ a.editable-click:hover {
         text-align: right;
     }
     .column-action {
-        width: 16px;
+        width: 26px;
     }
+}
+
+// Icomming
+
+.leftPanel {
+  .accordion-heading {
+    .popover {
+      left: 178px;
+      max-width: 256px;
+      top: 26px;
+      width: 250px
+    }
+    .popover.bottom .arrow {
+        left: 18%;
+    }
+  }
+}
+.centerPanel{
+  .uiHeaderBar {
+      .alignBtnGroup {
+        margin: 0 auto;
+        width:200px;
+      }
+  }
+}
+
+.filter-form  {
+  text-align: right;
+  label {
+    margin: 0 5px 0 28px;
+    vertical-align: middle;
+  }
+  select {
+    vertical-align: middle;
+  }
+}
+
+.input-field {
+  input {
+    width: 100%;
+    margin: 10px 0 0;
+  }
 }
