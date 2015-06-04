@@ -20,7 +20,7 @@ import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.dao.TaskHandler;
 import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.service.jpa.TaskServiceJPAImpl;
+import org.exoplatform.task.service.jpa.DAOHandlerJPAImpl;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -37,13 +37,13 @@ import java.util.List;
  */
 public class TaskDAOImpl extends GenericDAOImpl<Task, Long> implements TaskHandler {
 
-  public TaskDAOImpl(TaskServiceJPAImpl taskServiceJPAImpl) {
+  public TaskDAOImpl(DAOHandlerJPAImpl taskServiceJPAImpl) {
     super(taskServiceJPAImpl);
   }
 
   @Override
   public List<Task> findByProject(Long projectId) {
-    EntityManager em = taskService.getEntityManager();
+    EntityManager em = daoHandler.getEntityManager();
     Query query = em.createNamedQuery("Task.findTaskByProject", Task.class);
     query.setParameter("projectId", projectId);
     return query.getResultList();
@@ -61,7 +61,7 @@ public class TaskDAOImpl extends GenericDAOImpl<Task, Long> implements TaskHandl
   @Override
   public List<Task> findAllByMembership(String user, List<String> memberships) {
 
-    Query query = taskService.getEntityManager().createNamedQuery("Task.findByMemberships", Task.class);
+    Query query = daoHandler.getEntityManager().createNamedQuery("Task.findByMemberships", Task.class);
     query.setParameter("userName", user);
     query.setParameter("memberships", memberships);
 
@@ -80,7 +80,7 @@ public class TaskDAOImpl extends GenericDAOImpl<Task, Long> implements TaskHandl
 
   @Override
   public List<Task> findTaskByQuery(TaskQuery query) {
-    EntityManager em = taskService.getEntityManager();
+    EntityManager em = daoHandler.getEntityManager();
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<Task> q = cb.createQuery(Task.class);
 
@@ -154,7 +154,7 @@ public class TaskDAOImpl extends GenericDAOImpl<Task, Long> implements TaskHandl
       jql.append(" ORDER BY ta.").append(orderBy.getFieldName()).append(" ").append(orderBy.isAscending() ? "ASC" : " DESC");
     }
 
-    return taskService
+    return daoHandler
             .getEntityManager()
             .createQuery(jql.toString(), Task.class)
             .setParameter("userName", username)
@@ -172,7 +172,7 @@ public class TaskDAOImpl extends GenericDAOImpl<Task, Long> implements TaskHandl
       jql.append(" ORDER BY ta.").append(orderBy.getFieldName()).append(" ").append(orderBy.isAscending() ? "ASC" : " DESC");
     }
 
-    return taskService
+    return daoHandler
             .getEntityManager()
             .createQuery(jql.toString(), Task.class)
             .setParameter("userName", username)

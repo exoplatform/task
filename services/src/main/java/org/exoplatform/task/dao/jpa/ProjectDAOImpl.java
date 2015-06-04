@@ -18,7 +18,7 @@ package org.exoplatform.task.dao.jpa;
 
 import org.exoplatform.task.dao.ProjectHandler;
 import org.exoplatform.task.domain.Project;
-import org.exoplatform.task.service.jpa.TaskServiceJPAImpl;
+import org.exoplatform.task.service.jpa.DAOHandlerJPAImpl;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -35,13 +35,13 @@ public class ProjectDAOImpl extends GenericDAOImpl<Project, Long> implements Pro
 
   private static final Logger LOG = Logger.getLogger("ProjectDAOImpl");
 
-  public ProjectDAOImpl(TaskServiceJPAImpl taskServiceJPAImpl) {
+  public ProjectDAOImpl(DAOHandlerJPAImpl taskServiceJPAImpl) {
     super(taskServiceJPAImpl);
   }
 
   @Override
   public List<Project> findSubProjects(Project project) {
-    EntityManager em = taskService.getEntityManager();
+    EntityManager em = daoHandler.getEntityManager();
     Query query = em.createNamedQuery(project != null ? "findSubProjects" : "getRootProjects");
     if(project != null) {
       query.setParameter("projectId", project.getId());
@@ -51,7 +51,7 @@ public class ProjectDAOImpl extends GenericDAOImpl<Project, Long> implements Pro
 
   @Override
   public List<Project> findSubProjectsByMemberships(Project project, List<String> memberships) {
-    EntityManager em = taskService.getEntityManager();
+    EntityManager em = daoHandler.getEntityManager();
     Query query = em.createNamedQuery(project != null ? "Project.findSubProjectsByMemberships" : "Project.findRootProjectsByMemberships");
     if(project != null) {
       query.setParameter("projectId", project.getId());
@@ -61,20 +61,8 @@ public class ProjectDAOImpl extends GenericDAOImpl<Project, Long> implements Pro
   }
 
   @Override
-  public Project cloneProject(Long projectId, boolean cloneTask) {
-    Project orgProject = find(projectId);
-    
-    if (orgProject != null) {
-      Project project = orgProject.clone(cloneTask);
-      return create(project);
-    } else {
-      return null;
-    }
-  }
-
-  @Override
   public List<Project> findAllByMemberships(List<String> memberships) {
-    Query query = taskService.getEntityManager().createNamedQuery("Project.findAllByMembership", Project.class);
+    Query query = daoHandler.getEntityManager().createNamedQuery("Project.findAllByMembership", Project.class);
     query.setParameter("memberships", memberships);
 
     return query.getResultList();

@@ -19,36 +19,30 @@
 
 package org.exoplatform.task.management.controller;
 
-import juzu.MimeType;
-import juzu.Path;
-import juzu.Resource;
-import juzu.Response;
-import juzu.HttpMethod;
+import juzu.*;
 import juzu.impl.common.Tools;
 import juzu.request.SecurityContext;
 import org.exoplatform.commons.juzu.ajax.Ajax;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
-import org.exoplatform.task.dao.CommentHandler;
 import org.exoplatform.task.dao.OrderBy;
-import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Project;
-import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.management.model.CommentModel;
-import org.exoplatform.task.management.util.CommentUtils;
-import org.exoplatform.task.management.util.UserUtils;
-import org.exoplatform.task.service.TaskBuilder;
+import org.exoplatform.task.utils.CommentUtils;
+import org.exoplatform.task.utils.UserUtils;
+import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.TaskParser;
 import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.service.UserService;
+import org.exoplatform.task.utils.ProjectUtil;
+import org.exoplatform.task.utils.TaskUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.inject.Inject;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -56,12 +50,12 @@ import java.util.*;
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
 public class TaskController {
-  public static final int INCOMING_PROJECT_ID = -1;
-  public static final int TODO_PROJECT_ID = -2;
-
 
   @Inject
   TaskService taskService;
+
+  @Inject
+  ProjectService projectService;
 
   @Inject
   TaskParser taskParser;
@@ -91,7 +85,7 @@ public class TaskController {
   @Ajax
   @MimeType.HTML
   public Response detail(Long id, SecurityContext securityContext) {
-    Task task = taskService.getTaskHandler().find(id);
+    Task task = taskService.getTaskById(id);
     StringBuilder coWorkerDisplayName = new StringBuilder();
     if(task.getCoworker() != null && task.getCoworker().size() > 0) {
       for(String userName : task.getCoworker()) {
@@ -120,9 +114,9 @@ public class TaskController {
       }
     }
 
-    long commentCount = taskService.getCommentHandler().count(task);
+    long commentCount = taskService.getNbOfCommentsByTask(task);
 
-    List<Comment> cmts = taskService.getCommentHandler().findCommentsOfTask(task, 0, 2);
+    List<Comment> cmts = taskService.getCommentsByTask(task, 0, 2);
     List<CommentModel> comments = new ArrayList<CommentModel>(cmts.size());
     for(Comment c : cmts) {
       org.exoplatform.task.model.User u = userService.loadUser(c.getAuthor());
@@ -145,25 +139,13 @@ public class TaskController {
   @Ajax
   @MimeType.JSON
   public Response clone(Long id) {
-    Task task = taskService.getTaskHandler().find(id);
-    if(task == null) {
-      return Response.notFound("Can not find task with ID: " + id);
+
+    Task newTask = taskService.cloneTaskById(id);
+
+    if(newTask == null) {
+      return Response.error("Impossible to clone task with ID: " + id);
     }
-    Task newTask = new TaskBuilder()
-        .withTitle("[Clone] " + task.getTitle())
-        .withAssignee(task.getAssignee())
-        .withContext(task.getContext())
-        .withCreatedBy(task.getCreatedBy())
-        .withDescription(task.getDescription())
-        .withDueDate(task.getDueDate())
-        .withPriority(task.getPriority())
-        .withStartDate(task.getStartDate())
-        .withDuration(task.getDuration())
-        .withStatus(task.getStatus())
-        .build();
-    newTask.setCoworker(task.getCoworker());
-    newTask.setTags(task.getTags());
-    taskService.getTaskHandler().create(newTask);
+
     try {
       JSONObject json = new JSONObject();
       json.put("id", newTask.getId());
@@ -177,14 +159,14 @@ public class TaskController {
   @Ajax
   @MimeType.JSON
   public Response delete(Long id) {
-    Task task = taskService.getTaskHandler().find(id);
-    if(task == null) {
-      return Response.notFound("Can not find task with ID: " + id);
+
+    if(!taskService.deleteTaskById(id)) {
+      return Response.error("Impossible to delete task with ID: " + id);
     }
-    taskService.getTaskHandler().delete(task);
+
     try {
       JSONObject json = new JSONObject();
-      json.put("id", task.getId());
+      json.put("id", id);
       return Response.ok(json.toString());
     } catch (JSONException ex) {
       return Response.status(500).body(ex.getMessage());
@@ -195,73 +177,11 @@ public class TaskController {
   @Ajax
   @MimeType("text/plain")
   public Response saveTaskInfo(Long taskId, String name, String[] value) {
-    String val = value != null && value.length > 0 ? value[0] : null;
 
-    Task task = taskService.getTaskHandler().find(taskId);
-    if(task == null) {
-      return Response.notFound("Task not found with ID: " + taskId);
-    }
-    if("title".equalsIgnoreCase(name)) {
-      task.setTitle(val);
-    } else if("dueDate".equalsIgnoreCase(name)) {
-      if(value == null || val.trim().isEmpty()) {
-        task.setDueDate(null);
-      } else {
-        DateFormat df = new SimpleDateFormat("YYYY-MM-dd");
-        try {
-          Date date = df.parse(val);
-          task.setDueDate(date);
-        } catch (ParseException ex) {
-          return Response.status(406).body("Can not parse date time value: " + val);
-        }
-      }
-    } else if("status".equalsIgnoreCase(name)) {
-      try {
-        Long statusId = Long.parseLong(val);
-        Status status = taskService.getStatusHandler().find(statusId);
-        if(status == null) {
-          return Response.notFound("Status does not exist with ID: " + val);
-        }
-        task.setStatus(status);
-
-        // Task is completed if this status is last one
-        boolean isLast = true;
-        for(Status s : status.getProject().getStatus()) {
-          if (s.getId() != status.getId() && s.getRank() > status.getRank()) {
-            isLast = false;
-            break;
-          }
-        }
-        if(isLast) {
-          task.setCompleted(true);
-        } else {
-          task.setCompleted(false);
-        }
-
-      } catch (NumberFormatException ex) {
-        return Response.status(406).body("Status is unacceptable: " + val);
-      }
-    } else if("description".equalsIgnoreCase(name)) {
-      task.setDescription(val);
-    } else if("assignee".equalsIgnoreCase(name)) {
-      task.setAssignee(val);
-    } else if("coworker".equalsIgnoreCase(name)) {
-      Set<String> coworker = new HashSet<String>();
-      for(String v : value) {
-        coworker.add(v);
-      }
-      task.setCoworker(coworker);
-    } else if("tags".equalsIgnoreCase(name)) {
-      Set<String> tags = new HashSet<String>();
-      for(String t : value) {
-        tags.add(t);
-      }
-      task.setTags(tags);
-    } else {
-      return Response.status(406).body("Field name: " + name + " is not supported");
+    if (taskService.updateTaskInfo(taskId, name, value) == null ) {
+      return Response.error("Impossible to save field "+name+" with value "+value+" for task ID: "+taskId);
     }
 
-    taskService.getTaskHandler().update(task);
     return Response.ok("Update successfully");
   }
 
@@ -269,12 +189,11 @@ public class TaskController {
   @Ajax
   @MimeType("text/plain")
   public Response updateCompleted(Long taskId, Boolean completed) {
-    Task task = taskService.getTaskHandler().find(taskId);
-    if(task == null) {
-      return Response.notFound("Task not found with ID: " + taskId);
+
+    if(taskService.updateTaskCompleted(taskId, completed) == null ) {
+      return Response.notFound("Impossible to update field completed with value "+completed+" for task ID: " + taskId);
     }
-    task.setCompleted(completed);
-    taskService.getTaskHandler().update(task);
+
     return Response.ok("Update successfully");
   }
 
@@ -287,18 +206,10 @@ public class TaskController {
       return Response.status(401);
     }
 
-    Task task = taskService.getTaskHandler().find(taskId);
-    if (task == null) {
-      return Response.status(404).body("There is no task with ID: " + taskId);
+    Comment cmt = taskService.addCommentToTaskId(taskId, currentUser, comment);
+    if (cmt == null) {
+      return Response.status(404).body("Impossible to add comment to task with ID: " + taskId);
     }
-
-    Comment cmt = new Comment();
-    cmt.setTask(task);
-    cmt.setAuthor(currentUser);
-    cmt.setComment(comment);
-    cmt.setCreatedTime(new Date());
-
-    cmt = taskService.getCommentHandler().create(cmt);
 
     //TODO:
     CommentModel model = new CommentModel(cmt, userService.loadUser(cmt.getAuthor()), CommentUtils.formatMention(cmt.getComment(), userService));
@@ -326,14 +237,13 @@ public class TaskController {
   @Ajax
   @MimeType.HTML
   public Response loadAllComments(Long taskId, SecurityContext securityContext) {
-    Task task = taskService.getTaskHandler().find(taskId);
-    if(task == null) {
-      return Response.notFound("Task does not exist with ID: " + taskId);
-    }
-    CommentHandler commentDAO = taskService.getCommentHandler();
-    long commentCount = commentDAO.count(task);
 
-    List<Comment> cmts = commentDAO.findCommentsOfTask(task, 0, -1);
+    List<Comment> cmts = taskService.getCommentsByTaskId(taskId, 0, -1);
+
+    if(cmts == null) {
+      return Response.error("Impossible to load all comments for task with ID: " + taskId);
+    }
+
     List<CommentModel> listComments = new ArrayList<CommentModel>(cmts.size());
     for(Comment cmt : cmts) {
       org.exoplatform.task.model.User u = userService.loadUser(cmt.getAuthor());
@@ -343,24 +253,24 @@ public class TaskController {
     org.exoplatform.task.model.User currentUser = userService.loadUser(securityContext.getRemoteUser());
 
     return comments.with()
-            .commentCount(commentCount)
-            .comments(listComments)
-            .currentUser(currentUser)
-            .ok()
-            .withCharset(Tools.UTF_8);
+        .commentCount(cmts.size())
+        .comments(listComments)
+        .currentUser(currentUser)
+        .ok()
+        .withCharset(Tools.UTF_8);
   }
 
   @Resource
   @Ajax
   @MimeType("text/plain")
   public Response deleteComment(Long commentId) {
-    CommentHandler commentDAO = taskService.getCommentHandler();
-    Comment comment = commentDAO.find(commentId);
-    if(comment == null) {
-      return Response.notFound("Comment is not exists with ID: " + commentId);
+
+    if(!taskService.deleteCommentById(commentId)) {
+      return Response.error("Impossible to delete comment with ID: " + commentId);
     }
-    commentDAO.delete(comment);
+
     return Response.ok("Delete comment successfully!");
+
   }
 
   @Resource
@@ -371,51 +281,51 @@ public class TaskController {
     Project project = null;
     List<Task> tasks;
 
-    //TODO: if username is NULL?
-    String username = securityContext.getRemoteUser();
+    String currentUser = securityContext.getRemoteUser();
+    if (currentUser == null || currentUser.isEmpty()) {
+      return Response.status(401);
+    }
 
     OrderBy order = null;
     if(orderBy != null && !orderBy.trim().isEmpty()) {
       order = "title".equals(orderBy) ? new OrderBy.ASC(orderBy) : new OrderBy.DESC(orderBy);
     }
 
-    if(projectId == INCOMING_PROJECT_ID) {
-      tasks = taskService.getTaskHandler().getIncomingTask(username, order);
-    } else if (projectId == TODO_PROJECT_ID) {
-      tasks = taskService.getTaskHandler().getToDoTask(username, order);
-    } else {
-      project = taskService.getProjectHandler().find(projectId);
-      if(project == null) {
-        return Response.notFound("Project not found with ID: " + projectId);
+    //Get Tasks in good order
+    if(projectId == ProjectUtil.INCOMING_PROJECT_ID) {
+      tasks = taskService.getIncomingTasksByUser(currentUser, order);
+    }
+    else if (projectId == ProjectUtil.TODO_PROJECT_ID) {
+      tasks = taskService.getToDoTasksByUser(currentUser, order);
+    }
+    else {
+      tasks = projectService.getTasksWithKeywordByProjectId(projectId, order, keyword);
+      project = projectService.getProjectById(projectId); //DAOHandler.getProjectHandler().find(projectId);
+      if(tasks == null) {
+        return Response.notFound("Impossible to get tasks for project with ID: " + projectId);
       }
-      TaskQuery taskQuery = new TaskQuery();
-      taskQuery.setProjectId(project.getId());
-      taskQuery.setKeyword(keyword);
-      taskQuery.setOrderBy(order == null ? null : Arrays.asList(order));
-      tasks = taskService.getTaskHandler().findTaskByQuery(taskQuery);
     }
 
-    //
+    //Group Tasks
     Map<String, List<Task>> groupTasks = new HashMap<String, List<Task>>();
     if(groupBy != null && !groupBy.isEmpty()) {
-      groupTasks = groupTasks(tasks, groupBy);
+      groupTasks = TaskUtil.groupTasks(tasks, groupBy);
     }
-
     if(groupTasks.isEmpty()) {
       groupTasks.put("", tasks);
     }
 
     return taskListView
-            .with()
-            .currentProjectId(projectId)
-            .project(project)
-            .tasks(tasks)
-            .groupTasks(groupTasks)
-            .keyword(keyword == null ? "" : keyword)
-            .groupBy(groupBy == null ? "" : groupBy)
-            .orderBy(orderBy == null ? "" : orderBy)
-            .ok()
-            .withCharset(Tools.UTF_8);
+        .with()
+        .currentProjectId(projectId)
+        .project(project)
+        .tasks(tasks)
+        .groupTasks(groupTasks)
+        .keyword(keyword == null ? "" : keyword)
+        .groupBy(groupBy == null ? "" : groupBy)
+        .orderBy(orderBy == null ? "" : orderBy)
+        .ok()
+        .withCharset(Tools.UTF_8);
   }
 
   @Resource(method = HttpMethod.POST)
@@ -427,70 +337,24 @@ public class TaskController {
       return Response.content(406, "Task input must not be null or empty");
     }
 
-    String username = securityContext.getRemoteUser();
+    String currentUser = securityContext.getRemoteUser();
+    if (currentUser == null || currentUser.isEmpty()) {
+      return Response.status(401);
+    }
 
     Task task = taskParser.parse(taskInput);
+    task.setCreatedBy(currentUser);
 
-    Project project = null;
-
+    //Project task
     if(projectId > 0) {
-      project = taskService.getProjectHandler().find(projectId);
-      if (project == null) {
-        return Response.notFound("Project not found with ID: " + projectId);
-      }
-      Status status = taskService.getStatusHandler().findLowestRankStatusByProject(projectId);
-      task.setStatus(status);
+      projectService.createTaskToProjectId(projectId, task);
     }
-
-    task.setCreatedBy(username);
-
-    if (TODO_PROJECT_ID == projectId) {
-      task.setAssignee(username);
+    //Incoming Task
+    else {
+      taskService.createTask(task);
     }
-
-    taskService.getTaskHandler().create(task);
 
     return listTasks(projectId, "", "", "", securityContext);
   }
 
-
-  public static Map<String, List<Task>> groupTasks(List<Task> tasks, String groupBy) {
-    Map<String, List<Task>> maps = new HashMap<String, List<Task>>();
-    for(Task task : tasks) {
-      for (String key : getGroupName(task, groupBy)) {
-        List<Task> list = maps.get(key);
-        if(list == null) {
-          list = new LinkedList<Task>();
-          maps.put(key, list);
-        }
-        list.add(task);
-      }
-    }
-    return maps;
-  }
-
-  private static String[] getGroupName(Task task, String groupBy) {
-    if("project".equalsIgnoreCase(groupBy)) {
-      Status s = task.getStatus();
-      if(s == null) {
-        return new String[] {"No Project"};
-      } else {
-        return new String[] {s.getProject().getName()};
-      }
-    } else if("status".equalsIgnoreCase(groupBy)) {
-      Status s = task.getStatus();
-      if(s == null) {
-        return new String[] {"TODO"};
-      } else {
-        return new String[] {s.getName()};
-      }
-    } else if("tag".equalsIgnoreCase(groupBy)) {
-      Set<String> tags = task.getTags();
-      return tags == null || tags.size() == 0 ? new String[] {"Un tagged"} : tags.toArray(new String[0]);
-    } else if ("assignee".equalsIgnoreCase(groupBy)) {
-      String assignee = task.getAssignee();
-      return new String[] {assignee != null ? assignee : "Unassigned"};
-    }
-    return new String[0];
-  }
 }

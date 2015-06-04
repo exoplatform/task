@@ -29,8 +29,12 @@ import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.service.TaskParser;
 import org.exoplatform.task.service.TaskService;
+
 import javax.inject.Inject;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
@@ -57,7 +61,7 @@ public class TaskManagement {
   public Response.Content index(SecurityContext securityContext) {
     //TODO: should check if username is null?
     String username = securityContext.getRemoteUser();
-    List<Task> tasks = taskService.getTaskHandler().getIncomingTask(username, null);
+    List<Task> tasks = taskService.getIncomingTasksByUser(username, null);
 
     Map<String, List<Task>> groupTasks = new HashMap<String, List<Task>>();
     groupTasks.put("", tasks);
@@ -84,7 +88,7 @@ public class TaskManagement {
   @Action
   public Response createTask(String taskInput, String groupBy, String orderBy) {
     if(taskInput != null && !taskInput.isEmpty()) {
-      this.taskService.getTaskHandler().create(taskParser.parse(taskInput));
+      taskService.createTask(taskParser.parse(taskInput));
     } else {
 
     }

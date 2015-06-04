@@ -29,7 +29,7 @@ import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.Query;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.services.organization.UserHandler;
-import org.exoplatform.task.management.util.UserUtils;
+import org.exoplatform.task.utils.UserUtils;
 import org.exoplatform.task.service.UserService;
 import org.json.JSONArray;
 import org.json.JSONException;

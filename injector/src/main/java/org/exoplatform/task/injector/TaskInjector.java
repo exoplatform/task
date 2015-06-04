@@ -24,7 +24,7 @@ import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.service.TaskService;
+import org.exoplatform.task.service.DAOHandler;
 
 import java.util.*;
 
@@ -84,7 +84,7 @@ public class TaskInjector extends DataInjector {
 
   //Service
 
-  private final TaskService taskService;
+  private final DAOHandler DAOHandler;
 
   //
 
@@ -115,7 +115,7 @@ public class TaskInjector extends DataInjector {
 
   public TaskInjector() {
     PortalContainer container = PortalContainer.getInstance();
-    taskService = (TaskService)container.getComponentInstanceOfType(TaskService.class);
+    DAOHandler = (DAOHandler)container.getComponentInstanceOfType(DAOHandler.class);
   }
 
   private void init() {
@@ -203,7 +203,7 @@ public class TaskInjector extends DataInjector {
           task.setStatus(randomStatus);
           randomStatus.getTasks().add(task);
         }
-        taskService.getProjectHandler().create(project);
+        DAOHandler.getProjectHandler().create(project);
       }
 
       //Create Incoming Task (not attached to project) of the user
@@ -213,7 +213,7 @@ public class TaskInjector extends DataInjector {
         task.setCompleted(false);
         tasks.add(task);
       }
-      taskService.getTaskHandler().createAll(tasks);
+      DAOHandler.getTaskHandler().createAll(tasks);
 
     }
 
@@ -255,7 +255,7 @@ public class TaskInjector extends DataInjector {
           task.setStatus(randomStatus);
           randomStatus.getTasks().add(task);
         }
-        taskService.getProjectHandler().create(project);
+        DAOHandler.getProjectHandler().create(project);
       }
 
     }

@@ -41,7 +41,7 @@ import org.exoplatform.task.dao.TaskHandler;
 import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.factory.ExoEntityManagerFactory;
-import org.exoplatform.task.service.jpa.TaskServiceJPAImpl;
+import org.exoplatform.task.service.jpa.DAOHandlerJPAImpl;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
@@ -52,7 +52,7 @@ public class TestCommentDAO {
   private TaskHandler taskDAO;
 
   private final String username = "root";
-  private TaskServiceJPAImpl taskService;
+  private DAOHandlerJPAImpl taskService;
 
   @BeforeClass
   public static void createTable() throws SQLException,
@@ -63,7 +63,7 @@ public class TestCommentDAO {
 
   @Before
   public void initDAOs() {
-    taskService = new TaskServiceJPAImpl();
+    taskService = new DAOHandlerJPAImpl();
     taskDAO = taskService.getTaskHandler();
     commentDAO = taskService.getCommentHandler();
 

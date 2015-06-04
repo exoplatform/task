@@ -17,7 +17,7 @@
 package org.exoplatform.task.dao.jpa;
 
 import org.exoplatform.task.dao.GenericDAO;
-import org.exoplatform.task.service.jpa.TaskServiceJPAImpl;
+import org.exoplatform.task.service.jpa.DAOHandlerJPAImpl;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -42,17 +42,17 @@ public class GenericDAOImpl<E, ID extends Serializable> implements GenericDAO<E,
 
   protected EntityManagerFactory entityManagerFactory;
 
-  protected TaskServiceJPAImpl taskService;
+  protected DAOHandlerJPAImpl daoHandler;
 
-  public GenericDAOImpl(TaskServiceJPAImpl taskServiceJPAImpl) {
-    taskService = taskServiceJPAImpl;
+  public GenericDAOImpl(DAOHandlerJPAImpl daoHandlerJPA) {
+    daoHandler = daoHandlerJPA;
     ParameterizedType genericSuperclass = (ParameterizedType) getClass().getGenericSuperclass();
     this.entityClass = (Class) genericSuperclass.getActualTypeArguments()[0];
   }
 
   @Override
   public Long count() {
-    CriteriaBuilder cb = taskService.getEntityManager().getCriteriaBuilder();
+    CriteriaBuilder cb = daoHandler.getEntityManager().getCriteriaBuilder();
     CriteriaQuery<Long> query = cb.createQuery(Long.class);
 
     Root<E> entity = query.from(entityClass);
@@ -60,12 +60,12 @@ public class GenericDAOImpl<E, ID extends Serializable> implements GenericDAO<E,
     //Selecting the count
     query.select(cb.count(entity));
 
-    return taskService.getEntityManager().createQuery(query).getSingleResult();
+    return daoHandler.getEntityManager().createQuery(query).getSingleResult();
   }
 
   @Override
   public E find(ID id) {
-    return (E) taskService.getEntityManager().find(entityClass, id);
+    return (E) daoHandler.getEntityManager().find(entityClass, id);
   }
 
   @Override
@@ -73,7 +73,7 @@ public class GenericDAOImpl<E, ID extends Serializable> implements GenericDAO<E,
     ParameterizedType genericSuperclass = (ParameterizedType) getClass().getGenericSuperclass();
     this.entityClass = (Class) genericSuperclass.getActualTypeArguments()[0];
 
-    CriteriaBuilder cb = taskService.getEntityManager().getCriteriaBuilder();
+    CriteriaBuilder cb = daoHandler.getEntityManager().getCriteriaBuilder();
     CriteriaQuery<E> query = cb.createQuery(entityClass);
 
     Root<E> entity = query.from(entityClass);
@@ -81,44 +81,44 @@ public class GenericDAOImpl<E, ID extends Serializable> implements GenericDAO<E,
     //Selecting the entity
     query.select(entity);
 
-    return taskService.getEntityManager().createQuery(query).getResultList();
+    return daoHandler.getEntityManager().createQuery(query).getResultList();
   }
 
   @Override
   public E create(E entity) {
-    taskService.getEntityManager().persist(entity);
+    daoHandler.getEntityManager().persist(entity);
     return entity;
   }
 
   @Override
   public void createAll(List<E> entities) {
     for (E entity : entities) {
-      taskService.getEntityManager().persist(entity);
+      daoHandler.getEntityManager().persist(entity);
     }
   }
 
   @Override
   public E update(E entity) {
-    taskService.getEntityManager().merge(entity);
+    daoHandler.getEntityManager().merge(entity);
     return entity;
   }
 
   @Override
   public void updateAll(List<E> entities) {
     for (E entity : entities) {
-      taskService.getEntityManager().merge(entity);
+      daoHandler.getEntityManager().merge(entity);
     }
   }
 
   @Override
   public void delete(E entity) {
-    taskService.getEntityManager().remove(entity);
+    daoHandler.getEntityManager().remove(entity);
   }
 
   @Override
   public void deleteAll(List<E> entities) {
     for (E entity : entities) {
-      taskService.getEntityManager().remove(entity);
+      daoHandler.getEntityManager().remove(entity);
     }
   }
 
@@ -126,7 +126,7 @@ public class GenericDAOImpl<E, ID extends Serializable> implements GenericDAO<E,
   public void deleteAll() {
     List<E> entities = findAll();
     for (E entity : entities) {
-      taskService.getEntityManager().remove(entity);
+      daoHandler.getEntityManager().remove(entity);
     }
   }
 }

@@ -22,18 +22,18 @@ import org.exoplatform.social.core.activity.ActivityListenerPlugin;
 import org.exoplatform.social.core.service.LinkProvider;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.service.TaskParser;
-import org.exoplatform.task.service.TaskService;
+import org.exoplatform.task.service.DAOHandler;
 
 public class ActivityTaskCreationListener extends ActivityListenerPlugin {
 
-  private TaskService taskService;
+  private DAOHandler DAOHandler;
   
   private TaskParser parser;
   
   public static final String PREFIX = "++";
   
-  public ActivityTaskCreationListener(TaskService taskService, TaskParser parser) {
-    this.taskService = taskService;
+  public ActivityTaskCreationListener(DAOHandler DAOHandler, TaskParser parser) {
+    this.DAOHandler = DAOHandler;
     this.parser = parser;
   }
 
@@ -65,7 +65,7 @@ public class ActivityTaskCreationListener extends ActivityListenerPlugin {
       if (idx >=0 && idx + 2 < comment.length() - 1) {
         Task task = parser.parse(comment.substring(idx + 2, comment.length() - 4));
         task.setDescription(LinkProvider.getSingleActivityUrl(activity.getId()));
-        taskService.getTaskHandler().create(task);
+        DAOHandler.getTaskHandler().create(task);
       }
     }
   }

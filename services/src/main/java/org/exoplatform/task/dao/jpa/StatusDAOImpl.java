@@ -18,7 +18,7 @@ package org.exoplatform.task.dao.jpa;
 
 import org.exoplatform.task.dao.StatusHandler;
 import org.exoplatform.task.domain.Status;
-import org.exoplatform.task.service.jpa.TaskServiceJPAImpl;
+import org.exoplatform.task.service.jpa.DAOHandlerJPAImpl;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -31,13 +31,13 @@ import javax.persistence.Query;
  */
 public class StatusDAOImpl extends GenericDAOImpl<Status, Long> implements StatusHandler {
 
-  public StatusDAOImpl(TaskServiceJPAImpl taskServiceJPAImpl) {
+  public StatusDAOImpl(DAOHandlerJPAImpl taskServiceJPAImpl) {
     super(taskServiceJPAImpl);
   }
 
   @Override
   public Status findLowestRankStatusByProject(Long projectId) {
-    EntityManager em = taskService.getEntityManager();
+    EntityManager em = daoHandler.getEntityManager();
     Query query = em.createNamedQuery("Status.findLowestRankStatusByProject", Status.class);
     query.setParameter("projectId", projectId);
     return (Status)query.getSingleResult();

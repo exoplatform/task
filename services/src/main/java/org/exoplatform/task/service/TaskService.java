@@ -1,40 +1,47 @@
-/*
- * Copyright (C) 2015 eXo Platform SAS.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
-
 package org.exoplatform.task.service;
 
-import org.exoplatform.task.dao.CommentHandler;
-import org.exoplatform.task.dao.ProjectHandler;
-import org.exoplatform.task.dao.StatusHandler;
-import org.exoplatform.task.dao.TaskHandler;
+import org.exoplatform.task.dao.OrderBy;
+import org.exoplatform.task.domain.Comment;
+import org.exoplatform.task.domain.Task;
 
 import java.util.List;
 
 /**
- * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
+ * Created by TClement on 6/3/15.
  */
 public interface TaskService {
-  public ProjectHandler getProjectHandler();
 
-  public TaskHandler getTaskHandler();
+  Task createTask(Task task);
 
-  public CommentHandler getCommentHandler();
+  Task updateTask(Task task);
 
-  public StatusHandler getStatusHandler();
+  Task updateTaskInfo(long id, String param, String[] values);
+
+  Task updateTaskCompleted(long id, Boolean completed);
+
+  void deleteTask(Task task);
+
+  boolean deleteTaskById(long id);
+
+  Task cloneTaskById(long id);
+
+  Task getTaskById(long id);
+
+  Long getNbOfCommentsByTaskId(long id);
+
+  Long getNbOfCommentsByTask(Task task);
+
+  List<Comment> getCommentsByTaskId(long id, int start, int limit);
+
+  List<Comment> getCommentsByTask(Task task, int start, int limit);
+
+  Comment addCommentToTaskId(long id, String username, String comment);
+
+  boolean deleteCommentById(long commentId);
+
+  List<Task> getIncomingTasksByUser(String username, OrderBy orderBy);
+
+  List<Task> getToDoTasksByUser(String username, OrderBy orderBy);
+
+
 }

@@ -58,7 +58,7 @@ import java.util.Set;
 })
 public class Project {
 
-  private static final String PREFIX = "Copy of ";
+  private static final String PREFIX_CLONE = "Copy of ";
 
   @Id 
   @GeneratedValue
@@ -187,7 +187,7 @@ public class Project {
   }
   
   public Project clone(boolean cloneTask) {
-    Project project = new Project(PREFIX + this.getName(), this.getDescription(), new HashSet<Status>(), 
+    Project project = new Project(PREFIX_CLONE + this.getName(), this.getDescription(), new HashSet<Status>(),
                                   new HashSet<String>(this.getManager()), new HashSet<String>(this.getParticipator()));
     
     project.setColor(this.getColor());

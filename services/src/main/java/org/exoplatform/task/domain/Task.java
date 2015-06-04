@@ -47,6 +47,9 @@ import java.util.Set;
             query = "SELECT t FROM Task t WHERE t.status.project.id = :projectId")
 })
 public class Task {
+
+  private static final String PREFIX_CLONE = "Copy of ";
+
   @Id
   @GeneratedValue
   @Column(name = "TASK_ID")
@@ -238,7 +241,7 @@ public class Task {
   }
 
   public Task clone() {
-    Task newTask = new TaskBuilder().withTitle(this.getTitle())
+    Task newTask = new TaskBuilder().withTitle(PREFIX_CLONE+this.getTitle())
                                     .withAssignee(this.getAssignee())
                                     .withContext(this.getContext())
                                     .withCreatedBy(this.getCreatedBy())

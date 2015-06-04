@@ -37,7 +37,7 @@ import org.exoplatform.task.dao.StatusHandler;
 import org.exoplatform.task.dao.TaskHandler;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.factory.ExoEntityManagerFactory;
-import org.exoplatform.task.service.jpa.TaskServiceJPAImpl;
+import org.exoplatform.task.service.jpa.DAOHandlerJPAImpl;
 
 /**
  * Created by The eXo Platform SAS
@@ -50,7 +50,7 @@ public class DAOTest {
   private TaskHandler taskDAO;
   private ProjectHandler projectDAO;
   private StatusHandler statusDAO;
-  private TaskServiceJPAImpl taskService;
+  private DAOHandlerJPAImpl taskService;
 
   @BeforeClass
   public static void createTable() throws SQLException,
@@ -61,7 +61,7 @@ public class DAOTest {
 
   @Before
   public void initDAOs() {
-    taskService = new TaskServiceJPAImpl();
+    taskService = new DAOHandlerJPAImpl();
 
     taskDAO = taskService.getTaskHandler();
     projectDAO = taskService.getProjectHandler();

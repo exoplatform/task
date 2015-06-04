@@ -20,13 +20,13 @@ import org.exoplatform.task.dao.CommentHandler;
 import org.exoplatform.task.dao.ProjectHandler;
 import org.exoplatform.task.dao.StatusHandler;
 import org.exoplatform.task.dao.TaskHandler;
-import org.exoplatform.task.service.TaskService;
+import org.exoplatform.task.service.DAOHandler;
 
 /**
  * @author <a href="trongtt@gmail.com">Trong Tran</a>
  * @version $Revision$
  */
-abstract public class AbstractTaskService implements TaskService {
+abstract public class AbstractDAOHandler implements DAOHandler {
 
   protected ProjectHandler pHandler;
 

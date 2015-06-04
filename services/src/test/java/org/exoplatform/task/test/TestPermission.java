@@ -25,7 +25,7 @@ import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.factory.ExoEntityManagerFactory;
 import org.exoplatform.task.service.TaskParser;
 import org.exoplatform.task.service.impl.TaskParserImpl;
-import org.exoplatform.task.service.jpa.TaskServiceJPAImpl;
+import org.exoplatform.task.service.jpa.DAOHandlerJPAImpl;
 import org.junit.*;
 
 import javax.persistence.Persistence;
@@ -45,7 +45,7 @@ public class TestPermission {
 
   private TaskHandler tDAO;
   private ProjectHandler pDAO;
-  private TaskServiceJPAImpl taskService;
+  private DAOHandlerJPAImpl taskService;
   private TaskParser parser = new TaskParserImpl();
 
   @BeforeClass
@@ -62,7 +62,7 @@ public class TestPermission {
 
   @Before
   public void setup() {
-    taskService = new TaskServiceJPAImpl();
+    taskService = new DAOHandlerJPAImpl();
     tDAO = taskService.getTaskHandler();
     pDAO = taskService.getProjectHandler();
 

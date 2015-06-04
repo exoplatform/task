@@ -25,7 +25,7 @@ package org.exoplatform.task.dao.jpa;
 import org.exoplatform.task.dao.CommentHandler;
 import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.service.jpa.TaskServiceJPAImpl;
+import org.exoplatform.task.service.jpa.DAOHandlerJPAImpl;
 
 import javax.persistence.Query;
 
@@ -37,13 +37,13 @@ import java.util.List;
  */
 public class CommentDAOImpl extends GenericDAOImpl<Comment, Long> implements CommentHandler {
 
-  public CommentDAOImpl(TaskServiceJPAImpl taskServiceJPAImpl) {
+  public CommentDAOImpl(DAOHandlerJPAImpl taskServiceJPAImpl) {
     super(taskServiceJPAImpl);
   }
 
   @Override
   public long count(Task task) {
-    Long count = taskService.getEntityManager().createNamedQuery("Comment.countCommentOfTask", Long.class)
+    Long count = daoHandler.getEntityManager().createNamedQuery("Comment.countCommentOfTask", Long.class)
             .setParameter("taskId", task.getId())
             .getSingleResult();
     return count;
@@ -51,7 +51,7 @@ public class CommentDAOImpl extends GenericDAOImpl<Comment, Long> implements Com
 
   @Override
   public List<Comment> findCommentsOfTask(Task task, int start, int limit) {
-    Query query = taskService.getEntityManager().createNamedQuery("Comment.findCommentsOfTask", Comment.class);
+    Query query = daoHandler.getEntityManager().createNamedQuery("Comment.findCommentsOfTask", Comment.class);
     query.setParameter("taskId", task.getId());
     if(limit > 0) {
       query.setFirstResult(start);

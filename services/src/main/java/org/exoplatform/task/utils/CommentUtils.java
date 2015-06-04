@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.exoplatform.task.management.util;
+package org.exoplatform.task.utils;
 
 import org.exoplatform.task.model.User;
 import org.exoplatform.task.service.UserService;
@@ -27,7 +27,11 @@ import java.util.StringTokenizer;
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
-public class CommentUtils {
+public final class CommentUtils {
+
+  private CommentUtils() {
+  }
+
   public static String formatMention(String text, UserService userService) {
     if(text == null || text.isEmpty()) {
       return text;

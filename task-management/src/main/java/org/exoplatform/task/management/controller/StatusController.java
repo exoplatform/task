@@ -25,7 +25,7 @@ import juzu.Response;
 import org.exoplatform.commons.juzu.ajax.Ajax;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
-import org.exoplatform.task.service.TaskService;
+import org.exoplatform.task.service.ProjectService;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,7 +35,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
@@ -43,13 +42,13 @@ import java.util.Set;
 public class StatusController {
 
   @Inject
-  TaskService taskService;
+  ProjectService projectService;
 
   @Resource
   @Ajax
   @MimeType.JSON
   public Response getAllStatus(Long projectId) {
-    Project project = taskService.getProjectHandler().find(projectId);
+    Project project = projectService.getProjectById(projectId);
     if(project == null) {
       return Response.notFound("Project does not exist with ID: " + projectId);
     }

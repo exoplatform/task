@@ -26,7 +26,7 @@ import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.factory.ExoEntityManagerFactory;
 import org.exoplatform.task.service.TaskParser;
 import org.exoplatform.task.service.impl.TaskParserImpl;
-import org.exoplatform.task.service.jpa.TaskServiceJPAImpl;
+import org.exoplatform.task.service.jpa.DAOHandlerJPAImpl;
 import org.junit.*;
 
 import javax.persistence.Persistence;
@@ -40,7 +40,7 @@ import java.util.List;
 public class TestTaskDAO {
 
   private TaskHandler tDAO;
-  private TaskServiceJPAImpl taskService;
+  private DAOHandlerJPAImpl taskService;
   private TaskParser parser = new TaskParserImpl();
 
   private final String username = "root";
@@ -59,7 +59,7 @@ public class TestTaskDAO {
 
   @Before
   public void setup() {
-    taskService = new TaskServiceJPAImpl();
+    taskService = new DAOHandlerJPAImpl();
     tDAO = taskService.getTaskHandler();
 
     //

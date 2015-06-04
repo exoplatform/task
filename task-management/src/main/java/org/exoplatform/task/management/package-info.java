@@ -21,7 +21,9 @@
 @Portlet
 @Bindings({
     @Binding(value = TaskParser.class),
-    @Binding(value = TaskService.class),
+    @Binding(DAOHandler.class),
+    @Binding(value = TaskService.class, implementation = TaskServiceImpl.class),
+    @Binding(value = ProjectService.class, implementation = ProjectServiceImpl.class),
     @Binding(value = OrganizationService.class),
     @Binding(IdentityManager.class),
     @Binding(value = UserService.class, implementation = UserServiceImpl.class)
@@ -49,16 +51,16 @@ package org.exoplatform.task.management;
 
 import juzu.Application;
 import juzu.plugin.asset.*;
+import juzu.plugin.binding.Binding;
+import juzu.plugin.binding.Bindings;
 import juzu.plugin.less4j.Less;
 import juzu.plugin.portlet.Portlet;
-import juzu.plugin.binding.Bindings;
-import juzu.plugin.binding.Binding;
 import juzu.plugin.webjars.WebJar;
 import juzu.plugin.webjars.WebJars;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.social.core.manager.IdentityManager;
 import org.exoplatform.task.management.controller.TaskManagement;
-import org.exoplatform.task.service.TaskParser;
-import org.exoplatform.task.service.TaskService;
-import org.exoplatform.task.service.UserService;
+import org.exoplatform.task.service.*;
+import org.exoplatform.task.service.impl.ProjectServiceImpl;
+import org.exoplatform.task.service.impl.TaskServiceImpl;
 import org.exoplatform.task.service.impl.UserServiceImpl;

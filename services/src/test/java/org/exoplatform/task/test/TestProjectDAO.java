@@ -16,27 +16,21 @@
 */
 package org.exoplatform.task.test;
 
-import java.sql.SQLException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.persistence.Persistence;
-
 import junit.framework.Assert;
 import liquibase.exception.LiquibaseException;
-
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
 import org.exoplatform.task.dao.ProjectHandler;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.factory.ExoEntityManagerFactory;
-import org.exoplatform.task.service.jpa.TaskServiceJPAImpl;
+import org.exoplatform.task.service.jpa.DAOHandlerJPAImpl;
+import org.junit.*;
+
+import javax.persistence.Persistence;
+import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author <a href="trongtt@exoplatform.com">Trong Tran</a>
@@ -45,7 +39,7 @@ import org.exoplatform.task.service.jpa.TaskServiceJPAImpl;
 public class TestProjectDAO {
 
   private ProjectHandler pDAO;
-  private TaskServiceJPAImpl taskService;
+  private DAOHandlerJPAImpl taskService;
 
   @BeforeClass
   public static void init() throws SQLException,
@@ -61,7 +55,7 @@ public class TestProjectDAO {
 
   @Before
   public void setup() {
-    taskService = new TaskServiceJPAImpl();
+    taskService = new DAOHandlerJPAImpl();
     pDAO = taskService.getProjectHandler();
 
     //
@@ -95,28 +89,6 @@ public class TestProjectDAO {
     all = pDAO.findAll();
     Assert.assertEquals(2, all.size());
     Assert.assertEquals(p1.getId() + 1, p2.getId());
-  }
-  
-  @Test
-  public void testCloneProject() {
-    Task t = createTask("my task");
-    Status st = createStatus("TODO", t);
-    Project p1 = createProject("Test project 1", st);
-    pDAO.create(p1);    
-    
-    List<Project> all = pDAO.findAll();
-    Assert.assertEquals(1, all.size());
-    Assert.assertEquals("Test project 1", p1.getName());    
-    
-    //
-    pDAO.cloneProject(p1.getId(), true);
-    all = pDAO.findAll();
-    Assert.assertEquals(2, all.size());
-    //
-    Project cloned = all.get(0).getId() == p1.getId() ? all.get(1) : all.get(0);
-    Assert.assertEquals("[CLONE] Test project 1", cloned.getName());
-    Assert.assertEquals(1, cloned.getStatus().size());
-    Assert.assertEquals(1, cloned.getStatus().iterator().next().getTasks().size());
   }
 
   @Test

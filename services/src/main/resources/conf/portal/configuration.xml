@@ -4,12 +4,24 @@
                xmlns="http://www.exoplatform.org/xml/ns/kernel_1_2.xsd">
 
   <component>
-    <key>org.exoplatform.task.service.jpa.TaskService</key>
-    <type>org.exoplatform.task.service.jpa.TaskServiceJPAImpl</type>
-  </component> 
+    <key>org.exoplatform.task.service.DAOHandler</key>
+    <type>org.exoplatform.task.service.jpa.DAOHandlerJPAImpl</type>
+  </component>
+
+  <!--
+  <component>
+    <key>org.exoplatform.task.service.TaskService</key>
+    <type>org.exoplatform.task.service.impl.TaskServiceImpl</type>
+  </component>
 
   <component>
-    <key>org.exoplatform.task.service</key>
+    <key>org.exoplatform.task.service.ProjectService</key>
+    <type>org.exoplatform.task.service.impl.ProjectServiceImpl</type>
+  </component>
+  -->
+
+  <component>
+    <key>org.exoplatform.task.service.TaskParser</key>
     <type>org.exoplatform.task.service.impl.TaskParserImpl</type>
   </component>    
   
