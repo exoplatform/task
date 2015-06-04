@@ -16,7 +16,6 @@
                 </span>
                 <a class="actionIcon" href="#"><i class="uiIcon uiIconFilter"></i></a>
                 <a class="actionIcon" href="#"><i class="uiIcon uiIconLink"></i></a>
-
             </div>
             <div class="pull-right search-container">
                 <form class="UIForm" action="#" onsubmit="javascript:void(0)">
@@ -74,17 +73,85 @@
                         </div>
                     </div>
                     <div class="input-field">
-                        <input type="text" placeholder="Untiled Task" />
-                        <div style="display: block" class="popover fade bottom in" role="tooltip">
-                            <div class="arrow"></div>
-                            <div class="popover-content">Click Here to create your first task.</div>
-                        </div>
+                        <form action="#" method="GET" class="form-create-task">
+                            <input type="text" name="taskTitle" placeholder="Untiled Task" />
+                        </form>
+                        <% if (tasks.size() == 0) { %>
+                            <div style="display: block" class="popover fade bottom in" role="tooltip">
+                                <div class="arrow"></div>
+                                <div class="popover-content">Click Here to create your first task.</div>
+                            </div>
+                        <%}%>
                     </div>
                 </div><!-- /.header -->
                 <div class="body relative">
-
                     <!-- The default list -->
-                    <ul class="table-project">
+                    <% if (tasks.size() > 0) { %>
+                        <div class="table-project">
+                            <% groupTasks.each {group -> %>
+                                <div class="row-group">
+                                    <% if (groupBy != null && !groupBy.isEmpty()) { %>
+                                        <div class="row-item heading primaryBackground">
+                                            <div class="column-item">
+                                                <% if (groupBy == 'assignee') {%>
+                                                    <a href="#"><i class="uiIcon uiIconArrowDown"></i></a>
+                                                    <%
+                                                        def user = userMap[group.key];
+                                                    %>
+                                                    <% if (user.username != 'guest') {%>
+                                                    <img width="20px" height="20px" src="${user.avatar}" alt="${user.displayName}">
+                                                    <%}%>
+                                                    <a href="javascript:void(0)"><span class="group-name">${user.username == "guest" ? "UnAssigned" : user.displayName}</span> <span class="amount-item">(${group.value.size()})</span></a>
+                                                <% } else { %>
+                                                    <a href="javascript:void(0)"><span class="group-name">${group.key}</span> <span class="amount-item">(${group.value.size()})</span></a>
+                                                <% } %>
+                                            </div>
+                                        </div>
+                                    <%}%>
+                                    <div class="row-item group">
+                                        <div class="column-item">
+                                            <ul class="table-project">
+                                                <%group.value.eachWithIndex { task, index -> %>
+                                                <%
+                                                    def isDueDateToday = false;
+                                                    def isOverDue = false;
+                                                    /*if (index % 2 == 0) {
+                                                        isDueDateToday = true;
+                                                    }
+                                                    if (index % 3 == 0) {
+                                                        isOverDue = true;
+                                                    }*/
+                                                %>
+                                                    <li class="row-item row-odd hover-action-reveal has-border taskItem" data-taskid="${task.id}">
+                                                        <div class="column-item column-checkbox">
+                                                            <span class="project-color ${task.status != null ? task.status.project.color : ''}"></span>
+                                                            <span class="uiCheckbox inline-block-hide">
+                                                                <input type="checkbox" class="checkbox" ${task.completed || true ? "checked=\"checked\"" : ""}>
+                                                                <span></span>
+                                                            </span>
+                                                             <span class="status-task inline-block-show">
+                                                                <i class="${isDueDateToday ? "uiIconColorWarningInBlue" : (isOverDue ? "uiIconColorWarningInRed" : "")}"></i>
+                                                            </span>
+                                                        </div>
+                                                        <div class="column-item column-title">${task.title}</div>
+                                                        <div class="column-item column-time">
+                                                            <span class="text-time inline-block-show">${task.dueDate != null ? task.dueDate : "&nbsp;"}</span>
+                                                            <a class="actionIcon inline-block-hide" href="#"><i class="uiIcon uiIconClock"></i></a>
+                                                        </div>
+                                                        <div class="column-item column-action"><a class="actionIcon inline-block-hide viewTaskDetail" href="#"><i class="uiIcon uiIconArrowRight"></i></a></div>
+                                                    </li>
+                                                <%}%>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            <%}%>
+                        </div>
+                    <%}%>
+
+
+                    <!-- TODO remove -->
+                    <ul class="table-project" style="display: none">
                         <li class="row-item row-odd hover-action-reveal has-border">
                             <div class="column-item column-checkbox">
                                 <span class="project-color Tomato"></span>
@@ -232,7 +299,8 @@
                     </ul>
                     <br>
                     <!-- The case has collapse -->
-                    <div class="table-project">
+                    <!-- TODO remove -->
+                    <div class="table-project" style="display: none">
                         <div class="row-group">
                             <div class="row-item heading primaryBackground">
                                 <div class="column-item">
@@ -251,7 +319,6 @@
                                                     <input type="checkbox" class="checkbox">
                                                     <span></span>
                                                 </span>
-
                                             </div>
                                             <div class="column-item column-title">Review website designs</div>
                                             <div class="column-item column-time">
@@ -475,61 +542,6 @@
                         </div><!-- /.row-group -->
 
                     </div><!-- /.table-project -->
-
-                    <ul>
-                        <li class="item-add-new-task" style="display: none">
-                            <form action="#" method="GET" class="form-create-task">
-                                <input class="input-block-level" type="text" name="taskTitle" placeholder="Enter to create new task">
-                            </form>
-                        </li>
-                    </ul>
-
-                    <% if (tasks == null || tasks.size() == 0) {%>
-                        <% if (keyword == null || keyword.isEmpty()) {%>
-                            <div class="notask-description">
-                                This your personal project. You can share it for work collaboration.
-                            </div>
-                        <% } else {%>
-                            <div class="notask-description">
-                                There is no task match with your keyword.
-                            </div>
-                        <% }%>
-                    <%} else {
-                        groupTasks.each {group -> %>
-
-                        <div class="row-fluid">
-                            <div class="span12">
-                                <% if (groupBy != null && !groupBy.isEmpty()) { %>
-                                <h4 class="text-center">${group.key}</h4>
-                                <%}%>
-                                <ul>
-                                    <% group.value.eachWithIndex { task, index -> %>
-                                    <li class="task" task-id="${task.id}">
-                                        <div class="pull-left">
-                                            <% if(task.completed){%>
-                                            <i class="uiIconTick">&nbsp;</i>
-                                            <del>${task.title}<del>
-                                                    <% } else {%>
-                                                <input id="checkbox-task-${group}-${index}" type="checkbox"/>
-                                                <a href="#">${task.title}</a>
-                                                    <% }%>
-                                        </div>
-                                        <div class="pull-right">
-                                            <%if(task.tags != null) { task.tags.eachWithIndex { tag, i ->%>
-                                            <span class="tag"><%if(i > 0) { print ", "}%>[${tag}]</span>
-                                            <%}}%>
-                                            <% if(task.dueDate != null) { %>
-                                            <span class="duedate">${task.dueDate}</span>
-                                            <%}%>
-                                        </div>
-                                        <div class="clearfix"></div>
-                                    </li>
-                                    <%}%>
-                                </ul>
-                            </div>
-                        </div>
-                        <%}
-                    }%>
                 </div>
             </div>
         </div>

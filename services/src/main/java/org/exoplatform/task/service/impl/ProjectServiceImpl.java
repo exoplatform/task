@@ -153,6 +153,8 @@ public class ProjectServiceImpl implements ProjectService {
       }
     } else if("description".equalsIgnoreCase(param)) {
       project.setDescription(val);
+    } else if ("color".equalsIgnoreCase(param)) {
+      project.setColor(val);
     } else {
       LOG.info("Project does not contain field: " + param);
       //TODO return exception instead of null

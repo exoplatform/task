@@ -164,12 +164,14 @@ $(document).ready(function() {
         return false;
     });
 
-    $centerPanel.on('click', 'li.task', function(e) {
-        var $li = $(e.target || e.srcElement).closest('li.task');
-        var taskId = $li.attr('task-id');
+    $centerPanel.on('click', '.viewTaskDetail', function(e) {
+        var $li = $(e.target || e.srcElement).closest('.taskItem');
+        var taskId = $li.data('taskid');
         var currentTask = $rightPanelContent.find('.task-detail').attr('task-id');
         if (taskId != currentTask || $rightPanel.is(':hidden')) {
             $rightPanelContent.jzLoad('TaskController.detail()', {id: taskId}, function(html) {
+                $centerPanel.find('li.selected').removeClass('selected');
+                $li.addClass('selected');
                 taApp.showRightPanel($centerPanel, $rightPanel);
                 initEditInline(taskId);
                 $rightPanelContent.find('textarea').exoMentions({
@@ -425,35 +427,30 @@ $(document).ready(function() {
     $leftPanel.on('click', 'a.project-name', function(e) {
         var $a = $(e.target).closest('a');
         var projectId = $a.data('id');
-        var currentProject = $centerPanel.find('.projectListView').attr('data-projectId');
-        if (currentProject != projectId || ($rightPanel.is(':hidden') && projectId > 0)) {
-            if ($a.data('canview')) {
-              $centerPanelContent.jzLoad('TaskController.listTasks()', {projectId: projectId}, function() {
+        var currentProject = $centerPanel.find('.projectListView').data('projectid');
+
+        if (currentProject != projectId && ($a.data('canview') || projectId < 0)) {
+            $centerPanelContent.jzLoad('TaskController.listTasks()', {projectId: projectId}, function() {
                 $a.closest('.leftPanel > ul').find('li.active').removeClass('active');
                 $a.closest('li').addClass('active');
-              });              
-            }
-
-            // Show project summary at right panel
-            if(projectId > 0 && $a.data('canedit')) {
-                $rightPanelContent.jzLoad('ProjectController.projectDetail()', {id: projectId}, function () {
-                    $a.closest('ul.list-projects[parentid="0"]').find('li.active').removeClass('active');
-                    $a.closest('li').addClass('active');
-                    taApp.showRightPanel($centerPanel, $rightPanel);
-                    initEditInlineForProject(projectId);
-                });
-            } else {
-                taApp.hideRightPanel($centerPanel, $rightPanel, $rightPanelContent);
-            }
+            });
+        }
+        // Show project summary at right panel
+        if(projectId > 0 && $a.data('canedit') && (currentProject != projectId || $rightPanel.is(':hidden'))) {
+            $rightPanelContent.jzLoad('ProjectController.projectDetail()', {id: projectId}, function () {
+                $a.closest('ul.list-projects[parentid="0"]').find('li.active').removeClass('active');
+                $a.closest('li').addClass('active');
+                taApp.showRightPanel($centerPanel, $rightPanel);
+                initEditInlineForProject(projectId);
+            });
+        } else {
+            taApp.hideRightPanel($centerPanel, $rightPanel, $rightPanelContent);
         }
         return false;
     });
 
     $centerPanel.on('click', 'a.btn-add-task', function(e) {
-        var $projectListView =  $(e.target).closest('.projectListView');
-        $projectListView.find('.taskList li.item-add-new-task').show(500, function() {
-            $projectListView.find('form.form-create-task input').focus();
-        });
+        $centerPanel.find('.input-field input').focus();
         return false;
     });
 
@@ -521,6 +518,53 @@ $(document).ready(function() {
      //hide the popover when there are no project in left panel
     $('.add-new-project').on('click',function() {
         $(this).parent().find('.popover').css('display','none');
+    });
+
+    $leftPanel.on('click', '.changeProjectColor', function(e) {
+        e.preventDefault();
+        var $a = $(e.target).closest('a,li');
+        var $project = $a.closest('.project-item');
+        var projectId = $project.attr('data-projectId');
+        var color = $a.attr('data-color');
+
+        var updateProjectURL = $a.jzURL('ProjectController.saveProjectInfo');
+        $.ajax({
+            url: updateProjectURL,
+            data: {
+                projectId: projectId,
+                name: 'color',
+                value: color
+            },
+            type: 'POST',
+            success: function(data) {
+                $project.find('a.colorPie').attr('class', color + ' colorPie');
+                $project.find('a > i.iconCheckBox').removeClass('iconCheckBox');
+                $a.find('i').addClass('iconCheckBox');
+            },
+            error: function() {
+                alert('Error while update color of project, please try again.');
+            }
+        });
+
+        $project.find('.sub-item.open').removeClass('open');
+
+        return false;
+    });
+
+    $centerPanel.on('change', '.taskItem input[type="checkbox"]', function(e) {
+        var $input = $(e.target);
+        var $taskItem = $input.closest('.taskItem');
+        var taskId = $taskItem.data('taskid');
+        var isCompleted = !this.checked;
+        var data = {taskId: taskId, completed: !isCompleted};
+        $input.jzAjax('TaskController.updateCompleted()', {
+            data: data,
+            success: function(message) {
+                if (!isCompleted) {
+                    $taskItem.fadeOut(500);
+                }
+            }
+        });
     });
   });
 });

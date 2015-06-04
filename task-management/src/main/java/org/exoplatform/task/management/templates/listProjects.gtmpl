@@ -4,11 +4,12 @@
 import org.exoplatform.services.security.ConversationState;
     
 def displayListProjectItem(project, level) {
-   def identity = ConversationState.getCurrent().getIdentity();
-	def hasChildClass = (project.children != null && project.children.size() > 0) ? 'has-child' : '';
+    def identity = ConversationState.getCurrent().getIdentity();
+    def hasChild = (project.children != null && project.children.size() > 0);
+    def hasChildClass = hasChild  ? 'has-child' : '';
 	def indent = (level - 1) * 20; 
 %>
-    <li class="dropdown project-item">
+    <li class="dropdown project-item ${project.color == '' ? 'no-color' : ''}" data-projectId="${project.id}">
         <div class="sub-item" style="padding-left: <%=indent%>px">
         <%if (project.canEdit(identity)) { %>
 	        <a class="dropdown-toggle pull-right"
@@ -16,8 +17,8 @@ def displayListProjectItem(project, level) {
 	           href="#">
 	            <i class="uiIconRightMenu uiIconLightGray"></i>
 	        </a>
-	        <div class="dropdown-menu uiDropdownWithIcon" style="left: 100%;">
-	        	<span class="arrowLeft"></span>
+	        <div class="dropdown-menu uiDropdownWithIcon" style="left: 100%;top: -100px;">
+	        	<span class="arrowLeft" style = "top: 115px;"></span>
 	        	<ul class="uiDropdownMenu project-menu" data-projectId="${project.id}">
 		            <li><a href="#"><i class="uiIconEditMini uiIconLightGray"></i>Add task</a></li>
 		            <li><a href="#" class="share-project"><i class="uiIconShare uiIconLightGray"></i>Share</a></li>
@@ -25,47 +26,32 @@ def displayListProjectItem(project, level) {
 		            <li><a href="#"><i class="uiIconTrash uiIconLightGray"></i>Delete</a></li>
 		            <li><a href="#"><i class="uiIconHide uiIconLightGray"></i>Hide</a></li>
 		            <li><a class="new-project" data-projectId="${project.id}" href="#"><i class="uiIconAddProject uiIconLightGray"></i>Add project</a></li>
-		            <li class="noColor">No Color</li>
+		            <li class="noColor changeProjectColor" data-color="">No Color</li>
 		            <li class="calendarTableColor">
-						<div>
-							<a class="asparagus colorCell" href="#" style="display: block;"><i class="iconCheckBox"></i></a>
-							<a class="munsell_blue colorCell" href="#" style="display: block;"><i class=""></i></a>
-							<a class="navy_blue colorCell" href="#" style="display: block;"><i class=""></i></a>
-							<a class="purple colorCell" href="#" style="display: block;"><i class=""></i></a>
-							<a class="red colorCell" href="#" style="display: block;"><i class=""></i></a>
-							<a class="brown colorCell" href="#" style="display: block;"><i class=""></i></a>
-						</div>
-						<div>
-							<a class="laurel_green colorCell" href="#" style="display: block;"><i class=""></i></a>
-							<a class="sky_blue colorCell" href="#" style="display: block;"><i class=""></i></a>
-							<a class="blue_gray colorCell" href="#" style="display: block;"><i class=""></i></a>
-							<a class="light_purple colorCell" href="#" style="display: block;"><i class=""></i></a>
-							<a class="hot_pink colorCell" href="#" style="display: block;"><i class=""></i></a>
-							<a class="light_brown colorCell" href="#" style="display: block;"><i class=""></i></a>
-						</div>
-						<div>
-							<a class="moss_green colorCell" href="#" style="display: block;"><i class=""></i></a>
-							<a class="powder_blue colorCell" href="#" style="display: block;"><i class=""></i></a>
-							<a class="light_blue colorCell" href="#" style="display: block;"><i class=""></i></a>
-							<a class="pink colorCell" href="#" style="display: block;"><i class=""></i></a>
-							<a class="Orange colorCell" href="#" style="display: block;"><i class=""></i></a>
-							<a class="gray colorCell" href="#" style="display: block;"><i class=""></i></a>
-						</div>
-						<div>
-							<a class="green colorCell" href="#" style="display: block;"><i class=""></i></a>
-							<a class="baby_blue colorCell" href="#" style="display: block;"><i class=""></i></a>
-							<a class="light_gray colorCell" href="#" style="display: block;"><i class=""></i></a>
-							<a class="beige colorCell" href="#" style="display: block;"><i class=""></i></a>
-							<a class="yellow colorCell" href="#" style="display: block;"><i class=""></i></a>
-							<a class="plum colorCell" href="#" style="display: block;"><i class=""></i></a>
-						</div>
+                        <%
+                            def colors = [
+                                ['asparagus', 'munsell_blue', 'navy_blue', 'purple', 'red', 'brown'],
+                                ['laurel_green', 'sky_blue', 'blue_gray', 'light_purple', 'hot_pink', 'light_brown'],
+                                ['moss_green', 'powder_blue', 'light_blue', 'pink', 'Orange', 'gray'],
+                                ['green', 'baby_blue', 'light_gray', 'beige', 'yellow', 'plum']
+                            ];
+                        %>
+                        <%
+                            colors.each {c -> %>
+                                <div>
+                                    <%c.each {color ->%>
+                                    <a class="${color} colorCell changeProjectColor" data-color="${color}" href="#" style="display: block;"><i class="${project.color == color ? "iconCheckBox" : ""}"></i></a>
+                                    <%}%>
+                                </div>
+                            <%}
+                        %>
 					</li>
 		        </ul>
 		    </div>
 		    <%}%>
-	        <a href="#" class="Orange colorPie"><span class=""></span></a>
+	        <a href="#" class="${project.color} colorPie"><span class=""></span></a>
 	        <a href="#" class="project-name" data-id="${project.id}" data-canEdit="<%=project.canEdit(identity)%>" data-canView="<%=project.canView(identity)%>">
-	        		<i class="uiIconLightGray uiIconArrowRight"></i>${project.name}
+	        		<i class="${hasChild ? "uiIconArrowDownMini uiIconLightGray" : ""}"></i>${project.name}
 	        </a>
 		</div>
         <% if (project.children != null && project.children.size() > 0) {
@@ -78,7 +64,7 @@ def displayListProjectItem(project, level) {
 def displayListProjects(projects, parentId, level) { %>
     <ul class="list-projects" parentId="${parentId}">
         <%if(projects.size() == 0) {%>
-        <li class="no-project">
+        <li class="no-project center muted">
             No project
         </li>
         <%} else {

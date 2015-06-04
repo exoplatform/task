@@ -307,9 +307,17 @@ public class TaskController {
     }
 
     //Group Tasks
+    Map<String, org.exoplatform.task.model.User> userMap = null;
     Map<String, List<Task>> groupTasks = new HashMap<String, List<Task>>();
     if(groupBy != null && !groupBy.isEmpty()) {
       groupTasks = TaskUtil.groupTasks(tasks, groupBy);
+      if("assignee".equalsIgnoreCase(groupBy)) {
+        userMap = new HashMap<String, org.exoplatform.task.model.User>();
+        for(String assignee : groupTasks.keySet()) {
+          org.exoplatform.task.model.User user = userService.loadUser(assignee);
+          userMap.put(assignee, user);
+        }
+      }
     }
     if(groupTasks.isEmpty()) {
       groupTasks.put("", tasks);
@@ -324,6 +332,7 @@ public class TaskController {
         .keyword(keyword == null ? "" : keyword)
         .groupBy(groupBy == null ? "" : groupBy)
         .orderBy(orderBy == null ? "" : orderBy)
+        .set("userMap", userMap)
         .ok()
         .withCharset(Tools.UTF_8);
   }

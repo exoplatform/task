@@ -23,13 +23,16 @@
 		                   data-toggle="dropdown"
 		                   href="#">
 		                    <i class="uiIconLightGray uiIconSimplePlusMini"></i>
+                        </a>
 
-		                </a>
+                        <% if (projects.size() == 0) { %>
                         <div role="tooltip" class="popover fade bottom in" style="display: block" >
                             <div class="arrow" ></div>
                             <div class="popover-content">Click Here to create your first project.</div>
                         </div>
-		                <div class="dropdown-menu uiDropdownWithIcon" style="left: 100%;">
+                        <%}%>
+
+		                <div class="dropdown-menu uiDropdownWithIcon" style="left: 100%; top: -22px">
 		                	<span class="arrowLeft"></span>
 		                	<ul class="uiDropdownMenu">
 			                    <li><a class="new-project" data-projectId="0" href="#"><i class="uiIconAddProject uiIconLightGray"></i>Add project</a></li>
