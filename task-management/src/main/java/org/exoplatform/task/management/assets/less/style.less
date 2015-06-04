@@ -66,15 +66,6 @@
     margin: 10px 0;
 }
 
-.editable-click, a.editable-click {
-    display: inline-block;
-    padding: 5px 20px 5px 5px;
-    border: solid 1px transparent;
-    color: #333;
-}
-a.editable-click:hover {
-    border: solid 1px #ddd;
-}
 #taskCommentButton {
     margin-top: 10px;
 }
@@ -181,7 +172,7 @@ a.editable-click:hover {
 #taskManagement {
     .centerPanel.uiBox {
         .title {
-            padding: 5px;
+            padding:4px 5px;
             line-height: 28px;
             .label-title {
                 font-size: 18px;
@@ -335,7 +326,24 @@ a.editable-click:hover {
 .advancedSearch-action {
     display: none;
 }
-
+.leftPanel,.rightPanel  {
+     position: relative;
+     .resizeButton {
+        cursor: pointer;
+        height: 16px;
+        right: -18px;
+        margin-top: -8px;
+        position: absolute;
+        top: 50%;
+            
+    }
+}
+.rightPanel{
+    .resizeButton {
+        left: -18px;
+        right: auto;
+    }
+}   
 .centerPanel {
     .uiSearchInput.searchWithIcon {
         display: block;
@@ -394,6 +402,18 @@ a.editable-click:hover {
            .uiIconClock {
                 background-position: -160px -81px;
             }
+        }
+    }
+}
+
+.no-project {
+    padding: 6px 0;
+}
+
+.rightPanel  {
+    .title {
+        .actionIconSmall {
+            line-height: 10px;
         }
     }
 }

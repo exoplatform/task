@@ -27,11 +27,11 @@
             </div>
             <div class="label-title pull-left">${currentProjectId > 0 ? project.name : "Incoming"}</div>
             <div class="alignBtnGroup center">
-                <ul class="btn-group ">
+                <ul class="btn-group normal-group">
                     <li class="btn active">
                         <a href="javascript:void(0);" >List</a>
                     </li>
-                    <li class="btn ">
+                    <li class="btn ">  
                         <a href="javascript:void(0);">Board</a>
                     </li>
                 </ul>

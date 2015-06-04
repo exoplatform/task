@@ -159,7 +159,7 @@ $(document).ready(function() {
         });
     };
 
-    $rightPanel.on('click', '.control a.close', function(e) {
+    $rightPanel.on('click', '.close-right-panel', function(e) {
         taApp.hideRightPanel($centerPanel, $rightPanel, $rightPanelContent);
         return false;
     });

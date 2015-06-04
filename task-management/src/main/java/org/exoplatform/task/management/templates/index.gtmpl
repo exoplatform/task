@@ -48,17 +48,20 @@
 	                <a class="project-name" href="#">Label</a>
 	            </li>
 	        </ul>
+	        <div class="resizeButton " id="ShowHideLeft">
+			  <i  class="uiIconMiniArrowLeft"></i>
+			</div>
 	    </div>
-	    <div class="centerPanel uiBox span9">
-            <div class="centerPanelContent ">
+	    <div class="centerPanel uiBox span9">				
+            <div class="centerPanelContent ">            	
                 #{include path=projectTaskListView.gtmpl /}
             </div>
 	    </div>
 	    <div class="rightPanel span4" style="display: none">
-	        <div class="control pull-right">
-	            <a href="#" class="close"><i class="uiIconClose"></i></a>
-	        </div>
-	        <div class="rightPanelContent row-fluid">
+	    	<div class="resizeButton close-right-panel" id="ShowHideRight">
+			  <i  class="uiIconMiniArrowRight"></i>
+			</div>
+	        <div class="rightPanelContent ">
 	            <!-- Content at right will be load dynamically by ajax -->
 	        </div>
 	    </div>
