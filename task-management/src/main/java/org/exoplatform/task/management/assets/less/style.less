@@ -118,28 +118,44 @@
     width: 100%;
 }
 
-
-.projectListView .header {
-    padding: 10px;
-    .input-field {
-        position: relative;
-        .popover  {
-             left: 0;
-             top: 43px;
-             .arrow {
-                left: 12%;
-             }
-        }
+.no-project {
+    //background: url("../images/img-folder.png") no-repeat center center transparent;
+    text-align: center;
+    padding-top: 100px!important;
+    padding-bottom: 100px!important;
+    .image {
+        margin-bottom: 15px;
+    }
+    .text-notify {
+        font-size: 24px;
     }
 }
-.projectListView > .header {
-    margin-bottom: 20px;
-}
-.projectListView .header h2 {
-    margin: 0 0 0 5px;
-    font-size: 19px;
-    line-height: 100%;
-    padding-top: 5px;
+.projectListView {
+    > .header {
+        margin-bottom: 20px;
+    }
+    .header {
+        padding: 10px;
+        .input-field {
+            position: relative;
+            .popover  {
+                 left: 0;
+                 top: 43px;
+                 .arrow {
+                    left: 12%;
+                 }
+            }
+        }
+        h2 {
+            margin: 0 0 0 5px;
+            font-size: 19px;
+            line-height: 100%;
+            padding-top: 5px;
+        }
+    }
+    .uiContentBox {
+        padding: 0;
+    }
 }
 
 .projectListView .input-block-level,
@@ -208,6 +224,7 @@
 .table-project{
     display: table;
     width: 100%;
+    table-layout: fixed;
     .row-item {
         display: table-row;
         cursor: pointer;
@@ -277,6 +294,16 @@
     }
     .column-action {
         width: 26px;
+    }
+}
+
+.table-project-collapse {
+    margin-bottom: 30px;
+    .heading {
+        padding: 4px 8px;
+        .group-name {
+            font-weight: bold;
+        }
     }
 }
 
