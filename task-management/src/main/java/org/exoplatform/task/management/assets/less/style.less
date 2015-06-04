@@ -118,11 +118,22 @@
     width: 100%;
 }
 
-.no-project {
-    //background: url("../images/img-folder.png") no-repeat center center transparent;
+.empty-box {
+    position: relative;
     text-align: center;
     padding-top: 100px!important;
     padding-bottom: 100px!important;
+    min-height: 200px;
+    .empty-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      -moz-transform: translate(-50%, -50%);
+      -webkit-transform: translate(-50%, -50%);
+      -o-transform: translate(-50%, -50%);
+      -ms-transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%);
+    }
     .image {
         margin-bottom: 15px;
     }
@@ -431,10 +442,6 @@
             }
         }
     }
-}
-
-.no-project {
-    padding: 6px 0;
 }
 
 .rightPanel  {
