@@ -4,6 +4,9 @@ import org.exoplatform.services.security.Identity;
 import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.exception.ParameterEntityException;
+import org.exoplatform.task.exception.ProjectNotFoundException;
+import org.exoplatform.task.exception.NotAllowedOperationOnEntityException;
 
 import java.util.List;
 import java.util.Set;
@@ -13,34 +16,34 @@ import java.util.Set;
  */
 public interface ProjectService {
 
-  Project createDefaultStatusProjectWithManager(String name, String description, Long parentId, String username);
+  Project createDefaultStatusProjectWithManager(String name, String description, Long parentId, String username) throws ProjectNotFoundException;
 
   Project createDefaultStatusProjectWithAttributes(Long parentId, String name, String description,
-                        Set<String> managers, Set<String> participators);
+                        Set<String> managers, Set<String> participators) throws ProjectNotFoundException;
 
   Project createDefaultStatusProject(Project project);
 
   Project createProject(Project project);
 
-  Project updateProjectInfo(long id, String param, String[] values);
+  Project updateProjectInfo(long id, String param, String[] values) throws ProjectNotFoundException, ParameterEntityException;
 
-  boolean deleteProjectById(long id);
+  void deleteProjectById(long id) throws ProjectNotFoundException;
 
   void deleteProject(Project project);
 
-  Project cloneProjectById(long id, boolean cloneTask);
+  Project cloneProjectById(long id, boolean cloneTask) throws ProjectNotFoundException;
 
-  Project getProjectById(Long id);
+  Project getProjectById(Long id) throws ProjectNotFoundException;
 
-  Task createTaskToProjectId(long id, Task task);
+  Task createTaskToProjectId(long id, Task task) throws ProjectNotFoundException;
 
-  List<Task> getTasksByProjectId(long id, OrderBy orderBy);
+  List<Task> getTasksByProjectId(long id, OrderBy orderBy) throws ProjectNotFoundException;
 
-  List<Task> getTasksWithKeywordByProjectId(long id, OrderBy orderBy, String keyword);
+  List<Task> getTasksWithKeywordByProjectId(long id, OrderBy orderBy, String keyword) throws ProjectNotFoundException;
 
-  Project removePermissionFromProjectId(Long id, String permission, String type);
+  Project removePermissionFromProjectId(Long id, String permission, String type) throws ProjectNotFoundException, NotAllowedOperationOnEntityException;
 
-  Project addPermissionsFromProjectId(Long id, String permissions, String type);
+  Project addPermissionsFromProjectId(Long id, String permissions, String type) throws ProjectNotFoundException, NotAllowedOperationOnEntityException;
 
   List<Project> getProjectTreeByIdentity(Identity identity);
 

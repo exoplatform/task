@@ -35,6 +35,7 @@ import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.task.domain.Project;
+import org.exoplatform.task.exception.AbstractEntityException;
 import org.exoplatform.task.model.User;
 import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.UserService;
@@ -108,21 +109,22 @@ public class ProjectController {
       return Response.status(412).body("Name of project is required");
     }
 
-    Project project = projectService.createDefaultStatusProjectWithManager(name, description, parentId, currentUser);
-
-    if (project == null) {
-      return Response.error("Impossible to create project");
-    }
-
-    JSONObject result = new JSONObject();
     try {
-      result.put("id", project.getId());
+
+      Project project = projectService.createDefaultStatusProjectWithManager(name, description, parentId, currentUser); //Can throw ProjectNotFoundException
+
+      JSONObject result = new JSONObject();
+      result.put("id", project.getId());//Can throw JSONException (same for all #json.put methods below)
       result.put("name", project.getName());
       result.put("color", "transparent");
+
+      return Response.ok(result.toString()).withCharset(Tools.UTF_8);
+
+    } catch (AbstractEntityException e) {
+      return Response.status(e.getHttpStatusCode()).body(e.getMessage());
     } catch (JSONException ex) {
       return Response.status(500).body(ex.getMessage());
     }
-    return Response.ok(result.toString()).withCharset(Tools.UTF_8);
   }
 
   @Resource
@@ -130,34 +132,36 @@ public class ProjectController {
   @MimeType.JSON
   public Response cloneProject(Long id, String cloneTask, SecurityContext securityContext) {
 
-    Project project = projectService.cloneProjectById(id, Boolean.parseBoolean(cloneTask));
-
-    JSONObject result = new JSONObject();
-
-    if (project == null) {
-      return Response.error("Impossible to create project with id: "+id);
-    }
-
     try {
+
+      Project project = projectService.cloneProjectById(id, Boolean.parseBoolean(cloneTask)); //Can throw ProjectNotFoundException
+
+      JSONObject result = new JSONObject();
       result.put("id", project.getId());
       result.put("name", project.getName());
       result.put("color", project.getColor());
+
+      return Response.ok(result.toString()).withCharset(Tools.UTF_8);
+
+    } catch (AbstractEntityException e) {
+      return Response.status(e.getHttpStatusCode()).body(e.getMessage());
     } catch (JSONException ex) {
       return Response.status(500).body(ex.getMessage());
     }
-    return Response.ok(result.toString()).withCharset(Tools.UTF_8);
   }
 
   @Resource
   @Ajax
   @MimeType.HTML
   public Response openShareDialog(Long id) {
-    Project project = projectService.getProjectById(id);
 
-    if (project != null) {
+    try {
+
+      Project project = projectService.getProjectById(id); //Can throw ProjectNotFoundException
       return renderShareDialog(project);
-    } else {
-      return Response.status(404).body("no projectId " + id);
+
+    } catch (AbstractEntityException e) {
+      return Response.status(e.getHttpStatusCode()).body(e.getMessage());
     }
   }
 
@@ -166,12 +170,13 @@ public class ProjectController {
   @MimeType.HTML
   public Response removePermission(Long id, String permission, String type) {
 
-    Project project = projectService.removePermissionFromProjectId(id, permission, type);
+    try {
 
-    if (project != null) {
+      Project project = projectService.removePermissionFromProjectId(id, permission, type); //Can throw ProjectNotFoundException & NotAllowedOperationOnEntityException
       return renderShareDialog(project);
-    } else {
-      return Response.error("Impossible to remove permission from project with id: " + id);
+
+    } catch (AbstractEntityException e) {
+      return Response.status(e.getHttpStatusCode()).body(e.getMessage());
     }
   }
 
@@ -179,16 +184,13 @@ public class ProjectController {
   @Ajax
   @MimeType.HTML
   public Response openUserSelector(Long id, String type) {
-    Project project = projectService.getProjectById(id);
 
-    if (project != null) {
-      org.exoplatform.services.organization.User[] users = null;
-      try {
-        ListAccess<org.exoplatform.services.organization.User> tmp = orgService.getUserHandler().findAllUsers();
-        users = tmp.load(0, tmp.getSize());
-      } catch (Exception e) {
-        return Response.status(503).body(e.getMessage());
-      }
+    try {
+
+      Project project = projectService.getProjectById(id); //Can throw ProjectNotFoundException
+
+      ListAccess<org.exoplatform.services.organization.User> tmp = orgService.getUserHandler().findAllUsers(); //Can throw Exception
+      org.exoplatform.services.organization.User[] users = tmp.load(0, tmp.getSize());
 
       Set<String> allUsers = new HashSet<String>();
       if (users != null) {
@@ -200,45 +202,45 @@ public class ProjectController {
 
       return userSelectorDialog.with().type(type)
           .users(allUsers).ok();
-    } else {
-      return Response.status(404).body("no projectId " + id);
+
+    } catch (AbstractEntityException e) {
+      return Response.status(e.getHttpStatusCode()).body(e.getMessage());
+    } catch (Exception ex) { //Throw by orgService
+      return Response.status(500).body(ex.getMessage());
     }
+
   }
 
   @Resource
   @Ajax
   @MimeType.HTML
-  public Response openGroupSelector(Long id, String type) {
-    Project project = projectService.getProjectById(id);
+  public Response openGroupSelector(String type) {
 
-    if (project != null) {
-      Collection groups, msTypes;
-      try {
-        groups = orgService.getGroupHandler().getAllGroups();
-        msTypes = orgService.getMembershipTypeHandler().findMembershipTypes();
-      } catch (Exception e) {
-        return Response.status(503).body(e.getMessage());
-      }
-
-      Set<String> allGroups = new HashSet<String>();
-      if (groups != null) {
-        for (Object g : groups) {
-          allGroups.add(((Group)g).getId());
-        }
-      }
-
-      Set<String> allMSTypes = new HashSet<String>();
-      if (msTypes != null) {
-        for (Object mst : msTypes) {
-          allMSTypes.add(((MembershipType)mst).getName());
-        }
-      }
-
-      return groupSelectorDialog.with().type(type)
-          .groups(allGroups).membershipTypes(allMSTypes).ok();
-    } else {
-      return Response.status(404).body("no projectId " + id);
+    Collection groups, msTypes;
+    try {
+      groups = orgService.getGroupHandler().getAllGroups();
+      msTypes = orgService.getMembershipTypeHandler().findMembershipTypes();
+    } catch (Exception e) {
+      return Response.status(503).body(e.getMessage());
     }
+
+    Set<String> allGroups = new HashSet<String>();
+    if (groups != null) {
+      for (Object g : groups) {
+        allGroups.add(((Group)g).getId());
+      }
+    }
+
+    Set<String> allMSTypes = new HashSet<String>();
+    if (msTypes != null) {
+      for (Object mst : msTypes) {
+        allMSTypes.add(((MembershipType)mst).getName());
+      }
+    }
+
+    return groupSelectorDialog.with().type(type)
+        .groups(allGroups).membershipTypes(allMSTypes).ok();
+
   }
 
   @Resource
@@ -246,12 +248,13 @@ public class ProjectController {
   @MimeType.HTML
   public Response addPermission(Long id, String permissions, String type) {
 
-    Project project = projectService.addPermissionsFromProjectId(id,permissions, type);
+    try {
 
-    if (project != null) {
+      Project project = projectService.addPermissionsFromProjectId(id,permissions, type); //Can throw ProjectNotFoundException & NotAllowedOperationOnEntityException
       return renderShareDialog(project);
-    } else {
-      return Response.status(404).body("no projectId {}, or permission is null " + id);
+
+    } catch (AbstractEntityException e) {
+      return Response.status(e.getHttpStatusCode()).body(e.getMessage());
     }
   }
 
@@ -279,38 +282,47 @@ public class ProjectController {
   @Ajax
   @MimeType.HTML
   public Response projectDetail(Long id) {
-    Project project = projectService.getProjectById(id);
-    if(project == null) {
-      return Response.notFound("Project does not exist with ID: " + id);
-    }
+    try {
 
-    Map<String, User> users = new HashMap<String, User>();
-    if(project.getManager() != null && !project.getManager().isEmpty()) {
-      for(String username : project.getManager()) {
-        User user = userService.loadUser(username);
-        users.put(username, user);
+      Project project = projectService.getProjectById(id); //Can throw ProjectNotFoundException
+
+      Map<String, User> users = new HashMap<String, User>();
+      if(project.getManager() != null && !project.getManager().isEmpty()) {
+        for(String username : project.getManager()) {
+          User user = userService.loadUser(username);
+          users.put(username, user);
+        }
       }
-    }
 
-    return detail
-        .with()
-        .project(project)
-        .userMap(users)
-        .ok()
-        .withCharset(Tools.UTF_8);
+      return detail
+          .with()
+          .project(project)
+          .userMap(users)
+          .ok()
+          .withCharset(Tools.UTF_8);
+
+    } catch (AbstractEntityException e) {
+      return Response.status(e.getHttpStatusCode()).body(e.getMessage());
+    }
   }
 
   @Resource
   @Ajax
   @MimeType("text/plain")
   public Response saveProjectInfo(Long projectId, String name, String[] value) {
+
     if(name == null) {
       return Response.status(406).body("Field name is required");
     }
 
-    if (projectService.updateProjectInfo(projectId, name, value) == null) return Response.error("Impossible to update info for project with ID:  " + projectId);
+    try {
 
-    return Response.ok("Update successfully");
+      projectService.updateProjectInfo(projectId, name, value); //Can throw ProjectNotFoundException & NotAllowedOperationOnEntityException
+      return Response.ok("Update successfully");
+
+    } catch (AbstractEntityException e) {
+      return Response.status(e.getHttpStatusCode()).body(e.getMessage());
+    }
   }
 
 
@@ -319,11 +331,14 @@ public class ProjectController {
   @MimeType("text/plain")
   public Response deleteProject(Long projectId) {
 
-    if (!projectService.deleteProjectById(projectId)) {
-      return Response.error("Impossible to delete project with ID: " + projectId);
-    }
+    try {
 
-    return Response.ok("Delete project successfully");
+      projectService.deleteProjectById(projectId); //Can throw ProjectNotFoundException
+      return Response.ok("Delete project successfully");
+
+    } catch (AbstractEntityException e) {
+      return Response.status(e.getHttpStatusCode()).body(e.getMessage());
+    }
   }
 
   private Response renderShareDialog(Project project) {

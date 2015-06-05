@@ -3,6 +3,10 @@ package org.exoplatform.task.service;
 import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.exception.CommentNotFoundException;
+import org.exoplatform.task.exception.ParameterEntityException;
+import org.exoplatform.task.exception.StatusNotFoundException;
+import org.exoplatform.task.exception.TaskNotFoundException;
 
 import java.util.List;
 
@@ -15,29 +19,27 @@ public interface TaskService {
 
   Task updateTask(Task task);
 
-  Task updateTaskInfo(long id, String param, String[] values);
+  Task updateTaskInfo(long id, String param, String[] values) throws TaskNotFoundException, ParameterEntityException, StatusNotFoundException;
 
-  Task updateTaskCompleted(long id, Boolean completed);
+  Task updateTaskCompleted(long id, Boolean completed) throws TaskNotFoundException, ParameterEntityException, StatusNotFoundException;
 
   void deleteTask(Task task);
 
-  boolean deleteTaskById(long id);
+  void deleteTaskById(long id) throws TaskNotFoundException;
 
-  Task cloneTaskById(long id);
+  Task cloneTaskById(long id) throws TaskNotFoundException;
 
-  Task getTaskById(long id);
-
-  Long getNbOfCommentsByTaskId(long id);
+  Task getTaskById(long id) throws TaskNotFoundException;
 
   Long getNbOfCommentsByTask(Task task);
 
-  List<Comment> getCommentsByTaskId(long id, int start, int limit);
+  List<Comment> getCommentsByTaskId(long id, int start, int limit) throws TaskNotFoundException;
 
   List<Comment> getCommentsByTask(Task task, int start, int limit);
 
-  Comment addCommentToTaskId(long id, String username, String comment);
+  Comment addCommentToTaskId(long id, String username, String comment) throws TaskNotFoundException;
 
-  boolean deleteCommentById(long commentId);
+  void deleteCommentById(long commentId) throws CommentNotFoundException;
 
   List<Task> getIncomingTasksByUser(String username, OrderBy orderBy);
 

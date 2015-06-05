@@ -22,6 +22,10 @@ import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.exception.CommentNotFoundException;
+import org.exoplatform.task.exception.ParameterEntityException;
+import org.exoplatform.task.exception.StatusNotFoundException;
+import org.exoplatform.task.exception.TaskNotFoundException;
 import org.exoplatform.task.service.DAOHandler;
 import org.exoplatform.task.service.TaskBuilder;
 import org.exoplatform.task.service.TaskService;
@@ -57,8 +61,10 @@ public class TaskServiceImpl implements TaskService {
     return daoHandler.getTaskHandler().update(task);
   }
 
+
+
   @Override
-  public Task updateTaskInfo(long id, String param, String[] values) {
+  public Task updateTaskInfo(long id, String param, String[] values) throws TaskNotFoundException, ParameterEntityException, StatusNotFoundException {
 
     String value = values != null && values.length > 0 ? values[0] : null;
 
@@ -66,9 +72,7 @@ public class TaskServiceImpl implements TaskService {
 
     if(task == null) {
       LOG.info("Can not find task with ID: " + id);
-      //TODO return exception instead of null
-      //return Response.notFound("Task not found with ID: " + taskId);
-      return null;
+      throw new TaskNotFoundException(id);
     }
     if("title".equalsIgnoreCase(param)) {
       task.setTitle(value);
@@ -81,10 +85,8 @@ public class TaskServiceImpl implements TaskService {
           Date date = df.parse(value);
           task.setDueDate(date);
         } catch (ParseException ex) {
-          LOG.info("Can parse date time value: " + value);
-          //TODO return exception instead of null
-          //return Response.status(406).body("Can not parse date time value: " + val);
-          return null;
+          LOG.info("Can parse date time value: "+value+" for Task with ID: "+id);
+          throw new ParameterEntityException(id, "Task", param, value, "cannot be parse to date");
         }
       }
     } else if("status".equalsIgnoreCase(param)) {
@@ -93,9 +95,7 @@ public class TaskServiceImpl implements TaskService {
         Status status = daoHandler.getStatusHandler().find(statusId);
         if(status == null) {
           LOG.info("Status does not exist with ID: " + value);
-          //TODO return exception instead of null
-          //return Response.notFound("Status does not exist with ID: " + val);
-          return null;
+          throw new StatusNotFoundException(id);
         }
         task.setStatus(status);
 
@@ -114,10 +114,8 @@ public class TaskServiceImpl implements TaskService {
         }
 
       } catch (NumberFormatException ex) {
-        LOG.info("Status is unacceptable: " + value);
-        //TODO return exception instead of null
-        //return Response.status(406).body("Status is unacceptable: " + val);
-        return null;
+        LOG.info("Status is unacceptable: "+value+" for Task with ID: "+id);
+        throw new ParameterEntityException(id, "Task", param, value, "is unacceptable");
       }
     } else if("description".equalsIgnoreCase(param)) {
       task.setDescription(value);
@@ -149,7 +147,7 @@ public class TaskServiceImpl implements TaskService {
   }
 
   @Override
-  public Task updateTaskCompleted(long id, Boolean completed) {
+  public Task updateTaskCompleted(long id, Boolean completed) throws TaskNotFoundException, ParameterEntityException, StatusNotFoundException {
     String[] values = new String[1];
     values[0] = completed.toString();
     return updateTaskInfo(id, "completed", values);
@@ -161,30 +159,27 @@ public class TaskServiceImpl implements TaskService {
   }
 
   @Override
-  public boolean deleteTaskById(long id) {
-    //TODO return exception in case task does not exist instead of boolean (change method signature to void)
+  public void deleteTaskById(long id) throws TaskNotFoundException {
 
     Task task = getTaskById(id);
 
     if(task == null) {
       LOG.info("Can not find task with ID: " + id);
-      return false;
+      throw new TaskNotFoundException(id);
     }
 
     deleteTask(task);
 
-    return true;
   }
 
   @Override
-  public Task cloneTaskById(long id) {
+  public Task cloneTaskById(long id) throws TaskNotFoundException {
 
     Task task = getTaskById(id);
 
     if(task == null) {
       LOG.info("Can not find task with ID: " + id);
-      //TODO return exception instead of null
-      return null;
+      throw new TaskNotFoundException(id);
     }
 
     Task newTask = new TaskBuilder()
@@ -206,23 +201,13 @@ public class TaskServiceImpl implements TaskService {
   }
 
   @Override
-  public Task getTaskById(long id) {
-    return daoHandler.getTaskHandler().find(id);
-  }
-
-  @Override
-  public Long getNbOfCommentsByTaskId(long id) {
-
-    Task task = getTaskById(id);
-
+  public Task getTaskById(long id) throws TaskNotFoundException {
+    Task task = daoHandler.getTaskHandler().find(id);
     if (task == null) {
       LOG.info("Can not find task with ID: " + id);
-      //TODO return exception instead of null
-      //return Response.notFound("Task does not exist with ID: " + taskId);
-      return null;
+      throw new TaskNotFoundException(id);
     }
-
-    return getNbOfCommentsByTask(task);
+    return task;
   }
 
   @Override
@@ -231,22 +216,11 @@ public class TaskServiceImpl implements TaskService {
   }
 
   @Override
-  public List<Comment> getCommentsByTaskId(long id, int start, int limit) {
+  public List<Comment> getCommentsByTaskId(long id, int start, int limit) throws TaskNotFoundException {
 
-    Task task = getTaskById(id);
+    Task task = getTaskById(id); //Can throws TaskNotFoundException
 
-    if (task == null) {
-      LOG.info("Can not find task with ID: " + id);
-      //TODO return exception instead of null
-      //return Response.notFound("Task does not exist with ID: " + taskId);
-      return null;
-    }
-
-    //TODO refactor after returning exception instead of null
-    List<Comment> comments = getCommentsByTask(task, start, limit);
-    if (comments == null) comments = new ArrayList<Comment>();
-
-    return comments;
+    return getCommentsByTask(task, start, limit);
   }
 
   @Override
@@ -255,15 +229,9 @@ public class TaskServiceImpl implements TaskService {
   }
 
   @Override
-  public Comment addCommentToTaskId(long id, String username, String comment) {
+  public Comment addCommentToTaskId(long id, String username, String comment) throws TaskNotFoundException {
 
-    Task task = getTaskById(id);
-    if (task == null) {
-      LOG.info("Can not find task with ID: " + id);
-      //TODO return exception instead of null
-      //return Response.status(404).body("There is no task with ID: " + taskId);
-      return null;
-    }
+    Task task = getTaskById(id); //Can throws TaskNotFoundException
 
     Comment newComment = new Comment();
     newComment.setTask(task);
@@ -276,19 +244,17 @@ public class TaskServiceImpl implements TaskService {
   }
 
   @Override
-  public boolean deleteCommentById(long commentId) {
-    //TODO return exception in case comment does not exist instead of boolean (change method signature to void)
+  public void deleteCommentById(long commentId) throws CommentNotFoundException {
 
     Comment comment = daoHandler.getCommentHandler().find(commentId);
 
     if(comment == null) {
       LOG.info("Can not find comment with ID: " + commentId);
-      return false;
+      throw new CommentNotFoundException(commentId);
     }
 
     daoHandler.getCommentHandler().delete(comment);
 
-    return true;
   }
 
   @Override

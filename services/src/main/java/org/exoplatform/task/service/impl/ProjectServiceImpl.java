@@ -26,6 +26,9 @@ import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.exception.ParameterEntityException;
+import org.exoplatform.task.exception.ProjectNotFoundException;
+import org.exoplatform.task.exception.NotAllowedOperationOnEntityException;
 import org.exoplatform.task.service.DAOHandler;
 import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.utils.ProjectUtil;
@@ -53,7 +56,7 @@ public class ProjectServiceImpl implements ProjectService {
   DAOHandler daoHandler;
 
   @Override
-  public Project createDefaultStatusProjectWithManager(String name, String description, Long parentId, String username) {
+  public Project createDefaultStatusProjectWithManager(String name, String description, Long parentId, String username) throws ProjectNotFoundException {
 
     Set<String> managers = new HashSet<String>();
     managers.add(username);
@@ -63,7 +66,7 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   @Override
-  public Project createDefaultStatusProjectWithAttributes(Long parentId, String name, String description, Set<String> managers, Set<String> participators) {
+  public Project createDefaultStatusProjectWithAttributes(Long parentId, String name, String description, Set<String> managers, Set<String> participators) throws ProjectNotFoundException {
 
     Project project = new Project(name, description, null, managers, participators);
 
@@ -78,9 +81,8 @@ public class ProjectServiceImpl implements ProjectService {
       }
       else {
         LOG.info("Can not find project for parent with ID: " + parentId);
-        //TODO return exception instead of null
+        throw new ProjectNotFoundException(parentId);
         //return Response.content(406, "Can not find project id for parentID = " + parentId);
-        return null;
       }
     }
 
@@ -100,24 +102,16 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   @Override
-  public Project updateProjectInfo(long id, String param, String[] values) {
+  public Project updateProjectInfo(long id, String param, String[] values) throws ProjectNotFoundException, ParameterEntityException {
 
     String val = values != null && values.length > 0 ? values[0] : null;
 
-    Project project = getProjectById(id);
-    if(project == null) {
-      LOG.info("Project does not exist with ID: " + id);
-      //TODO return exception instead of null
-      //return Response.notFound("Project does not exist with ID: " + projectId);
-      return null;
-    }
+    Project project = getProjectById(id); //Can throw ProjectNotFoundException
 
     if("name".equalsIgnoreCase(param)) {
       if(val == null || val.isEmpty()) {
         LOG.info("Name of project must not empty");
-        //TODO return exception instead of null
-        //return Response.status(406).body("Name of project must not empty");
-        return null;
+        throw new ParameterEntityException(id, "Project", param, val, "must not be empty");
       }
       project.setName(val);
     } else if("manager".equalsIgnoreCase(param)) {
@@ -146,9 +140,7 @@ public class ProjectServiceImpl implements ProjectService {
           project.setDueDate(date);
         } catch (ParseException e) {
           LOG.info("can not parse date string: " + val);
-          //TODO return exception instead of null
-          //return Response.status(500).body("can not parse date string: " + val);
-          return null;
+          throw new ParameterEntityException(id, "Project", param, val, "cannot be parse to date");
         }
       }
     } else if("description".equalsIgnoreCase(param)) {
@@ -157,26 +149,18 @@ public class ProjectServiceImpl implements ProjectService {
       project.setColor(val);
     } else {
       LOG.info("Project does not contain field: " + param);
-      //TODO return exception instead of null
-      //return Response.status(406).body("Project does not contain field: " + param);
-      return null;
+      throw new ParameterEntityException(id, "Project", param, val, "is unknown for the entity Project");
     }
 
     return daoHandler.getProjectHandler().update(project);
   }
 
   @Override
-  public boolean deleteProjectById(long id) {
-    //TODO return exception in case task does not exist instead of boolean (change method signature to void)
+  public void deleteProjectById(long id) throws ProjectNotFoundException {
 
-    Project project = getProjectById(id);
+    Project project = getProjectById(id); //Can throw ProjectNotFoundException
 
-    if (project == null) {
-      LOG.info("Project does not exist with ID: " + id);
-      return false;
-    }
-
-    // Update all child project
+    // Update all child projects
     if(project.getChildren() != null) {
       for(Project child : project.getChildren()) {
         deleteProjectById(child.getId());
@@ -185,7 +169,6 @@ public class ProjectServiceImpl implements ProjectService {
 
     deleteProject(project);
 
-    return true;
   }
 
   @Override
@@ -194,16 +177,9 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   @Override
-  public Project cloneProjectById(long id, boolean cloneTask) {
+  public Project cloneProjectById(long id, boolean cloneTask) throws ProjectNotFoundException {
 
-    Project project = getProjectById(id);
-
-    if (project == null) {
-      LOG.info("Can not find projct with ID: " + id);
-      //TODO return exception instead of null
-      //return Response.content(406, "Can not find project id" + id);
-      return null;
-    }
+    Project project = getProjectById(id); //Can throw ProjectNotFoundException
 
     Project newProject = project.clone(cloneTask);
     createProject(newProject);
@@ -213,21 +189,20 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   @Override
-  public Project getProjectById(Long id) {
-    return daoHandler.getProjectHandler().find(id);
+  public Project getProjectById(Long id) throws ProjectNotFoundException {
+
+    Project project = daoHandler.getProjectHandler().find(id);
+    if (project == null) throw new ProjectNotFoundException(id);
+
+    return project;
+
   }
 
   @Override
-  public Task createTaskToProjectId(long id, Task task) {
+  public Task createTaskToProjectId(long id, Task task) throws ProjectNotFoundException {
 
-    Project project = getProjectById(id);
+    Project project = getProjectById(id); //Can throw ProjectNotFoundException
 
-    if (project == null) {
-      LOG.info("Can not find project with ID: " + id);
-      //TODO return exception instead of null
-      //return Response.notFound("Project not found with ID: " + projectId);
-      return null;
-    }
     Status status = daoHandler.getStatusHandler().findLowestRankStatusByProject(id);
     task.setStatus(status);
 
@@ -236,36 +211,25 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   @Override
-  public List<Task> getTasksByProjectId(long id, OrderBy orderBy) {
-    return getTasksWithKeywordByProjectId(id, orderBy, null);
+  public List<Task> getTasksByProjectId(long id, OrderBy orderBy) throws ProjectNotFoundException {
+    return getTasksWithKeywordByProjectId(id, orderBy, null); //Can throw ProjectNotFoundException
   }
 
   @Override
-  public List<Task> getTasksWithKeywordByProjectId(long id, OrderBy orderBy, String keyword) {
+  public List<Task> getTasksWithKeywordByProjectId(long id, OrderBy orderBy, String keyword) throws ProjectNotFoundException {
 
-    Project project = getProjectById(id);
-    if(project == null) {
-
-      LOG.info("Can not find project with ID: " + id);
-      //TODO return exception instead of null
-      //return Response.notFound("Project not found with ID: " + projectId);
-      return null;
-    }
+    Project project = getProjectById(id); //Can throw ProjectNotFoundException
 
     TaskQuery taskQuery = new TaskQuery();
     taskQuery.setProjectId(project.getId());
     taskQuery.setKeyword(keyword);
     taskQuery.setOrderBy(orderBy == null ? null : Arrays.asList(orderBy));
 
-    //TODO refactor after returning exception instead of null
-    List<Task> tasks = daoHandler.getTaskHandler().findTaskByQuery(taskQuery);
-    if (tasks == null) tasks = new ArrayList<Task>();
-
-    return tasks;
+    return daoHandler.getTaskHandler().findTaskByQuery(taskQuery);
   }
 
   @Override
-  public Project removePermissionFromProjectId(Long id, String permission, String type) {
+  public Project removePermissionFromProjectId(Long id, String permission, String type) throws ProjectNotFoundException, NotAllowedOperationOnEntityException {
 
     Project project = daoHandler.getProjectHandler().find(id);
 
@@ -275,9 +239,7 @@ public class ProjectServiceImpl implements ProjectService {
           project.getManager().remove(permission);
         } else {
           LOG.info("Not allow to remove last manager for project with ID: " + id);
-          //TODO return exception instead of null
-          //return Response.status(401).body("Not allow to remove last manager");
-          return null;
+          throw new NotAllowedOperationOnEntityException(id, "Project", "Remove last manager");
         }
       } else {
         project.getParticipator().remove(permission);
@@ -285,18 +247,16 @@ public class ProjectServiceImpl implements ProjectService {
       return daoHandler.getProjectHandler().update(project);
     } else {
       LOG.info("Can not find project with ID: " + id);
-      //TODO return exception instead of null
-      //return Response.status(404).body("no projectId " + id);
-      return null;
+      throw new ProjectNotFoundException(id);
     }
   }
 
   @Override
-  public Project addPermissionsFromProjectId(Long id, String permissions, String type) {
+  public Project addPermissionsFromProjectId(Long id, String permissions, String type) throws ProjectNotFoundException, NotAllowedOperationOnEntityException {
 
-    Project project = daoHandler.getProjectHandler().find(id);
+    Project project = getProjectById(id);
 
-    if (project != null && permissions != null) {
+    if (permissions != null) {
       Set<String> per = new HashSet<String>();
       MembershipEntry entry = MembershipEntry.parse(permissions);
       if (entry != null) {
@@ -313,12 +273,12 @@ public class ProjectServiceImpl implements ProjectService {
       } else {
         project.getParticipator().addAll(per);
       }
+
       return daoHandler.getProjectHandler().update(project);
+
     } else {
-      LOG.info("Can not find project with ID: {}, or permissions is null" + id);
-      //TODO return exception instead of null
-      //return Response.status(404).body("no projectId {}, or permission is null " + id);
-      return null;
+      LOG.info("Add permissions equal to null (not allow) to Project with ID: "+id);
+      throw new NotAllowedOperationOnEntityException(id, "Project", "Add permission equal to null");
     }
 
   }

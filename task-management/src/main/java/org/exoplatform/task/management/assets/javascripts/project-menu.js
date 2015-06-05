@@ -129,7 +129,7 @@ define('project-menu', ['SHARED/jquery'], function($) {
       var pid = $openGroupSelector.closest('.sharePrjDialog').attr('data-projectId');
       var type = $openGroupSelector.closest('.manager').length != 0 ? 'manager' : 'participant';
       
-      $('.sharePrjDialog .selectorDialog').jzLoad('ProjectController.openGroupSelector()', {'id': pid, 'type': type}, function() {
+      $('.sharePrjDialog .selectorDialog').jzLoad('ProjectController.openGroupSelector()', {'type': type}, function() {
         var $dialog = $('.groupSelectorDialog');
         $dialog.find('.grp li').first().addClass('selected');
         $dialog.modal({'backdrop': false});

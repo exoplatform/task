@@ -25,6 +25,7 @@ import juzu.Response;
 import org.exoplatform.commons.juzu.ajax.Ajax;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
+import org.exoplatform.task.exception.AbstractEntityException;
 import org.exoplatform.task.service.ProjectService;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -48,11 +49,11 @@ public class StatusController {
   @Ajax
   @MimeType.JSON
   public Response getAllStatus(Long projectId) {
-    Project project = projectService.getProjectById(projectId);
-    if(project == null) {
-      return Response.notFound("Project does not exist with ID: " + projectId);
-    }
+
     try {
+
+      Project project = projectService.getProjectById(projectId); //Can throw ProjectNotFoundException
+
       JSONArray array = new JSONArray();
       List<Status> statuses = new LinkedList<Status>(project.getStatus());
       Collections.sort(statuses, new Comparator<Status>() {
@@ -73,7 +74,11 @@ public class StatusController {
         json.put("text", status.getName());
         array.put(json);
       }
+
       return Response.ok(array.toString());
+
+    } catch (AbstractEntityException e) {
+      return Response.status(e.getHttpStatusCode()).body(e.getMessage());
     } catch (JSONException ex) {
       return Response.status(500).body("JSONException while create reporting");
     }

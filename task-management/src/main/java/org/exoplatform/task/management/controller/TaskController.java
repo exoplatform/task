@@ -29,15 +29,17 @@ import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.exception.AbstractEntityException;
+import org.exoplatform.task.exception.ProjectNotFoundException;
 import org.exoplatform.task.management.model.CommentModel;
-import org.exoplatform.task.utils.CommentUtils;
-import org.exoplatform.task.utils.UserUtils;
 import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.TaskParser;
 import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.service.UserService;
+import org.exoplatform.task.utils.CommentUtils;
 import org.exoplatform.task.utils.ProjectUtil;
 import org.exoplatform.task.utils.TaskUtil;
+import org.exoplatform.task.utils.UserUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -85,54 +87,57 @@ public class TaskController {
   @Ajax
   @MimeType.HTML
   public Response detail(Long id, SecurityContext securityContext) {
-    Task task = taskService.getTaskById(id);
-    StringBuilder coWorkerDisplayName = new StringBuilder();
-    if(task.getCoworker() != null && task.getCoworker().size() > 0) {
-      for(String userName : task.getCoworker()) {
-        try {
-          User user = orgService.getUserHandler().findUserByName(userName);
+
+    try {
+
+      Task task = taskService.getTaskById(id); //Can throw TaskNotFoundException
+
+      StringBuilder coWorkerDisplayName = new StringBuilder();
+      if(task.getCoworker() != null && task.getCoworker().size() > 0) {
+        for(String userName : task.getCoworker()) {
+          User user = orgService.getUserHandler().findUserByName(userName); //Can throw Exception
           if(user != null) {
             if(coWorkerDisplayName.length() > 0) {
               coWorkerDisplayName.append(", ");
             }
             coWorkerDisplayName.append(UserUtils.getDisplayName(user));
           }
-        } catch (Exception ex) {
         }
       }
-    }
 
-    String assignee = "";
-    if(task.getAssignee() != null) {
-      try {
-        User user = orgService.getUserHandler().findUserByName(task.getAssignee());
+      String assignee = "";
+      if(task.getAssignee() != null) {
+        User user = orgService.getUserHandler().findUserByName(task.getAssignee()); //Can throw Exception
         if(user != null) {
           assignee = UserUtils.getDisplayName(user);
         }
-      } catch (Exception ex) {
-        return Response.status(500).body(ex.getMessage());
       }
+
+      long commentCount = taskService.getNbOfCommentsByTask(task);
+
+      List<Comment> cmts = taskService.getCommentsByTask(task, 0, 2);
+      List<CommentModel> comments = new ArrayList<CommentModel>(cmts.size());
+      for(Comment c : cmts) {
+        org.exoplatform.task.model.User u = userService.loadUser(c.getAuthor());
+        comments.add(new CommentModel(c, u, CommentUtils.formatMention(c.getComment(), userService)));
+      }
+
+      org.exoplatform.task.model.User currentUser = userService.loadUser(securityContext.getRemoteUser());
+
+      return detail.with()
+          .task(task)
+          .assigneeName(assignee)
+          .coWokerDisplayName(coWorkerDisplayName.toString())
+          .commentCount(commentCount)
+          .comments(comments)
+          .currentUser(currentUser)
+          .ok().withCharset(Tools.UTF_8);
+
+    } catch (AbstractEntityException e) {
+      return Response.status(e.getHttpStatusCode()).body(e.getMessage());
+    } catch (Exception ex) { //Throw by orgService
+      return Response.status(500).body(ex.getMessage());
     }
-
-    long commentCount = taskService.getNbOfCommentsByTask(task);
-
-    List<Comment> cmts = taskService.getCommentsByTask(task, 0, 2);
-    List<CommentModel> comments = new ArrayList<CommentModel>(cmts.size());
-    for(Comment c : cmts) {
-      org.exoplatform.task.model.User u = userService.loadUser(c.getAuthor());
-      comments.add(new CommentModel(c, u, CommentUtils.formatMention(c.getComment(), userService)));
-    }
-
-    org.exoplatform.task.model.User currentUser = userService.loadUser(securityContext.getRemoteUser());
-
-    return detail.with()
-        .task(task)
-        .assigneeName(assignee)
-        .coWokerDisplayName(coWorkerDisplayName.toString())
-        .commentCount(commentCount)
-        .comments(comments)
-        .currentUser(currentUser)
-        .ok().withCharset(Tools.UTF_8);
   }
 
   @Resource
@@ -140,16 +145,16 @@ public class TaskController {
   @MimeType.JSON
   public Response clone(Long id) {
 
-    Task newTask = taskService.cloneTaskById(id);
-
-    if(newTask == null) {
-      return Response.error("Impossible to clone task with ID: " + id);
-    }
-
     try {
+
+      Task newTask = taskService.cloneTaskById(id); //Can throw TaskNotFoundException
+
       JSONObject json = new JSONObject();
-      json.put("id", newTask.getId());
+      json.put("id", newTask.getId()); //Can throw JSONException
       return Response.ok(json.toString());
+
+    } catch (AbstractEntityException e) {
+      return Response.status(e.getHttpStatusCode()).body(e.getMessage());
     } catch (JSONException ex) {
       return Response.status(500).body(ex.getMessage());
     }
@@ -160,14 +165,16 @@ public class TaskController {
   @MimeType.JSON
   public Response delete(Long id) {
 
-    if(!taskService.deleteTaskById(id)) {
-      return Response.error("Impossible to delete task with ID: " + id);
-    }
-
     try {
+
+      taskService.deleteTaskById(id);//Can throw TaskNotFoundException
+
       JSONObject json = new JSONObject();
-      json.put("id", id);
+      json.put("id", id); //Can throw JSONException
       return Response.ok(json.toString());
+
+    } catch (AbstractEntityException e) {
+      return Response.status(e.getHttpStatusCode()).body(e.getMessage());
     } catch (JSONException ex) {
       return Response.status(500).body(ex.getMessage());
     }
@@ -178,11 +185,14 @@ public class TaskController {
   @MimeType("text/plain")
   public Response saveTaskInfo(Long taskId, String name, String[] value) {
 
-    if (taskService.updateTaskInfo(taskId, name, value) == null ) {
-      return Response.error("Impossible to save field "+name+" with value "+value+" for task ID: "+taskId);
-    }
+    try {
 
-    return Response.ok("Update successfully");
+      taskService.updateTaskInfo(taskId, name, value); //Can throw TaskNotFoundException & ParameterEntityException & StatusNotFoundException
+      return Response.ok("Update successfully");
+
+    } catch (AbstractEntityException e) {
+      return Response.status(e.getHttpStatusCode()).body(e.getMessage());
+    }
   }
 
   @Resource
@@ -190,34 +200,37 @@ public class TaskController {
   @MimeType("text/plain")
   public Response updateCompleted(Long taskId, Boolean completed) {
 
-    if(taskService.updateTaskCompleted(taskId, completed) == null ) {
-      return Response.notFound("Impossible to update field completed with value "+completed+" for task ID: " + taskId);
-    }
+    try {
 
-    return Response.ok("Update successfully");
+      taskService.updateTaskCompleted(taskId, completed); //Can throw TaskNotFoundException & ParameterEntityException
+      return Response.ok("Update successfully");
+
+    } catch (AbstractEntityException e) {
+      return Response.status(e.getHttpStatusCode()).body(e.getMessage());
+    }
   }
 
   @Resource
   @Ajax
   @MimeType.JSON
   public Response comment(Long taskId, String comment, SecurityContext securityContext) {
+
     String currentUser = securityContext.getRemoteUser();
     if (currentUser == null || currentUser.isEmpty()) {
       return Response.status(401);
     }
 
-    Comment cmt = taskService.addCommentToTaskId(taskId, currentUser, comment);
-    if (cmt == null) {
-      return Response.status(404).body("Impossible to add comment to task with ID: " + taskId);
-    }
-
-    //TODO:
-    CommentModel model = new CommentModel(cmt, userService.loadUser(cmt.getAuthor()), CommentUtils.formatMention(cmt.getComment(), userService));
-
-    DateFormat df = new SimpleDateFormat("MMM dd, yyyy HH:mm");
     try {
+
+      Comment cmt = taskService.addCommentToTaskId(taskId, currentUser, comment); //Can throw TaskNotFoundException
+
+      //TODO:
+      CommentModel model = new CommentModel(cmt, userService.loadUser(cmt.getAuthor()), CommentUtils.formatMention(cmt.getComment(), userService));
+
+      DateFormat df = new SimpleDateFormat("MMM dd, yyyy HH:mm");
+
       JSONObject json = new JSONObject();
-      json.put("id", model.getId());
+      json.put("id", model.getId()); //Can throw JSONException (same for all #json.put methods below)
       JSONObject user = new JSONObject();
       user.put("username", model.getAuthor().getUsername());
       user.put("displayName", model.getAuthor().getDisplayName());
@@ -228,7 +241,11 @@ public class TaskController {
       json.put("createdTime", model.getCreatedTime().getTime());
       json.put("createdTimeString", df.format(model.getCreatedTime()));
       return Response.ok(json.toString()).withCharset(Tools.UTF_8);
-    } catch (JSONException ex) {
+
+    } catch (AbstractEntityException e) {
+      return Response.status(e.getHttpStatusCode()).body(e.getMessage());
+    }
+    catch (JSONException ex) {
       return Response.status(500).body(ex.getMessage());
     }
   }
@@ -238,26 +255,29 @@ public class TaskController {
   @MimeType.HTML
   public Response loadAllComments(Long taskId, SecurityContext securityContext) {
 
-    List<Comment> cmts = taskService.getCommentsByTaskId(taskId, 0, -1);
+    try {
 
-    if(cmts == null) {
-      return Response.error("Impossible to load all comments for task with ID: " + taskId);
+      List<Comment> cmts = taskService.getCommentsByTaskId(taskId, 0, -1); //Can throw TaskNotFoundException
+
+      List<CommentModel> listComments = new ArrayList<CommentModel>(cmts.size());
+      for(Comment cmt : cmts) {
+        org.exoplatform.task.model.User u = userService.loadUser(cmt.getAuthor());
+        listComments.add(new CommentModel(cmt, u, CommentUtils.formatMention(cmt.getComment(), userService)));
+      }
+
+      org.exoplatform.task.model.User currentUser = userService.loadUser(securityContext.getRemoteUser());
+
+      return comments.with()
+          .commentCount(cmts.size())
+          .comments(listComments)
+          .currentUser(currentUser)
+          .ok()
+          .withCharset(Tools.UTF_8);
+
+    } catch (AbstractEntityException e) {
+      return Response.status(e.getHttpStatusCode()).body(e.getMessage());
     }
 
-    List<CommentModel> listComments = new ArrayList<CommentModel>(cmts.size());
-    for(Comment cmt : cmts) {
-      org.exoplatform.task.model.User u = userService.loadUser(cmt.getAuthor());
-      listComments.add(new CommentModel(cmt, u, CommentUtils.formatMention(cmt.getComment(), userService)));
-    }
-
-    org.exoplatform.task.model.User currentUser = userService.loadUser(securityContext.getRemoteUser());
-
-    return comments.with()
-        .commentCount(cmts.size())
-        .comments(listComments)
-        .currentUser(currentUser)
-        .ok()
-        .withCharset(Tools.UTF_8);
   }
 
   @Resource
@@ -265,11 +285,14 @@ public class TaskController {
   @MimeType("text/plain")
   public Response deleteComment(Long commentId) {
 
-    if(!taskService.deleteCommentById(commentId)) {
-      return Response.error("Impossible to delete comment with ID: " + commentId);
-    }
+    try {
 
-    return Response.ok("Delete comment successfully!");
+      taskService.deleteCommentById(commentId); //Can throw CommentNotFoundException
+      return Response.ok("Delete comment successfully!");
+
+    } catch (AbstractEntityException e) {
+      return Response.status(e.getHttpStatusCode()).body(e.getMessage());
+    }
 
   }
 
@@ -299,10 +322,11 @@ public class TaskController {
       tasks = taskService.getToDoTasksByUser(currentUser, order);
     }
     else {
-      tasks = projectService.getTasksWithKeywordByProjectId(projectId, order, keyword);
-      project = projectService.getProjectById(projectId); //DAOHandler.getProjectHandler().find(projectId);
-      if(tasks == null) {
-        return Response.notFound("Impossible to get tasks for project with ID: " + projectId);
+      try {
+        tasks = projectService.getTasksWithKeywordByProjectId(projectId, order, keyword);
+        project = projectService.getProjectById(projectId);
+      } catch (ProjectNotFoundException e) {
+        return Response.notFound("Impossible to get tasks for project with ID: " + e.getEntityId());
       }
     }
 
@@ -356,7 +380,11 @@ public class TaskController {
 
     //Project task
     if(projectId > 0) {
-      projectService.createTaskToProjectId(projectId, task);
+      try {
+        projectService.createTaskToProjectId(projectId, task);
+      } catch (AbstractEntityException e) {
+        return Response.status(e.getHttpStatusCode()).body(e.getMessage());
+      }
     }
     //Incoming Task
     else {
