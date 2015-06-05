@@ -68,20 +68,33 @@
 	    
 	    <!-- Modal -->
 	    <div class="modalPlace"></div>
-	    <div class="confirmCloneProject modal hide fade" tabindex="-1" role="dialog" aria-labelledby="cloneProjectLabel" aria-hidden="true">
-		  <div class="modal-header">
-		    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-		    <h3 id="cloneProjectLabel">&{popup.confirm}</h3>
+	    <div class="confirmCloneProject uiPopup modal hide fade" tabindex="-1" role="dialog" aria-labelledby="cloneProjectLabel" aria-hidden="true">
+		  <div class="popupHeader clearfix">
+		  	<a onclick="" title="Close Window" data-dismiss="modal" aria-hidden="true" class="uiIconClose pull-right"></a>
+		    <h3 id="cloneProjectLabel" class="PopupTitle popupTitle">&{popup.confirm}</h3>
 		  </div>
-		  <div class="modal-body">
-		    <p class="msg" data-msg="&{popup.msg.cloneProject}"></p>
-		    <input type="checkbox" class="cloneTask"/> &{popup.checkbox.cloneTask}
-		    <input type="hidden" class="pId"/>
+		  <div class="PopupContent popupContent">
+			  <div class="media">
+			  	<div class="pull-left">
+			  		<i class="uiIconColorQuestion"></i>
+			  	</div>
+			  	<div class="media-body">
+			  		<p class="msg" data-msg="&{popup.msg.cloneProject}"></p>	
+			    	<p>
+				    	<span class="uiCheckbox cloneTask">
+			                <input type="checkbox" checked="checked" class="checkbox">
+			                <span>&{popup.checkbox.cloneTask}</span>
+		                </span>			    
+			    		<input type="hidden" class="pId"/>
+		    		</p>
+			  	</div>
+			  </div>
+			  <div class="uiAction uiActionBorder">
+			    <button class="btn btn-primary">&{popup.clone}</button>
+			    <button class="btn" data-dismiss="modal" aria-hidden="true">&{popup.cancel}</button>
+			  </div>
 		  </div>
-		  <div class="modal-footer">
-		    <button class="btn btn-primary">&{popup.clone}</button>
-		    <button class="btn" data-dismiss="modal" aria-hidden="true">&{popup.cancel}</button>
-		  </div>
+		  <span class="uiIconResize pull-right uiIconLightGray"></span>
 		</div>
 	</div>
 </div>
