@@ -148,8 +148,8 @@ public class ProjectServiceImpl implements ProjectService {
     } else if ("color".equalsIgnoreCase(param)) {
       project.setColor(val);
     } else {
-      LOG.info("Project does not contain field: " + param);
-      throw new ParameterEntityException(id, "Project", param, val, "is unknown for the entity Project");
+      LOG.info("Field name: " + param + " is not supported for entity Project");
+      throw new ParameterEntityException(id, "Project", param, val, "is not supported for the entity Project");
     }
 
     return daoHandler.getProjectHandler().update(project);

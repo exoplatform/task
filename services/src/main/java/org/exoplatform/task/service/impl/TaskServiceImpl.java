@@ -136,10 +136,8 @@ public class TaskServiceImpl implements TaskService {
       }
       task.setTags(tags);
     } else {
-      LOG.info("Field name: " + param + " is not supported");
-      //TODO return exception instead of null
-      //return Response.status(406).body("Field name: " + name + " is not supported");
-      return null;
+      LOG.info("Field name: " + param + " is not supported for entity Task");
+      throw new ParameterEntityException(id, "Task", param, value, "is not supported for the entity Task");
     }
 
     return updateTask(task);
