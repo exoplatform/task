@@ -19,6 +19,7 @@ package org.exoplatform.task.utils;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -45,6 +46,65 @@ public final class TaskUtil {
       }
     }
     return maps;
+  }
+  
+  public static String getWorkPlan(Date startDate, long duration) {
+    if (startDate == null || duration <= 0) {
+      return null;      
+    }
+    
+    Calendar start = Calendar.getInstance();
+    start.setTimeInMillis(startDate.getTime());
+    Calendar end = Calendar.getInstance();
+    end.setTimeInMillis(startDate.getTime() + duration);
+    //
+    duration = normalizeDate(end).getTimeInMillis() - normalizeDate(start).getTimeInMillis();
+    
+    SimpleDateFormat df = new SimpleDateFormat("dd/MM/YYYY");
+
+    StringBuilder workplan = new StringBuilder("Work planned ");
+    if (start.get(Calendar.MONTH) == end.get(Calendar.MONTH) && start.get(Calendar.YEAR) == end.get(Calendar.YEAR)) {
+      if (start.get(Calendar.DATE) == end.get(Calendar.DATE)) {
+        workplan.append("for ").append(df.format(start.getTime()));
+      } else {
+        workplan.append("from ").append(start.get(Calendar.DATE));
+        workplan.append(" to ").append(df.format(end.getTime()));
+      }
+    } else {
+      workplan.append("from ").append(df.format(startDate));
+      workplan.append(" to ").append(df.format(end.getTime()));
+    }
+    buildHour(duration, workplan);
+    return workplan.toString();
+  }
+
+  private static void buildHour(long duration, StringBuilder workplan) {
+    workplan.append(" (");        
+    int halfHour = 30 * 60 * 1000;
+    if (duration == halfHour) {
+      workplan.append("30 minutes)");
+    } else if (duration == halfHour * 2) {
+      workplan.append("1 hour)");
+    } else if (duration == halfHour * 48) {
+      workplan.append("all day)");          
+    } else {
+      long hour = duration / (halfHour*2);
+      long odd = duration % (halfHour * 2);
+      if (odd == 0) {
+        workplan.append(hour).append(" hours)");
+      } else {
+        workplan.append(hour).append(" hours 30 minutes)");
+      }
+    }
+  }
+
+  private static Calendar normalizeDate(Calendar date) {
+    Calendar result = Calendar.getInstance();
+    result.setTimeInMillis(date.getTimeInMillis());
+    if (result.get(Calendar.MINUTE) == 59) {
+      result.add(Calendar.MINUTE, 1);
+    }
+    return result;
   }
 
   private static String[] getGroupName(Task task, String groupBy) {

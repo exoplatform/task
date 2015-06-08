@@ -111,7 +111,7 @@
       <column name="CREATED_TIME" type="TIMESTAMP">
         <constraints nullable="true"/>
       </column>
-      <column name="DURATION" type="INTEGER">
+      <column name="DURATION" type="BIGINT">
         <constraints nullable="true"/>
       </column>
       <column name="START_DATE" type="TIMESTAMP">

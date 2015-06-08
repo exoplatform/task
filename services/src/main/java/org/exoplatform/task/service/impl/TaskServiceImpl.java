@@ -32,6 +32,7 @@ import org.exoplatform.task.service.TaskService;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -65,79 +66,105 @@ public class TaskServiceImpl implements TaskService {
 
   @Override
   public Task updateTaskInfo(long id, String param, String[] values) throws TaskNotFoundException, ParameterEntityException, StatusNotFoundException {
-
-    String value = values != null && values.length > 0 ? values[0] : null;
-
     Task task = getTaskById(id);
 
     if(task == null) {
       LOG.info("Can not find task with ID: " + id);
       throw new TaskNotFoundException(id);
     }
-    if("title".equalsIgnoreCase(param)) {
-      task.setTitle(value);
-    } else if("dueDate".equalsIgnoreCase(param)) {
-      if(value == null || value.trim().isEmpty()) {
-        task.setDueDate(null);
+    
+    if ("workPlan".equalsIgnoreCase(param)) {
+      if (values == null) {
+        task.setStartDate(null);
+        task.setDuration(0);
       } else {
-        DateFormat df = new SimpleDateFormat("YYYY-MM-dd");
+        if (values.length != 2) {
+          LOG.error("workPlan updateing lack of params");
+        }
+        
         try {
-          Date date = df.parse(value);
-          task.setDueDate(date);
-        } catch (ParseException ex) {
-          LOG.info("Can parse date time value: "+value+" for Task with ID: "+id);
-          throw new ParameterEntityException(id, "Task", param, value, "cannot be parse to date");
-        }
+          Calendar dateFrom = Calendar.getInstance();
+          dateFrom.setTimeInMillis(Long.parseLong(values[0]));
+          Calendar dateTo = Calendar.getInstance();
+          dateTo.setTimeInMillis(Long.parseLong(values[1]));
+          
+          task.setStartDate(dateFrom.getTime());
+          task.setDuration(dateTo.getTimeInMillis() - dateFrom.getTimeInMillis());
+        } catch (NumberFormatException ex) {
+          LOG.info("Can parse date time value");
+          //TODO return exception instead of null
+          //return Response.status(406).body("Can not parse date time value: " + val);
+          return null;
+        }  
       }
-    } else if("status".equalsIgnoreCase(param)) {
-      try {
-        Long statusId = Long.parseLong(value);
-        Status status = daoHandler.getStatusHandler().find(statusId);
-        if(status == null) {
-          LOG.info("Status does not exist with ID: " + value);
-          throw new StatusNotFoundException(id);
-        }
-        task.setStatus(status);
-
-        // Task is completed if this status is last one
-        boolean isLast = true;
-        for(Status s : status.getProject().getStatus()) {
-          if (s.getId() != status.getId() && s.getRank() > status.getRank()) {
-            isLast = false;
-            break;
+    } else {
+      String value = values != null && values.length > 0 ? values[0] : null;
+      
+      if("title".equalsIgnoreCase(param)) {
+        task.setTitle(value);
+      } else if("dueDate".equalsIgnoreCase(param)) {
+        if(value == null || value.trim().isEmpty()) {
+          task.setDueDate(null);
+        } else {
+          DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+          try {
+            Date date = df.parse(value);
+            task.setDueDate(date);
+          } catch (ParseException ex) {
+            LOG.info("Can parse date time value: "+value+" for Task with ID: "+id);
+            throw new ParameterEntityException(id, "Task", param, value, "cannot be parse to date");
           }
         }
-        if(isLast) {
-          task.setCompleted(true);
-        } else {
-          task.setCompleted(false);
-        }
+      } else if("status".equalsIgnoreCase(param)) {
+        try {
+          Long statusId = Long.parseLong(value);
+          Status status = daoHandler.getStatusHandler().find(statusId);
+          if(status == null) {
+            LOG.info("Status does not exist with ID: " + value);
+            throw new StatusNotFoundException(id);
+          }
+          task.setStatus(status);
 
-      } catch (NumberFormatException ex) {
-        LOG.info("Status is unacceptable: "+value+" for Task with ID: "+id);
-        throw new ParameterEntityException(id, "Task", param, value, "is unacceptable");
+          // Task is completed if this status is last one
+          boolean isLast = true;
+          for(Status s : status.getProject().getStatus()) {
+            if (s.getId() != status.getId() && s.getRank() > status.getRank()) {
+              isLast = false;
+              break;
+            }
+          }
+          if(isLast) {
+            task.setCompleted(true);
+          } else {
+            task.setCompleted(false);
+          }
+
+        } catch (NumberFormatException ex) {
+          LOG.info("Status is unacceptable: "+value+" for Task with ID: "+id);
+          throw new ParameterEntityException(id, "Task", param, value, "is unacceptable");
+        }
+      } else if("description".equalsIgnoreCase(param)) {
+        task.setDescription(value);
+      } else if("completed".equalsIgnoreCase(param)) {
+        task.setCompleted(Boolean.parseBoolean(value));
+      } else if("assignee".equalsIgnoreCase(param)) {
+        task.setAssignee(value);
+      } else if("coworker".equalsIgnoreCase(param)) {
+        Set<String> coworker = new HashSet<String>();
+        for(String v : values) {
+          coworker.add(v);
+        }
+        task.setCoworker(coworker);
+      } else if("tags".equalsIgnoreCase(param)) {
+        Set<String> tags = new HashSet<String>();
+        for(String t : values) {
+          tags.add(t);
+        }
+        task.setTags(tags);
+      } else {
+        LOG.info("Field name: " + param + " is not supported for entity Task");
+        throw new ParameterEntityException(id, "Task", param, value, "is not supported for the entity Task");
       }
-    } else if("description".equalsIgnoreCase(param)) {
-      task.setDescription(value);
-    } else if("completed".equalsIgnoreCase(param)) {
-      task.setCompleted(Boolean.parseBoolean(value));
-    } else if("assignee".equalsIgnoreCase(param)) {
-      task.setAssignee(value);
-    } else if("coworker".equalsIgnoreCase(param)) {
-      Set<String> coworker = new HashSet<String>();
-      for(String v : values) {
-        coworker.add(v);
-      }
-      task.setCoworker(coworker);
-    } else if("tags".equalsIgnoreCase(param)) {
-      Set<String> tags = new HashSet<String>();
-      for(String t : values) {
-        tags.add(t);
-      }
-      task.setTags(tags);
-    } else {
-      LOG.info("Field name: " + param + " is not supported for entity Task");
-      throw new ParameterEntityException(id, "Task", param, value, "is not supported for the entity Task");
     }
 
     return updateTask(task);
@@ -265,4 +292,3 @@ public class TaskServiceImpl implements TaskService {
     return daoHandler.getTaskHandler().getToDoTask(username, orderBy);
   }
 }
-

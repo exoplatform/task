@@ -61,8 +61,173 @@ $(document).ready(function() {
         });
         return d.promise();
     };
+    
+    var initWorkPlan = function(taskId) {
+      var $workplan = $('.workPlan');
+      
+      var saveWorkPlan = function(plan) {
+        var data = {
+            pk : taskId,
+            name : 'workPlan',
+          };
+        if (plan) {
+          data.value = plan;
+        }
+        var callback = saveTaskDetailFunction(data);
+        
+        callback.done(function() {
+          $centerPanel.find('.selected .viewTaskDetail').click();
+        }).fail(function() {                
+          alert('fail to update');
+        });
+      }
+      
+      var $removeWorkPlan = $workplan.find('.removeWorkPlan');
+      $removeWorkPlan.click(function() {
+        saveWorkPlan(null);
+      });
+      
+      //
+      var $duration = $workplan.find('.duration');
+      var currStart = $workplan.data('startdate').split('-');
+      var startDate = new Date(currStart[0], currStart[1] - 1, currStart[2], currStart[3], currStart[4]);
+      var endDate = new Date();
+      endDate.setTime(startDate.getTime() + parseFloat($workplan.data('duration')));
+      //
+      $duration.popover({
+        html : true,
+        content : $('.rangeCalendar').html()
+      }).on('shown.bs.popover', function() { 
+        //setup calendar
+        $workplan.find('.popover .calendar').each(function() {
+          var $calendar = $(this);
+          var $popover = $calendar.closest('.popover');
+          
+          if ($calendar.hasClass('fromCalendar')) {
+            $calendar.datepicker('setDate', startDate);
+          } else {
+            $calendar.datepicker('setDate', endDate);
+          }
+          $calendar.datepicker('clearDates');
+          
+          //
+          $calendar.on('changeDate', function(e) {
+            var dateFrom, dateTo;
+            if ($calendar.hasClass('fromCalendar')) {
+              dateFrom = $calendar.datepicker('getDate');
+              dateTo = $calendar.parent().find('.toCalendar').datepicker('getDate');
+            } else {
+              dateFrom = $calendar.parent().find('.fromCalendar').datepicker('getDate');
+              dateTo = $calendar.datepicker('getDate');
+            }
+            
+            if (dateFrom && dateTo) {
+              var allDay = $popover.find('input[name="allDay"]').is(':checked');
+              var timeFrom = [0, 0], timeTo = [23, 59];
+              if (!allDay) {
+                var $selectors = $popover.find('.timeSelector');
+                timeFrom = $selectors.first().editable('getValue').timeFrom.split(':');
+                timeTo = $selectors.last().editable('getValue').timeTo.split(':');
+              }
+              
+              var setTime = function(dt, time) {
+                dt.setHours(time[0]);
+                dt.setMinutes(time[1]);
+                dt.setMilliseconds(0);
+              }
+              setTime(dateFrom, timeFrom);
+              setTime(dateTo, timeTo);
+
+              saveWorkPlan([dateFrom.getTime(), dateTo.getTime()]);
+            }
+          });
+        });
+
+        //
+        var $allDay = $workplan.find('.popover input[type="checkbox"]');           
+        $allDay.on('change', function(e) {
+          var $chk = $(e.target);
+          if ($chk.is(':checked')) {
+            $workplan.find('.popover .timeSelector').hide();
+          } else {
+            $workplan.find('.popover .timeSelector').show();
+          }
+        });
+        if (startDate.getHours() == 0 && startDate.getMinutes() == 0 &&
+            endDate.getHours() == 23 && endDate.getMinutes() == 59) {          
+          $allDay[0].checked = true;
+          $allDay.trigger('change');
+        }
+
+        //setup timeSelector
+        var tmp = new Date(0,0,0,0,0,0,0);
+        var times = [], d = tmp.getDate();
+        while (tmp.getDate() == d) {
+          var h = tmp.getHours(), m = tmp.getMinutes();
+          var t = (h < 10 ? '0' + h : h) + ':' + (m < 10 ? '0' + m : m);
+          times.push({'value': t, 'text': t});
+          tmp.setMinutes(tmp.getMinutes() + 30);
+        }
+        times.push({'value': '23:59', 'text': '23:59'});
+        
+        var options = {
+            source : times,
+            mode : 'inline',
+            showbuttons : false
+        }
+        
+        //default time
+        var getIdx = function(date) {
+          var idx = date.getHours() * 2;
+          if (date.getMinutes() == 59) {
+            idx += 2;
+          } else if (date.getMinutes() == 30) {
+            idx += 1;
+          }
+          return idx;
+        }
+
+        $workplan.find('.popover .timeSelector').each(function() {
+          var $selector = $(this);
+          if ($selector.data('name') == 'timeFrom') {
+            options.value = times[getIdx(startDate)].value;
+          } else {
+            options.value = times[getIdx(endDate)].value;
+          }
+          $selector.editable(options);
+        });
+      });
+    };
+    
+    var initDueDate = function() {
+      var $dueDate = $('.editable[data-name="dueDate"]');
+      $dueDate.on('shown', function(e) {
+        var $content = $dueDate.parent().find('.popover .popover-content');
+        if ($content.find('.calControl').length == 0) {
+          $content.html($content.html() + "<div>" 
+              + $dueDate.parent().find('.dueDateControl').html()
+              + "</div>");
+        }
+      });
+      
+      $dueDate.parent().on('click', '.calControl', function(e) {
+        var $btn = $(e.target);
+        var next = new Date();
+        if ($btn.hasClass('none')) {
+          next = null;       
+        } else if ($btn.hasClass('tomorrow')) {
+          next.setDate(next.getDate() + 1);
+        } else if ($btn.hasClass('nextWeek')) {
+          next.setDate(next.getDate() + 7);
+        }
+        
+        $dueDate.editable('setValue', next);
+      });
+    };
 
     var initEditInline = function(taskId) {
+        initWorkPlan(taskId);
+        
         var $taskDetailContainer = $('#taskDetailContainer');
         $taskDetailContainer.find('.editable').each(function(){
             var $this = $(this);
@@ -154,8 +319,9 @@ $(document).ready(function() {
                     tags: [],
                     tokenSeparators: [',']
                 };
-            }
+            }            
             $this.editable(editOptions);
+            initDueDate();
         });
     };
 
@@ -165,36 +331,34 @@ $(document).ready(function() {
     });
 
     $centerPanel.on('click', '.viewTaskDetail', function(e) {
-        var $li = $(e.target || e.srcElement).closest('.taskItem');
+        var $li = $(e.target || e.srcElement).closest('.taskItem');        
         var taskId = $li.data('taskid');
         var currentTask = $rightPanelContent.find('.task-detail').attr('task-id');
-        if (taskId != currentTask || $rightPanel.is(':hidden')) {
-            $rightPanelContent.jzLoad('TaskController.detail()', {id: taskId}, function(html) {
-                $centerPanel.find('li.selected').removeClass('selected');
-                $li.addClass('selected');
-                taApp.showRightPanel($centerPanel, $rightPanel);
-                initEditInline(taskId);
-                $rightPanelContent.find('textarea').exoMentions({
-                    onDataRequest:function (mode, query, callback) {
-                        var _this = this;
-                        $('#taskDetailContainer').jzAjax('UserController.findUsersToMention()', {
-                            data: {query: query},
-                            success: function(data) {
-                                callback.call(_this, data);
-                            }
-                        });
-                    },
-                    idAction : 'taskCommentButton',
-                    elasticStyle : {
-                        maxHeight : '52px',
-                        minHeight : '22px',
-                        marginButton: '4px',
-                        enableMargin: false
-                    }
-                });
-                return false;
-            });
-        }
+        $rightPanelContent.jzLoad('TaskController.detail()', {id: taskId}, function(html) {
+          $centerPanel.find('li.selected').removeClass('selected');
+          $li.addClass('selected');
+          taApp.showRightPanel($centerPanel, $rightPanel);
+          initEditInline(taskId);
+          $rightPanelContent.find('textarea').exoMentions({
+            onDataRequest:function (mode, query, callback) {
+              var _this = this;
+              $('#taskDetailContainer').jzAjax('UserController.findUsersToMention()', {
+                data: {query: query},
+                success: function(data) {
+                  callback.call(_this, data);
+                }
+              });
+            },
+            idAction : 'taskCommentButton',
+            elasticStyle : {
+              maxHeight : '52px',
+              minHeight : '22px',
+              marginButton: '4px',
+              enableMargin: false
+            }
+          });
+          return false;
+        });
     });
 
     $rightPanel.on('click', 'a.task-completed-field', function(e){

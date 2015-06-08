@@ -5,6 +5,11 @@
 #{param name=comments/}
 #{param name=currentUser/}
 
+<%
+	import java.text.SimpleDateFormat;
+	import java.util.Date;
+	import org.exoplatform.task.utils.TaskUtil;
+%>
 <div id="taskDetailContainer" class="task-detail" task-id="${task.id}">
     <div class="row-fluid task-info-row">
         <a href="#" class="icon task-completed-field status-icon ${task.completed ? "icon-completed" : ""}">&nbsp;</a>
@@ -23,6 +28,12 @@
         <div class="span6">
             <a href="#"><i class="uiIconClock"></i></a>
             <a class="editable" href="#" data-name="dueDate" data-type="date" data-format="yyyy-mm-dd" data-viewformat="M dd, yyyy">${task.dueDate != null ? task.dueDate : ''}</a>
+            <div class="dueDateControl" style="display: none">
+            	<a href="#" class="none calControl">None</a>
+            	<a href="#" class="today calControl">Today</a>
+            	<a href="#" class="tomorrow calControl">Tomorrow</a>
+            	<a href="#" class="nextWeek calControl">Next Week</a>
+            </div>
         </div>
         <div class="span6">
             <% if (task.status != null) { %>
@@ -102,5 +113,41 @@
                 </form>
             </div>
         </div>
+    </div>
+    <div class="row-fluid task-workplan-row">
+      <div class="span6">
+	      <a href="#"><i class="uiIconClock"></i></a>
+	      <%
+	      def startDate = task.getStartDate();
+	      def duration = task.getDuration();
+	      def workplan = TaskUtil.getWorkPlan(startDate, duration);
+	      if (workplan == null) {
+	        workplan = "no workplan";
+	      }
+	      def hasPlan = true;
+	      if (startDate == null) {
+	        hasPlan = false;
+	        startDate = new Date();
+	        startDate.setMinutes(0);
+	        duration = 30 * 60 * 1000;
+	      }
+	      def df = new SimpleDateFormat("YYYY-MM-dd-HH-mm");
+	      %>
+	      <div class="workPlan" data-startdate="<%=df.format(startDate)%>" data-duration="${duration}">
+	      	<a class="duration" href="#">${workplan}</a>
+	      	<%if (hasPlan) {%>
+	      	<a href="#"><i class="uiIconTrash removeWorkPlan"></i></a>
+	      	<%} %>
+	      	<div class="rangeCalendar" style="display:none">
+	      		From:
+					<div class="fromCalendar calendar"></div>
+					To:
+					<div class="toCalendar calendar"></div>
+					<input type="checkbox" name="allDay"/>All day<br/>
+					<a class="timeSelector" data-name="timeFrom" href="#" data-type="select"></a>
+					<a class="timeSelector" data-name="timeTo" href="#" data-type="select"></a>
+				</div>
+			</div>
+      </div>
     </div>
 </div>
