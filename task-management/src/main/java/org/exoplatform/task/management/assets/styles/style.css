@@ -1,1 +1,741 @@
-.clearfix{clear:both}.task-management h4{background:#eee;padding:5px}#taskManagement .task{padding:10px 0;margin:10px 0;border-bottom:dotted 1px #ccc}#taskManagement .task label{display:inline-block}#taskManagement .task input[type="checkbox"],#taskManagement .task span.tag{visibility:hidden}#taskManagement .task:hover{background:#f5f7fa}#taskManagement .task input[type="checkbox"]:checked,#taskManagement .task:hover input[type="checkbox"],#taskManagement .task:hover span.tag{visibility:visible}.task-detail{padding-right:7px}.task-detail .icon{display:inline-block;width:24px;height:24px;border:solid 4px #666;background-color:#fff;cursor:pointer}.task-detail .icon.icon-completed,.task-detail .icon:hover{margin-top:0;background:#fff url("../images/completed.png") no-repeat top left}.task-detail .icon.icon-completed{vertical-align:middle}.task-detail .icon.icon-completed:hover{background-image:none}.task-description .editable-inline,.task-description .editable-input,.task-description .editable-input textarea,.task-description .editableform{width:100%}.editable[data-type="textarea"]{display:block;height:72px;border:solid 1px #ccc;padding:3px 10px;margin:3px 0 30px;border-radius:3px}.task-info-row{margin:10px 0}.editable-click,a.editable-click{display:inline-block;padding:5px 20px 5px 5px;border:solid 1px transparent;color:#333}a.editable-click:hover{border:solid 1px #ddd}#taskCommentButton{margin-top:10px}.comment .comment-action{width:16px}.comment .action-link{visibility:hidden}.comment:hover .action-link{visibility:visible}.leftPanel ul.nav li a{border-radius:0;margin:0}.leftPanel ul.left-menu.nav>li{margin:3px 0}.leftPanel ul.left-menu.nav>li>a{background:#eee}.leftPanel ul.left-menu.nav li.dropdown>ul.dropdown-menu{top:30px;left:calc(70%)}.leftPanel ul.left-menu.nav li.dropdown b.caret{float:right}.leftPanel ul.list-projects.nav li.dropdown>a>b.caret{visibility:hidden}.leftPanel ul.list-projects.nav li.dropdown:hover>a>b.caret{visibility:visible}.leftPanel ul.left-menu.nav>li.active a{background:#08c}.leftPanel ul.left-menu.nav>li>ul.list-projects{margin:0}.leftPanel ul.left-menu.nav>li>ul.list-projects>li>a{padding-left:5px;margin:0}.project-description .editable-inline,.project-description .editable-input,.project-description .editable-input textarea,.project-description .editableform{width:100%}.projectListView .header{background:#eee;padding:5px 0 0}.projectListView>.header{margin-bottom:20px}.projectListView .header h2{margin:0 0 0 5px;font-size:19px;line-height:100%;padding-top:5px}.projectListView .input-block-level,.projectListView .input-block-level:focus{border:0;border-bottom:solid 1px #ccc;border-radius:0;outline:0;box-shadow:none}.form-search.relative{position:relative;margin-bottom:5px;margin-right:5px}.form-search.relative .uiIconEcmsSearchMini{position:absolute;left:8px;top:8px}.form-search.relative input[type="text"]{padding-left:25px}.panel .header{height:30px}.taskList h4{background:#eee;margin-top:10px;padding:7px 0 5px}.taskMngCont{margin:20px}
+/* Reset*/
+input.grayLarge {
+  color: #999;
+  font-size: 18px;
+  height: 36px;
+  width: 100%;
+}
+input.blackLarge {
+  color: #333;
+  font-size: 18px;
+  height: 36px;
+  width: 100%;
+}
+input.grayNormal {
+  color: #999;
+  font-size: 13px;
+  height: 28px;
+  width: 100%;
+}
+input.blackNormal {
+  color: #333;
+  font-size: 13px;
+  height: 28px;
+  width: 100%;
+}
+select.selectboxMini {
+  height: 28px;
+  vertical-align: middle;
+  width: 62px;
+  margin: 0;
+}
+.clearfix {
+  clear: both;
+}
+.task-management h4 {
+  background: #eee;
+  padding: 5px;
+}
+#taskManagement .task {
+  padding: 10px 0;
+  margin: 10px 0;
+  border-bottom: dotted 1px #ccc;
+}
+#taskManagement .task label {
+  display: inline-block;
+}
+#taskManagement .task input[type="checkbox"],
+#taskManagement .task span.tag {
+  visibility: hidden;
+}
+#taskManagement .task:hover {
+  background: #F5F7FA;
+}
+#taskManagement .task input[type="checkbox"]:checked,
+#taskManagement .task:hover input[type="checkbox"],
+#taskManagement .task:hover span.tag {
+  visibility: visible;
+}
+.task-detail {
+  padding-right: 7px;
+}
+.task-detail .icon {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  border: solid 4px #666;
+  background-color: #fff;
+  cursor: pointer;
+}
+.task-detail .icon.icon-completed,
+.task-detail .icon:hover {
+  margin-top: 0px;
+  background: #ffffff url("../images/icons/completed.png") no-repeat top left;
+}
+.task-detail .icon.icon-completed {
+  vertical-align: middle;
+}
+.task-detail .icon.icon-completed:hover {
+  background-image: none;
+}
+.task-description .editable-inline,
+.task-description .editable-input,
+.task-description .editable-input textarea,
+.task-description .editableform {
+  width: 100%;
+}
+.editable[data-type="textarea"] {
+  display: block;
+  height: 72px;
+  border: solid 1px #ccc;
+  padding: 3px 10px;
+  margin: 3px 0px 10px;
+  border-radius: 3px;
+}
+.task-info-row {
+  margin: 10px 0;
+}
+#taskCommentButton {
+  margin-top: 10px;
+}
+.comment .comment-action {
+  width: 16px;
+}
+.comment .action-link {
+  visibility: hidden;
+}
+.comment:hover .action-link {
+  visibility: visible;
+}
+.leftPanel ul.nav li a {
+  border-radius: 0;
+  margin: 0;
+}
+.leftPanel ul.left-menu.nav > li {
+  margin: 3px 0;
+}
+.leftPanel ul.left-menu.nav > li > a {
+  background: #eee;
+}
+.leftPanel ul.left-menu.nav li.dropdown > ul.dropdown-menu {
+  top: 30px;
+  left: calc(70%);
+}
+.leftPanel ul.left-menu.nav li.dropdown b.caret {
+  float: right;
+}
+.leftPanel ul.list-projects.nav li.dropdown > a > b.caret {
+  visibility: hidden;
+}
+.leftPanel ul.list-projects.nav li.dropdown:hover > a > b.caret {
+  visibility: visible;
+}
+.leftPanel ul.left-menu.nav > li.active a {
+  background: #0088cc;
+}
+.leftPanel ul.left-menu.nav > li > ul.list-projects {
+  margin: 0;
+}
+.leftPanel ul.left-menu.nav > li > ul.list-projects > li > a {
+  padding-left: 5px;
+  margin: 0;
+}
+.project-description .editable-inline,
+.project-description .editable-input,
+.project-description .editable-input textarea,
+.project-description .editableform {
+  width: 100%;
+}
+li[data-showhiddenproject="false"] li[data-hiddenproject="true"] {
+  display: none;
+}
+li[data-showhiddenproject="false"] .label-hideHiddenProject {
+  display: none;
+}
+li[data-showhiddenproject="false"] li.all-children-hided a.project-name > i {
+  display: none;
+}
+li[data-showhiddenproject="true"] .label-showHiddenProject {
+  display: none;
+}
+li[data-showhiddenproject="true"] .all-project-hidden {
+  display: none;
+}
+li[data-hiddenproject="true"] a.project-name {
+  opacity: 0.5;
+}
+li[data-hiddenproject="true"] > .sub-item .label-hide {
+  display: none;
+}
+li[data-hiddenproject="false"] > .sub-item .label-show {
+  display: none;
+}
+.not-all-project-hidden {
+  display: none;
+}
+.empty-box {
+  position: relative;
+  text-align: center;
+  padding-top: 100px!important;
+  padding-bottom: 100px!important;
+  min-height: 200px;
+}
+.empty-box .empty-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -moz-transform: translate(-50%, -50%);
+  -webkit-transform: translate(-50%, -50%);
+  -o-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+.empty-box .image {
+  margin-bottom: 15px;
+}
+.empty-box .text-notify {
+  font-size: 24px;
+}
+.projectListView > .header {
+  margin-bottom: 20px;
+}
+.projectListView .header {
+  padding: 10px;
+}
+.projectListView .header .input-field {
+  position: relative;
+}
+.projectListView .header .input-field .popover {
+  left: 0;
+  top: 43px;
+}
+.projectListView .header .input-field .popover .arrow {
+  left: 12%;
+}
+.projectListView .header h2 {
+  margin: 0 0 0 5px;
+  font-size: 19px;
+  line-height: 100%;
+  padding-top: 5px;
+}
+.projectListView .uiContentBox {
+  padding: 0;
+}
+.projectListView .input-block-level,
+.projectListView .input-block-level:focus {
+  border: none;
+  border-bottom: solid 1px #ccc;
+  border-radius: 0;
+  outline: none;
+  box-shadow: none;
+}
+.form-search.relative {
+  position: relative;
+  margin-bottom: 5px;
+  margin-right: 5px;
+}
+.form-search.relative .uiIconEcmsSearchMini {
+  position: absolute;
+  left: 8px;
+  top: 8px;
+}
+.form-search.relative input[type="text"] {
+  padding-left: 25px;
+}
+.taskMngCont {
+  margin: 20px;
+}
+/* Projects Area */
+#taskManagement .centerPanel.uiBox .projectListView .title {
+  padding: 4px 5px;
+  line-height: 28px;
+}
+#taskManagement .centerPanel.uiBox .projectListView .title .label-title {
+  font-size: 18px;
+  font-weight: bold;
+  padding-left: 10px;
+  padding-right: 10px;
+  max-width: 280px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#taskManagement .centerPanel.uiBox .projectListView .title .uiSearchInput input[type="text"] {
+  min-height: 28px;
+  height: 28px;
+  float: right;
+  max-width: 210px;
+}
+#taskManagement .centerPanel.uiBox .projectListView .title .uiSearchInput .advancedSearch,
+#taskManagement .centerPanel.uiBox .projectListView .title .uiSearchInput .AdvancedSearch {
+  top: 1px;
+}
+#taskManagement .centerPanel.uiBox .projectListView .title .settingActionButtons {
+  margin-left: 5px;
+}
+#taskManagement .centerPanel.uiBox .projectListView .title .settingActionButtons .actionIcon {
+  margin-top: 1px;
+  float: left;
+}
+.table-project {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+.table-project .row-item {
+  display: table-row;
+  cursor: pointer;
+}
+.table-project .row-item.heading {
+  font-weight: bold;
+}
+.table-project .row-item.heading .column-item > * {
+  vertical-align: middle;
+}
+.table-project .row-item.group {
+  border-bottom: none;
+}
+.table-project .row-item.group > .column-item {
+  padding: 0;
+}
+.table-project .row-item.group .table-project {
+  margin-bottom: 30px;
+}
+.table-project .row-item .text-time {
+  height: 26px;
+  line-height: 26px;
+}
+.table-project .row-item:hover.group,
+.table-project .row-item.selected.group {
+  background: none;
+}
+.table-project .row-item.selected .column-title {
+  font-weight: bold;
+}
+.table-project .row-group {
+  display: table-row-group;
+  margin-bottom: 30px;
+}
+.table-project .column-item {
+  display: table-cell;
+  padding: 4px;
+  vertical-align: middle;
+  position: relative;
+}
+.table-project .column-item .project-color {
+  position: absolute;
+  left: 1px;
+  top: 0;
+  bottom: 1px;
+  width: 5px;
+}
+.table-project .column-item .labels {
+  margin: 0 10px 0 0;
+}
+.table-project .column-item:first-child {
+  padding-left: 13px;
+}
+.table-project .column-item:last-child {
+  padding-right: 8px;
+}
+.table-project .column-checkbox {
+  width: 24px;
+}
+.table-project .column-checkbox .status-task {
+  margin-left: 4px;
+}
+.table-project .column-time {
+  text-align: right;
+}
+.table-project .column-action {
+  width: 26px;
+}
+.table-project-collapse {
+  margin-bottom: 30px;
+}
+.table-project-collapse .heading {
+  padding: 4px 8px;
+}
+.table-project-collapse .heading .group-name {
+  font-weight: bold;
+}
+.leftPanel .accordion-heading .popover {
+  left: 178px;
+  max-width: 256px;
+  top: 26px;
+  width: 250px;
+}
+.leftPanel .accordion-heading .popover.bottom .arrow {
+  left: 18%;
+}
+.centerPanel .uiHeaderBar .alignBtnGroup {
+  margin: 0 auto;
+  width: 200px;
+}
+.filter-form .btn.dropdown-toggle {
+  padding-right: 10px;
+}
+.filter-form .action-bar {
+  display: inline-block;
+  margin-top: 2px;
+  margin-left: 5px;
+  vertical-align: middle;
+}
+.all-task .all-task-action-toggle a.active {
+  font-weight: bold;
+}
+.all-task span {
+  vertical-align: middle;
+}
+.all-task .all-task-action {
+  display: none;
+  text-align: left;
+}
+.input-field input {
+  width: 100%;
+  margin: 10px 0 0;
+}
+.advancedSearch-action {
+  display: none;
+}
+.leftPanel,
+.rightPanel {
+  position: relative;
+}
+.leftPanel .resizeButton,
+.rightPanel .resizeButton {
+  cursor: pointer;
+  height: 16px;
+  right: -18px;
+  margin-top: -8px;
+  position: absolute;
+  top: 50%;
+}
+.rightPanel .resizeButton {
+  left: -18px;
+  right: auto;
+}
+.rightPanel .addProject .breadcrumbCont,
+.rightPanel .addProject .inputName,
+.rightPanel .addProject .prjAuthor,
+.rightPanel .addProject .prjDescription {
+  margin: 0 0 10px;
+}
+.rightPanel .addProject .breadcrumbCont {
+  position: relative;
+}
+.rightPanel .addProject .breadcrumbCont .uiTreeExplorer {
+  padding-bottom: 10px;
+  position: absolute;
+  top: 30px;
+  left: 0;
+  width: 100%;
+  box-shadow: none;
+}
+.rightPanel .addProject .breadcrumbCont .uiTreeExplorer .node {
+  margin-left: 0px;
+  padding-top: 0px;
+}
+.rightPanel .addProject .breadcrumbCont .uiTreeExplorer .node a {
+  display: block;
+  padding: 5px;
+}
+.rightPanel .addProject .breadcrumbCont .uiTreeExplorer .node a:hover,
+.rightPanel .addProject .breadcrumbCont .uiTreeExplorer .node a.selected {
+  /*TODO: remove hard-code here*/
+
+  background-color: #477ab3;
+}
+.rightPanel .addProject .prjAuthor {
+  padding: 0 10px;
+  line-height: 30px;
+}
+.rightPanel .addProject .prjAuthor .avatarSmall {
+  font-weight: bold;
+}
+.rightPanel .addProject .prjDescription {
+  padding: 10px;
+}
+.rightPanel .addProject .prjDescription ul li {
+  line-height: 20px;
+  padding-bottom: 10px;
+  list-style-type: disc;
+  margin-left: 10px;
+}
+.rightPanel .addProject .prjDescription ul li:last-child {
+  padding-bottom: 0;
+}
+.rightPanel .addProject .inputName {
+  font-size: 18px;
+  height: 36px;
+  line-height: 36px;
+}
+.rightPanel .addProject .viewInCal {
+  padding: 7px 23px;
+}
+.rightPanel .addTask .uiContentBox {
+  padding-top: 8px;
+}
+.rightPanel .addTask .taskName input {
+  margin-top: 5px;
+}
+.rightPanel .addTask .taskDescription {
+  margin-top: 10px;
+}
+.rightPanel .addTask .inforBar1 > div:nth-child(2n) {
+  margin-left: 13px;
+}
+.rightPanel .addTask .inforBar1 .uiEditableInline .popover {
+  min-width: 252px;
+}
+.rightPanel .addTask .inforBar1 .uiEditableInline .popover.bottom .arrow {
+  left: 13%;
+}
+.rightPanel .addTask .inforBar1 .uiEditableInline .popover .popover-content .header.nav-inline a {
+  padding-left: 5px;
+  margin: 10px 0 10px 2px;
+}
+.rightPanel .addTask .inforBar1 .uiEditableInline .popover .popover-content .header.nav-inline a:first-child {
+  margin-left: 0;
+  padding-left: 0;
+}
+.rightPanel .addTask .inforBar1 .uiEditableInline .popover .popover-content .uiCalendarComponent hr {
+  margin: 0;
+}
+.rightPanel .addTask .tags a {
+  box-shadow: none;
+}
+.rightPanel .taskAssignment .contBlock .exo-mentions .replaceTextArea span {
+  margin-right: 5px;
+  line-height: 20px;
+}
+.rightPanel .taskAssignment .contBlock .exo-mentions .replaceTextArea span:last-child {
+  margin-right: 0;
+}
+.rightPanel .taskAssignment .contBlock .exo-mentions .replaceTextArea.inactive {
+  background: transparent none repeat scroll 0 0;
+  border: medium none;
+  box-shadow: none;
+  margin: 0;
+}
+.centerPanel .uiSearchInput.searchWithIcon {
+  display: block;
+}
+.centerPanel.span5 .settingActionButtons .advancedSearch-action {
+  display: inline-block;
+}
+.centerPanel.span5 .uiSearchInput {
+  display: none;
+}
+.centerPanel.span5 .uiHeaderBar.toggle .uiSearchInput {
+  display: block;
+}
+.centerPanel.span5 .uiHeaderBar.toggle .alignBtnGroup {
+  float: left;
+  width: auto;
+}
+.centerPanel.span5 .all-task-action-toggle {
+  display: none;
+}
+.centerPanel.span5 .all-task-action {
+  display: inline-block;
+  margin-top: 2px;
+}
+#taskManagement .centerPanel.span5 .title .label-title {
+  max-width: 130px;
+}
+#taskManagement .centerPanel.span9 .uiHeaderBar.toggle .label-title {
+  display: block;
+}
+.uiHeaderBar.toggle .label-title,
+.uiHeaderBar.toggle .action-search {
+  display: none;
+}
+.uiHeaderBar.toggle .action-close {
+  display: inline-block !important;
+}
+.table-project .column-item .actionIcon {
+  padding: 0 2px;
+  margin: 2px 0;
+}
+.table-project .column-item .actionIcon .uiIconArrowRight {
+  background-position: -39px -120px;
+}
+.table-project .column-item .actionIcon .uiIconClock {
+  background-position: -160px -81px;
+}
+.rightPanel .title .actionIconSmall {
+  line-height: 10px;
+}
+.form-create-task {
+  margin-left: 25px;
+}
+.form-create-task > input {
+  opacity: 0.5;
+}
+.form-create-task > input:focus {
+  opacity: 1;
+}
+.sharePrjDialog,
+.modal8 {
+  width: 800px;
+  margin-left: -400px;
+}
+.sharePrjDialog .exo-mentions .autocomplete-menu,
+.modal8 .exo-mentions .autocomplete-menu {
+  margin-top: -1px;
+}
+.sharePrjDialog .table td {
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+.action-mentions .exo-mentions {
+  background: transparent;
+  border-radius: 0;
+}
+.permission-owner .replaceTextArea {
+  float: left;
+  height: auto;
+  vertical-align: top;
+  width: 60%;
+  padding: 5px;
+  margin-right: 5px;
+  min-height: 16px;
+}
+.permission-owner .replaceTextArea.open {
+  overflow: visible;
+}
+.exo-mentions .replaceTextArea > span {
+  margin: 2px 1px;
+}
+.exo-mentions .replaceTextArea > span i {
+  cursor: pointer;
+}
+.list-users .item:last-child {
+  margin-bottom: 0;
+}
+.userSelectorDialog .uiSearch {
+  margin-top: 0;
+}
+.list-projects .no-project {
+  padding: 6px 0px;
+}
+.column-item .dragable {
+  width: 6px;
+  height: 22px;
+  background: url('../images/icons/dragable.png');
+  left: 8px;
+  cursor: move;
+  position: absolute;
+}
+.commentList .commmentLeft + .commentRight {
+  margin-left: 50px;
+}
+.commentList .commentRight .author .date {
+  margin-left: 10px;
+}
+.commentList .commentItem {
+  position: relative;
+  margin: 10px 0 15px 0;
+}
+.commentList .commentFormBox {
+  margin-bottom: 0;
+}
+.commentList .commentFormBox .exo-mentions {
+  margin-bottom: 15px;
+}
+.commentList .contentComment {
+  word-wrap: break-word;
+}
+.commentList .controllDelete {
+  cursor: pointer;
+  display: none;
+  position: absolute;
+  right: -5px;
+  top: 0;
+}
+.commentList .commentItem:hover .controllDelete {
+  display: block;
+}
+.commentList .author a {
+  font-weight: bold;
+  word-wrap: break-word;
+}
+.autocomplete-menu li {
+  position: relative;
+}
+.autocomplete-menu .user-status {
+  position: absolute;
+  right: 7px;
+  top: 7px;
+}
+.list-changes li + li {
+  margin-top: 10px;
+}
+.done {
+  text-decoration: line-through;
+}
+.labels,
+.tags {
+  margin: 5px 0;
+}
+.label-task,
+.tags .label {
+  border-radius: 2px;
+  display: inline-block;
+  padding: 2px 7px;
+  font-size: 11px;
+  font-weight: bold;
+  line-height: 20px;
+  text-shadow: 0 0 0 transparent;
+  box-shadow: none;
+  vertical-align: middle;
+}
+.label-task .uiIconClose,
+.tags .label .uiIconClose {
+  opacity: 1;
+}
+.label-task,
+.tags .label {
+  margin: 2px 0;
+}
+.label-task {
+  color: white;
+}
+.label-task:hover,
+.label-task:focus {
+  color: white;
+}
+[data-currentgroupby=""] [data-groupby=""] {
+  display: none;
+}
+[data-currentgroupby="status"] [data-groupby="status"] {
+  display: none;
+}
+[data-currentgroupby="assignee"] [data-groupby="assignee"] {
+  display: none;
+}
+[data-currentgroupby="project"] [data-groupby="project"] {
+  display: none;
+}
+[data-currentgroupby="tag"] [data-groupby="tag"] {
+  display: none;
+}
+[data-currentorderby=""] [data-orderby=""] {
+  display: none;
+}
+[data-currentorderby="title"] [data-orderby="title"] {
+  display: none;
+}
+[data-currentorderby="priority"] [data-orderby="priority"] {
+  display: none;
+}
+[data-currentorderby="dueDate"] [data-orderby="dueDate"] {
+  display: none;
+}
+[data-currentorderby="createdTime"] [data-orderby="createdTime"] {
+  display: none;
+}
+.exo-mentions .tags {
+  margin: 0;
+}

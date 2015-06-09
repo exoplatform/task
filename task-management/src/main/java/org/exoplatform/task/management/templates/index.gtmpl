@@ -6,6 +6,7 @@
 #{param name=keyword /}
 #{param name=groupBy /}
 #{param name=orderBy /}
+#{param name=filter /}
 #{param name=projects/}
 #{param name=userSetting/}
 #{param name=bundle/}
@@ -15,10 +16,10 @@
 	    <div class="leftPanel uiAccordion span3">
 	        <ul class="left-menu">
 	            <li class="accordion-heading active">
-	                <a class="project-name" data-id="-1">Incomming&nbsp;<span class="badgeDefault badgePrimary mini top">1</span></a>
+	                <a class="project-name" data-id="-1" href="@{TaskManagement.index()}">&{label.incoming}&nbsp;<span class="badgeDefault badgePrimary mini top">1</span></a>
 	            </li>
 	            <li class="accordion-heading">
-	                <a class="project-name" data-id="-2" href="#">To Do</a>
+	                <a class="project-name" data-id="-2" href="#">&{label.todo}</a>
 	            </li>
 	            <li class="accordion-heading dropdown" data-showhiddenproject="${userSetting.showHiddenProject}">
 	                <div class="item">
@@ -28,10 +29,20 @@
 		                    <i class="uiIconLightGray uiIconSimplePlusMini addProject" 
 		                    data-content="&{label.welcome.firstProject}" data-placement="bottom"></i>
                         </a>
+                        <% if (projects.size() == 0) { %>
+                        <div role="tooltip" class="popover fade bottom in" style="display: block" >
+                            <div class="arrow" ></div>
+                            <div class="popover-content">&{tooltip.clickToAddProject}</div>
+                        </div>
+                        <%}%>
 		                <div class="dropdown-menu uiDropdownWithIcon" style="left: 100%; top: -22px">
 		                	<span class="arrowLeft"></span>
 		                	<ul class="uiDropdownMenu">
-			                    <li><a class="new-project" data-projectId="0" href="#"><i class="uiIconAddProject uiIconLightGray"></i>Add project</a></li>
+			                    <li>
+                                    <a class="new-project" data-projectId="0" href="#">
+                                        <i class="uiIconAddProject uiIconLightGray"></i>&{label.addProject}
+                                    </a>
+                                </li>
 			                    <li><a href="javascript:void(0)" class="actionShowHiddenProject">
                                     <i class="uiIconShowProject uiIconLightGray"></i>
                                     <span class="label-showHiddenProject">
@@ -56,14 +67,342 @@
 			  <i  class="uiIconMiniArrowLeft"></i>
 			</div>
 	    </div>
-	    <div class="centerPanel uiBox span9">				
+	    <div class="centerPanel uiBox span9">
+	    	
+
             <div class="centerPanelContent ">            	
                 #{include path=projectTaskListView.gtmpl /}
             </div>
 	    </div>
 	    <div class="rightPanel span4" style="display: none">
-	    	<div class="resizeButton close-right-panel" id="ShowHideRight">
-			  <i  class="uiIconMiniArrowRight"></i>
+	    	<div class="sample uiBox pd10" style="display: none">
+				<!-- ##################################### -->
+				<br>
+				<!-- when click to .hoverStatus need add class .active to .uiEditableInline -->
+				<div class="uiEditableInline hover-action-reveal">
+					<i class="uiIconPLFCalendar" data-toggle="tooltip" title="Click to show in Calendar"></i>
+					<span class="hoverStatus small" data-toggle="tooltip" title="Click to edit">
+					<span class="text-label"></span>
+					<!-- you can use classes like .input-medium, .input-small to set size availabel  -->
+					<input type="text" class="input-value input-small" value="21 Sep 2011">
+					</span>
+					<span class="actionIcon inline-hide"><i class="uiIcon uiIconTrash"></i></span>
+				</div>
+				<br>
+				<!-- when click to .hoverStatus need add class .active to .uiEditableInline -->
+				<div class="uiEditableInline active">
+					<i class="uiIconPLFCalendar" data-toggle="tooltip" title="Click to show in Calendar"></i>
+					<span class="hoverStatus small" data-toggle="tooltip" title="Click to edit">
+						<span class="text-label"></span>
+						<!-- you can use classes like .input-medium, .input-small to set size availabel  -->
+						<input type="text" class="input-value input-small" value="21 Sep 2011">
+					</span>
+					<span class="actionIcon inline-hide"><i class="uiIcon uiIconTrash"></i></span>
+				</div>
+				<br>
+				<!-- when click to .hoverStatus need add class .edit to .uiEditableInline -->
+				<div class="uiEditableInline hover-action-reveal">
+					<i class="uiIconPLFCalendar" data-toggle="tooltip" title="Click to show in Calendar"></i>
+					<span class="hoverStatus small editableField" data-toggle="tooltip" title="Click to edit">
+					<span class="text-label">Work planned for</span>
+					<!-- you can use classes like .input-medium, .input-small to set size availabel  -->
+					<input type="text" class="input-value input-small" value="21 Sep 2011">
+					</span>
+					<span class="actionIcon inline-hide"><i class="uiIcon uiIconTrash"></i></span>
+				</div>
+				<br>
+				<!-- when click to .hoverStatus need add class .edit to .uiEditableInline -->
+				<div class="uiEditableInline active hover-action-reveal">
+					<i class="uiIconPLFCalendar uiIconPLFBlue" data-toggle="tooltip" title="Click to show in Calendar"></i>
+					<span class="hoverStatus small editableField" data-toggle="tooltip" title="Click to edit">
+					<span class="text-label">Work planned for</span>
+					<input type="text" class="input-value input-small" value="21 Sep 2011">
+					</span>
+					<span class="actionIcon inline-hide"><i class="uiIcon uiIconTrash"></i></span>
+				</div>
+				<br>
+				<hr>
+				<div class="uiEditableInline hover-action-reveal">
+					<i class="uiIconPLFCalendar" data-toggle="tooltip" title="Click to show in Calendar"></i>
+					<!-- After selected date and time finish will add class .editableField to .hoverStatus -->
+					<div class="hoverStatus small">
+						<span class="text-label"> </span>
+						<span class="view-value">Unscheduled</span>
+					</div>
+					<span class="actionIcon inline-hide"><i class="uiIcon uiIconTrash"></i></span>
+				</div>
+				<br>
+				<div class="uiEditableInline active">
+					<i class="uiIconPLFCalendar" data-toggle="tooltip" title="Click to show in Calendar"></i>
+					<!-- After selected date and time finish will add class .editableField to .hoverStatus -->
+					<div class="hoverStatus small">
+						<span class="text-label"></span>
+						<span class="view-value">Unscheduled</span>
+					</div>
+					<span class="actionIcon inline-hide"><i class="uiIcon uiIconTrash"></i></span>
+				</div>
+				<br>
+				<!-- when click to .hoverStatus need add class .edit to .uiEditableInline -->
+				<div class="uiEditableInline hover-action-reveal">
+					<i class="uiIconPLFCalendar" data-toggle="tooltip" title="Click to show in Calendar"></i>
+					<span class="hoverStatus small editableField" data-toggle="tooltip" title="Click to edit">
+					<span class="text-label">Work planned for</span>
+					<span class="view-value"><strong>21 Sep 2011</strong>(All day)</span>
+					</span>
+					<span class="actionIcon inline-hide"><i class="uiIcon uiIconTrash"></i></span>
+				</div>
+				<br>
+				<!-- Added class .edit -->
+				<div class="uiEditableInline active">
+					<!-- Added class .uiIconPLFBlue to change to saved status -->
+					<i class="uiIconPLFCalendar" data-toggle="tooltip" title="Click to show in Calendar"></i>
+					<div class="hoverStatus small editableField" data-toggle="tooltip" title="Click to edit">
+						<span class="text-label ">Work planned for</span>
+						<span class="view-value"><strong>21 Sep 2011</strong>(All day)</span>
+					</div>
+					<span class="actionIcon inline-hide"><i class="uiIcon uiIconTrash"></i></span>
+				</div>
+				<hr>
+				<!-- when click to .hoverStatus need add class .edit to .uiEditableInline -->
+				<div class="uiEditableInline hover-action-reveal">
+					<i class="uiIconPLFCalendar uiIconPLFBlue" data-toggle="tooltip" title="Click to show in Calendar"></i>
+					<span class="hoverStatus small editableField" data-toggle="tooltip" title="Click to edit">
+					<span class="text-label">Work planned for</span> 
+					<span class="view-value"><strong>21 Sep 2011</strong>(All day)</span>
+					</span>
+					<span class="actionIcon inline-hide"><i class="uiIcon uiIconTrash"></i></span>
+				</div>
+				<br>
+				<div class="uiEditableInline active">
+					<!-- Added class .uiIconPLFBlue to change to saved status -->
+					<i class="uiIconPLFCalendar" data-toggle="tooltip" title="Click to show in Calendar"></i>
+					<div class="hoverStatus small editableField" data-toggle="tooltip" title="Click to edit">
+						<span class="text-label ">Work planned for</span>
+						<span class="view-value"><strong>21 Sep 2011</strong>(All day)</span>
+						<!-- You can use classes .left, .right, .bottom, .top to set arrow -->
+						<div class="popover fade left in" role="tooltip" style="display: block;top: -134px; left: -380px;">
+							<div class="arrow"></div>
+							<div class="popover-content">
+								<div class="row-fluid">
+									<div class="span6"><strong>From</strong></div>
+									<div class="span6"><strong>To</strong></div>
+								</div>
+								<div class="clearfix">
+									<div class="uiCalendarComponent uiBox pull-left" id="BlockCalendar">
+										<div style="cursor: default" onmousedown="event.cancelBubble = true">
+											<h5 class="title clearfix">
+											<a data-original-title="Previous Month" class="actionIcon pull-left" onclick="" rel="tooltip" data-placement="right">
+											<i class="uiIconMiniArrowLeft uiIconLightGray"></i></a>
+											<span>January, 2015</span>
+											<a data-original-title="Next Month" class="actionIcon pull-right" onclick="" rel="tooltip" data-placement="right">
+											<i class="uiIconMiniArrowRight uiIconLightGray"></i></a>
+											</h5>
+											<table class="weekList">
+												<tbody>
+													<tr>
+														<td>
+														<font color="red">S</font></td>
+														<td>M</td>
+														<td>T</td>
+														<td>W</td>
+														<td>T</td>
+														<td>F</td>
+														<td>S</td>
+													</tr>
+												</tbody>
+											</table>
+											<hr>
+											<table cellspacing="0" cellpadding="0" class="weekDays" id="">
+												<tbody>
+													<tr>
+														<td><a onclick="" class="otherMonth" href="#">28</a></td>
+														<td><a onclick="" class="otherMonth" href="#">29</a></td>
+														<td><a onclick="" class="otherMonth" href="#">30</a></td>
+														<td><a onclick="" class="otherMonth" href="#">31</a></td>
+														<td><a onclick="" href="#" class="">1</a></td>
+														<td><a onclick="" href="#" class="">2</a></td>
+														<td><a onclick="" href="#" class="">3</a></td>
+													</tr>
+													<tr>
+														<td><a onclick="" href="#" class="">4</a></td>
+														<td><a onclick="" href="#" class="">5</a></td>
+														<td><a onclick="" href="#" class="">6</a></td>
+														<td><a onclick="" href="#" class="">7</a></td>
+														<td><a onclick="" href="#" class="">8</a></td>
+														<td><a onclick="" href="#" class="">9</a></td>
+														<td><a onclick="" href="#" class="">10</a></td>
+													</tr>
+													<tr class="currentWeek">
+														<td><a onclick="" href="#" class="">11</a></td>
+														<td><a onclick="" href="#" class="">12</a></td>
+														<td><a onclick="" href="#" class="">13</a></td>
+														<td><a onclick="" href="#" class="">14</a></td>
+														<td><a onclick="" href="#" class="">15</a></td>
+														<td><a onclick="" href="#" class="highLight today">16</a></td>
+														<td><a onclick="" href="#" class="">17</a></td>
+													</tr>
+													<tr>
+														<td><a onclick="" href="#" class="">18</a></td>
+														<td><a onclick="" href="#" class="">19</a></td>
+														<td><a onclick="eXo.webui.UICalendar.setDate(2015,1,20)" href="#" class="">20</a></td>
+														<td><a onclick="" href="#" class="">21</a></td>
+														<td><a onclick="" href="#" class="">22</a></td>
+														<td><a onclick="" href="#" class="">23</a></td>
+														<td><a onclick="" href="#" class="">24</a></td>
+													</tr>
+													<tr>
+														<td><a onclick="" href="#" class="">25</a></td>
+														<td><a onclick="" href="#" class="">26</a></td>
+														<td><a onclick="" href="#" class="">27</a></td>
+														<td><a onclick="" href="#" class="">28</a></td>
+														<td><a onclick="" href="#" class="">29</a></td>
+														<td><a onclick="" href="#" class="">30</a></td>
+														<td><a onclick="" href="#" class="">31</a></td>
+													</tr>
+													<tr>
+													</tr>
+												</tbody>
+											</table>
+										</div>
+									</div>
+									<div class="uiCalendarComponent uiBox pull-left" id="BlockCalendar">
+										<div style="cursor: default" onmousedown="event.cancelBubble = true">
+											<h5 class="title clearfix">
+											<a data-original-title="Previous Month" class="actionIcon pull-left" onclick="" rel="tooltip" data-placement="right">
+											<i class="uiIconMiniArrowLeft uiIconLightGray"></i></a>
+											<span>January, 2015</span>
+											<a data-original-title="Next Month" class="actionIcon pull-right" onclick="" rel="tooltip" data-placement="right">
+											<i class="uiIconMiniArrowRight uiIconLightGray"></i></a>
+											</h5>
+											<table class="weekList">
+												<tbody>
+													<tr>
+														<td>
+														<font color="red">S</font></td>
+														<td>M</td>
+														<td>T</td>
+														<td>W</td>
+														<td>T</td>
+														<td>F</td>
+														<td>S</td>
+													</tr>
+												</tbody>
+											</table>
+											<hr>
+											<table cellspacing="0" cellpadding="0" class="weekDays" id="">
+												<tbody>
+													<tr>
+														<td><a onclick="" class="otherMonth" href="#">28</a></td>
+														<td><a onclick="" class="otherMonth" href="#">29</a></td>
+														<td><a onclick="" class="otherMonth" href="#">30</a></td>
+														<td><a onclick="" class="otherMonth" href="#">31</a></td>
+														<td><a onclick="" href="#" class="">1</a></td>
+														<td><a onclick="" href="#" class="">2</a></td>
+														<td><a onclick="" href="#" class="">3</a></td>
+													</tr>
+													<tr>
+														<td><a onclick="" href="#" class="">4</a></td>
+														<td><a onclick="" href="#" class="">5</a></td>
+														<td><a onclick="" href="#" class="">6</a></td>
+														<td><a onclick="" href="#" class="">7</a></td>
+														<td><a onclick="" href="#" class="">8</a></td>
+														<td><a onclick="" href="#" class="">9</a></td>
+														<td><a onclick="" href="#" class="">10</a></td>
+													</tr>
+													<tr class="currentWeek">
+														<td><a onclick="" href="#" class="">11</a></td>
+														<td><a onclick="" href="#" class="">12</a></td>
+														<td><a onclick="" href="#" class="">13</a></td>
+														<td><a onclick="" href="#" class="">14</a></td>
+														<td><a onclick="" href="#" class="">15</a></td>
+														<td><a onclick="" href="#" class="highLight today">16</a></td>
+														<td><a onclick="" href="#" class="">17</a></td>
+													</tr>
+													<tr>
+														<td><a onclick="" href="#" class="">18</a></td>
+														<td><a onclick="" href="#" class="">19</a></td>
+														<td><a onclick="eXo.webui.UICalendar.setDate(2015,1,20)" href="#" class="">20</a></td>
+														<td><a onclick="" href="#" class="">21</a></td>
+														<td><a onclick="" href="#" class="">22</a></td>
+														<td><a onclick="" href="#" class="">23</a></td>
+														<td><a onclick="" href="#" class="">24</a></td>
+													</tr>
+													<tr>
+														<td><a onclick="" href="#" class="">25</a></td>
+														<td><a onclick="" href="#" class="">26</a></td>
+														<td><a onclick="" href="#" class="">27</a></td>
+														<td><a onclick="" href="#" class="">28</a></td>
+														<td><a onclick="" href="#" class="">29</a></td>
+														<td><a onclick="" href="#" class="">30</a></td>
+														<td><a onclick="" href="#" class="">31</a></td>
+													</tr>
+													<tr>
+													</tr>
+												</tbody>
+											</table>
+										</div>
+									</div>
+								</div>
+								<!-- /.clearfix -->
+								<div class="row-fluid choose-time">
+									<div class="span5 center">
+										<div class="form-dropdown">
+											<input data-toggle="dropdown" class="input-size-mini" type="text" maxlength="5" value="09:00">
+											<ul class="dropdown-menu">
+												<li><a href="#">01:00</a></li>
+												<li><a href="#">01:30</a></li>
+												<li><a href="#">02:00</a></li>
+												<li><a href="#">02:30</a></li>
+												<li><a href="#">03:00</a></li>
+												<li><a href="#">03:30</a></li>
+												<li><a href="#">04:00</a></li>
+												<li><a href="#">04:30</a></li>
+												<li><a href="#">05:00</a></li>
+												<li><a href="#">05:30</a></li>
+											</ul>
+										</div>
+									</div>
+									<div class="span2 center">
+										<label class="uiCheckbox">
+											<input type="checkbox" class="checkbox">
+											<span>All day</span>
+										</label>
+									</div>
+									<div class="span5 center">
+										<div class="form-dropdown">
+											<input data-toggle="dropdown" class="input-size-mini" type="text" maxlength="5" value="09:00">
+											<ul class="dropdown-menu">
+												<li><a href="#">01:00</a></li>
+												<li><a href="#">01:30</a></li>
+												<li><a href="#">02:00</a></li>
+												<li><a href="#">02:30</a></li>
+											</ul>
+										</div>
+									</div>
+								</div>
+							</div>
+							<!-- /.popover-content -->
+						</div>
+						<!-- /.popover -->
+					</div>
+					<span class="actionIcon inline-hide"><i class="uiIcon uiIconTrash"></i></span>
+				</div>
+				<hr>
+				<!-- when click to .hoverStatus need add class .edit to .uiEditableInline -->
+				<div class="uiEditableInline hover-action-reveal">
+					<i class="uiIconPLFCalendar uiIconPLFBlue" data-toggle="tooltip" title="Click to show in Calendar"></i>
+					<span class="hoverStatus small editableField" data-toggle="tooltip" title="Click to edit">
+					<span class="text-label">Work planned for</span>
+					<span class="view-value"><strong>21 Sep 2011</strong>(All day)</span>
+					</span>
+					<span class="actionIcon inline-hide"><i class="uiIcon uiIconTrash"></i></span>
+				</div>
+				<br>
+				<!-- ##################################### -->
+			</div><!-- ./samples -->
+	    	<div class="resizeButton close-right-panel" id="ShowHideRight" style="display: none">
+			  <!-- after click this icon add class .saved -->
+			  <i class="uiIconMiniArrowRight saved"></i>
 			</div>
 	        <div class="rightPanelContent ">
 	            <!-- Content at right will be load dynamically by ajax -->

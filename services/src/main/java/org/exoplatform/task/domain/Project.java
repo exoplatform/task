@@ -45,6 +45,12 @@ import java.util.Set;
             "  LEFT JOIN p.manager managers " +
             "  LEFT JOIN p.participator participators " +
             "WHERE managers in (:memberships) OR participators in (:memberships)"),
+    @NamedQuery(name = "Project.findAllByMembershipAndKeyword",
+        query = "SELECT p FROM Project p " +
+            "  LEFT JOIN p.manager managers " +
+            "  LEFT JOIN p.participator participators " +
+            "  WHERE (managers in (:memberships) OR participators in (:memberships))" +
+            "  AND UPPER(p.name) LIKE :keyword"),
     @NamedQuery(name = "Project.findRootProjectsByMemberships",
         query = "SELECT p FROM Project p " +
             "  LEFT JOIN p.manager managers " +

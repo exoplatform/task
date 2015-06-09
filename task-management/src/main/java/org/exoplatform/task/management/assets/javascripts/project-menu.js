@@ -46,7 +46,7 @@ define('project-menu', ['SHARED/jquery'], function($) {
     });
     
     $rightPanel.on('click', '.projectDetail .action-clone-project', function() {
-      var $detail = $(this).closest('.projectDetail');
+      var $detail = $(this).closest('[data-projectid]');
       var pId = $detail.attr('data-projectId');
       var projectName = $detail.find('.projectName').html();
       
@@ -58,20 +58,14 @@ define('project-menu', ['SHARED/jquery'], function($) {
       var parentId = $(e.target).closest('a').attr('data-projectId');
       $rightPanelContent.jzLoad('ProjectController.projectForm()', {parentId: parentId}, function() {
         taApp.showRightPanel($centerPanel, $rightPanel);
-                
+        $rightPanel.find('[name="name"]').on('blur', function(e) {
+            $(e.target || e.srcElement).closest('form').submit();
+        });
         var $ancestors = $rightPanel.find('.editable');
         $ancestors.editable({
           mode : 'inline',
-          showbuttons: false,
-          source : $ancestors.jzURL('ProjectController.projectTreeAsJSON'),
-          select2: {
-            width: '200px'
-          },
-          display : function() {
-            $ancestors.jzLoad('ProjectController.getBreadCumbs()', {id: $ancestors.editable('getValue').parent || $ancestors.data('value')});
-          }
+          showbuttons: false
         });
-       
       });
       return true;
     });        
@@ -83,7 +77,7 @@ define('project-menu', ['SHARED/jquery'], function($) {
     });
     
     $rightPanel.on('click', 'a.action-delete-project', function(e) {
-      var $projectDetail = $(e.target).closest('.projectDetail');
+      var $projectDetail = $(e.target).closest('[data-projectid]');
       var projectId = $projectDetail.attr('data-projectId');
       taApp.showDialog('ProjectController.openConfirmDelete()', {id : projectId});
     });    

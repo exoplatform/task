@@ -69,5 +69,19 @@ public class ProjectDAOImpl extends GenericDAOImpl<Project, Long> implements Pro
 
     return query.getResultList();
   }
+
+  @Override
+  public List<Project> findAllByMembershipsAndKeyword(List<String> memberships, String keyword) {
+    Query query = daoHandler.getEntityManager().createNamedQuery("Project.findAllByMembershipAndKeyword", Project.class);
+    query.setParameter("memberships", memberships);
+    if (keyword == null || keyword.isEmpty()) {
+      keyword = "%";
+    } else {
+      keyword = "%" + keyword.toUpperCase() + "%";
+    }
+    query.setParameter("keyword", keyword);
+
+    return query.getResultList();
+  }
 }
 

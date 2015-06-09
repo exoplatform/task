@@ -1,5 +1,5 @@
 // TODO: Move juzu-ajax, mentionsPlugin module into task management project if need
-require(['project-menu', 'SHARED/jquery', 'SHARED/edit_inline_js', 'SHARED/juzu-ajax', 'SHARED/mentionsPlugin', 'SHARED/bts_modal'], function(pMenu, $) {
+require(['project-menu', 'x_editable_select3', 'SHARED/jquery', 'SHARED/edit_inline_js', 'SHARED/juzu-ajax', 'SHARED/mentionsPlugin', 'SHARED/bts_modal', 'x_editable_selectize'], function(pMenu, $) {
   var taApp = {};
 
   taApp.getUI = function() {
@@ -124,9 +124,14 @@ $(document).ready(function() {
         '<button type="button" class="btn editable-cancel"><i class="uiIconClose"></i></button>';
     
     var saveTaskDetailFunction = function(params) {
+        var currentTaskId = $rightPanelContent.find('[data-taskid]').data('taskid');
+        if (currentTaskId == 0 || currentTaskId == undefined) {
+            return;
+        }
         var d = new $.Deferred;
         var data = params;
-        data.taskId = params.pk;
+        params.pk = currentTaskId;
+        data.taskId = currentTaskId;
         $('#taskDetailContainer').jzAjax('TaskController.saveTaskInfo()',{
             data: data,
             method: 'POST',
@@ -147,7 +152,7 @@ $(document).ready(function() {
       var saveWorkPlan = function(plan) {
         var data = {
             pk : taskId,
-            name : 'workPlan',
+            name : 'workPlan'
           };
         if (plan) {
           data.value = plan;
@@ -305,9 +310,9 @@ $(document).ready(function() {
     };
 
     var initEditInline = function(taskId) {
-        initWorkPlan(taskId);
-        
-        var $taskDetailContainer = $('#taskDetailContainer');
+        //initWorkPlan(taskId);
+
+        var $taskDetailContainer = $('#taskDetailContainer, [data-taskid]');
         $taskDetailContainer.find('.editable').each(function(){
             var $this = $(this);
             var dataType = $this.attr('data-type');
@@ -315,13 +320,17 @@ $(document).ready(function() {
             var editOptions = {
                 mode: 'inline',
                 showbuttons: false,
+                onblur: 'submit',
+                emptyclass: 'muted',
                 pk: taskId,
                 url: saveTaskDetailFunction
             };
 
             if(dataType == 'textarea') {
-                editOptions.showbuttons = 'bottom';
                 editOptions.emptytext = "Description";
+            } else if (dataType == 'text') {
+                editOptions.inputclass = 'blackLarge';
+                editOptions.clear = false;
             }
             if(fieldName == 'assignee' || fieldName == 'coworker') {
                 var findUserURL = $this.jzURL('UserController.findUser');
@@ -385,28 +394,9 @@ $(document).ready(function() {
               editOptions.source = priority;
             }
             if(fieldName == 'tags') {
-                editOptions.showbuttons = true;
-                editOptions.emptytext = "No Tags";
-                editOptions.display = function(value, sourceData, response) {
-                    if(value && value.length > 0) {
-                        var html = [];
-                        $.each(value, function(i, v) {
-                            if(typeof v == 'string') {
-                                html.push('<span class="badgeDefault badgePrimary">' + v + '</span>');
-                            } else {
-                                html.push('<span class="badgeDefault badgePrimary">' + v.text + '</span>');
-                            }
-                        });
-                        $(this).html(html.join(' '));
-                    } else {
-                        $(this).empty();
-                    }
-                };
-                editOptions.select2 = {
-                    tags: [],
-                    tokenSeparators: [',']
-                };
-            }            
+                editOptions.emptytext = '<i class="uiIconHag" data-toggle="tooltip" title="Click to edit"></i> No Tags';
+            }
+
             $this.editable(editOptions);
             initDueDate();
         });
@@ -417,8 +407,8 @@ $(document).ready(function() {
         return false;
     });
 
-    $centerPanel.on('click', '.viewTaskDetail', function(e) {
-        var $li = $(e.target || e.srcElement).closest('.taskItem');        
+    $centerPanel.on('click', '[data-taskid]', function(e) {
+        var $li = $(e.target || e.srcElement).closest('[data-taskid]');
         var taskId = $li.data('taskid');
         var currentTask = $rightPanelContent.find('.task-detail').attr('task-id');
         $rightPanelContent.jzLoad('TaskController.detail()', {id: taskId}, function(html) {
@@ -552,12 +542,11 @@ $(document).ready(function() {
         var $form = $(e.target).closest('form');
         var name = $form.find('input[name="name"]').val();
         var description = $form.find('textarea[name="description"]').val();
-        var $breadcumbs = $rightPanel.find('.breadcumbs'); 
-        var parentId = $breadcumbs.editable('getValue').parent || $breadcumbs.data('value');
+        var $breadcumbs = $rightPanel.find('.breadcrumb');
+        var parentId = $breadcumbs.data('value');
 
         if(name == '') {
-            alert('Please input the project name');
-            return false;
+            name = 'Untitled Project';
         }
 
         var createURL = $rightPanel.jzURL('ProjectController.createProject');        
@@ -601,21 +590,25 @@ $(document).ready(function() {
         return d.promise();
     };
     var initEditInlineForProject = function(projectId) {
-        var $project = $rightPanel.find('.projectDetail');
+        var $project = $rightPanel.find('[data-projectid]');
         $project.find('.editable').each(function(){
             var $this = $(this);
             var dataType = $this.attr('data-type');
             var fieldName = $this.attr('data-name');
             var editOptions = {
                 mode: 'inline',
+                onblur: 'submit',
                 showbuttons: false,
+                emptyclass: 'muted',
                 pk: projectId,
                 url: saveProjectDetailFunction
             };
 
             if(dataType == 'textarea') {
-                editOptions.showbuttons = 'bottom';
                 editOptions.emptytext = "Description";
+            } else if (dataType == 'text')  {
+                editOptions.inputclass = 'blackLarge';
+                editOptions.clear = false;
             }
             if(fieldName == 'manager' || fieldName == 'participator') {
                 var findUserURL = $this.jzURL('UserController.findUser');
@@ -662,6 +655,12 @@ $(document).ready(function() {
                 editOptions.mode = 'popup';
             }
             $this.editable(editOptions);
+
+            $this.on('shown', function(e, editable) {
+                $this.parent().removeClass('inactive').addClass('active');
+            }).on('hidden', function(e, editable) {
+                $this.parent().removeClass('active').addClass('inactive');
+            });
         });
     };
 
@@ -692,7 +691,10 @@ $(document).ready(function() {
                 $a.closest('ul.list-projects[parentid="0"]').find('li.active').removeClass('active');
                 $a.closest('li').addClass('active');
                 taApp.showRightPanel($centerPanel, $rightPanel);
-                initEditInlineForProject(projectId);
+                //TODO: check can edit to init editInline
+                if($rightPanelContent.find('[data-projectid]').data('canedit')) {
+                    initEditInlineForProject(projectId);
+                }
             });
         } else {
             taApp.hideRightPanel($centerPanel, $rightPanel, $rightPanelContent);
@@ -721,13 +723,17 @@ $(document).ready(function() {
     var submitFilter = function(e) {
         var $projectListView =  $(e.target).closest('.projectListView');
         var projectId = $projectListView.attr('data-projectId');
-        var groupBy = $projectListView.find('select[name="groupBy"]').val();
+        var groupBy = $projectListView.find('[name="groupBy"]').val();
         if(groupBy == undefined) {
             groupBy = '';
         }
-        var orderBy = $projectListView.find('select[name="orderBy"]').val();
+        var orderBy = $projectListView.find('[name="orderBy"]').val();
         if(orderBy == undefined) {
             orderBy = '';
+        }
+        var filter = $projectListView.find('[name="filter"]').val();
+        if (filter == undefined) {
+            filter = '';
         }
         var keyword = $projectListView.closest('.projectListView').find('input[name="keyword"]').val();
         $centerPanelContent.jzLoad('TaskController.listTasks()',
@@ -735,7 +741,8 @@ $(document).ready(function() {
                 projectId: projectId,
                 keyword: keyword,
                 groupBy: groupBy,
-                orderBy: orderBy
+                orderBy: orderBy,
+                filter: filter
             },
             function() {
                 taApp.hideRightPanel($centerPanel, $rightPanel, $rightPanelContent);
@@ -752,6 +759,25 @@ $(document).ready(function() {
         submitFilter(e);
         return false;
     });
+    $centerPanel.on('click', '[data-groupby]', function(e) {
+        var $searchForm = $centerPanel.find('form.form-search');
+        var $a = $(e.target || e.srcElement).closest('[data-groupby]');
+        var $input = $('[name="groupBy"]').val($a.data('groupby'));
+        submitFilter(e);
+    });
+    $centerPanel.on('click', '[data-orderby]', function(e) {
+        var $searchForm = $centerPanel.find('form.form-search');
+        var $a = $(e.target || e.srcElement).closest('[data-orderby]');
+        $('[name="orderBy"]').val($a.data('orderby'));
+        submitFilter(e);
+    });
+    $centerPanel.on('click', '[data-taskfilter]', function(e) {
+        var $searchForm = $centerPanel.find('form.form-search');
+        var $a = $(e.target || e.srcElement).closest('[data-taskfilter]');
+        $('[name="filter"]').val($a.data('taskfilter'));
+        submitFilter(e);
+    });
+
     //show hide the search box for responsive
     $centerPanel.on('click', '.action-search' ,function() {
         $(this).css('display','none');

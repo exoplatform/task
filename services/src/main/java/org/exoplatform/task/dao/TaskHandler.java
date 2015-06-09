@@ -18,6 +18,7 @@ package org.exoplatform.task.dao;
 
 import org.exoplatform.task.domain.Task;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -40,7 +41,7 @@ public interface TaskHandler extends GenericDAO<Task, Long> {
 
   List<Task> getIncomingTask(String username, OrderBy orderBy);
 
-  List<Task> getToDoTask(String username, OrderBy orderBy);
+  List<Task> getToDoTask(String username, OrderBy orderBy, Date fromDueDate, Date toDueDate);
 
   long getTaskNum(String username, Long projectId);
 

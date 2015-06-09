@@ -1,122 +1,43 @@
-.clearfix {clear: both}
+/* Reset*/
+body {
+   .editable-click, a.editable-click, a.editable-click:hover{
+       border:  none;
+    } 
+}
 
-.task-management h4 {
-    background: #eee;
-    padding: 5px;
+input.grayLarge {
+    font-size: 18px;
+    height: 36px;
+    width: 100%;
 }
-#taskManagement .task {
-    padding: 10px 0;
-    margin: 10px 0;
-    border-bottom: dotted 1px #ccc;
+
+input.blackLarge {
+    font-size: 18px;
+    height: 36px;
+    width: 100%;
 }
-#taskManagement .task label {
-    display: inline-block;
+
+input.grayNormal {
+    font-size: 13px;
+    height: 28px;
+    width: 100%;
 }
-#taskManagement .task input[type="checkbox"],
-#taskManagement .task span.tag
-{
-    visibility: hidden;
+
+input.blackNormal {
+    font-size: 13px;
+    height: 28px;
+    width: 100%;
 }
-#taskManagement .task:hover {
-    background: #F5F7FA;
-}
-#taskManagement .task input[type="checkbox"]:checked,
-#taskManagement .task:hover input[type="checkbox"],
-#taskManagement .task:hover span.tag
-{
-    visibility: visible;
-}
-.task-detail {
-    padding-right: 7px;
-}
-.task-detail .icon {
-    display: inline-block;
-    width: 24px;
-    height: 24px;
-    border: solid 4px #666;
-    background-color: #fff;
-    cursor: pointer;
-}
-.task-detail .icon.icon-completed,
-.task-detail .icon:hover {
-    margin-top: 0px;
-    background: #fff url("../images/completed.png") no-repeat top left;
-}
-.task-detail .icon.icon-completed {
+
+select.selectboxMini {
+    height: 28px;
     vertical-align: middle;
-}
-.task-detail .icon.icon-completed:hover {
-    background-image: none;
-}
-.task-description .editable-inline,
-.task-description .editable-input,
-.task-description .editable-input textarea,
-.task-description .editableform {
-    width: 100%;
-}
-.editable[data-type="textarea"] {
-    display: block;
-    height: 72px;
-    border: solid 1px #ccc;
-    padding: 3px 10px;
-    margin: 3px 0px 30px;
-    border-radius: 3px;
-}
-.task-info-row {
-    margin: 10px 0;
+    width: 62px;
+    margin: 0;
 }
 
-#taskCommentButton {
-    margin-top: 10px;
-}
-.comment .comment-action {
-    width: 16px;
-}
-.comment .action-link {
-    visibility: hidden;
-}
-.comment:hover .action-link {
-    visibility: visible;
-}
-.leftPanel ul.nav li a {
-    border-radius: 0;
-    margin: 0;
-}
-.leftPanel ul.left-menu.nav > li {
-    margin: 3px 0;
-}
-.leftPanel ul.left-menu.nav > li > a {
-    background: #eee;
-}
-.leftPanel ul.left-menu.nav li.dropdown > ul.dropdown-menu {
-    top: 30px;
-    left: calc(100% - 30px);
-}
-.leftPanel ul.left-menu.nav li.dropdown b.caret {
-    float: right;
-}
-.leftPanel ul.list-projects.nav li.dropdown > a > b.caret {
-    visibility: hidden;
-}
-.leftPanel ul.list-projects.nav li.dropdown:hover > a > b.caret {
-    visibility: visible;
-}
-.leftPanel ul.left-menu.nav > li.active a {
-    background: #0088cc;
-}
-.leftPanel ul.left-menu.nav > li > ul.list-projects {
-    margin: 0;
-}
-.leftPanel ul.left-menu.nav > li > ul.list-projects > li > a {
-    padding-left: 5px;
-    margin: 0;
-}
-.project-description .editable-inline,
-.project-description .editable-input,
-.project-description .editable-input textarea,
-.project-description .editableform {
-    width: 100%;
-}
+
+
 li[data-showhiddenproject="false"] {
   li[data-hiddenproject="true"] {
     display: none;
@@ -210,27 +131,6 @@ li[data-hiddenproject="false"] {
     }
 }
 
-.projectListView .input-block-level,
-.projectListView .input-block-level:focus {
-    border: none;
-    border-bottom: solid 1px #ccc;
-    border-radius: 0;
-    outline: none;
-    box-shadow: none;
-}
-.form-search.relative {
-    position: relative;
-    margin-bottom: 5px;
-    margin-right: 5px;
-}
-.form-search.relative .uiIconEcmsSearchMini {
-    position: absolute;
-    left: 8px;
-    top: 8px;
-}
-.form-search.relative input[type="text"] {
-    padding-left: 25px;
-}
 
 .taskMngCont {
 	margin: 20px;
@@ -238,7 +138,7 @@ li[data-hiddenproject="false"] {
 
 /* Projects Area */
 #taskManagement {
-    .centerPanel.uiBox {
+    .centerPanel.uiBox .projectListView {
         .title {
             padding:4px 5px;
             line-height: 28px;
@@ -328,6 +228,12 @@ li[data-hiddenproject="false"] {
             bottom: 1px;
             width: 5px;
         }
+         .labels {
+            margin: 0 10px 0 0;
+            .label {
+                margin: 0;
+            }
+        }   
         &:first-child{
             padding-left: 13px;
         }
@@ -364,7 +270,8 @@ li[data-hiddenproject="false"] {
 .leftPanel {
   .accordion-heading {
     .popover {
-      left: 178px;
+      left: auto;
+       right: -187px;
       max-width: 256px;
       top: 26px;
       width: 250px
@@ -396,15 +303,8 @@ li[data-hiddenproject="false"] {
 }
 
 .all-task {
-   .all-task-action-toggle a {
-        margin: 10px 0;
-        border-left: 1px solid #333;
-         border-left: 1px solid #333;
-        display: inline-block;
-        line-height: 10px;
-        margin-left: 5px;
-        padding-left: 10px;
-        vertical-align: middle;
+   .all-task-action-toggle a.active {
+        font-weight: bold;
     }
     span {
         vertical-align: middle;
@@ -414,7 +314,11 @@ li[data-hiddenproject="false"] {
         text-align: left;
     }
 }
-
+.editable-input  {
+    textarea {
+        width: 100%;
+    }
+}
 .input-field {
   input {
     width: 100%;
@@ -443,7 +347,114 @@ li[data-hiddenproject="false"] {
         left: -18px;
         right: auto;
     }
-}
+    .addProject {
+        .breadcrumbCont, .inputName, .prjAuthor, .prjDescription {
+            margin: 0 0 10px;  
+        }
+        .breadcrumbCont {
+            position: relative;
+            input {
+                width: 100%;
+            }
+        }
+        .prjAuthor { 
+            padding: 0 10px;
+            line-height: 30px; 
+            .avatarSmall {
+                font-weight: bold;
+            }
+        } 
+        
+        .inputName {
+            font-size: 18px;
+            line-height: 26px;
+        }
+        .viewInCal {
+            padding: 7px 28px;
+        }
+    }
+    .addTask {
+        .iconTaskName {
+            margin: 5px 5px 0 0;
+        }
+        .breadcrumbCont {
+            max-width: 225px;
+            * {
+               max-width: 225px; 
+            }
+        }
+        .uiContentBox {
+            padding-top: 8px;
+        }
+        .taskName {
+            margin-top: 5px;
+            font-size: 18px;
+            line-height: 26px;
+            input.blackLarge {
+                padding: 0 9px;
+            }
+        }
+        .inforBar1 .pull-left, .taskDescription, .inforBar2 {
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+        .inforBar1 {
+            > div {
+                margin-right: 10px; 
+                .toDo .editable-container.editable-inline {
+                    display: inline-block;
+                }
+            }
+            .uiEditableInline .popover {
+                &.bottom .arrow {
+                    left: 13%;
+                }
+                min-width: 252px;
+                .popover-content {
+                    .header {
+                        &.nav-inline {
+                            a {
+                                padding-left: 5px;
+                                margin:10px 0 10px 2px;
+                            }
+                            a:first-child {
+                                margin-left: 0;padding-left: 0;
+                            }
+                        }
+                    }
+                    .uiCalendarComponent hr {
+                        margin: 0;
+                    }
+                }
+            }
+        }
+        
+        .inforBar2 .priority .editable-container.editable-inline {
+            display: inline-block;
+        }
+        .tags {
+            a {
+                box-shadow: none;
+            }
+        }
+    } 
+    .taskAssignment .contBlock .exo-mentions .replaceTextArea {
+        span {
+            margin-right: 5px;
+            line-height: 20px;
+            &:last-child {
+                margin-right: 0;
+            }
+        }
+        &.inactive {
+            background: transparent none repeat scroll 0 0;
+            border: medium none;
+            box-shadow: none;
+            margin: 0;
+        }
+
+    }
+}  
 .centerPanel {
     .uiSearchInput.searchWithIcon {
         display: block;
@@ -518,5 +529,239 @@ li[data-hiddenproject="false"] {
         .actionIconSmall {
             line-height: 10px;
         }
+    }
+}
+
+.form-create-task {
+    margin-left: 25px;
+    > input {
+        opacity: 0.5;
+        &:focus {
+         opacity: 1;
+        }
+    }
+}
+
+//share project
+
+
+.sharePrjDialog ,.modal8{
+    width: 800px;
+    margin-left: -400px;
+    .exo-mentions .autocomplete-menu {
+        margin-top: -1px;
+    }
+}
+
+.sharePrjDialog {
+    .table td {
+        padding-top: 12px;
+        padding-bottom: 12px;
+    }
+}
+.action-mentions {
+    .exo-mentions {
+        background: transparent;
+        border-radius:0;
+    }
+}
+.permission-owner {
+    .replaceTextArea {
+        float: left;
+        height: auto;
+        vertical-align: top;
+        width: 60%;
+        padding:5px;
+         margin-right: 5px;
+         min-height: 16px;
+        &.open {
+            overflow: visible;
+        }
+    }
+}
+
+.exo-mentions .replaceTextArea > span {
+    margin: 2px 1px;
+    i {
+        cursor: pointer;
+    }
+}
+
+.list-users .item:last-child {
+    margin-bottom: 0;
+}
+
+.userSelectorDialog  {
+    .uiSearch  {
+        margin-top:0;
+    }
+}
+
+.list-projects .no-project {
+    padding: 6px 0px;
+}
+.column-item {
+    .dragable {
+        width: 6px;
+        height: 22px;
+        background: url('../images/icons/dragable.png');
+        left: 8px;cursor: move;
+        position: absolute;
+    }
+}
+
+//comment section
+.commentList {
+    .commmentLeft + .commentRight {
+        margin-left: 50px;
+    }
+    .commentRight {
+         .author .date{
+            margin-left: 10px;
+        }
+    }
+    .commentItem {
+        position: relative;
+        margin: 10px 0 15px 0;
+    }
+    .commentFormBox {
+        margin-bottom: 0;
+        .exo-mentions {
+            margin-bottom: 15px;
+        }
+    }
+    .contentComment {        
+        word-wrap: break-word;
+    }
+    .controllDelete {
+          cursor: pointer;
+        display: none;
+        position: absolute;
+        right: -5px;
+        top: 0;
+    }
+     .commentItem:hover .controllDelete {
+        display: block;
+    }
+    .author a{
+        font-weight: bold;
+        word-wrap: break-word;
+    }
+}
+
+.autocomplete-menu {
+    li {
+        position: relative;
+    }
+    .user-status {
+        position: absolute;
+        right: 7px;
+        top: 7px;
+    }
+}
+
+.list-changes li + li {
+    margin-top: 10px;
+}
+
+.done {
+    text-decoration: line-through;
+}
+
+.labels , .tags {
+    margin: 5px 0;
+   
+}
+
+.tags .label   {
+    margin:2px 2px 2px 0;
+}
+
+[data-currentgroupby=""] [data-groupby=""] {
+  display: none;
+}
+[data-currentgroupby="status"] [data-groupby="status"] {
+  display: none;
+}
+[data-currentgroupby="assignee"] [data-groupby="assignee"] {
+  display: none;
+}
+[data-currentgroupby="project"] [data-groupby="project"] {
+  display: none;
+}
+[data-currentgroupby="tag"] [data-groupby="tag"] {
+  display: none;
+}
+
+[data-currentorderby=""] [data-orderby=""] {
+  display: none;
+}
+[data-currentorderby="title"] [data-orderby="title"] {
+  display: none;
+}
+[data-currentorderby="priority"] [data-orderby="priority"] {
+  display: none;
+}
+[data-currentorderby="dueDate"] [data-orderby="dueDate"] {
+  display: none;
+}
+[data-currentorderby="createdTime"] [data-orderby="createdTime"] {
+  display: none;
+}
+
+.exo-mentions .tags{
+    margin: 0;
+}
+
+.editable-pre-wrapped {
+    white-space: normal;
+}
+.editable-container.editable-inline ,.editable-input{
+    display: block;
+}
+.selectize-input {
+    padding: 0 4px;
+    &.has-items {
+         padding: 2px 4px;
+    }
+    .label {
+        vertical-align: middle;
+        height: 14px;
+        line-height: 13px;
+        max-width: 200px;
+        overflow: hidden;
+        padding-right: 20px;
+        position: relative;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        .removeValue {
+           font-size: 11px;
+            position: absolute;
+            right: 5px;
+            top: 2px;
+            font-weight: normal;
+        }
+    }
+     input[type="text"]  {
+        margin-left: 10px!important;
+
+    }
+    .label + input[type="text"] {
+       margin-left: 5px!important;
+       height: 16px;
+    }
+}
+
+.prjDescription,
+.taskDescription {
+    ul,ol {
+        margin: 10px 0 10px 25px;
+        li {
+            line-height: 20px;
+            list-style-type: disc;
+        }
+    }
+    ol li {
+        list-style-type: decimal;
     }
 }

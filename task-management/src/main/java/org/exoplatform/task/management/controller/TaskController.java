@@ -23,11 +23,14 @@ import juzu.*;
 import juzu.impl.common.Tools;
 import juzu.request.SecurityContext;
 import org.exoplatform.commons.juzu.ajax.Ajax;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Project;
+import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.exception.AbstractEntityException;
 import org.exoplatform.task.exception.ProjectNotFoundException;
@@ -52,6 +55,7 @@ import java.util.*;
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
 public class TaskController {
+  private static final Log LOG = ExoLogger.getExoLogger(TaskController.class);
 
   @Inject
   TaskService taskService;
@@ -124,8 +128,15 @@ public class TaskController {
 
       org.exoplatform.task.model.User currentUser = userService.loadUser(securityContext.getRemoteUser());
 
+      String breadcumbs = bundle.getString("label.noProject");
+      if (task.getStatus() != null) {
+        Project p = task.getStatus().getProject();
+        breadcumbs = ProjectUtil.buildBreadcumbs(p.getId(), projectService, bundle);
+      }
+
       return detail.with()
           .task(task)
+          .breadcumbs(breadcumbs)
           .assigneeName(assignee)
           .coWokerDisplayName(coWorkerDisplayName.toString())
           .commentCount(commentCount)
@@ -299,7 +310,7 @@ public class TaskController {
   @Resource
   @Ajax
   @MimeType.HTML
-  public Response listTasks(Long projectId, String keyword, String groupBy, String orderBy,
+  public Response listTasks(Long projectId, String keyword, String groupBy, String orderBy, String filter,
                             SecurityContext securityContext) {
     Project project = null;
     List<Task> tasks;
@@ -319,7 +330,41 @@ public class TaskController {
       tasks = taskService.getIncomingTasksByUser(currentUser, order);
     }
     else if (projectId == ProjectUtil.TODO_PROJECT_ID) {
-      tasks = taskService.getToDoTasksByUser(currentUser, order);
+      //TODO: process fiter here
+      Date fromDueDate = null;
+      Date toDueDate = null;
+
+      if ("overDue".equalsIgnoreCase(filter)) {
+        fromDueDate = null;
+        toDueDate = new Date();
+      } else if ("today".equalsIgnoreCase(filter)) {
+        Calendar c = Calendar.getInstance();
+        c.set(Calendar.HOUR, 0);
+        c.set(Calendar.MINUTE, 0);
+        c.set(Calendar.SECOND, 0);
+        fromDueDate = c.getTime();
+        c.add(Calendar.HOUR, 24);
+        toDueDate = c.getTime();
+      } else if ("tomorrow".equalsIgnoreCase(filter)) {
+        Calendar c = Calendar.getInstance();
+        c.set(Calendar.HOUR, 0);
+        c.set(Calendar.MINUTE, 0);
+        c.set(Calendar.SECOND, 0);
+        c.add(Calendar.HOUR, 24);
+        fromDueDate = c.getTime();
+        c.add(Calendar.HOUR, 24);
+        toDueDate = c.getTime();
+      } else if ("upcoming".equalsIgnoreCase(filter)) {
+        Calendar c = Calendar.getInstance();
+        c.set(Calendar.HOUR, 0);
+        c.set(Calendar.MINUTE, 0);
+        c.set(Calendar.SECOND, 0);
+        c.add(Calendar.DATE, 2);
+        fromDueDate = c.getTime();
+        toDueDate = null;
+      }
+
+      tasks = taskService.getToDoTasksByUser(currentUser, order, fromDueDate, toDueDate);
     }
     else {
       try {
@@ -366,6 +411,7 @@ public class TaskController {
         .keyword(keyword == null ? "" : keyword)
         .groupBy(groupBy == null ? "" : groupBy)
         .orderBy(orderBy == null ? "" : orderBy)
+        .filter(filter == null ? "" : filter)
         .bundle(bundle)
         .set("userMap", userMap)
         .ok()
@@ -402,7 +448,7 @@ public class TaskController {
       taskService.createTask(task);
     }
 
-    return listTasks(projectId, "", "", "", securityContext);
+    return listTasks(projectId, "", "", "", "", securityContext);
   }
 
 }

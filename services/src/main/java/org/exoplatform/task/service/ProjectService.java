@@ -53,4 +53,6 @@ public interface ProjectService {
 
   List<Project> getProjectTreeByIdentity(Identity identity);
 
+  List<Project> findProjectByKeyWord(Identity identity, String keyword);
+
 }

@@ -32,6 +32,7 @@ import org.junit.*;
 
 import javax.persistence.Persistence;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -181,9 +182,11 @@ public class TestTaskDAO {
     tDAO.create(task2);
 
     Task task3 = newTaskInstance("Task 3", "", username);
+    task3.setDueDate(new Date());
     tDAO.create(task3);
 
     Task task4 = newTaskInstance("Task 4", "", username);
+    task4.setDueDate(new Date());
     task4.setStatus(status);
     tDAO.create(task4);
 
@@ -192,7 +195,7 @@ public class TestTaskDAO {
     task5.setCompleted(true);
     tDAO.create(task5);
 
-    List<Task> tasks = tDAO.getToDoTask(username, null);
+    List<Task> tasks = tDAO.getToDoTask(username, null, null, null);
 
     assertContain(tasks, task3.getId());
     assertContain(tasks, task4.getId());
