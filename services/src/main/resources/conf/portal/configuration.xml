@@ -4,6 +4,16 @@
                xmlns="http://www.exoplatform.org/xml/ns/kernel_1_2.xsd">
 
   <component>
+    <type>org.exoplatform.commons.api.jpa.EntityManagerService</type>
+    <init-params>
+      <value-param>
+        <name>persistence.unit.name</name>
+        <value>org.exoplatform.task</value>
+      </value-param>
+    </init-params>
+  </component>
+
+  <component>
     <key>org.exoplatform.task.service.DAOHandler</key>
     <type>org.exoplatform.task.service.jpa.DAOHandlerJPAImpl</type>
   </component>

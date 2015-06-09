@@ -130,6 +130,12 @@
         <artifactId>juzu-plugins-webjars</artifactId>
         <version>${juzu.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.exoplatform.commons</groupId>
+        <artifactId>commons-api</artifactId>
+        <version>${platform.version}</version>
+      </dependency>
+
       <!-- Junit for testing -->
       <dependency>
         <groupId>org.juzu</groupId>
