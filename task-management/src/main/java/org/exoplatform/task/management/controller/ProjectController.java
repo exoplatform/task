@@ -74,6 +74,10 @@ public class ProjectController {
   @Inject
   @Path("shareDialog.gtmpl")
   org.exoplatform.task.management.templates.shareDialog shareDialog;
+  
+  @Inject
+  @Path("confirmDeleteProject.gtmpl")
+  org.exoplatform.task.management.templates.confirmDeleteProject confirmDeleteProject;
 
   @Inject
   @Path("userSelectorDialog.gtmpl")
@@ -153,10 +157,23 @@ public class ProjectController {
   @Resource
   @Ajax
   @MimeType.HTML
+  public Response openConfirmDelete(Long id) {
+    try {
+      Project project = projectService.getProjectById(id); //Can throw ProjectNotFoundException      
+      return confirmDeleteProject.with().pid(project.getId())
+          .ok().withCharset(Tools.UTF_8);
+
+    } catch (AbstractEntityException e) {
+      return Response.status(e.getHttpStatusCode()).body(e.getMessage());
+    }
+  }
+  
+  @Resource
+  @Ajax
+  @MimeType.HTML
   public Response openShareDialog(Long id) {
 
     try {
-
       Project project = projectService.getProjectById(id); //Can throw ProjectNotFoundException
       return renderShareDialog(project);
 
@@ -329,13 +346,10 @@ public class ProjectController {
   @Resource
   @Ajax
   @MimeType("text/plain")
-  public Response deleteProject(Long projectId) {
-
+  public Response deleteProject(Long projectId, Boolean deleteChild) {
     try {
-
-      projectService.deleteProjectById(projectId); //Can throw ProjectNotFoundException
+      projectService.deleteProjectById(projectId, deleteChild); //Can throw ProjectNotFoundException
       return Response.ok("Delete project successfully");
-
     } catch (AbstractEntityException e) {
       return Response.status(e.getHttpStatusCode()).body(e.getMessage());
     }

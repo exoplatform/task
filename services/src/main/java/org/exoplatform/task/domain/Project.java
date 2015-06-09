@@ -42,7 +42,7 @@ import java.util.Set;
         query = "SELECT p FROM Project p " +
         "  LEFT JOIN p.manager managers " +
         "  LEFT JOIN p.participator participators " +
-        "WHERE managers in :memberships OR participators in :memberships"),
+        "WHERE managers in (:memberships) OR participators in (:memberships)"),
     @NamedQuery(name = "Project.findRootProjectsByMemberships",
         query = "SELECT p FROM Project p " +
             "  LEFT JOIN p.manager managers " +
@@ -53,7 +53,7 @@ import java.util.Set;
         query = "SELECT p FROM Project p " +
             "  LEFT JOIN p.manager managers " +
             "  LEFT JOIN p.participator participators " +
-            "WHERE (managers in :memberships OR participators in :memberships) " +
+            "WHERE (managers in (:memberships) OR participators in (:memberships)) " +
             "AND p.parent.id = :projectId")
 })
 public class Project {
@@ -92,7 +92,7 @@ public class Project {
   @JoinColumn(name = "PARENT_PROJECT_ID", nullable = true)
   private Project parent;
 
-  @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
+  @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY, cascade=CascadeType.REMOVE)
   private List<Project> children = new LinkedList<Project>();
 
   public Project() {

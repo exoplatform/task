@@ -19,17 +19,44 @@ require(['project-menu', 'SHARED/jquery', 'SHARED/edit_inline_js', 'SHARED/juzu-
       '$centerPanelContent' : $centerPanelContent
     };
   }
+  
+  taApp.showDialog = function(controllerURL, data) {
+    var $modalPlace = $('.modalPlace');
+    $modalPlace.jzLoad(controllerURL, data, function() {
+      var $dialog = $modalPlace.children().first();
+      $dialog.modal({'backdrop': false});
+    });
+  }
 
   taApp.showRightPanel = function($centerPanel, $rightPanel) {
     $centerPanel.removeClass('span9').addClass('span5');
     $rightPanel.show();
   };
+  
   taApp.hideRightPanel = function($centerPanel, $rightPanel, $rightPanelContent) {
     $rightPanelContent.html('');
     $rightPanel.hide();
     $centerPanel.removeClass('span5').addClass('span9');
   };
     
+  taApp.reloadProjectTree = function(id) {
+    var $leftPanel = taApp.getUI().$leftPanel;
+    
+    var $listProject = $leftPanel.find('ul.list-projects');
+    var $div = $('<div></div>').hide();
+    $listProject.parent().append($div);
+    $div.jzLoad('ProjectController.projectTree()', function(content) {
+        $div.remove();
+        $listProject.html($(content).html());
+        
+        if (id) {
+          $listProject.find('a.project-name[data-id="' + id+ '"]').click();          
+        } else {
+          $listProject.find('a.project-name').click();
+        }
+    });
+  }
+  
 $(document).ready(function() {
     var ui = taApp.getUI();
     var $taskManagement = ui.$taskManagement;
@@ -475,22 +502,14 @@ $(document).ready(function() {
             return false;
         }
 
-        var createURL = $rightPanel.jzURL('ProjectController.createProject');
-        var $listProject = $leftPanel.find('ul.list-projects');
+        var createURL = $rightPanel.jzURL('ProjectController.createProject');        
         $.ajax({
             type: 'POST',
             url: createURL,
             data: {name: name, description: description, parentId: parentId},
             success: function(data) {
                 // Reload project tree;
-                var $div = $('<div></div>').hide();
-                $listProject.parent().append($div);
-                $div.jzLoad('ProjectController.projectTree()', {current: 0}, function(content) {
-                    $div.remove();
-                    $listProject.html($(content).html());
-
-                    $listProject.find('a.project-name[data-id="'+data.id+'"]').click();
-                });
+                taApp.reloadProjectTree(data.id);
             },
             error: function() {
                 alert('error while create new project. Please try again.')

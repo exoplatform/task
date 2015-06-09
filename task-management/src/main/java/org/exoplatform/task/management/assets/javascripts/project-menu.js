@@ -2,12 +2,14 @@ define('project-menu', ['SHARED/jquery'], function($) {
   var pMenu = {};
   
   pMenu.init = function(taApp) {
+    pMenu.taApp = taApp;
     var ui = taApp.getUI();
     var $leftPanel = ui.$leftPanel;
     var $centerPanel = ui.$centerPanel;
     var $rightPanel = ui.$rightPanel;
     var $rightPanelContent = ui.$rightPanelContent;    
     var $cloneProject = $('.confirmCloneProject');
+    var $modalPlace = $('.modalPlace');
     
     //begin clone-project
     $leftPanel.on('click', 'a.clone-project', function(e) {
@@ -58,36 +60,21 @@ define('project-menu', ['SHARED/jquery'], function($) {
         taApp.showRightPanel($centerPanel, $rightPanel);
       });
       return true;
-    });    
+    });        
    
+    $leftPanel.on('click', '.delete-project', function(e) {
+      var $deleteBtn = $(e.target);
+      var pid = $deleteBtn.closest('.project-menu').attr('data-projectId');
+      taApp.showDialog('ProjectController.openConfirmDelete()', {id : pid});
+    });
+    
     $rightPanel.on('click', 'a.action-delete-project', function(e) {
       var $projectDetail = $(e.target).closest('.projectDetail');
       var projectId = $projectDetail.attr('data-projectId');
-      var deleteProjectURL = $projectDetail.jzURL('ProjectController.deleteProject');
-      var projectName = $projectDetail.find('a.editable[data-name="name"]').html();
-      var confirmed = confirm('Are you sure you want to delete project: ' + projectName);
-      if (confirmed) {
-        $.ajax({
-          type: 'POST',
-          url: deleteProjectURL,
-          data: {projectId: projectId},
-          success: function (resp) {
-            $projectDetail.remove();
-            taApp.hideRightPanel($centerPanel, $rightPanel, $rightPanelContent);
-            $leftPanel
-            .find('li.project-item a.project-name[data-id="' + projectId + '"]')
-            .closest('li.project-item').remove();
-          },
-          error: function () {
-            alert('Delete project failure, please try again.');
-          }
-        });
-      }
-      return true;
+      taApp.showDialog('ProjectController.openConfirmDelete()', {id : projectId});
     });    
     
-    //begin share-project        
-    var $modalPlace = $('.modalPlace');
+    //begin share-project            
     function openShareDialog(pid) {
       $modalPlace.jzLoad('ProjectController.openShareDialog()', {'id': pid}, function() {
         var $dialog = $('.sharePrjDialog');
@@ -185,6 +172,28 @@ define('project-menu', ['SHARED/jquery'], function($) {
     }
     
     //end share-project
+  }
+  
+  pMenu.initDeleteProjectDialog = function() {
+    var $confirm = $('.confirmDeleteProject');
+    var pid = $confirm.data('id');
+    
+    $confirm.on('click', '.confirmDelete', function(e) {
+      var deleteProjectURL = $confirm.jzURL('ProjectController.deleteProject');
+      var deleteChild = $confirm.find('.deleteChild').is(':checked');
+      
+      $.ajax({
+        type: 'POST',
+        url: deleteProjectURL,
+        data: {projectId: pid, deleteChild : deleteChild},
+        success: function () {
+          pMenu.taApp.reloadProjectTree();
+        },
+        error: function () {
+          alert('Delete project failure, please try again.');
+        }
+      });
+    });
   }
   
   return pMenu;

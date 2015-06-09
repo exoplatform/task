@@ -23,7 +23,7 @@ def displayListProjectItem(project, level) {
 		            <li><a href="#"><i class="uiIconEditMini uiIconLightGray"></i>Add task</a></li>
 		            <li><a href="#" class="share-project"><i class="uiIconShare uiIconLightGray"></i>Share</a></li>
 		            <li><a class="clone-project" data-projectId="${project.id}" href="#"><i class="uiIconCloneNode uiIconLightGray"></i>Clone</a></li>
-		            <li><a href="#"><i class="uiIconTrash uiIconLightGray"></i>Delete</a></li>
+		            <li><a class="delete-project" href="#"><i class="uiIconTrash uiIconLightGray"></i>Delete</a></li>
 		            <li><a href="#"><i class="uiIconHide uiIconLightGray"></i>Hide</a></li>
 		            <li><a class="new-project" data-projectId="${project.id}" href="#"><i class="uiIconAddProject uiIconLightGray"></i>Add project</a></li>
 		            <li class="noColor changeProjectColor" data-color="">No Color</li>

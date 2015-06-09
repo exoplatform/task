@@ -27,9 +27,9 @@ public interface ProjectService {
 
   Project updateProjectInfo(long id, String param, String[] values) throws ProjectNotFoundException, ParameterEntityException;
 
-  void deleteProjectById(long id) throws ProjectNotFoundException;
+  void deleteProjectById(long id, boolean deleteChild) throws ProjectNotFoundException;
 
-  void deleteProject(Project project);
+  void deleteProject(Project project, boolean deleteChild);
 
   Project cloneProjectById(long id, boolean cloneTask) throws ProjectNotFoundException;
 

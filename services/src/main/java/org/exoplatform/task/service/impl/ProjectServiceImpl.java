@@ -36,6 +36,7 @@ import org.exoplatform.task.utils.UserUtils;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -70,14 +71,14 @@ public class ProjectServiceImpl implements ProjectService {
 
     Project project = new Project(name, description, null, managers, participators);
 
-    if (parentId != null) {
+    if (parentId != null && parentId != 0) {
       Project parentProject = daoHandler.getProjectHandler().find(parentId);
       if (parentProject != null) {
         project.setParent(parentProject);
         //If parent, list of members/participators of parents override the list of members/participators in parameter
-        project.setParticipator(parentProject.getParticipator());
+        project.setParticipator(new HashSet<String>(parentProject.getParticipator()));
         //If parent, list of manager of parents override the list of managers in parameter
-        project.setManager(parentProject.getManager());
+        project.setManager(new HashSet<String>(parentProject.getManager()));
       }
       else {
         LOG.info("Can not find project for parent with ID: " + parentId);
@@ -156,23 +157,21 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   @Override
-  public void deleteProjectById(long id) throws ProjectNotFoundException {
-
+  public void deleteProjectById(long id, boolean deleteChild) throws ProjectNotFoundException {
     Project project = getProjectById(id); //Can throw ProjectNotFoundException
 
-    // Update all child projects
-    if(project.getChildren() != null) {
-      for(Project child : project.getChildren()) {
-        deleteProjectById(child.getId());
-      }
-    }
-
-    deleteProject(project);
-
+    deleteProject(project, deleteChild);
   }
 
   @Override
-  public void deleteProject(Project project) {
+  public void deleteProject(Project project, boolean deleteChild) {    
+    if (!deleteChild && project.getChildren() != null) {
+      Project parent = project.getParent();
+      for (Project child : project.getChildren()) {
+        child.setParent(parent);
+      }
+      project.getChildren().clear();
+    }
     daoHandler.getProjectHandler().delete(project);
   }
 
@@ -290,6 +289,8 @@ public class ProjectServiceImpl implements ProjectService {
 
     return ProjectUtil.buildRootProjects(projects);
   }
+  
+  
 
   private void createDefaultStatusToProject(Project project) {
     StatusHandler statusHandler = daoHandler.getStatusHandler();
