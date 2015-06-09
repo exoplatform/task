@@ -22,11 +22,14 @@ import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import org.apache.commons.lang.StringUtils;
+
+import org.exoplatform.commons.persistence.impl.EntityManagerService;
+import org.exoplatform.commons.persistence.impl.GenericDAOJPAImpl;
 import org.exoplatform.task.dao.StatusHandler;
 import org.exoplatform.task.domain.Status;
-import org.exoplatform.task.service.jpa.DAOHandlerJPAImpl;
 
 /**
  * Created by The eXo Platform SAS
@@ -34,15 +37,22 @@ import org.exoplatform.task.service.jpa.DAOHandlerJPAImpl;
  * tclement@exoplatform.com
  * 4/10/15
  */
-public class StatusDAOImpl extends GenericDAOImpl<Status, Long> implements StatusHandler {
+public class StatusDAOImpl extends GenericDAOJPAImpl<Status, Long> implements StatusHandler {
 
-  public StatusDAOImpl(DAOHandlerJPAImpl taskServiceJPAImpl) {
-    super(taskServiceJPAImpl);
+  private EntityManagerService entityService;
+
+  public StatusDAOImpl(EntityManagerService entityService) {
+    this.entityService = entityService;
+  }
+  
+  @Override
+  public EntityManager getEntityManager() {
+    return entityService.getEntityManager();
   }
 
   @Override
   public Status findLowestRankStatusByProject(Long projectId) {
-    EntityManager em = daoHandler.getEntityManager();
+    EntityManager em = getEntityManager();
     Query query = em.createNamedQuery("Status.findLowestRankStatusByProject", Status.class);
     query.setParameter("projectId", projectId);
     return (Status)query.getSingleResult();
@@ -77,5 +87,15 @@ public class StatusDAOImpl extends GenericDAOImpl<Status, Long> implements Statu
     }
   }
 
+  public List<Status> findByNamedQuery(String query, Map<String, Object> params) {
+    EntityManager em = getEntityManager();
+    TypedQuery<Status> q = em.createNamedQuery(query, Status.class);
+    if (params != null) {
+      for (Map.Entry<String, Object> p : params.entrySet()) {
+        q.setParameter(p.getKey(), p.getValue());      
+      }      
+    }
+    return q.getResultList();
+  }
 }
 

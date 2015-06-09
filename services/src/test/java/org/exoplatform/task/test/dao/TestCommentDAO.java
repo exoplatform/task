@@ -1,84 +1,62 @@
-/*
-* JBoss, a division of Red Hat
-* Copyright 2006, Red Hat Middleware, LLC, and individual contributors as indicated
-* by the @authors tag. See the copyright.txt in the distribution for a
-* full listing of individual contributors.
+/* 
+* Copyright (C) 2003-2015 eXo Platform SAS.
 *
-* This is free software; you can redistribute it and/or modify it
-* under the terms of the GNU Lesser General Public License as
-* published by the Free Software Foundation; either version 2.1 of
-* the License, or (at your option) any later version.
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Lesser General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
 *
-* This software is distributed in the hope that it will be useful,
+* This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-* Lesser General Public License for more details.
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU Lesser General Public License for more details.
 *
-* You should have received a copy of the GNU Lesser General Public
-* License along with this software; if not, write to the Free
-* Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
-* 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+* You should have received a copy of the GNU Lesser General Public License
+* along with this program. If not, see http://www.gnu.org/licenses/ .
 */
 
 package org.exoplatform.task.test.dao;
 
-import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.Persistence;
-
-import junit.framework.Assert;
-import liquibase.exception.LiquibaseException;
-
-import org.exoplatform.task.test.TestUtils;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
+import org.exoplatform.container.PortalContainer;
 import org.exoplatform.task.dao.CommentHandler;
 import org.exoplatform.task.dao.TaskHandler;
 import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.factory.ExoEntityManagerFactory;
-import org.exoplatform.task.service.jpa.DAOHandlerJPAImpl;
+import org.exoplatform.task.service.DAOHandler;
+import org.exoplatform.task.test.AbstractTest;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
-public class TestCommentDAO {
+public class TestCommentDAO extends AbstractTest {
 
   private CommentHandler commentDAO;
   private TaskHandler taskDAO;
 
   private final String username = "root";
-  private DAOHandlerJPAImpl taskService;
-
-  @BeforeClass
-  public static void createTable() throws SQLException,
-          ClassNotFoundException, LiquibaseException {
-    TestUtils.initH2DB();
-    ExoEntityManagerFactory.setEntityManagerFactory(Persistence.createEntityManagerFactory("org.exoplatform.task"));
-  }
+  private DAOHandler taskService;
 
   @Before
   public void initDAOs() {
-    taskService = new DAOHandlerJPAImpl();
+    PortalContainer container = PortalContainer.getInstance();
+    
+    taskService = (DAOHandler) container.getComponentInstanceOfType(DAOHandler.class);
     taskDAO = taskService.getTaskHandler();
     commentDAO = taskService.getCommentHandler();
-
-    //
-    taskService.startRequest(null);
   }
 
   @After
   public void cleanData() {
     commentDAO.deleteAll();
     taskDAO.deleteAll();
-
-    //
-    taskService.endRequest(null);
   }
 
   @Test

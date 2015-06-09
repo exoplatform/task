@@ -16,19 +16,23 @@
 */
 package org.exoplatform.task.test.service;
 
-import org.exoplatform.task.dao.*;
-import org.exoplatform.task.domain.Project;
-import org.exoplatform.task.domain.Status;
-import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.exception.NotAllowedOperationOnEntityException;
-import org.exoplatform.task.exception.ParameterEntityException;
-import org.exoplatform.task.exception.ProjectNotFoundException;
-import org.exoplatform.task.service.DAOHandler;
-import org.exoplatform.task.service.ProjectService;
-import org.exoplatform.task.service.StatusService;
-import org.exoplatform.task.service.TaskService;
-import org.exoplatform.task.service.impl.ProjectServiceImpl;
-import org.exoplatform.task.test.TestUtils;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,13 +43,23 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import org.exoplatform.task.dao.OrderBy;
+import org.exoplatform.task.dao.ProjectHandler;
+import org.exoplatform.task.dao.StatusHandler;
+import org.exoplatform.task.dao.TaskHandler;
+import org.exoplatform.task.dao.TaskQuery;
+import org.exoplatform.task.domain.Project;
+import org.exoplatform.task.domain.Status;
+import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.exception.NotAllowedOperationOnEntityException;
+import org.exoplatform.task.exception.ParameterEntityException;
+import org.exoplatform.task.exception.ProjectNotFoundException;
+import org.exoplatform.task.service.ProjectService;
+import org.exoplatform.task.service.StatusService;
+import org.exoplatform.task.service.TaskService;
+import org.exoplatform.task.service.impl.ProjectServiceImpl;
+import org.exoplatform.task.service.jpa.DAOHandlerJPAImpl;
+import org.exoplatform.task.test.TestUtils;
 
 /**
  * Created by The eXo Platform SAS
@@ -69,7 +83,7 @@ public class ProjectServiceTest {
   @Mock
   StatusHandler statusHandler;
   @Mock
-  DAOHandler daoHandler;
+  DAOHandlerJPAImpl daoHandler;
 
   //ArgumentCaptors are how you can retrieve objects that were passed into a method call
   @Captor

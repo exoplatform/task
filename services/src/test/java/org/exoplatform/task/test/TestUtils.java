@@ -16,23 +16,24 @@
 */
 package org.exoplatform.task.test;
 
-import liquibase.Liquibase;
-import liquibase.database.Database;
-import liquibase.database.DatabaseFactory;
-import liquibase.database.jvm.JdbcConnection;
-import liquibase.exception.LiquibaseException;
-import liquibase.resource.FileSystemResourceAccessor;
-import org.exoplatform.task.domain.Comment;
-import org.exoplatform.task.domain.Project;
-import org.exoplatform.task.domain.Status;
-import org.exoplatform.task.domain.Task;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+
+import liquibase.Liquibase;
+import liquibase.database.Database;
+import liquibase.database.DatabaseFactory;
+import liquibase.database.jvm.JdbcConnection;
+import liquibase.exception.LiquibaseException;
+import liquibase.resource.FileSystemResourceAccessor;
+
+import org.exoplatform.task.domain.Comment;
+import org.exoplatform.task.domain.Project;
+import org.exoplatform.task.domain.Status;
+import org.exoplatform.task.domain.Task;
 
 /**
  * Created by The eXo Platform SAS
@@ -79,6 +80,7 @@ public class TestUtils {
     Database database = DatabaseFactory.getInstance()
         .findCorrectDatabaseImplementation(new JdbcConnection(conn));
 
+    // TODO: We should not point to a relative file outside of the project.
     liquibase = new Liquibase("../task-management/src/main/resources/db/changelog/db.changelog-1.0.0.xml",
         new FileSystemResourceAccessor(), database);
     liquibase.update((String)null);

@@ -19,10 +19,11 @@
 
 package org.exoplatform.task.dao;
 
+import java.util.List;
+
+import org.exoplatform.commons.api.persistence.GenericDAO;
 import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Task;
-
-import java.util.List;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.

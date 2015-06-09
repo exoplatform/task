@@ -16,6 +16,30 @@
 */
 package org.exoplatform.task.test.service;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.mockito.runners.MockitoJUnitRunner;
+
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.task.dao.CommentHandler;
@@ -23,7 +47,6 @@ import org.exoplatform.task.dao.StatusHandler;
 import org.exoplatform.task.dao.TaskHandler;
 import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.domain.TaskLog;
 import org.exoplatform.task.exception.CommentNotFoundException;
 import org.exoplatform.task.exception.ParameterEntityException;
 import org.exoplatform.task.exception.StatusNotFoundException;
@@ -35,27 +58,6 @@ import org.exoplatform.task.service.impl.TaskEvent;
 import org.exoplatform.task.service.impl.TaskEvent.Type;
 import org.exoplatform.task.service.impl.TaskServiceImpl;
 import org.exoplatform.task.test.TestUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.runners.MockitoJUnitRunner;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
 
 /**
  * Created by The eXo Platform SAS
@@ -90,7 +92,7 @@ public class TaskServiceTest {
   @Before
   public void setUp() {
     MockitoAnnotations.initMocks(this);
-    taskService = new TaskServiceImpl(daoHandler, Arrays.asList(taskListener));
+    taskService = TaskServiceImpl.createInstance(daoHandler, Arrays.asList(taskListener));
 
     //Mock DAO handler to return Mocked DAO
 

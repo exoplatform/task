@@ -16,20 +16,26 @@
 */
 package org.exoplatform.task.dao.jpa;
 
-import org.exoplatform.task.dao.OrderBy;
-import org.exoplatform.task.dao.TaskHandler;
-import org.exoplatform.task.dao.TaskQuery;
-import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.service.jpa.DAOHandlerJPAImpl;
-
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import javax.persistence.criteria.*;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+
+import org.exoplatform.commons.persistence.impl.EntityManagerService;
+import org.exoplatform.commons.persistence.impl.GenericDAOJPAImpl;
+import org.exoplatform.task.dao.OrderBy;
+import org.exoplatform.task.dao.TaskHandler;
+import org.exoplatform.task.dao.TaskQuery;
+import org.exoplatform.task.domain.Task;
 
 /**
  * Created by The eXo Platform SAS
@@ -37,15 +43,22 @@ import java.util.List;
  * tclement@exoplatform.com
  * 4/8/15
  */
-public class TaskDAOImpl extends GenericDAOImpl<Task, Long> implements TaskHandler {
+public class TaskDAOImpl extends GenericDAOJPAImpl<Task, Long> implements TaskHandler {
 
-  public TaskDAOImpl(DAOHandlerJPAImpl taskServiceJPAImpl) {
-    super(taskServiceJPAImpl);
+  private EntityManagerService entityService;
+
+  public TaskDAOImpl(EntityManagerService entityService) {
+    this.entityService = entityService;
+  }
+
+  @Override
+  public EntityManager getEntityManager() {
+    return entityService.getEntityManager();
   }
 
   @Override
   public List<Task> findByProject(Long projectId) {
-    EntityManager em = daoHandler.getEntityManager();
+    EntityManager em = getEntityManager();
     Query query = em.createNamedQuery("Task.findTaskByProject", Task.class);
     query.setParameter("projectId", projectId);
     return query.getResultList();
@@ -63,7 +76,7 @@ public class TaskDAOImpl extends GenericDAOImpl<Task, Long> implements TaskHandl
   @Override
   public List<Task> findAllByMembership(String user, List<String> memberships) {
 
-    Query query = daoHandler.getEntityManager().createNamedQuery("Task.findByMemberships", Task.class);
+    Query query = getEntityManager().createNamedQuery("Task.findByMemberships", Task.class);
     query.setParameter("userName", user);
     query.setParameter("memberships", memberships);
 
@@ -82,7 +95,7 @@ public class TaskDAOImpl extends GenericDAOImpl<Task, Long> implements TaskHandl
 
   @Override
   public List<Task> findTaskByQuery(TaskQuery query) {
-    EntityManager em = daoHandler.getEntityManager();
+    EntityManager em = getEntityManager();
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<Task> q = cb.createQuery(Task.class);
 
@@ -171,11 +184,9 @@ public class TaskDAOImpl extends GenericDAOImpl<Task, Long> implements TaskHandl
           : " DESC");
     }
 
-    return daoHandler
-        .getEntityManager()
-        .createQuery(jql.toString(), Task.class)
-        .setParameter("userName", username)
-        .getResultList();
+    return getEntityManager().createQuery(jql.toString(), Task.class)
+                             .setParameter("userName", username)
+                             .getResultList();
   }
 
   @Override
@@ -199,8 +210,7 @@ public class TaskDAOImpl extends GenericDAOImpl<Task, Long> implements TaskHandl
           : " DESC");
     }
 
-    Query query = daoHandler
-        .getEntityManager()
+    Query query = getEntityManager()
         .createQuery(jql.toString(), Task.class);
 
     query.setParameter("userName", username);
@@ -240,7 +250,7 @@ public class TaskDAOImpl extends GenericDAOImpl<Task, Long> implements TaskHandl
       }
     }    
 
-    Query query = daoHandler.getEntityManager()
+    Query query = getEntityManager()
         .createQuery(jql.toString());
     
     if (userName != null) {

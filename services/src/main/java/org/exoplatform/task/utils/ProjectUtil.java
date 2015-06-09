@@ -16,17 +16,17 @@
 */
 package org.exoplatform.task.utils;
 
-import org.exoplatform.services.log.ExoLogger;
-import org.exoplatform.services.log.Log;
-import org.exoplatform.task.domain.Project;
-import org.exoplatform.task.exception.ProjectNotFoundException;
-import org.exoplatform.task.service.ProjectService;
-
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
+
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
+import org.exoplatform.task.domain.Project;
+import org.exoplatform.task.exception.ProjectNotFoundException;
+import org.exoplatform.task.service.ProjectService;
 
 /**
  * Created by The eXo Platform SAS

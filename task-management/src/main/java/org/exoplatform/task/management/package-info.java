@@ -22,13 +22,13 @@
 @Bindings({
     @Binding(value = NavigationState.class),
     @Binding(value = TaskParser.class),
-    @Binding(DAOHandler.class),
-    @Binding(value = TaskService.class, implementation = TaskServiceImpl.class),
-    @Binding(value = ProjectService.class, implementation = ProjectServiceImpl.class),
-    @Binding(value = StatusService.class, implementation = StatusServiceImpl.class),
+    @Binding(value = DAOHandler.class),
+    @Binding(value = TaskService.class),
+    @Binding(value = ProjectService.class),
+    @Binding(value = StatusService.class),
     @Binding(value = OrganizationService.class),
-    @Binding(IdentityManager.class),
-    @Binding(value = UserService.class, implementation = UserServiceImpl.class)
+    @Binding(value = IdentityManager.class),
+    @Binding(value = UserService.class)
 })
 @WebJars({
     @WebJar("x-editable-bootstrap"),
@@ -65,7 +65,11 @@
 package org.exoplatform.task.management;
 
 import juzu.Application;
-import juzu.plugin.asset.*;
+import juzu.plugin.asset.Assets;
+import juzu.plugin.asset.Script;
+import juzu.plugin.asset.Scripts;
+import juzu.plugin.asset.Stylesheet;
+import juzu.plugin.asset.Stylesheets;
 import juzu.plugin.binding.Binding;
 import juzu.plugin.binding.Bindings;
 import juzu.plugin.less4j.Less;
@@ -75,10 +79,12 @@ import juzu.plugin.webjars.WebJars;
 
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.social.core.manager.IdentityManager;
-import org.exoplatform.task.management.controller.TaskManagement;
-import org.exoplatform.task.service.*;
-import org.exoplatform.task.service.impl.ProjectServiceImpl;
-import org.exoplatform.task.service.impl.StatusServiceImpl;
-import org.exoplatform.task.service.impl.TaskServiceImpl;
-import org.exoplatform.task.service.impl.UserServiceImpl;
 import org.exoplatform.task.management.controller.NavigationState;
+import org.exoplatform.task.management.controller.TaskManagement;
+import org.exoplatform.task.service.DAOHandler;
+import org.exoplatform.task.service.ProjectService;
+import org.exoplatform.task.service.StatusService;
+import org.exoplatform.task.service.TaskParser;
+import org.exoplatform.task.service.TaskService;
+import org.exoplatform.task.service.UserService;
+

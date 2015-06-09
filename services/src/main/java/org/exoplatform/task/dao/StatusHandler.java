@@ -1,5 +1,6 @@
 package org.exoplatform.task.dao;
 
+import org.exoplatform.commons.api.persistence.GenericDAO;
 import org.exoplatform.task.domain.Status;
 
 /**

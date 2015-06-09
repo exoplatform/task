@@ -19,10 +19,14 @@
 
 package org.exoplatform.task.service.impl;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.StringTokenizer;
+
 import org.exoplatform.task.service.TaskBuilder;
 import org.exoplatform.task.service.TaskParserPlugin;
-
-import java.util.*;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.

@@ -1,15 +1,15 @@
 package org.exoplatform.task.service;
 
+import java.util.List;
+import java.util.Set;
+
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.exception.NotAllowedOperationOnEntityException;
 import org.exoplatform.task.exception.ParameterEntityException;
 import org.exoplatform.task.exception.ProjectNotFoundException;
-import org.exoplatform.task.exception.NotAllowedOperationOnEntityException;
-
-import java.util.List;
-import java.util.Set;
 
 /**
  * Created by TClement on 6/3/15.

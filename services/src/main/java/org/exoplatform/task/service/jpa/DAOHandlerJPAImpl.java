@@ -16,8 +16,9 @@
 */
 package org.exoplatform.task.service.jpa;
 
-import org.exoplatform.container.ExoContainer;
-import org.exoplatform.container.component.ComponentRequestLifecycle;
+import javax.inject.Singleton;
+
+import org.exoplatform.commons.persistence.impl.EntityManagerService;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.task.dao.jpa.CommentDAOImpl;
@@ -25,13 +26,8 @@ import org.exoplatform.task.dao.jpa.ProjectDAOImpl;
 import org.exoplatform.task.dao.jpa.StatusDAOImpl;
 import org.exoplatform.task.dao.jpa.TaskDAOImpl;
 import org.exoplatform.task.dao.jpa.UserSettingDAO;
-import org.exoplatform.task.factory.ExoEntityManagerFactory;
 import org.exoplatform.task.service.DAOHandler;
 import org.exoplatform.task.service.impl.AbstractDAOHandler;
-
-import javax.inject.Singleton;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 
 /**
  * Created by The eXo Platform SAS
@@ -40,44 +36,18 @@ import javax.persistence.EntityManagerFactory;
  * 4/8/15
  */
 @Singleton
-public class DAOHandlerJPAImpl extends AbstractDAOHandler implements DAOHandler, ComponentRequestLifecycle {
+public class DAOHandlerJPAImpl extends AbstractDAOHandler implements DAOHandler {
 
   private static final Log LOG = ExoLogger.getLogger("DAOHandlerJPAImpl");
 
-  private ThreadLocal<EntityManager> entityManager = new ThreadLocal<EntityManager>();
-
-  public DAOHandlerJPAImpl() {
+  public DAOHandlerJPAImpl(EntityManagerService entityService) {
     LOG.info("DAOHandlerJPAImpl is creating...");
-    pHandler = new ProjectDAOImpl(this);
-    tHandler = new TaskDAOImpl(this);
-    cHandler = new CommentDAOImpl(this);
-    sHandler = new StatusDAOImpl(this);
-    uHandler = new UserSettingDAO(this);
+    pHandler = new ProjectDAOImpl(entityService);
+    tHandler = new TaskDAOImpl(entityService);
+    cHandler = new CommentDAOImpl(entityService);
+    sHandler = new StatusDAOImpl(entityService);
+    uHandler = new UserSettingDAO(entityService);
     LOG.info("DAOHandlerJPAImpl is created");
-  }
-
-  public EntityManager getEntityManager() {
-    return entityManager.get();
-  }
-
-  @Override
-  public void startRequest(ExoContainer container) {
-    EntityManagerFactory entityManagerFactory = ExoEntityManagerFactory.getEntityManagerFactory();
-    entityManager.set(entityManagerFactory.createEntityManager());
-    if (!getEntityManager().getTransaction().isActive()) {
-      getEntityManager().getTransaction().begin();
-      LOG.info("Task management JPA Transaction begin");
-    }
-  }
-
-  @Override
-  public void endRequest(ExoContainer container) {
-    if (getEntityManager() != null && getEntityManager().getTransaction().isActive()) {
-      getEntityManager().getTransaction().commit();
-      getEntityManager().close();
-      LOG.info("Task management JPA Transaction close");
-      entityManager.set(null);
-    }
   }
 }
 

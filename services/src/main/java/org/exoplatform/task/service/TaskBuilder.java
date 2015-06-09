@@ -19,11 +19,13 @@
 
 package org.exoplatform.task.service;
 
-import org.exoplatform.task.domain.*;
-
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.exoplatform.task.domain.Priority;
+import org.exoplatform.task.domain.Status;
+import org.exoplatform.task.domain.Task;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.

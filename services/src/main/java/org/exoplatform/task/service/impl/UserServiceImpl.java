@@ -19,6 +19,9 @@
 
 package org.exoplatform.task.service.impl;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
@@ -34,9 +37,6 @@ import org.exoplatform.task.exception.ProjectNotFoundException;
 import org.exoplatform.task.model.User;
 import org.exoplatform.task.service.DAOHandler;
 import org.exoplatform.task.service.UserService;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
@@ -55,6 +55,12 @@ public class UserServiceImpl implements UserService {
 
   @Inject
   private DAOHandler daoHandler;
+
+  public UserServiceImpl(OrganizationService orgService, IdentityManager idMgr, DAOHandler handler) {
+    this.orgService = orgService;
+    this.identityManager = idMgr;
+    this.daoHandler = handler;
+  }
 
   @Override
   public User loadUser(String username) {

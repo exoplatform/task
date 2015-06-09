@@ -17,12 +17,13 @@
 package org.exoplatform.task.integration;
 
 import org.apache.shindig.social.opensocial.model.Activity;
+
 import org.exoplatform.social.core.activity.ActivityLifeCycleEvent;
 import org.exoplatform.social.core.activity.ActivityListenerPlugin;
 import org.exoplatform.social.core.service.LinkProvider;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.service.TaskParser;
 import org.exoplatform.task.service.DAOHandler;
+import org.exoplatform.task.service.TaskParser;
 
 public class ActivityTaskCreationListener extends ActivityListenerPlugin {
 

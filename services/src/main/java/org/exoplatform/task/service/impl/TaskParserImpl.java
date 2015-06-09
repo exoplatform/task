@@ -19,12 +19,12 @@
 
 package org.exoplatform.task.service.impl;
 
+import java.util.ServiceLoader;
+
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.service.TaskBuilder;
 import org.exoplatform.task.service.TaskParser;
 import org.exoplatform.task.service.TaskParserPlugin;
-
-import java.util.ServiceLoader;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.

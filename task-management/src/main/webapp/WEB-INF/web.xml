@@ -49,11 +49,6 @@
     <listener-class>liquibase.integration.servlet.LiquibaseServletListener</listener-class>
   </listener>
 
-  <!-- JPA Entity Manager -->
-  <listener>
-    <listener-class>org.exoplatform.task.factory.ExoEntityManagerFactory</listener-class>
-  </listener>
-
   <resource-ref>
     <description>DB Connection</description>
     <res-ref-name>exo-jcr_portal</res-ref-name>

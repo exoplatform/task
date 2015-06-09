@@ -30,6 +30,7 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.exoplatform.commons.api.persistence.Transactional;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.security.Identity;
@@ -80,6 +81,7 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   @Override
+  @Transactional
   public Project createDefaultStatusProjectWithManager(String name, String description, Long parentId, String username)
       throws ProjectNotFoundException {
 
@@ -91,10 +93,10 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   @Override
+  @Transactional
   public Project createDefaultStatusProjectWithAttributes(Long parentId, String name, String description,
                                                           Set<String> managers, Set<String> participators)
       throws ProjectNotFoundException {
-
     Project project = new Project(name, description, new HashSet<Status>(), managers, participators);
 
     if (parentId != null && parentId != 0) {
@@ -126,6 +128,7 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   @Override
+  @Transactional
   public Project createDefaultStatusProject(Project project) {
     Project newProject = daoHandler.getProjectHandler().create(project);
     
@@ -136,11 +139,14 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   @Override
+  @Transactional
   public Project createProject(Project project) {
-    return daoHandler.getProjectHandler().create(project);
+    Project obj = daoHandler.getProjectHandler().create(project);
+    return obj;
   }
 
   @Override
+  @Transactional
   public Project updateProjectInfo(long id, String param, String[] values)
       throws ProjectNotFoundException, ParameterEntityException {
 
@@ -207,10 +213,12 @@ public class ProjectServiceImpl implements ProjectService {
       throw new ParameterEntityException(id, "Project", param, val, "is not supported for the entity Project", null);
     }
 
-    return daoHandler.getProjectHandler().update(project);
+    Project obj = daoHandler.getProjectHandler().update(project);
+    return obj;
   }
 
   @Override
+  @Transactional
   public void deleteProjectById(long id, boolean deleteChild) throws ProjectNotFoundException {
     Project project = getProjectById(id); //Can throw ProjectNotFoundException
 
@@ -218,6 +226,7 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   @Override
+  @Transactional
   public void deleteProject(Project project, boolean deleteChild) {    
     if (!deleteChild && project.getChildren() != null) {
       Project parent = project.getParent();
@@ -230,6 +239,7 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   @Override
+  @Transactional
   public Project cloneProjectById(long id, boolean cloneTask) throws ProjectNotFoundException {
 
     Project project = getProjectById(id); //Can throw ProjectNotFoundException
@@ -252,13 +262,12 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   @Override
+  @Transactional
   public Task createTaskToProjectId(long id, Task task) throws ProjectNotFoundException {
-
     Status status = daoHandler.getStatusHandler().findLowestRankStatusByProject(id);
     task.setStatus(status);
     
     return taskService.createTask(task);
-
   }
 
   @Override
@@ -286,6 +295,7 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   @Override
+  @Transactional
   public Project removePermissionFromProjectId(Long id, String permission, String type)
       throws ProjectNotFoundException, NotAllowedOperationOnEntityException {
 
@@ -302,7 +312,8 @@ public class ProjectServiceImpl implements ProjectService {
       } else {
         project.getParticipator().remove(permission);
       }
-      return daoHandler.getProjectHandler().update(project);
+      Project obj = daoHandler.getProjectHandler().update(project);
+      return obj;
     } else {
       LOG.info("Can not find project with ID: " + id);
       throw new ProjectNotFoundException(id);
@@ -310,6 +321,7 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   @Override
+  @Transactional
   public Project addPermissionsFromProjectId(Long id, String permissions, String type)
       throws ProjectNotFoundException, NotAllowedOperationOnEntityException {
 
@@ -332,8 +344,8 @@ public class ProjectServiceImpl implements ProjectService {
       } else {
         project.getParticipator().addAll(per);
       }
-
-      return daoHandler.getProjectHandler().update(project);
+      Project obj = daoHandler.getProjectHandler().update(project);
+      return obj;
 
     } else {
       LOG.info("Add permissions equal to null (not allow) to Project with ID: "+id);

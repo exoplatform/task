@@ -16,6 +16,21 @@
 */
 package org.exoplatform.task.service.impl;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ServiceLoader;
+import java.util.Set;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import org.exoplatform.commons.api.persistence.Transactional;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.task.dao.OrderBy;
@@ -34,14 +49,6 @@ import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.service.impl.TaskEvent.EventBuilder;
 import org.exoplatform.task.service.impl.TaskEvent.Type;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
 /**
  * Created by The eXo Platform SAS
  * Author : Thibault Clement
@@ -58,19 +65,22 @@ public class TaskServiceImpl implements TaskService {
   
   private List<TaskListener> listeners = new LinkedList<TaskListener>();
 
-  public TaskServiceImpl() {
+  public TaskServiceImpl(DAOHandler daoHandler) {
+    this.daoHandler = daoHandler;
     for (TaskListener listener : ServiceLoader.load(TaskListener.class)) {
       listeners.add(listener);
     }
   }
 
-  //For testing purpose only
-  public TaskServiceImpl(DAOHandler daoHandler, List<TaskListener> listeners) {    
-    this.daoHandler = daoHandler;
-    this.listeners = listeners;
+  // Just for test purpose
+  static public TaskServiceImpl createInstance(DAOHandler hl, List<TaskListener> ls) {
+    TaskServiceImpl sv = new TaskServiceImpl(hl);
+    sv.listeners = ls;
+    return sv;
   }
 
   @Override
+  @Transactional
   public Task createTask(Task task) {
     Task result = daoHandler.getTaskHandler().create(task);
     //
@@ -82,6 +92,7 @@ public class TaskServiceImpl implements TaskService {
   }
 
   @Override
+  @Transactional
   public Task updateTaskInfo(long id, String param, String[] values)
       throws TaskNotFoundException, ParameterEntityException, StatusNotFoundException {
 
@@ -226,6 +237,7 @@ public class TaskServiceImpl implements TaskService {
   }
 
   @Override
+  @Transactional
   public Task updateTaskCompleted(long id, Boolean completed)
       throws TaskNotFoundException, ParameterEntityException, StatusNotFoundException {
 
@@ -235,11 +247,13 @@ public class TaskServiceImpl implements TaskService {
   }
 
   @Override
+  @Transactional
   public void deleteTask(Task task) {    
     daoHandler.getTaskHandler().delete(task);
   }
 
   @Override
+  @Transactional
   public void deleteTaskById(long id) throws TaskNotFoundException {
 
     Task task = getTaskById(id);// Can throw TaskNotFoundException
@@ -249,6 +263,7 @@ public class TaskServiceImpl implements TaskService {
   }
 
   @Override
+  @Transactional
   public Task cloneTaskById(long id) throws TaskNotFoundException {
 
     Task task = getTaskById(id);// Can throw TaskNotFoundException
@@ -287,6 +302,7 @@ public class TaskServiceImpl implements TaskService {
   }
 
   @Override
+  @Transactional
   public Comment addCommentToTaskId(long id, String username, String comment) throws TaskNotFoundException {
 
     Task task = getTaskById(id); //Can throws TaskNotFoundException
@@ -296,9 +312,8 @@ public class TaskServiceImpl implements TaskService {
     newComment.setAuthor(username);
     newComment.setComment(comment);
     newComment.setCreatedTime(new Date());
-
-    return daoHandler.getCommentHandler().create(newComment);
-
+    Comment obj = daoHandler.getCommentHandler().create(newComment);
+    return obj;
   }
   
   @Override
@@ -315,6 +330,7 @@ public class TaskServiceImpl implements TaskService {
   }
 
   @Override
+  @Transactional
   public void deleteCommentById(long commentId) throws CommentNotFoundException {
 
     Comment comment = daoHandler.getCommentHandler().find(commentId);
@@ -325,7 +341,6 @@ public class TaskServiceImpl implements TaskService {
     }
 
     daoHandler.getCommentHandler().delete(comment);
-
   }
 
   @Override

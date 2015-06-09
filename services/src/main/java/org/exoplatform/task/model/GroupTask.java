@@ -19,10 +19,10 @@
 
 package org.exoplatform.task.model;
 
-import org.exoplatform.task.domain.Task;
-
 import java.util.Collections;
 import java.util.List;
+
+import org.exoplatform.task.domain.Task;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.

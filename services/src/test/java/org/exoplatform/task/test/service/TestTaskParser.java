@@ -19,15 +19,20 @@
 
 package org.exoplatform.task.test.service;
 
-import org.exoplatform.task.domain.Priority;
-import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.service.TaskParser;
-import org.exoplatform.task.service.impl.TaskParserImpl;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Set;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.*;
+import org.exoplatform.task.domain.Priority;
+import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.service.TaskParser;
+import org.exoplatform.task.service.impl.TaskParserImpl;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
@@ -224,13 +229,13 @@ public class TestTaskParser {
     assertEqual(Arrays.asList("tag1", "tag2", "tag3"), labels);
   }
 
-  private void assertEqual(Collection expected, Collection actual) {
+  private void assertEqual(Collection<String> expected, Collection<String> actual) {
     if(expected.size() != actual.size()) {
       Assert.fail("Size of 2 collection must be the same");
     }
-    for(Object e1 : expected) {
+    for(String e1 : expected) {
       boolean existed = false;
-      for(Object e2 : actual) {
+      for(String e2 : actual) {
         if(e1 == e2 || e1.equals(e2)) {
           existed = true;
           break;

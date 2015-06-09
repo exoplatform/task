@@ -16,63 +16,41 @@
 */
 package org.exoplatform.task.test.dao;
 
-import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.Persistence;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
-import liquibase.exception.LiquibaseException;
-
+import org.exoplatform.container.PortalContainer;
 import org.exoplatform.task.dao.ProjectHandler;
 import org.exoplatform.task.dao.StatusHandler;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.factory.ExoEntityManagerFactory;
-import org.exoplatform.task.service.jpa.DAOHandlerJPAImpl;
-import org.exoplatform.task.test.TestUtils;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.exoplatform.task.service.DAOHandler;
+import org.exoplatform.task.test.AbstractTest;
 
-public class TestStatusDAO {
+public class TestStatusDAO extends AbstractTest {
 
   private StatusHandler sDAO;
   private ProjectHandler pDAO;
-  private DAOHandlerJPAImpl taskService;
-
-  @BeforeClass
-  public static void init() throws SQLException,
-      ClassNotFoundException, LiquibaseException {
-    TestUtils.initH2DB();
-    ExoEntityManagerFactory.setEntityManagerFactory(Persistence.createEntityManagerFactory("org.exoplatform.task"));
-  }
-  
-  @AfterClass
-  public static void destroy() throws LiquibaseException, SQLException {
-    TestUtils.closeDB();
-  }
+  private DAOHandler taskService;
 
   @Before
   public void setup() {
-    taskService = new DAOHandlerJPAImpl();
+    PortalContainer container = PortalContainer.getInstance();
+    
+    taskService = (DAOHandler) container.getComponentInstanceOfType(DAOHandler.class);
     sDAO = taskService.getStatusHandler();
     pDAO = taskService.getProjectHandler();
-
-    //
-    taskService.startRequest(null);
   }
 
   @After
   public void tearDown() {
     sDAO.deleteAll();
-
-    //
-    taskService.endRequest(null);
   }
 
   @Test

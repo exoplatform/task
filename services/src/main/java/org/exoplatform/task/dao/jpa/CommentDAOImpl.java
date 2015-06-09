@@ -22,28 +22,37 @@
 
 package org.exoplatform.task.dao.jpa;
 
+import java.util.Collections;
+import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+
+import org.exoplatform.commons.persistence.impl.EntityManagerService;
+import org.exoplatform.commons.persistence.impl.GenericDAOJPAImpl;
 import org.exoplatform.task.dao.CommentHandler;
 import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.service.jpa.DAOHandlerJPAImpl;
-
-import javax.persistence.Query;
-
-import java.util.Collections;
-import java.util.List;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
-public class CommentDAOImpl extends GenericDAOImpl<Comment, Long> implements CommentHandler {
+public class CommentDAOImpl extends GenericDAOJPAImpl<Comment, Long> implements CommentHandler {
 
-  public CommentDAOImpl(DAOHandlerJPAImpl taskServiceJPAImpl) {
-    super(taskServiceJPAImpl);
+  private EntityManagerService entityService;
+
+  public CommentDAOImpl(EntityManagerService entityService) {
+    this.entityService = entityService;
+  }
+  
+  @Override
+  public EntityManager getEntityManager() {
+    return entityService.getEntityManager();
   }
 
   @Override
   public long count(Task task) {
-    Long count = daoHandler.getEntityManager().createNamedQuery("Comment.countCommentOfTask", Long.class)
+    Long count = getEntityManager().createNamedQuery("Comment.countCommentOfTask", Long.class)
             .setParameter("taskId", task.getId())
             .getSingleResult();
     return count;
@@ -51,7 +60,7 @@ public class CommentDAOImpl extends GenericDAOImpl<Comment, Long> implements Com
 
   @Override
   public List<Comment> findCommentsOfTask(Task task, int start, int limit) {
-    Query query = daoHandler.getEntityManager().createNamedQuery("Comment.findCommentsOfTask", Comment.class);
+    Query query = getEntityManager().createNamedQuery("Comment.findCommentsOfTask", Comment.class);
     query.setParameter("taskId", task.getId());
     if(limit > 0) {
       query.setFirstResult(start);

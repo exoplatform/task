@@ -1,5 +1,8 @@
 package org.exoplatform.task.service;
 
+import java.util.Date;
+import java.util.List;
+
 import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Task;
@@ -8,9 +11,6 @@ import org.exoplatform.task.exception.CommentNotFoundException;
 import org.exoplatform.task.exception.ParameterEntityException;
 import org.exoplatform.task.exception.StatusNotFoundException;
 import org.exoplatform.task.exception.TaskNotFoundException;
-
-import java.util.Date;
-import java.util.List;
 
 /**
  * Created by TClement on 6/3/15.

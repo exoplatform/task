@@ -4,7 +4,7 @@
                xmlns="http://www.exoplatform.org/xml/ns/kernel_1_2.xsd">
 
   <component>
-    <type>org.exoplatform.commons.api.jpa.EntityManagerService</type>
+    <type>org.exoplatform.commons.persistence.impl.EntityManagerService</type>
     <init-params>
       <value-param>
         <name>persistence.unit.name</name>
@@ -18,7 +18,16 @@
     <type>org.exoplatform.task.service.jpa.DAOHandlerJPAImpl</type>
   </component>
 
-  <!--
+  <component>
+    <key>org.exoplatform.task.service.StatusService</key>
+    <type>org.exoplatform.task.service.impl.StatusServiceImpl</type>
+  </component>
+
+  <component>
+    <key>org.exoplatform.task.service.UserService</key>
+    <type>org.exoplatform.task.service.impl.UserServiceImpl</type>
+  </component>
+
   <component>
     <key>org.exoplatform.task.service.TaskService</key>
     <type>org.exoplatform.task.service.impl.TaskServiceImpl</type>
@@ -28,7 +37,6 @@
     <key>org.exoplatform.task.service.ProjectService</key>
     <type>org.exoplatform.task.service.impl.ProjectServiceImpl</type>
   </component>
-  -->
 
   <component>
     <key>org.exoplatform.task.service.TaskParser</key>

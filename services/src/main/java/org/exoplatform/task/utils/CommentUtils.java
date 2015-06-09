@@ -19,10 +19,10 @@
 
 package org.exoplatform.task.utils;
 
+import java.util.StringTokenizer;
+
 import org.exoplatform.task.model.User;
 import org.exoplatform.task.service.UserService;
-
-import java.util.StringTokenizer;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.

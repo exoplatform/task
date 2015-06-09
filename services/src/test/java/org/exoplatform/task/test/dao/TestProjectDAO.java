@@ -16,61 +16,40 @@
 */
 package org.exoplatform.task.test.dao;
 
-import java.sql.SQLException;
 import java.util.List;
 
-import javax.persistence.Persistence;
-
 import junit.framework.Assert;
-import liquibase.exception.LiquibaseException;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import org.exoplatform.container.PortalContainer;
 import org.exoplatform.task.dao.ProjectHandler;
 import org.exoplatform.task.domain.Project;
-import org.exoplatform.task.factory.ExoEntityManagerFactory;
-import org.exoplatform.task.service.jpa.DAOHandlerJPAImpl;
-import org.exoplatform.task.test.TestUtils;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.exoplatform.task.service.DAOHandler;
+import org.exoplatform.task.test.AbstractTest;
 
 /**
  * @author <a href="trongtt@exoplatform.com">Trong Tran</a>
  * @version $Revision$
  */
-public class TestProjectDAO {
+public class TestProjectDAO extends AbstractTest {
 
   private ProjectHandler pDAO;
-  private DAOHandlerJPAImpl taskService;
-
-  @BeforeClass
-  public static void init() throws SQLException,
-      ClassNotFoundException, LiquibaseException {
-    TestUtils.initH2DB();
-    ExoEntityManagerFactory.setEntityManagerFactory(Persistence.createEntityManagerFactory("org.exoplatform.task"));
-  }
-  
-  @AfterClass
-  public static void destroy() throws LiquibaseException, SQLException {
-    TestUtils.closeDB();
-  }
+  private DAOHandler taskService;
 
   @Before
   public void setup() {
-    taskService = new DAOHandlerJPAImpl();
+    PortalContainer container = PortalContainer.getInstance();
+    
+    taskService = (DAOHandler) container.getComponentInstanceOfType(DAOHandler.class);
     pDAO = taskService.getProjectHandler();
-
-    //
-    taskService.startRequest(null);
   }
 
   @After
   public void tearDown() {
     pDAO.deleteAll();
-
-    //
-    taskService.endRequest(null);
   }
 
   @Test
@@ -108,6 +87,6 @@ public class TestProjectDAO {
 
     projects = pDAO.findSubProjects(null);
     Assert.assertTrue(projects.size() >= 1);
-  }  
+  }
 }
 

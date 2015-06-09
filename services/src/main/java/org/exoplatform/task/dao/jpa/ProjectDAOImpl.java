@@ -16,14 +16,16 @@
 */
 package org.exoplatform.task.dao.jpa;
 
-import org.exoplatform.task.dao.ProjectHandler;
-import org.exoplatform.task.domain.Project;
-import org.exoplatform.task.service.jpa.DAOHandlerJPAImpl;
+import java.util.List;
+import java.util.logging.Logger;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import java.util.List;
-import java.util.logging.Logger;
+
+import org.exoplatform.commons.persistence.impl.EntityManagerService;
+import org.exoplatform.commons.persistence.impl.GenericDAOJPAImpl;
+import org.exoplatform.task.dao.ProjectHandler;
+import org.exoplatform.task.domain.Project;
 
 /**
  * Created by The eXo Platform SAS
@@ -31,17 +33,24 @@ import java.util.logging.Logger;
  * tclement@exoplatform.com
  * 4/10/15
  */
-public class ProjectDAOImpl extends GenericDAOImpl<Project, Long> implements ProjectHandler {
+public class ProjectDAOImpl extends GenericDAOJPAImpl<Project, Long> implements ProjectHandler {
 
   private static final Logger LOG = Logger.getLogger("ProjectDAOImpl");
 
-  public ProjectDAOImpl(DAOHandlerJPAImpl taskServiceJPAImpl) {
-    super(taskServiceJPAImpl);
+  private EntityManagerService entityService;
+
+  public ProjectDAOImpl(EntityManagerService entityService) {
+    this.entityService = entityService;
+  }
+  
+  @Override
+  public EntityManager getEntityManager() {
+    return entityService.getEntityManager();
   }
 
   @Override
   public List<Project> findSubProjects(Project project) {
-    EntityManager em = daoHandler.getEntityManager();
+    EntityManager em = getEntityManager();
     Query query = em.createNamedQuery(project != null ? "Project.findSubProjects" : "Project.getRootProjects");
     if(project != null) {
       query.setParameter("projectId", project.getId());
@@ -51,7 +60,7 @@ public class ProjectDAOImpl extends GenericDAOImpl<Project, Long> implements Pro
 
   @Override
   public List<Project> findSubProjectsByMemberships(Project project, List<String> memberships) {
-    EntityManager em = daoHandler.getEntityManager();
+    EntityManager em = getEntityManager();
     Query query = em.createNamedQuery(project != null ?
         "Project.findSubProjectsByMemberships"
         : "Project.findRootProjectsByMemberships");
@@ -64,7 +73,7 @@ public class ProjectDAOImpl extends GenericDAOImpl<Project, Long> implements Pro
 
   @Override
   public List<Project> findAllByMemberships(List<String> memberships) {
-    Query query = daoHandler.getEntityManager().createNamedQuery("Project.findAllByMembership", Project.class);
+    Query query = getEntityManager().createNamedQuery("Project.findAllByMembership", Project.class);
     query.setParameter("memberships", memberships);
 
     return query.getResultList();
@@ -72,7 +81,7 @@ public class ProjectDAOImpl extends GenericDAOImpl<Project, Long> implements Pro
 
   @Override
   public List<Project> findAllByMembershipsAndKeyword(List<String> memberships, String keyword) {
-    Query query = daoHandler.getEntityManager().createNamedQuery("Project.findAllByMembershipAndKeyword", Project.class);
+    Query query = getEntityManager().createNamedQuery("Project.findAllByMembershipAndKeyword", Project.class);
     query.setParameter("memberships", memberships);
     if (keyword == null || keyword.isEmpty()) {
       keyword = "%";

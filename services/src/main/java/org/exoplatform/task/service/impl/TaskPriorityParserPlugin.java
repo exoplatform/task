@@ -19,14 +19,14 @@
 
 package org.exoplatform.task.service.impl;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.task.domain.Priority;
 import org.exoplatform.task.service.TaskBuilder;
 import org.exoplatform.task.service.TaskParserPlugin;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.

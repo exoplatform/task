@@ -16,10 +16,11 @@
 */
 package org.exoplatform.task.dao;
 
-import org.exoplatform.task.domain.Task;
-
 import java.util.Date;
 import java.util.List;
+
+import org.exoplatform.commons.api.persistence.GenericDAO;
+import org.exoplatform.task.domain.Task;
 
 /**
  * @author <a href="trongtt@exoplatform.com">Trong Tran</a>

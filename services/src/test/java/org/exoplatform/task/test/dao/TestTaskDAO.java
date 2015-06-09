@@ -16,8 +16,15 @@
 */
 package org.exoplatform.task.test.dao;
 
-import liquibase.exception.LiquibaseException;
+import java.util.Date;
+import java.util.List;
 
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+import org.exoplatform.container.PortalContainer;
 import org.exoplatform.task.dao.TaskHandler;
 import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.domain.Priority;
@@ -25,58 +32,34 @@ import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.domain.TaskLog;
-import org.exoplatform.task.factory.ExoEntityManagerFactory;
+import org.exoplatform.task.service.DAOHandler;
 import org.exoplatform.task.service.TaskParser;
 import org.exoplatform.task.service.impl.TaskParserImpl;
-import org.exoplatform.task.service.jpa.DAOHandlerJPAImpl;
-import org.exoplatform.task.test.TestUtils;
-import org.junit.*;
-
-import javax.persistence.Persistence;
-
-import java.sql.SQLException;
-import java.util.Date;
-import java.util.List;
+import org.exoplatform.task.test.AbstractTest;
 
 /**
  * @author <a href="trongtt@exoplatform.com">Trong Tran</a>
  * @version $Revision$
  */
-public class TestTaskDAO {
+public class TestTaskDAO extends AbstractTest {
 
   private TaskHandler tDAO;
-  private DAOHandlerJPAImpl taskService;
+  private DAOHandler taskService;
   private TaskParser parser = new TaskParserImpl();
 
   private final String username = "root";
 
-  @BeforeClass
-  public static void init() throws SQLException,
-      ClassNotFoundException, LiquibaseException {
-    TestUtils.initH2DB();
-    ExoEntityManagerFactory.setEntityManagerFactory(Persistence.createEntityManagerFactory("org.exoplatform.task"));
-  }
-  
-  @AfterClass
-  public static void destroy() throws LiquibaseException, SQLException {
-    TestUtils.closeDB();
-  }
-
   @Before
   public void setup() {
-    taskService = new DAOHandlerJPAImpl();
+    PortalContainer container = PortalContainer.getInstance();
+    
+    taskService = (DAOHandler) container.getComponentInstanceOfType(DAOHandler.class);
     tDAO = taskService.getTaskHandler();
-
-    //
-    taskService.startRequest(null);
   }
 
   @After
   public void tearDown() {
     tDAO.deleteAll();
-
-    //
-    taskService.endRequest(null);
   }
 
   @Test
@@ -235,8 +218,6 @@ public class TestTaskDAO {
     log.setMsg("has created task");
     task.getTaskLogs().add(log);
     
-    taskService.endRequest(null);
-    taskService.startRequest(null);
     //
     task = tDAO.find(task.getId());
     Assert.assertEquals(1,  task.getTaskLogs().size());
