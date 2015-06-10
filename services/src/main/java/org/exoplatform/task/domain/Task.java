@@ -44,7 +44,7 @@ import java.util.Set;
             "OR project IN (SELECT pr2.id FROM Project pr2 LEFT JOIN pr2.participator participators WHERE participators IN :memberships) " +
             ") "),
     @NamedQuery(name = "Task.findTaskByProject",
-            query = "SELECT t FROM Task t WHERE t.status.project.id = :projectId")
+        query = "SELECT t FROM Task t WHERE t.status.project.id = :projectId")
 })
 public class Task {
 
@@ -242,17 +242,46 @@ public class Task {
 
   public Task clone() {
     Task newTask = new TaskBuilder().withTitle(PREFIX_CLONE+this.getTitle())
-                                    .withAssignee(this.getAssignee())
-                                    .withContext(this.getContext())
-                                    .withCreatedBy(this.getCreatedBy())
-                                    .withDescription(this.getDescription())
-                                    .withDueDate(this.getDueDate())
-                                    .withPriority(this.getPriority())
-                                    .withStartDate(this.getStartDate())
-                                    .withDuration(this.getDuration())                    
-                                    .build();
+        .withAssignee(this.getAssignee())
+        .withContext(this.getContext())
+        .withCreatedBy(this.getCreatedBy())
+        .withDescription(this.getDescription())
+        .withDueDate(this.getDueDate())
+        .withPriority(this.getPriority())
+        .withStartDate(this.getStartDate())
+        .withDuration(this.getDuration())
+        .withStatus(this.status)
+        .build();
     newTask.setCoworker(new HashSet<String>(this.getCoworker()));
     newTask.setTags(new HashSet<String>(this.getTags()));
     return newTask;
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    Task task = (Task) o;
+
+    if (completed != task.completed) return false;
+    if (duration != task.duration) return false;
+    if (id != task.id) return false;
+    if (assignee != null ? !assignee.equals(task.assignee) : task.assignee != null) return false;
+    if (comments != null ? !comments.equals(task.comments) : task.comments != null) return false;
+    if (context != null ? !context.equals(task.context) : task.context != null) return false;
+    if (coworker != null ? !coworker.equals(task.coworker) : task.coworker != null) return false;
+    if (createdBy != null ? !createdBy.equals(task.createdBy) : task.createdBy != null) return false;
+    if (createdTime != null ? !createdTime.equals(task.createdTime) : task.createdTime != null) return false;
+    if (description != null ? !description.equals(task.description) : task.description != null) return false;
+    if (dueDate != null ? !dueDate.equals(task.dueDate) : task.dueDate != null) return false;
+    if (priority != task.priority) return false;
+    if (startDate != null ? !startDate.equals(task.startDate) : task.startDate != null) return false;
+    if (status != null ? !status.equals(task.status) : task.status != null) return false;
+    if (tags != null ? !tags.equals(task.tags) : task.tags != null) return false;
+    if (title != null ? !title.equals(task.title) : task.title != null) return false;
+
+    return true;
+  }
+
 }

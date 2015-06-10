@@ -14,7 +14,7 @@
 * You should have received a copy of the GNU Lesser General Public License
 * along with this program. If not, see http://www.gnu.org/licenses/ .
 */
-package org.exoplatform.task.test;
+package org.exoplatform.task.test.security;
 
 import liquibase.exception.LiquibaseException;
 import org.exoplatform.task.dao.ProjectHandler;
@@ -26,6 +26,7 @@ import org.exoplatform.task.factory.ExoEntityManagerFactory;
 import org.exoplatform.task.service.TaskParser;
 import org.exoplatform.task.service.impl.TaskParserImpl;
 import org.exoplatform.task.service.jpa.DAOHandlerJPAImpl;
+import org.exoplatform.task.test.TestUtils;
 import org.junit.*;
 
 import javax.persistence.Persistence;

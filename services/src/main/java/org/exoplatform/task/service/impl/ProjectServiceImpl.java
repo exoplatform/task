@@ -56,6 +56,14 @@ public class ProjectServiceImpl implements ProjectService {
   @Inject
   DAOHandler daoHandler;
 
+  public ProjectServiceImpl() {
+  }
+
+  //For testing purpose only
+  public ProjectServiceImpl(DAOHandler daoHandler) {
+    this.daoHandler = daoHandler;
+  }
+
   @Override
   public Project createDefaultStatusProjectWithManager(String name, String description, Long parentId, String username) throws ProjectNotFoundException {
 
@@ -83,7 +91,6 @@ public class ProjectServiceImpl implements ProjectService {
       else {
         LOG.info("Can not find project for parent with ID: " + parentId);
         throw new ProjectNotFoundException(parentId);
-        //return Response.content(406, "Can not find project id for parentID = " + parentId);
       }
     }
 
@@ -199,8 +206,6 @@ public class ProjectServiceImpl implements ProjectService {
 
   @Override
   public Task createTaskToProjectId(long id, Task task) throws ProjectNotFoundException {
-
-    Project project = getProjectById(id); //Can throw ProjectNotFoundException
 
     Status status = daoHandler.getStatusHandler().findLowestRankStatusByProject(id);
     task.setStatus(status);

@@ -27,7 +27,6 @@ import org.exoplatform.task.exception.ParameterEntityException;
 import org.exoplatform.task.exception.StatusNotFoundException;
 import org.exoplatform.task.exception.TaskNotFoundException;
 import org.exoplatform.task.service.DAOHandler;
-import org.exoplatform.task.service.TaskBuilder;
 import org.exoplatform.task.service.TaskService;
 
 import javax.inject.Inject;
@@ -52,6 +51,14 @@ public class TaskServiceImpl implements TaskService {
   @Inject
   private DAOHandler daoHandler;
 
+  public TaskServiceImpl() {
+  }
+
+  //For testing purpose only
+  public TaskServiceImpl(DAOHandler daoHandler) {
+    this.daoHandler = daoHandler;
+  }
+
   @Override
   public Task createTask(Task task) {
     return daoHandler.getTaskHandler().create(task);
@@ -62,8 +69,6 @@ public class TaskServiceImpl implements TaskService {
     return daoHandler.getTaskHandler().update(task);
   }
 
-
-
   @Override
   public Task updateTaskInfo(long id, String param, String[] values) throws TaskNotFoundException, ParameterEntityException, StatusNotFoundException {
     Task task = getTaskById(id);
@@ -72,34 +77,32 @@ public class TaskServiceImpl implements TaskService {
       LOG.info("Can not find task with ID: " + id);
       throw new TaskNotFoundException(id);
     }
-    
+
     if ("workPlan".equalsIgnoreCase(param)) {
       if (values == null) {
         task.setStartDate(null);
         task.setDuration(0);
       } else {
         if (values.length != 2) {
-          LOG.error("workPlan updateing lack of params");
+          LOG.error("workPlan updating lack of params");
         }
-        
+
         try {
           Calendar dateFrom = Calendar.getInstance();
           dateFrom.setTimeInMillis(Long.parseLong(values[0]));
           Calendar dateTo = Calendar.getInstance();
           dateTo.setTimeInMillis(Long.parseLong(values[1]));
-          
+
           task.setStartDate(dateFrom.getTime());
           task.setDuration(dateTo.getTimeInMillis() - dateFrom.getTimeInMillis());
         } catch (NumberFormatException ex) {
-          LOG.info("Can parse date time value");
-          //TODO return exception instead of null
-          //return Response.status(406).body("Can not parse date time value: " + val);
-          return null;
-        }  
+          LOG.info("Can parse date time value: "+values[0]+" or "+values[1]+" for Task with ID: "+id);
+          throw new ParameterEntityException(id, "Task", param, values[0]+" or "+values[1], "cannot be parse to date");
+        }
       }
     } else {
       String value = values != null && values.length > 0 ? values[0] : null;
-      
+
       if("title".equalsIgnoreCase(param)) {
         task.setTitle(value);
       } else if("dueDate".equalsIgnoreCase(param)) {
@@ -124,20 +127,6 @@ public class TaskServiceImpl implements TaskService {
             throw new StatusNotFoundException(id);
           }
           task.setStatus(status);
-
-          // Task is completed if this status is last one
-          boolean isLast = true;
-          for(Status s : status.getProject().getStatus()) {
-            if (s.getId() != status.getId() && s.getRank() > status.getRank()) {
-              isLast = false;
-              break;
-            }
-          }
-          if(isLast) {
-            task.setCompleted(true);
-          } else {
-            task.setCompleted(false);
-          }
 
         } catch (NumberFormatException ex) {
           LOG.info("Status is unacceptable: "+value+" for Task with ID: "+id);
@@ -186,12 +175,7 @@ public class TaskServiceImpl implements TaskService {
   @Override
   public void deleteTaskById(long id) throws TaskNotFoundException {
 
-    Task task = getTaskById(id);
-
-    if(task == null) {
-      LOG.info("Can not find task with ID: " + id);
-      throw new TaskNotFoundException(id);
-    }
+    Task task = getTaskById(id);// Can throw TaskNotFoundException
 
     deleteTask(task);
 
@@ -200,27 +184,9 @@ public class TaskServiceImpl implements TaskService {
   @Override
   public Task cloneTaskById(long id) throws TaskNotFoundException {
 
-    Task task = getTaskById(id);
+    Task task = getTaskById(id);// Can throw TaskNotFoundException
 
-    if(task == null) {
-      LOG.info("Can not find task with ID: " + id);
-      throw new TaskNotFoundException(id);
-    }
-
-    Task newTask = new TaskBuilder()
-        .withTitle(task.getTitle())
-        .withAssignee(task.getAssignee())
-        .withContext(task.getContext())
-        .withCreatedBy(task.getCreatedBy())
-        .withDescription(task.getDescription())
-        .withDueDate(task.getDueDate())
-        .withPriority(task.getPriority())
-        .withStartDate(task.getStartDate())
-        .withDuration(task.getDuration())
-        .withStatus(task.getStatus())
-        .build();
-    newTask.setCoworker(task.getCoworker());
-    newTask.setTags(task.getTags());
+    Task newTask = task.clone();
 
     return createTask(newTask);
   }

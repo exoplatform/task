@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.exoplatform.task.test;
+package org.exoplatform.task.test.service;
 
 import org.exoplatform.task.domain.Priority;
 import org.exoplatform.task.domain.Task;

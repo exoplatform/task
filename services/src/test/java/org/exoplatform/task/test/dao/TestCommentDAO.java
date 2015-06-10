@@ -20,7 +20,7 @@
 * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 */
 
-package org.exoplatform.task.test;
+package org.exoplatform.task.test.dao;
 
 import java.sql.SQLException;
 import java.util.Date;
@@ -31,6 +31,7 @@ import javax.persistence.Persistence;
 import junit.framework.Assert;
 import liquibase.exception.LiquibaseException;
 
+import org.exoplatform.task.test.TestUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;

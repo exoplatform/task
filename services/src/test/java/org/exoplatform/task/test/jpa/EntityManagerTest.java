@@ -1,19 +1,13 @@
-package org.exoplatform.task.test;
+package org.exoplatform.task.test.jpa;
 
-import java.sql.SQLException;
+import liquibase.exception.LiquibaseException;
+import org.exoplatform.task.test.TestUtils;
+import org.junit.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-
-import liquibase.exception.LiquibaseException;
-
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import java.sql.SQLException;
 
 public class EntityManagerTest {
 

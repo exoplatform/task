@@ -128,4 +128,21 @@ public class Status {
     }
     return status;
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    Status status = (Status) o;
+
+    if (id != status.id) return false;
+    if (name != null ? !name.equals(status.name) : status.name != null) return false;
+    if (project != null ? !project.equals(status.project) : status.project != null) return false;
+    if (rank != null ? !rank.equals(status.rank) : status.rank != null) return false;
+    if (tasks != null ? !tasks.equals(status.tasks) : status.tasks != null) return false;
+
+    return true;
+  }
+
 }
