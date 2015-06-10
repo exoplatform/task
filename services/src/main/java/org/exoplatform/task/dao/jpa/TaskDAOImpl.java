@@ -25,6 +25,7 @@ import org.exoplatform.task.service.jpa.DAOHandlerJPAImpl;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.criteria.*;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -119,6 +120,14 @@ public class TaskDAOImpl extends GenericDAOImpl<Task, Long> implements TaskHandl
               )
       );
     }
+    
+    if (query.getCompleted() != null) {
+      if (query.getCompleted()) {
+        predicates.add(cb.equal(task.get("completed"), query.getCompleted()));        
+      } else {
+        predicates.add(cb.notEqual(task.get("completed"), !query.getCompleted()));
+      }
+    }
 
     if(predicates.size() > 0) {
       Iterator<Predicate> it = predicates.iterator();
@@ -148,7 +157,7 @@ public class TaskDAOImpl extends GenericDAOImpl<Task, Long> implements TaskHandl
     StringBuilder jql = new StringBuilder();
     jql.append("SELECT ta FROM Task ta LEFT JOIN ta.coworker cowoker ")
             .append("WHERE (ta.status.id is null or ta.status.id = 0) ")
-            .append("AND (ta.assignee = :userName OR ta.createdBy = :userName OR cowoker = :userName)");
+            .append("AND (ta.assignee = :userName OR ta.createdBy = :userName OR cowoker = :userName) AND ta.completed != TRUE");
 
     if(orderBy != null && !orderBy.getFieldName().isEmpty()) {
       jql.append(" ORDER BY ta.").append(orderBy.getFieldName()).append(" ").append(orderBy.isAscending() ? "ASC" : " DESC");

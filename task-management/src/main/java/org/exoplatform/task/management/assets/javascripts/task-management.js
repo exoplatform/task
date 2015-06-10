@@ -54,6 +54,36 @@ require(['project-menu', 'SHARED/jquery', 'SHARED/edit_inline_js', 'SHARED/juzu-
         } else {
           $listProject.find('a.project-name').first().click();
         }
+    });    
+  }
+  
+  taApp.setTaskComplete = function(taskId, isCompleted) {
+    var ui = taApp.getUI();
+    var $taskItem = ui.$centerPanel.find('.taskItem[data-taskid="' + taskId + '"]');    
+    var $next = $taskItem.next('.taskItem').first();
+    if ($next.length == 0) {
+      $next.prev('.taskItem').first();
+    }
+
+    var data = {taskId: taskId, completed: isCompleted};    
+    //
+    $taskItem.jzAjax('TaskController.updateCompleted()', {
+      data: data,
+      success: function(message) {
+        if (isCompleted) {
+          $taskItem.fadeOut(500, function() {
+            $taskItem.remove();
+          });
+          if ($next.length == 0) {
+            ui.$leftPanel.find('.active .project-name').click();
+          } else {
+            $next.find('.viewTaskDetail').click();            
+          }
+        }
+      },
+      error : function(jqXHR, textStatus, errorThrown) {
+        console.error && console.error('update failure: ' + jqXHR.responseText);
+      }
     });
   }
   
@@ -389,17 +419,10 @@ $(document).ready(function() {
     });
 
     $rightPanel.on('click', 'a.task-completed-field', function(e){
-        e.preventDefault();
         var $a = $(e.target || e.srcElement).closest('a');
-        var isCompleted = $a.hasClass('icon-completed');
+        $a.toggleClass('icon-completed');
         var taskId = $a.closest('.task-detail').attr('task-id');
-        var data = {taskId: taskId, completed: !isCompleted};
-        $a.jzAjax('TaskController.updateCompleted()', {
-            data: data,
-            success: function(message) {
-                $a.toggleClass('icon-completed');
-            }
-        });
+        taApp.setTaskComplete(taskId, $a.hasClass('icon-completed'));
         return false;
     });
     $rightPanel.on('click', 'a.action-clone-task', function(e){
@@ -738,16 +761,9 @@ $(document).ready(function() {
         var $input = $(e.target);
         var $taskItem = $input.closest('.taskItem');
         var taskId = $taskItem.data('taskid');
-        var isCompleted = !this.checked;
-        var data = {taskId: taskId, completed: !isCompleted};
-        $input.jzAjax('TaskController.updateCompleted()', {
-            data: data,
-            success: function(message) {
-                if (!isCompleted) {
-                    $taskItem.fadeOut(500);
-                }
-            }
-        });
+        var isCompleted = this.checked;
+        //
+        taApp.setTaskComplete(taskId, isCompleted);
     });
 
     // Table Project Collapse

@@ -228,6 +228,7 @@ public class ProjectServiceImpl implements ProjectService {
     taskQuery.setProjectId(project.getId());
     taskQuery.setKeyword(keyword);
     taskQuery.setOrderBy(orderBy == null ? null : Arrays.asList(orderBy));
+    taskQuery.setCompleted(false);
 
     return daoHandler.getTaskHandler().findTaskByQuery(taskQuery);
   }

@@ -32,7 +32,8 @@ public class TaskQuery {
   private long projectId = 0;
   private String assignee = null;
   private String keyword = null;
-
+  private Boolean completed;
+  
   private List<OrderBy> orderBy = new ArrayList<OrderBy>();
 
   public long getTaskId() {
@@ -89,5 +90,13 @@ public class TaskQuery {
 
   public void setOrderBy(List<OrderBy> orderBy) {
     this.orderBy = orderBy;
+  }
+
+  public Boolean getCompleted() {
+    return completed;
+  }
+
+  public void setCompleted(Boolean completed) {
+    this.completed = completed;
   }
 }

@@ -159,7 +159,7 @@
                                                         <div class="column-item column-checkbox">
                                                             <span class="project-color ${task.status != null ? task.status.project.color : ''}"></span>
                                                             <span class="uiCheckbox inline-block-hide">
-                                                                <input type="checkbox" class="checkbox" ${task.completed || true ? "checked=\"checked\"" : ""}>
+                                                                <input type="checkbox" class="checkbox" ${task.completed == true ? "checked=\"checked\"" : ""}>
                                                                 <span></span>
                                                             </span>
                                                              <span class="status-task inline-block-show">
