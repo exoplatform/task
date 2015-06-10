@@ -1,4 +1,5 @@
 #{param name=pid /}
+#{param name=msg /}
 
 <!-- confirm-delete-project -->
 <div class="confirmDeleteProject uiPopup modal hide fade" data-id="${pid}" tabindex="-1" role="dialog" aria-labelledby="confirmLabel" aria-hidden="true">
@@ -12,7 +13,7 @@
 	  		<i class="uiIconColorQuestion"></i>
 	  	</div>
 	  	<div class="media-body">
-	  		<p class="msg" data-msg="&{popup.msg.deleteProject}"></p>	
+	  		<p class="msg">${msg}</p>	
 	    	<p>
 		    	<span class="uiCheckbox">
              <input type="checkbox" class="checkbox deleteChild">

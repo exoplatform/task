@@ -51,6 +51,9 @@ import java.util.*;
 public class ProjectController {
 
   @Inject
+  ResourceBundle bundle;
+  
+  @Inject
   ProjectService projectService;
 
   @Inject
@@ -159,10 +162,16 @@ public class ProjectController {
   @MimeType.HTML
   public Response openConfirmDelete(Long id) {
     try {
-      Project project = projectService.getProjectById(id); //Can throw ProjectNotFoundException      
-      return confirmDeleteProject.with().pid(project.getId())
-          .ok().withCharset(Tools.UTF_8);
+      Project project = projectService.getProjectById(id); //Can throw ProjectNotFoundException
+      if (project != null) {
+        String msg = bundle.getString("popup.msg.deleteProject");
+        msg = msg.replace("{}", project.getName());
 
+        return confirmDeleteProject.with().pid(project.getId()).msg(msg)
+            .ok().withCharset(Tools.UTF_8);        
+      } else {
+        return Response.status(404);
+      }
     } catch (AbstractEntityException e) {
       return Response.status(e.getHttpStatusCode()).body(e.getMessage());
     }

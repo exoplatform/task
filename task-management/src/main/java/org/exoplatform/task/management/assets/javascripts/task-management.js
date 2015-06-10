@@ -52,7 +52,7 @@ require(['project-menu', 'SHARED/jquery', 'SHARED/edit_inline_js', 'SHARED/juzu-
         if (id) {
           $listProject.find('a.project-name[data-id="' + id+ '"]').click();          
         } else {
-          $listProject.find('a.project-name').click();
+          $listProject.find('a.project-name').first().click();
         }
     });
   }

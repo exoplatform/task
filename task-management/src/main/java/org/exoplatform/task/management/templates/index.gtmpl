@@ -81,8 +81,8 @@
 			  	<div class="media-body">
 			  		<p class="msg" data-msg="&{popup.msg.cloneProject}"></p>	
 			    	<p>
-				    	<span class="uiCheckbox cloneTask">
-			                <input type="checkbox" checked="checked" class="checkbox">
+				    	<span class="uiCheckbox">
+			                <input type="checkbox" checked="checked" class="checkbox cloneTask">
 			                <span>&{popup.checkbox.cloneTask}</span>
 		                </span>			    
 			    		<input type="hidden" class="pId"/>
