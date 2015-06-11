@@ -36,8 +36,8 @@ import java.util.Set;
 @Entity
 @Table(name = "TASK_PROJECTS")
 @NamedQueries({
-    @NamedQuery(name = "getRootProjects", query = "SELECT p FROM Project p WHERE p.parent.id = 0 OR p.parent is null"),
-    @NamedQuery(name = "findSubProjects", query = "SELECT p FROM Project p WHERE p.parent.id = :projectId"),
+    @NamedQuery(name = "Project.getRootProjects", query = "SELECT p FROM Project p WHERE p.parent.id = 0 OR p.parent is null"),
+    @NamedQuery(name = "Project.findSubProjects", query = "SELECT p FROM Project p WHERE p.parent.id = :projectId"),
     @NamedQuery(name = "Project.findAllByMembership",
         query = "SELECT p FROM Project p " +
         "  LEFT JOIN p.manager managers " +
