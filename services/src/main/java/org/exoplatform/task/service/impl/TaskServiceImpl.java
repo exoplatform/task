@@ -20,6 +20,7 @@ import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.domain.Comment;
+import org.exoplatform.task.domain.Priority;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.exception.CommentNotFoundException;
@@ -150,6 +151,9 @@ public class TaskServiceImpl implements TaskService {
           tags.add(t);
         }
         task.setTags(tags);
+      } else if ("priority".equalsIgnoreCase(param)) {
+        Priority priority = Priority.valueOf(value);
+        task.setPriority(priority);
       } else {
         LOG.info("Field name: " + param + " is not supported for entity Task");
         throw new ParameterEntityException(id, "Task", param, value, "is not supported for the entity Task");

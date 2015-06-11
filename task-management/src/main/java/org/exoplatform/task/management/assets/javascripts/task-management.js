@@ -354,6 +354,14 @@ $(document).ready(function() {
                 //editOptions.source = allStatusURL;
                 editOptions.value = currentStatus;
             }
+            if (fieldName == 'priority') {
+              var priority = [];
+              $.each($this.data('priority').split(','), function(idx, elem) {
+                priority.push({'text': elem, 'value': elem});
+              });
+              //
+              editOptions.source = priority;
+            }
             if(fieldName == 'tags') {
                 editOptions.showbuttons = true;
                 editOptions.emptytext = "No Tags";
