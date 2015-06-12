@@ -58,6 +58,20 @@ define('project-menu', ['SHARED/jquery'], function($) {
       var parentId = $(e.target).closest('a').attr('data-projectId');
       $rightPanelContent.jzLoad('ProjectController.projectForm()', {parentId: parentId}, function() {
         taApp.showRightPanel($centerPanel, $rightPanel);
+                
+        var $ancestors = $rightPanel.find('.editable');
+        $ancestors.editable({
+          mode : 'inline',
+          showbuttons: false,
+          source : $ancestors.jzURL('ProjectController.projectTreeAsJSON'),
+          select2: {
+            width: '200px'
+          },
+          display : function() {
+            $ancestors.jzLoad('ProjectController.getBreadCumbs()', {id: $ancestors.editable('getValue').parent || $ancestors.data('value')});
+          }
+        });
+       
       });
       return true;
     });        

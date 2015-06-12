@@ -526,7 +526,8 @@ $(document).ready(function() {
         var $form = $(e.target).closest('form');
         var name = $form.find('input[name="name"]').val();
         var description = $form.find('textarea[name="description"]').val();
-        var parentId = $form.find('input[name="parentId"]').val();
+        var $breadcumbs = $rightPanel.find('.breadcumbs'); 
+        var parentId = $breadcumbs.editable('getValue').parent || $breadcumbs.data('value');
 
         if(name == '') {
             alert('Please input the project name');

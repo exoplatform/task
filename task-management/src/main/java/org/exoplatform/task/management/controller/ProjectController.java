@@ -25,6 +25,7 @@ import juzu.Resource;
 import juzu.Response;
 import juzu.impl.common.Tools;
 import juzu.request.SecurityContext;
+
 import org.exoplatform.commons.juzu.ajax.Ajax;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.log.ExoLogger;
@@ -36,13 +37,16 @@ import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.exception.AbstractEntityException;
+import org.exoplatform.task.exception.ProjectNotFoundException;
 import org.exoplatform.task.model.User;
 import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.UserService;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.inject.Inject;
+
 import java.util.*;
 
 /**
@@ -96,9 +100,18 @@ public class ProjectController {
   @Ajax
   @MimeType.HTML
   public Response projectForm(Long parentId) {
+    List<Project> projects = getProjectTree();
+    
+    Project parent;
+    try {
+      parent = projectService.getProjectById(parentId);
+    } catch (ProjectNotFoundException e) {
+      parent = new Project();
+    }
+    
     return form
-        .with()
-        .parentId(parentId)
+        .with().breadcumbs(buildBreadcumbs(parent.getId()))
+        .parent(parent)
         .ok();
   }
 
@@ -294,6 +307,62 @@ public class ProjectController {
         .with()
         .projects(projects)
         .ok();
+  }
+  
+  @Resource
+  @Ajax
+  @MimeType.JSON
+  public Response projectTreeAsJSON() throws JSONException {
+    List<Project> projects = getProjectTree();
+    Project root = new Project();
+    root.setName(bundle.getString("label.projects"));
+    projects.add(0, root);
+    //
+    JSONArray array = new JSONArray();
+    buildJSON(array, projects);
+    return Response.ok(array.toString()).withCharset(Tools.UTF_8);
+  }
+  
+  @Resource
+  @Ajax
+  @MimeType.HTML
+  public Response getBreadCumbs(Long id) {
+    String breadcumbs = buildBreadcumbs(id);
+    return Response.ok(breadcumbs.toString()).withCharset(Tools.UTF_8);
+  }
+
+  private String buildBreadcumbs(Long id) {
+    Project project = null;
+    try {
+      project = projectService.getProjectById(id);
+    } catch (ProjectNotFoundException e) {
+      LOG.warn("project {} not found", id);
+    }
+    
+    StringBuilder builder = new StringBuilder();
+    if (project != null) {
+      Project tmp = project;
+      while (tmp != null) {
+        builder.insert(0, tmp.getName()).insert(0, " &gt; ");
+        tmp = tmp.getParent();
+      }
+    }
+    builder.insert(0, bundle.getString("label.projects") + " ");
+    return builder.toString();
+  }
+
+  private JSONArray buildJSON(JSONArray array, List<Project> projects) throws JSONException {
+    for(Project p : projects) {
+        JSONObject json = new JSONObject();
+        json.put("id", p.getId());
+        json.put("text", p.getName());
+        array.put(json);
+        if (p.getChildren() != null) {
+          buildJSON(array, p.getChildren());
+        }
+    }
+    
+    return array;
   }
 
   public List<Project> getProjectTree() {

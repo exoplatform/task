@@ -1,7 +1,12 @@
-#{param name=parentId/}
+#{param name=parent/}
+#{param name=breadcumbs/}
 
 <div class="span12">
-    <h6>Create new project</h6>
+    <h6>Create new project</h6>    
+    <a class="breadcumbs editable" href="#" data-name="parent" data-type="select2" data-inputclass="input-small" 
+    	data-value="${parent.id}">
+    	${breadcumbs}    	
+    </a>
     <form class="create-project-form">
         <div class="control-group">
             <label class="control-label" for="inputName">Name</label>
@@ -17,7 +22,6 @@
         </div>
         <div class="control-group">
             <div class="controls text-right">
-                <input type="hidden" name="parentId" value="${parentId}"/>
                 <button type="submit" class="btn">Create</button>
             </div>
         </div>
