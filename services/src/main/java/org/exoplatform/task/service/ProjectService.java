@@ -16,16 +16,19 @@ import java.util.Set;
  */
 public interface ProjectService {
 
-  Project createDefaultStatusProjectWithManager(String name, String description, Long parentId, String username) throws ProjectNotFoundException;
+  Project createDefaultStatusProjectWithManager(String name, String description, Long parentId, String username)
+      throws ProjectNotFoundException;
 
   Project createDefaultStatusProjectWithAttributes(Long parentId, String name, String description,
-                        Set<String> managers, Set<String> participators) throws ProjectNotFoundException;
+                                                   Set<String> managers, Set<String> participators)
+      throws ProjectNotFoundException;
 
   Project createDefaultStatusProject(Project project);
 
   Project createProject(Project project);
 
-  Project updateProjectInfo(long id, String param, String[] values) throws ProjectNotFoundException, ParameterEntityException;
+  Project updateProjectInfo(long id, String param, String[] values)
+      throws ProjectNotFoundException, ParameterEntityException;
 
   void deleteProjectById(long id, boolean deleteChild) throws ProjectNotFoundException;
 
@@ -39,11 +42,14 @@ public interface ProjectService {
 
   List<Task> getTasksByProjectId(long id, OrderBy orderBy) throws ProjectNotFoundException;
 
-  List<Task> getTasksWithKeywordByProjectId(long id, OrderBy orderBy, String keyword) throws ProjectNotFoundException;
+  List<Task> getTasksWithKeywordByProjectId(long id, OrderBy orderBy, String keyword)
+      throws ProjectNotFoundException;
 
-  Project removePermissionFromProjectId(Long id, String permission, String type) throws ProjectNotFoundException, NotAllowedOperationOnEntityException;
+  Project removePermissionFromProjectId(Long id, String permission, String type)
+      throws ProjectNotFoundException, NotAllowedOperationOnEntityException;
 
-  Project addPermissionsFromProjectId(Long id, String permissions, String type) throws ProjectNotFoundException, NotAllowedOperationOnEntityException;
+  Project addPermissionsFromProjectId(Long id, String permissions, String type)
+      throws ProjectNotFoundException, NotAllowedOperationOnEntityException;
 
   List<Project> getProjectTreeByIdentity(Identity identity);
 

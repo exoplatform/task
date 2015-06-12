@@ -38,7 +38,8 @@ public class TaskParserImpl implements TaskParser {
     }
 
     TaskBuilder builder = new TaskBuilder();
-    ServiceLoader<TaskParserPlugin> parsers = ServiceLoader.load(TaskParserPlugin.class, this.getClass().getClassLoader());
+    ServiceLoader<TaskParserPlugin> parsers = ServiceLoader.load(TaskParserPlugin.class,
+        this.getClass().getClassLoader());
     String in = input;
     for(TaskParserPlugin parser : parsers) {
       in = parser.parse(in, builder);

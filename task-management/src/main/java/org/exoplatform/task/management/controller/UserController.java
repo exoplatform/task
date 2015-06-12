@@ -66,7 +66,7 @@ public class UserController {
             return Response.ok(array.toString());
         } catch (JSONException ex) {
             return Response.error(ex);
-        } catch (Exception ex) {
+        } catch (Exception ex) {// NOSONAR
             return Response.error(ex);
         }
     }
@@ -93,7 +93,7 @@ public class UserController {
             return Response.ok(array.toString());
         } catch (JSONException ex) {
             return Response.error(ex);
-        } catch (Exception ex) {
+        } catch (Exception ex) {// NOSONAR
             return Response.error(ex);
         }
     }
@@ -115,7 +115,7 @@ public class UserController {
           return Response.ok(array.toString()).withCharset(Tools.UTF_8);
         } catch (JSONException ex) {
           return Response.status(500);
-        } catch (Exception ex) {
+        } catch (Exception ex) {// NOSONAR
           return Response.status(500);
         }
       } else {

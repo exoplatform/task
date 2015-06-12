@@ -52,7 +52,9 @@ public class ProjectDAOImpl extends GenericDAOImpl<Project, Long> implements Pro
   @Override
   public List<Project> findSubProjectsByMemberships(Project project, List<String> memberships) {
     EntityManager em = daoHandler.getEntityManager();
-    Query query = em.createNamedQuery(project != null ? "Project.findSubProjectsByMemberships" : "Project.findRootProjectsByMemberships");
+    Query query = em.createNamedQuery(project != null ?
+        "Project.findSubProjectsByMemberships"
+        : "Project.findRootProjectsByMemberships");
     if(project != null) {
       query.setParameter("projectId", project.getId());
     }

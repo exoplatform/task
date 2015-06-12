@@ -46,7 +46,11 @@ public final class UserUtils {
         displayName = user.getFirstName();
       }
       if (user.getLastName() != null) {
-        displayName = displayName == null ? user.getLastName() : displayName + " " + user.getLastName();
+        if (displayName == null) {
+          displayName = user.getLastName();
+        } else {
+          displayName = new StringBuffer(displayName).append(" "+user.getLastName()).toString();
+        }
       }
       if(displayName == null) {
         displayName = user.getUserName();

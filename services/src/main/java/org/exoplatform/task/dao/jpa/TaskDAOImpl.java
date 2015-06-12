@@ -113,17 +113,17 @@ public class TaskDAOImpl extends GenericDAOImpl<Task, Long> implements TaskHandl
     if(query.getKeyword() != null && !query.getKeyword().isEmpty()) {
       String keyword = "%" + query.getKeyword() + "%";
       predicates.add(
-              cb.or(
-                  cb.like(task.<String>get("title"), keyword),
-                  cb.like(task.<String>get("description"), keyword),
-                  cb.like(task.<String>get("assignee"), keyword)
-              )
+          cb.or(
+              cb.like(task.<String>get("title"), keyword),
+              cb.like(task.<String>get("description"), keyword),
+              cb.like(task.<String>get("assignee"), keyword)
+          )
       );
     }
-    
+
     if (query.getCompleted() != null) {
       if (query.getCompleted()) {
-        predicates.add(cb.equal(task.get("completed"), query.getCompleted()));        
+        predicates.add(cb.equal(task.get("completed"), query.getCompleted()));
       } else {
         predicates.add(cb.notEqual(task.get("completed"), !query.getCompleted()));
       }
@@ -156,36 +156,41 @@ public class TaskDAOImpl extends GenericDAOImpl<Task, Long> implements TaskHandl
   public List<Task> getIncomingTask(String username, OrderBy orderBy) {
     StringBuilder jql = new StringBuilder();
     jql.append("SELECT ta FROM Task ta LEFT JOIN ta.coworker cowoker ")
-            .append("WHERE (ta.status.id is null or ta.status.id = 0) ")
-            .append("AND (ta.assignee = :userName OR ta.createdBy = :userName OR cowoker = :userName) AND ta.completed != TRUE");
+        .append("WHERE (ta.status.id is null or ta.status.id = 0) ")
+        .append("AND (ta.assignee = :userName OR ta.createdBy = :userName OR cowoker = :userName)")
+        .append(" AND ta.completed != TRUE");
 
     if(orderBy != null && !orderBy.getFieldName().isEmpty()) {
-      jql.append(" ORDER BY ta.").append(orderBy.getFieldName()).append(" ").append(orderBy.isAscending() ? "ASC" : " DESC");
+      jql.append(" ORDER BY ta.").append(orderBy.getFieldName()).append(" ").append(orderBy.isAscending() ?
+          "ASC"
+          : " DESC");
     }
 
     return daoHandler
-            .getEntityManager()
-            .createQuery(jql.toString(), Task.class)
-            .setParameter("userName", username)
-            .getResultList();
+        .getEntityManager()
+        .createQuery(jql.toString(), Task.class)
+        .setParameter("userName", username)
+        .getResultList();
   }
 
   @Override
   public List<Task> getToDoTask(String username, OrderBy orderBy) {
     StringBuilder jql = new StringBuilder();
     jql.append("SELECT ta FROM Task ta ")
-            .append("WHERE ta.assignee = :userName ")
-            .append("AND ta.completed != TRUE");
+        .append("WHERE ta.assignee = :userName ")
+        .append("AND ta.completed != TRUE");
 
     if(orderBy != null && !orderBy.getFieldName().isEmpty()) {
-      jql.append(" ORDER BY ta.").append(orderBy.getFieldName()).append(" ").append(orderBy.isAscending() ? "ASC" : " DESC");
+      jql.append(" ORDER BY ta.").append(orderBy.getFieldName()).append(" ").append(orderBy.isAscending() ?
+          "ASC"
+          : " DESC");
     }
 
     return daoHandler
-            .getEntityManager()
-            .createQuery(jql.toString(), Task.class)
-            .setParameter("userName", username)
-            .getResultList();
+        .getEntityManager()
+        .createQuery(jql.toString(), Task.class)
+        .setParameter("userName", username)
+        .getResultList();
   }
 }
 

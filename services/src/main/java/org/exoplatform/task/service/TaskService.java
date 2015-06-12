@@ -19,9 +19,11 @@ public interface TaskService {
 
   Task updateTask(Task task);
 
-  Task updateTaskInfo(long id, String param, String[] values) throws TaskNotFoundException, ParameterEntityException, StatusNotFoundException;
+  Task updateTaskInfo(long id, String param, String[] values)
+      throws TaskNotFoundException, ParameterEntityException, StatusNotFoundException;
 
-  Task updateTaskCompleted(long id, Boolean completed) throws TaskNotFoundException, ParameterEntityException, StatusNotFoundException;
+  Task updateTaskCompleted(long id, Boolean completed)
+      throws TaskNotFoundException, ParameterEntityException, StatusNotFoundException;
 
   void deleteTask(Task task);
 

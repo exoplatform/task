@@ -71,7 +71,9 @@ public class TaskServiceImpl implements TaskService {
   }
 
   @Override
-  public Task updateTaskInfo(long id, String param, String[] values) throws TaskNotFoundException, ParameterEntityException, StatusNotFoundException {
+  public Task updateTaskInfo(long id, String param, String[] values)
+      throws TaskNotFoundException, ParameterEntityException, StatusNotFoundException {
+
     Task task = getTaskById(id);
 
     if(task == null) {
@@ -98,7 +100,8 @@ public class TaskServiceImpl implements TaskService {
           task.setDuration(dateTo.getTimeInMillis() - dateFrom.getTimeInMillis());
         } catch (NumberFormatException ex) {
           LOG.info("Can parse date time value: "+values[0]+" or "+values[1]+" for Task with ID: "+id);
-          throw new ParameterEntityException(id, "Task", param, values[0]+" or "+values[1], "cannot be parse to date");
+          throw new ParameterEntityException(id, "Task", param, values[0]+" or "+values[1],
+              "cannot be parse to date", ex);
         }
       }
     } else {
@@ -116,7 +119,7 @@ public class TaskServiceImpl implements TaskService {
             task.setDueDate(date);
           } catch (ParseException ex) {
             LOG.info("Can parse date time value: "+value+" for Task with ID: "+id);
-            throw new ParameterEntityException(id, "Task", param, value, "cannot be parse to date");
+            throw new ParameterEntityException(id, "Task", param, value, "cannot be parse to date", ex);
           }
         }
       } else if("status".equalsIgnoreCase(param)) {
@@ -131,7 +134,7 @@ public class TaskServiceImpl implements TaskService {
 
         } catch (NumberFormatException ex) {
           LOG.info("Status is unacceptable: "+value+" for Task with ID: "+id);
-          throw new ParameterEntityException(id, "Task", param, value, "is unacceptable");
+          throw new ParameterEntityException(id, "Task", param, value, "is unacceptable", ex);
         }
       } else if("description".equalsIgnoreCase(param)) {
         task.setDescription(value);
@@ -156,7 +159,7 @@ public class TaskServiceImpl implements TaskService {
         task.setPriority(priority);
       } else {
         LOG.info("Field name: " + param + " is not supported for entity Task");
-        throw new ParameterEntityException(id, "Task", param, value, "is not supported for the entity Task");
+        throw new ParameterEntityException(id, "Task", param, value, "is not supported for the entity Task", null);
       }
     }
 
@@ -165,7 +168,9 @@ public class TaskServiceImpl implements TaskService {
   }
 
   @Override
-  public Task updateTaskCompleted(long id, Boolean completed) throws TaskNotFoundException, ParameterEntityException, StatusNotFoundException {
+  public Task updateTaskCompleted(long id, Boolean completed)
+      throws TaskNotFoundException, ParameterEntityException, StatusNotFoundException {
+
     String[] values = new String[1];
     values[0] = completed.toString();
     return updateTaskInfo(id, "completed", values);

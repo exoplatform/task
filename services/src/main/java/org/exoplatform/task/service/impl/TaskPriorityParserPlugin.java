@@ -19,11 +19,12 @@
 
 package org.exoplatform.task.service.impl;
 
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.exoplatform.task.domain.Priority;
 import org.exoplatform.task.service.TaskBuilder;
 import org.exoplatform.task.service.TaskParserPlugin;
 
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,7 +33,7 @@ import java.util.regex.Pattern;
  */
 public class TaskPriorityParserPlugin implements TaskParserPlugin {
 
-  private static final Logger LOG = Logger.getLogger("TaskPriorityParserPlugin");
+  private static final Log LOG = ExoLogger.getExoLogger(TaskPriorityParserPlugin.class);
 
   @Override
   public String parse(String input, TaskBuilder builder) {
@@ -43,7 +44,7 @@ public class TaskPriorityParserPlugin implements TaskParserPlugin {
       try {
         builder.withPriority(Priority.valueOf(priority.toUpperCase()));
       } catch (IllegalArgumentException ex) {
-        LOG.severe(ex.getStackTrace().toString());
+        LOG.debug("Issue during parsing task priority: ", ex);
       }
     }
 

@@ -40,7 +40,8 @@ public interface CommentHandler extends GenericDAO<Comment, Long> {
    * (Last comment will be at last)
    * @param task - Task object
    * @param start - The first row to select.
-   * @param limit - The limit row to select. If limit <= 0, the start param will be ignore and all comment will be loaded.
+   * @param limit - The limit row to select. If limit <= 0, the start param will be ignore and all comment will be
+   *              loaded.
    * @return list of comments
    */
   List<Comment> findCommentsOfTask(Task task, int start, int limit);

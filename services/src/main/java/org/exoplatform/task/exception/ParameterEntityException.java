@@ -29,17 +29,23 @@ public class ParameterEntityException extends AbstractEntityException {
   private String param;
   private String value;
   private String exception;
+  private Throwable cause;
 
-  public ParameterEntityException(Long entityId, String entityType, String param, String value, String exception) {
+  public ParameterEntityException(Long entityId, String entityType, String param, String value, String exception,
+                                  Throwable cause) {
     super(entityId, entityType, HTTP_STATUS_CODE_ERROR);
     this.param = param;
     this.value = value;
     this.exception = exception;
+    this.cause = cause;
   }
 
   @Override
   public String getMessage() {
-    return "Parameter "+param+" with value =  on "+getEntityType()+" with ID: "+getEntityId()+" "+exception;
+    StringBuffer message = new StringBuffer("Parameter "+param+" with value =  on "+getEntityType()+
+        " with ID: "+getEntityId()+" "+exception);
+    if (cause != null) message.append(" Original cause is: "+cause);
+    return message.toString();
   }
 
   public String getParam() {

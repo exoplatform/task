@@ -34,11 +34,11 @@
     @WebJar("select2")
 })
 @Scripts({
-        @Script(id = "task-management-js", value = "javascripts/task-management.js"),
-        @Script(id = "project-menu-js", value = "javascripts/project-menu.js")
+    @Script(id = "task-management-js", value = "javascripts/task-management.js"),
+    @Script(id = "project-menu-js", value = "javascripts/project-menu.js")
 })
 @Less({
-	@Stylesheet(id = "style-less", value = "less/style.less")
+    @Stylesheet(id = "style-less", value = "less/style.less")
 })
 @Stylesheets({
     @Stylesheet(id = "style.css", value = "styles/style.css"),

@@ -31,7 +31,8 @@ import java.util.Set;
 @Table(name = "TASK_STATUS")
 @NamedQueries({
     @NamedQuery(name = "Status.findLowestRankStatusByProject",
-        query = "SELECT s FROM Status s WHERE s.rank = (SELECT MIN(s2.rank) FROM Status s2 WHERE s2.project.id = :projectId) AND s.project.id = :projectId)")
+        query = "SELECT s FROM Status s WHERE s.rank = (SELECT MIN(s2.rank) FROM Status s2 " +
+            "WHERE s2.project.id = :projectId) AND s.project.id = :projectId)")
 })
 public class Status {
   @Id
@@ -112,10 +113,10 @@ public class Status {
   public void setProject(Project project) {
     this.project = project;
   }
-  
+
   public Status clone(boolean cloneTask) {
     Status status = new Status(this.getName(), this.getRank(), new HashSet<Task>(), null);
-    
+
     if (cloneTask) {
       if (this.getTasks() != null) {
         for (Task t : this.getTasks()) {

@@ -131,10 +131,12 @@ public class TaskInjector extends DataInjector {
     nbIncomingTasks = getIntegerParam(params, NUMBER_INCOMING_TASKS, DEFAULT_NUMBER_INCOMING_TASKS);
     taskType = getStringParam(params, TASK_TYPE, DEFAULT_TASK_TYPE);
     if (!USER_TASK_TYPE.equals(taskType) && !SPACE_TASK_TYPE.equals(taskType)) {
-      LOG.warn(TASK_TYPE+" parameter ["+taskType+"] is invalid, the default one will be used."+TASK_TYPE+" parameter must be equal to "+USER_TASK_TYPE+" (default) or "+SPACE_TASK_TYPE);
+      LOG.warn(TASK_TYPE+" parameter ["+taskType+"] is invalid, the default one will be used."+TASK_TYPE
+          +" parameter must be equal to "+USER_TASK_TYPE+" (default) or "+SPACE_TASK_TYPE);
       taskType = USER_TASK_TYPE;
     }
-    namePrefix = (USER_TASK_TYPE.equals(taskType)) ? getStringParam(params, NAME_PREFIX, DEFAULT_USER_PREFIX) : getStringParam(params, NAME_PREFIX, DEFAULT_SPACE_PREFIX);
+    namePrefix = (USER_TASK_TYPE.equals(taskType)) ? getStringParam(params, NAME_PREFIX, DEFAULT_USER_PREFIX) :
+        getStringParam(params, NAME_PREFIX, DEFAULT_SPACE_PREFIX);
     nameSuffix = getIntegerParam(params, NAME_SUFFIX, DEFAULT_SUFFIX);
     taskPrefix = getStringParam(params, TASK_PREFIX, DEFAULT_TASK_PREFIX);
     projectPrefix = getStringParam(params, PROJECT_PREFIX, DEFAULT_PROJECT_PREFIX);
@@ -175,7 +177,8 @@ public class TaskInjector extends DataInjector {
 
   private void addPersonnalTasks() {
 
-    LOG.info("Adding " + nbProject + " personal projects with " + nbTasks + " tasks for "+(userTo-userFrom)+" user(s)" );
+    LOG.info("Adding " + nbProject + " personal projects with " + nbTasks + " tasks for "+(userTo-userFrom)
+        +" user(s)" );
 
     for (int i = userFrom; i < userTo; i++) {
 

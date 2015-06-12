@@ -23,6 +23,8 @@ import juzu.MimeType;
 import juzu.Resource;
 import juzu.Response;
 import org.exoplatform.commons.juzu.ajax.Ajax;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.exception.AbstractEntityException;
@@ -41,6 +43,8 @@ import java.util.List;
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
 public class StatusController {
+
+  private static final Log LOG = ExoLogger.getExoLogger(StatusController.class);
 
   @Inject
   ProjectService projectService;
@@ -78,8 +82,10 @@ public class StatusController {
       return Response.ok(array.toString());
 
     } catch (AbstractEntityException e) {
+      LOG.warn("Impossible to retrieve status for Project "+projectId, e);
       return Response.status(e.getHttpStatusCode()).body(e.getMessage());
     } catch (JSONException ex) {
+      LOG.warn("JSONException while create reporting", ex);
       return Response.status(500).body("JSONException while create reporting");
     }
   }

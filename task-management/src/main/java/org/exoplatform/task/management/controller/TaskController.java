@@ -135,7 +135,7 @@ public class TaskController {
 
     } catch (AbstractEntityException e) {
       return Response.status(e.getHttpStatusCode()).body(e.getMessage());
-    } catch (Exception ex) { //Throw by orgService
+    } catch (Exception ex) {// NOSONAR
       return Response.status(500).body(ex.getMessage());
     }
   }

@@ -28,8 +28,10 @@ import java.util.Date;
 @Entity
 @Table(name = "TASK_COMMENTS")
 @NamedQueries({
-        @NamedQuery(name = "Comment.countCommentOfTask", query = "SELECT count(c) FROM Comment c WHERE c.task.id = :taskId"),
-        @NamedQuery(name = "Comment.findCommentsOfTask", query = "SELECT c FROM Comment c WHERE c.task.id = :taskId ORDER BY c.createdTime DESC")
+    @NamedQuery(name = "Comment.countCommentOfTask",
+        query = "SELECT count(c) FROM Comment c WHERE c.task.id = :taskId"),
+    @NamedQuery(name = "Comment.findCommentsOfTask",
+        query = "SELECT c FROM Comment c WHERE c.task.id = :taskId ORDER BY c.createdTime DESC")
 })
 public class Comment {
   @Id

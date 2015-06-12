@@ -36,13 +36,15 @@ import java.util.Set;
 @Entity
 @Table(name = "TASK_PROJECTS")
 @NamedQueries({
-    @NamedQuery(name = "Project.getRootProjects", query = "SELECT p FROM Project p WHERE p.parent.id = 0 OR p.parent is null"),
-    @NamedQuery(name = "Project.findSubProjects", query = "SELECT p FROM Project p WHERE p.parent.id = :projectId"),
+    @NamedQuery(name = "Project.getRootProjects",
+        query = "SELECT p FROM Project p WHERE p.parent.id = 0 OR p.parent is null"),
+    @NamedQuery(name = "Project.findSubProjects",
+        query = "SELECT p FROM Project p WHERE p.parent.id = :projectId"),
     @NamedQuery(name = "Project.findAllByMembership",
         query = "SELECT p FROM Project p " +
-        "  LEFT JOIN p.manager managers " +
-        "  LEFT JOIN p.participator participators " +
-        "WHERE managers in (:memberships) OR participators in (:memberships)"),
+            "  LEFT JOIN p.manager managers " +
+            "  LEFT JOIN p.participator participators " +
+            "WHERE managers in (:memberships) OR participators in (:memberships)"),
     @NamedQuery(name = "Project.findRootProjectsByMemberships",
         query = "SELECT p FROM Project p " +
             "  LEFT JOIN p.manager managers " +
@@ -60,7 +62,7 @@ public class Project {
 
   private static final String PREFIX_CLONE = "Copy of ";
 
-  @Id 
+  @Id
   @GeneratedValue
   @Column(name = "PROJECT_ID")
   private long      id;
@@ -185,11 +187,11 @@ public class Project {
   public void setChildren(List<Project> children) {
     this.children = children;
   }
-  
+
   public Project clone(boolean cloneTask) {
     Project project = new Project(PREFIX_CLONE + this.getName(), this.getDescription(), new HashSet<Status>(),
-                                  new HashSet<String>(this.getManager()), new HashSet<String>(this.getParticipator()));
-    
+        new HashSet<String>(this.getManager()), new HashSet<String>(this.getParticipator()));
+
     project.setColor(this.getColor());
     project.setDueDate(this.getDueDate());
     project.setParent(this.getParent());
@@ -201,7 +203,7 @@ public class Project {
         cloned.setProject(project);
       }
     }
-    
+
     if (this.getChildren() != null) {
       for (Project p : this.getChildren()) {
         Project cloned = p.clone(cloneTask);
@@ -209,10 +211,10 @@ public class Project {
         cloned.setParent(project);
       }
     }
-    
+
     return project;
   }
-  
+
   public boolean canView(Identity user) {
     Set<String> permissions = new HashSet<String>(getParticipator());
     permissions.addAll(getManager());
@@ -235,14 +237,14 @@ public class Project {
           memberships.add(entry);
         }
       }
-      
+
       for (MembershipEntry entry :  user.getMemberships()) {
         if (memberships.contains(entry)) {
           return true;
         }
       }
-    }    
-    
+    }
+
     return false;
   }
 
@@ -267,5 +269,5 @@ public class Project {
       return false;
     return true;
   }
-  
+
 }

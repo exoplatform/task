@@ -19,6 +19,8 @@
 
 package org.exoplatform.task.service.impl;
 
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.social.core.identity.model.Profile;
 import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
@@ -36,6 +38,8 @@ import javax.inject.Singleton;
 @Singleton
 public class UserServiceImpl implements UserService {
   private static final User GUEST = new User("guest", "Guest", LinkProvider.PROFILE_DEFAULT_AVATAR_URL);
+
+  private static final Log LOG = ExoLogger.getExoLogger(UserServiceImpl.class);
 
   @Inject
   private OrganizationService orgService;
@@ -62,7 +66,8 @@ public class UserServiceImpl implements UserService {
       }
       return new User(username, profile.getFullName(), avatarURL);
 
-    } catch (Exception ex) {
+    } catch (Exception ex) {// NOSONAR Throw by orgService
+      LOG.debug("User not find, return GUEST", ex);
       return GUEST;
     }
   }

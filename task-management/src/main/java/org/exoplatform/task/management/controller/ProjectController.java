@@ -244,7 +244,7 @@ public class ProjectController {
 
     } catch (AbstractEntityException e) {
       return Response.status(e.getHttpStatusCode()).body(e.getMessage());
-    } catch (Exception ex) { //Throw by orgService
+    } catch (Exception ex) {// NOSONAR
       return Response.status(500).body(ex.getMessage());
     }
 
@@ -259,7 +259,7 @@ public class ProjectController {
     try {
       groups = orgService.getGroupHandler().getAllGroups();
       msTypes = orgService.getMembershipTypeHandler().findMembershipTypes();
-    } catch (Exception e) {
+    } catch (Exception e) {// NOSONAR
       return Response.status(503).body(e.getMessage());
     }
 

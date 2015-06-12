@@ -65,7 +65,8 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   @Override
-  public Project createDefaultStatusProjectWithManager(String name, String description, Long parentId, String username) throws ProjectNotFoundException {
+  public Project createDefaultStatusProjectWithManager(String name, String description, Long parentId, String username)
+      throws ProjectNotFoundException {
 
     Set<String> managers = new HashSet<String>();
     managers.add(username);
@@ -75,7 +76,9 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   @Override
-  public Project createDefaultStatusProjectWithAttributes(Long parentId, String name, String description, Set<String> managers, Set<String> participators) throws ProjectNotFoundException {
+  public Project createDefaultStatusProjectWithAttributes(Long parentId, String name, String description,
+                                                          Set<String> managers, Set<String> participators)
+      throws ProjectNotFoundException {
 
     Project project = new Project(name, description, null, managers, participators);
 
@@ -110,7 +113,8 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   @Override
-  public Project updateProjectInfo(long id, String param, String[] values) throws ProjectNotFoundException, ParameterEntityException {
+  public Project updateProjectInfo(long id, String param, String[] values)
+      throws ProjectNotFoundException, ParameterEntityException {
 
     String val = values != null && values.length > 0 ? values[0] : null;
 
@@ -119,7 +123,7 @@ public class ProjectServiceImpl implements ProjectService {
     if("name".equalsIgnoreCase(param)) {
       if(val == null || val.isEmpty()) {
         LOG.info("Name of project must not empty");
-        throw new ParameterEntityException(id, "Project", param, val, "must not be empty");
+        throw new ParameterEntityException(id, "Project", param, val, "must not be empty", null);
       }
       project.setName(val);
     } else if("manager".equalsIgnoreCase(param)) {
@@ -148,7 +152,7 @@ public class ProjectServiceImpl implements ProjectService {
           project.setDueDate(date);
         } catch (ParseException e) {
           LOG.info("can not parse date string: " + val);
-          throw new ParameterEntityException(id, "Project", param, val, "cannot be parse to date");
+          throw new ParameterEntityException(id, "Project", param, val, "cannot be parse to date", e);
         }
       }
     } else if("description".equalsIgnoreCase(param)) {
@@ -157,7 +161,7 @@ public class ProjectServiceImpl implements ProjectService {
       project.setColor(val);
     } else {
       LOG.info("Field name: " + param + " is not supported for entity Project");
-      throw new ParameterEntityException(id, "Project", param, val, "is not supported for the entity Project");
+      throw new ParameterEntityException(id, "Project", param, val, "is not supported for the entity Project", null);
     }
 
     return daoHandler.getProjectHandler().update(project);
@@ -220,7 +224,8 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   @Override
-  public List<Task> getTasksWithKeywordByProjectId(long id, OrderBy orderBy, String keyword) throws ProjectNotFoundException {
+  public List<Task> getTasksWithKeywordByProjectId(long id, OrderBy orderBy, String keyword)
+      throws ProjectNotFoundException {
 
     Project project = getProjectById(id); //Can throw ProjectNotFoundException
 
@@ -234,7 +239,8 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   @Override
-  public Project removePermissionFromProjectId(Long id, String permission, String type) throws ProjectNotFoundException, NotAllowedOperationOnEntityException {
+  public Project removePermissionFromProjectId(Long id, String permission, String type)
+      throws ProjectNotFoundException, NotAllowedOperationOnEntityException {
 
     Project project = daoHandler.getProjectHandler().find(id);
 
@@ -257,7 +263,8 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   @Override
-  public Project addPermissionsFromProjectId(Long id, String permissions, String type) throws ProjectNotFoundException, NotAllowedOperationOnEntityException {
+  public Project addPermissionsFromProjectId(Long id, String permissions, String type)
+      throws ProjectNotFoundException, NotAllowedOperationOnEntityException {
 
     Project project = getProjectById(id);
 
