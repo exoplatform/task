@@ -36,6 +36,7 @@ import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.task.domain.Project;
+import org.exoplatform.task.domain.UserSetting;
 import org.exoplatform.task.exception.AbstractEntityException;
 import org.exoplatform.task.exception.ProjectNotFoundException;
 import org.exoplatform.task.model.User;
@@ -300,11 +301,12 @@ public class ProjectController {
   @Resource
   @Ajax
   @MimeType.HTML
-  public Response projectTree() {
+  public Response projectTree(SecurityContext securityContext) {
     List<Project> projects = getProjectTree();
-
+    UserSetting setting = userService.getUserSetting(securityContext.getRemoteUser());
     return listProjects
         .with()
+        .userSetting(setting)
         .projects(projects)
         .ok();
   }

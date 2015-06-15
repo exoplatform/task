@@ -22,11 +22,17 @@ package org.exoplatform.task.service.impl;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
+import org.exoplatform.services.security.Identity;
 import org.exoplatform.social.core.identity.model.Profile;
 import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
 import org.exoplatform.social.core.manager.IdentityManager;
 import org.exoplatform.social.core.service.LinkProvider;
+import org.exoplatform.task.domain.Project;
+import org.exoplatform.task.domain.UserSetting;
+import org.exoplatform.task.exception.NotAllowedOperationOnEntityException;
+import org.exoplatform.task.exception.ProjectNotFoundException;
 import org.exoplatform.task.model.User;
+import org.exoplatform.task.service.DAOHandler;
 import org.exoplatform.task.service.UserService;
 
 import javax.inject.Inject;
@@ -46,6 +52,9 @@ public class UserServiceImpl implements UserService {
 
   @Inject
   private IdentityManager identityManager;
+
+  @Inject
+  private DAOHandler daoHandler;
 
   @Override
   public User loadUser(String username) {
@@ -70,5 +79,38 @@ public class UserServiceImpl implements UserService {
       LOG.debug("User not find, return GUEST", ex);
       return GUEST;
     }
+  }
+
+  @Override
+  public UserSetting getUserSetting(String username) {
+    return daoHandler.getUserSettingHandler().getOrCreate(username);
+  }
+
+  @Override
+  public void hideProject(Identity identity, Long projectId, boolean hide) throws ProjectNotFoundException, NotAllowedOperationOnEntityException {
+    Project project = daoHandler.getProjectHandler().find(projectId);
+    if (project == null) {
+      throw new ProjectNotFoundException(projectId);
+    }
+
+    if (!project.canView(identity)) {
+      throw new NotAllowedOperationOnEntityException(projectId, "Project", "hide");
+    }
+
+    UserSetting setting = daoHandler.getUserSettingHandler().getOrCreate(identity.getUserId());
+    if (hide) {
+      setting.getHiddenProjects().add(project);
+    } else {
+      setting.getHiddenProjects().remove(project);
+    }
+
+    daoHandler.getUserSettingHandler().update(setting);
+  }
+
+  @Override
+  public void showHiddenProject(String username, boolean show) {
+    UserSetting setting = daoHandler.getUserSettingHandler().getOrCreate(username);
+    setting.setShowHiddenProject(show);
+    daoHandler.getUserSettingHandler().update(setting);
   }
 }

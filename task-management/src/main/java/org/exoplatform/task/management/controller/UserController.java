@@ -23,12 +23,17 @@ import juzu.MimeType;
 import juzu.Resource;
 import juzu.Response;
 import juzu.impl.common.Tools;
+import juzu.request.SecurityContext;
 import org.exoplatform.commons.juzu.ajax.Ajax;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.Query;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.services.organization.UserHandler;
+import org.exoplatform.services.security.ConversationState;
+import org.exoplatform.services.security.Identity;
+import org.exoplatform.task.exception.NotAllowedOperationOnEntityException;
+import org.exoplatform.task.exception.ProjectNotFoundException;
 import org.exoplatform.task.utils.UserUtils;
 import org.exoplatform.task.service.UserService;
 import org.json.JSONArray;
@@ -121,5 +126,28 @@ public class UserController {
       } else {
         return Response.ok("[]");
       }
+    }
+
+    @Resource
+    @Ajax
+    @MimeType("text/plain")
+    public Response showHiddenProject(Boolean show, SecurityContext securityContext) {
+        userService.showHiddenProject(securityContext.getRemoteUser(), show);
+        return Response.ok("Update successfully");
+    }
+
+    @Resource
+    @Ajax
+    @MimeType("text/plain")
+    public Response hideProject(Long projectId, Boolean hide) {
+        try {
+            Identity identity = ConversationState.getCurrent().getIdentity();
+            userService.hideProject(identity, projectId, hide);
+            return Response.ok("Hide project successfully");
+        } catch (ProjectNotFoundException ex) {
+            return Response.notFound(ex.getMessage());
+        } catch (NotAllowedOperationOnEntityException ex) {
+            return Response.status(403).body(ex.getMessage());
+        }
     }
 }

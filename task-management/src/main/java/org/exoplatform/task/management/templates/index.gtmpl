@@ -6,6 +6,7 @@
 #{param name=groupBy /}
 #{param name=orderBy /}
 #{param name=projects/}
+#{param name=userSetting/}
 
 <div class="taskMngCont">
 	<div id="taskManagement" class="row-fluid">
@@ -17,7 +18,7 @@
 	            <li class="accordion-heading">
 	                <a class="project-name" data-id="-2" href="#">To Do</a>
 	            </li>
-	            <li class="accordion-heading dropdown">
+	            <li class="accordion-heading dropdown" data-showhiddenproject="${userSetting.showHiddenProject}">
 	                <div class="item">
 		                <a class="dropdown-toggle actionIconSmall add-new-project pull-right"
 		                   data-toggle="dropdown"
@@ -36,10 +37,18 @@
 		                	<span class="arrowLeft"></span>
 		                	<ul class="uiDropdownMenu">
 			                    <li><a class="new-project" data-projectId="0" href="#"><i class="uiIconAddProject uiIconLightGray"></i>Add project</a></li>
-			                    <li><a href="#"><i class="uiIconShowProject uiIconLightGray"></i>Show Hidden projects</a></li>
+			                    <li><a href="javascript:void(0)" class="actionShowHiddenProject">
+                                    <i class="uiIconShowProject uiIconLightGray"></i>
+                                    <span class="label-showHiddenProject">
+                                        &{label.showHiddenProject}
+                                    </span>
+                                    <span class="label-hideHiddenProject">
+                                        &{label.hideHiddenProject}
+                                    </span>
+                                </a></li>
 			                </ul>
 			            </div>
-		                <a class="project-name" href="#">Projects</a>
+		                <a class="project-name" href="#">&{label.projects}</a>
 					</div>
 	
 	                #{include path=listProjects.gtmpl /}

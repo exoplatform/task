@@ -1,15 +1,27 @@
 #{param name=projects/}
+#{param name=userSetting/}
 
 <%
 import org.exoplatform.services.security.ConversationState;
-    
+
 def displayListProjectItem(project, level) {
     def identity = ConversationState.getCurrent().getIdentity();
     def hasChild = (project.children != null && project.children.size() > 0);
     def hasChildClass = hasChild  ? 'has-child' : '';
-	def indent = (level - 1) * 20; 
+	def indent = (level - 1) * 20;
+    def isHidden = userSetting.isHiddenProject(project);
+    def isAllChildHidden = true;
+    if (hasChild) {
+        project.children.each {p ->
+            if (!userSetting.isHiddenProject(p)) {
+                isAllChildHidden = false;
+            }
+        };
+    } else {
+        isAllChildHidden = false;
+    }
 %>
-    <li class="dropdown project-item ${project.color == '' ? 'no-color' : ''}" data-projectId="${project.id}">
+    <li class="dropdown project-item ${project.color == '' ? 'no-color' : ''} ${isAllChildHidden ? "all-children-hided" : ""}" data-projectId="${project.id}" data-hiddenproject="${isHidden}">
         <div class="sub-item" style="padding-left: <%=indent%>px">
         <%if (project.canEdit(identity)) { %>
 	        <a class="dropdown-toggle pull-right"
@@ -20,12 +32,18 @@ def displayListProjectItem(project, level) {
 	        <div class="dropdown-menu uiDropdownWithIcon" style="left: 100%;top: -100px;">
 	        	<span class="arrowLeft" style = "top: 115px;"></span>
 	        	<ul class="uiDropdownMenu project-menu" data-projectId="${project.id}">
-		            <li><a href="#"><i class="uiIconEditMini uiIconLightGray"></i>Add task</a></li>
-		            <li><a href="#" class="share-project"><i class="uiIconShare uiIconLightGray"></i>Share</a></li>
-		            <li><a class="clone-project" data-projectId="${project.id}" href="#"><i class="uiIconCloneNode uiIconLightGray"></i>Clone</a></li>
-		            <li><a class="delete-project" href="#"><i class="uiIconTrash uiIconLightGray"></i>Delete</a></li>
-		            <li><a href="#"><i class="uiIconHide uiIconLightGray"></i>Hide</a></li>
-		            <li><a class="new-project" data-projectId="${project.id}" href="#"><i class="uiIconAddProject uiIconLightGray"></i>Add project</a></li>
+		            <li><a href="#"><i class="uiIconEditMini uiIconLightGray"></i>&{label.addTask}</a></li>
+		            <li><a href="#" class="share-project"><i class="uiIconShare uiIconLightGray"></i>&{label.share}</a></li>
+		            <li><a class="clone-project" data-projectId="${project.id}" href="#"><i class="uiIconCloneNode uiIconLightGray"></i>&{label.clone}</a></li>
+		            <li><a class="delete-project" href="#"><i class="uiIconTrash uiIconLightGray"></i>&{label.delete}</a></li>
+		            <li>
+                        <a href="javascript:void(0)" class="actionHideProject">
+                            <i class="uiIconHide uiIconLightGray"></i>
+                            <span class="label-show">&{label.show}</span>
+                            <span class="label-hide">&{label.hide}</span>
+                        </a>
+                    </li>
+		            <li><a class="new-project" data-projectId="${project.id}" href="#"><i class="uiIconAddProject uiIconLightGray"></i>&{label.addProject}</a></li>
 		            <li class="noColor changeProjectColor" data-color="">No Color</li>
 		            <li class="calendarTableColor">
                         <%
@@ -63,18 +81,27 @@ def displayListProjectItem(project, level) {
 
 def displayListProjects(projects, parentId, level) { %>
     <ul class="list-projects" parentId="${parentId}">
+        <%
+            def allProjectAreHidden = true;
+        %>
         <%if(projects.size() == 0) {%>
         <li class="no-project center muted">
-            No project
+            &{label.noProject}
         </li>
         <%} else {
-        	level++; 
+        	level++;
         	projects.each { project ->
+                if (!userSetting.isHiddenProject(project)) allProjectAreHidden = false;
             	displayListProjectItem(project, level)
         	}
         	level--;
         }
         %>
+        <% if (parentId == 0) {%>
+        <li class="no-project center muted ${allProjectAreHidden ? "all-project-hidden" : "not-all-project-hidden"}">
+            &{label.allProjectAreHidden}
+        </li>
+        <%}%>
     </ul>
 <%}%>
 

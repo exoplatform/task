@@ -17,24 +17,28 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.exoplatform.task.service;
+package org.exoplatform.task.dao.jpa;
 
-import org.exoplatform.services.security.Identity;
+import org.exoplatform.task.dao.UserSettingHandler;
 import org.exoplatform.task.domain.UserSetting;
-import org.exoplatform.task.exception.NotAllowedOperationOnEntityException;
-import org.exoplatform.task.exception.ProjectNotFoundException;
-import org.exoplatform.task.model.User;
+import org.exoplatform.task.service.jpa.DAOHandlerJPAImpl;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
-public interface UserService {
+public class UserSettingDAO extends GenericDAOImpl<UserSetting, String> implements UserSettingHandler {
 
-  User loadUser(String username);
+  public UserSettingDAO(DAOHandlerJPAImpl daoHandlerJPA) {
+    super(daoHandlerJPA);
+  }
 
-  UserSetting getUserSetting(String username);
-
-  void showHiddenProject(String username, boolean show);
-
-  void hideProject(Identity identity, Long projectId, boolean hide) throws ProjectNotFoundException, NotAllowedOperationOnEntityException;
+  @Override
+  public UserSetting getOrCreate(String username) {
+    UserSetting setting = this.find(username);
+    if (setting == null) {
+      setting = new UserSetting(username);
+      this.create(setting);
+    }
+    return this.find(username);
+  }
 }

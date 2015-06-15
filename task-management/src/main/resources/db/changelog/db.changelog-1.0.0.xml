@@ -174,4 +174,27 @@
     </createTable>
   </changeSet>
 
+  <!-- Definition of TASK_USER_SETTING table -->
+  <changeSet author="tuyennt@exoplatform.com" id="1.0.0-12">
+    <createTable tableName="TASK_USER_SETTING">
+      <column name="USERNAME" type="VARCHAR(50)">
+        <constraints primaryKey="true" primaryKeyName="PK_TASK_USER_SETTING" nullable="false" unique="true"/>
+      </column>
+      <column name="SHOW_HIDDEN_PROJECT" type="BIT" defaultValue="0">
+        <constraints nullable="true"/>
+      </column>
+    </createTable>
+  </changeSet>
+  <!-- Definition of TASK_HIDDEN_PROJECT table -->
+  <changeSet author="tuyennt@exoplatform.com" id="1.0.0-13">
+    <createTable tableName="TASK_HIDDEN_PROJECT">
+      <column name="USERNAME" type="VARCHAR(50)">
+        <constraints foreignKeyName="FK_TASK_HIDDEN_PROJECT_TASK_USER_SETTING_01" references="TASK_USER_SETTING(USERNAME)" nullable="false"/>
+      </column>
+      <column name="PROJECT_ID" type="BIGINT">
+        <constraints foreignKeyName="FK_TASK_HIDDEN_PROJECT_TASK_PROJECTS_01" references="TASK_PROJECTS(PROJECT_ID)" nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+
 </databaseChangeLog>

@@ -27,8 +27,10 @@ import juzu.impl.common.Tools;
 import juzu.request.SecurityContext;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.domain.UserSetting;
 import org.exoplatform.task.service.TaskParser;
 import org.exoplatform.task.service.TaskService;
+import org.exoplatform.task.service.UserService;
 
 import javax.inject.Inject;
 import java.util.HashMap;
@@ -46,6 +48,9 @@ public class TaskManagement {
 
   @Inject
   TaskParser taskParser;
+
+  @Inject
+  UserService userService;
 
   @Inject
   @Path("index.gtmpl")
@@ -68,6 +73,8 @@ public class TaskManagement {
 
     List<Project> projects = projectController.getProjectTree();
 
+    UserSetting setting = userService.getUserSetting(username);
+
     return index.with()
         .currentProjectId(-1)
         .project(null)
@@ -77,6 +84,7 @@ public class TaskManagement {
         .groupBy("")
         .orderBy("")
         .projects(projects)
+        .userSetting(setting)
         .ok().withCharset(Tools.UTF_8);
   }
 

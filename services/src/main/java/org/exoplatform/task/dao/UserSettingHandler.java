@@ -17,24 +17,13 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.exoplatform.task.service;
+package org.exoplatform.task.dao;
 
-import org.exoplatform.services.security.Identity;
 import org.exoplatform.task.domain.UserSetting;
-import org.exoplatform.task.exception.NotAllowedOperationOnEntityException;
-import org.exoplatform.task.exception.ProjectNotFoundException;
-import org.exoplatform.task.model.User;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
-public interface UserService {
-
-  User loadUser(String username);
-
-  UserSetting getUserSetting(String username);
-
-  void showHiddenProject(String username, boolean show);
-
-  void hideProject(Identity identity, Long projectId, boolean hide) throws ProjectNotFoundException, NotAllowedOperationOnEntityException;
+public interface UserSettingHandler extends GenericDAO<UserSetting, String> {
+  UserSetting getOrCreate(String username);
 }

@@ -23,6 +23,7 @@ import org.exoplatform.task.dao.CommentHandler;
 import org.exoplatform.task.dao.ProjectHandler;
 import org.exoplatform.task.dao.StatusHandler;
 import org.exoplatform.task.dao.TaskHandler;
+import org.exoplatform.task.dao.UserSettingHandler;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
@@ -35,4 +36,6 @@ public interface DAOHandler {
   public CommentHandler getCommentHandler();
 
   public StatusHandler getStatusHandler();
+
+  public UserSettingHandler getUserSettingHandler();
 }

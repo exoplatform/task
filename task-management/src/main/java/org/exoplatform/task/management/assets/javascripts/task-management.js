@@ -786,5 +786,58 @@ $(document).ready(function() {
             $(this).find('.uiIcon').attr('class','uiIcon uiIconArrowDown');
         }
     });
+
+    $leftPanel.on('click', '.actionShowHiddenProject', function(e) {
+        var $a = $(e.target || e.srcElement).closest('a');
+        var $projects = $a.closest('li[data-showhiddenproject]');
+        var isShowHidden = $projects.data('showhiddenproject');
+        var data = {show: !isShowHidden};
+        $a.jzAjax('UserController.showHiddenProject()', {
+            data: data,
+            success: function(message) {
+                $projects.attr('data-showhiddenproject', !isShowHidden ? "true" : "false");
+                $projects.data('showhiddenproject', !isShowHidden);
+            },
+            error : function(jqXHR, textStatus, errorThrown) {
+                console.error && console.error('update failure: ' + jqXHR.responseText);
+            }
+        });
+        return true;
+    });
+
+    $leftPanel.on('click', '.actionHideProject', function(e) {
+        var $a = $(e.target || e.srcElement).closest('a');
+        var $project = $(e.target).closest('.project-item');
+        var projectId = $project.data('projectid');
+        var isHidden = $project.data('hiddenproject');
+        var data = {projectId: projectId, hide: !isHidden};
+        $a.jzAjax('UserController.hideProject()', {
+            data: data,
+            success: function(message) {
+                // Update data attribute in DOM element
+                $project.attr('data-hiddenproject', !isHidden ? "true" : "false");
+                $project.data('hiddenproject', !isHidden);
+
+                //. Check is all projects are hidden or not
+                var $projectList = $project.closest('li[data-showhiddenproject]');
+                if ($projectList.find('[parentid="0"] > li[data-hiddenproject="false"]').length == 0) {
+                    // If all project are hidden, we need add message "All projects are hidden"
+                    $projectList.find('li.not-all-project-hidden')
+                        .removeClass('not-all-project-hidden')
+                        .addClass('all-project-hidden');
+
+                } else {
+                    $projectList.find('li.all-project-hidden')
+                        .removeClass('all-project-hidden')
+                        .addClass('not-all-project-hidden');
+                }
+            },
+            error : function(jqXHR, textStatus, errorThrown) {
+                console.error && console.error('update failure: ' + jqXHR.responseText);
+            }
+        });
+
+        return true;
+    });
   });
 });

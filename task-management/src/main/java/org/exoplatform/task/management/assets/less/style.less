@@ -117,6 +117,47 @@
 .project-description .editableform {
     width: 100%;
 }
+li[data-showhiddenproject="false"] {
+  li[data-hiddenproject="true"] {
+    display: none;
+  }
+  .label-hideHiddenProject {
+    display: none;
+  }
+  li.all-children-hided {
+    a.project-name > i {
+      display: none;
+    }
+  }
+}
+li[data-showhiddenproject="true"] {
+  .label-showHiddenProject {
+    display: none;
+  }
+  .all-project-hidden {
+    display: none;
+  }
+}
+li[data-hiddenproject="true"] {
+  a.project-name {
+    opacity: 0.5;
+  }
+  > .sub-item {
+    .label-hide {
+      display: none;
+    }
+  }
+}
+li[data-hiddenproject="false"] {
+  > .sub-item {
+    .label-show {
+      display: none;
+    }
+  }
+}
+.not-all-project-hidden {
+  display: none;
+}
 
 .empty-box {
     position: relative;
@@ -343,7 +384,7 @@
 }
 
 .filter-form  {
-   
+
      .btn.dropdown-toggle {
         padding-right: 10px;
      }
@@ -394,7 +435,7 @@
         margin-top: -8px;
         position: absolute;
         top: 50%;
-            
+
     }
 }
 .rightPanel{
@@ -402,7 +443,7 @@
         left: -18px;
         right: auto;
     }
-}   
+}
 .centerPanel {
     .uiSearchInput.searchWithIcon {
         display: block;
@@ -459,7 +500,7 @@
 
 .table-project {
     .column-item {
-        .actionIcon {            
+        .actionIcon {
            padding: 0 2px;
            margin: 2px 0;
            .uiIconArrowRight {
