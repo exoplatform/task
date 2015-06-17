@@ -25,6 +25,7 @@ import org.exoplatform.task.exception.ParameterEntityException;
 import org.exoplatform.task.exception.ProjectNotFoundException;
 import org.exoplatform.task.service.DAOHandler;
 import org.exoplatform.task.service.ProjectService;
+import org.exoplatform.task.service.StatusService;
 import org.exoplatform.task.service.impl.ProjectServiceImpl;
 import org.exoplatform.task.test.TestUtils;
 import org.junit.After;
@@ -57,6 +58,8 @@ public class ProjectServiceTest {
   ProjectService projectService;
 
   @Mock
+  StatusService statusService;
+  @Mock
   TaskHandler taskHandler;
   @Mock
   ProjectHandler projectHandler;
@@ -77,8 +80,10 @@ public class ProjectServiceTest {
   @Before
   public void setUp() {
     MockitoAnnotations.initMocks(this);
-    projectService = new ProjectServiceImpl(daoHandler);
-
+    projectService = new ProjectServiceImpl(statusService, daoHandler);
+    
+    when(statusService.getDefaultStatus()).thenReturn(Arrays.asList("1", "2", "3", "4"));
+    
     //Mock DAO handler to return Mocked DAO
 
     when(daoHandler.getTaskHandler()).thenReturn(taskHandler);
@@ -138,8 +143,22 @@ public class ProjectServiceTest {
   public void testCreateDefaultStatusProject() {
     projectService.createDefaultStatusProject(TestUtils.getDefaultProject());
     verify(projectHandler, times(1)).create(any(Project.class));
-    //Default project contains 3 default status so create(status) must be called 3 times
-    verify(statusHandler, times(3)).create(any(Status.class));
+    //Default project contains 4 default status so create(status) must be called 4 times
+    verify(statusService, times(4)).createStatus(any(Project.class), any(String.class));
+  }
+  
+  @Test
+  public void testCreateProjectWithParent() throws ProjectNotFoundException {
+    Project parent = new Project();
+    parent.setId(1L);
+    parent.getStatus().add(new Status(1L, "testStatus"));
+    when(projectHandler.find(1L)).thenReturn(parent);
+    
+    projectService.createDefaultStatusProjectWithAttributes(1L, "test", null, null, null);
+    
+    verify(projectHandler, times(1)).create(any(Project.class));
+    //the new created project must inherits parent's workflow
+    verify(statusService, times(1)).createStatus(any(Project.class), eq("testStatus"));
   }
 
   @Test

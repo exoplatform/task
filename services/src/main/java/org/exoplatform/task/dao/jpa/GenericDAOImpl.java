@@ -17,15 +17,21 @@
 package org.exoplatform.task.dao.jpa;
 
 import org.exoplatform.task.dao.GenericDAO;
+import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.service.jpa.DAOHandlerJPAImpl;
 
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -82,6 +88,17 @@ public class GenericDAOImpl<E, ID extends Serializable> implements GenericDAO<E,
     query.select(entity);
 
     return daoHandler.getEntityManager().createQuery(query).getResultList();
+  }
+  
+  public List<E> findByNamedQuery(String query, Map<String, Object> params) {
+    EntityManager em = daoHandler.getEntityManager();
+    TypedQuery<E> q = em.createNamedQuery(query, entityClass);
+    if (params != null) {
+      for (Map.Entry<String, Object> p : params.entrySet()) {
+        q.setParameter(p.getKey(), p.getValue());      
+      }      
+    }
+    return q.getResultList();
   }
 
   @Override

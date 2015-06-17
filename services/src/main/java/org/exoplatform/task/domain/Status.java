@@ -32,9 +32,14 @@ import java.util.Set;
 @NamedQueries({
     @NamedQuery(name = "Status.findLowestRankStatusByProject",
         query = "SELECT s FROM Status s WHERE s.rank = (SELECT MIN(s2.rank) FROM Status s2 " +
-            "WHERE s2.project.id = :projectId) AND s.project.id = :projectId)")
+            "WHERE s2.project.id = :projectId) AND s.project.id = :projectId)"),
+    @NamedQuery(name = "Status.findHighestRankStatusByProject",
+            query = "SELECT s FROM Status s WHERE s.rank = (SELECT MAX(s2.rank) FROM Status s2 " +
+                "WHERE s2.project.id = :projectId) AND s.project.id = :projectId)"),
+    @NamedQuery(name = "Status.findByName",
+                query = "SELECT s FROM Status s WHERE s.name = :name AND s.project.id = :projectID)")
 })
-public class Status {
+public class Status implements Comparable<Status>{
   @Id
   @GeneratedValue
   @Column(name = "STATUS_ID")
@@ -146,4 +151,14 @@ public class Status {
     return true;
   }
 
+  @Override
+  public int compareTo(Status o) {
+    if(getRank() == null) {
+      return o.getRank() == null ? 0 : -1;
+    } else if(o.getRank() == null) {
+      return 1;
+    }
+
+    return getRank().compareTo(o.getRank());
+  }
 }

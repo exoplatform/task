@@ -16,12 +16,17 @@
 */
 package org.exoplatform.task.dao.jpa;
 
-import org.exoplatform.task.dao.StatusHandler;
-import org.exoplatform.task.domain.Status;
-import org.exoplatform.task.service.jpa.DAOHandlerJPAImpl;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+
+import org.apache.commons.lang.StringUtils;
+import org.exoplatform.task.dao.StatusHandler;
+import org.exoplatform.task.domain.Status;
+import org.exoplatform.task.service.jpa.DAOHandlerJPAImpl;
 
 /**
  * Created by The eXo Platform SAS
@@ -42,5 +47,35 @@ public class StatusDAOImpl extends GenericDAOImpl<Status, Long> implements Statu
     query.setParameter("projectId", projectId);
     return (Status)query.getSingleResult();
   }
+  
+  @Override
+  public Status findHighestRankStatusByProject(long projectId) {
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put("projectId", projectId);
+    List<Status> sts = findByNamedQuery("Status.findHighestRankStatusByProject", params);
+    if (!sts.isEmpty()) {
+      return sts.get(0);
+    } else {
+      return null;
+    }
+  }
+  
+  @Override
+  public Status findByName(String name, long projectID) {
+    if (!StringUtils.isNotEmpty(name)) {
+      return null;
+    }
+    
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put("name", name);
+    params.put("projectID", projectID);
+    List<Status> sts = findByNamedQuery("Status.findByName", params);
+    if (!sts.isEmpty()) {
+      return sts.get(0);
+    } else {
+      return null;
+    }
+  }
+
 }
 

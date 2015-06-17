@@ -10,4 +10,7 @@ public interface StatusHandler extends GenericDAO<Status, Long> {
 
   Status findLowestRankStatusByProject(Long projectId);
 
+  Status findHighestRankStatusByProject(long projectId);
+
+  Status findByName(String name, long projectID);
 }

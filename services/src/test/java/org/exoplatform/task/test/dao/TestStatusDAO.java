@@ -17,30 +17,31 @@
 package org.exoplatform.task.test.dao;
 
 import java.sql.SQLException;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Persistence;
 
-import junit.framework.Assert;
 import liquibase.exception.LiquibaseException;
 
 import org.exoplatform.task.dao.ProjectHandler;
+import org.exoplatform.task.dao.StatusHandler;
 import org.exoplatform.task.domain.Project;
+import org.exoplatform.task.domain.Status;
+import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.factory.ExoEntityManagerFactory;
 import org.exoplatform.task.service.jpa.DAOHandlerJPAImpl;
 import org.exoplatform.task.test.TestUtils;
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-/**
- * @author <a href="trongtt@exoplatform.com">Trong Tran</a>
- * @version $Revision$
- */
-public class TestProjectDAO {
+public class TestStatusDAO {
 
+  private StatusHandler sDAO;
   private ProjectHandler pDAO;
   private DAOHandlerJPAImpl taskService;
 
@@ -59,6 +60,7 @@ public class TestProjectDAO {
   @Before
   public void setup() {
     taskService = new DAOHandlerJPAImpl();
+    sDAO = taskService.getStatusHandler();
     pDAO = taskService.getProjectHandler();
 
     //
@@ -67,47 +69,67 @@ public class TestProjectDAO {
 
   @After
   public void tearDown() {
-    pDAO.deleteAll();
+    sDAO.deleteAll();
 
     //
     taskService.endRequest(null);
   }
 
   @Test
-  public void testProjectCreation() {
-    List<Project> all;
-
-    Project p1 = new Project("Test project 1", null, null, null, null);
-    pDAO.create(p1);
-    all = pDAO.findAll();
-    Assert.assertEquals(1, all.size());
-    Assert.assertEquals("Test project 1", p1.getName());
-
-    all = pDAO.findAll();
-    Assert.assertEquals(1, all.size());
-    Assert.assertEquals("Test project 1", p1.getName());
-    Project p2 = new Project("Test project 2", null, null, null, null);
-    pDAO.create(p2);
-
-    all = pDAO.findAll();
-    Assert.assertEquals(2, all.size());
-    Assert.assertEquals(p1.getId() + 1, p2.getId());
+  public void testFindHighestRank() {
+    Status s1 = createStatus("s1");
+    s1.setRank(0);
+    Status s2 = createStatus("s2");
+    s2.setRank(1);
+    Project p = createProject("p", s1, s2);
+    pDAO.create(p);
+    
+    Status s = sDAO.findHighestRankStatusByProject(p.getId());
+    Assert.assertEquals(s2.getId(), s.getId());
   }
 
   @Test
-  public void testFindSubProject() {
-    Project parent = new Project("Parent project", null, null, null, null);
-    pDAO.create(parent);
+  public void testFindByName() {
+    Status s1 = createStatus("s1");
+    Project p = createProject("p", s1);
+    pDAO.create(p);
+    
+    Status s = sDAO.findByName(s1.getName(), p.getId());
+    Assert.assertEquals(s1.getId(), s.getId());
+  }
+  
+  private Project createProject(String name, Status ...status) {
+    Set<String> managers = new HashSet<String>();
+    managers.add("root");
 
-    Project child = new Project("Child project", null, null, null, null);
-    child.setParent(parent);
-    pDAO.create(child);
+    Set<String> participators = new HashSet<String>();
+    participators.add("demo");
 
-    List<Project> projects = pDAO.findSubProjects(parent);
-    Assert.assertEquals(1, projects.size());
+    Set<Status> tmp = new HashSet<Status>();
+    Project project = new Project(name, "des", tmp, managers, participators);    
+    if (status != null) {
+      for (Status st : status) {
+        st.setProject(project);
+        tmp.add(st);
+      }
+    }
 
-    projects = pDAO.findSubProjects(null);
-    Assert.assertTrue(projects.size() >= 1);
-  }  
+    return project;
+  }
+
+  private Status createStatus(String name, Task ...tasks) {
+    Status st = new Status();
+    st.setName(name);
+    st.setRank(1);
+    if (tasks != null) {
+      Set<Task> set = new HashSet<Task>();
+      for (Task t : tasks) {
+        t.setStatus(st);
+        set.add(t);
+      }
+      st.setTasks(set);      
+    }
+    return st;
+  }
 }
 

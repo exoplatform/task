@@ -16,31 +16,37 @@
 */
 package org.exoplatform.task.service.impl;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.services.security.MembershipEntry;
 import org.exoplatform.task.dao.OrderBy;
-import org.exoplatform.task.dao.StatusHandler;
 import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.exception.NotAllowedOperationOnEntityException;
 import org.exoplatform.task.exception.ParameterEntityException;
 import org.exoplatform.task.exception.ProjectNotFoundException;
-import org.exoplatform.task.exception.NotAllowedOperationOnEntityException;
 import org.exoplatform.task.service.DAOHandler;
 import org.exoplatform.task.service.ProjectService;
+import org.exoplatform.task.service.StatusService;
 import org.exoplatform.task.utils.ProjectUtil;
 import org.exoplatform.task.utils.UserUtils;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 /**
  * Created by The eXo Platform SAS
@@ -54,14 +60,18 @@ public class ProjectServiceImpl implements ProjectService {
   private static final Log LOG = ExoLogger.getExoLogger(ProjectServiceImpl.class);
 
   @Inject
+  StatusService statusService;
+  
+  @Inject
   DAOHandler daoHandler;
 
   public ProjectServiceImpl() {
   }
 
   //For testing purpose only
-  public ProjectServiceImpl(DAOHandler daoHandler) {
+  public ProjectServiceImpl(StatusService statusService, DAOHandler daoHandler) {
     this.daoHandler = daoHandler;
+    this.statusService = statusService;
   }
 
   @Override
@@ -90,20 +100,33 @@ public class ProjectServiceImpl implements ProjectService {
         project.setParticipator(new HashSet<String>(parentProject.getParticipator()));
         //If parent, list of manager of parents override the list of managers in parameter
         project.setManager(new HashSet<String>(parentProject.getManager()));
-      }
-      else {
+        
+        //persist project
+        project = createProject(project);
+        
+        //inherit status from parent
+        List<Status> prSt = new LinkedList<Status>(parentProject.getStatus());
+        Collections.sort(prSt);
+        for (Status st : prSt) {
+          statusService.createStatus(project, st.getName());
+        }
+        return project;
+      } else {
         LOG.info("Can not find project for parent with ID: " + parentId);
         throw new ProjectNotFoundException(parentId);
       }
+    } else {
+      return createDefaultStatusProject(project);      
     }
-
-    return createDefaultStatusProject(project);
   }
 
   @Override
   public Project createDefaultStatusProject(Project project) {
     Project newProject = daoHandler.getProjectHandler().create(project);
-    createDefaultStatusToProject(newProject);
+    
+    for (String s : statusService.getDefaultStatus()) {
+      statusService.createStatus(newProject, s);
+    }    
     return newProject;
   }
 
@@ -301,32 +324,6 @@ public class ProjectServiceImpl implements ProjectService {
     List<Project> projects = daoHandler.getProjectHandler().findAllByMemberships(memberships);
 
     return ProjectUtil.buildRootProjects(projects);
-  }
-  
-  
-
-  private void createDefaultStatusToProject(Project project) {
-    StatusHandler statusHandler = daoHandler.getStatusHandler();
-
-    //Todo get default status from property file
-    //. Create status for project
-    Status status = new Status();
-    status.setName("Todo");
-    status.setRank(1);
-    status.setProject(project);
-    statusHandler.create(status);
-
-    status = new Status();
-    status.setName("In Progress");
-    status.setRank(2);
-    status.setProject(project);
-    statusHandler.create(status);
-
-    status = new Status();
-    status.setName("Done");
-    status.setRank(3);
-    status.setProject(project);
-    statusHandler.create(status);
   }
 
 }

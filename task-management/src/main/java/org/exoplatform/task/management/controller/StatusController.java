@@ -22,6 +22,7 @@ package org.exoplatform.task.management.controller;
 import juzu.MimeType;
 import juzu.Resource;
 import juzu.Response;
+
 import org.exoplatform.commons.juzu.ajax.Ajax;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -29,11 +30,13 @@ import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.exception.AbstractEntityException;
 import org.exoplatform.task.service.ProjectService;
+import org.exoplatform.task.service.StatusService;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.inject.Inject;
+
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -60,18 +63,7 @@ public class StatusController {
 
       JSONArray array = new JSONArray();
       List<Status> statuses = new LinkedList<Status>(project.getStatus());
-      Collections.sort(statuses, new Comparator<Status>() {
-        @Override
-        public int compare(Status o1, Status o2) {
-          if(o1.getRank() == null) {
-            return o2.getRank() == null ? 0 : -1;
-          } else if(o2.getRank() == null) {
-            return 1;
-          }
-
-          return o1.getRank().compareTo(o2.getRank());
-        }
-      });
+      Collections.sort(statuses);
       for (Status status : statuses) {
         JSONObject json = new JSONObject();
         json.put("value", status.getId());
