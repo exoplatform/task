@@ -156,7 +156,7 @@
      		def priorities = StringUtils.join(Priority.values(), ",");
      	%>
         <a class="editable task-priority" href="#" data-priority="${priorities}" data-inputclass="input-small" 
-	        	data-name="priority" data-type="select" data-emptytext="${label.noPriority}"
+	        	data-name="priority" data-type="select" data-emptytext="&{label.noPriority}"
 	        	data-value="${task.priority != null ?  task.priority : Priority.UNDEFINED}"></a>
       </div>
     </div>
