@@ -27,6 +27,14 @@ require(['project-menu', 'SHARED/jquery', 'SHARED/edit_inline_js', 'SHARED/juzu-
       $dialog.modal({'backdrop': false});
     });
   }
+  
+  taApp.showOneTimePopover = function($popover) {
+    $popover.popover('show');
+    $(document).one('click', function() {
+      $popover.popover('hide'); 
+      $popover.popover('destroy');
+    });
+  }
 
   taApp.showRightPanel = function($centerPanel, $rightPanel) {
     $centerPanel.removeClass('span9').addClass('span5');
@@ -97,7 +105,15 @@ $(document).ready(function() {
     var $centerPanelContent = ui.$centerPanelContent;
     
     pMenu.init(taApp);
-
+    
+    //welcome
+    var $addProject = $taskManagement.find('.addProject');
+    taApp.showOneTimePopover($addProject);
+    var $inputTask = $centerPanelContent.find('input[name="taskTitle"]');
+    if ($inputTask.data('content')) {
+      taApp.showOneTimePopover($inputTask);
+    }
+    
     $.fn.editableform.buttons = '<button type="submit" class="btn btn-primary editable-submit"><i class="uiIconTick icon-white"></i></button>'+
         '<button type="button" class="btn editable-cancel"><i class="uiIconClose"></i></button>';
     
@@ -644,10 +660,16 @@ $(document).ready(function() {
         var projectId = $a.data('id');
         var currentProject = $centerPanel.find('.projectListView').data('projectid');
 
-        if (currentProject != projectId && ($a.data('canview') || projectId < 0)) {
+        if (currentProject != projectId && ($a.data('canview') || projectId <= 0)) {
             $centerPanelContent.jzLoad('TaskController.listTasks()', {projectId: projectId}, function() {
                 $a.closest('.leftPanel > ul').find('li.active').removeClass('active');
                 $a.closest('li').addClass('active');
+                
+                //welcome
+                var $inputTask = $centerPanelContent.find('input[name="taskTitle"]');
+                if ($inputTask.data('content')) {
+                  taApp.showOneTimePopover($inputTask);
+                }
             });
         }
         // Show project summary at right panel

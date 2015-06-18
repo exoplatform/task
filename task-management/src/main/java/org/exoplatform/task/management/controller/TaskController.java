@@ -324,7 +324,9 @@ public class TaskController {
     else {
       try {
         tasks = projectService.getTasksWithKeywordByProjectId(projectId, order, keyword);
-        project = projectService.getProjectById(projectId);
+        if (projectId > 0) {
+          project = projectService.getProjectById(projectId);          
+        }
       } catch (ProjectNotFoundException e) {
         return Response.notFound("Impossible to get tasks for project with ID: " + e.getEntityId());
       }
@@ -346,16 +348,25 @@ public class TaskController {
     if(groupTasks.isEmpty()) {
       groupTasks.put("", tasks);
     }
+    
+    long taskNum;
+    if (projectId <= 0) {
+      taskNum = taskService.getTaskNum(currentUser, projectId);
+    } else {
+      taskNum = taskService.getTaskNum(null, projectId);
+    }
 
     return taskListView
         .with()
         .currentProjectId(projectId)
         .project(project)
         .tasks(tasks)
+        .taskNum(taskNum)
         .groupTasks(groupTasks)
         .keyword(keyword == null ? "" : keyword)
         .groupBy(groupBy == null ? "" : groupBy)
         .orderBy(orderBy == null ? "" : orderBy)
+        .bundle(bundle)
         .set("userMap", userMap)
         .ok()
         .withCharset(Tools.UTF_8);

@@ -249,11 +249,15 @@ public class ProjectServiceImpl implements ProjectService {
   @Override
   public List<Task> getTasksWithKeywordByProjectId(long id, OrderBy orderBy, String keyword)
       throws ProjectNotFoundException {
-
-    Project project = getProjectById(id); //Can throw ProjectNotFoundException
+    
 
     TaskQuery taskQuery = new TaskQuery();
-    taskQuery.setProjectId(project.getId());
+    if (id != 0) {
+      Project project = getProjectById(id); //Can throw ProjectNotFoundException
+      taskQuery.setProjectId(project.getId());      
+    } else {
+      taskQuery.setProjectId(0L);
+    }
     taskQuery.setKeyword(keyword);
     taskQuery.setOrderBy(orderBy == null ? null : Arrays.asList(orderBy));
     taskQuery.setCompleted(false);

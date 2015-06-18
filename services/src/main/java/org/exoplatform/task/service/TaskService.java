@@ -47,5 +47,5 @@ public interface TaskService {
 
   List<Task> getToDoTasksByUser(String username, OrderBy orderBy);
 
-
+  long getTaskNum(String username, Long projectId);
 }

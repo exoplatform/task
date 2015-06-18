@@ -75,16 +75,20 @@ public class TaskManagement {
 
     UserSetting setting = userService.getUserSetting(username);
 
+    long taskNum = taskService.getTaskNum(username, null);
+    
     return index.with()
         .currentProjectId(-1)
         .project(null)
         .tasks(tasks)
+        .taskNum(taskNum)
         .groupTasks(groupTasks)
         .keyword("")
         .groupBy("")
         .orderBy("")
         .projects(projects)
         .userSetting(setting)
+        .bundle(bundle)
         .ok().withCharset(Tools.UTF_8);
   }
 

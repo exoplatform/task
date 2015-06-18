@@ -106,8 +106,12 @@ public class TaskDAOImpl extends GenericDAOImpl<Task, Long> implements TaskHandl
       predicates.add(cb.like(task.<String>get("assignee"), '%' + query.getAssignee() + '%'));
     }
 
-    if(query.getProjectId() > 0) {
-      predicates.add(cb.equal(task.get("status").get("project").get("id"), query.getProjectId()));
+    if (query.getProjectId() != null) {
+      if(query.getProjectId() > 0) {
+        predicates.add(cb.equal(task.get("status").get("project").get("id"), query.getProjectId()));
+      } else if (query.getProjectId() == 0) {
+        predicates.add(cb.isNotNull(task.get("status")));
+      }      
     }
 
     if(query.getKeyword() != null && !query.getKeyword().isEmpty()) {
@@ -191,6 +195,44 @@ public class TaskDAOImpl extends GenericDAOImpl<Task, Long> implements TaskHandl
         .createQuery(jql.toString(), Task.class)
         .setParameter("userName", username)
         .getResultList();
+  }
+  
+  @Override
+  public long getTaskNum(String userName, Long projectId) {
+    if (userName == null && projectId == null) {
+      return -1L;
+    }
+    
+    StringBuilder jql = new StringBuilder();
+    jql.append("SELECT count(*) FROM Task ta");
+    if (userName != null) {
+      jql.append(" LEFT JOIN ta.coworker cowoker ");      
+    }
+    jql.append(" WHERE ");
+    if (userName != null) {
+      jql.append("(ta.assignee = :userName OR ta.createdBy = :userName OR cowoker = :userName)");
+      if (projectId != null) {
+        jql.append(" AND");
+      }
+    }
+    if (projectId != null) {
+      if (projectId != 0) {
+        jql.append(" ta.status.project.id = :projectId");
+      } else {
+        jql.append(" NOT ta.status is null");
+      }
+    }    
+
+    Query query = daoHandler.getEntityManager()
+        .createQuery(jql.toString());
+    
+    if (userName != null) {
+      query.setParameter("userName", userName);
+    }
+    if (projectId != null && projectId != 0) {
+      query.setParameter("projectId", projectId);    
+    }
+    return (Long)query.getSingleResult();    
   }
 }
 

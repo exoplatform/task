@@ -200,6 +200,23 @@ public class TestTaskDAO {
     assertNotContain(tasks, task2.getId());
     assertNotContain(tasks, task5.getId());
   }
+  
+  @Test
+  public void testGetTaskNum() {
+    Project project = new Project();
+    project.setName("Project1");
+    Status status = newStatusInstance("TO DO", 1);
+    status.setProject(project);
+    project.getStatus().add(status);
+    taskService.getProjectHandler().create(project);
+
+    Task task1 = newTaskInstance("Task 1", "", null);
+    task1.setStatus(status);
+    tDAO.create(task1);
+    
+    long num = tDAO.getTaskNum(null, 0L);
+    Assert.assertEquals(1, num);
+  }
 
   private Task newTaskInstance(String taskTitle, String description, String assignee) {
     Task task = new Task();

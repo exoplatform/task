@@ -42,5 +42,7 @@ public interface TaskHandler extends GenericDAO<Task, Long> {
 
   List<Task> getToDoTask(String username, OrderBy orderBy);
 
+  long getTaskNum(String username, Long projectId);
+
 }
 
