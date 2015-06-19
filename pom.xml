@@ -33,7 +33,6 @@
   <name>Task management parent POM</name>
   <description>Task management add-on parent POM</description>
 
-
   <scm>
     <connection>scm:git:git://github.com/exo-addons/task.git</connection>
     <developerConnection>scm:git:git@github.com:exo-addons/task.git</developerConnection>
@@ -51,16 +50,34 @@
   <properties>
     <maven.compiler.target>1.6</maven.compiler.target>
     <maven.compiler.source>1.6</maven.compiler.source>
-    <hibernate.version>4.1.12.Final</hibernate.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <juzu.version>1.0.x-SNAPSHOT</juzu.version>
-    <platform.version>4.2.x-SNAPSHOT</platform.version>
-    <groovy.version>1.7.6</groovy.version>
-    <junit.version>4.10</junit.version>
+
+    <org.exoplatform.depmgt.version>11-SNAPSHOT</org.exoplatform.depmgt.version>
+    <platform.version>4.3.x-SNAPSHOT</platform.version>
+    <juzu.version>1.1.x-SNAPSHOT</juzu.version>
+    <hibernate.version>4.1.12.Final</hibernate.version>
+    <org.antlr.version>3.4</org.antlr.version>
   </properties>
 
   <dependencyManagement>
     <dependencies>
+      <!-- Import versions of external dependencies to use -->
+      <dependency>
+        <groupId>org.exoplatform</groupId>
+        <artifactId>maven-depmgt-pom</artifactId>
+        <version>${org.exoplatform.depmgt.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <!-- Import versions from platform project -->
+      <dependency>
+        <groupId>org.exoplatform.platform</groupId>
+        <artifactId>platform</artifactId>
+        <version>${platform.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
       <dependency>
         <groupId>org.exoplatform.addons.task</groupId>
         <artifactId>task-management-services</artifactId>
@@ -78,16 +95,15 @@
         <version>${project.version}</version>
       </dependency>
 
+      <!--less4j 1.4.0 is not compatible with antlr 3.5-->
       <dependency>
-        <groupId>org.juzu</groupId>
-        <artifactId>juzu-core</artifactId>
-        <version>${juzu.version}</version>
+        <groupId>org.antlr</groupId>
+        <artifactId>antlr-runtime</artifactId>
+        <version>${org.antlr.version}</version>
+	<scope>provided</scope>
       </dependency>
-      <dependency>
-        <groupId>org.juzu</groupId>
-        <artifactId>juzu-plugins-portlet</artifactId>
-        <version>${juzu.version}</version>
-      </dependency>
+
+      <!--missing version declaration in maven-depmgt-pom-->
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-plugins-validation</artifactId>
@@ -103,55 +119,6 @@
         <artifactId>juzu-plugins-webjars</artifactId>
         <version>${juzu.version}</version>
       </dependency>
-
-      <dependency>
-        <groupId>org.exoplatform.core</groupId>
-        <artifactId>exo.core.component.organization.api</artifactId>
-        <version>2.5.x-SNAPSHOT</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.exoplatform.social</groupId>
-        <artifactId>social-component-core</artifactId>
-        <version>${platform.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.exoplatform.commons</groupId>
-        <artifactId>commons-juzu</artifactId>
-        <version>${platform.version}</version>
-      </dependency>
-
-      <!-- Groovy -->
-      <dependency>
-        <groupId>org.codehaus.groovy</groupId>
-        <artifactId>groovy-all</artifactId>
-        <version>${groovy.version}</version>
-        <scope>provided</scope>
-      </dependency>
-
-      <dependency>
-        <groupId>javax.portlet</groupId>
-        <artifactId>portlet-api</artifactId>
-        <version>2.0</version>
-        <scope>provided</scope>
-      </dependency>
-
-      <!-- Dependencies for Guice in GateIn portal -->
-      <dependency>
-        <groupId>javax.inject</groupId>
-        <artifactId>javax.inject</artifactId>
-        <version>1</version>
-        <scope>provided</scope>
-      </dependency>
-
-      <dependency>
-        <groupId>com.google.inject</groupId>
-        <artifactId>guice</artifactId>
-        <version>3.0</version>
-        <scope>provided</scope>
-      </dependency>
-
       <!-- Junit for testing -->
       <dependency>
         <groupId>org.juzu</groupId>
@@ -170,13 +137,6 @@
         <groupId>org.juzu</groupId>
         <artifactId>juzu-depchain-arquillian-tomcat7</artifactId>
         <version>${juzu.version}</version>
-        <scope>test</scope>
-      </dependency>
-
-      <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-        <version>${junit.version}</version>
         <scope>test</scope>
       </dependency>
     </dependencies>
