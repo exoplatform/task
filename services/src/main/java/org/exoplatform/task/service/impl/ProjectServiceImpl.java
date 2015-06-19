@@ -90,7 +90,7 @@ public class ProjectServiceImpl implements ProjectService {
                                                           Set<String> managers, Set<String> participators)
       throws ProjectNotFoundException {
 
-    Project project = new Project(name, description, null, managers, participators);
+    Project project = new Project(name, description, new HashSet<Status>(), managers, participators);
 
     if (parentId != null && parentId != 0) {
       Project parentProject = daoHandler.getProjectHandler().find(parentId);

@@ -48,19 +48,17 @@ require(['project-menu', 'SHARED/jquery', 'SHARED/edit_inline_js', 'SHARED/juzu-
   };
     
   taApp.reloadProjectTree = function(id) {
-    var $leftPanel = taApp.getUI().$leftPanel;
-    
+    var $leftPanel = taApp.getUI().$leftPanel;    
     var $listProject = $leftPanel.find('ul.list-projects');
-    var $div = $('<div></div>').hide();
-    $listProject.parent().append($div);
-    $div.jzLoad('ProjectController.projectTree()', function(content) {
-        $div.remove();
-        $listProject.html($(content).html());
-        
+    $listProject.jzLoad('ProjectController.projectTree()', function() {
         if (id) {
           $listProject.find('a.project-name[data-id="' + id+ '"]').click();          
         } else {
-          $listProject.find('a.project-name').first().click();
+          if ($listProject.find('a.project-name').length > 0) {
+            $listProject.find('.project-name').first().click();
+          } else {
+            $leftPanel.find('.project-name').first().click();
+          }
         }
     });    
   }

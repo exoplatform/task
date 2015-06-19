@@ -85,18 +85,22 @@ public class StatusServiceImpl implements StatusService {
     }
 
     //
-    for (Status st : project.getStatus()) {
-      if (st.getName().equalsIgnoreCase(name)) {
-        LOG.warn("Status {} has already exists", name);
-        return st;
-      }
+    if (project.getStatus() != null) {
+      for (Status st : project.getStatus()) {
+        if (st.getName().equalsIgnoreCase(name)) {
+          LOG.warn("Status {} has already exists", name);
+          return st;
+        }
+      }      
+    } else {
+      project.setStatus(new HashSet<Status>());
     }
 
     Status max = daoHandler.getStatusHandler().findHighestRankStatusByProject(project.getId());
     int maxRank = max != null && max.getRank() != null ? max.getRank() : -1;
     
     StatusHandler handler = daoHandler.getStatusHandler();
-    Status st = new Status(name, ++maxRank, new HashSet<Task>(), project);
+    Status st = new Status(name, ++maxRank, new HashSet<Task>(), project);    
     project.getStatus().add(st);
     handler.create(st);
     return st;
