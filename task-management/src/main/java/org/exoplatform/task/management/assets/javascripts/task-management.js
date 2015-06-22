@@ -48,9 +48,18 @@ require(['project-menu', 'SHARED/jquery', 'SHARED/edit_inline_js', 'SHARED/juzu-
     $rightPanel.hide();
     $centerPanel.removeClass('span5').addClass('span9');
   };
+  
+  taApp.reloadTaskList = function(projectId, callback) {
+    var $centerPanelContent = taApp.getUI().$centerPanelContent;
+    $centerPanelContent.jzLoad('TaskController.listTasks()', {projectId: projectId}, function() {
+      if (callback) {
+        callback();
+      }
+    });
+  }
     
   taApp.reloadProjectTree = function(id) {
-    var $leftPanel = taApp.getUI().$leftPanel;    
+    var $leftPanel = taApp.getUI().$leftPanel;
     var $listProject = $leftPanel.find('ul.list-projects');
     $listProject.jzLoad('ProjectController.projectTree()', function() {
         if (id) {
@@ -452,7 +461,11 @@ $(document).ready(function() {
         $a.jzAjax('TaskController.clone()', {
             data: {id: taskId},
             success: function(response) {
-                window.location.reload();
+              var id = response.id; 
+              var projectId = $leftPanel.find('.active .project-name').data('id');
+              taApp.reloadTaskList(projectId, function() {
+                $centerPanel.find('.taskItem[data-taskid="' + id + '"] .viewTaskDetail').click();      
+              });
             }
         });
     });
@@ -658,19 +671,19 @@ $(document).ready(function() {
         var currentProject = $centerPanel.find('.projectListView').data('projectid');
 
         if (currentProject != projectId && ($a.data('canview') || projectId <= 0)) {
-            $centerPanelContent.jzLoad('TaskController.listTasks()', {projectId: projectId}, function() {
-                $a.closest('.leftPanel > ul').find('li.active').removeClass('active');
-                $a.closest('li').addClass('active');
-                
-                //welcome
-                if ($a.data('id') == '0' && $leftPanel.find('.project-item').length == 0) {
-                  var $addProject = $taskManagement.find('.addProject');
-                  taApp.showOneTimePopover($addProject);
-                }
-                
-                var $inputTask = $centerPanelContent.find('input[name="taskTitle"]');
-                taApp.showOneTimePopover($inputTask);
-                $inputTask.focus();
+            taApp.reloadTaskList(projectId, function() {
+              $a.closest('.leftPanel > ul').find('li.active').removeClass('active');
+              $a.closest('li').addClass('active');
+
+              //welcome
+              if ($a.data('id') == '0' && $leftPanel.find('.project-item').length == 0) {
+                var $addProject = $taskManagement.find('.addProject');
+                taApp.showOneTimePopover($addProject);
+              }
+              
+              var $inputTask = $centerPanelContent.find('input[name="taskTitle"]');
+              taApp.showOneTimePopover($inputTask);
+              $inputTask.focus();
             });
         }
         // Show project summary at right panel
