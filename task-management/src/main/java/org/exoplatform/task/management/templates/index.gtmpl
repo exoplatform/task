@@ -26,10 +26,7 @@
 		                   data-toggle="dropdown"
 		                   href="#">
 		                    <i class="uiIconLightGray uiIconSimplePlusMini addProject" 
-		                    <%if (projects.isEmpty()) { %>
-		                    data-content="&{label.welcome.firstProject}" data-placement="bottom"
-		                    <%} %>
-		                    ></i>
+		                    data-content="&{label.welcome.firstProject}" data-placement="bottom"></i>
                         </a>
 		                <div class="dropdown-menu uiDropdownWithIcon" style="left: 100%; top: -22px">
 		                	<span class="arrowLeft"></span>

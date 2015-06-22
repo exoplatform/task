@@ -40,7 +40,7 @@ define('project-menu', ['SHARED/jquery'], function($) {
                 window.location.reload();
             },
             error: function() {
-                alert('error while create new project. Please try again.')
+                alert('error while clone project. Please try again.')
             }
         });
     });

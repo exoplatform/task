@@ -29,11 +29,13 @@ require(['project-menu', 'SHARED/jquery', 'SHARED/edit_inline_js', 'SHARED/juzu-
   }
   
   taApp.showOneTimePopover = function($popover) {
-    $popover.popover('show');
-    $(document).one('click', function() {
-      $popover.popover('hide'); 
-      $popover.popover('destroy');
-    });
+    if ($popover.data('content')) { 
+      $popover.popover('show');
+      $(document).one('click', function() {
+        $popover.popover('hide'); 
+        $popover.popover('destroy');
+      });
+    }
   }
 
   taApp.showRightPanel = function($centerPanel, $rightPanel) {
@@ -57,7 +59,7 @@ require(['project-menu', 'SHARED/jquery', 'SHARED/edit_inline_js', 'SHARED/juzu-
           if ($listProject.find('a.project-name').length > 0) {
             $listProject.find('.project-name').first().click();
           } else {
-            $leftPanel.find('.project-name').first().click();
+            $leftPanel.find('.project-name[data-id="0"]').first().click();
           }
         }
     });    
@@ -104,13 +106,9 @@ $(document).ready(function() {
     
     pMenu.init(taApp);
     
-    //welcome
-    var $addProject = $taskManagement.find('.addProject');
-    taApp.showOneTimePopover($addProject);
+    //welcome    
     var $inputTask = $centerPanelContent.find('input[name="taskTitle"]');
-    if ($inputTask.data('content')) {
-      taApp.showOneTimePopover($inputTask);
-    }
+    taApp.showOneTimePopover($inputTask);
     
     $.fn.editableform.buttons = '<button type="submit" class="btn btn-primary editable-submit"><i class="uiIconTick icon-white"></i></button>'+
         '<button type="button" class="btn editable-cancel"><i class="uiIconClose"></i></button>';
@@ -664,10 +662,14 @@ $(document).ready(function() {
                 $a.closest('li').addClass('active');
                 
                 //welcome
-                var $inputTask = $centerPanelContent.find('input[name="taskTitle"]');
-                if ($inputTask.data('content')) {
-                  taApp.showOneTimePopover($inputTask);
+                if ($a.data('id') == '0' && $leftPanel.find('.project-item').length == 0) {
+                  var $addProject = $taskManagement.find('.addProject');
+                  taApp.showOneTimePopover($addProject);
                 }
+                
+                var $inputTask = $centerPanelContent.find('input[name="taskTitle"]');
+                taApp.showOneTimePopover($inputTask);
+                $inputTask.focus();
             });
         }
         // Show project summary at right panel
@@ -681,7 +683,6 @@ $(document).ready(function() {
         } else {
             taApp.hideRightPanel($centerPanel, $rightPanel, $rightPanelContent);
         }
-        return false;
     });
 
     $centerPanel.on('click', 'a.btn-add-task', function(e) {
