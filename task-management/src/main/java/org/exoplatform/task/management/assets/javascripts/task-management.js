@@ -109,6 +109,7 @@ $(document).ready(function() {
     //welcome    
     var $inputTask = $centerPanelContent.find('input[name="taskTitle"]');
     taApp.showOneTimePopover($inputTask);
+    $inputTask.focus();
     
     $.fn.editableform.buttons = '<button type="submit" class="btn btn-primary editable-submit"><i class="uiIconTick icon-white"></i></button>'+
         '<button type="button" class="btn editable-cancel"><i class="uiIconClose"></i></button>';
