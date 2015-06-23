@@ -1,3 +1,4 @@
+@import "_mixins.less";
 /* Reset*/
 body {
    .editable-click, a.editable-click, a.editable-click:hover{
@@ -150,10 +151,8 @@ li[data-hiddenproject="false"] {
                 font-weight: bold;
                 padding-left: 10px;
                 padding-right: 10px;
-                  max-width: 280px;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: nowrap;
+                  max-width: 170px;
+                .text-overflow();
             }
             .uiSearchInput input[type="text"] {
                 min-height: 28px;
@@ -464,6 +463,15 @@ li[data-hiddenproject="false"] {
         .tags {
             a {
                 box-shadow: none;
+            }
+            > .icon-hash {
+                margin-top: 7px;
+                margin-right: 6px;
+            }
+            &.active {
+                .icon-hash {
+                    display: none;
+                }
             }
         }
     } 
@@ -792,5 +800,11 @@ li[data-hiddenproject="false"] {
     }
     ol li {
         list-style-type: decimal;
+    }
+}
+
+.editable-input {
+    .uiDropdownMenu li > a {
+        .text-overflow();
     }
 }

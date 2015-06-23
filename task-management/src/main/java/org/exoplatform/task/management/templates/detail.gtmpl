@@ -45,7 +45,7 @@
         <a href="<%= TaskManagement_.permalink(task.getId())%>" title="Permalink" data-toggle="tooltip" class="permalink actionIcon" style="position: relative;">
             <i class="uiIconPermalink"></i>
         </a>
-        <div class="popover fade bottom in" style="left: auto; right: -17px; top: 25px;display: block;">
+        <div class="popover fade bottom in" style="left: auto; right: -17px; top: 25px;display: none;">
             <div class="arrow" style="left: auto; right: 17px;"></div>
             <div class="popover-content">
                 <div>
@@ -194,27 +194,25 @@
         ${task.description == null ? "" : task.description}
     </div>
 </div>
-<div class="exo-mentions dropdown open">
-    <div class="tags uiEditableInline">
-        <!--<a href="#" class="label primary">Sprint 25</a>
-        <a href="#" class="label primary">Content</a>-->
-        <%
-            def tags = '';
-            if (task.tags != null && task.tags.size() > 0) {
-                task.tags.each {tag ->
-                    if (!tag.isEmpty())
-                        tags += '<span href="#" class="label primary">'+ tag +'</span>';
-                };
-            }
-            tags = tags.trim();
-        %>
-        <i class="uiIconHag ${tags.length() > 0 ? "hidden" : ""}" data-toggle="tooltip" title="Click to edit"></i>
-        <div class="${editableClasses} small" href="#"
-           data-name="tags" data-type="selectize"
-           data-inputclass="input-large"
-           data-value="${task.tags != null && task.tags.size() > 0 ? task.tags.join(',') : ''}">
-            ${tags}
-        </div>
+<div class="tags uiEditableInline clearfix">
+    <!--<a href="#" class="label primary">Sprint 25</a>
+    <a href="#" class="label primary">Content</a>-->
+    <%
+        def tags = '';
+        if (task.tags != null && task.tags.size() > 0) {
+            task.tags.each {tag ->
+                if (!tag.isEmpty())
+                    tags += '<span href="#" class="label primary">'+ tag +'</span>';
+            };
+        }
+        tags = tags.trim();
+    %>
+    <span class="pull-left icon-hash ${tags.length() > 0 ? "hidden" : ""}"><i class="uiIconHag" data-toggle="tooltip" title="Click to edit"></i></span>
+    <div class="${editableClasses} small pull-left" href="#"
+       data-name="tags" data-type="selectize"
+       data-inputclass="input-large"
+       data-value="${task.tags != null && task.tags.size() > 0 ? task.tags.join(',') : ''}">
+        ${tags}
     </div>
 </div>
 <div class="inforBar2 clearfix">

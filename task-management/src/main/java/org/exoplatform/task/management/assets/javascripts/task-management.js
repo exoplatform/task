@@ -415,7 +415,7 @@ $(document).ready(function() {
                 editOptions.emptytext = 'No Tags';
                 editOptions.success = function(response, newValue) {
                   var isEmpty = newValue.length == 0 || newValue[0] == '';
-                  var $i = $this.parent().find('i.uiIconHag');
+                  var $i = $this.parent().find('.icon-hash');
                   if (isEmpty) {
                     $i.removeClass('hidden');
                   } else {
@@ -426,6 +426,12 @@ $(document).ready(function() {
 
             $this.editable(editOptions);
             initDueDate();
+
+            $this.on('shown', function(e, editable) {
+                $this.parent().removeClass('inactive').addClass('active');
+            }).on('hidden', function(e, editable) {
+                $this.parent().removeClass('active').addClass('inactive');
+            });
         });
     };
 
