@@ -1,0 +1,43 @@
+#{param name=keyword/}
+#{param name=projects/}
+#{param name=currentProjectId/}
+
+<%
+def displayProject(project, level) {%>
+    <%
+        //. If current project is match, we do not shot its tree
+        if (currentProjectId == project.getId()) {
+            return;
+        }
+        String name = project.getName();
+        boolean isMatched = false;
+        if (keyword == "") {
+            isMatched = true;
+        } else if (name.contains(keyword)) {
+            isMatched = true;
+            name = name.replace(keyword, "<strong>"+ keyword + "</strong>");
+        }
+        def padding = level * 20 + 20;
+    %>
+    <li>
+        <a class="" style="padding-left: ${padding}px" href="javascript:void(0)" data-matched="${isMatched}" data-projectid="${project.id}">${name}</a>
+        <% if (project.children != null && project.children.size() > 0) {%>
+            <ul>
+                <%project.children.each {p -> displayProject(p, level + 1)}%>
+            </ul>
+        <% }%>
+    </li>
+<%}%>
+
+<% if (projects.size() > 0) { %>
+    <ul>
+        <li>
+            <a href="javascript:void(0)" data-matched="${keyword == "" ? "true" : "false"}" data-projectid="0">&{label.projects}</a>
+            <ul>
+                <%projects.each{p -> displayProject(p, 1)}%>
+            </ul>
+        </li>
+    </ul>
+<% } else { %>
+    <div>&{message.noProjectFound}</div>
+<% }%>

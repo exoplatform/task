@@ -3,18 +3,18 @@
 #{param name=pid /}
 
 <!-- share-project -->
-<div class="sharePrjDialog modal hide fade" data-projectId="${pid}" tabindex="-1" role="dialog" aria-labelledby="shareProjectLabel" aria-hidden="true">
-  <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-    <h3 id="shareProjectLabel">&{popup.shareProject}</h3>
-  </div>
-  <div class="modal-body">
-  	<table>
+<div style="display:block" class="sharePrjDialog modal hide fade in uiPopup" data-projectId="${pid}" tabindex="-1" role="dialog" aria-labelledby="shareProjectLabel" aria-hidden="true">
+  <div class="popupHeader clearfix">
+        <a onclick="" title="Close Window" data-dismiss="modal" aria-hidden="true" class="uiIconClose pull-right"></a>
+        <h3 id="shareProjectLabel" class="PopupTitle popupTitle">&{popup.shareProject}</h3>
+   </div>
+   <div class="PopupContent popupContent">
+  	<table class="uiGrid table table-hover table-striped" cellspacing="0" cellpadding="0" summary="" >
   		<tr>
   			<th>&{label.permission}</th>
   			<th>&{label.userOrGroup}</th>
   		</tr>
-  		<tr>
+  <!-- 		<tr>
   			<td><h4>&{label.manager}</h4>&{label.manager.description}</td>
   			<td class="manager">
   				<ul class="managerList">
@@ -37,11 +37,595 @@
   				<button class="openUserSelector">&{label.user}</button>
   				<button class="openGroupSelector">&{label.group}</button>
   			</td>
-  		</tr>
-  	</table>	    
+  		</tr> -->
+
+      <!-- this is static html-->
+
+      <tr>
+        <td>
+          <p><strong>&{label.manager}</strong></p>
+          <div class="des">&{label.manager.description}</div>
+        </td>
+        <td class="manager">
+          <!-- this is result after choice permision-->
+          <div class="permission-display" style="display:block">
+            <div class="pull-right edit-action">
+              <a href="" class="actionIcon action-edit-user" data-original-title="edit" data-toggle="tooltip" rel="tooltip" data-placement="bottom">
+                <i class="uiIconEdit uiIconLightGray"></i>
+              </a>          
+             </div>        
+             <div class="list-users">
+                  <div class="muted no-assisement">No assisement</div>  
+             </div>  
+           </div>
+           <!-- this is mention action-->
+           <div class="action-mentions" style="display: none">
+            <textarea title="What are you working on?" cols="30" rows="10" id="composerInput" name="composerInput"
+                 class="textarea-mentions" style="visibility: hidden; display: none;"></textarea>
+             <div class="exo-mentions" >                
+                <div class="permission-owner clearfix">
+                    <!-- display mention-->
+                    <div  class="replaceTextArea editable" g_editable="true" id="DisplaycomposerInput" data-mentions="true">
+                      <span >Chris B<i  class="uiIconClose uiIconLightGray"></i></span>
+                      <span >Patric<i  class="uiIconClose uiIconLightGray"></i></span> 
+                      <span >root<i  class="uiIconClose uiIconLightGray"></i></span> 
+                      <span >An Nguyen<i  class="uiIconClose uiIconLightGray"></i></span>
+                      <br/><!-- start group/membership -->
+                      <span  data-toggle="dropdown" class="dropdown-toggle" >Any <i  class="uiIconArrowDownMini uiIconLightGray"></i></span> 
+                        <ul class="dropdown-menu">
+                          <li><a  href="#">Any</a></li>
+                          <li><a  href="#">Author</a></li>
+                          <li><a  href="#">Editor</a></li>
+                        </ul>
+                      in
+                      <span >Administrator<i  class="uiIconClose uiIconLightGray"></i></span> 
+                      <!-- CURSOR POINTER-->
+                      <div class="cursorText"></div>
+                    </div>  
+
+                     <a  data-backdrop="false" rel="tooltip" data-placement="bottom" title="" class="actionIcon openUserSelector" data-original-title="Select User">
+                       <i class="uiIconUser uiIconLightGray"></i>
+                     </a>                 
+                     <a  href="#selectGroupModal"  data-backdrop="false" data-toggle="modal" rel="tooltip" data-placement="bottom" title="" class="actionIcon" data-original-title="Select Group/Membership">
+                       <i class="uiIconGroup uiIconLightGray"></i>
+                     </a>             
+                     <button  class="btn" type="button">Add</button>
+                </div>   
+                <!-- dropdow for mention -->
+                <div class="autocomplete-menu" style="display: none;">
+                    <ul>
+                        <li class="data">
+                          <div class="avatarSmall">
+                            <img src="/eXoSkin/skin/images/system/UserAvtDefault.png">
+                          </div>
+                          Roo<strong>t</strong> Roo<strong>t</strong> (root)
+                          <span class="user-status"><i class="uiIconColorCircleOrange"></i></span>
+                        </li> 
+                        <li class="data">
+                          <div class="avatarSmall">
+                            <img src="/eXoSkin/skin/images/system/UserAvtDefault.png">
+                          </div>
+                          Roo<strong>t</strong> Roo<strong>t</strong> (root)
+                          <span class="user-status"><i class="uiIconColorCircleGreen"></i></span>
+                        </li>    
+                        <li class="data">
+                          <div class="avatarSmall">
+                            <img src="/eXoSkin/skin/images/system/UserAvtDefault.png">
+                          </div>
+                          Roo<strong>t</strong> Roo<strong>t</strong> (root)
+                          <span class="user-status"><i class="uiIconColorCircleRed"></i></span>
+                        </li>                       
+                        <li class="data active">
+                          <div class="avatarSmall">
+                            <img src="/eXoSkin/skin/images/system/UserAvtDefault.png">
+                          </div>
+                          <strong>t</strong>rung (trung)
+                          <span class="user-status"><i class="uiIconColorCircleGray"></i></span>
+                        </li>
+                      </ul>
+                  </div>     
+              </div>
+           </div>
+        </td>
+      </tr>  
+
+
+      
+
+
+      <tr>
+        <td>
+          <p><strong>&{label.manager}</strong></p>
+          <div class="des">&{label.manager.description}</div>
+        </td>
+        <td class="manager">
+          <!-- this is result after choice permision-->
+          <div class="permission-display" style="display:none">
+            <div class="pull-right edit-action">
+              <a href="" class="actionIcon action-edit-user" data-original-title="edit" data-toggle="tooltip" rel="tooltip" data-placement="bottom">
+                <i class="uiIconEdit uiIconLightGray"></i>
+              </a>          
+             </div>        
+             <div class="list-users">
+                <p class="item"><strong>An Nguyen</strong> (anbn)</p>
+                <p class="item"><strong>Ha Le</strong> (any:/platform/administrator)</p>
+                <p class="item"><strong>Root</strong> (john)</p>
+             </div>  
+           </div>
+           <!-- this is mention action-->
+           <div class="action-mentions" style="display: block">
+            <textarea title="What are you working on?" cols="30" rows="10" id="composerInput" name="composerInput"
+                 class="textarea-mentions" style="visibility: hidden; display: none;"></textarea>
+             <div class="exo-mentions" >                
+                <div class="permission-owner clearfix">
+                    <!-- display mention-->
+                    <div  class="replaceTextArea editable" g_editable="true" id="DisplaycomposerInput" data-mentions="true">
+                     
+                      <!-- CURSOR POINTER-->
+                      <div class="cursorText"></div>
+                    </div>  
+
+                      <a  data-backdrop="false" rel="tooltip" data-placement="bottom" title="" class="actionIcon openUserSelector" data-original-title="Select User">
+                       <i class="uiIconUser uiIconLightGray"></i>
+                     </a>                  
+                     <a  href="#selectGroupModal" data-backdrop="false" data-toggle="modal" rel="tooltip" data-placement="bottom" title="" class="actionIcon" data-original-title="Select Group/Membership">
+                       <i class="uiIconGroup uiIconLightGray"></i>
+                     </a>             
+                     <button  class="btn" type="button">Add</button>
+                </div>   
+                <!-- dropdow for mention -->
+                <div class="autocomplete-menu" style="display: none;">
+                    <ul>
+                        <li class="data">
+                          <div class="avatarSmall">
+                            <img src="/eXoSkin/skin/images/system/UserAvtDefault.png">
+                          </div>
+                          Roo<strong>t</strong> Roo<strong>t</strong> (root)
+                          <span class="user-status"><i class="uiIconColorCircleOrange"></i></span>
+                        </li> 
+                        <li class="data">
+                          <div class="avatarSmall">
+                            <img src="/eXoSkin/skin/images/system/UserAvtDefault.png">
+                          </div>
+                          Roo<strong>t</strong> Roo<strong>t</strong> (root)
+                          <span class="user-status"><i class="uiIconColorCircleGreen"></i></span>
+                        </li>    
+                        <li class="data">
+                          <div class="avatarSmall">
+                            <img src="/eXoSkin/skin/images/system/UserAvtDefault.png">
+                          </div>
+                          Roo<strong>t</strong> Roo<strong>t</strong> (root)
+                          <span class="user-status"><i class="uiIconColorCircleRed"></i></span>
+                        </li>                       
+                        <li class="data active">
+                          <div class="avatarSmall">
+                            <img src="/eXoSkin/skin/images/system/UserAvtDefault.png">
+                          </div>
+                          <strong>t</strong>rung (trung)
+                          <span class="user-status"><i class="uiIconColorCircleGray"></i></span>
+                        </li>
+                      </ul>
+                  </div>
+                  <!-- placeholder alias -->
+                <div class="placeholder" style="top: 5px; display: block;">Select a user</div>  
+
+              </div>
+           </div>
+        </td>
+      </tr>  
+
+
+       <tr>
+        <td>
+          <p><strong>&{label.manager}</strong></p>
+          <div class="des">&{label.manager.description}</div>
+        </td>
+        <td class="manager">
+          <!-- this is result after choice permision-->
+          <div class="permission-display" style="display:none">
+            <div class="pull-right edit-action">
+              <a href="" class="actionIcon action-edit-user" data-original-title="edit" data-toggle="tooltip" rel="tooltip" data-placement="bottom">
+                <i class="uiIconEdit uiIconLightGray"></i>
+              </a>          
+             </div>        
+             <div class="list-users">
+                <p class="item"><strong>An Nguyen</strong> (anbn)</p>
+                <p class="item"><strong>Ha Le</strong> (any:/platform/administrator)</p>
+                <p class="item"><strong>Root</strong> (john)</p>
+             </div>  
+           </div>
+           <!-- this is mention action-->
+           <div class="action-mentions" style="display: block">
+            <textarea title="What are you working on?" cols="30" rows="10" id="composerInput" name="composerInput"
+                 class="textarea-mentions" style="visibility: hidden; display: none;"></textarea>
+             <div class="exo-mentions" >                
+                <div class="permission-owner clearfix">
+                    <!-- display mention-->
+                    <div  class="replaceTextArea editable" g_editable="true" id="DisplaycomposerInput" data-mentions="true">
+                      <span >Chris B<i  class="uiIconClose uiIconLightGray"></i></span>
+                      <span >Patric<i  class="uiIconClose uiIconLightGray"></i></span> 
+                      <span >root<i  class="uiIconClose uiIconLightGray"></i></span> 
+                      <span >An Nguyen<i  class="uiIconClose uiIconLightGray"></i></span>
+                      <br/><!-- start group/membership -->
+                      <span  data-toggle="dropdown" class="dropdown-toggle" >Any <i  class="uiIconArrowDownMini uiIconLightGray"></i></span> 
+                        <ul class="dropdown-menu">
+                          <li><a  href="#">Any</a></li>
+                          <li><a  href="#">Author</a></li>
+                          <li><a  href="#">Editor</a></li>
+                        </ul>
+                      in
+                      <span >Administrator<i  class="uiIconClose uiIconLightGray"></i></span> 
+                      <!-- CURSOR POINTER-->
+                      <div class="cursorText"></div>
+                    </div>  
+
+                      <a  data-backdrop="false" rel="tooltip" data-placement="bottom" title="" class="actionIcon openUserSelector" data-original-title="Select User">
+                       <i class="uiIconUser uiIconLightGray"></i>
+                     </a>                   
+                     <a  href="#selectGroupModal"  data-backdrop="false" data-toggle="modal" rel="tooltip" data-placement="bottom" title="" class="actionIcon" data-original-title="Select Group/Membership">
+                       <i class="uiIconGroup uiIconLightGray"></i>
+                     </a>             
+                     <button  class="btn" type="button">Add</button>
+                </div>   
+                <!-- dropdow for mention -->
+                <div class="autocomplete-menu" style="display: none;">
+                    <ul>
+                        <li class="data">
+                          <div class="avatarSmall">
+                            <img src="/eXoSkin/skin/images/system/UserAvtDefault.png">
+                          </div>
+                          Roo<strong>t</strong> Roo<strong>t</strong> (root)
+                          <span class="user-status"><i class="uiIconColorCircleOrange"></i></span>
+                        </li> 
+                        <li class="data">
+                          <div class="avatarSmall">
+                            <img src="/eXoSkin/skin/images/system/UserAvtDefault.png">
+                          </div>
+                          Roo<strong>t</strong> Roo<strong>t</strong> (root)
+                          <span class="user-status"><i class="uiIconColorCircleGreen"></i></span>
+                        </li>    
+                        <li class="data">
+                          <div class="avatarSmall">
+                            <img src="/eXoSkin/skin/images/system/UserAvtDefault.png">
+                          </div>
+                          Roo<strong>t</strong> Roo<strong>t</strong> (root)
+                          <span class="user-status"><i class="uiIconColorCircleRed"></i></span>
+                        </li>                       
+                        <li class="data active">
+                          <div class="avatarSmall">
+                            <img src="/eXoSkin/skin/images/system/UserAvtDefault.png">
+                          </div>
+                          <strong>t</strong>rung (trung)
+                          <span class="user-status"><i class="uiIconColorCircleGray"></i></span>
+                        </li>
+                      </ul>
+                  </div>     
+              </div>
+           </div>
+        </td>
+      </tr>  
+
+
+      <tr>
+        <td>
+          <p><strong>&{label.manager}</strong></p>
+          <div class="des">&{label.manager.description}</div>
+        </td>
+        <td class="manager">
+          <!-- this is result after choice permision-->
+          <div class="permission-display" style="display:block">
+            <div class="pull-right edit-action">
+              <a href="" class="actionIcon action-edit-user" data-original-title="edit" data-toggle="tooltip" rel="tooltip" data-placement="bottom">
+                <i class="uiIconEdit uiIconLightGray"></i>
+              </a>          
+             </div>        
+             <div class="list-users">
+                <p class="item"><strong>An Nguyen</strong> (anbn)</p>
+                <p class="item"><strong>Ha Le</strong> (any:/platform/administrator)</p>
+                <p class="item"><strong>Root</strong> (john)</p>
+             </div>  
+           </div>
+           <!-- this is mention action-->
+           <div class="action-mentions" style="display: none">
+            <textarea title="What are you working on?" cols="30" rows="10" id="composerInput" name="composerInput"
+                 class="textarea-mentions" style="visibility: hidden; display: none;"></textarea>
+             <div class="exo-mentions" >                
+                <div class="permission-owner clearfix">
+                    <!-- display mention-->
+                    <div  class="replaceTextArea editable" g_editable="true" id="DisplaycomposerInput" data-mentions="true">
+                     
+                      <!-- CURSOR POINTER-->
+                      <div class="cursorText"></div>
+                    </div>  
+
+                     <a  data-backdrop="false" rel="tooltip" data-placement="bottom" title="" class="actionIcon openUserSelector" data-original-title="Select User">
+                       <i class="uiIconUser uiIconLightGray"></i>
+                     </a>                     
+                     <a  href="#selectGroupModal" data-backdrop="false"  data-toggle="modal" rel="tooltip" data-placement="bottom" title="" class="actionIcon" data-original-title="Select Group/Membership">
+                       <i class="uiIconGroup uiIconLightGray"></i>
+                     </a>             
+                     <button  class="btn" type="button">Add</button>
+                </div>   
+                <!-- dropdow for mention -->
+                <div class="autocomplete-menu" style="display: none;">
+                    <ul>
+                        <li class="data">
+                          <div class="avatarSmall">
+                            <img src="/eXoSkin/skin/images/system/UserAvtDefault.png">
+                          </div>
+                          Roo<strong>t</strong> Roo<strong>t</strong> (root)
+                          <span class="user-status"><i class="uiIconColorCircleOrange"></i></span>
+                        </li> 
+                        <li class="data">
+                          <div class="avatarSmall">
+                            <img src="/eXoSkin/skin/images/system/UserAvtDefault.png">
+                          </div>
+                          Roo<strong>t</strong> Roo<strong>t</strong> (root)
+                          <span class="user-status"><i class="uiIconColorCircleGreen"></i></span>
+                        </li>    
+                        <li class="data">
+                          <div class="avatarSmall">
+                            <img src="/eXoSkin/skin/images/system/UserAvtDefault.png">
+                          </div>
+                          Roo<strong>t</strong> Roo<strong>t</strong> (root)
+                          <span class="user-status"><i class="uiIconColorCircleRed"></i></span>
+                        </li>                       
+                        <li class="data active">
+                          <div class="avatarSmall">
+                            <img src="/eXoSkin/skin/images/system/UserAvtDefault.png">
+                          </div>
+                          <strong>t</strong>rung (trung)
+                          <span class="user-status"><i class="uiIconColorCircleGray"></i></span>
+                        </li>
+                      </ul>
+                  </div>
+                  <!-- placeholder alias -->
+                <div class="placeholder" style="top: 5px; display: block;">Select a user</div>  
+                     
+              </div>
+           </div>
+        </td>
+      </tr> 
+
+
+       
+      <tr>
+        <td>
+          <p><strong>&{label.manager}</strong></p>
+          <div class="des">&{label.manager.description}</div>
+        </td>
+        <td class="manager">
+          <!-- this is result after choice permision-->
+          <div class="permission-display" style="display:none">
+            <div class="pull-right edit-action">
+              <a href="" class="actionIcon action-edit-user" data-original-title="edit" data-toggle="tooltip" rel="tooltip" data-placement="bottom">
+                <i class="uiIconEdit uiIconLightGray"></i>
+              </a>          
+             </div>        
+             <div class="list-users">
+                <p class="item"><strong>An Nguyen</strong> (anbn)</p>
+                <p class="item"><strong>Ha Le</strong> (any:/platform/administrator)</p>
+                <p class="item"><strong>Root</strong> (john)</p>
+             </div>  
+           </div>
+           <!-- this is mention action-->
+           <div class="action-mentions" style="display: block">
+            <textarea title="What are you working on?" cols="30" rows="10" id="composerInput" name="composerInput"
+                 class="textarea-mentions" style="visibility: hidden; display: none;"></textarea>
+             <div class="exo-mentions" >                
+                <div class="permission-owner clearfix">
+                    <!-- display mention-->
+                    <div  class="replaceTextArea editable" g_editable="true" id="DisplaycomposerInput" data-mentions="true">
+                     
+                      <!-- CURSOR POINTER-->
+                      <div class="cursorText"></div>
+                    </div>  
+
+                     <a  data-backdrop="false" rel="tooltip" data-placement="bottom" title="" class="actionIcon openUserSelector" data-original-title="Select User">
+                       <i class="uiIconUser uiIconLightGray"></i>
+                     </a>                   
+                     <a  href="#selectGroupModal" data-backdrop="false" data-toggle="modal" rel="tooltip" data-placement="bottom" title="" class="actionIcon" data-original-title="Select Group/Membership">
+                       <i class="uiIconGroup uiIconLightGray"></i>
+                     </a>             
+                     <button  class="btn" type="button">Add</button>
+                </div>   
+                <!-- dropdow for mention -->
+                <div class="autocomplete-menu" style="display: block;">
+                   <ul>
+                        <li class="data">
+                          <div class="avatarSmall">
+                            <img src="/eXoSkin/skin/images/system/UserAvtDefault.png">
+                          </div>
+                          Roo<strong>t</strong> Roo<strong>t</strong> (root)
+                          <span class="user-status"><i class="uiIconColorCircleOrange"></i></span>
+                        </li> 
+                        <li class="data">
+                          <div class="avatarSmall">
+                            <img src="/eXoSkin/skin/images/system/UserAvtDefault.png">
+                          </div>
+                          Roo<strong>t</strong> Roo<strong>t</strong> (root)
+                          <span class="user-status"><i class="uiIconColorCircleGreen"></i></span>
+                        </li>    
+                        <li class="data">
+                          <div class="avatarSmall">
+                            <img src="/eXoSkin/skin/images/system/UserAvtDefault.png">
+                          </div>
+                          Roo<strong>t</strong> Roo<strong>t</strong> (root)
+                          <span class="user-status"><i class="uiIconColorCircleRed"></i></span>
+                        </li>                       
+                        <li class="data active">
+                          <div class="avatarSmall">
+                            <img src="/eXoSkin/skin/images/system/UserAvtDefault.png">
+                          </div>
+                          <strong>t</strong>rung (trung)
+                          <span class="user-status"><i class="uiIconColorCircleGray"></i></span>
+                        </li>
+                      </ul>
+                  </div>
+                  <!-- placeholder alias -->
+                <div class="placeholder" style="top: 5px; display: block;">Select a user</div>  
+                     
+              </div>
+           </div>
+        </td>
+      </tr> 
+
+
+  	</table>
+    <div class="uiAction uiActionBorder">
+      <button class="btn" data-dismiss="modal" aria-hidden="true">&{popup.close}</button>
+    </div>	    
   </div>
-  <div class="modal-footer">
-    <button class="btn" data-dismiss="modal" aria-hidden="true">&{popup.close}</button>
-  </div>
+   <span class="uiIconResize pull-right uiIconLightGray"></span>
   <div class="selectorDialog"></div>
 </div>
+
+
+
+
+
+<!-- selectGroupModal -->
+<div id="selectGroupModal" class="modal hide fade in uiPopup" role="dialog" >
+  <div class="popupHeader clearfix">
+    <a onclick="" title="Close Window" data-dismiss="modal" aria-hidden="true" class="uiIconClose pull-right"></a>
+    <h3 id="shareProjectLabel" class="PopupTitle popupTitle">Select Permision</h3>
+  </div>
+  <div class="PopupContent popupContent">
+    <div id="UIGroupSelector" class="uiGroupSelector uiGroupMembershipSelector">
+      <div class="uiGrayLightBox uiBox noRounded ">
+        <ul class="breadcrumb">
+          <li>
+            <i class="uiIconTree uiIconLightGray"></i>
+          </li>      
+          <li class="">          
+             <a href="javascript:void(0);">organization</a>
+            <i class="uiIconArrowRightMini uiIconLightGray"></i>
+          </li> 
+          <li class="active"> 
+            <a  href="javascript:void(0);">management</a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="row-fluid">
+        <div class="span6">
+          <div class="uiBox selectGroup noRounded">
+            <h6 class="title">Browse and select a group</h6>        
+            <div class="uiTrees scrollArea">
+              <div class="treeContainer jsContainer">
+                
+                  <div class="homeNode clearfix">
+                    <a style="display: block;" title="Up Level" rel="tooltip"  href="javascript:void(0);" class="actionIcon pull-left">
+                      <i class="uiIconUpLevel uiIconLightGray"></i>
+                    </a>
+                  </div>
+                  
+                  <ul class="nodeGroup">
+                    
+                    <li class="node">
+                      
+                       <a  href="javascript:void(0);"><i class="uiIconGroup uiIconLightGray"></i>Development </a>                      
+                                     
+                      </li>
+                    
+                    <li class="node">
+                      
+                       <a title="Organization" class="uiIconNode expandIcon nodeSelected" href="javascript:void(0);"><i class="uiIconGroup uiIconLightGray"></i>Organization </a>                     
+                      
+                        <ul  class="childrenContainer nodeGroup">
+                        
+                            <li class="node">
+                               <a  title="Employees" class="uiIconNode collapseIcon" href="javascript:void(0);"><i class="uiIconGroup uiIconLightGray"></i>Employees </a>
+                            </li>
+                          
+                            <li class="node">
+                               <a title="Management" class="uiIconNode collapseIcon" href="javascript:void(0);"><i class="uiIconGroup uiIconLightGray"></i>Management </a>
+                            </li>
+                                          
+                        </ul>         
+                                     
+                      </li>
+                    
+                    <li class="node">                      
+                       <a  class="uiIconNode collapseIcon" href="javascript:void(0);"><i class="uiIconGroup uiIconLightGray"></i>Platform </a> 
+                    </li>                    
+                    <li class="node">                      
+                       <a title="Spaces" class="uiIconNode collapseIcon" href="javascript:void(0);"><i class="uiIconGroup uiIconLightGray"></i>Spaces </a>                      
+                                    
+                      </li>
+                    
+                  </ul>
+                  
+              </div>  
+            </div>
+          </div>
+        </div>
+        <div class="span6">   
+            <div class="uiBox noRounded childGoup">
+              <h6 class="title">Select a Membership</h6>
+              <div class="uiContentBox">
+                <ul>
+                
+                <li>
+                  <span class="uiIconMiniArrowRight"></span>
+                  <a title="*" href="javascript:void(0);">*</a>
+                </li>  
+                
+                <li>
+                  <span class="uiIconMiniArrowRight"></span>
+                  <a title="author"  href="javascript:void(0);">author</a>
+                </li>  
+                
+                <li>
+                  <span class="uiIconMiniArrowRight"></span>
+                  <a title="editor" href="javascript:void(0);">editor</a>
+                </li>  
+                
+                <li>
+                  <span class="uiIconMiniArrowRight"></span>
+                  <a title="manager" href="javascript:void(0);">manager</a>
+                </li>  
+                
+                <li>
+                  <span class="uiIconMiniArrowRight"></span>
+                  <a title="member"  href="javascript:void(0);">member</a>
+                </li>  
+                
+                <li>
+                  <span class="uiIconMiniArrowRight"></span>
+                  <a title="publisher"  href="javascript:void(0);">publisher</a>
+                </li>  
+                
+                <li>
+                  <span class="uiIconMiniArrowRight"></span>
+                  <a title="redactor"  href="javascript:void(0);">redactor</a>
+                </li>  
+                
+                <li>
+                  <span class="uiIconMiniArrowRight"></span>
+                  <a title="validator"  href="javascript:void(0);">validator</a>
+                </li>  
+                
+                <li>
+                  <span class="uiIconMiniArrowRight"></span>
+                  <a title="webdesigner" href="javascript:void(0);">webdesigner</a>
+                </li>  
+                
+                </ul>
+              </div>
+            </div>
+        </div>      
+        </div>
+    </div>
+  </div>
+  <span class="uiIconResize pull-right uiIconLightGray"></span>
+</div>
+
+
+
+
+
+
+
+
+

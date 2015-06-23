@@ -35,6 +35,7 @@ import org.exoplatform.services.log.Log;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.services.security.MembershipEntry;
 import org.exoplatform.task.dao.OrderBy;
+import org.exoplatform.task.dao.StatusHandler;
 import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
@@ -182,6 +183,21 @@ public class ProjectServiceImpl implements ProjectService {
       project.setDescription(val);
     } else if ("color".equalsIgnoreCase(param)) {
       project.setColor(val);
+    } else if ("parent".equalsIgnoreCase(param)) {
+      try {
+        long projectId = Long.parseLong(val);
+        if (projectId == 0) {
+          project.setParent(null);
+        } else if (projectId == project.getId()) {
+          throw new ParameterEntityException(id, "Project", param, val, "project can not be child of itself", null);
+        } else {
+          Project parent = this.getProjectById(projectId);
+          project.setParent(parent);
+        }
+      } catch (NumberFormatException ex) {
+        LOG.info("can not parse date string: " + val);
+        throw new ParameterEntityException(id, "Project", param, val, "cannot be parse to Long", ex);
+      }
     } else {
       LOG.info("Field name: " + param + " is not supported for entity Project");
       throw new ParameterEntityException(id, "Project", param, val, "is not supported for the entity Project", null);
@@ -330,5 +346,34 @@ public class ProjectServiceImpl implements ProjectService {
     return ProjectUtil.buildRootProjects(projects);
   }
 
+  @Override
+  public List<Project> findProjectByKeyWord(Identity identity, String keyword) {
+    List<String> memberships = UserUtils.getMemberships(identity);
+    return daoHandler.getProjectHandler().findAllByMembershipsAndKeyword(memberships, keyword);
+  }
+  
+  private void createDefaultStatusToProject(Project project) {
+    StatusHandler statusHandler = daoHandler.getStatusHandler();
+
+    //Todo get default status from property file
+    //. Create status for project
+    Status status = new Status();
+    status.setName("Todo");
+    status.setRank(1);
+    status.setProject(project);
+    statusHandler.create(status);
+
+    status = new Status();
+    status.setName("In Progress");
+    status.setRank(2);
+    status.setProject(project);
+    statusHandler.create(status);
+
+    status = new Status();
+    status.setName("Done");
+    status.setRank(3);
+    status.setProject(project);
+    statusHandler.create(status);
+  }
 }
 

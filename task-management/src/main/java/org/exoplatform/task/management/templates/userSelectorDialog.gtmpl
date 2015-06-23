@@ -1,7 +1,7 @@
 #{param name=users /}
 #{param name=type /}
 
-<div class="userSelectorDialog modal hide fade" style="display:block" data-type="${type}" tabindex="-1" role="dialog" aria-labelledby="userSelectorLabel" aria-hidden="true">
+/*<div class="userSelectorDialog modal hide fade uiPopup" style="display:block" data-type="${type}" tabindex="-1" role="dialog" aria-labelledby="userSelectorLabel" aria-hidden="true">
   <div class="modal-header">
     <button type="button" class="close" aria-hidden="true">×</button>
     <h3 id="userSelectorLabel">&{popup.selectUser}</h3>
@@ -17,3 +17,103 @@
     <button class="btn btn-primary addUser" aria-hidden="true">&{popup.add}</button>
   </div>
 </div>
+*/
+
+
+<!-- selectGroupModal -->
+<div id="userSelectorDialog" class="userSelectorDialog modal hide fade in uiPopup modal8" style="display:block" data-type="${type}" tabindex="-1" role="dialog" aria-labelledby="userSelectorLabel" aria-hidden="true" >
+  <div class="popupHeader clearfix">
+    <a onclick="" title="Close Window" data-dismiss="modal" aria-hidden="true" class="uiIconClose pull-right"></a>
+    <h3 id="shareProjectLabel" class="PopupTitle popupTitle">&{popup.selectUser}</h3>
+  </div>
+  <div class="PopupContent popupContent uiUserSelector">
+    <div class="uiSearch clearfix">        
+      <span class="pull-left searchByGroup">
+        <span class="inputLarge ">
+          <input type="text" id="group" name="group" placeholder="Group">
+          <a style="display: none;"  href="javascript:void(0);"><span></span></a>
+        </span>
+        <a title="" data-placement="bottom" rel="tooltip"  href="javascript:void(0);" class="actionIcon" data-original-title="Group">
+          <i class="uiIconSearch uiIconLightGray"><span class="skipHidden">Group</span></i>
+        </a>
+      </span>
+        
+      <span class="searchByUser">
+        <span class="inputLarge ">
+          <a data-original-title="Quick Search"  rel="tooltip" data-placement="left" class="btnSearchUser" id="">
+            <i class="uiIconSearch uiIconLightGray"><span class="skipHidden">Quick Search</span></i>
+          </a>
+          <input type="text" id="Quick Search" name="Quick Search" placeholder="Search">
+        </span>
+        <span class="selectboxMedium">
+          <span class="uiSelectbox">
+            <select id="filter" name="filter" class="selectbox">
+              <option value="userName">User Name</option>
+              <option value="lastName">Last Name</option>
+              <option value="firstName">First Name</option>
+              <option value="email">Email</option>
+            </select>
+          </span>
+        </span>
+      </span>        
+      </div>
+      <table class="uiGrid table table-hover table-striped" id="UIListUsers">
+        <thead>
+          <tr>            
+            <th class="center">
+              <span class="uiCheckbox">
+                <input type="checkbox" name="selectall" class="checkbox"><span></span>
+              </span>             
+            </th>            
+            <th>
+              User Name
+            </th>
+            <th>
+              First Name
+            </th>
+            <th>
+              Last Name
+            </th>
+            <th>
+              Email
+            </th>
+            
+          </tr>
+        </thead>
+        <tbody>    
+          
+          <tr>
+            
+            <td class="center">
+              <span class="uiCheckbox"><input type="checkbox" class="checkbox" name="root" id="root"><span></span></span>
+            </td>            
+            <td><span class="text">root</span></td>
+            <td><span class="text">Root</span></td>
+            <td><span class="text">Root</span></td>
+            <td><a class="text" href="javascript:void(0);">root@gatein.com</a></td>
+            
+          </tr>       
+          <tr>
+            
+            <td class="center">
+              <span class="uiCheckbox"><input type="checkbox" class="checkbox" name="trung" id="trung"><span></span></span>
+            </td>
+            
+            
+            <td><span class="text">trung</span></td>
+            <td><span class="text">trung</span></td>
+            <td><span class="text">trung</span></td>
+            <td><a class="text" href="javascript:void(0);">trung@gmail.com</a></td>
+            
+          </tr>
+        
+      </tbody>
+    </table>
+    <div class="uiAction uiActionBorder">    
+      <a class="btn addUser"  href="javascript:void(0);" >&{popup.add}</a>  
+      <a class="btn "  href="javascript:void(0);" data-dismiss="modal" aria-hidden="true">Close</a>      
+    </div>
+  </div>
+  <span class="uiIconResize pull-right uiIconLightGray"></span>
+</div>
+

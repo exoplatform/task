@@ -32,10 +32,18 @@
 @WebJars({
     @WebJar("x-editable-bootstrap"),
     @WebJar("bootstrap-datepicker"),
+    @WebJar("selectize.js"),
     @WebJar("select2")
 })
 @Scripts({
-    @Script(id = "task-management-js", value = "javascripts/task-management.js"),
+    @Script(id = "jquery-adapter", value = "javascripts/jquery-adapter.js"),
+    @Script(id = "selectize-js", value = "selectize.js/0.12.1/js/standalone/selectize.js",
+            depends = {"jquery-adapter"}),
+    @Script(id = "x-editable-selectize-field", value = "javascripts/x-editable-selectize.js",
+            depends = {"selectize-js"}),
+    @Script(id = "x-editable-customfield-js", value = "javascripts/x-editable-parentProject.js"),
+    @Script(id = "task-management-js", value = "javascripts/task-management.js",
+            depends = {"x-editable-selectize-field","x-editable-customfield-js"}),
     @Script(id = "project-menu-js", value = "javascripts/project-menu.js")
 })
 @Less({
@@ -44,6 +52,7 @@
 @Stylesheets({
     @Stylesheet(id = "style.css", value = "styles/style.css"),
     @Stylesheet(id = "bootstrap-datepicker.css", value = "bootstrap-datepicker/1.4.0/css/bootstrap-datepicker.css"),
+    @Stylesheet(id = "selectize-css", value = "selectize.js/0.12.1/css/selectize.css"),
     @Stylesheet(id = "select2-css", value = "select2/3.5.2/select2.css"),
     @Stylesheet(id = "edit-inline-css", value = "x-editable-bootstrap/1.4.6/css/bootstrap-editable.css")
 })
@@ -51,6 +60,8 @@
 package org.exoplatform.task.management;
 
 import juzu.Application;
+import juzu.plugin.amd.Module;
+import juzu.plugin.amd.Modules;
 import juzu.plugin.asset.*;
 import juzu.plugin.binding.Binding;
 import juzu.plugin.binding.Bindings;

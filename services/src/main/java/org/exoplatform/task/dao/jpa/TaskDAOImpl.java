@@ -27,6 +27,7 @@ import javax.persistence.Query;
 import javax.persistence.criteria.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -178,11 +179,19 @@ public class TaskDAOImpl extends GenericDAOImpl<Task, Long> implements TaskHandl
   }
 
   @Override
-  public List<Task> getToDoTask(String username, OrderBy orderBy) {
+  public List<Task> getToDoTask(String username, OrderBy orderBy, Date fromDueDate, Date toDueDate) {
     StringBuilder jql = new StringBuilder();
     jql.append("SELECT ta FROM Task ta ")
         .append("WHERE ta.assignee = :userName ")
-        .append("AND ta.completed != TRUE");
+        .append("AND ta.completed != TRUE ")
+        .append("AND ta.dueDate != NULL ");
+
+    if (fromDueDate != null) {
+      jql.append("AND ta.dueDate >= :fromDueDate ");
+    }
+    if (toDueDate != null) {
+      jql.append("AND ta.dueDate <= :toDueDate ");
+    }
 
     if(orderBy != null && !orderBy.getFieldName().isEmpty()) {
       jql.append(" ORDER BY ta.").append(orderBy.getFieldName()).append(" ").append(orderBy.isAscending() ?
@@ -190,11 +199,19 @@ public class TaskDAOImpl extends GenericDAOImpl<Task, Long> implements TaskHandl
           : " DESC");
     }
 
-    return daoHandler
+    Query query = daoHandler
         .getEntityManager()
-        .createQuery(jql.toString(), Task.class)
-        .setParameter("userName", username)
-        .getResultList();
+        .createQuery(jql.toString(), Task.class);
+
+    query.setParameter("userName", username);
+    if (fromDueDate != null) {
+      query.setParameter("fromDueDate", fromDueDate);
+    }
+    if (toDueDate != null) {
+      query.setParameter("toDueDate", toDueDate);
+    }
+
+    return query.getResultList();
   }
   
   @Override

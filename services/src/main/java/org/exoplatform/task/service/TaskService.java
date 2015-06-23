@@ -8,6 +8,7 @@ import org.exoplatform.task.exception.ParameterEntityException;
 import org.exoplatform.task.exception.StatusNotFoundException;
 import org.exoplatform.task.exception.TaskNotFoundException;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -45,7 +46,7 @@ public interface TaskService {
 
   List<Task> getIncomingTasksByUser(String username, OrderBy orderBy);
 
-  List<Task> getToDoTasksByUser(String username, OrderBy orderBy);
+  List<Task> getToDoTasksByUser(String username, OrderBy orderBy, Date fromDueDate, Date toDueDate);
 
   long getTaskNum(String username, Long projectId);
 }

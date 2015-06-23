@@ -21,6 +21,7 @@ import org.exoplatform.services.log.Log;
 import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Priority;
+import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.exception.CommentNotFoundException;
@@ -34,6 +35,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import java.text.DateFormat;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -157,6 +159,17 @@ public class TaskServiceImpl implements TaskService {
       } else if ("priority".equalsIgnoreCase(param)) {
         Priority priority = Priority.valueOf(value);
         task.setPriority(priority);
+      } else if ("project".equalsIgnoreCase(param)) {
+        try {
+          Long projectId = Long.parseLong(value);
+          Status st = daoHandler.getStatusHandler().findLowestRankStatusByProject(projectId);
+          if (st == null) {
+            throw new ParameterEntityException(id, "Task", param, value, "Status for project is not found", null);
+          }
+          task.setStatus(st);
+        } catch (NumberFormatException ex) {
+          throw new ParameterEntityException(id, "Task", param, value, "ProjectID must be long", ex);
+        }
       } else {
         LOG.info("Field name: " + param + " is not supported for entity Task");
         throw new ParameterEntityException(id, "Task", param, value, "is not supported for the entity Task", null);
@@ -263,8 +276,8 @@ public class TaskServiceImpl implements TaskService {
   }
 
   @Override
-  public List<Task> getToDoTasksByUser(String username, OrderBy orderBy) {
-    return daoHandler.getTaskHandler().getToDoTask(username, orderBy);
+  public List<Task> getToDoTasksByUser(String username, OrderBy orderBy, Date fromDueDate, Date toDueDate) {
+    return daoHandler.getTaskHandler().getToDoTask(username, orderBy, fromDueDate, toDueDate);
   }
   
   @Override

@@ -16,11 +16,16 @@
 */
 package org.exoplatform.task.utils;
 
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.exoplatform.task.domain.Project;
+import org.exoplatform.task.exception.ProjectNotFoundException;
+import org.exoplatform.task.service.ProjectService;
 
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.Set;
 
 /**
@@ -30,6 +35,7 @@ import java.util.Set;
  * 6/3/15
  */
 public final class ProjectUtil {
+  private static final Log LOG = ExoLogger.getExoLogger(ProjectUtil.class);
 
   public static final int INCOMING_PROJECT_ID = -1;
   public static final int TODO_PROJECT_ID = -2;
@@ -75,5 +81,55 @@ public final class ProjectUtil {
     return new LinkedList<Project>(rootPRJs);
   }
 
+
+  //TODO: should move this method to web module
+  public static String buildBreadcumbs(Long id, ProjectService projectService, ResourceBundle bundle) {
+    Project project = null;
+    try {
+      project = projectService.getProjectById(id);
+    } catch (ProjectNotFoundException e) {
+      LOG.warn("project {} not found", id);
+    }
+
+    StringBuilder builder = new StringBuilder();
+    if (project != null) {
+      Project tmp = project;
+      while (tmp != null) {
+        StringBuilder el = new StringBuilder();
+        if (builder.length() == 0) {
+          el.append("<li class=\"active\">").append(tmp.getName()).append("</li>");
+        } else {
+          el.append("<li>")
+                  .append("<a class=\"Selected\" title=\"\" data-placement=\"bottom\" rel=\"tooltip\" href=\"#\" data-original-title=\"")
+                  .append(tmp.getName())
+                  .append("\">")
+                  .append(tmp.getName())
+                  .append("</a>")
+                  .append("<span class=\"uiIconMiniArrowRight\"></span>")
+                  .append("</li>");
+        }
+        builder.insert(0, el.toString());
+        tmp = tmp.getParent();
+      }
+    }
+
+    String label = bundle.getString("label.projects");
+    StringBuilder el = new StringBuilder();
+    if (builder.length() == 0) {
+      el.append("<li class=\"active\">").append(label).append("</li>");
+    } else {
+      el.append("<li>")
+              .append("<a class=\"Selected\" title=\"\" data-placement=\"bottom\" rel=\"tooltip\" href=\"#\" data-original-title=\"")
+              .append(label)
+              .append("\">")
+              .append(label)
+              .append("</a>")
+              .append("<span class=\"uiIconMiniArrowRight\"></span>")
+              .append("</li>");
+    }
+    builder.insert(0, el.toString());
+
+    return builder.toString();
+  }
 }
 

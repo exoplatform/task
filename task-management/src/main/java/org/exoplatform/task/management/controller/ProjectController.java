@@ -42,6 +42,7 @@ import org.exoplatform.task.exception.ProjectNotFoundException;
 import org.exoplatform.task.model.User;
 import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.UserService;
+import org.exoplatform.task.utils.ProjectUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -95,6 +96,10 @@ public class ProjectController {
   @Path("groupSelectorDialog.gtmpl")
   org.exoplatform.task.management.templates.groupSelectorDialog groupSelectorDialog;
 
+  @Inject
+  @Path("projectSearchResult.gtmpl")
+  org.exoplatform.task.management.templates.projectSearchResult projectSearchResult;
+
   private static final Log LOG = ExoLogger.getExoLogger(ProjectController.class);
 
   @Resource
@@ -111,7 +116,8 @@ public class ProjectController {
     }
     
     return form
-        .with().breadcumbs(buildBreadcumbs(parent.getId()))
+        .with()
+        .breadcumbs(ProjectUtil.buildBreadcumbs(parent.getId(), projectService, bundle))
         .parent(parent)
         .ok();
   }
@@ -329,28 +335,8 @@ public class ProjectController {
   @Ajax
   @MimeType.HTML
   public Response getBreadCumbs(Long id) {
-    String breadcumbs = buildBreadcumbs(id);
+    String breadcumbs = ProjectUtil.buildBreadcumbs(id, projectService, bundle);
     return Response.ok(breadcumbs.toString()).withCharset(Tools.UTF_8);
-  }
-
-  private String buildBreadcumbs(Long id) {
-    Project project = null;
-    try {
-      project = projectService.getProjectById(id);
-    } catch (ProjectNotFoundException e) {
-      LOG.warn("project {} not found", id);
-    }
-    
-    StringBuilder builder = new StringBuilder();
-    if (project != null) {
-      Project tmp = project;
-      while (tmp != null) {
-        builder.insert(0, tmp.getName()).insert(0, " &gt; ");
-        tmp = tmp.getParent();
-      }
-    }
-    builder.insert(0, bundle.getString("label.projects") + " ");
-    return builder.toString();
   }
 
   private JSONArray buildJSON(JSONArray array, List<Project> projects) throws JSONException {
@@ -391,8 +377,15 @@ public class ProjectController {
         }
       }
 
+      Project parent = project.getParent();
+      if (parent == null) {
+        parent = new Project();
+      }
+
       return detail
           .with()
+          .breadcumbs(ProjectUtil.buildBreadcumbs(parent.getId(), projectService, bundle))
+          .parent(parent)
           .project(project)
           .userMap(users)
           .ok()
@@ -433,6 +426,22 @@ public class ProjectController {
     } catch (AbstractEntityException e) {
       return Response.status(e.getHttpStatusCode()).body(e.getMessage());
     }
+  }
+
+  @Resource
+  @Ajax
+  @MimeType.HTML
+  public Response findProject(String keyword, Long currentProject) {
+    Identity identity = ConversationState.getCurrent().getIdentity();
+    List<Project> projects = projectService.findProjectByKeyWord(identity, keyword);
+    projects = ProjectUtil.buildRootProjects(projects);
+
+    return projectSearchResult
+            .with()
+            .keyword(keyword)
+            .projects(projects)
+            .currentProjectId(currentProject)
+            .ok();
   }
 
   private Response renderShareDialog(Project project) {

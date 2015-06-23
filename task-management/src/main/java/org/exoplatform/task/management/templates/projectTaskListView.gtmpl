@@ -6,6 +6,7 @@
 #{param name=keyword /}
 #{param name=groupBy /}
 #{param name=orderBy /}
+#{param name=filter /}
 #{param name=bundle /}
 
 <div class="projectListView" data-projectid="${currentProjectId}">
@@ -24,6 +25,9 @@
                     <div class="uiSearchForm uiSearchInput searchWithIcon">
                          <a title="" class="advancedSearch" rel="tooltip" data-placement="bottom" href="javascript:void(0)" data-original-title="Search"><i class="uiIconSearch uiIconLightGray"></i></a>
                          <input type="text"  name="keyword" value="${keyword}" placeholder="Search" >
+                         <input type="hidden" name="groupBy" value="${groupBy}"/>
+                         <input type="hidden" name="orderBy" value="${orderBy}"/>
+                         <input type="hidden" name="filter" value=""/>
                      </div>
                 </form>
             </div>
@@ -65,66 +69,79 @@
                         <div class="header-right pull-right">
                             <!-- this is filter action-->
                             <% if (tasks.size() > 2) { %>
-                            <form class="filter-form form-inline" action="#" method="GET">
-                               
-                                 <span class="action-bar dropdown  pull-right">
-                                    <a href="" class="actionIcon dropdown-toggle"  data-original-title="Due date" data-toggle="dropdown"  rel="tooltip" data-placement="bottom"><i class="uiIconSortDown uiIconLightGray"></i> Due date</a>
-                                    <ul class="dropdown-menu">
-                                      <li><a href="#">Title</a></li>
-                                      <li><a href="#">Priority</a></li>
-                                      <li><a href="#">Due date</a></li>
-                                      <li><a href="#">Created time</a></li>
-                                    </ul>
-                                  </span>
-                                   <span class="action-bar dropdown pull-right">
-                                    <a href="" class="actionIcon dropdown-toggle"  data-original-title="group By" data-toggle="dropdown"  rel="tooltip" data-placement="bottom"><i class="uiIconViewList uiIconLightGray"></i> Project</a>
-                                    <ul class="dropdown-menu">
-                                      <li><a href="#">Status</a></li>
-                                      <li><a href="#">Assignee</a></li>
-                                      <li><a href="#">Project</a></li>
-                                      <li><a href="#">Tags</a></li>
-                                    </ul>
-                                  </span>
-                                <select name="groupBy" class="span3"" style="display:none">
-                                    <option value="">None</option>
-                                    <option value="status" ${groupBy == "status" ? "selected = \"selected\"" : ""}>Status</option>
-                                    <% if (currentProjectId != -2) {%>
-                                    <option value="assignee" ${groupBy == "assignee" ? "selected = \"selected\"" : ""}>Assignee</option>
-                                    <% } else { %>
-                                    <option value="project" ${groupBy == "project" ? "selected = \"selected\"" : ""}>Project</option>
-                                    <% } %>
-                                    <option value="tag" ${groupBy == "tag" ? "selected = \"selected\"" : ""}>Tags</option>
-                                </select>
-                                <select name="orderBy" class="span3" style="display:none">
-                                    <option value="">None</option>
-                                    <option value="title" ${orderBy == 'title' ? "selected = \"selected\"" : ""}>Title</option>
-                                    <option value="priority" ${orderBy == 'priority' ? "selected = \"selected\"" : ""}>Priority</option>
-                                    <option value="dueDate" ${orderBy == 'dueDate' ? "selected = \"selected\"" : ""}>Due date</option>
-                                    <option value="createdTime" ${orderBy == 'createdTime' ? "selected = \"selected\"" : ""}>Created time</option>
-                                </select>
-                            </form>
+                             <%
+                                 def orders = [
+                                    title: bundle.getString("label.title"),
+                                    priority: bundle.getString("label.priority"),
+                                    dueDate: bundle.getString("label.duedate"),
+                                    createdTime: bundle.getString("label.createdTime")
+                                 ];
+                             %>
+                             <span class="action-bar dropdown pull-right" data-currentorderby="${orderBy}">
+                                <a href="" class="actionIcon dropdown-toggle" data-original-title="Due date" data-toggle="dropdown"  rel="tooltip" data-placement="bottom">
+                                    <i class="uiIconSortDown uiIconLightGray"></i>
+                                    <span>${orderBy != null && orderBy != "" ? orders[orderBy] : orders["dueDate"]}</span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                  <%orders.each{k,v -> %>
+                                    <li><a href="javascript:void(0)" data-orderby="${k}">${v}</a></li>
+                                  <%}%>
+                                </ul>
+                             </span>
+
+                             <%
+                                 def groups = [
+                                    "": bundle.getString("label.none"),
+                                     status: bundle.getString("label.status"),
+                                     assignee: bundle.getString("label.assignee"),
+                                     project: bundle.getString("label.project"),
+                                     tag: bundle.getString("label.tag")
+                                 ];
+                             %>
+                             <span class="action-bar dropdown pull-right" data-currentgroupby="${groupBy}">
+                                <a href="" class="actionIcon dropdown-toggle"  data-original-title="group By" data-toggle="dropdown"  rel="tooltip" data-placement="bottom">
+                                    <i class="uiIconViewList uiIconLightGray"></i>
+                                    <span>${groups[groupBy]}</span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <%groups.each{k,v -> %>
+                                        <li><a href="javascript:void(0)" data-groupby="${k}">${v}</a></li>
+                                    <%}%>
+                                </ul>
+                             </span>
                             <%}%>
                         </div>
+
+                        <!-- Only display filter when current view is TODO -->
+                        <% if (currentProjectId == -2) {%>
                         <div class="all-task center ">
-                                <span class="all-task-action-toggle">
-                                    <span><strong>All Tasks</strong></span>
-                                    <a  href="">Overdue</a>
-                                    <a href="">today</a>
-                                    <a href="">tomorrow</a>
-                                    <a href="">upcoming</a>
-                                </span>
-                                
-                                <span class="dropdown all-task-action">
-                                    <a href="" data-toggle="dropdown" class="actionIcon dropdown-toggle"><strong>All Tasks</strong> <i class="uiIconArrowDown uiIconLightGray"></i></a>
-                                     <ul class="dropdown-menu">
-                                      <li><a href="#">Overdue</a></li>
-                                      <li><a href="#">today</a></li>
-                                      <li><a href="#">tomorrow</a></li>
-                                      <li><a href="#">upcoming</a></li>
-                                    </ul>
-                                </span>
-                                
+                            <%
+                                def filters = [
+                                    "": bundle.getString("label.allTask"),
+                                    overdue: bundle.getString("label.overdue"),
+                                    today: bundle.getString("label.today"),
+                                    tomorrow: bundle.getString("label.tomorrow"),
+                                    upcoming: bundle.getString("label.upcoming")
+                                ];
+                            %>
+                            <span class="all-task-action-toggle nav-inline">
+                                <% filters.each{k,v -> %>
+                                    <a href="javascript:void(0);" class="${filter == k ? "active" : ""}" data-taskfilter="${k}">${v}</a>
+                                <%}%>
+                            </span>
+
+                            <span class="dropdown all-task-action">
+                                <a href="" data-toggle="dropdown" class="actionIcon dropdown-toggle">
+                                    <strong>${filters[filter]}</strong> <i class="uiIconArrowDown uiIconLightGray"></i>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <%filters.each{k,v -> %>
+                                    <li><a href="javascript:void(0);" data-taskfilter="${k}">${v}</a></li>
+                                    <%}%>
+                                </ul>
+                            </span>
                         </div>
+                        <%}%>
                     </div>
                     <div class="input-field">
                         <form action="#" method="GET" class="form-create-task">
@@ -155,7 +172,7 @@
                                                     <%}%>
                                                     <a href="javascript:void(0)"><span class="group-name">${user.username == "guest" ? "UnAssigned" : user.displayName}</span> <span class="amount-item">(${group.value.size()})</span></a>
                                                 <% } else { %>
-                                                    <a href="javascript:void(0)"><span class="group-name">${group.key}</span> <span class="amount-item">(${group.value.size()})</span></a>
+                                                    <div class="heading-title"><span class="group-name">${group.key}</span> <span class="amount-item">(${group.value.size()})</span></div>
                                                 <% } %>
                                         </div>
                                     <%}%>
@@ -165,30 +182,28 @@
                                                 <%
                                                     def isDueDateToday = false;
                                                     def isOverDue = false;
-                                                    /*if (index % 2 == 0) {
-                                                        isDueDateToday = true;
-                                                    }
-                                                    if (index % 3 == 0) {
-                                                        isOverDue = true;
-                                                    }*/
                                                 %>
-                                                    <li class="row-item row-odd hover-action-reveal has-border taskItem" data-taskid="${task.id}">
+                                                    <li class="row-item row-odd hover-action-reveal has-border has-background taskItem" data-taskid="${task.id}">
                                                         <div class="column-item column-checkbox">
-                                                            <span class="project-color ${task.status != null ? task.status.project.color : ''}"></span>
+                                                            <span class="project-color ${task.status != null ? task.status.project.color : ''}">&nbsp;</span>
+                                                            <span class="inline-block-hide dragable">&nbsp;</span>
                                                             <span class="uiCheckbox inline-block-hide">
                                                                 <input type="checkbox" class="checkbox" ${task.completed == true ? "checked=\"checked\"" : ""}>
                                                                 <span></span>
                                                             </span>
                                                              <span class="status-task inline-block-show">
-                                                                <i class="${isDueDateToday ? "uiIconColorWarningInBlue" : (isOverDue ? "uiIconColorWarningInRed" : "")}"></i>
+                                                                <i class="${isDueDateToday ? "uiIconColorWarningInBlue" : (isOverDue ? "uiIconColorWarningInRed" : "")}">&nbsp;</i>
                                                             </span>
                                                         </div>
                                                         <div class="column-item column-title">${task.title}</div>
                                                         <div class="column-item column-time">
                                                             <span class="text-time inline-block-show">${task.dueDate != null ? task.dueDate : "&nbsp;"}</span>
+                                                            <span class="inline-block-hide labels">
+                                                                <a href="#" class="navy_blue label">Next</a>
+                                                                <a href="#" class="orange label">Writing</a>
+                                                             </span>
                                                             <a class="actionIcon inline-block-hide" href="#"><i class="uiIcon uiIconClock"></i></a>
                                                         </div>
-                                                        <div class="column-item column-action"><a class="actionIcon inline-block-hide viewTaskDetail" href="#"><i class="uiIcon uiIconArrowRight"></i></a></div>
                                                     </li>
                                                 <%}%>
                                             </ul>
@@ -207,7 +222,7 @@
                     <%} else if (currentProjectId == 0) {%>
                       	<div class="empty-box no-project ">
                            <div class="empty-content">
-                               <img class="image" src="/task-management/assets/org/exoplatform/task/management/assets/images/img-folder.png" alt="no-project" />
+                               <img class="image" src="/task-management/assets/org/exoplatform/task/management/assets/images/img-task.png" alt="no-task" />
                                <div class="text-notify muted">&{label.noTask}</div>
                            </div>
                         </div>
@@ -240,6 +255,30 @@
                     		}
 							 }
                     	} %>
+                </div>
+                <div data-template="list-task-item" style="display: none">
+                    <li class="row-item row-odd hover-action-reveal has-border has-background taskItem" data-taskid="{{taskid}}">
+                        <div class="column-item column-checkbox">
+                            <span class="project-color null">&nbsp;</span>
+                            <span class="inline-block-hide dragable">&nbsp;</span>
+                          <span class="uiCheckbox inline-block-hide">
+                              <input type="checkbox" class="checkbox">
+                              <span></span>
+                          </span>
+                          <span class="status-task inline-block-show">
+                              <i class="">&nbsp;</i>
+                          </span>
+                        </div>
+                        <div class="column-item column-title">{{title}}</div>
+                        <div class="column-item column-time">
+                            <span class="text-time inline-block-show">&nbsp;</span>
+                            <span class="inline-block-hide labels" style="display: none">
+                              <a href="#" class="navy_blue label">Next</a>
+                              <a href="#" class="orange label">Writing</a>
+                            </span>
+                            <a class="actionIcon inline-block-hide" href="#"><i class="uiIcon uiIconClock"></i></a>
+                        </div>
+                    </li>
                 </div>
             </div>
     </div>

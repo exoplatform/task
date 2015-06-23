@@ -86,6 +86,11 @@
     </dependency>
     <dependency>
       <groupId>org.webjars</groupId>
+      <artifactId>selectize.js</artifactId>
+      <version>0.12.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.webjars</groupId>
       <artifactId>select2</artifactId>
       <version>3.5.2</version>
     </dependency>

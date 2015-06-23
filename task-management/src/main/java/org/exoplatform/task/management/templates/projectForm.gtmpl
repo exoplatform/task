@@ -1,29 +1,40 @@
 #{param name=parent/}
+#{param name=project/}
+#{param name=userMap/}
 #{param name=breadcumbs/}
 
-<div class="span12">
-    <h6>Create new project</h6>    
-    <a class="breadcumbs editable" href="#" data-name="parent" data-type="select2" data-inputclass="input-small" 
-    	data-value="${parent.id}">
-    	${breadcumbs}    	
-    </a>
-    <form class="create-project-form">
-        <div class="control-group">
-            <label class="control-label" for="inputName">Name</label>
-            <div class="controls">
-                <input type="text" class="span12" id="inputName" name="name" placeholder="Untitled Project">
-            </div>
+<div class="addProject uiBox" data-projectid="0">
+    <h5 class="title">
+        <div class="pull-right action-buttons dropdown">
+            <a href="#" class="actionIconSmall close-right-panel"><i class="uiIconClose uiIconLightGray"></i></a>
         </div>
-        <div class="control-group">
-            <label class="control-label" for="inputDesciption">Description</label>
-            <div class="controls">
-                <textarea id="inputDesciption" class="span12" name="description" placeholder="Enter description"></textarea>
+        <div>&{label.projectOverview}</div>
+    </h5>
+    <div class="uiContentBox">
+        <form action="#" class="create-project-form" onsubmit="javascript:void(0)">
+            <div class="breadcrumbCont uiEditableInline">
+                <ul class="breadcrumb hoverStatus editableField editable"
+                    data-name="parent" data-type="ParentProject" data-value="${parent.id}">
+                    ${breadcumbs}
+                </ul>
             </div>
-        </div>
-        <div class="control-group">
-            <div class="controls text-right">
-                <button type="submit" class="btn">Create</button>
+            <div class="inputName">
+                <input type="text" name="name" placeholder="&{label.untitledProject}" class="blackLarge">
             </div>
-        </div>
-    </form>
+            <div class="row-fluid prjAuthor">
+                <div class="span3">&{label.manager}:</div>
+                <div class="span9">
+                    <a class="avatarSmall" href="#"><img alt="avatar" src="/eXoSkin/skin/images/system/UserAvtDefault.png">  Root Root</a>
+                </div>
+            </div>
+            <div class="">
+                <textarea name="description" placeholder="&{label.description}" style="width: 100%"></textarea>
+            </div>
+            <div class="uiGroupBoundCheckBox"><label class="uiCheckbox"><input type="checkbox" title="&{message.enableCalendarIntegration}" class="checkbox"><span>&{message.enableCalendarIntegration}</span></label></div>
+            <div class="viewInCal" style="display: none">
+                <i class="uiIconPLFCalendar"></i>
+                <a data-placement="bottom" data-toggle="tooltip" href="#" data-original-title="View in Calendar">Sub Project 1</a>
+            </div>
+        </form>
+    </div>
 </div>
