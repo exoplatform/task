@@ -388,10 +388,26 @@ li[data-hiddenproject="false"] {
         }
         .taskName {
             margin-top: 5px;
-            font-size: 18px;
-            line-height: 26px;
+            .projectName {
+                font-size: 18px;
+                line-height: 26px;
+            }
+            span.uiCheckbox {
+                margin-left: 2px;
+                margin-right: 0;
+                span {
+                    width: 0;
+                    top: 6px;
+                }
+            }
+            .editable-container.editable-inline {
+                display: inline-block;
+            }
             input.blackLarge {
-                padding: 0 9px;
+                padding: 0 4px;
+            }
+            .parmalink i {
+                vertical-align: middle;
             }
         }
         .inforBar1 .pull-left, .taskDescription, .inforBar2 {
