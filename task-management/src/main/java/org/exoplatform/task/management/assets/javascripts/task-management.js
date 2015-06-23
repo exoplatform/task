@@ -336,6 +336,7 @@ $(document).ready(function() {
                 showbuttons: false,
                 onblur: 'submit',
                 emptyclass: 'muted',
+                highlight: false,
                 pk: taskId,
                 url: saveTaskDetailFunction
             };
@@ -406,9 +407,21 @@ $(document).ready(function() {
               });
               //
               editOptions.source = priority;
+              editOptions.success = function(response, newValue) {
+                $this.parent().find('i').attr('class', 'uiIconColorPriority' + newValue);
+              }
             }
             if(fieldName == 'tags') {
-                editOptions.emptytext = '<i class="uiIconHag" data-toggle="tooltip" title="Click to edit"></i> No Tags';
+                editOptions.emptytext = 'No Tags';
+                editOptions.success = function(response, newValue) {
+                  var isEmpty = newValue.length == 0 || newValue[0] == '';
+                  var $i = $this.parent().find('i.uiIconHag');
+                  if (isEmpty) {
+                    $i.removeClass('hidden');
+                  } else {
+                    $i.addClass('hidden');
+                  }
+                }
             }
 
             $this.editable(editOptions);
@@ -614,6 +627,7 @@ $(document).ready(function() {
                 onblur: 'submit',
                 showbuttons: false,
                 emptyclass: 'muted',
+                highlight: false,
                 pk: projectId,
                 url: saveProjectDetailFunction
             };
@@ -690,7 +704,7 @@ $(document).ready(function() {
 
               //welcome
               if ($a.data('id') == '0' && $leftPanel.find('.project-item').length == 0) {
-                var $addProject = $taskManagement.find('.addProject');
+                var $addProject = $taskManagement.find('.add-new-project');
                 taApp.showOneTimePopover($addProject);
               }
               

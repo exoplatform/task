@@ -1,150 +1,34 @@
 /* Reset*/
+body .editable-click,
+body a.editable-click,
+body a.editable-click:hover {
+  border: none;
+}
 input.grayLarge {
-  color: #999;
   font-size: 18px;
   height: 36px;
   width: 100%;
 }
 input.blackLarge {
-  color: #333;
   font-size: 18px;
   height: 36px;
   width: 100%;
 }
 input.grayNormal {
-  color: #999;
   font-size: 13px;
   height: 28px;
   width: 100%;
 }
 input.blackNormal {
-  color: #333;
   font-size: 13px;
   height: 28px;
   width: 100%;
 }
 select.selectboxMini {
-  height: 28px;
+  height: 30px;
   vertical-align: middle;
-  width: 62px;
+  width: 72px;
   margin: 0;
-}
-.clearfix {
-  clear: both;
-}
-.task-management h4 {
-  background: #eee;
-  padding: 5px;
-}
-#taskManagement .task {
-  padding: 10px 0;
-  margin: 10px 0;
-  border-bottom: dotted 1px #ccc;
-}
-#taskManagement .task label {
-  display: inline-block;
-}
-#taskManagement .task input[type="checkbox"],
-#taskManagement .task span.tag {
-  visibility: hidden;
-}
-#taskManagement .task:hover {
-  background: #F5F7FA;
-}
-#taskManagement .task input[type="checkbox"]:checked,
-#taskManagement .task:hover input[type="checkbox"],
-#taskManagement .task:hover span.tag {
-  visibility: visible;
-}
-.task-detail {
-  padding-right: 7px;
-}
-.task-detail .icon {
-  display: inline-block;
-  width: 24px;
-  height: 24px;
-  border: solid 4px #666;
-  background-color: #fff;
-  cursor: pointer;
-}
-.task-detail .icon.icon-completed,
-.task-detail .icon:hover {
-  margin-top: 0px;
-  background: #ffffff url("../images/icons/completed.png") no-repeat top left;
-}
-.task-detail .icon.icon-completed {
-  vertical-align: middle;
-}
-.task-detail .icon.icon-completed:hover {
-  background-image: none;
-}
-.task-description .editable-inline,
-.task-description .editable-input,
-.task-description .editable-input textarea,
-.task-description .editableform {
-  width: 100%;
-}
-.editable[data-type="textarea"] {
-  display: block;
-  height: 72px;
-  border: solid 1px #ccc;
-  padding: 3px 10px;
-  margin: 3px 0px 10px;
-  border-radius: 3px;
-}
-.task-info-row {
-  margin: 10px 0;
-}
-#taskCommentButton {
-  margin-top: 10px;
-}
-.comment .comment-action {
-  width: 16px;
-}
-.comment .action-link {
-  visibility: hidden;
-}
-.comment:hover .action-link {
-  visibility: visible;
-}
-.leftPanel ul.nav li a {
-  border-radius: 0;
-  margin: 0;
-}
-.leftPanel ul.left-menu.nav > li {
-  margin: 3px 0;
-}
-.leftPanel ul.left-menu.nav > li > a {
-  background: #eee;
-}
-.leftPanel ul.left-menu.nav li.dropdown > ul.dropdown-menu {
-  top: 30px;
-  left: calc(70%);
-}
-.leftPanel ul.left-menu.nav li.dropdown b.caret {
-  float: right;
-}
-.leftPanel ul.list-projects.nav li.dropdown > a > b.caret {
-  visibility: hidden;
-}
-.leftPanel ul.list-projects.nav li.dropdown:hover > a > b.caret {
-  visibility: visible;
-}
-.leftPanel ul.left-menu.nav > li.active a {
-  background: #0088cc;
-}
-.leftPanel ul.left-menu.nav > li > ul.list-projects {
-  margin: 0;
-}
-.leftPanel ul.left-menu.nav > li > ul.list-projects > li > a {
-  padding-left: 5px;
-  margin: 0;
-}
-.project-description .editable-inline,
-.project-description .editable-input,
-.project-description .editable-input textarea,
-.project-description .editableform {
-  width: 100%;
 }
 li[data-showhiddenproject="false"] li[data-hiddenproject="true"] {
   display: none;
@@ -195,6 +79,11 @@ li[data-hiddenproject="false"] > .sub-item .label-show {
 }
 .empty-box .text-notify {
   font-size: 24px;
+  line-height: 26px;
+}
+.empty-box .text-notify span {
+  font-size: 18px;
+  display: block;
 }
 .projectListView > .header {
   margin-bottom: 20px;
@@ -206,11 +95,11 @@ li[data-hiddenproject="false"] > .sub-item .label-show {
   position: relative;
 }
 .projectListView .header .input-field .popover {
-  left: 0;
-  top: 43px;
+  left: 0!important;
+  top: 43px!important;
 }
 .projectListView .header .input-field .popover .arrow {
-  left: 12%;
+  left: 50px;
 }
 .projectListView .header h2 {
   margin: 0 0 0 5px;
@@ -220,27 +109,6 @@ li[data-hiddenproject="false"] > .sub-item .label-show {
 }
 .projectListView .uiContentBox {
   padding: 0;
-}
-.projectListView .input-block-level,
-.projectListView .input-block-level:focus {
-  border: none;
-  border-bottom: solid 1px #ccc;
-  border-radius: 0;
-  outline: none;
-  box-shadow: none;
-}
-.form-search.relative {
-  position: relative;
-  margin-bottom: 5px;
-  margin-right: 5px;
-}
-.form-search.relative .uiIconEcmsSearchMini {
-  position: absolute;
-  left: 8px;
-  top: 8px;
-}
-.form-search.relative input[type="text"] {
-  padding-left: 25px;
 }
 .taskMngCont {
   margin: 20px;
@@ -332,6 +200,9 @@ li[data-hiddenproject="false"] > .sub-item .label-show {
 .table-project .column-item .labels {
   margin: 0 10px 0 0;
 }
+.table-project .column-item .labels .label {
+  margin: 0;
+}
 .table-project .column-item:first-child {
   padding-left: 13px;
 }
@@ -360,13 +231,14 @@ li[data-hiddenproject="false"] > .sub-item .label-show {
   font-weight: bold;
 }
 .leftPanel .accordion-heading .popover {
-  left: 178px;
+  left: auto;
+  right: -112px;
   max-width: 256px;
   top: 26px;
   width: 250px;
 }
 .leftPanel .accordion-heading .popover.bottom .arrow {
-  left: 18%;
+  left: 120px;
 }
 .centerPanel .uiHeaderBar .alignBtnGroup {
   margin: 0 auto;
@@ -390,6 +262,9 @@ li[data-hiddenproject="false"] > .sub-item .label-show {
 .all-task .all-task-action {
   display: none;
   text-align: left;
+}
+.editable-input textarea {
+  width: 100%;
 }
 .input-field input {
   width: 100%;
@@ -424,27 +299,8 @@ li[data-hiddenproject="false"] > .sub-item .label-show {
 .rightPanel .addProject .breadcrumbCont {
   position: relative;
 }
-.rightPanel .addProject .breadcrumbCont .uiTreeExplorer {
-  padding-bottom: 10px;
-  position: absolute;
-  top: 30px;
-  left: 0;
+.rightPanel .addProject .breadcrumbCont input {
   width: 100%;
-  box-shadow: none;
-}
-.rightPanel .addProject .breadcrumbCont .uiTreeExplorer .node {
-  margin-left: 0px;
-  padding-top: 0px;
-}
-.rightPanel .addProject .breadcrumbCont .uiTreeExplorer .node a {
-  display: block;
-  padding: 5px;
-}
-.rightPanel .addProject .breadcrumbCont .uiTreeExplorer .node a:hover,
-.rightPanel .addProject .breadcrumbCont .uiTreeExplorer .node a.selected {
-  /*TODO: remove hard-code here*/
-
-  background-color: #477ab3;
 }
 .rightPanel .addProject .prjAuthor {
   padding: 0 10px;
@@ -453,37 +309,47 @@ li[data-hiddenproject="false"] > .sub-item .label-show {
 .rightPanel .addProject .prjAuthor .avatarSmall {
   font-weight: bold;
 }
-.rightPanel .addProject .prjDescription {
-  padding: 10px;
-}
-.rightPanel .addProject .prjDescription ul li {
-  line-height: 20px;
-  padding-bottom: 10px;
-  list-style-type: disc;
-  margin-left: 10px;
-}
-.rightPanel .addProject .prjDescription ul li:last-child {
-  padding-bottom: 0;
-}
 .rightPanel .addProject .inputName {
   font-size: 18px;
-  height: 36px;
-  line-height: 36px;
+  line-height: 26px;
 }
 .rightPanel .addProject .viewInCal {
-  padding: 7px 23px;
+  padding: 7px 28px;
+}
+.rightPanel .addTask .iconTaskName {
+  margin: 5px 5px 0 0;
+}
+.rightPanel .addTask .breadcrumbCont {
+  max-width: 225px;
+}
+.rightPanel .addTask .breadcrumbCont * {
+  max-width: 225px;
 }
 .rightPanel .addTask .uiContentBox {
   padding-top: 8px;
 }
-.rightPanel .addTask .taskName input {
+.rightPanel .addTask .taskName {
   margin-top: 5px;
+  font-size: 18px;
+  line-height: 26px;
 }
-.rightPanel .addTask .taskDescription {
-  margin-top: 10px;
+.rightPanel .addTask .taskName input.blackLarge {
+  padding: 0 9px;
 }
-.rightPanel .addTask .inforBar1 > div:nth-child(2n) {
-  margin-left: 13px;
+.rightPanel .addTask .inforBar1 .pull-left,
+.rightPanel .addTask .taskDescription,
+.rightPanel .addTask .inforBar2 {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+.rightPanel .addTask .inforBar1 > div {
+  margin-right: 12px;
+}
+.rightPanel .addTask .inforBar1 > div .toDo .editable-container.editable-inline {
+  display: inline-block;
+}
+.rightPanel .addTask .inforBar1 > div:last-child {
+  margin-right: 0;
 }
 .rightPanel .addTask .inforBar1 .uiEditableInline .popover {
   min-width: 252px;
@@ -501,6 +367,9 @@ li[data-hiddenproject="false"] > .sub-item .label-show {
 }
 .rightPanel .addTask .inforBar1 .uiEditableInline .popover .popover-content .uiCalendarComponent hr {
   margin: 0;
+}
+.rightPanel .addTask .inforBar2 .priority .editable-container.editable-inline {
+  display: inline-block;
 }
 .rightPanel .addTask .tags a {
   box-shadow: none;
@@ -679,32 +548,8 @@ li[data-hiddenproject="false"] > .sub-item .label-show {
 .tags {
   margin: 5px 0;
 }
-.label-task,
 .tags .label {
-  border-radius: 2px;
-  display: inline-block;
-  padding: 2px 7px;
-  font-size: 11px;
-  font-weight: bold;
-  line-height: 20px;
-  text-shadow: 0 0 0 transparent;
-  box-shadow: none;
-  vertical-align: middle;
-}
-.label-task .uiIconClose,
-.tags .label .uiIconClose {
-  opacity: 1;
-}
-.label-task,
-.tags .label {
-  margin: 2px 0;
-}
-.label-task {
-  color: white;
-}
-.label-task:hover,
-.label-task:focus {
-  color: white;
+  margin: 2px 2px 2px 0;
 }
 [data-currentgroupby=""] [data-groupby=""] {
   display: none;
@@ -738,4 +583,59 @@ li[data-hiddenproject="false"] > .sub-item .label-show {
 }
 .exo-mentions .tags {
   margin: 0;
+}
+.editable-pre-wrapped {
+  white-space: normal;
+}
+.editable-container.editable-inline,
+.editable-input {
+  display: block;
+}
+.selectize-input {
+  padding: 0 4px;
+}
+.selectize-input.has-items {
+  padding: 2px 4px;
+}
+.selectize-input .label {
+  vertical-align: middle;
+  height: 14px;
+  line-height: 13px;
+  max-width: 200px;
+  overflow: hidden;
+  padding-right: 20px;
+  position: relative;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.selectize-input .label .removeValue {
+  font-size: 11px;
+  position: absolute;
+  right: 5px;
+  top: 2px;
+  font-weight: normal;
+}
+.selectize-input input[type="text"] {
+  margin-left: 10px!important;
+}
+.selectize-input .label + input[type="text"] {
+  margin-left: 5px!important;
+  height: 16px;
+}
+.prjDescription ul,
+.taskDescription ul,
+.prjDescription ol,
+.taskDescription ol {
+  margin: 10px 0 10px 25px;
+}
+.prjDescription ul li,
+.taskDescription ul li,
+.prjDescription ol li,
+.taskDescription ol li {
+  line-height: 20px;
+  list-style-type: disc;
+}
+.prjDescription ol li,
+.taskDescription ol li {
+  list-style-type: decimal;
 }

@@ -30,13 +30,11 @@ input.blackNormal {
 }
 
 select.selectboxMini {
-    height: 28px;
+    height: 30px;
     vertical-align: middle;
-    width: 62px;
+    width: 72px;
     margin: 0;
 }
-
-
 
 li[data-showhiddenproject="false"] {
   li[data-hiddenproject="true"] {
@@ -101,6 +99,11 @@ li[data-hiddenproject="false"] {
     }
     .text-notify {
         font-size: 24px;
+        line-height: 26px;
+        span {
+            font-size: 18px;
+            display: block;
+        }
     }
 }
 .projectListView {
@@ -112,10 +115,10 @@ li[data-hiddenproject="false"] {
         .input-field {
             position: relative;
             .popover  {
-                 left: 0;
-                 top: 43px;
+                 left: 0!important;
+                 top: 43px!important;
                  .arrow {
-                    left: 12%;
+                    left: 50px;
                  }
             }
         }
@@ -271,13 +274,13 @@ li[data-hiddenproject="false"] {
   .accordion-heading {
     .popover {
       left: auto;
-       right: -187px;
+       right: -112px;
       max-width: 256px;
       top: 26px;
       width: 250px
     }
     .popover.bottom .arrow {
-        left: 18%;
+        left: 120px;
     }
   }
 }
@@ -416,9 +419,12 @@ li[data-hiddenproject="false"] {
         }
         .inforBar1 {
             > div {
-                margin-right: 10px; 
+                margin-right: 12px; 
                 .toDo .editable-container.editable-inline {
                     display: inline-block;
+                }
+                &:last-child {
+                    margin-right: 0;
                 }
             }
             .uiEditableInline .popover {

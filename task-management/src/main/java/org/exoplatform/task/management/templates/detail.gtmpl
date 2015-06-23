@@ -173,16 +173,14 @@
     </div>
     <div class="pull-left">
         <div class="toDo">
-            <div class="uiEditableInline">
-                <i title="Click to edit" data-toggle="tooltip" class="uiIconTime"></i>
+            <div class="uiEditableInline">                
                 <% if (task.status != null) { %>
+                    <i title="Click to edit" data-toggle="tooltip" class="uiIconTime"></i>
                     <span class="${editableClasses} small" href="javascript:void(0)"
                        data-source="@{StatusController.getAllStatus(projectId=task.status.project.id)}"
                        data-inputclass="selectboxMini" data-name="status" data-type="select"
                        data-title="Select status" data-val="${task.status != null ?  task.status.id: '0'}"></span>
-                <%} else { %>
-                    <span href="#" title="&{message.addToProjectToChangeStatus}">&{label.noStatus}</span>
-                <% }%>
+                <%}  %>                    
             </div>
         </div>
     </div>
@@ -200,11 +198,14 @@
             def tags = '';
             if (task.tags != null && task.tags.size() > 0) {
                 task.tags.each {tag ->
-                    tags += '<span href="#" class="label primary">'+ tag +'</span>';
+                    if (!tag.isEmpty())
+                        tags += '<span href="#" class="label primary">'+ tag +'</span>';
                 };
             }
+            tags = tags.trim();
         %>
-        <div class="${editableClasses}" href="#"
+        <i class="uiIconHag ${tags.length() > 0 ? "hidden" : ""}" data-toggle="tooltip" title="Click to edit"></i>
+        <div class="${editableClasses} small" href="#"
            data-name="tags" data-type="selectize"
            data-inputclass="input-large"
            data-value="${task.tags != null && task.tags.size() > 0 ? task.tags.join(',') : ''}">
@@ -215,7 +216,7 @@
 <div class="inforBar2 clearfix">
     <div class="priority pull-right">
         <div class="uiEditableInline">
-            <i title="Click to edit" data-toggle="tooltip" class="uiIconColorFlagGray"></i>
+            <i title="Click to edit" data-toggle="tooltip" class="uiIconColorPriority${task.priority != null ?  task.priority : Priority.UNDEFINED}"></i>
             <%
                 def priorities = StringUtils.join(Priority.values(), ",");
             %>

@@ -66,6 +66,9 @@ define('x_editable_selectize', ['jquery', 'SHARED/edit_inline_js', 'selectize'],
                     return [];
                 }
                 str = "" + str;
+                if (str.length == 0) {
+                    return [];
+                }
                 return str.split(this.selectizeOptions.delimiter);
             },
 
