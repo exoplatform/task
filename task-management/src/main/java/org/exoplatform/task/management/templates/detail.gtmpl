@@ -40,21 +40,15 @@
         </div>
     </div>
 </div>
-<div class="taskName uiEditableInline" data-original-title="&{tooltip.clickToEdit}" data-toggle="tooltip" rel="tooltip" data-placement="bottom">
-    <span class="uiCheckbox inline-block-hide">
-        <input type="checkbox" class="checkbox">
-        <span></span>
-    </span>
-    <span class="projectName ${editableClasses} small"
-          data-name="title" data-type="text">
-        ${task.title}
-    </span>
-    <a href="<%= TaskManagement_.permalink(task.getId())%>" title="Permalink" data-toggle="tooltip" class="permalink actionIcon" style="position: relative;">
-        <i class="uiIconPermalink"></i>
-        <div class="popover fade bottom in" style="left: -85px; top: 25px; display: block;">
-            <div class="arrow" style="left: 95px;"></div>
+<div class="taskName uiEditableInline clearfix" data-original-title="&{tooltip.clickToEdit}" data-toggle="tooltip" rel="tooltip" data-placement="bottom">
+    <div class="pull-right">
+        <a href="<%= TaskManagement_.permalink(task.getId())%>" title="Permalink" data-toggle="tooltip" class="permalink actionIcon" style="position: relative;">
+            <i class="uiIconPermalink"></i>
+        </a>
+        <div class="popover fade bottom in" style="left: auto; right: -17px; top: 25px;display: block;">
+            <div class="arrow" style="left: auto; right: 17px;"></div>
             <div class="popover-content">
-                <div class="">
+                <div>
                     <i class="uiIconPermalink"></i>
                     Link to share
                 </div>
@@ -65,7 +59,17 @@
                 </div>
             </div>
         </div>
-    </a>
+    </div>
+    <div class="pull-left">
+        <span class="uiCheckbox inline-block-hide">
+            <input type="checkbox" class="checkbox">
+            <span></span>
+        </span>
+        <span class="projectName ${editableClasses} small"
+              data-name="title" data-type="text">
+            ${task.title}
+        </span>
+    </div>
 </div>
 <div class="inforBar1 clearfix">
     <div class="pull-left">

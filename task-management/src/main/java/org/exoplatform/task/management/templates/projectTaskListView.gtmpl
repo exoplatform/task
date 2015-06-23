@@ -18,12 +18,12 @@
                    <a href="javascript:void(0)" class="action-close  " style="display:none"> <i class="uiIconClose uiIconLightGray" ></i></a>
                 </span>
                 <a class="actionIcon" href="#"><i class="uiIcon uiIconFilter"></i></a>
-                <a class="actionIcon"  title="Permalink" data-toggle="tooltip" href="#" style="position: relative;">
+                <span class="actionIcon"  title="Permalink" data-toggle="tooltip" style="position: relative;">
                   <i class="uiIcon uiIconLink"></i>
                   <div class="popover fade bottom in" style="left: -351px; top: 25px; max-width: none; display: block;">
                     <div class="arrow" style="left: 360px;"></div>
                     <div class="popover-content">
-                      <div class="">
+                      <div>
                           <i class="uiIconPermalink"></i>
                           Link to share
                       </div>
@@ -34,7 +34,7 @@
                       </div>
                     </div>
                   </div>
-                </a>
+                </span>
             </div>
             <div class="pull-right search-container">
                 <form class="UIForm" action="#" onsubmit="javascript:void(0)">
