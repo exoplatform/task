@@ -19,9 +19,28 @@
 
 package org.exoplatform.task.management.controller;
 
-import juzu.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
+
+import javax.inject.Inject;
+
+import juzu.HttpMethod;
+import juzu.MimeType;
+import juzu.Path;
+import juzu.Resource;
+import juzu.Response;
 import juzu.impl.common.Tools;
 import juzu.request.SecurityContext;
+
 import org.exoplatform.commons.juzu.ajax.Ajax;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -30,10 +49,11 @@ import org.exoplatform.services.organization.User;
 import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Project;
-import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.domain.TaskLog;
 import org.exoplatform.task.exception.AbstractEntityException;
 import org.exoplatform.task.exception.ProjectNotFoundException;
+import org.exoplatform.task.exception.TaskNotFoundException;
 import org.exoplatform.task.management.model.CommentModel;
 import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.TaskParser;
@@ -45,11 +65,6 @@ import org.exoplatform.task.utils.TaskUtil;
 import org.exoplatform.task.utils.UserUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import javax.inject.Inject;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
@@ -78,6 +93,10 @@ public class TaskController {
   @Inject
   @Path("detail.gtmpl")
   org.exoplatform.task.management.templates.detail detail;
+  
+  @Inject
+  @Path("taskLogs.gtmpl")
+  org.exoplatform.task.management.templates.taskLogs taskLogs;
 
   @Inject
   @Path("comments.gtmpl")
@@ -149,6 +168,17 @@ public class TaskController {
     } catch (Exception ex) {// NOSONAR
       return Response.status(500).body(ex.getMessage());
     }
+  }
+  
+  @Resource
+  @Ajax
+  @MimeType.HTML
+  public Response renderTaskLogs(Long taskId, SecurityContext securityContext) throws TaskNotFoundException {
+    Task task = taskService.getTaskById(taskId); //Can throw TaskNotFoundException
+    
+    List<TaskLog> logs = new LinkedList<TaskLog>(task.getTaskLogs());
+    Collections.sort(logs);
+    return taskLogs.with().bundle(bundle).taskLogs(logs).ok().withCharset(Tools.UTF_8);
   }
 
   @Resource

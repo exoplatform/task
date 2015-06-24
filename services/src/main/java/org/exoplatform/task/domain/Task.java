@@ -104,6 +104,11 @@ public class Task {
 
   @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
   private Set<Comment> comments = new HashSet<Comment>();
+  
+  @ElementCollection(fetch=FetchType.LAZY)
+  @CollectionTable(name = "TASK_LOGS",
+      joinColumns = @JoinColumn(name = "TASK_ID"))
+  private Set<TaskLog> taskLogs = new HashSet<TaskLog>();
 
   public Task() {
   }
@@ -241,6 +246,14 @@ public class Task {
 
   public void setComments(Set<Comment> comments) {
     this.comments = comments;
+  }
+
+  public Set<TaskLog> getTaskLogs() {
+    return taskLogs;
+  }
+
+  public void setTaskLogs(Set<TaskLog> taskLogs) {
+    this.taskLogs = taskLogs;
   }
 
   public Task clone() {

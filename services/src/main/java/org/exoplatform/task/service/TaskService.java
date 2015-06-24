@@ -3,6 +3,7 @@ package org.exoplatform.task.service;
 import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.domain.TaskLog;
 import org.exoplatform.task.exception.CommentNotFoundException;
 import org.exoplatform.task.exception.ParameterEntityException;
 import org.exoplatform.task.exception.StatusNotFoundException;
@@ -17,8 +18,6 @@ import java.util.List;
 public interface TaskService {
 
   Task createTask(Task task);
-
-  Task updateTask(Task task);
 
   Task updateTaskInfo(long id, String param, String[] values)
       throws TaskNotFoundException, ParameterEntityException, StatusNotFoundException;
@@ -49,4 +48,6 @@ public interface TaskService {
   List<Task> getToDoTasksByUser(String username, OrderBy orderBy, Date fromDueDate, Date toDueDate);
 
   long getTaskNum(String username, Long projectId);
+
+  TaskLog addTaskLog(long taskId, String username, String msg, String target) throws TaskNotFoundException;
 }

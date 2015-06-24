@@ -1,5 +1,5 @@
 // TODO: Move juzu-ajax, mentionsPlugin module into task management project if need
-require(['project-menu', 'x_editable_select3', 'SHARED/jquery', 'SHARED/edit_inline_js', 'SHARED/juzu-ajax', 'SHARED/mentionsPlugin', 'SHARED/bts_modal', 'x_editable_selectize'], function(pMenu, $) {
+require(['project-menu', 'x_editable_select3', 'SHARED/jquery', 'SHARED/edit_inline_js', 'SHARED/juzu-ajax', 'SHARED/mentionsPlugin', 'SHARED/bts_modal', 'x_editable_selectize', 'SHARED/bts_tab'], function(pMenu, $) {
   var taApp = {};
 
   taApp.getUI = function() {
@@ -94,7 +94,7 @@ require(['project-menu', 'x_editable_select3', 'SHARED/jquery', 'SHARED/edit_inl
           if ($next.length == 0) {
             ui.$leftPanel.find('.active .project-name').click();
           } else {
-            $next.find('.viewTaskDetail').click();            
+            $next.click();            
           }
         }
       },
@@ -160,7 +160,7 @@ $(document).ready(function() {
         var callback = saveTaskDetailFunction(data);
         
         callback.done(function() {
-          $centerPanel.find('.selected .viewTaskDetail').click();
+          $centerPanel.find('.selected').click();
         }).fail(function() {                
           alert('fail to update');
         });
@@ -311,7 +311,21 @@ $(document).ready(function() {
 
     var initEditInline = function(taskId) {
         //initWorkPlan(taskId);
-
+      
+       //tabs in task detail
+       $('.taskTabs a').click(function(e) {
+         e.preventDefault();
+         
+         var $tab = $(this);
+         if ($tab.attr('href') == '.taskLogs') {
+           $tab.closest('.task-detail').find('.taskLogs').jzLoad('TaskController.renderTaskLogs()', {taskId: taskId}, function() {
+             $tab.tab('show');
+           });
+         } else {
+           $tab.tab('show');           
+         }
+       });
+      
         var $taskDetailContainer = $('#taskDetailContainer, [data-taskid]');
         $taskDetailContainer.find('.editable').each(function(){
             var $this = $(this);
@@ -454,7 +468,7 @@ $(document).ready(function() {
               var id = response.id; 
               var projectId = $leftPanel.find('.active .project-name').data('id');
               taApp.reloadTaskList(projectId, function() {
-                $centerPanel.find('.taskItem[data-taskid="' + id + '"] .viewTaskDetail').click();      
+                $centerPanel.find('.taskItem[data-taskid="' + id + '"]').click();      
               });
             }
         });

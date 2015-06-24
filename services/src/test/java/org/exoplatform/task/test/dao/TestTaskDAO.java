@@ -17,12 +17,14 @@
 package org.exoplatform.task.test.dao;
 
 import liquibase.exception.LiquibaseException;
+
 import org.exoplatform.task.dao.TaskHandler;
 import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.domain.Priority;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.domain.TaskLog;
 import org.exoplatform.task.factory.ExoEntityManagerFactory;
 import org.exoplatform.task.service.TaskParser;
 import org.exoplatform.task.service.impl.TaskParserImpl;
@@ -31,6 +33,7 @@ import org.exoplatform.task.test.TestUtils;
 import org.junit.*;
 
 import javax.persistence.Persistence;
+
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
@@ -219,6 +222,24 @@ public class TestTaskDAO {
     
     long num = tDAO.getTaskNum(null, 0L);
     Assert.assertEquals(1, num);
+  }
+  
+  @Test
+  public void testTaskLog() {
+    Task task = newTaskInstance("Task 1", "", null);
+    tDAO.create(task);
+    Assert.assertEquals(0, task.getTaskLogs().size());
+    
+    TaskLog log = new TaskLog();
+    log.setAuthor("root");
+    log.setMsg("has created task");
+    task.getTaskLogs().add(log);
+    
+    taskService.endRequest(null);
+    taskService.startRequest(null);
+    //
+    task = tDAO.find(task.getId());
+    Assert.assertEquals(1,  task.getTaskLogs().size());
   }
 
   private Task newTaskInstance(String taskTitle, String description, String assignee) {

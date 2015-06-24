@@ -26,6 +26,7 @@ import org.exoplatform.task.exception.ProjectNotFoundException;
 import org.exoplatform.task.service.DAOHandler;
 import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.StatusService;
+import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.service.impl.ProjectServiceImpl;
 import org.exoplatform.task.test.TestUtils;
 import org.junit.After;
@@ -60,6 +61,8 @@ public class ProjectServiceTest {
   @Mock
   StatusService statusService;
   @Mock
+  TaskService taskService;
+  @Mock
   TaskHandler taskHandler;
   @Mock
   ProjectHandler projectHandler;
@@ -80,7 +83,7 @@ public class ProjectServiceTest {
   @Before
   public void setUp() {
     MockitoAnnotations.initMocks(this);
-    projectService = new ProjectServiceImpl(statusService, daoHandler);
+    projectService = new ProjectServiceImpl(statusService, taskService, daoHandler);
     
     when(statusService.getDefaultStatus()).thenReturn(Arrays.asList("1", "2", "3", "4"));
     
@@ -367,7 +370,7 @@ public class ProjectServiceTest {
     when(statusHandler.findLowestRankStatusByProject(TestUtils.EXISTING_PROJECT_ID)).thenReturn(defaultStatus);
 
     projectService.createTaskToProjectId(TestUtils.EXISTING_PROJECT_ID, defaultTask);
-    verify(taskHandler, times(1)).create(taskCaptor.capture());
+    verify(taskService, times(1)).createTask(taskCaptor.capture());
 
     assertEquals(defaultStatus.getId(), taskCaptor.getValue().getStatus().getId());
   }

@@ -35,7 +35,6 @@ import org.exoplatform.services.log.Log;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.services.security.MembershipEntry;
 import org.exoplatform.task.dao.OrderBy;
-import org.exoplatform.task.dao.StatusHandler;
 import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
@@ -46,6 +45,7 @@ import org.exoplatform.task.exception.ProjectNotFoundException;
 import org.exoplatform.task.service.DAOHandler;
 import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.StatusService;
+import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.utils.ProjectUtil;
 import org.exoplatform.task.utils.UserUtils;
 
@@ -64,15 +64,19 @@ public class ProjectServiceImpl implements ProjectService {
   StatusService statusService;
   
   @Inject
+  TaskService taskService;
+  
+  @Inject
   DAOHandler daoHandler;
 
   public ProjectServiceImpl() {
   }
 
   //For testing purpose only
-  public ProjectServiceImpl(StatusService statusService, DAOHandler daoHandler) {
+  public ProjectServiceImpl(StatusService statusService, TaskService taskService, DAOHandler daoHandler) {
     this.daoHandler = daoHandler;
     this.statusService = statusService;
+    this.taskService = taskService;
   }
 
   @Override
@@ -252,8 +256,8 @@ public class ProjectServiceImpl implements ProjectService {
 
     Status status = daoHandler.getStatusHandler().findLowestRankStatusByProject(id);
     task.setStatus(status);
-
-    return daoHandler.getTaskHandler().create(task);
+    
+    return taskService.createTask(task);
 
   }
 
@@ -350,30 +354,6 @@ public class ProjectServiceImpl implements ProjectService {
   public List<Project> findProjectByKeyWord(Identity identity, String keyword) {
     List<String> memberships = UserUtils.getMemberships(identity);
     return daoHandler.getProjectHandler().findAllByMembershipsAndKeyword(memberships, keyword);
-  }
-  
-  private void createDefaultStatusToProject(Project project) {
-    StatusHandler statusHandler = daoHandler.getStatusHandler();
-
-    //Todo get default status from property file
-    //. Create status for project
-    Status status = new Status();
-    status.setName("Todo");
-    status.setRank(1);
-    status.setProject(project);
-    statusHandler.create(status);
-
-    status = new Status();
-    status.setName("In Progress");
-    status.setRank(2);
-    status.setProject(project);
-    statusHandler.create(status);
-
-    status = new Status();
-    status.setName("Done");
-    status.setRank(3);
-    status.setProject(project);
-    statusHandler.create(status);
   }
 }
 

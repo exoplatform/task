@@ -16,17 +16,23 @@
 */
 package org.exoplatform.task.test.service;
 
+import org.exoplatform.services.security.ConversationState;
+import org.exoplatform.services.security.Identity;
 import org.exoplatform.task.dao.CommentHandler;
 import org.exoplatform.task.dao.StatusHandler;
 import org.exoplatform.task.dao.TaskHandler;
 import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.domain.TaskLog;
 import org.exoplatform.task.exception.CommentNotFoundException;
 import org.exoplatform.task.exception.ParameterEntityException;
 import org.exoplatform.task.exception.StatusNotFoundException;
 import org.exoplatform.task.exception.TaskNotFoundException;
 import org.exoplatform.task.service.DAOHandler;
+import org.exoplatform.task.service.TaskListener;
 import org.exoplatform.task.service.TaskService;
+import org.exoplatform.task.service.impl.TaskEvent;
+import org.exoplatform.task.service.impl.TaskEvent.Type;
 import org.exoplatform.task.service.impl.TaskServiceImpl;
 import org.exoplatform.task.test.TestUtils;
 import org.junit.After;
@@ -41,6 +47,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -69,18 +76,21 @@ public class TaskServiceTest {
   StatusHandler statusHandler;
   @Mock
   DAOHandler daoHandler;
-
+  @Mock
+  TaskListener taskListener;
+  
   //ArgumentCaptors are how you can retrieve objects that were passed into a method call
   @Captor
   ArgumentCaptor<Task> taskCaptor;
   @Captor
   ArgumentCaptor<Comment> commentCaptor;
-
+  @Captor
+  ArgumentCaptor<TaskEvent> eventCaptor;
 
   @Before
   public void setUp() {
     MockitoAnnotations.initMocks(this);
-    taskService = new TaskServiceImpl(daoHandler);
+    taskService = new TaskServiceImpl(daoHandler, Arrays.asList(taskListener));
 
     //Mock DAO handler to return Mocked DAO
 
@@ -97,11 +107,23 @@ public class TaskServiceTest {
     when(statusHandler.find(TestUtils.EXISTING_STATUS_ID)).thenReturn(TestUtils.getDefaultStatus());
     when(commentHandler.find(TestUtils.EXISTING_COMMENT_ID)).thenReturn(TestUtils.getDefaultComment());
 
+    Identity root = new Identity("root");
+    ConversationState.setCurrent(new ConversationState(root));
   }
 
   @After
   public void tearDown() {
     taskService = null;
+    ConversationState.setCurrent(null);
+  }
+  
+  @Test
+  public void testTaskCreatedEvent() {
+    taskService.createTask(TestUtils.getDefaultTask());
+    verify(taskListener, times(1)).event(eventCaptor.capture());
+    
+    TaskEvent event = eventCaptor.getValue();
+    assertEquals(Type.CREATED, event.getType());
   }
 
   @Test

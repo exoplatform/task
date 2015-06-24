@@ -16,11 +16,18 @@
 */
 package org.exoplatform.task.utils;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.Set;
+
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
-
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 /**
  * Created by The eXo Platform SAS
@@ -48,9 +55,55 @@ public final class TaskUtil {
     return maps;
   }
   
+ public static String getPeriod(long time, ResourceBundle bundle) {
+   long duration = (System.currentTimeMillis() - time) / 1000;
+   long value;
+   if (duration < 60) {
+     return bundle.getString("label.Less_Than_A_Minute");
+   } else {
+     if (duration < 120) {
+       return bundle.getString("label.About_A_Minute");
+     } else {
+       if (duration < 3600) {
+         value = Math.round(duration / 60);
+         return bundle.getString("label.About_?_Minutes").
+                 replaceFirst("\\{0\\}", String.valueOf(value));
+       } else {
+         if (duration < 7200) {
+           return bundle.getString("label.About_An_Hour");
+         } else {
+           if (duration < 86400) {
+             value = Math.round(duration / 3600);
+             return bundle.getString("label.About_?_Hours").
+                     replaceFirst("\\{0\\}", String.valueOf(value));
+           } else {
+             if (duration < 172800) {
+               return bundle.getString("label.About_A_Day");
+             } else {
+               if (duration < 2592000) {
+                 value = Math.round(duration / 86400);
+                 return bundle.getString("label.About_?_Days").
+                         replaceFirst("\\{0\\}", String.valueOf(value));
+               } else {
+                 if (duration < 5184000) {
+                   return bundle.getString("label.About_A_Month");
+                 } else {
+                   value = Math.round(duration / 2592000);
+                   return bundle.getString("label.About_?_Months").
+                           replaceFirst("\\{0\\}", String.valueOf(value));
+                 }
+               }
+             }
+           }
+         }
+       }
+     }
+   }
+ }
+  
   public static String getWorkPlan(Date startDate, long duration) {
     if (startDate == null || duration <= 0) {
-      return null;      
+      return null;
     }
     
     Calendar start = Calendar.getInstance();
