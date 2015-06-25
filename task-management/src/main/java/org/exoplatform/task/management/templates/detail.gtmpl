@@ -24,9 +24,9 @@
     <div class="pull-right action-buttons dropdown">
         <a data-toggle="dropdown" class="dropdown-toggle actionIconSmall" href="#"><i class="uiIconArrowDown"></i></a>
         <ul class="dropdown-menu">
-            <li><a class="action-clone-project" href="#"><i class="uiIconCloneNode"></i> &{label.clone}</a></li>
-            <li><a class="action-clone-project" href="#"><i class="uiIconWatch"></i> &{label.watch}</a></li>
-            <li><a class="action-delete-project" href="#"><i class="uiIconDelete"></i> &{label.delete}</a></li>
+            <li><a class="action-clone-task" href="#"><i class="uiIconCloneNode"></i> &{label.clone}</a></li>
+            <li><a class="action-watch-task" href="#"><i class="uiIconWatch"></i> &{label.watch}</a></li>
+            <li><a class="action-delete-task" href="#"><i class="uiIconDelete"></i> &{label.delete}</a></li>
         </ul>
         <a class="actionIconSmall close-right-panel" href="#"><i class="uiIconClose"></i></a>
     </div>
@@ -74,99 +74,13 @@
 </div>
 <div class="inforBar1 clearfix">
     <div class="pull-left">
-        <div class="uiEditableInline">
+        <div class="uiEditableInline" title="Click to edit" data-toggle="tooltip">
             <i title="Click to edit" data-toggle="tooltip" class="uiIconClock"></i>
-            <span title="Click to edit" data-toggle="tooltip" class="hoverStatus small editableField">
-                Due Date
-                <div class="popover fade bottom in" role="tooltip" style="display: none;top: 28px; left: 20px;">
-                    <div class="arrow"></div>
-                    <div class="popover-content">
-                        <div class="header  nav-inline">
-                            <a class="active" href="#">None</a>
-                            <a href="#">Today</a>
-                            <a href="#">Tomorrow</a>
-                            <a href="#">Next week</a>
-                        </div>
-                        <div class="uiCalendarComponent uiBox pull-left" id="BlockCalendar">
-                            <div style="cursor: default" onmousedown="event.cancelBubble = true">
-                                <h5 class="title clearfix">
-                                    <a data-original-title="Previous Month" class="actionIcon pull-left" onclick="" rel="tooltip" data-placement="right">
-                                        <i class="uiIconMiniArrowLeft uiIconLightGray"></i></a>
-                                    <span>January, 2015</span>
-                                    <a data-original-title="Next Month" class="actionIcon pull-right" onclick="" rel="tooltip" data-placement="right">
-                                        <i class="uiIconMiniArrowRight uiIconLightGray"></i></a>
-                                </h5>
-                                <table class="weekList">
-                                    <tbody>
-                                    <tr>
-                                        <td>
-                                            <font color="red">S</font></td>
-                                        <td>M</td>
-                                        <td>T</td>
-                                        <td>W</td>
-                                        <td>T</td>
-                                        <td>F</td>
-                                        <td>S</td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                                <hr>
-                                <table cellspacing="0" cellpadding="0" class="weekDays" id="">
-                                    <tbody>
-                                    <tr>
-                                        <td><a onclick="" class="otherMonth" href="#">28</a></td>
-                                        <td><a onclick="" class="otherMonth" href="#">29</a></td>
-                                        <td><a onclick="" class="otherMonth" href="#">30</a></td>
-                                        <td><a onclick="" class="otherMonth" href="#">31</a></td>
-                                        <td><a onclick="" href="#" class="">1</a></td>
-                                        <td><a onclick="" href="#" class="">2</a></td>
-                                        <td><a onclick="" href="#" class="">3</a></td>
-                                    </tr>
-                                    <tr>
-                                        <td><a onclick="" href="#" class="">4</a></td>
-                                        <td><a onclick="" href="#" class="">5</a></td>
-                                        <td><a onclick="" href="#" class="">6</a></td>
-                                        <td><a onclick="" href="#" class="">7</a></td>
-                                        <td><a onclick="" href="#" class="">8</a></td>
-                                        <td><a onclick="" href="#" class="">9</a></td>
-                                        <td><a onclick="" href="#" class="">10</a></td>
-                                    </tr>
-                                    <tr class="currentWeek">
-                                        <td><a onclick="" href="#" class="">11</a></td>
-                                        <td><a onclick="" href="#" class="">12</a></td>
-                                        <td><a onclick="" href="#" class="">13</a></td>
-                                        <td><a onclick="" href="#" class="">14</a></td>
-                                        <td><a onclick="" href="#" class="">15</a></td>
-                                        <td><a onclick="" href="#" class="highLight today">16</a></td>
-                                        <td><a onclick="" href="#" class="">17</a></td>
-                                    </tr>
-                                    <tr>
-                                        <td><a onclick="" href="#" class="">18</a></td>
-                                        <td><a onclick="" href="#" class="">19</a></td>
-                                        <td><a onclick="eXo.webui.UICalendar.setDate(2015,1,20)" href="#" class="">20</a></td>
-                                        <td><a onclick="" href="#" class="">21</a></td>
-                                        <td><a onclick="" href="#" class="">22</a></td>
-                                        <td><a onclick="" href="#" class="">23</a></td>
-                                        <td><a onclick="" href="#" class="">24</a></td>
-                                    </tr>
-                                    <tr>
-                                        <td><a onclick="" href="#" class="">25</a></td>
-                                        <td><a onclick="" href="#" class="">26</a></td>
-                                        <td><a onclick="" href="#" class="">27</a></td>
-                                        <td><a onclick="" href="#" class="">28</a></td>
-                                        <td><a onclick="" href="#" class="">29</a></td>
-                                        <td><a onclick="" href="#" class="">30</a></td>
-                                        <td><a onclick="" href="#" class="">31</a></td>
-                                    </tr>
-                                    <tr>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- /.popover-content -->
-                </div>
+            <span class="${editableClasses} small dueDateField"
+                  data-type="calendar" data-name="duedate"
+                  data-value="${task.dueDate != null ? task.dueDate.format('yyyy-MM-dd') : ''}"
+                  data-format="yyyy-MM-dd" data-viewformat="dd M yyyy">
+                ${task.dueDate != null ? task.dueDate.format('dd MMM yyyy') : ''}
             </span>
         </div>
     </div>

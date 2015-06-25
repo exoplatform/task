@@ -168,21 +168,21 @@ $(document).ready(function() {
     });
     $rightPanel.on('click', 'a.action-clone-task', function(e){
         var $a = $(e.target).closest('a');
-        var taskId = $a.closest('.task-detail').attr('task-id');
+        var taskId = $a.closest('[data-taskid]').data('taskid');
         $a.jzAjax('TaskController.clone()', {
             data: {id: taskId},
             success: function(response) {
               var id = response.id; 
               var projectId = $leftPanel.find('.active .project-name').data('id');
               taApp.reloadTaskList(projectId, function() {
-                $centerPanel.find('.taskItem[data-taskid="' + id + '"]').click();      
+                $centerPanel.find('.taskItem[data-taskid="' + id + '"]').click();
               });
             }
         });
     });
     $rightPanel.on('click', 'a.action-delete-task', function(e){
         var $a = $(e.target).closest('a');
-        var taskId = $a.closest('.task-detail').attr('task-id');
+        var taskId = $a.closest('[data-taskid]').data('taskid');
         $a.jzAjax('TaskController.delete()', {
             data: {id: taskId},
             success: function(response) {

@@ -158,6 +158,9 @@ define('x_editable_selectize', ['jquery', 'SHARED/edit_inline_js', 'selectize'],
                 $dropdown_content.remove();
                 $dropdown_content = $('<ul>').addClass(settings.dropdownContentClass).appendTo($dropdown);
                 self.$dropdown_content = $dropdown_content;
+                setTimeout(function() {
+                    self.focus();
+                }, 100);
             },
             score: function(search) {
                 var score = this.getScoreFunction(search);

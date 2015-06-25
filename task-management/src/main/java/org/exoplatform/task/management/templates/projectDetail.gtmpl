@@ -56,7 +56,7 @@
 
 <h3 style="display: none">Add/Edit Task</h3>
 
-<div class="addTask uiBox" style="display: none">
+<div class="addTask uiBox" style="display: block">
     <div class="uiContentBox">
         <div class="clearfix">
             <div class="pull-right action-buttons dropdown">
@@ -123,7 +123,7 @@
                     <i title="Click to edit" data-toggle="tooltip" class="uiIconClock"></i>
                     <span title="Click to edit" data-toggle="tooltip" class="hoverStatus small editableField">
                         Due Date
-                        <div class="popover fade bottom in" role="tooltip" style="display: none;top: 28px; left: 20px;">
+                        <div class="popover fade bottom in" role="tooltip" style="display: block;top: 28px; left: 20px;">
                             <div class="arrow"></div>
                             <div class="popover-content">
                                 <div class="header  nav-inline">
@@ -604,8 +604,8 @@
     </div>  
 </div>
 
-<h3 style="display:block">Task Assignment</h3>
-<div class="taskAssignment" style="display:block">
+<h3 style="display:none">Task Assignment</h3>
+<div class="taskAssignment" style="display:none">
     <div class="uiEditableInline">
         <i class="uiIconUser" data-toggle="tooltip" title="Click to edit"></i>
         <div class="hoverStatus small editableField" data-toggle="tooltip" title="Click to edit">

@@ -1,6 +1,7 @@
 define('ta_edit_inline',
-    ['jquery', 'SHARED/edit_inline_js', 'selectize', 'x_editable_select3', 'x_editable_selectize'],
-    function($, editinline, selectize) {
+    ['jquery', 'SHARED/uiCalendar', 'SHARED/edit_inline_js', 'selectize',
+        'x_editable_select3', 'x_editable_selectize', 'x_editable_calendar'],
+    function($, uiCalendar, editinline, selectize) {
 
         /**
          * This is plugin for selectize, it is used to delete assignee of task
@@ -87,6 +88,9 @@ define('ta_edit_inline',
                 options.clear = false;
             } else if (type == 'textarea') {
                 options.emptytext = "Description";
+            } else if (type == 'calendar') {
+                options.mode = 'popup';
+                options.emptytext = 'No Duedate';
             }
 
             return options;
@@ -298,6 +302,17 @@ define('ta_edit_inline',
 
                 $dueDate.editable('setValue', next);
             });
+
+            /*var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            var $input = $rightPanel.find('input[name="duedate_hidden"]');
+            $rightPanel.on('click', '.dueDateField', function(e) {
+                uiCalendar.init($input[0], false, 'MM/dd/yyyy', '', months.join(',') + ',');
+                e.stopPropagation();
+                return false;
+            });
+            $rightPanel.on('change', 'input[name="duedate_hidden"]', function(e) {
+                console.log('input change: ' + $input.val());
+            });*/
         };
 
 
