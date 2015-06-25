@@ -1,5 +1,7 @@
 // TODO: Move juzu-ajax, mentionsPlugin module into task management project if need
-require(['project-menu', 'x_editable_select3', 'SHARED/jquery', 'SHARED/edit_inline_js', 'SHARED/juzu-ajax', 'SHARED/mentionsPlugin', 'SHARED/bts_modal', 'x_editable_selectize', 'SHARED/bts_tab'], function(pMenu, $) {
+require(['project-menu', 'ta_edit_inline', 'SHARED/jquery',
+        'SHARED/juzu-ajax', 'SHARED/mentionsPlugin', 'SHARED/bts_modal', 'SHARED/bts_tab'
+        ], function(pMenu, editInline, $) {
   var taApp = {};
 
   taApp.getUI = function() {
@@ -114,326 +116,12 @@ $(document).ready(function() {
     var $centerPanelContent = ui.$centerPanelContent;
     
     pMenu.init(taApp);
+    editInline.init(taApp);
     
     //welcome    
     var $inputTask = $centerPanelContent.find('input[name="taskTitle"]');
     taApp.showOneTimePopover($inputTask);
     $inputTask.focus();
-    
-    $.fn.editableform.buttons = '<button type="submit" class="btn btn-primary editable-submit"><i class="uiIconTick icon-white"></i></button>'+
-        '<button type="button" class="btn editable-cancel"><i class="uiIconClose"></i></button>';
-    
-    var saveTaskDetailFunction = function(params) {
-        var currentTaskId = $rightPanelContent.find('[data-taskid]').data('taskid');
-        if (currentTaskId == 0 || currentTaskId == undefined) {
-            return;
-        }
-        var d = new $.Deferred;
-        var data = params;
-        params.pk = currentTaskId;
-        data.taskId = currentTaskId;
-        $('#taskDetailContainer').jzAjax('TaskController.saveTaskInfo()',{
-            data: data,
-            method: 'POST',
-            traditional: true,
-            success: function(response) {
-                d.resolve();
-            },
-            error: function(jqXHR, textStatus, errorThrown ) {
-                d.reject('update failure: ' + jqXHR.responseText);
-            }
-        });
-        return d.promise();
-    };
-    
-    var initWorkPlan = function(taskId) {
-      var $workplan = $('.workPlan');
-      
-      var saveWorkPlan = function(plan) {
-        var data = {
-            pk : taskId,
-            name : 'workPlan'
-          };
-        if (plan) {
-          data.value = plan;
-        }
-        var callback = saveTaskDetailFunction(data);
-        
-        callback.done(function() {
-          $centerPanel.find('.selected').click();
-        }).fail(function() {                
-          alert('fail to update');
-        });
-      }
-      
-      var $removeWorkPlan = $workplan.find('.removeWorkPlan');
-      $removeWorkPlan.click(function() {
-        saveWorkPlan(null);
-      });
-      
-      //
-      var $duration = $workplan.find('.duration');
-      var currStart = $workplan.data('startdate').split('-');
-      var startDate = new Date(currStart[0], currStart[1] - 1, currStart[2], currStart[3], currStart[4]);
-      var endDate = new Date();
-      endDate.setTime(startDate.getTime() + parseFloat($workplan.data('duration')));
-      //
-      $duration.popover({
-        html : true,
-        content : $('.rangeCalendar').html()
-      }).on('shown.bs.popover', function() { 
-        //setup calendar
-        $workplan.find('.popover .calendar').each(function() {
-          var $calendar = $(this);
-          var $popover = $calendar.closest('.popover');
-          
-          if ($calendar.hasClass('fromCalendar')) {
-            $calendar.datepicker('setDate', startDate);
-          } else {
-            $calendar.datepicker('setDate', endDate);
-          }
-          $calendar.datepicker('clearDates');
-          
-          //
-          $calendar.on('changeDate', function(e) {
-            var dateFrom, dateTo;
-            if ($calendar.hasClass('fromCalendar')) {
-              dateFrom = $calendar.datepicker('getDate');
-              dateTo = $calendar.parent().find('.toCalendar').datepicker('getDate');
-            } else {
-              dateFrom = $calendar.parent().find('.fromCalendar').datepicker('getDate');
-              dateTo = $calendar.datepicker('getDate');
-            }
-            
-            if (dateFrom && dateTo) {
-              var allDay = $popover.find('input[name="allDay"]').is(':checked');
-              var timeFrom = [0, 0], timeTo = [23, 59];
-              if (!allDay) {
-                var $selectors = $popover.find('.timeSelector');
-                timeFrom = $selectors.first().editable('getValue').timeFrom.split(':');
-                timeTo = $selectors.last().editable('getValue').timeTo.split(':');
-              }
-              
-              var setTime = function(dt, time) {
-                dt.setHours(time[0]);
-                dt.setMinutes(time[1]);
-                dt.setMilliseconds(0);
-              }
-              setTime(dateFrom, timeFrom);
-              setTime(dateTo, timeTo);
-
-              saveWorkPlan([dateFrom.getTime(), dateTo.getTime()]);
-            }
-          });
-        });
-
-        //
-        var $allDay = $workplan.find('.popover input[type="checkbox"]');           
-        $allDay.on('change', function(e) {
-          var $chk = $(e.target);
-          if ($chk.is(':checked')) {
-            $workplan.find('.popover .timeSelector').hide();
-          } else {
-            $workplan.find('.popover .timeSelector').show();
-          }
-        });
-        if (startDate.getHours() == 0 && startDate.getMinutes() == 0 &&
-            endDate.getHours() == 23 && endDate.getMinutes() == 59) {          
-          $allDay[0].checked = true;
-          $allDay.trigger('change');
-        }
-
-        //setup timeSelector
-        var tmp = new Date(0,0,0,0,0,0,0);
-        var times = [], d = tmp.getDate();
-        while (tmp.getDate() == d) {
-          var h = tmp.getHours(), m = tmp.getMinutes();
-          var t = (h < 10 ? '0' + h : h) + ':' + (m < 10 ? '0' + m : m);
-          times.push({'value': t, 'text': t});
-          tmp.setMinutes(tmp.getMinutes() + 30);
-        }
-        times.push({'value': '23:59', 'text': '23:59'});
-        
-        var options = {
-            source : times,
-            mode : 'inline',
-            showbuttons : false
-        }
-        
-        //default time
-        var getIdx = function(date) {
-          var idx = date.getHours() * 2;
-          if (date.getMinutes() == 59) {
-            idx += 2;
-          } else if (date.getMinutes() == 30) {
-            idx += 1;
-          }
-          return idx;
-        }
-
-        $workplan.find('.popover .timeSelector').each(function() {
-          var $selector = $(this);
-          if ($selector.data('name') == 'timeFrom') {
-            options.value = times[getIdx(startDate)].value;
-          } else {
-            options.value = times[getIdx(endDate)].value;
-          }
-          $selector.editable(options);
-        });
-      });
-    };
-    
-    var initDueDate = function() {
-      var $dueDate = $('.editable[data-name="dueDate"]');
-      $dueDate.on('shown', function(e) {
-        var $content = $dueDate.parent().find('.popover .popover-content');
-        if ($content.find('.calControl').length == 0) {
-          $content.html($content.html() + "<div>" 
-              + $dueDate.parent().find('.dueDateControl').html()
-              + "</div>");
-        }
-      });
-      
-      $dueDate.parent().on('click', '.calControl', function(e) {
-        var $btn = $(e.target);
-        var next = new Date();
-        if ($btn.hasClass('none')) {
-          next = null;       
-        } else if ($btn.hasClass('tomorrow')) {
-          next.setDate(next.getDate() + 1);
-        } else if ($btn.hasClass('nextWeek')) {
-          next.setDate(next.getDate() + 7);
-        }
-        
-        $dueDate.editable('setValue', next);
-      });
-    };
-
-    var initEditInline = function(taskId) {
-        //initWorkPlan(taskId);
-      
-       //tabs in task detail
-       $('.taskTabs a').click(function(e) {
-         e.preventDefault();
-         
-         var $tab = $(this);
-         if ($tab.attr('href') == '.taskLogs') {
-           $tab.closest('.task-detail').find('.taskLogs').jzLoad('TaskController.renderTaskLogs()', {taskId: taskId}, function() {
-             $tab.tab('show');
-           });
-         } else {
-           $tab.tab('show');           
-         }
-       });
-      
-        var $taskDetailContainer = $('#taskDetailContainer, [data-taskid]');
-        $taskDetailContainer.find('.editable').each(function(){
-            var $this = $(this);
-            var dataType = $this.attr('data-type');
-            var fieldName = $this.attr('data-name');
-            var editOptions = {
-                mode: 'inline',
-                showbuttons: false,
-                onblur: 'submit',
-                emptyclass: 'muted',
-                highlight: false,
-                pk: taskId,
-                url: saveTaskDetailFunction
-            };
-
-            if(dataType == 'textarea') {
-                editOptions.emptytext = "Description";
-            } else if (dataType == 'text') {
-                editOptions.inputclass = 'blackLarge';
-                editOptions.clear = false;
-            }
-            if(fieldName == 'assignee' || fieldName == 'coworker') {
-                var findUserURL = $this.jzURL('UserController.findUser');
-                var getDisplayNameURL = $this.jzURL('UserController.getDisplayNameOfUser');
-                //editOptions.source = findUserURL;
-                editOptions.showbuttons = true;
-                editOptions.emptytext = "Unassigned";
-                editOptions.source = findUserURL;
-                editOptions.select2= {
-                    multiple: (fieldName == 'coworker'),
-                    allowClear: true,
-                    placeholder: 'Select an user',
-                    tokenSeparators:[","],
-                    minimumInputLength: 1,
-                    initSelection: function (element, callback) {
-                        return $.get(getDisplayNameURL, { usernames: element.val() }, function (data) {
-                            callback((fieldName == 'coworker') ? data : data[0]);
-                        });
-                    }
-                };
-
-                //. This is workaround for issue of xEditable: https://github.com/vitalets/x-editable/issues/431
-                if(fieldName == 'coworker') {
-                    editOptions.display = function (value, sourceData) {
-                        //display checklist as comma-separated values
-                        if (!value || !value.length) {
-                            $(this).empty();
-                            return;
-                        }
-                        if (value && value.length > 0) {
-                            //. Temporary display username in text field. It will be replace with displayName after ajax Get success
-                            $(this).html(value.join(', '));
-                            var $this = $(this);
-                            $.get(getDisplayNameURL, { usernames: value.join(',') }, function (data) {
-                                var html = [];
-                                $.each(data, function (i, v) {
-                                    html.push($.fn.editableutils.escape(v.text));
-                                });
-                                $this.html(html.join(', '));
-                            });
-                        }
-                    };
-                }
-            }
-            if(fieldName == 'dueDate') {
-                editOptions.emptytext = "no Duedate";
-                editOptions.mode = 'popup';
-            }
-            if(fieldName == 'status') {
-                //var allStatusURL = $this.jzURL('StatusController.getAllStatus');
-                var currentStatus = $this.attr('data-val');
-                //editOptions.source = allStatusURL;
-                editOptions.value = currentStatus;
-            }
-            if (fieldName == 'priority') {
-              var priority = [];
-              $.each($this.data('priority').split(','), function(idx, elem) {
-                priority.push({'text': elem, 'value': elem});
-              });
-              //
-              editOptions.source = priority;
-              editOptions.success = function(response, newValue) {
-                $this.parent().find('i').attr('class', 'uiIconColorPriority' + newValue);
-              }
-            }
-            if(fieldName == 'tags') {
-                editOptions.emptytext = 'No Tags';
-                editOptions.success = function(response, newValue) {
-                  var isEmpty = newValue.length == 0 || newValue[0] == '';
-                  var $i = $this.parent().find('.icon-hash');
-                  if (isEmpty) {
-                    $i.removeClass('hidden');
-                  } else {
-                    $i.addClass('hidden');
-                  }
-                }
-            }
-
-            $this.editable(editOptions);
-            initDueDate();
-
-            $this.on('shown', function(e, editable) {
-                $this.parent().removeClass('inactive').addClass('active');
-            }).on('hidden', function(e, editable) {
-                $this.parent().removeClass('active').addClass('inactive');
-            });
-        });
-    };
 
     $rightPanel.on('click', '.close-right-panel', function(e) {
         taApp.hideRightPanel($centerPanel, $rightPanel, $rightPanelContent);
@@ -448,7 +136,7 @@ $(document).ready(function() {
           $centerPanel.find('li.selected').removeClass('selected');
           $li.addClass('selected');
           taApp.showRightPanel($centerPanel, $rightPanel);
-          initEditInline(taskId);
+          editInline.initEditInline(taskId);
           $rightPanelContent.find('textarea').exoMentions({
             onDataRequest:function (mode, query, callback) {
               var _this = this;
@@ -500,6 +188,21 @@ $(document).ready(function() {
             success: function(response) {
                 window.location.reload();
             }
+        });
+    });
+
+    $rightPanel.on('click', '.editAssignee', function(e) {
+        e.stopPropagation();
+        var $edit = $(e.target).closest('.uiEditableInline');
+        $edit.addClass('active').removeClass('inactive');
+        $edit.find('.assignmentPopup')
+            .on('click', function(e) {
+                e.stopPropagation();
+            })
+            .show();
+        $(document).one('click', function(e) {
+            $edit.find('.assignmentPopup').off('click').hide();
+            $edit.addClass('inactive').removeClass('active');
         });
     });
 
@@ -599,105 +302,6 @@ $(document).ready(function() {
         return false;
     });
 
-    var saveProjectDetailFunction = function(params) {
-        var d = new $.Deferred;
-        var data = params;
-        data.projectId = params.pk;
-        $rightPanel.jzAjax('ProjectController.saveProjectInfo()',{
-            data: data,
-            method: 'POST',
-            traditional: true,
-            success: function(response) {
-                d.resolve();
-                //
-                if (params.name == 'name') {
-                    $leftPanel
-                        .find('li.project-item a.project-name[data-id="'+ data.projectId +'"]')
-                        .html(data.value);
-                }
-            },
-            error: function(jqXHR, textStatus, errorThrown ) {
-                d.reject('update failure: ' + jqXHR.responseText);
-            }
-        });
-        return d.promise();
-    };
-    var initEditInlineForProject = function(projectId) {
-        var $project = $rightPanel.find('[data-projectid]');
-        $project.find('.editable').each(function(){
-            var $this = $(this);
-            var dataType = $this.attr('data-type');
-            var fieldName = $this.attr('data-name');
-            var editOptions = {
-                mode: 'inline',
-                onblur: 'submit',
-                showbuttons: false,
-                emptyclass: 'muted',
-                highlight: false,
-                pk: projectId,
-                url: saveProjectDetailFunction
-            };
-
-            if(dataType == 'textarea') {
-                editOptions.emptytext = "Description";
-            } else if (dataType == 'text')  {
-                editOptions.inputclass = 'blackLarge';
-                editOptions.clear = false;
-            }
-            if(fieldName == 'manager' || fieldName == 'participator') {
-                var findUserURL = $this.jzURL('UserController.findUser');
-                var getDisplayNameURL = $this.jzURL('UserController.getDisplayNameOfUser');
-                editOptions.showbuttons = true;
-                editOptions.emptytext = (fieldName == 'manager' ? "No Manager" : "No Participator");
-                editOptions.source = findUserURL;
-                editOptions.select2= {
-                    multiple: true,
-                    allowClear: true,
-                    placeholder: 'Select an user',
-                    tokenSeparators:[","],
-                    minimumInputLength: 1,
-                    initSelection: function (element, callback) {
-                        return $.get(getDisplayNameURL, { usernames: element.val() }, function (data) {
-                            callback(data);
-                        });
-                    }
-                };
-
-                //. This is workaround for issue of xEditable: https://github.com/vitalets/x-editable/issues/431
-                editOptions.display = function (value, sourceData) {
-                    //display checklist as comma-separated values
-                    if (!value || !value.length) {
-                        $(this).empty();
-                        return;
-                    }
-                    if (value && value.length > 0) {
-                        //. Temporary display username in text field. It will be replace with displayName after ajax Get success
-                        $(this).html(value.join(', '));
-                        var $this = $(this);
-                        $.get(getDisplayNameURL, { usernames: value.join(',') }, function (data) {
-                            var html = [];
-                            $.each(data, function (i, v) {
-                                html.push($.fn.editableutils.escape(v.text));
-                            });
-                            $this.html(html.join(', '));
-                        });
-                    }
-                };
-            }
-            if(fieldName == 'dueDate') {
-                editOptions.emptytext = "no Duedate";
-                editOptions.mode = 'popup';
-            }
-            $this.editable(editOptions);
-
-            $this.on('shown', function(e, editable) {
-                $this.parent().removeClass('inactive').addClass('active');
-            }).on('hidden', function(e, editable) {
-                $this.parent().removeClass('active').addClass('inactive');
-            });
-        });
-    };
-
     $leftPanel.on('click', 'a.project-name', function(e) {
         var $a = $(e.target).closest('a');
         var projectId = $a.data('id');
@@ -727,7 +331,7 @@ $(document).ready(function() {
                 taApp.showRightPanel($centerPanel, $rightPanel);
                 //TODO: check can edit to init editInline
                 if($rightPanelContent.find('[data-projectid]').data('canedit')) {
-                    initEditInlineForProject(projectId);
+                    editInline.initEditInlineForProject(projectId);
                 }
             });
         } else {

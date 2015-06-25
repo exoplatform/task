@@ -62,10 +62,12 @@ public class UserController {
             ListAccess<User> users = uHandler.findUsersByQuery(uQuery);
             JSONArray array = new JSONArray();
             for(User u : users.load(0, users.getSize())) {
+                org.exoplatform.task.model.User user = userService.loadUser(u.getUserName());
                 JSONObject json = new JSONObject();
                 json.put("id", u.getUserName());
                 String displayName = UserUtils.getDisplayName(u);
                 json.put("text", displayName);
+                json.put("avatar", user.getAvatar());
                 array.put(json);
             }
             return Response.ok(array.toString());
@@ -115,6 +117,7 @@ public class UserController {
             JSONObject json = new JSONObject();
             json.put("id", user.getUsername());
             json.put("text", user.getDisplayName());
+            json.put("avatar", user.getAvatar());
             array.put(json);
           }
           return Response.ok(array.toString()).withCharset(Tools.UTF_8);

@@ -61,29 +61,24 @@ public final class TaskUtil {
     
     Task task = taskService.getTaskById(id); //Can throw TaskNotFoundException
     taskModel.setTask(task);
-    
-    StringBuilder coWorkerDisplayName = new StringBuilder();
-    if(task.getCoworker() != null && task.getCoworker().size() > 0) {
-      for(String userName : task.getCoworker()) {
-        User user = findUserByName(userName, orgService);
-        if(user != null) {
-          if(coWorkerDisplayName.length() > 0) {
-            coWorkerDisplayName.append(", ");
-          }
-          coWorkerDisplayName.append(UserUtils.getDisplayName(user));
+
+    org.exoplatform.task.model.User assignee = null;
+    int numberCoworkers = 0;
+    if(task.getAssignee() != null && !task.getAssignee().isEmpty()) {
+      assignee = userService.loadUser(task.getAssignee());
+      numberCoworkers = task.getCoworker() != null ? task.getCoworker().size() : 0;
+    } else if (task.getCoworker() != null && task.getCoworker().size() > 0) {
+      Set<String> coworkers = task.getCoworker();
+      for (String u : coworkers) {
+        if (assignee == null && u != null && !u.isEmpty()) {
+          assignee = userService.loadUser(coworkers.iterator().next());
+        } else {
+          numberCoworkers++;
         }
       }
     }
-    taskModel.setCoWorkerDisplayName(coWorkerDisplayName.toString());
-
-    String assignee = "";
-    if(task.getAssignee() != null) {
-      User user = findUserByName(task.getAssignee(), orgService);
-      if(user != null) {
-        assignee = UserUtils.getDisplayName(user);
-      }
-    }
     taskModel.setAssignee(assignee);
+    taskModel.setNumberCoworkers(numberCoworkers);
 
     long commentCount = taskService.getNbOfCommentsByTask(task);
     taskModel.setCommentCount(commentCount);

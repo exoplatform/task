@@ -43,8 +43,10 @@
     @Script(id = "x-editable-selectize-field", value = "javascripts/x-editable-selectize.js",
             depends = {"selectize-js"}),
     @Script(id = "x-editable-customfield-js", value = "javascripts/x-editable-parentProject.js"),
-    @Script(id = "task-management-js", value = "javascripts/task-management.js",
+    @Script(id = "task-edit-inline", value = "javascripts/editinline.js",
             depends = {"x-editable-selectize-field","x-editable-customfield-js"}),
+    @Script(id = "task-management-js", value = "javascripts/task-management.js",
+            depends = {"task-edit-inline"}),
     @Script(id = "project-menu-js", value = "javascripts/project-menu.js")
 })
 @Less({

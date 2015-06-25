@@ -10,8 +10,8 @@
 
 	def task = taskModel.getTask();
 	def breadcumbs = taskModel.getBreadcumbs();
-	def assigneeName = taskModel.getAssignee();
-	def coWokerDisplayName = taskModel.getCoWorkerDisplayName();
+	def assignee = taskModel.getAssignee();
+	def countCoWorker = taskModel.getNumberCoworkers();
 	def commentCount = taskModel.getCommentCount();
 	def comments = taskModel.getComments();
 	def currentUser = taskModel.getCurrentUser();
@@ -170,10 +170,43 @@
         </div>
     </div>
     <div class="pull-left">
-        <div class="uiEditableInline">
-            <i title="Click to edit" data-toggle="tooltip" class="uiIconUser"></i>
-            <span title="Click to edit" data-toggle="tooltip" class="hoverStatus small editableField">Unassigned</span>
+        <div class="uiEditableInline inactive">
+            <span class = "unassigned ${assignee == null ? "" : "hidden"}" style = "">
+                <i title="Click to edit" data-toggle="tooltip" class="uiIconUser"></i>
+                <a title="Click to edit" data-toggle="tooltip" class="hoverStatus small editableField editAssignee">&{label.unassigned}</a>
+            </span>
+            <span class = "assigned ${assignee == null ? "hidden" : ""}">
+                <a class="avatarMini" href="#"><img alt="avatar" src="${assignee.avatar}"></a>
+                <a title="Click to edit" data-toggle="tooltip" class="hoverStatus small editableField editAssignee">
+                    <% if (countCoWorker == 0) {%>
+                        ${assignee.displayName}
+                    <%} else {%>
+                        +${countCoWorker} &{label.coworkers}
+                    <%}%>
+                </a>
+            </span>
+            <div class="uiBox assignmentPopup" style="display: none; position: absolute; left: auto; right: 0; top: 30px; width: 300px; z-index: 9">
+                <div class="uiContentBox">
+                    <div class="contBlock">
+                        <div>&{label.assignTo}:</div>
+                        <div class="inputUser">
+                            <input type = "text" name="assignee" value="${task.assignee != null ? task.assignee : ""}"/>
+                        </div>
+                    </div>
+                    <div class="contBlock tags">
+                        <%
+                            def coWorkers = "";
+                            if(task.coworker != null && task.coworker.size() > 0) {
+                                coWorkers = task.coworker.join(',');
+                            }
+                        %>
+                        <div>&{label.coworkers}:</div>
+                        <input type="text" name="coworker" value="${coWorkers}"/>
+                    </div>
+                </div>
+            </div>
         </div>
+
     </div>
     <div class="pull-left">
         <div class="toDo">
@@ -245,7 +278,7 @@
 </div>
 </div>
 
-<div id="taskDetailContainer" class="task-detail" task-id="${task.id}" style="display:none">
+<div id="taskDetailContainer" class="task-detail" task-id="${task.id}" style="display:block">
     <div class="row-fluid task-info-row">
         <a href="#" class="icon task-completed-field status-icon ${task.completed ? "icon-completed" : ""}">&nbsp;</a>
         <a class="editable" href="#" data-name="title" data-type="text">${task.title}</a>
@@ -280,16 +313,8 @@
     </div>
     <div class="row-fluid task-assign">
         <div class="span6">
-            <span>Assign to:</span><a class="editable" href="#" data-name="assignee" data-type="select2" data-inputclass="input-small" data-value="${task.assignee == null ? '' : task.assignee}">${assigneeName}</a>
         </div>
         <div class="span6">
-            <%
-                def coWorkers = "";
-                if(task.coworker != null && task.coworker.size() > 0) {
-                    coWorkers = task.coworker.join(',');
-                }
-            %>
-            <span>Co-Worker:</span><a class="editable" href="#" data-name="coworker" data-type="select2" data-inputclass="input-small" data-value="${coWorkers}">${coWokerDisplayName}</a>
         </div>
     </div>
     <div class="row-fluid task-info-row task-description">

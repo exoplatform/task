@@ -24,8 +24,8 @@ import org.exoplatform.task.domain.Task;
 public class TaskModel {
   private Task task;
   private String breadcumbs;
-  private String assignee;
-  private String coWorkerDisplayName;
+  private User assignee;
+  private int numberCoworkers;
   private long commentCount;
   private List<CommentModel> comments;
   private User currentUser;
@@ -42,17 +42,11 @@ public class TaskModel {
   public void setBreadcumbs(String breadcumbs) {
     this.breadcumbs = breadcumbs;
   }
-  public String getAssignee() {
+  public User getAssignee() {
     return assignee;
   }
-  public void setAssignee(String assignee) {
+  public void setAssignee(User assignee) {
     this.assignee = assignee;
-  }
-  public String getCoWorkerDisplayName() {
-    return coWorkerDisplayName;
-  }
-  public void setCoWorkerDisplayName(String coWorkerDisplayName) {
-    this.coWorkerDisplayName = coWorkerDisplayName;
   }
   public long getCommentCount() {
     return commentCount;
@@ -72,5 +66,12 @@ public class TaskModel {
   public void setCurrentUser(User currentUser) {
     this.currentUser = currentUser;
   }
-  
+
+  public int getNumberCoworkers() {
+    return numberCoworkers;
+  }
+
+  public void setNumberCoworkers(int numberCoworkers) {
+    this.numberCoworkers = numberCoworkers;
+  }
 }

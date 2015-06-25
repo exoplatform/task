@@ -604,8 +604,8 @@
     </div>  
 </div>
 
-<h3 style="display:none">Task Assignment</h3>   
-<div class="taskAssignment" style="display:none">
+<h3 style="display:block">Task Assignment</h3>
+<div class="taskAssignment" style="display:block">
     <div class="uiEditableInline">
         <i class="uiIconUser" data-toggle="tooltip" title="Click to edit"></i>
         <div class="hoverStatus small editableField" data-toggle="tooltip" title="Click to edit">
@@ -700,7 +700,7 @@
                     <div class="contBlock">
                         <div>Coworker:</div>
                         <div class="inputUser">
-                            <input type="text" value="" class="input-value" style="visibility: hidden; display: none;">
+                            <input type="text" value="" class="input-value" style="visibility: hidden; display: block;">
                             <div class="exo-mentions">
                                 <div contenteditable="true" class="replaceTextArea editable">
                                     Hello  @tr

@@ -176,8 +176,12 @@ public class TaskServiceImpl implements TaskService {
         builder.withNewVal(task.getAssignee());
       } else if("coworker".equalsIgnoreCase(param)) {
         Set<String> coworker = new HashSet<String>();
-        for(String v : values) {
-          coworker.add(v);
+        if (values != null) {
+          for (String v : values) {
+            if (v != null && !v.isEmpty()) {
+              coworker.add(v);
+            }
+          }
         }
         task.setCoworker(coworker);
       } else if("tags".equalsIgnoreCase(param)) {
