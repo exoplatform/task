@@ -213,6 +213,10 @@ li[data-hiddenproject="false"] {
                 font-weight: bold;
             }
         }
+        .column-title {
+             font-weight: bold;
+            .text-overflow();
+        }
     }
     .row-group {
         display: table-row-group;
@@ -465,7 +469,7 @@ li[data-hiddenproject="false"] {
                 box-shadow: none;
             }
             > .icon-hash {
-                margin-top: 7px;
+                margin-top: 4px;
                 margin-right: 6px;
             }
             &.active {
@@ -711,7 +715,7 @@ li[data-hiddenproject="false"] {
 }
 
 .tags .label   {
-    margin:2px 2px 2px 0;
+    margin:2px 4px 2px 0;
 }
 
 [data-currentgroupby=""] [data-groupby=""] {
@@ -767,7 +771,7 @@ li[data-hiddenproject="false"] {
         line-height: 13px;
         max-width: 200px;
         overflow: hidden;
-        padding-right: 20px;
+        padding-right: 20px!important;
         position: relative;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -778,10 +782,6 @@ li[data-hiddenproject="false"] {
             top: 2px;
             font-weight: normal;
         }
-    }
-     input[type="text"]  {
-        margin-left: 10px!important;
-
     }
     .label + input[type="text"] {
        margin-left: 5px!important;
@@ -806,5 +806,34 @@ li[data-hiddenproject="false"] {
 .editable-input {
     .uiDropdownMenu li > a {
         .text-overflow();
+    }
+}
+.editable-unsaved {
+    font-weight: normal;
+}
+
+
+.selectize-input.replaceTextArea {
+     width: 100%!important;
+     height: auto;
+     input {
+        height: 20px !important;
+     }
+     &.locked {
+        border-color: transparent;
+        -webkit-box-shadow: none;
+        box-shadow: none;
+        padding: 0;
+     }
+}
+.tags.uiEditableInline {
+    .hoverStatus.small {
+        padding: 2px 5px;
+    }
+}
+
+.exo-mentions.loading {
+    .autocomplete-menu.loading {
+        display: block;
     }
 }

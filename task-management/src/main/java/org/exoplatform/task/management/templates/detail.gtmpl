@@ -11,6 +11,7 @@
 	def task = taskModel.getTask();
 	def breadcumbs = taskModel.getBreadcumbs();
 	def assignee = taskModel.getAssignee();
+    def hasAssignee = (assignee != null);
 	def countCoWorker = taskModel.getNumberCoworkers();
 	def commentCount = taskModel.getCommentCount();
 	def comments = taskModel.getComments();
@@ -171,15 +172,15 @@
     </div>
     <div class="pull-left">
         <div class="uiEditableInline inactive">
-            <span class = "unassigned ${assignee == null ? "" : "hidden"}" style = "">
+            <span class = "unassigned ${!hasAssignee ? "" : "hidden"}" style = "">
                 <i title="Click to edit" data-toggle="tooltip" class="uiIconUser"></i>
                 <a title="Click to edit" data-toggle="tooltip" class="hoverStatus small editableField editAssignee">&{label.unassigned}</a>
             </span>
-            <span class = "assigned ${assignee == null ? "hidden" : ""}">
-                <a class="avatarMini" href="#"><img alt="avatar" src="${assignee.avatar}"></a>
+            <span class = "assigned ${!hasAssignee ? "hidden" : ""}">
+                <a class="avatarMini" href="#"><img alt="avatar" src="${hasAssignee ? assignee.avatar : ""}"></a>
                 <a title="Click to edit" data-toggle="tooltip" class="hoverStatus small editableField editAssignee">
                     <% if (countCoWorker == 0) {%>
-                        ${assignee.displayName}
+                        ${hasAssignee ? assignee.displayName : ""}
                     <%} else {%>
                         +${countCoWorker} &{label.coworkers}
                     <%}%>
@@ -188,7 +189,7 @@
             <div class="uiBox assignmentPopup" style="display: none; position: absolute; left: auto; right: 0; top: 30px; width: 300px; z-index: 9">
                 <div class="uiContentBox">
                     <div class="contBlock">
-                        <div>&{label.assignTo}:</div>
+                        <div class="mgB10 mgT5">&{label.assignTo}:</div>
                         <div class="inputUser">
                             <input type = "text" name="assignee" value="${task.assignee != null ? task.assignee : ""}"/>
                         </div>
@@ -200,7 +201,7 @@
                                 coWorkers = task.coworker.join(',');
                             }
                         %>
-                        <div>&{label.coworkers}:</div>
+                        <div class="mgB10 mgT5">&{label.coworkers}:</div>
                         <input type="text" name="coworker" value="${coWorkers}"/>
                     </div>
                 </div>

@@ -126,6 +126,7 @@ define('x_editable_selectize', ['jquery', 'SHARED/edit_inline_js', 'selectize'],
             options: [],
             wrapperClass: 'exo-mentions dropdown',
             dropdownClass: 'dropdown-menu uiDropdownMenu',
+            inputClass: 'selectize-input replaceTextArea ',
             openOnFocus: false,
             create: true,
             plugins: {
@@ -143,7 +144,7 @@ define('x_editable_selectize', ['jquery', 'SHARED/edit_inline_js', 'selectize'],
                         '</li>';
                 },
                 item: function(item, escape) {
-                    return '<span class="label primary" href="#">' + escape(item.text) +'</span>';
+                    return '<div class="label primary" href="#">' + escape(item.text) +'</div>';
                 },
                 option_create: function(data, escape) {
                     return '<li class="create"><a href="javascript:void(0)">Add <strong>' + escape(data.input) + '</strong>&hellip;</a></li>';
