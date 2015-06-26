@@ -123,7 +123,7 @@
                     <i title="Click to edit" data-toggle="tooltip" class="uiIconClock"></i>
                     <span title="Click to edit" data-toggle="tooltip" class="hoverStatus small editableField">
                         Due Date
-                        <div class="popover fade bottom in" role="tooltip" style="display: block;top: 28px; left: 20px;">
+                        <div class="popover fade bottom in" role="tooltip" style="display: none;top: 28px; left: 20px;">
                             <div class="arrow"></div>
                             <div class="popover-content">
                                 <div class="header  nav-inline">
@@ -605,7 +605,7 @@
 </div>
 
 <h3 style="display:none">Task Assignment</h3>
-<div class="taskAssignment" style="display:none">
+<div class="taskAssignment" style="display:block">
     <div class="uiEditableInline">
         <i class="uiIconUser" data-toggle="tooltip" title="Click to edit"></i>
         <div class="hoverStatus small editableField" data-toggle="tooltip" title="Click to edit">
@@ -622,7 +622,7 @@
         <i class="uiIconUser" data-toggle="tooltip" title="Click to edit"></i>
         <div class="hoverStatus small editableField" data-toggle="tooltip" title="Click to edit">
             <span class="view-value">Unassigned</span>
-            <div class="uiBox" style="display: none;position: absolute; left: 25px; top: 30px;">
+            <div class="uiBox" style="display: block;position: absolute; left: 25px; top: 30px;">
                 <div class="uiContentBox">
                     <div class="contBlock">
                         <div>Assigned to:</div>

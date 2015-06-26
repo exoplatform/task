@@ -405,7 +405,7 @@ public class TaskController {
 
   @Resource(method = HttpMethod.POST)
   @Ajax
-  @MimeType.HTML
+  @MimeType.JSON
   public Response createTask(Long projectId, String taskInput, SecurityContext securityContext) {
 
     if(taskInput == null || taskInput.isEmpty()) {
@@ -433,7 +433,13 @@ public class TaskController {
       taskService.createTask(task);
     }
 
-    return listTasks(projectId, "", "", "", "", securityContext);
+    try {
+      JSONObject json = new JSONObject();
+      json.put("id", task.getId());
+      return Response.ok(json.toString());
+    } catch (JSONException ex) {
+      return Response.status(500).body("JSONException: " + ex);
+    }
   }
 
 }

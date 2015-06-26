@@ -351,8 +351,13 @@ $(document).ready(function() {
         $form.jzAjax('TaskController.createTask()', {
             method: 'POST',
             data: {projectId: projectId, taskInput: taskInput},
-            success: function(html) {
-                $centerPanelContent.html(html);
+            success: function(task) {
+                var id = task.id;
+                var projectId = $leftPanel.find('.active .project-name').data('id');
+                taApp.reloadTaskList(projectId, function() {
+                    $centerPanel.find('.taskItem[data-taskid="' + id + '"]').click();
+                    $centerPanel.find('input[name="taskTitle"]').focus();
+                });
             }
         });
         return false;

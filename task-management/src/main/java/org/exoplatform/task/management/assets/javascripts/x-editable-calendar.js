@@ -26,7 +26,6 @@ define('x_editable_calendar', ['jquery', 'SHARED/edit_inline_js', 'SHARED/uiCale
                     clndr.firstChild.style.position = 'relative';
                 },
                 renderCalendar: function() {
-                    console.warn(this.selectedDate);
                     var table = uiCalendar.renderCalendar.apply(this, arguments);
                     table = table.replace(/eXo\.webui\.UICalendar/g, 'eXo.webui.UICalendarTaskManagement');
                     return table;
@@ -44,7 +43,6 @@ define('x_editable_calendar', ['jquery', 'SHARED/edit_inline_js', 'SHARED/uiCale
             var DPG = $.fn.datepicker.DPGlobal;
 
             var Calendar = function (options) {
-                console.log(options);
                 this.options = options;
                 this.init('calendar', options, Calendar.defaults);
             };

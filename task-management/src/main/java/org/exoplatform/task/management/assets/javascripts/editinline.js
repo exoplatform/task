@@ -66,6 +66,56 @@ define('ta_edit_inline',
             })();
 
         });
+
+        selectize.define('no_results', function( options ) {
+            var self = this;
+
+            options = $.extend({
+                html: function(data) {
+                    return (
+                        '<div class="autocomplete-menu not-found">' +
+                        ' <div class="noMatch center muted">No match</div>' +
+                        '</div>'
+                        );
+                }
+            }, options );
+
+            self.displayEmptyResultsMessage = function () {
+                //this.$empty_results_container.css( 'top', this.$control.outerHeight() );
+                this.$empty_results_container.show();
+            };
+
+            self.refreshOptions = (function () {
+                var original = self.refreshOptions;
+
+                return function () {
+                    original.apply( self, arguments );
+                    this.hasOptions || !self.lastQuery ? this.$empty_results_container.hide() :
+                        this.displayEmptyResultsMessage();
+                }
+            })();
+
+            self.onBlur = (function () {
+                var original = self.onBlur;
+
+                return function () {
+                    original.apply( self, arguments );
+                    this.$empty_results_container.hide();
+                };
+            })();
+
+            self.setup = (function() {
+                var original = self.setup;
+                return function() {
+                    original.apply(self, arguments);
+                    self.$empty_results_container = $( options.html( $.extend( {
+                        classNames: self.$input.attr( 'class' ) }, options ) ) );
+                    self.$empty_results_container.insertBefore( self.$dropdown );
+                    self.$empty_results_container.hide();
+                };
+            })();
+        });
+
         /**
          * End selectize plugin
          */
@@ -278,44 +328,6 @@ define('ta_edit_inline',
             });
         };
 
-        editInline.initDueDate = function() {
-            var $dueDate = $('.editable[data-name="dueDate"]');
-            $dueDate.on('shown', function(e) {
-                var $content = $dueDate.parent().find('.popover .popover-content');
-                if ($content.find('.calControl').length == 0) {
-                    $content.html($content.html() + "<div>"
-                        + $dueDate.parent().find('.dueDateControl').html()
-                        + "</div>");
-                }
-            });
-
-            $dueDate.parent().on('click', '.calControl', function(e) {
-                var $btn = $(e.target);
-                var next = new Date();
-                if ($btn.hasClass('none')) {
-                    next = null;
-                } else if ($btn.hasClass('tomorrow')) {
-                    next.setDate(next.getDate() + 1);
-                } else if ($btn.hasClass('nextWeek')) {
-                    next.setDate(next.getDate() + 7);
-                }
-
-                $dueDate.editable('setValue', next);
-            });
-
-            /*var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-            var $input = $rightPanel.find('input[name="duedate_hidden"]');
-            $rightPanel.on('click', '.dueDateField', function(e) {
-                uiCalendar.init($input[0], false, 'MM/dd/yyyy', '', months.join(',') + ',');
-                e.stopPropagation();
-                return false;
-            });
-            $rightPanel.on('change', 'input[name="duedate_hidden"]', function(e) {
-                console.log('input change: ' + $input.val());
-            });*/
-        };
-
-
         var selectizeOptions = {
             valueField: 'id',
             labelField: 'text',
@@ -331,7 +343,8 @@ define('ta_edit_inline',
                 task_remove_button: {
                     label: '<i class="uiIconClose uiIconLightGray"></i>',
                     className : 'removeValue'
-                }
+                },
+                no_results: {}
             },
             render: {
                 option: function(item, escape) {
@@ -554,7 +567,6 @@ define('ta_edit_inline',
                     $this.parent().removeClass('active').addClass('inactive');
                 });
             });
-            editInline.initDueDate();
             editInline.initAssignment(taskId);
         };
 
