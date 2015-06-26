@@ -79,9 +79,12 @@ public class TaskManagement {
   
   @Inject
   ProjectController projectController;
+  
+  @Inject
+  NavigationState navState;
 
   @View
-  public Response.Content index(Long taskId, SecurityContext securityContext) throws ProjectNotFoundException {
+  public Response.Content index(SecurityContext securityContext) throws ProjectNotFoundException {
     //TODO: should check if username is null?
     String username = securityContext.getRemoteUser();
     
@@ -89,19 +92,23 @@ public class TaskManagement {
     TaskModel taskModel = null;
     List<Task> tasks = null;
     Project project = null;
-    if (taskId != null) {
+    long taskId = navState.getTaskId();
+    //
+    if (taskId != -1) {
       try {
         taskModel = TaskUtil.getTaskModel(taskId, bundle, username, taskService, 
                                                     orgService, userService, projectService);
       } catch (TaskNotFoundException e) {
         LOG.error(e);
       }
-      project = taskModel.getTask().getStatus().getProject();
-      currProject = project.getId();
-      tasks = projectService.getTasksByProjectId(currProject, null);      
+      if (taskModel.getTask().getStatus() != null) {
+        project = taskModel.getTask().getStatus().getProject();
+        currProject = project.getId();
+        tasks = projectService.getTasksByProjectId(currProject, null);      
+      }
     }
-    
-    if (taskModel == null) {
+
+    if (tasks == null) {
       tasks = taskService.getIncomingTasksByUser(username, null);      
     }
 
@@ -113,11 +120,10 @@ public class TaskManagement {
     UserSetting setting = userService.getUserSetting(username);
 
     long taskNum = taskService.getTaskNum(username, null);
-    long currTaskId = taskId == null ? -1 : taskId;
     
     return index.with()
         .currentProjectId(currProject)
-        .taskId(currTaskId)
+        .taskId(taskId)
         .taskModel(taskModel)
         .project(project)
         .tasks(tasks)
@@ -132,10 +138,16 @@ public class TaskManagement {
         .bundle(bundle)
         .ok().withCharset(Tools.UTF_8);
   }
+  
+  @Action
+  public Response permalink(Long taskId) {
+    navState.setTaskId(taskId);
+    return TaskManagement_.index();
+  }
 
   @Action
   public Response changeViewState(String groupBy, String orderBy) {
-    return TaskManagement_.index(null);
+    return TaskManagement_.index();
   }
 
   @Action
@@ -145,6 +157,6 @@ public class TaskManagement {
     } else {
 
     }
-    return TaskManagement_.index(null);
+    return TaskManagement_.index();
   }
 }

@@ -20,6 +20,7 @@
 @Application(defaultController = TaskManagement.class)
 @Portlet
 @Bindings({
+    @Binding(value = NavigationState.class),
     @Binding(value = TaskParser.class),
     @Binding(DAOHandler.class),
     @Binding(value = TaskService.class, implementation = TaskServiceImpl.class),
@@ -60,8 +61,6 @@
 package org.exoplatform.task.management;
 
 import juzu.Application;
-import juzu.plugin.amd.Module;
-import juzu.plugin.amd.Modules;
 import juzu.plugin.asset.*;
 import juzu.plugin.binding.Binding;
 import juzu.plugin.binding.Bindings;
@@ -78,3 +77,4 @@ import org.exoplatform.task.service.impl.ProjectServiceImpl;
 import org.exoplatform.task.service.impl.StatusServiceImpl;
 import org.exoplatform.task.service.impl.TaskServiceImpl;
 import org.exoplatform.task.service.impl.UserServiceImpl;
+import org.exoplatform.task.management.controller.NavigationState;

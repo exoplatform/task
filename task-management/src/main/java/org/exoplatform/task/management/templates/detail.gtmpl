@@ -44,7 +44,7 @@
     <span class="projectName ${editableClasses}" data-name="title" data-type="text">
         ${task.title}
     </span>
-    <a href="<%= TaskManagement_.index(task.getId())%>" class="actionIcon"><i class="uiIcon uiIconLink"></i></a>
+    <a href="<%= TaskManagement_.permalink(task.getId())%>" class="actionIcon"><i class="uiIcon uiIconLink"></i></a>
 </div>
 <div class="inforBar1 clearfix">
     <div class="pull-left">
