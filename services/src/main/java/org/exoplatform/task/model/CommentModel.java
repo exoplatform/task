@@ -17,13 +17,12 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.exoplatform.task.management.model;
+package org.exoplatform.task.model;
+
+import java.util.Date;
 
 import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.model.User;
-
-import java.util.Date;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.

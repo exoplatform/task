@@ -1,10 +1,4 @@
-#{param name=task/}
-#{param name=breadcumbs/}
-#{param name=assigneeName/}
-#{param name=coWokerDisplayName/}
-#{param name=commentCount/}
-#{param name=comments/}
-#{param name=currentUser/}
+#{param name=taskModel/}
 
 <%
 	import java.text.SimpleDateFormat;
@@ -12,10 +6,17 @@
 	import org.exoplatform.task.utils.TaskUtil;
 	import org.apache.commons.lang.StringUtils;
 	import org.exoplatform.task.domain.Priority;
+	import org.exoplatform.task.management.controller.TaskManagement_;
 
-    def editableClasses = "hoverStatus editableField editable";
+	def task = taskModel.getTask();
+	def breadcumbs = taskModel.getBreadcumbs();
+	def assigneeName = taskModel.getAssignee();
+	def coWokerDisplayName = taskModel.getCoWorkerDisplayName();
+	def commentCount = taskModel.getCommentCount();
+	def comments = taskModel.getComments();
+	def currentUser = taskModel.getCurrentUser();
+   def editableClasses = "hoverStatus editableField editable";
 %>
-
 <div class="addTask uiBox" data-taskid="${task.id}">
 <div class="uiContentBox">
 <div class="clearfix">
@@ -40,10 +41,10 @@
     </div>
 </div>
 <div class="taskName uiEditableInline" data-original-title="&{tooltip.clickToEdit}" data-toggle="tooltip" rel="tooltip" data-placement="bottom">
-    <span class="projectName ${editableClasses}"
-          data-name="title" data-type="text">
+    <span class="projectName ${editableClasses}" data-name="title" data-type="text">
         ${task.title}
     </span>
+    <a href="<%= TaskManagement_.index(task.getId())%>" class="actionIcon"><i class="uiIcon uiIconLink"></i></a>
 </div>
 <div class="inforBar1 clearfix">
     <div class="pull-left">

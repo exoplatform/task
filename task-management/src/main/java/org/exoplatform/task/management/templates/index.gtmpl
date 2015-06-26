@@ -10,6 +10,8 @@
 #{param name=projects/}
 #{param name=userSetting/}
 #{param name=bundle/}
+#{param name=taskId/}
+#{param name=taskModel/}
 
 <div class="taskMngCont">
 	<div id="taskManagement" class="row-fluid">
@@ -67,14 +69,12 @@
 			  <i  class="uiIconMiniArrowLeft"></i>
 			</div>
 	    </div>
-	    <div class="centerPanel uiBox span9">
-	    	
-
+	    <div class="centerPanel uiBox <%=taskId == -1 ? "span9" : "span5" %>">
             <div class="centerPanelContent ">            	
                 #{include path=projectTaskListView.gtmpl /}
             </div>
 	    </div>
-	    <div class="rightPanel span4" style="display: none">
+	    <div class="rightPanel span4" style="<%= taskId == -1 ? "display: none" : ""%>">
 	    	<div class="sample uiBox pd10" style="display: none">
 				<!-- ##################################### -->
 				<br>
@@ -406,6 +406,9 @@
 			</div>
 	        <div class="rightPanelContent ">
 	            <!-- Content at right will be load dynamically by ajax -->
+	            <%if (taskId != -1) { %>
+	            #{include path=detail.gtmpl /}
+	            <%} %>
 	        </div>
 	    </div>
 	    

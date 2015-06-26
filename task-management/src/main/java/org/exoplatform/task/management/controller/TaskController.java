@@ -45,7 +45,6 @@ import org.exoplatform.commons.juzu.ajax.Ajax;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
-import org.exoplatform.services.organization.User;
 import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Project;
@@ -54,7 +53,8 @@ import org.exoplatform.task.domain.TaskLog;
 import org.exoplatform.task.exception.AbstractEntityException;
 import org.exoplatform.task.exception.ProjectNotFoundException;
 import org.exoplatform.task.exception.TaskNotFoundException;
-import org.exoplatform.task.management.model.CommentModel;
+import org.exoplatform.task.model.CommentModel;
+import org.exoplatform.task.model.TaskModel;
 import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.TaskParser;
 import org.exoplatform.task.service.TaskService;
@@ -62,7 +62,6 @@ import org.exoplatform.task.service.UserService;
 import org.exoplatform.task.utils.CommentUtils;
 import org.exoplatform.task.utils.ProjectUtil;
 import org.exoplatform.task.utils.TaskUtil;
-import org.exoplatform.task.utils.UserUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -113,54 +112,10 @@ public class TaskController {
 
     try {
 
-      Task task = taskService.getTaskById(id); //Can throw TaskNotFoundException
-
-      StringBuilder coWorkerDisplayName = new StringBuilder();
-      if(task.getCoworker() != null && task.getCoworker().size() > 0) {
-        for(String userName : task.getCoworker()) {
-          User user = orgService.getUserHandler().findUserByName(userName); //Can throw Exception
-          if(user != null) {
-            if(coWorkerDisplayName.length() > 0) {
-              coWorkerDisplayName.append(", ");
-            }
-            coWorkerDisplayName.append(UserUtils.getDisplayName(user));
-          }
-        }
-      }
-
-      String assignee = "";
-      if(task.getAssignee() != null) {
-        User user = orgService.getUserHandler().findUserByName(task.getAssignee()); //Can throw Exception
-        if(user != null) {
-          assignee = UserUtils.getDisplayName(user);
-        }
-      }
-
-      long commentCount = taskService.getNbOfCommentsByTask(task);
-
-      List<Comment> cmts = taskService.getCommentsByTask(task, 0, 2);
-      List<CommentModel> comments = new ArrayList<CommentModel>(cmts.size());
-      for(Comment c : cmts) {
-        org.exoplatform.task.model.User u = userService.loadUser(c.getAuthor());
-        comments.add(new CommentModel(c, u, CommentUtils.formatMention(c.getComment(), userService)));
-      }
-
-      org.exoplatform.task.model.User currentUser = userService.loadUser(securityContext.getRemoteUser());
-
-      String breadcumbs = bundle.getString("label.noProject");
-      if (task.getStatus() != null) {
-        Project p = task.getStatus().getProject();
-        breadcumbs = ProjectUtil.buildBreadcumbs(p.getId(), projectService, bundle);
-      }
+      TaskModel model = TaskUtil.getTaskModel(id, bundle, securityContext.getRemoteUser(), taskService, orgService, userService, projectService);
 
       return detail.with()
-          .task(task)
-          .breadcumbs(breadcumbs)
-          .assigneeName(assignee)
-          .coWokerDisplayName(coWorkerDisplayName.toString())
-          .commentCount(commentCount)
-          .comments(comments)
-          .currentUser(currentUser)
+          .taskModel(model)
           .ok().withCharset(Tools.UTF_8);
 
     } catch (AbstractEntityException e) {

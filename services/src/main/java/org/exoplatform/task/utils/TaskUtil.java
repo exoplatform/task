@@ -17,6 +17,7 @@
 package org.exoplatform.task.utils;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -26,8 +27,20 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
+import org.exoplatform.services.organization.OrganizationService;
+import org.exoplatform.services.organization.User;
+import org.exoplatform.task.domain.Comment;
+import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.exception.TaskNotFoundException;
+import org.exoplatform.task.model.CommentModel;
+import org.exoplatform.task.model.TaskModel;
+import org.exoplatform.task.service.ProjectService;
+import org.exoplatform.task.service.TaskService;
+import org.exoplatform.task.service.UserService;
 
 /**
  * Created by The eXo Platform SAS
@@ -37,7 +50,72 @@ import org.exoplatform.task.domain.Task;
  */
 public final class TaskUtil {
 
+  private static final Log LOG = ExoLogger.getExoLogger(TaskUtil.class.getName());
+  
   private TaskUtil() {
+  }
+  
+  public static TaskModel getTaskModel(Long id, ResourceBundle bundle, String username, 
+                                       TaskService taskService, OrganizationService orgService, UserService userService, ProjectService projectService) throws TaskNotFoundException {
+    TaskModel taskModel = new TaskModel();
+    
+    Task task = taskService.getTaskById(id); //Can throw TaskNotFoundException
+    taskModel.setTask(task);
+    
+    StringBuilder coWorkerDisplayName = new StringBuilder();
+    if(task.getCoworker() != null && task.getCoworker().size() > 0) {
+      for(String userName : task.getCoworker()) {
+        User user = findUserByName(userName, orgService);
+        if(user != null) {
+          if(coWorkerDisplayName.length() > 0) {
+            coWorkerDisplayName.append(", ");
+          }
+          coWorkerDisplayName.append(UserUtils.getDisplayName(user));
+        }
+      }
+    }
+    taskModel.setCoWorkerDisplayName(coWorkerDisplayName.toString());
+
+    String assignee = "";
+    if(task.getAssignee() != null) {
+      User user = findUserByName(task.getAssignee(), orgService);
+      if(user != null) {
+        assignee = UserUtils.getDisplayName(user);
+      }
+    }
+    taskModel.setAssignee(assignee);
+
+    long commentCount = taskService.getNbOfCommentsByTask(task);
+    taskModel.setCommentCount(commentCount);
+    
+    List<Comment> cmts = taskService.getCommentsByTask(task, 0, 2);
+    List<CommentModel> comments = new ArrayList<CommentModel>(cmts.size());
+    for(Comment c : cmts) {
+      org.exoplatform.task.model.User u = userService.loadUser(c.getAuthor());
+      comments.add(new CommentModel(c, u, CommentUtils.formatMention(c.getComment(), userService)));
+    }
+    taskModel.setComments(comments);
+
+    org.exoplatform.task.model.User currentUser = userService.loadUser(username);
+    taskModel.setCurrentUser(currentUser);
+    
+    String breadcumbs = bundle.getString("label.noProject");
+    if (task.getStatus() != null) {
+      Project p = task.getStatus().getProject();
+      breadcumbs = ProjectUtil.buildBreadcumbs(p.getId(), projectService, bundle);
+    }
+    taskModel.setBreadcumbs(breadcumbs);
+
+    return taskModel;
+  }
+
+  private static User findUserByName(String userName, OrganizationService orgService) {
+    try {
+      return orgService.getUserHandler().findUserByName(userName);
+    } catch (Exception e) {
+      LOG.error(e);
+      return null;
+    }
   }
 
   public static Map<String, List<Task>> groupTasks(List<Task> tasks, String groupBy) {

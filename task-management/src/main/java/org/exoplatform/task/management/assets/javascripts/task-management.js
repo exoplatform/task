@@ -700,7 +700,7 @@ $(document).ready(function() {
             });
         }
         // Show project summary at right panel
-        if(projectId > 0 && $a.data('canedit') && (currentProject != projectId || $rightPanel.is(':hidden'))) {
+        if(projectId > 0 && $a.data('canedit') && (currentProject != projectId || $rightPanel.is(':hidden') || !$rightPanelContent.children().first().data('projectid'))) {
             $rightPanelContent.jzLoad('ProjectController.projectDetail()', {id: projectId}, function () {
                 $a.closest('ul.list-projects[parentid="0"]').find('li.active').removeClass('active');
                 $a.closest('li').addClass('active');
