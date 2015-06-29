@@ -1,4 +1,5 @@
 #{param name=taskModel/}
+#{param name=bundle/}
 
 <%
 	import java.text.SimpleDateFormat;
@@ -173,20 +174,89 @@
             <span class="task-priority ${editableClasses} small" href="#" data-priority="${priorities}" data-inputclass="selectboxMini"
                data-name="priority" data-type="select" data-emptytext="&{label.noPriority}"
                data-value="${task.priority != null ?  task.priority : Priority.UNDEFINED}"></span>
-
-            <!--<span title="Click to edit" data-toggle="tooltip" class="hoverStatus small"><span class="view-value">None</span></span>
-            <select style="display: none;" name="priority" class="selectboxMini">
-                <option value="high">High</option>
-                <option value="normal">Normal</option>
-                <option value="low">Low</option>
-                <option value="none">None</option>
-            </select>-->
         </div>
     </div>
     <div class="pull-left">
-        <div class="uiEditableInline">
+        <%
+            def startDate = task.getStartDate();
+            def duration = task.getDuration();
+            def workplan = TaskUtil.getWorkPlan(startDate, duration, bundle);
+            if(workplan == null) {
+                workplan = bundle.getString("label.noWorkPlan");
+            }
+            def hasPlan = true;
+            if(startDate == null) {
+                hasPlan = false;
+                startDate = new Date();
+                startDate.setMinutes(0);
+                duration = 30 * 60 * 1000;
+            }
+            def endDate = new Date(startDate.getTime() + duration);
+            def df = new SimpleDateFormat("YYYY-MM-dd-HH-mm");
+            int halfHour = 30 * 60 * 1000;
+            def isAllday = false;
+            if (duration > halfHour * 47 && duration <= halfHour * 48) {
+                isAllday = true;
+            }
+        %>
+        <div class="uiEditableInline fieldWorkPlan inactive"
+             data-toggle="tooltip" title="Click to edit"
+             data-startdate="<%=df.format(startDate)%>" data-duration="${duration}">
             <i title="Click to edit" data-toggle="tooltip" class="uiIconPLFCalendar"></i>
-            <span title="Click to edit" data-toggle="tooltip" class="hoverStatus small editableField">Unscheduled</span>
+            <span class="hoverStatus small editableField">${workplan}</span>
+            <span class="actionIcon inline-hide removeWorkPlan ${hasPlan ? "" : "hidden"}"><i class="uiIcon uiIconTrash"></i></span>
+            <div class = "rangeCalendar" style = "display: none">
+                <div style="width: 470px;">
+                    <div class="row-fluid">
+                        <div class="span6"><strong>From</strong></div>
+                        <div class="span6"><strong>To</strong></div>
+                    </div>
+                    <div class="clearfix">
+                        <div class="uiCalendarComponent pull-left" id="BlockCalendar1">
+                            <input name="fromDate" type="hidden" value="${hasPlan ? startDate.format('yyyy-MM-dd') : ""}" />
+                        </div>
+                        <div class="uiCalendarComponent pull-left" id="BlockCalendar2">
+                            <input name="toDate" type="hidden" value="${hasPlan ? endDate.format('yyyy-MM-dd') : ""}" />
+                        </div>
+                    </div>
+                    <!-- /.clearfix -->
+                    <div class="row-fluid choose-time ${isAllday} ${isAllday ? "all-day" : ""}">
+                        <div class="span5 center timeSelector">
+                            <div class="form-dropdown">
+                                <input data-toggle="dropdown" class="input-size-mini" type="text" name="fromTime" maxlength="5" value="${isAllday ? "00:00" : startDate.format('HH:mm')}">
+                                <ul class="dropdown-menu">
+                                    <%for(int i = 0; i <= 23; i++) {
+                                        def hour = i < 10 ? "0" + i : i;
+                                    %>
+                                        <li><a href="javascript:void(0)" data-time="${hour}:00">${hour}:00</a></li>
+                                        <li><a href="javascript:void(0)" data-time="${hour}:30">${hour}:30</a></li>
+                                    <%}%>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="span2 center">
+                            <label class="uiCheckbox">
+                                <input type="checkbox" name="allday" class="checkbox" ${isAllday ? 'checked="true"' : ''}>
+                                <span>All day</span>
+                            </label>
+                        </div>
+                        <div class="span5 center timeSelector">
+                            <div class="form-dropdown">
+                                <input data-toggle="dropdown" class="input-size-mini" type="text" name="toTime" maxlength="5" value="${isAllday ? '23:59' : endDate.format('HH:mm')}">
+                                <ul class="dropdown-menu">
+                                    <%for(int i = 0; i <= 23; i++) {
+                                        def hour = i < 10 ? "0" + i : i;
+                                    %>
+                                        <li><a href="javascript:void(0)" data-time="${hour}:00">${hour}:00</a></li>
+                                        <li><a href="javascript:void(0)" data-time="${hour}:30">${hour}:30</a></li>
+                                    <%}%>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row-fluid center error errorMessage"></div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -305,22 +375,6 @@
     <div class="row-fluid task-workplan-row">
       <div class="span6">
 	      <a href="#"><i class="uiIconClock"></i></a>
-	      <%
-	      def startDate = task.getStartDate();
-	      def duration = task.getDuration();
-	      def workplan = TaskUtil.getWorkPlan(startDate, duration);
-	      if (workplan == null) {
-	        workplan = "no workplan";
-	      }
-	      def hasPlan = true;
-	      if (startDate == null) {
-	        hasPlan = false;
-	        startDate = new Date();
-	        startDate.setMinutes(0);
-	        duration = 30 * 60 * 1000;
-	      }
-	      def df = new SimpleDateFormat("YYYY-MM-dd-HH-mm");
-	      %>
 	      <div class="workPlan" data-startdate="<%=df.format(startDate)%>" data-duration="${duration}">
 	      	<a class="duration" href="#">${workplan}</a>
 	      	<%if (hasPlan) {%>

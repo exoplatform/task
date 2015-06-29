@@ -605,20 +605,20 @@
 </div>
 
 <h3 style="display:none">Task Assignment</h3>
-<div class="taskAssignment" style="display:block">
+<div class="taskAssignment" style="display:none">
     <div class="uiEditableInline">
         <i class="uiIconUser" data-toggle="tooltip" title="Click to edit"></i>
         <div class="hoverStatus small editableField" data-toggle="tooltip" title="Click to edit">
             <span class="view-value">Unassigned</span>
         </div>
     </div>
-    <div class="uiEditableInline">
+    <div class="uiEditableInline" style = "display: none">
         <i class="uiIconUser" data-toggle="tooltip" title="Click to edit"></i>
         <div class="hoverStatus small editableField" data-toggle="tooltip" title="Click to edit">
             <span class="view-value"><a href="#">John Smith</a></span>
         </div>
     </div>
-    <div class="uiEditableInline edit">
+    <div class="uiEditableInline edit" style = "display: none">
         <i class="uiIconUser" data-toggle="tooltip" title="Click to edit"></i>
         <div class="hoverStatus small editableField" data-toggle="tooltip" title="Click to edit">
             <span class="view-value">Unassigned</span>

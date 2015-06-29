@@ -1,5 +1,5 @@
 define('ta_edit_inline',
-    ['jquery', 'SHARED/uiCalendar', 'SHARED/edit_inline_js', 'selectize',
+    ['jquery', 'task_ui_calendar', 'SHARED/edit_inline_js', 'selectize',
         'x_editable_select3', 'x_editable_selectize', 'x_editable_calendar'],
     function($, uiCalendar, editinline, selectize) {
 
@@ -182,7 +182,7 @@ define('ta_edit_inline',
                 method: 'POST',
                 traditional: true,
                 success: function(response) {
-                    d.resolve();
+                    d.resolve(response);
                 },
                 error: function(jqXHR, textStatus, errorThrown ) {
                     d.reject('update failure: ' + jqXHR.responseText);
@@ -191,8 +191,21 @@ define('ta_edit_inline',
             return d.promise();
         };
 
+        var UICalendarFrom = $.extend({}, uiCalendar, {
+            calendarId: 'UITaskFromCalendarControl',
+            eXoName: 'eXo.webui.UITaskCalendarFrom'
+        });
+        var UICalendarTo = $.extend({}, uiCalendar, {
+            calendarId: 'UITaskToCalendarControl',
+            eXoName: 'eXo.webui.UITaskCalendarTo'
+        });
+        eXo.webui.UITaskCalendarFrom = UICalendarFrom;
+        eXo.webui.UITaskCalendarTo = UICalendarTo;
+
         editInline.initWorkPlan = function(taskId) {
-            var $workplan = $('.workPlan');
+            var $fieldWorkPlan = $('.fieldWorkPlan');
+            var $popover = $fieldWorkPlan.find('.editableField');
+            var $removeWorkPlan = $fieldWorkPlan.find('.removeWorkPlan');
 
             var saveWorkPlan = function(plan) {
                 var data = {
@@ -202,129 +215,113 @@ define('ta_edit_inline',
                 if (plan) {
                     data.value = plan;
                 }
-                var callback = saveTaskDetailFunction(data);
-
-                callback.done(function() {
-                    $centerPanel.find('.selected .viewTaskDetail').click();
+                var callback = editInline.saveTaskDetailFunction(data);
+                callback.done(function(response) {
+                    $popover.html(response);
+                    if (plan == null) {
+                        $removeWorkPlan.addClass("hidden");
+                    } else {
+                        $removeWorkPlan.removeClass("hidden");
+                    }
                 }).fail(function() {
                     alert('fail to update');
                 });
-            }
+            };
 
-            var $removeWorkPlan = $workplan.find('.removeWorkPlan');
+
             $removeWorkPlan.click(function() {
                 saveWorkPlan(null);
             });
 
-            //
-            var $duration = $workplan.find('.duration');
-            var currStart = $workplan.data('startdate').split('-');
-            var startDate = new Date(currStart[0], currStart[1] - 1, currStart[2], currStart[3], currStart[4]);
-            var endDate = new Date();
-            endDate.setTime(startDate.getTime() + parseFloat($workplan.data('duration')));
-            //
-            $duration.popover({
-                html : true,
-                content : $('.rangeCalendar').html()
-            }).on('shown.bs.popover', function() {
-                //setup calendar
-                $workplan.find('.popover .calendar').each(function() {
-                    var $calendar = $(this);
-                    var $popover = $calendar.closest('.popover');
+            $(document).on('click', function(e) {
+                if ($(e.target).closest('.fieldWorkPlan').length == 0) {
+                    $popover.popover('hide');
+                }
+            });
+            $popover.popover({
+                placement: 'left',
+                html: true,
+                content: function() {
+                    return $fieldWorkPlan.find('.rangeCalendar').html()
+                }
+            }).on("shown.bs.popover", function(e) {
+                var $pop = $(this).parent().find('.popover');
+                $popover.parent().removeClass('inactive').addClass('active');
 
-                    if ($calendar.hasClass('fromCalendar')) {
-                        $calendar.datepicker('setDate', startDate);
+                var updatePopoverPossition = function() {
+                    var height = $pop.outerHeight();
+                    var cssHeight = '-' + (height/2 - 15) + 'px';
+                    $pop.css('top', cssHeight);
+                };
+
+                var $inputFrom = $pop.find('[name="fromDate"]');
+                var $inputTo = $pop.find('[name="toDate"]');
+                var $inputFromTime = $pop.find('[name="fromTime"]');
+                var $inputToTime = $pop.find('[name="toTime"]');
+                var $inputAllday = $pop.find('[name="allday"]');
+
+                UICalendarFrom.init($inputFrom[0], false, 'yyyy-MM-dd', $inputFrom.val());
+                UICalendarTo.init($inputTo[0], false, 'yyyy-MM-dd', $inputTo.val());
+
+                $pop.off('change', '[name="allday"]').on('change', '[name="allday"]', function(e) {
+                    var $this = $(this);
+                    var $timeSelector = $this.closest('.choose-time');
+                    if($this.is(':checked')) {
+                        $timeSelector.addClass('all-day');
                     } else {
-                        $calendar.datepicker('setDate', endDate);
+                        $timeSelector.removeClass('all-day');
                     }
-                    $calendar.datepicker('clearDates');
+                });
+                $pop.off('change', '[name="fromDate"], [name="toDate"], [name="fromTime"], [name="toTime"], [name="allday"]')
+                    .on('change', '[name="fromDate"], [name="toDate"], [name="fromTime"], [name="toTime"], [name="allday"]', function(e) {
 
-                    //
-                    $calendar.on('changeDate', function(e) {
-                        var dateFrom, dateTo;
-                        if ($calendar.hasClass('fromCalendar')) {
-                            dateFrom = $calendar.datepicker('getDate');
-                            dateTo = $calendar.parent().find('.toCalendar').datepicker('getDate');
-                        } else {
-                            dateFrom = $calendar.parent().find('.fromCalendar').datepicker('getDate');
-                            dateTo = $calendar.datepicker('getDate');
+                        UICalendarFrom.show();
+                        UICalendarTo.show();
+
+                        var fromDate = $.trim($inputFrom.val());
+                        var toDate = $.trim($inputTo.val());
+                        var fromTime = $.trim($inputFromTime.val());
+                        var toTime = $.trim($inputToTime.val());
+
+                        if (fromDate == '' || toDate == '') {
+                            return;
                         }
 
-                        if (dateFrom && dateTo) {
-                            var allDay = $popover.find('input[name="allDay"]').is(':checked');
-                            var timeFrom = [0, 0], timeTo = [23, 59];
-                            if (!allDay) {
-                                var $selectors = $popover.find('.timeSelector');
-                                timeFrom = $selectors.first().editable('getValue').timeFrom.split(':');
-                                timeTo = $selectors.last().editable('getValue').timeTo.split(':');
-                            }
+                        var isAllDay = $inputAllday.is(':checked');
+                        if (isAllDay) {
+                            $inputFromTime.val('00:00');
+                            $inputToTime.val('23:59');
+                        }
 
-                            var setTime = function(dt, time) {
-                                dt.setHours(time[0]);
-                                dt.setMinutes(time[1]);
-                                dt.setMilliseconds(0);
-                            }
-                            setTime(dateFrom, timeFrom);
-                            setTime(dateTo, timeTo);
+                        var fDate = new Date(fromDate + ' ' + fromTime + ':00').getTime();
+                        var tDate = new Date(toDate + ' ' + toTime + ':00').getTime();
 
-                            saveWorkPlan([dateFrom.getTime(), dateTo.getTime()]);
+                        if (fDate >= tDate) {
+                            $pop.find('.errorMessage').html('To time can not be lesser than from time');
+                            updatePopoverPossition();
+                        } else {
+                            $pop.find('.errorMessage').html('');
+                            updatePopoverPossition();
+                            saveWorkPlan([fDate, tDate]);
+                            var $rangeCalendar = $fieldWorkPlan.find('.rangeCalendar');
+                            $rangeCalendar.find('[name="fromDate"]').val(fromDate);
+                            $rangeCalendar.find('[name="toDate"]').val(toDate);
+                            $rangeCalendar.find('[name="fromTime"]').val(fromTime);
+                            $rangeCalendar.find('[name="toTime"]').val(toTime);
                         }
                     });
-                });
+                $pop.off('click', '[data-time]')
+                    .on('click', '[data-time]', function(e) {
+                        var $a = $(e.target).closest('[data-time]');
+                        var time = $a.data('time');
+                        var $input = $a.closest('ul').parent().find('input');
+                        $input.val(time);
+                        $input.change();
+                    });
 
-                //
-                var $allDay = $workplan.find('.popover input[type="checkbox"]');
-                $allDay.on('change', function(e) {
-                    var $chk = $(e.target);
-                    if ($chk.is(':checked')) {
-                        $workplan.find('.popover .timeSelector').hide();
-                    } else {
-                        $workplan.find('.popover .timeSelector').show();
-                    }
-                });
-                if (startDate.getHours() == 0 && startDate.getMinutes() == 0 &&
-                    endDate.getHours() == 23 && endDate.getMinutes() == 59) {
-                    $allDay[0].checked = true;
-                    $allDay.trigger('change');
-                }
-
-                //setup timeSelector
-                var tmp = new Date(0,0,0,0,0,0,0);
-                var times = [], d = tmp.getDate();
-                while (tmp.getDate() == d) {
-                    var h = tmp.getHours(), m = tmp.getMinutes();
-                    var t = (h < 10 ? '0' + h : h) + ':' + (m < 10 ? '0' + m : m);
-                    times.push({'value': t, 'text': t});
-                    tmp.setMinutes(tmp.getMinutes() + 30);
-                }
-                times.push({'value': '23:59', 'text': '23:59'});
-
-                var options = {
-                    source : times,
-                    mode : 'inline',
-                    showbuttons : false
-                }
-
-                //default time
-                var getIdx = function(date) {
-                    var idx = date.getHours() * 2;
-                    if (date.getMinutes() == 59) {
-                        idx += 2;
-                    } else if (date.getMinutes() == 30) {
-                        idx += 1;
-                    }
-                    return idx;
-                }
-
-                $workplan.find('.popover .timeSelector').each(function() {
-                    var $selector = $(this);
-                    if ($selector.data('name') == 'timeFrom') {
-                        options.value = times[getIdx(startDate)].value;
-                    } else {
-                        options.value = times[getIdx(endDate)].value;
-                    }
-                    $selector.editable(options);
-                });
+                updatePopoverPossition();
+            }).on('hidden.bs.popover', function(e) {
+                $popover.parent().removeClass('active').addClass('inactive');
             });
         };
 
@@ -502,7 +499,7 @@ define('ta_edit_inline',
         };
 
         editInline.initEditInline = function(taskId) {
-            //initWorkPlan(taskId);
+            editInline.initWorkPlan(taskId);
 
             //tabs in task detail
             $('.taskTabs a').click(function(e) {

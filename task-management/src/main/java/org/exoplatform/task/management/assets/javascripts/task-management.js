@@ -117,6 +117,8 @@ $(document).ready(function() {
     
     pMenu.init(taApp);
     editInline.init(taApp);
+
+    $('[data-toggle="tooltip"]').tooltip()
     
     //welcome    
     var $inputTask = $centerPanelContent.find('input[name="taskTitle"]');

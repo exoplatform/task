@@ -1,43 +1,7 @@
-define('x_editable_calendar', ['jquery', 'SHARED/edit_inline_js', 'SHARED/uiCalendar', 'SHARED/bootstrap_datepicker'],
+define('x_editable_calendar', ['jquery', 'SHARED/edit_inline_js', 'task_ui_calendar', 'SHARED/bootstrap_datepicker'],
     function(jquery, editinline, uiCalendar) {
         (function ($) {
             "use strict";
-
-            /**
-             * This is extends and override UICalendar javascript component in gatein
-             * Because some behaviour is not match
-             */
-            var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-            var UICalendar = $.extend({}, uiCalendar, {
-                hide: function() {
-                    // Don't need hide calendar
-                },
-                create : function() {
-                    uiCalendar.create.apply(this, arguments);
-                    var clndr = document.getElementById(this.calendarId);
-                    clndr.removeAttribute('style');
-                },
-                show: function() {
-                    uiCalendar.show.apply(this, arguments);
-                    var clndr = document.getElementById(this.calendarId);
-                    clndr.removeAttribute('style');
-                    clndr.firstChild.removeAttribute('style');
-                    clndr.firstChild.firstChild.removeAttribute('style');
-                    clndr.firstChild.style.position = 'relative';
-                },
-                renderCalendar: function() {
-                    var table = uiCalendar.renderCalendar.apply(this, arguments);
-                    table = table.replace(/eXo\.webui\.UICalendar/g, 'eXo.webui.UICalendarTaskManagement');
-                    return table;
-                }
-            });
-
-            var eXo = window.eXo || {};
-            eXo.webui = eXo.webui || {};
-            eXo.webui.UICalendarTaskManagement = UICalendar;
-            /**
-             * End UICalendar
-             */
 
             //. Use Dateparser and formatter of bootstrap-datepicker
             var DPG = $.fn.datepicker.DPGlobal;
@@ -74,7 +38,7 @@ define('x_editable_calendar', ['jquery', 'SHARED/edit_inline_js', 'SHARED/uiCale
 
                         var nextDate = new Date(nextTime);
 
-                        UICalendar.setDate(nextDate.getFullYear(), nextDate.getMonth() + 1, nextDate.getDate());
+                        uiCalendar.setDate(nextDate.getFullYear(), nextDate.getMonth() + 1, nextDate.getDate());
                     });
                 },
 
@@ -132,7 +96,7 @@ define('x_editable_calendar', ['jquery', 'SHARED/edit_inline_js', 'SHARED/uiCale
                     }
                     var $in = this.$input.find('input[name="calendar"]');
                     $in.val(value);
-                    UICalendar.init($in[0], false, this.options.format, '', months.join(',') + ',');
+                    uiCalendar.init($in[0], false, this.options.format, '');
                 },
 
                 /**

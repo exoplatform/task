@@ -116,6 +116,7 @@ public class TaskController {
 
       return detail.with()
           .taskModel(model)
+          .bundle(bundle)
           .ok().withCharset(Tools.UTF_8);
 
     } catch (AbstractEntityException e) {
@@ -183,8 +184,17 @@ public class TaskController {
 
     try {
 
-      taskService.updateTaskInfo(taskId, name, value); //Can throw TaskNotFoundException & ParameterEntityException & StatusNotFoundException
-      return Response.ok("Update successfully");
+      Task task = taskService.updateTaskInfo(taskId, name, value); //Can throw TaskNotFoundException & ParameterEntityException & StatusNotFoundException
+
+      String response = "Update successfully";
+      if ("workPlan".equalsIgnoreCase(name)) {
+        response = TaskUtil.getWorkPlan(task.getStartDate(), task.getDuration(), bundle);
+        if (response == null) {
+          response = bundle.getString("label.noWorkPlan");
+        }
+      }
+
+      return Response.ok(response);
 
     } catch (AbstractEntityException e) {
       return Response.status(e.getHttpStatusCode()).body(e.getMessage());
