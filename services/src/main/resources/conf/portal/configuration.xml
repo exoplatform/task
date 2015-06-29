@@ -46,4 +46,20 @@
     </component-plugin>
   </external-component-plugins>
   
+  <external-component-plugins>
+    <target-component>org.exoplatform.portal.application.state.ContextualPropertyManager</target-component>
+    <component-plugin>
+      <name>SpacePropertiesPlugin</name>
+      <set-method>addPlugin</set-method>
+      <type>org.exoplatform.task.integration.SpacePropertiesPlugin</type>
+      <init-params>
+        <value-param>
+          <name>namespaceURI</name>
+          <description>Namespace URI</description>
+          <value>http://www.exoplatform.org/xml/ns/prp_1_0</value>
+        </value-param>
+      </init-params>
+    </component-plugin>
+  </external-component-plugins>
+  
 </configuration>
