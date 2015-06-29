@@ -164,18 +164,7 @@
         ${tags}
     </div>
 </div>
-<div class="inforBar2 clearfix">
-    <div class="priority pull-right">
-        <div class="uiEditableInline">
-            <i title="Click to edit" data-toggle="tooltip" class="uiIconColorPriority${task.priority != null ?  task.priority : Priority.UNDEFINED}"></i>
-            <%
-                def priorities = StringUtils.join(Priority.values(), ",");
-            %>
-            <span class="task-priority ${editableClasses} small" href="#" data-priority="${priorities}" data-inputclass="selectboxMini"
-               data-name="priority" data-type="select" data-emptytext="&{label.noPriority}"
-               data-value="${task.priority != null ?  task.priority : Priority.UNDEFINED}"></span>
-        </div>
-    </div>
+<div class="inforBar2 clearfix">   
     <div class="pull-left">
         <%
             def startDate = task.getStartDate();
@@ -206,7 +195,7 @@
             <span class="hoverStatus small editableField">${workplan}</span>
             <span class="actionIcon inline-hide removeWorkPlan ${hasPlan ? "" : "hidden"}"><i class="uiIcon uiIconTrash"></i></span>
             <div class = "rangeCalendar" style = "display: none">
-                <div style="width: 470px;">
+                <div class="rangeCalendar-container">
                     <div class="row-fluid">
                         <div class="span6"><strong>From</strong></div>
                         <div class="span6"><strong>To</strong></div>
@@ -259,6 +248,18 @@
             </div>
         </div>
     </div>
+     <div class="priority pull-left">
+        <div class="uiEditableInline">
+            <i title="Click to edit" data-toggle="tooltip" class="uiIconColorPriority${task.priority != null ?  task.priority : Priority.UNDEFINED}"></i>
+            <%
+                def priorities = StringUtils.join(Priority.values(), ",");
+            %>
+            <span class="task-priority ${editableClasses} small" href="#" data-priority="${priorities}" data-inputclass="selectboxMini"
+               data-name="priority" data-type="select" data-emptytext="&{label.noPriority}"
+               data-value="${task.priority != null ?  task.priority : Priority.UNDEFINED}"></span>
+        </div>
+    </div>
+
 </div>
 </div>
 </div>

@@ -383,9 +383,9 @@ li[data-hiddenproject="false"] {
             margin: 5px 5px 0 0;
         }
         .breadcrumbCont {
-            max-width: 225px;
+            max-width: 214px;
             * {
-               max-width: 225px; 
+               max-width: 214px; 
             }
         }
         .uiContentBox {
@@ -396,7 +396,8 @@ li[data-hiddenproject="false"] {
             .projectName {
                 font-size: 18px;
                 line-height: 26px;
-                max-width: 245px;
+                max-width: 220px;
+                 word-wrap: break-word;
             }
             span.uiCheckbox {
                 margin-left: 2px;
@@ -414,6 +415,7 @@ li[data-hiddenproject="false"] {
             }
             input.blackLarge {
                 padding: 0 4px;
+                max-width: 230px;
             }
             .parmalink {
                 margin-top: 5px;
@@ -428,7 +430,7 @@ li[data-hiddenproject="false"] {
         }
         .inforBar1 {
             > div {
-                margin-right: 12px; 
+                margin-right: 6px; 
                 .toDo .editable-container.editable-inline {
                     display: inline-block;
                 }
@@ -566,6 +568,9 @@ li[data-hiddenproject="false"] {
         .actionIconSmall {
             line-height: 10px;
         }
+    }
+    .taskDescription {
+        word-wrap: break-word;
     }
 }
 
@@ -837,4 +842,14 @@ li[data-hiddenproject="false"] {
   &.all-day .timeSelector{
     visibility: hidden;
   }
+}
+
+.inforBar2 {
+    .pull-left + .priority  {
+        margin-left: 45px;
+    }
+}
+
+.rangeCalendar-container{
+    min-width: 470px;
 }
