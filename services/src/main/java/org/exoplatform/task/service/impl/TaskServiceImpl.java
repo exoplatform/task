@@ -97,7 +97,11 @@ public class TaskServiceImpl implements TaskService {
     builder.withTask(task);
     //
     if ("workPlan".equalsIgnoreCase(param)) {
-      builder.withType(Type.EDIT_WORKPLAN).withOldVal(task.getStartDate().getTime() + "/" + task.getDuration());
+      long oldStartTime = -1;
+      if (task.getStartDate() != null) {
+        oldStartTime = task.getStartDate().getTime();
+      }
+      builder.withType(Type.EDIT_WORKPLAN).withOldVal(oldStartTime + "/" + task.getDuration());
       //
       if (values == null) {
         task.setStartDate(null);

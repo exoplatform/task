@@ -42,23 +42,23 @@
         </div>
     </div>
 </div>
-<div class="taskName uiEditableInline clearfix" data-original-title="&{tooltip.clickToEdit}" data-toggle="tooltip" rel="tooltip" data-placement="bottom">
+<div class="taskName uiEditableInline clearfix taskPermalinkContainer">
     <div class="pull-right">
-        <a href="<%= TaskManagement_.permalink(task.getId())%>" title="Permalink" data-toggle="tooltip" class="permalink actionIcon" style="position: relative;">
-            <i class="uiIconPermalink"></i>
+        <a href="@{TaskManagement.permalink(taskId=task.id)}" data-toggle="popover" data-placement="left"
+            class="permalink actionIcon taskPermalink" style="position: relative;">
+            <span title="&{label.permalink}" data-toggle="tooltip">
+                <i class="uiIconPermalink"></i>
+            </span>
         </a>
-        <div class="popover fade bottom in" style="left: auto; right: -17px; top: 25px;display: none;">
-            <div class="arrow" style="left: auto; right: 17px;"></div>
-            <div class="popover-content">
-                <div>
-                    <i class="uiIconPermalink"></i>
-                    Link to share
-                </div>
-                <div class="input-field input-xlarge">
-                    <form method="GET" action="#">
-                        <input readonly type="text" name="" value="link to share">
-                    </form>
-                </div>
+        <div class="taskPermalinkPopoverContent" style="display:none">
+            <div>
+                <i class="uiIconPermalink"></i>
+                &{popover.title.linkToShare}
+            </div>
+            <div class="input-field input-xlarge">
+                <form method="GET" action="#">
+                    <input readonly type="text" name="" value="">
+                </form>
             </div>
         </div>
     </div>

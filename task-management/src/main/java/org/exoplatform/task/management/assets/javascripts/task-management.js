@@ -43,6 +43,7 @@ require(['project-menu', 'ta_edit_inline', 'SHARED/jquery',
   taApp.showRightPanel = function($centerPanel, $rightPanel) {
     $centerPanel.removeClass('span9').addClass('span5');
     $rightPanel.show();
+    $rightPanel.find('[data-toggle="tooltip"]').tooltip();
   };
   
   taApp.hideRightPanel = function($centerPanel, $rightPanel, $rightPanelContent) {
@@ -118,7 +119,7 @@ $(document).ready(function() {
     pMenu.init(taApp);
     editInline.init(taApp);
 
-    $('[data-toggle="tooltip"]').tooltip()
+    $('[data-toggle="tooltip"]').tooltip();
     
     //welcome    
     var $inputTask = $centerPanelContent.find('input[name="taskTitle"]');
@@ -130,36 +131,69 @@ $(document).ready(function() {
         return false;
     });
 
+    var taskLoadedCallback = function(taskId, isAjax) {
+        var $li = $centerPanel.find('li[data-taskid="'+taskId+'"]');
+        console.warn($li);
+        $centerPanel.find('li.selected').removeClass('selected');
+        $li.addClass('selected');
+        editInline.initEditInline(taskId);
+        var $permalink = $rightPanelContent.find('.taskPermalink');
+        var link = $permalink[0].href;
+        console.warn($rightPanelContent.find('.taskPermalinkPopoverContent input'));
+        $rightPanelContent.find('.taskPermalinkPopoverContent input').attr("value", link);
+        $permalink.popover({
+            html: true,
+            content: $rightPanelContent.find('.taskPermalinkPopoverContent').html()
+        });
+        $(document).on('click', function(e) {
+            if ($(e.target).closest('.taskPermalinkContainer').length > 0) {
+                e.stopPropagation();
+                return false;
+            } else {
+                $permalink.popover('hide');
+            }
+        });
+        $rightPanelContent.find('textarea').exoMentions({
+            onDataRequest:function (mode, query, callback) {
+                var _this = this;
+                $('#taskDetailContainer').jzAjax('UserController.findUsersToMention()', {
+                    data: {query: query},
+                    success: function(data) {
+                        callback.call(_this, data);
+                    }
+                });
+            },
+            idAction : 'taskCommentButton',
+            elasticStyle : {
+                maxHeight : '52px',
+                minHeight : '22px',
+                marginButton: '4px',
+                enableMargin: false
+            }
+        });
+
+        if (isAjax) {
+            if(window.history.pushState) {
+                window.history.pushState('', '', link);
+            }
+        }
+
+        return false;
+    };
     $centerPanel.on('click', '[data-taskid]', function(e) {
         var $li = $(e.target || e.srcElement).closest('[data-taskid]');
         var taskId = $li.data('taskid');
         var currentTask = $rightPanelContent.find('.task-detail').attr('task-id');
         $rightPanelContent.jzLoad('TaskController.detail()', {id: taskId}, function(html) {
-          $centerPanel.find('li.selected').removeClass('selected');
-          $li.addClass('selected');
           taApp.showRightPanel($centerPanel, $rightPanel);
-          editInline.initEditInline(taskId);
-          $rightPanelContent.find('textarea').exoMentions({
-            onDataRequest:function (mode, query, callback) {
-              var _this = this;
-              $('#taskDetailContainer').jzAjax('UserController.findUsersToMention()', {
-                data: {query: query},
-                success: function(data) {
-                  callback.call(_this, data);
-                }
-              });
-            },
-            idAction : 'taskCommentButton',
-            elasticStyle : {
-              maxHeight : '52px',
-              minHeight : '22px',
-              marginButton: '4px',
-              enableMargin: false
-            }
-          });
+          taskLoadedCallback(taskId, true);
           return false;
         });
     });
+    if ($rightPanel.is(':visible') && $rightPanel.find('[data-taskid]')) {
+        var taskId = $rightPanel.find('[data-taskid]').data('taskid');
+        taskLoadedCallback(taskId, false);
+    }
 
     $rightPanel.on('click', 'a.task-completed-field', function(e){
         var $a = $(e.target || e.srcElement).closest('a');
