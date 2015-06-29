@@ -293,8 +293,13 @@ define('ta_edit_inline',
                             $inputToTime.val('23:59');
                         }
 
-                        var fDate = new Date(fromDate + ' ' + fromTime + ':00').getTime();
-                        var tDate = new Date(toDate + ' ' + toTime + ':00').getTime();
+                        var fromDates = fromDate.split('-');
+                        var toDates = toDate.split('-');
+                        var fromTimes = fromTime.split(':');
+                        var toTimes = toTime.split(':');
+
+                        var fDate = new Date(fromDates[0], fromDates[1], fromDates[2], fromTimes[0], fromTimes[1], 0).getTime();
+                        var tDate = new Date(toDates[0], toDates[1], toDates[2], toTimes[0], toTimes[1], 0).getTime();
 
                         if (fDate >= tDate) {
                             $pop.find('.errorMessage').html('To time can not be lesser than from time');
