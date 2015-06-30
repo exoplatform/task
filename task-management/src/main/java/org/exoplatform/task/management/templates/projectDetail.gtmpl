@@ -22,7 +22,7 @@
         <div>&{label.projectOverview}</div>
     </h5>
     <div class="uiContentBox">
-        <div class="breadcrumbCont uiEditableInline inactive">
+        <div class="breadcrumbCont uiEditableInline inactive" data-original-title="Click to edit" data-toggle="tooltip" data-placement="bottom">
             <ul class="hoverStatusBlock breadcrumb ${editableClasses}"
                 data-name="parent" data-type="ParentProject" data-currentProject="${project.id}" data-value="${parent.id}">
                 ${breadcumbs}
@@ -56,7 +56,7 @@
 
 <h3 style="display: none">Add/Edit Task</h3>
 
-<div class="addTask uiBox" style="display: block">
+<div class="addTask uiBox" style="display: none">
     <div class="uiContentBox">
         <div class="clearfix">
             <div class="pull-right action-buttons dropdown">

@@ -33,7 +33,7 @@ define('x_editable_selectize', ['jquery', 'SHARED/edit_inline_js', 'selectize'],
                 }
                 var html = [];
                 $.each(value, function(index, val) {
-                    var span = '<span href="#" class="label primary">'+ val +'</span>';
+                    var span = '<div  class="label primary">'+ val +'</div>';
                     html.push(span);
                 });
                 var $html = html.join("\n");
@@ -144,7 +144,7 @@ define('x_editable_selectize', ['jquery', 'SHARED/edit_inline_js', 'selectize'],
                         '</li>';
                 },
                 item: function(item, escape) {
-                    return '<div class="label primary" href="#">' + escape(item.text) +'</div>';
+                    return '<div class="label primary">' + escape(item.text) +'</div>';
                 },
                 option_create: function(data, escape) {
                     return '<li class="create"><a href="javascript:void(0)">Add <strong>' + escape(data.input) + '</strong>&hellip;</a></li>';

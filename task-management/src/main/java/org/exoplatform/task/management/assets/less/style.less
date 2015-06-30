@@ -2,7 +2,7 @@
 /* Reset*/
 body {
    .editable-click, a.editable-click, a.editable-click:hover{
-       border:  none;
+       border:  1px solid transparent;
     } 
 }
 
@@ -234,7 +234,7 @@ li[data-hiddenproject="false"] {
             width: 5px;
         }
          .labels {
-            margin: 0 10px 0 0;
+            margin: 0 0px 0 0;
             .label {
                 margin: 0;
             }
@@ -382,11 +382,21 @@ li[data-hiddenproject="false"] {
         .iconTaskName {
             margin: 5px 5px 0 0;
         }
-        .breadcrumbCont {
-            max-width: 214px;
-            * {
-               max-width: 214px; 
+        .action-buttons {
+            & + .uiEditableInline  {
+                margin-right: 50px;
             }
+        }
+        .breadcrumbCont {
+            display: block;
+            margin-left: 22px;
+
+        .breadcrumb  {
+            display: block;
+        }
+           input {
+            width: 100%;
+           }
         }
         .uiContentBox {
             padding-top: 8px;
@@ -396,8 +406,8 @@ li[data-hiddenproject="false"] {
             .projectName {
                 font-size: 18px;
                 line-height: 26px;
-                max-width: 220px;
                  word-wrap: break-word;
+                 display: block;
             }
             span.uiCheckbox {
                 margin-left: 2px;
@@ -415,7 +425,6 @@ li[data-hiddenproject="false"] {
             }
             input.blackLarge {
                 padding: 0 4px;
-                max-width: 230px;
             }
             .parmalink {
                 margin-top: 5px;
@@ -430,7 +439,7 @@ li[data-hiddenproject="false"] {
         }
         .inforBar1 {
             > div {
-                margin-right: 6px; 
+                margin-right: 5px; 
                 .toDo .editable-container.editable-inline {
                     display: inline-block;
                 }
@@ -467,7 +476,7 @@ li[data-hiddenproject="false"] {
                 box-shadow: none;
             }
             > .icon-hash {
-                margin-top: 4px;
+                margin-top: 8px;
                 margin-right: 6px;
             }
             &.active {
@@ -571,6 +580,7 @@ li[data-hiddenproject="false"] {
     }
     .taskDescription {
         word-wrap: break-word;
+        padding:0 15px;
     }
 }
 
@@ -716,9 +726,15 @@ li[data-hiddenproject="false"] {
 }
 
 .tags .label   {
-    margin:2px 4px 2px 0;
+    margin:1px 1px 1px ;
 }
-
+.tags {
+    .hoverStatus {
+        > .label {
+            float: left;
+        }
+    }
+}
 [data-currentgroupby=""] [data-groupby=""] {
   display: none;
 }
@@ -785,11 +801,15 @@ li[data-hiddenproject="false"] {
         }
     }
     .label + input[type="text"] {
-       margin-left: 5px!important;
        height: 16px;
+       margin-left: 2px!important;
     }
 }
-
+.taskList {
+    .heading  {
+        img {max-width: 20px;}
+    }
+}
 .prjDescription,
 .taskDescription {
     ul,ol {
@@ -827,11 +847,7 @@ li[data-hiddenproject="false"] {
         padding: 0;
      }
 }
-.tags.uiEditableInline {
-    .hoverStatus.small {
-        padding: 2px 5px;
-    }
-}
+
 
 .exo-mentions.loading {
     .autocomplete-menu.loading {
@@ -845,11 +861,55 @@ li[data-hiddenproject="false"] {
 }
 
 .inforBar2 {
-    .pull-left + .priority  {
-        margin-left: 45px;
+    & > .pull-left {
+        margin-right : 14px;
+    }
+    .priority {
+        margin-right: 0
     }
 }
 
 .rangeCalendar-container{
     min-width: 470px;
+}
+
+.title-container{
+    margin-right: 28px;
+}
+.title-task {
+    margin-left: 20px;
+}
+.noMatch {
+    padding: 5px 0;
+}
+.pull-right + .date-work-plan {
+    margin: 0 28px 0 0 ;
+}
+
+.fieldWorkPlan {
+    & > .pull-right  {
+         .removeWorkPlan  {
+            margin-top: 4px;
+         }
+    }
+}
+.date-work-plan {
+    .hoverStatus {
+        margin-left: 20px;
+    }
+    .uiIconPLFCalendar  {
+        margin-top: 8px;
+    }
+}
+
+.taskName .permalink.taskPermalink {
+    margin-top: 6px;
+}
+
+.date-work-plan .popover-title {
+    display: none;
+}
+
+.projectName {
+    word-wrap: break-word;
 }
