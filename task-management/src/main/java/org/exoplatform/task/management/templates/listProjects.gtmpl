@@ -84,7 +84,9 @@ def displayListProjects(projects, parentId, level) { %>
         <%
             def allProjectAreHidden = true;
         %>
-        <%if(projects.size() == 0) {%>
+        <%if(projects.size() == 0) {
+            allProjectAreHidden = false; 
+        %>
         <li class="no-project center muted">
             &{label.noProject}
         </li>

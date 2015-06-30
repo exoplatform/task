@@ -61,29 +61,24 @@ public final class TaskUtil {
     
     Task task = taskService.getTaskById(id); //Can throw TaskNotFoundException
     taskModel.setTask(task);
-    
-    StringBuilder coWorkerDisplayName = new StringBuilder();
-    if(task.getCoworker() != null && task.getCoworker().size() > 0) {
-      for(String userName : task.getCoworker()) {
-        User user = findUserByName(userName, orgService);
-        if(user != null) {
-          if(coWorkerDisplayName.length() > 0) {
-            coWorkerDisplayName.append(", ");
-          }
-          coWorkerDisplayName.append(UserUtils.getDisplayName(user));
+
+    org.exoplatform.task.model.User assignee = null;
+    int numberCoworkers = 0;
+    if(task.getAssignee() != null && !task.getAssignee().isEmpty()) {
+      assignee = userService.loadUser(task.getAssignee());
+      numberCoworkers = task.getCoworker() != null ? task.getCoworker().size() : 0;
+    } else if (task.getCoworker() != null && task.getCoworker().size() > 0) {
+      Set<String> coworkers = task.getCoworker();
+      for (String u : coworkers) {
+        if (assignee == null && u != null && !u.isEmpty()) {
+          assignee = userService.loadUser(coworkers.iterator().next());
+        } else {
+          numberCoworkers++;
         }
       }
     }
-    taskModel.setCoWorkerDisplayName(coWorkerDisplayName.toString());
-
-    String assignee = "";
-    if(task.getAssignee() != null) {
-      User user = findUserByName(task.getAssignee(), orgService);
-      if(user != null) {
-        assignee = UserUtils.getDisplayName(user);
-      }
-    }
     taskModel.setAssignee(assignee);
+    taskModel.setNumberCoworkers(numberCoworkers);
 
     long commentCount = taskService.getNbOfCommentsByTask(task);
     taskModel.setCommentCount(commentCount);
@@ -132,7 +127,7 @@ public final class TaskUtil {
     }
     return maps;
   }
-  
+
  public static String getPeriod(long time, ResourceBundle bundle) {
    long duration = (System.currentTimeMillis() - time) / 1000;
    long value;
@@ -178,8 +173,8 @@ public final class TaskUtil {
      }
    }
  }
-  
-  public static String getWorkPlan(Date startDate, long duration) {
+
+  public static String getWorkPlan(Date startDate, long duration, ResourceBundle bundle) {
     if (startDate == null || duration <= 0) {
       return null;
     }
@@ -191,40 +186,40 @@ public final class TaskUtil {
     //
     duration = normalizeDate(end).getTimeInMillis() - normalizeDate(start).getTimeInMillis();
     
-    SimpleDateFormat df = new SimpleDateFormat("dd/MM/YYYY");
+    SimpleDateFormat df = new SimpleDateFormat("dd MMMM YYYY");
 
-    StringBuilder workplan = new StringBuilder("Work planned ");
+    StringBuilder workplan = new StringBuilder(bundle.getString("label.workPlaned")).append(" ");
     if (start.get(Calendar.MONTH) == end.get(Calendar.MONTH) && start.get(Calendar.YEAR) == end.get(Calendar.YEAR)) {
       if (start.get(Calendar.DATE) == end.get(Calendar.DATE)) {
-        workplan.append("for ").append(df.format(start.getTime()));
+        workplan.append(bundle.getString("label.for")).append(" ").append("<strong>").append(df.format(start.getTime())).append("</strong>");
       } else {
-        workplan.append("from ").append(start.get(Calendar.DATE));
-        workplan.append(" to ").append(df.format(end.getTime()));
+        workplan.append(bundle.getString("label.from")).append(" ").append("<strong>").append(start.get(Calendar.DATE)).append("</strong>");
+        workplan.append(" ").append(bundle.getString("label.to")).append(" ").append("<strong>").append(df.format(end.getTime())).append("</strong>");
       }
     } else {
-      workplan.append("from ").append(df.format(startDate));
-      workplan.append(" to ").append(df.format(end.getTime()));
+      workplan.append(bundle.getString("label.from")).append(" ").append("<strong>").append(df.format(startDate)).append("</strong>");
+      workplan.append(" ").append(bundle.getString("label.to")).append(" ").append("<strong>").append(df.format(end.getTime())).append("</strong>");
     }
-    buildHour(duration, workplan);
+    buildHour(duration, workplan, bundle);
     return workplan.toString();
   }
 
-  private static void buildHour(long duration, StringBuilder workplan) {
+  private static void buildHour(long duration, StringBuilder workplan, ResourceBundle bundle) {
     workplan.append(" (");        
     int halfHour = 30 * 60 * 1000;
     if (duration == halfHour) {
-      workplan.append("30 minutes)");
+      workplan.append("30 ").append(bundle.getString("label.minutes")).append(")");
     } else if (duration == halfHour * 2) {
-      workplan.append("1 hour)");
+      workplan.append("1 ").append(bundle.getString("label.hour")).append(")");
     } else if (duration == halfHour * 48) {
-      workplan.append("all day)");          
+      workplan.append(bundle.getString("label.allday")).append(")");
     } else {
       long hour = duration / (halfHour*2);
       long odd = duration % (halfHour * 2);
       if (odd == 0) {
-        workplan.append(hour).append(" hours)");
+        workplan.append(hour).append(" ").append(bundle.getString("label.hours")).append(")");
       } else {
-        workplan.append(hour).append(" hours 30 minutes)");
+        workplan.append(hour).append(" ").append(bundle.getString("label.hours")).append(" 30 ").append(bundle.getString("label.minutes")).append(")");
       }
     }
   }

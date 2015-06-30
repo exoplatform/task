@@ -116,6 +116,7 @@ public class TaskController {
 
       return detail.with()
           .taskModel(model)
+          .bundle(bundle)
           .ok().withCharset(Tools.UTF_8);
 
     } catch (AbstractEntityException e) {
@@ -183,8 +184,17 @@ public class TaskController {
 
     try {
 
-      taskService.updateTaskInfo(taskId, name, value); //Can throw TaskNotFoundException & ParameterEntityException & StatusNotFoundException
-      return Response.ok("Update successfully");
+      Task task = taskService.updateTaskInfo(taskId, name, value); //Can throw TaskNotFoundException & ParameterEntityException & StatusNotFoundException
+
+      String response = "Update successfully";
+      if ("workPlan".equalsIgnoreCase(name)) {
+        response = TaskUtil.getWorkPlan(task.getStartDate(), task.getDuration(), bundle);
+        if (response == null) {
+          response = bundle.getString("label.noWorkPlan");
+        }
+      }
+
+      return Response.ok(response);
 
     } catch (AbstractEntityException e) {
       return Response.status(e.getHttpStatusCode()).body(e.getMessage());
@@ -405,7 +415,7 @@ public class TaskController {
 
   @Resource(method = HttpMethod.POST)
   @Ajax
-  @MimeType.HTML
+  @MimeType.JSON
   public Response createTask(Long projectId, String taskInput, SecurityContext securityContext) {
 
     if(taskInput == null || taskInput.isEmpty()) {
@@ -433,7 +443,13 @@ public class TaskController {
       taskService.createTask(task);
     }
 
-    return listTasks(projectId, "", "", "", "", securityContext);
+    try {
+      JSONObject json = new JSONObject();
+      json.put("id", task.getId());
+      return Response.ok(json.toString());
+    } catch (JSONException ex) {
+      return Response.status(500).body("JSONException: " + ex);
+    }
   }
 
 }

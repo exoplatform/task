@@ -1,3 +1,4 @@
+@import "_mixins.less";
 /* Reset*/
 body {
    .editable-click, a.editable-click, a.editable-click:hover{
@@ -30,13 +31,11 @@ input.blackNormal {
 }
 
 select.selectboxMini {
-    height: 28px;
+    height: 30px;
     vertical-align: middle;
-    width: 62px;
+    width: 72px;
     margin: 0;
 }
-
-
 
 li[data-showhiddenproject="false"] {
   li[data-hiddenproject="true"] {
@@ -101,6 +100,11 @@ li[data-hiddenproject="false"] {
     }
     .text-notify {
         font-size: 24px;
+        line-height: 26px;
+        span {
+            font-size: 18px;
+            display: block;
+        }
     }
 }
 .projectListView {
@@ -112,10 +116,10 @@ li[data-hiddenproject="false"] {
         .input-field {
             position: relative;
             .popover  {
-                 left: 0;
-                 top: 43px;
+                 left: 0!important;
+                 top: 43px!important;
                  .arrow {
-                    left: 12%;
+                    left: 50px;
                  }
             }
         }
@@ -147,10 +151,8 @@ li[data-hiddenproject="false"] {
                 font-weight: bold;
                 padding-left: 10px;
                 padding-right: 10px;
-                  max-width: 280px;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: nowrap;
+                  max-width: 170px;
+                .text-overflow();
             }
             .uiSearchInput input[type="text"] {
                 min-height: 28px;
@@ -210,6 +212,9 @@ li[data-hiddenproject="false"] {
             .column-title {
                 font-weight: bold;
             }
+        }
+        .column-title {
+            .text-overflow();
         }
     }
     .row-group {
@@ -271,13 +276,13 @@ li[data-hiddenproject="false"] {
   .accordion-heading {
     .popover {
       left: auto;
-       right: -187px;
+       right: -112px;
       max-width: 256px;
       top: 26px;
       width: 250px
     }
     .popover.bottom .arrow {
-        left: 18%;
+        left: 120px;
     }
   }
 }
@@ -378,9 +383,9 @@ li[data-hiddenproject="false"] {
             margin: 5px 5px 0 0;
         }
         .breadcrumbCont {
-            max-width: 225px;
+            max-width: 214px;
             * {
-               max-width: 225px; 
+               max-width: 214px; 
             }
         }
         .uiContentBox {
@@ -388,27 +393,52 @@ li[data-hiddenproject="false"] {
         }
         .taskName {
             margin-top: 5px;
-            font-size: 18px;
-            line-height: 26px;
+            .projectName {
+                font-size: 18px;
+                line-height: 26px;
+                max-width: 220px;
+                 word-wrap: break-word;
+            }
+            span.uiCheckbox {
+                margin-left: 2px;
+                margin-right: 0;
+                margin-top: 10px;
+                vertical-align: top;
+
+                span {
+                    width: 0;
+                    top: 6px;
+                }
+            }
+            .editable-container.editable-inline {
+                display: inline-block;
+            }
             input.blackLarge {
-                padding: 0 9px;
+                padding: 0 4px;
+                max-width: 230px;
+            }
+            .parmalink {
+                margin-top: 5px;
+                i {
+                    vertical-align: middle;
+                }
             }
         }
-        .inforBar1 .pull-left, .taskDescription, .inforBar2 {
+        .inforBar1 > .pull-left, .taskDescription, .inforBar2 {
             margin-top: 5px;
             margin-bottom: 5px;
         }
         .inforBar1 {
             > div {
-                margin-right: 10px; 
+                margin-right: 6px; 
                 .toDo .editable-container.editable-inline {
                     display: inline-block;
                 }
+                &:last-child {
+                    margin-right: 0;
+                }
             }
             .uiEditableInline .popover {
-                &.bottom .arrow {
-                    left: 13%;
-                }
                 min-width: 252px;
                 .popover-content {
                     .header {
@@ -435,6 +465,15 @@ li[data-hiddenproject="false"] {
         .tags {
             a {
                 box-shadow: none;
+            }
+            > .icon-hash {
+                margin-top: 4px;
+                margin-right: 6px;
+            }
+            &.active {
+                .icon-hash {
+                    display: none;
+                }
             }
         }
     } 
@@ -529,6 +568,9 @@ li[data-hiddenproject="false"] {
         .actionIconSmall {
             line-height: 10px;
         }
+    }
+    .taskDescription {
+        word-wrap: break-word;
     }
 }
 
@@ -674,7 +716,7 @@ li[data-hiddenproject="false"] {
 }
 
 .tags .label   {
-    margin:2px 2px 2px 0;
+    margin:2px 4px 2px 0;
 }
 
 [data-currentgroupby=""] [data-groupby=""] {
@@ -730,7 +772,7 @@ li[data-hiddenproject="false"] {
         line-height: 13px;
         max-width: 200px;
         overflow: hidden;
-        padding-right: 20px;
+        padding-right: 20px!important;
         position: relative;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -741,10 +783,6 @@ li[data-hiddenproject="false"] {
             top: 2px;
             font-weight: normal;
         }
-    }
-     input[type="text"]  {
-        margin-left: 10px!important;
-
     }
     .label + input[type="text"] {
        margin-left: 5px!important;
@@ -764,4 +802,54 @@ li[data-hiddenproject="false"] {
     ol li {
         list-style-type: decimal;
     }
+}
+
+.editable-input {
+    .uiDropdownMenu li > a {
+        .text-overflow();
+    }
+}
+.editable-unsaved {
+    font-weight: normal;
+}
+
+
+.selectize-input.replaceTextArea {
+     width: 100%!important;
+     height: auto;
+     input {
+        height: 20px !important;
+     }
+     &.locked {
+        border-color: transparent;
+        -webkit-box-shadow: none;
+        box-shadow: none;
+        padding: 0;
+     }
+}
+.tags.uiEditableInline {
+    .hoverStatus.small {
+        padding: 2px 5px;
+    }
+}
+
+.exo-mentions.loading {
+    .autocomplete-menu.loading {
+        display: block;
+    }
+}
+.choose-time {
+  &.all-day .timeSelector{
+    visibility: hidden;
+  }
+}
+
+.inforBar2 {
+    .pull-left + .priority  {
+        margin-left: 45px;
+    }
+}
+
+.rangeCalendar-container{
+    min-width: 470px;
 }

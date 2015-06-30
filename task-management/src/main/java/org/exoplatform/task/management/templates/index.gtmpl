@@ -26,17 +26,10 @@
 	            <li class="accordion-heading dropdown" data-showhiddenproject="${userSetting.showHiddenProject}">
 	                <div class="item">
 		                <a class="dropdown-toggle actionIconSmall add-new-project pull-right"
-		                   data-toggle="dropdown"
-		                   href="#">
-		                    <i class="uiIconLightGray uiIconSimplePlusMini addProject" 
-		                    data-content="&{label.welcome.firstProject}" data-placement="bottom"></i>
+		                   data-toggle="dropdown" data-content="&{label.welcome.firstProject}" data-placement="bottom"
+		                   href="javascript:void(0)">
+		                    <i class="uiIconLightGray uiIconSimplePlusMini addProject" ></i>
                         </a>
-                        <% if (projects.size() == 0) { %>
-                        <div role="tooltip" class="popover fade bottom in" style="display: block" >
-                            <div class="arrow" ></div>
-                            <div class="popover-content">&{tooltip.clickToAddProject}</div>
-                        </div>
-                        <%}%>
 		                <div class="dropdown-menu uiDropdownWithIcon" style="left: 100%; top: -22px">
 		                	<span class="arrowLeft"></span>
 		                	<ul class="uiDropdownMenu">
@@ -400,7 +393,7 @@
 				<br>
 				<!-- ##################################### -->
 			</div><!-- ./samples -->
-	    	<div class="resizeButton close-right-panel" id="ShowHideRight" style="display: none">
+	    	<div class="resizeButton close-right-panel" id="ShowHideRight" >
 			  <!-- after click this icon add class .saved -->
 			  <i class="uiIconMiniArrowRight saved"></i>
 			</div>

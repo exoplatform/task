@@ -39,5 +39,5 @@ def displayProject(project, level) {%>
         </li>
     </ul>
 <% } else { %>
-    <div>&{message.noProjectFound}</div>
+    <div class="empty center">&{message.noProjectFound}</div>
 <% }%>
