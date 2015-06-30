@@ -163,7 +163,7 @@ public class TaskDAOImpl extends GenericDAOImpl<Task, Long> implements TaskHandl
     jql.append("SELECT ta FROM Task ta LEFT JOIN ta.coworker cowoker ")
         .append("WHERE (ta.status.id is null or ta.status.id = 0) ")
         .append("AND (ta.assignee = :userName OR ta.createdBy = :userName OR cowoker = :userName)")
-        .append(" AND ta.completed != TRUE");
+        .append(" AND ta.completed = FALSE");
 
     if(orderBy != null && !orderBy.getFieldName().isEmpty()) {
       jql.append(" ORDER BY ta.").append(orderBy.getFieldName()).append(" ").append(orderBy.isAscending() ?
@@ -183,8 +183,8 @@ public class TaskDAOImpl extends GenericDAOImpl<Task, Long> implements TaskHandl
     StringBuilder jql = new StringBuilder();
     jql.append("SELECT ta FROM Task ta ")
         .append("WHERE ta.assignee = :userName ")
-        .append("AND ta.completed != TRUE ")
-        .append("AND ta.dueDate != NULL ");
+        .append("AND ta.completed = FALSE ")
+        .append("AND ta.dueDate IS NOT NULL ");
 
     if (fromDueDate != null) {
       jql.append("AND ta.dueDate >= :fromDueDate ");

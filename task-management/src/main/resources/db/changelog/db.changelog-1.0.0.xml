@@ -28,7 +28,7 @@
         <constraints nullable="true"/>
       </column>
       <column name="PARENT_PROJECT_ID" type="BIGINT">
-        <constraints nullable="true"/>
+        <constraints foreignKeyName="FK_TASK__PROJECTS_TASK_PROJECTS_01" references="TASK_PROJECTS(PROJECT_ID)" nullable="true"/>
       </column>
     </createTable>
   </changeSet>
@@ -121,7 +121,7 @@
         <constraints nullable="true"/>
       </column>
       <column name="COMPLETED" type="BIT" defaultValue="0">
-        <constraints nullable="true"/>
+        <constraints nullable="false"/>
       </column>
     </createTable>
   </changeSet>
@@ -215,6 +215,14 @@
         <constraints nullable="false"/>
       </column>
     </createTable>
+  </changeSet>
+
+  <!-- Add index for performance -->
+  <changeSet author="tclement@exoplatform.com" id="1.0.0-15">
+    <createIndex indexName="IDX_TASK_TASKS_01"
+                 tableName="TASK_TASKS">
+      <column name="COMPLETED" type="BIT"/>
+    </createIndex>
   </changeSet>
 
 </databaseChangeLog>
