@@ -177,7 +177,7 @@ public class TaskDAOImpl extends GenericDAOJPAImpl<Task, Long> implements TaskHa
   public List<Task> getIncomingTask(String username, OrderBy orderBy) {
     StringBuilder jql = new StringBuilder();
     jql.append("SELECT ta FROM Task ta LEFT JOIN ta.coworker cowoker ")
-        .append("WHERE (ta.status.id is null or ta.status.id = 0) ")
+        .append("WHERE ta.status.id is null ")
         .append("AND (ta.assignee = :userName OR ta.createdBy = :userName OR cowoker = :userName)")
         .append(" AND ta.completed = FALSE");
 

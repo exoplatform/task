@@ -223,6 +223,18 @@
                  tableName="TASK_TASKS">
       <column name="COMPLETED" type="BIT"/>
     </createIndex>
+    <createIndex indexName="IDX_TASK_PROJECT_MANAGERS_01"
+                 tableName="TASK_PROJECT_MANAGERS">
+      <column name="MANAGER" type="VARCHAR(50)"/>
+    </createIndex>
+    <createIndex indexName="IDX_TASK_PROJECT_PARTICIPATORS_01"
+                 tableName="TASK_PROJECT_PARTICIPATORS">
+      <column name="PARTICIPATOR" type="VARCHAR(50)"/>
+    </createIndex>
+    <createIndex indexName="IDX_TASK_TASK_COWORKERS_01"
+                 tableName="TASK_TASK_COWORKERS">
+      <column name="COWORKER" type="VARCHAR(50)"/>
+    </createIndex>
   </changeSet>
 
 </databaseChangeLog>
