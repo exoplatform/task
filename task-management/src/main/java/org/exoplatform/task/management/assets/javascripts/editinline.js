@@ -432,8 +432,10 @@ define('ta_edit_inline',
 
                     // Update avatar and display name
                     var assg = options[assignee];
-                    $editable.find('.assigned img').attr('src', assg.avatar);
-                    $editable.find('.editAssignee').html(numberCoWorker == 0 ? assg.text : '+' + numberCoWorker + ' Coworkers');
+                    if (assg) {
+                        $editable.find('.assigned img').attr('src', assg.avatar);
+                        $editable.find('.assigned .editAssignee').html(numberCoWorker == 0 ? assg.text : '+' + numberCoWorker + ' Coworkers');
+                    }
                 },
                 error: function(response) {
                     alert('can not save co-workers');
@@ -520,6 +522,11 @@ define('ta_edit_inline',
                 }
             });
 
+            $rightPanel.on('show.bs.tab', '[href="#tab-changes"]', function(e) {
+                var taskId = $(e.target).closest('[data-taskid]').data('taskid');
+                $rightPanel.find('#tab-changes').jzLoad('TaskController.renderTaskLogs()', {taskId: taskId});
+            });
+
             var $taskDetailContainer = $('#taskDetailContainer, [data-taskid]');
             $taskDetailContainer.find('.editable').each(function() {
                 var $this = $(this);
@@ -564,9 +571,13 @@ define('ta_edit_inline',
 
                 $this.editable(editOptions);
                 $this.on('shown', function (e, editable) {
-                    $this.parent().removeClass('inactive').addClass('active');
+                    if (editable != undefined) {
+                        $this.parent().removeClass('inactive').addClass('active');
+                    }
                 }).on('hidden', function (e, editable) {
-                    $this.parent().removeClass('active').addClass('inactive');
+                    if (editable != undefined) {
+                        $this.parent().removeClass('active').addClass('inactive');
+                    }
                 });
             });
             editInline.initAssignment(taskId);

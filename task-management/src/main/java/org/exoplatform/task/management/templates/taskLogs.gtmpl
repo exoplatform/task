@@ -1,20 +1,22 @@
 #{param name=taskLogs/}
+#{param name=userMap/}
 #{param name=bundle/}
 
 <%
 import org.exoplatform.task.utils.TaskUtil;
-
-for (def log : taskLogs) {%>
-	<div class="row-fluid task-log-row">
-		<div class="span6">
-			<strong><%=log.getAuthor() %></strong>
-	 	<%=bundle.getString(log.getMsg()) %>
-	<%if (log.getTarget() != null) {%>
-	<strong><%=log.getTarget() %></strong>
-	<%} %>    	
-		</div>
-		<div class="span6">
-		<%= TaskUtil.getPeriod(log.getCreatedTime(), bundle)%>
-		</div>
-	</div>
+%>
+<ul class="list-changes">
+<%for (def log : taskLogs) {%>
+    <li class="clearfix">
+        <span class="date pull-right">
+            <%= TaskUtil.getPeriod(log.getCreatedTime(), bundle)%>
+        </span>
+        <%
+            def user = userMap[log.author];
+        %>
+        <a href="${user.url}">  ${user.displayName} </a>
+        <%=bundle.getString(log.getMsg()) %>
+        ${log.target != null ? log.target : ""}
+    </li>
 <%} %>
+</ul>

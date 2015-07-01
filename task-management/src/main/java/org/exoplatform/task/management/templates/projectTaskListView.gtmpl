@@ -14,12 +14,12 @@
         <div class="uiHeaderBar clearfix">
             <div class="settingActionButtons pull-right">
                 <span class="advancedSearch-action pull-left">
-                   <a href="javascript:void(0)" class="action-search actionIcon "> <i class="uiIconSearch uiIconLightGray"></i></a>
+                   <a href="javascript:void(0)" class="action-search actionIcon "  title="Search" data-toggle="tooltip"> <i class="uiIconSearch uiIconLightGray"></i></a>
                    <a href="javascript:void(0)" class="action-close  " style="display:none"> <i class="uiIconClose uiIconLightGray" ></i></a>
                 </span>
-                <a class="actionIcon" href="#"><i class="uiIcon uiIconFilter"></i></a>
+                <a class="actionIcon" href="#"  title="Filter" data-toggle="tooltip"><i class="uiIcon uiIconFilter"></i></a>
                 <span class="actionIcon"  title="Permalink" data-toggle="tooltip" style="position: relative;">
-                  <i title="Permalink" data-toggle="tooltip" class="uiIcon uiIconLink"></i>
+                  <i  class="uiIcon uiIconLink"></i>
                   <div class="popover fade bottom in" style="left: -351px; top: 25px; max-width: none; display: none;">
                     <div class="arrow" style="left: 360px;"></div>
                     <div class="popover-content">
@@ -110,9 +110,11 @@
                                     "": bundle.getString("label.none"),
                                      status: bundle.getString("label.status"),
                                      assignee: bundle.getString("label.assignee"),
-                                     project: bundle.getString("label.project"),
                                      tag: bundle.getString("label.tag")
                                  ];
+                                 if (currentProjectId == -2) {
+                                     groups['project'] = bundle.getString("label.project");
+                                 }
                              %>
                              <span class="action-bar dropdown pull-right" data-currentgroupby="${groupBy}">
                                 <a href="" class="actionIcon dropdown-toggle"  data-original-title="group By" data-toggle="dropdown"  rel="tooltip" data-placement="bottom">

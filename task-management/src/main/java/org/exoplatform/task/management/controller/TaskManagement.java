@@ -99,7 +99,7 @@ public class TaskManagement {
     //
     if (taskId != -1) {
       try {
-        taskModel = TaskUtil.getTaskModel(taskId, bundle, username, taskService, 
+        taskModel = TaskUtil.getTaskModel(taskId, false, bundle, username, taskService,
                                                     orgService, userService, projectService);
       } catch (TaskNotFoundException e) {
         LOG.error(e);

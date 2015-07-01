@@ -6,6 +6,7 @@
 	import java.util.Date;
 	import org.exoplatform.task.utils.TaskUtil;
 	import org.apache.commons.lang.StringUtils;
+    import org.exoplatform.task.utils.ResourceUtil;
 	import org.exoplatform.task.domain.Priority;
 
 	def task = taskModel.getTask();
@@ -66,8 +67,9 @@
             <input type="checkbox" class="checkbox">
             <span></span>
         </span>
-        <div class="title-task" data-original-title="Click to edit" data-toggle="tooltip" data-placement="bottom">
+        <div class="title-task">
             <span  class="projectName ${editableClasses} small"
+                   data-original-title="&{tooltip.clickToEdit}" rel="tooltip" data-placement="bottom"
               data-name="title" data-type="text">
                 ${task.title}
             </span>
@@ -77,9 +79,10 @@
 </div>
 <div class="inforBar1 clearfix">
     <div class="pull-left">
-        <div class="uiEditableInline" title="Click to edit" data-toggle="tooltip" data-placement="top">
+        <div class="uiEditableInline">
             <i  class="uiIconClock"></i>
             <span  class="${editableClasses} small dueDateField"
+                  data-original-title="&{tooltip.clickToEdit}" rel="tooltip" data-placement="top"
                   data-type="calendar" data-name="duedate"
                   data-value="${task.dueDate != null ? task.dueDate.format('yyyy-MM-dd') : ''}"
                   data-format="yyyy-MM-dd" data-viewformat="dd M yyyy">
@@ -90,8 +93,8 @@
     <div class="pull-left">
         <div class="uiEditableInline inactive">
             <span class = "unassigned ${!hasAssignee ? "" : "hidden"}" style = "">
-                <i title="Click to edit" data-toggle="tooltip" data-placement="bottom" class="uiIconUser"></i>
-                <a title="Click to edit" data-toggle="tooltip" data-placement="bottom" class="hoverStatus small editableField editAssignee">&{label.unassigned}</a>
+                <i class="uiIconUser"></i>
+                <a data-original-title="&{tooltip.clickToEdit}" rel="tooltip" data-placement="bottom" class="hoverStatus small editableField editAssignee">&{label.unassigned}</a>
             </span>
             <span class = "assigned ${!hasAssignee ? "hidden" : ""}">
                 <a class="avatarMini" href="#"><img alt="avatar" src="${hasAssignee ? assignee.avatar : ""}"></a>
@@ -128,10 +131,11 @@
     </div>
     <div class="pull-left">
         <div class="toDo">
-            <div class="uiEditableInline" title="Click to edit" data-toggle="tooltip" data-placement="bottom">                
+            <div class="uiEditableInline">
                 <% if (task.status != null) { %>
-                    <i  class="uiIconTime"></i>
+                    <i class="uiIconTime"></i>
                     <span  class="${editableClasses} small" href="javascript:void(0)"
+                       data-original-title="&{tooltip.clickToEdit}" rel="tooltip"
                        data-source="@{StatusController.getAllStatus(projectId=task.status.project.id)}"
                        data-inputclass="selectboxMini" data-name="status" data-type="select"
                        data-title="Select status" data-val="${task.status != null ?  task.status.id: '0'}"></span>
@@ -140,14 +144,13 @@
         </div>
     </div>
 </div>
-<div class="taskDescription" data-original-title="Click to edit" data-toggle="tooltip" data-placement="bottom">
-    <div data-type="textarea" data-name="description" class="${editableClasses}" >
+<div class="taskDescription">
+    <div data-type="textarea" data-name="description" class="${editableClasses}"
+         data-original-title="&{tooltip.clickToEdit}" rel="tooltip">
         ${task.description == null ? "" : task.description}
     </div>
 </div>
-<div class="tags uiEditableInline clearfix"  data-original-title="Click to edit" data-toggle="tooltip" data-placement="bottom" >
-    <!--<a href="#" class="label primary">Sprint 25</a>
-    <a href="#" class="label primary">Content</a>-->
+<div class="tags uiEditableInline clearfix"   >
     <%
         def tags = '';
         if (task.tags != null && task.tags.size() > 0) {
@@ -158,8 +161,9 @@
         }
         tags = tags.trim();
     %>
-    <span class="pull-left icon-hash ${tags.length() > 0 ? "hidden" : ""}"><i class="uiIconHag" data-toggle="tooltip" title="Click to edit" data-placement="bottom"></i></span>
-    <div class="${editableClasses} small pull-left" href="#"
+    <span class="pull-left icon-hash ${tags.length() > 0 ? "hidden" : ""}"><i class="uiIconHag" ></i></span>
+    <div class="${editableClasses} small pull-left"
+       data-original-title="&{tooltip.clickToEdit}" rel="tooltip"
        data-name="tags" data-type="selectize"
        data-inputclass="input-large"
        data-value="${task.tags != null && task.tags.size() > 0 ? task.tags.join(',') : ''}">
@@ -195,7 +199,7 @@
             <div class="pull-right"><span title="Remove" data-placement="bottom" data-toggle="tooltip"  class="actionIcon inline-hide removeWorkPlan ${hasPlan ? "" : "hidden"}"><i class="uiIcon uiIconTrash"></i></span></div>
             <div class="date-work-plan">
             <i class="uiIconPLFCalendar pull-left"></i>
-            <span data-toggle="tooltip" data-placement="bottom" title="Click to edit" class="hoverStatus hoverStatusBlock small editableField">${workplan}</span></div>            
+            <span data-original-title="&{tooltip.clickToEdit}" rel="tooltip" data-placement="bottom" class="hoverStatus hoverStatusBlock small editableField">${workplan}</span></div>
             <div class = "rangeCalendar" style = "display: none">
                 <div class="rangeCalendar-container">
                     <div class="row-fluid">
@@ -251,17 +255,37 @@
         </div>
     </div>
      <div class="priority pull-left">
-        <div class="uiEditableInline" title="Click to edit" data-placement="bottom" data-toggle="tooltip">
+        <div class="uiEditableInline">
             <i  class="uiIconColorPriority${task.priority != null ?  task.priority : Priority.UNDEFINED}"></i>
             <%
                 def priorities = StringUtils.join(Priority.values(), ",");
             %>
-            <span class="task-priority ${editableClasses} small"  data-priority="${priorities}" data-inputclass="selectboxMini"
+            <span class="task-priority ${editableClasses} small"
+                  data-original-title="&{tooltip.clickToEdit}" rel="tooltip"
+                  data-priority="${priorities}" data-inputclass="selectboxMini"
                data-name="priority" data-type="select" data-emptytext="&{label.noPriority}"
                data-value="${task.priority != null ?  task.priority : Priority.UNDEFINED}"></span>
         </div>
     </div>
 
+</div>
+<div id="tab-action" class="uiTabPane uiTabNormal">
+    <ul id="myTab" class="nav nav-tabs">
+        <li class="active">
+            <a href="#tab-comments" data-toggle="tab">&{label.comments}</a>
+        </li>
+        <li class="taskTabs">
+            <a href="#tab-changes" data-toggle="tab">&{label.changes}</a>
+        </li>
+    </ul>
+    <div id="myTabContent" class="tab-content">
+        <div id="tab-comments" class="tab-pane fade in active ">
+            #{include path=taskComments.gtmpl /}
+        </div>
+        <div id="tab-changes" class="tab-pane fade taskLogs">
+
+        </div>
+    </div>
 </div>
 </div>
 </div>

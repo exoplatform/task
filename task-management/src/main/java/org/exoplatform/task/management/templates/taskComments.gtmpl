@@ -1,0 +1,74 @@
+#{param name=taskModel/}
+#{param name=bundle/}
+
+<%
+    import org.exoplatform.task.utils.TaskUtil;
+    import org.exoplatform.task.utils.ResourceUtil;
+
+    def commentCount = taskModel.getCommentCount();
+    def comments = taskModel.getComments();
+    def currentUser = taskModel.getCurrentUser();
+    def allCommentsLoaded = commentCount == comments.size();
+%>
+<div class="commentBox" data-allcomment="${allCommentsLoaded}">
+    <% if (!allCommentsLoaded && commentCount > 2) {%>
+    <div class="commentListInfo ">
+        <a href="javascript:void(0);" class="load-all-comments"><%= ResourceUtil.resolveMessage(bundle, "comment.message.showAll", commentCount);%></a>
+    </div>
+    <%}%>
+    <% if (commentCount == 0) {%>
+    <div class="empty center">&{comment.message.noComment}</div>
+    <%} else {%>
+    <div class="commentList">
+        <% comments.each {comment -> %>
+        <div class="commentItem" data-commentid="${comment.id}">
+            <div class="commmentLeft pull-left">
+                <a class="avatarXSmall" href="${comment.author.url}">
+                    <img src="${comment.author.avatar}" alt="${comment.author.displayName}">
+                </a>
+            </div><!--end commentLeft-->
+            <div class="commentRight">
+                <div class="author">
+                    <a href="${comment.author.url}">${comment.author.displayName}</a>
+                                    <span class="date">
+                                        <%= TaskUtil.getPeriod(comment.getCreatedTime().getTime(), bundle)%>
+                                     </span>
+                </div>
+                <p class="contentComment">
+                    ${comment.formattedComment}
+                </p>
+            </div><!--end commentRight-->
+
+            <a class="uiIconDelete uiIconLightGray controllDelete"  href="javascript:void(0)"></a>
+        </div>
+        <%}%>
+    </div>
+    <%}%>
+    <div  class="commentList inputContainer">
+        <div  class="commentItem commentFormBox">
+            <form action="#" method="POST">
+                <div class="clearfix">
+                    <div class="commmentLeft pull-left">
+                        <a class="avatarXSmall" href="${currentUser.url}">
+                            <img src="${currentUser.avatar}" alt="${currentUser.displayName}">
+                        </a>
+                    </div><!--end commentLeft-->
+                    <div class="commentRight">
+                        <div class="commentInputBox ">
+                            <div class="commentInput">
+                                <!--<textarea title="Add your comment..." cols="30" rows="10" id="" name="" class="textarea" style="visibility: hidden; display: none;">
+                                </textarea>-->
+                                <textarea title="Add your comment..." name="comment" cols="30" rows="10" class="textarea"></textarea>
+                            </div>
+                        </div>
+                    </div><!--end commentRight-->
+                </div>
+                <div class="clearfix">
+                    <div class="pull-right">
+                        <button id="taskCommentButton" type="submit" class="btn pull-right btn-primary">&{comment.label.comment}</button>
+                    </div>
+                </div>
+            </form>
+        </div> <!--end commentItem-->
+    </div><!--end commentlist-->
+</div>

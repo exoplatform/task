@@ -17,55 +17,34 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.exoplatform.task.model;
+package org.exoplatform.task.utils;
+
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
-public class User {
-  private String username;
-  private String displayName;
-  private String avatar;
-  private String url;
+public class ResourceUtil {
+  public static String resolveMessage(ResourceBundle bundle, String key, Object... args) {
+    if (bundle == null || key == null) {
+      return key;
+    }
+    try {
+      String msg = bundle.getString(key);
 
-  public User() {}
+      if (msg != null && args != null) {
+        for (int i = 0; i < args.length; i++) {
+          if (args[i] != null) {
+            final String messageArg = String.valueOf(args[i]);
+            msg = msg.replace("{" + i + "}", messageArg);
+          }
+        }
+      }
 
-  public User(String username, String displayName, String avatar, String url) {
-    this.username = username;
-    this.displayName = displayName;
-    this.avatar = avatar;
-    this.url = url;
-  }
-
-  public String getUsername() {
-    return username;
-  }
-
-  public void setUsername(String username) {
-    this.username = username;
-  }
-
-  public String getDisplayName() {
-    return displayName;
-  }
-
-  public void setDisplayName(String displayName) {
-    this.displayName = displayName;
-  }
-
-  public String getAvatar() {
-    return avatar;
-  }
-
-  public void setAvatar(String avatar) {
-    this.avatar = avatar;
-  }
-
-  public String getUrl() {
-    return url;
-  }
-
-  public void setUrl(String url) {
-    this.url = url;
+      return msg;
+    } catch (MissingResourceException ex) {
+      return key;
+    }
   }
 }
