@@ -271,22 +271,14 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   @Override
-  public List<Task> getTasksByProjectId(long id, OrderBy orderBy) throws ProjectNotFoundException {
-    return getTasksWithKeywordByProjectId(id, orderBy, null); //Can throw ProjectNotFoundException
+  public List<Task> getTasksByProjectId(List<Long> ids, OrderBy orderBy) {
+    return getTasksWithKeywordByProjectId(ids, orderBy, null);
   }
 
   @Override
-  public List<Task> getTasksWithKeywordByProjectId(long id, OrderBy orderBy, String keyword)
-      throws ProjectNotFoundException {
-    
-
+  public List<Task> getTasksWithKeywordByProjectId(List<Long> ids, OrderBy orderBy, String keyword) {
     TaskQuery taskQuery = new TaskQuery();
-    if (id != 0) {
-      Project project = getProjectById(id); //Can throw ProjectNotFoundException
-      taskQuery.setProjectId(project.getId());      
-    } else {
-      taskQuery.setProjectId(0L);
-    }
+    taskQuery.setProjectIds(ids);
     taskQuery.setKeyword(keyword);
     taskQuery.setOrderBy(orderBy == null ? null : Arrays.asList(orderBy));
     taskQuery.setCompleted(false);
@@ -353,10 +345,9 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
   }
-
+  
   @Override
-  public List<Project> getProjectTreeByIdentity(Identity identity) {
-    List<String> memberships = UserUtils.getMemberships(identity);
+  public List<Project> getProjectTreeByMembership(List<String> memberships) {
     List<Project> projects = daoHandler.getProjectHandler().findAllByMemberships(memberships);
 
     return ProjectUtil.buildRootProjects(projects);

@@ -43,6 +43,10 @@
     <type>org.exoplatform.task.service.impl.TaskParserImpl</type>
   </component>    
   
+  <component>
+    <type>org.exoplatform.task.integration.SpaceTaskAppInstaller</type>
+  </component>
+  
   <external-component-plugins>
     <target-component>org.exoplatform.social.core.manager.ActivityManager</target-component>
     <component-plugin>
@@ -80,4 +84,12 @@
     </component-plugin>
   </external-component-plugins>
   
+  <external-component-plugins>
+    <target-component>org.exoplatform.social.core.space.spi.SpaceService</target-component>
+    <component-plugin>
+      <name>SpaceTaskDataInitializer</name>
+      <set-method>registerSpaceListenerPlugin</set-method>
+      <type>org.exoplatform.task.integration.SpaceTaskDataInitializer</type>
+    </component-plugin>
+  </external-component-plugins>
 </configuration>

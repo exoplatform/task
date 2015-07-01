@@ -17,6 +17,7 @@
 package org.exoplatform.task.dao.jpa;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -120,12 +121,14 @@ public class TaskDAOImpl extends GenericDAOJPAImpl<Task, Long> implements TaskHa
       predicates.add(cb.like(task.<String>get("assignee"), '%' + query.getAssignee() + '%'));
     }
 
-    if (query.getProjectId() != null) {
-      if(query.getProjectId() > 0) {
-        predicates.add(cb.equal(task.get("status").get("project").get("id"), query.getProjectId()));
-      } else if (query.getProjectId() == 0) {
+    if (query.getProjectIds() != null) {
+      if (query.getProjectIds().size() == 1 && query.getProjectIds().get(0) == 0) {
         predicates.add(cb.isNotNull(task.get("status")));
-      }      
+      } else if (query.getProjectIds().isEmpty()) {
+        return Collections.emptyList();
+      } else {
+        predicates.add(task.get("status").get("project").get("id").in(query.getProjectIds()));
+      }
     }
 
     if(query.getKeyword() != null && !query.getKeyword().isEmpty()) {
@@ -190,13 +193,17 @@ public class TaskDAOImpl extends GenericDAOJPAImpl<Task, Long> implements TaskHa
   }
 
   @Override
-  public List<Task> getToDoTask(String username, OrderBy orderBy, Date fromDueDate, Date toDueDate) {
+  public List<Task> getToDoTask(String username, List<Long> projectIds, OrderBy orderBy, Date fromDueDate, Date toDueDate) {
     StringBuilder jql = new StringBuilder();
     jql.append("SELECT ta FROM Task ta ")
         .append("WHERE ta.assignee = :userName ")
         .append("AND ta.completed = FALSE ")
         .append("AND ta.dueDate IS NOT NULL ");
 
+    if (projectIds != null && !projectIds.isEmpty()) {
+      jql.append("AND ta.status.project.id IN (:projectIds) ");
+    }
+    
     if (fromDueDate != null) {
       jql.append("AND ta.dueDate >= :fromDueDate ");
     }
@@ -214,6 +221,9 @@ public class TaskDAOImpl extends GenericDAOJPAImpl<Task, Long> implements TaskHa
         .createQuery(jql.toString(), Task.class);
 
     query.setParameter("userName", username);
+    if (projectIds != null && !projectIds.isEmpty()) {
+      query.setParameter("projectIds", projectIds);
+    }
     if (fromDueDate != null) {
       query.setParameter("fromDueDate", fromDueDate);
     }
@@ -225,9 +235,9 @@ public class TaskDAOImpl extends GenericDAOJPAImpl<Task, Long> implements TaskHa
   }
   
   @Override
-  public long getTaskNum(String userName, Long projectId) {
-    if (userName == null && projectId == null) {
-      return -1L;
+  public long getTaskNum(String userName, List<Long> projectIds) {
+    if (userName == null && (projectIds == null || projectIds.isEmpty())) {
+      return 0L;
     }
     
     StringBuilder jql = new StringBuilder();
@@ -238,15 +248,21 @@ public class TaskDAOImpl extends GenericDAOJPAImpl<Task, Long> implements TaskHa
     jql.append(" WHERE ");
     if (userName != null) {
       jql.append("(ta.assignee = :userName OR ta.createdBy = :userName OR cowoker = :userName)");
-      if (projectId != null) {
+      if (projectIds != null && !projectIds.isEmpty() && projectIds.get(0) != -2) {
         jql.append(" AND");
       }
     }
-    if (projectId != null) {
-      if (projectId != 0) {
-        jql.append(" ta.status.project.id = :projectId");
+    boolean needParam = false;
+    if (projectIds != null && !projectIds.isEmpty()) {
+      if (projectIds.size() == 1 && projectIds.get(0) <= 0) {
+        if (projectIds.get(0) == 0) {
+          jql.append(" NOT ta.status is null");          
+        } else if (projectIds.get(0) == -1) {
+          jql.append(" ta.status is null");
+        }
       } else {
-        jql.append(" NOT ta.status is null");
+        needParam = true;
+        jql.append(" ta.status.project.id IN (:projectIds)");
       }
     }    
 
@@ -256,8 +272,8 @@ public class TaskDAOImpl extends GenericDAOJPAImpl<Task, Long> implements TaskHa
     if (userName != null) {
       query.setParameter("userName", userName);
     }
-    if (projectId != null && projectId != 0) {
-      query.setParameter("projectId", projectId);    
+    if (needParam) {
+      query.setParameter("projectIds", projectIds);    
     }
     return (Long)query.getSingleResult();    
   }

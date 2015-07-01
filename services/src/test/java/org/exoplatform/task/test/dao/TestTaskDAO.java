@@ -36,6 +36,16 @@ import org.exoplatform.task.service.DAOHandler;
 import org.exoplatform.task.service.TaskParser;
 import org.exoplatform.task.service.impl.TaskParserImpl;
 import org.exoplatform.task.test.AbstractTest;
+import org.exoplatform.task.service.jpa.DAOHandlerJPAImpl;
+import org.exoplatform.task.test.TestUtils;
+import org.junit.*;
+
+import javax.persistence.Persistence;
+
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author <a href="trongtt@exoplatform.com">Trong Tran</a>
@@ -181,7 +191,7 @@ public class TestTaskDAO extends AbstractTest {
     task5.setCompleted(true);
     tDAO.create(task5);
 
-    List<Task> tasks = tDAO.getToDoTask(username, null, null, null);
+    List<Task> tasks = tDAO.getToDoTask(username, null, null, null, null);
 
     assertContain(tasks, task3.getId());
     assertContain(tasks, task4.getId());
@@ -203,7 +213,7 @@ public class TestTaskDAO extends AbstractTest {
     task1.setStatus(status);
     tDAO.create(task1);
     
-    long num = tDAO.getTaskNum(null, 0L);
+    long num = tDAO.getTaskNum(null, Arrays.asList(0L));
     Assert.assertEquals(1, num);
   }
   

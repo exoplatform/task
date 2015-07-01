@@ -40,19 +40,18 @@ public interface ProjectService {
 
   Task createTaskToProjectId(long id, Task task) throws ProjectNotFoundException;
 
-  List<Task> getTasksByProjectId(long id, OrderBy orderBy) throws ProjectNotFoundException;
+  List<Task> getTasksByProjectId(List<Long> ids, OrderBy orderBy);
 
-  List<Task> getTasksWithKeywordByProjectId(long id, OrderBy orderBy, String keyword)
-      throws ProjectNotFoundException;
+  List<Task> getTasksWithKeywordByProjectId(List<Long> ids, OrderBy orderBy, String keyword);
 
   Project removePermissionFromProjectId(Long id, String permission, String type)
       throws ProjectNotFoundException, NotAllowedOperationOnEntityException;
 
   Project addPermissionsFromProjectId(Long id, String permissions, String type)
       throws ProjectNotFoundException, NotAllowedOperationOnEntityException;
-
-  List<Project> getProjectTreeByIdentity(Identity identity);
-
+  
+  List<Project> getProjectTreeByMembership(List<String> memberships);
+ 
   List<Project> findProjectByKeyWord(Identity identity, String keyword);
 
 }

@@ -16,17 +16,19 @@
 */
 package org.exoplatform.task.utils;
 
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
+import org.exoplatform.services.security.ConversationState;
+import org.exoplatform.services.security.Identity;
+import org.exoplatform.task.domain.Project;
+import org.exoplatform.task.exception.ProjectNotFoundException;
+import org.exoplatform.task.service.ProjectService;
+
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
-
-import org.exoplatform.services.log.ExoLogger;
-import org.exoplatform.services.log.Log;
-import org.exoplatform.task.domain.Project;
-import org.exoplatform.task.exception.ProjectNotFoundException;
-import org.exoplatform.task.service.ProjectService;
 
 /**
  * Created by The eXo Platform SAS
@@ -41,6 +43,19 @@ public final class ProjectUtil {
   public static final int TODO_PROJECT_ID = -2;
 
   private ProjectUtil() {
+  }
+  
+  public static List<Project> getProjectTree(String space_group_id, ProjectService projectService) {
+    List<String> memberships = new LinkedList<String>();
+    if (space_group_id == null) {
+      ConversationState state = ConversationState.getCurrent();
+      Identity identity = state.getIdentity();
+      memberships.addAll(UserUtils.getMemberships(identity));      
+    } else {
+      memberships.addAll(UserUtils.getSpaceMemberships(space_group_id));
+    }    
+    
+    return projectService.getProjectTreeByMembership(memberships);
   }
 
   public static List<Project> buildRootProjects(List<Project> projects) {

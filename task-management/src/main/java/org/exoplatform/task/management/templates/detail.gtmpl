@@ -7,7 +7,6 @@
 	import org.exoplatform.task.utils.TaskUtil;
 	import org.apache.commons.lang.StringUtils;
 	import org.exoplatform.task.domain.Priority;
-	import org.exoplatform.task.management.controller.TaskManagement_;
 
 	def task = taskModel.getTask();
 	def breadcumbs = taskModel.getBreadcumbs();
@@ -44,7 +43,7 @@
 </div>
 <div class="taskName uiEditableInline clearfix taskPermalinkContainer">
     <div class="pull-right">
-        <a href="@{TaskManagement.permalink(taskId=task.id)}" data-toggle="popover" data-placement="left"
+        <a href="@{TaskManagement.permalink(space_group_id=null, taskId=task.id)}" data-toggle="popover" data-placement="left"
             class="permalink actionIcon taskPermalink" style="position: relative;">
             <span title="&{label.permalink}" data-toggle="tooltip">
                 <i class="uiIconPermalink"></i>

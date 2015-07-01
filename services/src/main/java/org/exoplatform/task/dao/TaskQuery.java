@@ -29,7 +29,7 @@ public class TaskQuery {
   private long taskId = 0;
   private String title = null;
   private String description = null;
-  private Long projectId;
+  private List<Long> projectIds;
   private String assignee = null;
   private String keyword = null;
   private Boolean completed;
@@ -60,12 +60,12 @@ public class TaskQuery {
     this.description = description;
   }
 
-  public Long getProjectId() {
-    return projectId;
+  public List<Long> getProjectIds() {
+    return projectIds;
   }
 
-  public void setProjectId(Long projectId) {
-    this.projectId = projectId;
+  public void setProjectIds(List<Long> projectIds) {
+    this.projectIds = projectIds;
   }
 
   public String getAssignee() {

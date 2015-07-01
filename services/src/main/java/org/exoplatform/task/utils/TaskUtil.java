@@ -18,6 +18,7 @@ package org.exoplatform.task.utils;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -53,6 +54,28 @@ public final class TaskUtil {
   private static final Log LOG = ExoLogger.getExoLogger(TaskUtil.class.getName());
   
   private TaskUtil() {
+  }
+  
+  public static long getTaskNum(String username, List<Long> spaceProjectIds, Long projectId, TaskService taskService) {
+    long taskNum = 0;
+    if (projectId > 0) {
+      taskNum = taskService.getTaskNum(null, Arrays.asList(projectId));      
+    } else {
+      if (spaceProjectIds != null) {
+        if (projectId == 0) {
+          taskNum = taskService.getTaskNum(null, spaceProjectIds);
+        } else {
+          taskNum = taskService.getTaskNum(username, spaceProjectIds);
+        }
+      } else {
+        if (projectId == 0) {
+          taskNum = taskService.getTaskNum(null, Arrays.asList(projectId));
+        } else {
+          taskNum = taskService.getTaskNum(username, Arrays.asList(projectId));
+        }
+      }      
+    }
+    return taskNum;
   }
   
   public static TaskModel getTaskModel(Long id, ResourceBundle bundle, String username, 

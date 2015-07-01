@@ -20,5 +20,15 @@
     <portlet-info>
       <title>Tasks</title>
     </portlet-info>
+    <supported-public-render-parameter>space_id</supported-public-render-parameter>
+    <supported-public-render-parameter>space_group_id</supported-public-render-parameter>
   </portlet>
+  <public-render-parameter>
+    <identifier>space_id</identifier>
+    <qname xmlns:x="http://www.exoplatform.org/xml/ns/prp_1_0">x:space_id</qname>
+  </public-render-parameter>
+  <public-render-parameter>
+    <identifier>space_group_id</identifier>
+    <qname xmlns:x="http://www.exoplatform.org/xml/ns/prp_1_0">x:space_group_id</qname>
+  </public-render-parameter>
 </portlet-app>

@@ -19,7 +19,9 @@
 
 package org.exoplatform.task.management.controller;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -46,6 +48,7 @@ import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.TaskParser;
 import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.service.UserService;
+import org.exoplatform.task.utils.ProjectUtil;
 import org.exoplatform.task.utils.TaskUtil;
 
 /**
@@ -63,10 +66,10 @@ public class TaskManagement {
 
   @Inject
   UserService userService;
-  
+
   @Inject
   OrganizationService orgService;
-  
+
   @Inject
   ProjectService projectService;
 
@@ -84,11 +87,11 @@ public class TaskManagement {
   NavigationState navState;
 
   @View
-  public Response.Content index(SecurityContext securityContext) throws ProjectNotFoundException {
+  public Response.Content index(String space_group_id, SecurityContext securityContext) throws ProjectNotFoundException {
     //TODO: should check if username is null?
     String username = securityContext.getRemoteUser();
     
-    long currProject = -1;
+    long currProject = space_group_id == null ? -1 : -2;
     TaskModel taskModel = null;
     List<Task> tasks = null;
     Project project = null;
@@ -104,22 +107,33 @@ public class TaskManagement {
       if (taskModel.getTask().getStatus() != null) {
         project = taskModel.getTask().getStatus().getProject();
         currProject = project.getId();
-        tasks = projectService.getTasksByProjectId(currProject, null);      
+        tasks = projectService.getTasksByProjectId(Arrays.asList(currProject), null);      
       }
     }
 
+    List<Long> spaceProjectIds = null;
+    List<Project> projects = ProjectUtil.getProjectTree(space_group_id, projectService);
+    if (space_group_id != null) {
+      spaceProjectIds = new LinkedList<Long>();
+      for (Project p : projects) {
+        spaceProjectIds.add(p.getId());
+      }            
+    }
+    
     if (tasks == null) {
-      tasks = taskService.getIncomingTasksByUser(username, null);      
+      if (space_group_id != null) {
+        tasks = taskService.getToDoTasksByUser(username, spaceProjectIds, null, null, null);
+      } else {
+        tasks = taskService.getIncomingTasksByUser(username, null);
+      }
     }
 
     Map<String, List<Task>> groupTasks = new HashMap<String, List<Task>>();
     groupTasks.put("", tasks);
 
-    List<Project> projects = projectController.getProjectTree();
-
     UserSetting setting = userService.getUserSetting(username);
 
-    long taskNum = taskService.getTaskNum(username, null);
+    long taskNum = TaskUtil.getTaskNum(username, spaceProjectIds, currProject, taskService);
     
     return index.with()
         .currentProjectId(currProject)
@@ -136,27 +150,28 @@ public class TaskManagement {
         .projects(projects)
         .userSetting(setting)
         .bundle(bundle)
+        .isInSpace(space_group_id != null)
         .ok().withCharset(Tools.UTF_8);
   }
   
   @Action
-  public Response permalink(Long taskId) {
+  public Response permalink(String space_group_id, Long taskId) {
     navState.setTaskId(taskId);
-    return TaskManagement_.index();
+    return TaskManagement_.index(space_group_id);
   }
 
   @Action
-  public Response changeViewState(String groupBy, String orderBy) {
-    return TaskManagement_.index();
+  public Response changeViewState(String space_group_id, String groupBy, String orderBy) {
+    return TaskManagement_.index(space_group_id);
   }
 
   @Action
-  public Response createTask(String taskInput, String groupBy, String orderBy) {
+  public Response createTask(String space_group_id, String taskInput, String groupBy, String orderBy) {
     if(taskInput != null && !taskInput.isEmpty()) {
       taskService.createTask(taskParser.parse(taskInput));
     } else {
 
     }
-    return TaskManagement_.index();
+    return TaskManagement_.index(space_group_id);
   }
 }

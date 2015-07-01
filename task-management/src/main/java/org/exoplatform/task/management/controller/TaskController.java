@@ -22,6 +22,7 @@ package org.exoplatform.task.management.controller;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -305,7 +306,7 @@ public class TaskController {
   @Resource
   @Ajax
   @MimeType.HTML
-  public Response listTasks(Long projectId, String keyword, String groupBy, String orderBy, String filter,
+  public Response listTasks(String space_group_id, Long projectId, String keyword, String groupBy, String orderBy, String filter,
                             SecurityContext securityContext) {
     Project project = null;
     List<Task> tasks;
@@ -313,6 +314,14 @@ public class TaskController {
     String currentUser = securityContext.getRemoteUser();
     if (currentUser == null || currentUser.isEmpty()) {
       return Response.status(401);
+    }    
+    List<Long> spaceProjectIds = null;
+    if (space_group_id != null) {
+      spaceProjectIds = new LinkedList<Long>();
+      List<Project> projects = ProjectUtil.getProjectTree(space_group_id, projectService);
+      for (Project p : projects) {
+        spaceProjectIds.add(p.getId());
+      }      
     }
 
     OrderBy order = null;
@@ -358,17 +367,21 @@ public class TaskController {
         fromDueDate = c.getTime();
         toDueDate = null;
       }
-
-      tasks = taskService.getToDoTasksByUser(currentUser, order, fromDueDate, toDueDate);
+      
+      tasks = taskService.getToDoTasksByUser(currentUser, spaceProjectIds, order, fromDueDate, toDueDate);
     }
     else {
-      try {
-        tasks = projectService.getTasksWithKeywordByProjectId(projectId, order, keyword);
-        if (projectId > 0) {
-          project = projectService.getProjectById(projectId);          
-        }
-      } catch (ProjectNotFoundException e) {
-        return Response.notFound("Impossible to get tasks for project with ID: " + e.getEntityId());
+      if (spaceProjectIds != null && projectId == 0) {
+        tasks = projectService.getTasksWithKeywordByProjectId(spaceProjectIds, order, keyword);        
+      } else {
+        tasks = projectService.getTasksWithKeywordByProjectId(Arrays.asList(projectId), order, keyword);
+      }
+      if (projectId > 0) {
+        try {
+          project = projectService.getProjectById(projectId);
+        } catch (ProjectNotFoundException e) {
+          return Response.notFound("not found project " + projectId);
+        }          
       }
     }
 
@@ -389,12 +402,7 @@ public class TaskController {
       groupTasks.put("", tasks);
     }
     
-    long taskNum;
-    if (projectId <= 0) {
-      taskNum = taskService.getTaskNum(currentUser, projectId);
-    } else {
-      taskNum = taskService.getTaskNum(null, projectId);
-    }
+    long taskNum = TaskUtil.getTaskNum(currentUser, spaceProjectIds, projectId, taskService);
 
     return taskListView
         .with()
@@ -416,7 +424,7 @@ public class TaskController {
   @Resource(method = HttpMethod.POST)
   @Ajax
   @MimeType.JSON
-  public Response createTask(Long projectId, String taskInput, SecurityContext securityContext) {
+  public Response createTask(String space_group_id, Long projectId, String taskInput, SecurityContext securityContext) {
 
     if(taskInput == null || taskInput.isEmpty()) {
       return Response.content(406, "Task input must not be null or empty");

@@ -349,13 +349,13 @@ public class TaskServiceImpl implements TaskService {
   }
 
   @Override
-  public List<Task> getToDoTasksByUser(String username, OrderBy orderBy, Date fromDueDate, Date toDueDate) {
-    return daoHandler.getTaskHandler().getToDoTask(username, orderBy, fromDueDate, toDueDate);
+  public List<Task> getToDoTasksByUser(String username, List<Long> projectIds, OrderBy orderBy, Date fromDueDate, Date toDueDate) {
+    return daoHandler.getTaskHandler().getToDoTask(username, projectIds, orderBy, fromDueDate, toDueDate);
   }
   
   @Override
-  public long getTaskNum(String username, Long projectId) {
-    return daoHandler.getTaskHandler().getTaskNum(username, projectId);
+  public long getTaskNum(String username, List<Long> projectIds) {
+    return daoHandler.getTaskHandler().getTaskNum(username, projectIds);
   }
   
   private Task updateTask(Task task) {

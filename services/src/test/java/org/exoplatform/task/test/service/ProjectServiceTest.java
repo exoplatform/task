@@ -396,7 +396,7 @@ public class ProjectServiceTest {
     boolean ascending = true;
     String keyword = "MyTag";
 
-    projectService.getTasksWithKeywordByProjectId(TestUtils.EXISTING_PROJECT_ID, new OrderBy(fieldName, ascending), keyword);
+    projectService.getTasksWithKeywordByProjectId(Arrays.asList(TestUtils.EXISTING_PROJECT_ID), new OrderBy(fieldName, ascending), keyword);
     verify(taskHandler, times(1)).findTaskByQuery(taskQueryCaptor.capture());
 
     assertEquals(fieldName, taskQueryCaptor.getValue().getOrderBy().iterator().next().getFieldName());

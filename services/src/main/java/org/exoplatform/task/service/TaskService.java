@@ -45,9 +45,9 @@ public interface TaskService {
 
   List<Task> getIncomingTasksByUser(String username, OrderBy orderBy);
 
-  List<Task> getToDoTasksByUser(String username, OrderBy orderBy, Date fromDueDate, Date toDueDate);
+  List<Task> getToDoTasksByUser(String username, List<Long> projectIds, OrderBy orderBy, Date fromDueDate, Date toDueDate);
 
-  long getTaskNum(String username, Long projectId);
+  long getTaskNum(String username, List<Long> projectIds);
 
   TaskLog addTaskLog(long taskId, String username, String msg, String target) throws TaskNotFoundException;
 }

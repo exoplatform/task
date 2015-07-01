@@ -62,6 +62,17 @@ public final class UserUtils {
     }
     return displayName;
   }
+  
+  public static List<String> getSpaceMemberships(String space_group_id) {
+    List<String> memberships = new LinkedList<String>();
+    if (space_group_id != null) {
+      memberships.add(new MembershipEntry(space_group_id, "manager").toString());
+      memberships.add(new MembershipEntry(space_group_id, "member").toString());
+    } else {
+      throw new IllegalArgumentException("space_group_id is null");
+    }
+    return memberships;
+  }
 
   public static List<String> getMemberships(Identity identity) {
     Map<String, List<MembershipEntry>> gms = new HashMap<String, List<MembershipEntry>>();

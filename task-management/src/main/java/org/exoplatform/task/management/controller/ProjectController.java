@@ -43,6 +43,7 @@ import org.exoplatform.task.model.User;
 import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.UserService;
 import org.exoplatform.task.utils.ProjectUtil;
+import org.exoplatform.task.utils.UserUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -105,9 +106,7 @@ public class ProjectController {
   @Resource
   @Ajax
   @MimeType.HTML
-  public Response projectForm(Long parentId) {
-    List<Project> projects = getProjectTree();
-    
+  public Response projectForm(Long parentId) {    
     Project parent;
     try {
       parent = projectService.getProjectById(parentId);
@@ -125,7 +124,7 @@ public class ProjectController {
   @Resource
   @Ajax
   @MimeType.JSON
-  public Response createProject(String name, String description, Long parentId, SecurityContext securityContext) {
+  public Response createProject(String space_group_id, String name, String description, Long parentId, SecurityContext securityContext) {
 
     String currentUser = securityContext.getRemoteUser();
     if(currentUser == null) {
@@ -137,9 +136,15 @@ public class ProjectController {
     }
 
     try {
-
-      Project project = projectService.createDefaultStatusProjectWithManager(name, description, parentId, currentUser); //Can throw ProjectNotFoundException
-
+      Project project;
+      if (space_group_id  != null) {
+        List<String> memberships = UserUtils.getSpaceMemberships(space_group_id);
+        Set<String> managers = new HashSet<String>(Arrays.asList(currentUser, memberships.get(0)));
+        Set<String> participators = new HashSet<String>(Arrays.asList(memberships.get(1)));
+        project = projectService.createDefaultStatusProjectWithAttributes(parentId, name, description, managers, participators);
+      } else {
+        project = projectService.createDefaultStatusProjectWithManager(name, description, parentId, currentUser); //Can throw ProjectNotFoundException        
+      }
       JSONObject result = new JSONObject();
       result.put("id", project.getId());//Can throw JSONException (same for all #json.put methods below)
       result.put("name", project.getName());
@@ -307,8 +312,8 @@ public class ProjectController {
   @Resource
   @Ajax
   @MimeType.HTML
-  public Response projectTree(SecurityContext securityContext) {
-    List<Project> projects = getProjectTree();
+  public Response projectTree(String space_group_id, SecurityContext securityContext) {
+    List<Project> projects = ProjectUtil.getProjectTree(space_group_id, projectService);
     UserSetting setting = userService.getUserSetting(securityContext.getRemoteUser());
     return listProjects
         .with()
@@ -320,8 +325,8 @@ public class ProjectController {
   @Resource
   @Ajax
   @MimeType.JSON
-  public Response projectTreeAsJSON() throws JSONException {
-    List<Project> projects = getProjectTree();
+  public Response projectTreeAsJSON(String space_group_id) throws JSONException {
+    List<Project> projects = ProjectUtil.getProjectTree(space_group_id, projectService);
     Project root = new Project();
     root.setName(bundle.getString("label.projects"));
     projects.add(0, root);
@@ -351,14 +356,6 @@ public class ProjectController {
     }
     
     return array;
-  }
-
-  public List<Project> getProjectTree() {
-
-    ConversationState state = ConversationState.getCurrent();
-    Identity identity = state.getIdentity();
-
-    return projectService.getProjectTreeByIdentity(identity);
   }
 
   @Resource
