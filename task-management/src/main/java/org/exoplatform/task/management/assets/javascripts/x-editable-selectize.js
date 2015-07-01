@@ -140,7 +140,7 @@ define('x_editable_selectize', ['jquery', 'SHARED/edit_inline_js', 'selectize'],
             render: {
                 option: function(item, escape) {
                     return '<li class="data">' +
-                        '<a href="">' + escape(item.name) + '</a>'
+                        '<a href="">' + escape(item.text) + '</a>'
                         '</li>';
                 },
                 item: function(item, escape) {

@@ -196,7 +196,7 @@
         %>
         <div class="uiEditableInline clearfix fieldWorkPlan inactive"            
              data-startdate="<%=df.format(startDate)%>" data-duration="${duration}">
-            <div class="pull-right"><span title="Remove" data-placement="bottom" data-toggle="tooltip"  class="actionIcon inline-hide removeWorkPlan ${hasPlan ? "" : "hidden"}"><i class="uiIcon uiIconTrash"></i></span></div>
+            <div class="pull-right"><span title="Remove" data-placement="bottom" data-toggle="tooltip"  class="actionIcon inline-hide removeWorkPlan ${hasPlan ? "" : "hidden"}"><i class="uiIcon uiIconTrashMini"></i></span></div>
             <div class="date-work-plan">
             <i class="uiIconPLFCalendar pull-left"></i>
             <span data-original-title="&{tooltip.clickToEdit}" rel="tooltip" data-placement="bottom" class="hoverStatus hoverStatusBlock small editableField">${workplan}</span></div>

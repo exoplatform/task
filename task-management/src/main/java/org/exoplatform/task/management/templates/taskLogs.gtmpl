@@ -8,15 +8,17 @@ import org.exoplatform.task.utils.TaskUtil;
 <ul class="list-changes">
 <%for (def log : taskLogs) {%>
     <li class="clearfix">
+       <div class="pull-left">
+            <%
+                def user = userMap[log.author];
+            %>
+            <a href="${user.url}">  ${user.displayName} </a>
+            <span><%=bundle.getString(log.getMsg()) %>
+            ${log.target != null ? log.target : ""}</span>
+        </div>        
         <span class="date pull-right">
             <%= TaskUtil.getPeriod(log.getCreatedTime(), bundle)%>
         </span>
-        <%
-            def user = userMap[log.author];
-        %>
-        <a href="${user.url}">  ${user.displayName} </a>
-        <%=bundle.getString(log.getMsg()) %>
-        ${log.target != null ? log.target : ""}
     </li>
 <%} %>
 </ul>

@@ -39,7 +39,9 @@
                 </p>
             </div><!--end commentRight-->
 
-            <a class="uiIconDelete uiIconLightGray controllDelete"  href="javascript:void(0)"></a>
+            <a   href="javascript:void(0)" class="actionIcon controllDelete" data-toggle="tooltip" data-placement="left" title="Remove">
+                <i class="uiIconTrashMini uiIconLightGray "></i>
+             </a>
         </div>
         <%}%>
     </div>
