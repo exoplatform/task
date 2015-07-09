@@ -55,7 +55,7 @@ public final class TaskUtil {
   
   private TaskUtil() {
   }
-  
+
   public static long getTaskNum(String username, List<Long> spaceProjectIds, Long projectId, TaskService taskService) {
     long taskNum = 0;
     if (projectId > 0) {
@@ -77,8 +77,8 @@ public final class TaskUtil {
     }
     return taskNum;
   }
-  
-  public static TaskModel getTaskModel(Long id, ResourceBundle bundle, String username, 
+
+  public static TaskModel getTaskModel(Long id, boolean loadAllComment, ResourceBundle bundle, String username,
                                        TaskService taskService, OrganizationService orgService, UserService userService, ProjectService projectService) throws TaskNotFoundException {
     TaskModel taskModel = new TaskModel();
     
@@ -105,8 +105,9 @@ public final class TaskUtil {
 
     long commentCount = taskService.getNbOfCommentsByTask(task);
     taskModel.setCommentCount(commentCount);
-    
-    List<Comment> cmts = taskService.getCommentsByTask(task, 0, 2);
+
+    int limitComment = loadAllComment ? -1 : 2;
+    List<Comment> cmts = taskService.getCommentsByTask(task, 0, limitComment);
     List<CommentModel> comments = new ArrayList<CommentModel>(cmts.size());
     for(Comment c : cmts) {
       org.exoplatform.task.model.User u = userService.loadUser(c.getAuthor());

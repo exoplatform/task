@@ -56,6 +56,7 @@ import org.exoplatform.task.exception.ProjectNotFoundException;
 import org.exoplatform.task.exception.TaskNotFoundException;
 import org.exoplatform.task.model.CommentModel;
 import org.exoplatform.task.model.TaskModel;
+import org.exoplatform.task.model.User;
 import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.TaskParser;
 import org.exoplatform.task.service.TaskService;
@@ -99,6 +100,10 @@ public class TaskController {
   org.exoplatform.task.management.templates.taskLogs taskLogs;
 
   @Inject
+  @Path("taskComments.gtmpl")
+  org.exoplatform.task.management.templates.taskComments taskComments;
+
+  @Inject
   @Path("comments.gtmpl")
   org.exoplatform.task.management.templates.comments comments;
 
@@ -113,7 +118,7 @@ public class TaskController {
 
     try {
 
-      TaskModel model = TaskUtil.getTaskModel(id, bundle, securityContext.getRemoteUser(), taskService, orgService, userService, projectService);
+      TaskModel model = TaskUtil.getTaskModel(id, false, bundle, securityContext.getRemoteUser(), taskService, orgService, userService, projectService);
 
       return detail.with()
           .taskModel(model)
@@ -135,7 +140,44 @@ public class TaskController {
     
     List<TaskLog> logs = new LinkedList<TaskLog>(task.getTaskLogs());
     Collections.sort(logs);
-    return taskLogs.with().bundle(bundle).taskLogs(logs).ok().withCharset(Tools.UTF_8);
+    Map<String, User> userMap = new HashMap<String, User>();
+    if (logs.size() > 0) {
+      for (TaskLog log : logs) {
+        String author = log.getAuthor();
+        if (!userMap.containsKey(author)) {
+          User user = userService.loadUser(log.getAuthor());
+          userMap.put(author, user);
+        }
+      }
+    }
+    return taskLogs.with()
+            .bundle(bundle)
+            .taskLogs(logs)
+            .userMap(userMap)
+            .ok().withCharset(Tools.UTF_8);
+  }
+
+  @Resource
+  @Ajax
+  @MimeType.HTML
+  public Response renderTaskComments(Long id, Boolean loadAllComment, SecurityContext securityContext) {
+    try {
+
+      if (loadAllComment == null) {
+        loadAllComment = Boolean.FALSE;
+      }
+      TaskModel model = TaskUtil.getTaskModel(id, loadAllComment, bundle, securityContext.getRemoteUser(), taskService, orgService, userService, projectService);
+
+      return taskComments.with()
+              .taskModel(model)
+              .bundle(bundle)
+              .ok().withCharset(Tools.UTF_8);
+
+    } catch (AbstractEntityException e) {
+      return Response.status(e.getHttpStatusCode()).body(e.getMessage());
+    } catch (Exception ex) {// NOSONAR
+      return Response.status(500).body(ex.getMessage());
+    }
   }
 
   @Resource
