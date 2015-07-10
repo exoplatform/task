@@ -64,9 +64,16 @@ public class SpacePropertiesPlugin extends AbstractContextualPropertyProviderPlu
       String requestPath = pContext.getControllerContext().getParameter(RequestNavigationData.REQUEST_PATH);
       ExoRouter.Route er = ExoRouter.route(requestPath);
 
-      String spacePrettyName = er.localArgs.get("spacePrettyName");
-      SpaceService sService = (SpaceService) PortalContainer.getInstance().getComponentInstanceOfType(SpaceService.class);
-      Space space = sService.getSpaceByPrettyName(spacePrettyName);
-      return space;
+      if (er != null && er.localArgs != null) {
+        String spacePrettyName = er.localArgs.get("spacePrettyName");
+        SpaceService sService = (SpaceService) PortalContainer.getInstance().getComponentInstanceOfType(SpaceService.class);
+
+        if (spacePrettyName != null && !spacePrettyName.isEmpty()) {
+          Space space = sService.getSpaceByPrettyName(spacePrettyName);
+          return space;
+        }
+      }
+
+      return null;
     }
 }
