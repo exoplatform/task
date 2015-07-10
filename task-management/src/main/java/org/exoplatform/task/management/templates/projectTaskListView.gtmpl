@@ -8,6 +8,8 @@
 #{param name=orderBy /}
 #{param name=filter /}
 #{param name=bundle /}
+#{param name=orders /}
+#{param name=groups /}
 
 <div class="projectListView" data-projectid="${currentProjectId}">
     <div class="title">
@@ -85,14 +87,6 @@
                         <div class="header-right pull-right">
                             <!-- this is filter action-->
                             <% if (tasks.size() > 2) { %>
-                             <%
-                                 def orders = [
-                                    title: bundle.getString("label.title"),
-                                    priority: bundle.getString("label.priority"),
-                                    dueDate: bundle.getString("label.duedate"),
-                                    createdTime: bundle.getString("label.createdTime")
-                                 ];
-                             %>
                              <span class="action-bar dropdown pull-right" data-currentorderby="${orderBy}">
                                 <a href="" class="actionIcon dropdown-toggle" data-original-title="Due date" data-toggle="dropdown"  rel="tooltip" data-placement="bottom">
                                     <i class="uiIconSortDown uiIconLightGray"></i>
@@ -104,18 +98,6 @@
                                   <%}%>
                                 </ul>
                              </span>
-
-                             <%
-                                 def groups = [
-                                    "": bundle.getString("label.none"),
-                                     status: bundle.getString("label.status"),
-                                     assignee: bundle.getString("label.assignee"),
-                                     tag: bundle.getString("label.tag")
-                                 ];
-                                 if (currentProjectId == -2) {
-                                     groups['project'] = bundle.getString("label.project");
-                                 }
-                             %>
                              <span class="action-bar dropdown pull-right" data-currentgroupby="${groupBy}">
                                 <a href="" class="actionIcon dropdown-toggle"  data-original-title="group By" data-toggle="dropdown"  rel="tooltip" data-placement="bottom">
                                     <i class="uiIconViewList uiIconLightGray"></i>
@@ -178,7 +160,7 @@
                     <% if (tasks.size() > 0) { %>
                         <div class="table-project-collapse">
                             <% groupTasks.each {group -> %>
-                                    <% if (groupBy != null && !groupBy.isEmpty()) { %>
+                                    <% if (groupBy != null && !groupBy.isEmpty() && !"none".equals(groupBy)) { %>
                                         <div class="heading primaryBackground">
                                                 <% if (groupBy == 'assignee') {%>
                                                     <a class="toggle-collapse-group" href="#"><i class="uiIcon uiIconArrowDown"></i></a>
