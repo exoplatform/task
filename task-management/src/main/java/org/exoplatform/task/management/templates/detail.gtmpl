@@ -94,7 +94,7 @@
         <div class="uiEditableInline inactive">
             <span class = "unassigned ${!hasAssignee ? "" : "hidden"}" style = "">
                 <i class="uiIconUser"></i>
-                <a data-original-title="&{tooltip.clickToEdit}" rel="tooltip" data-placement="bottom" class="hoverStatus small editableField editAssignee">&{label.unassigned}</a>
+                <a data-original-title="&{tooltip.clickToEdit}" rel="tooltip" data-placement="bottom" class="hoverStatus muted small editableField editAssignee">&{label.unassigned}</a>
             </span>
             <span class = "assigned ${!hasAssignee ? "hidden" : ""}">
                 <a class="avatarMini" href="#"><img alt="avatar" src="${hasAssignee ? assignee.avatar : ""}"></a>
