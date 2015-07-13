@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -53,9 +54,38 @@ public final class TaskUtil {
 
   private static final Log LOG = ExoLogger.getExoLogger(TaskUtil.class.getName());
   
+  public static final String TITLE = "title";  
+  public static final String PRIORITY = "priority";
+  public static final String DUEDATE = "dueDate";
+  public static final String CREATED_TIME = "createdTime";
+  public static final String NONE = "none";
+  public static final String STATUS = "status";
+  public static final String ASSIGNEE = "assignee";
+  public static final String PROJECT = "project";
+  public static final String RANK = "status.rank";
+  
   private TaskUtil() {
   }
 
+  public static Map<String, String> getDefOrders(ResourceBundle bundle) {
+    return resolve(Arrays.asList(TITLE, PRIORITY, DUEDATE, CREATED_TIME), bundle);
+  }
+  
+  public static Map<String, String> getDefGroupBys(ResourceBundle bundle) {
+    return resolve(Arrays.asList(NONE, STATUS, ASSIGNEE), bundle);
+  }
+  
+  public static Map<String, String> resolve(List<String> keys, ResourceBundle bundle) {    
+    Map<String, String> labels = new LinkedHashMap<String, String>();
+    for (String k : keys) {
+      if (k.isEmpty()) {
+        k = NONE;
+      }
+      labels.put(k, bundle.getString("label." + k));
+    }
+    return labels;
+  }
+  
   public static long getTaskNum(String username, List<Long> spaceProjectIds, Long projectId, TaskService taskService) {
     long taskNum = 0;
     if (projectId > 0) {

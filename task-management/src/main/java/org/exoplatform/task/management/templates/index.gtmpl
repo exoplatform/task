@@ -13,6 +13,8 @@
 #{param name=taskId/}
 #{param name=taskModel/}
 #{param name=isInSpace/}
+#{param name=orders /}
+#{param name=groups /}
 
 <div class="taskMngCont">
 	<div id="taskManagement" class="row-fluid">

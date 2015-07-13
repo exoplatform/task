@@ -27,7 +27,6 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -111,16 +110,6 @@ public class TaskController {
   @Inject
   @Path("projectTaskListView.gtmpl")
   org.exoplatform.task.management.templates.projectTaskListView taskListView;
-  
-  public static final String TITLE = "title";  
-  public static final String PRIORITY = "priority";
-  public static final String DUEDATE = "dueDate";
-  public static final String CREATED_TIME = "createdTime";
-  public static final String NONE = "none";
-  public static final String STATUS = "status";
-  public static final String ASSIGNEE = "assignee";
-  public static final String PROJECT = "project";
-  public static final String RANK = "status.rank";
 
   @Resource
   @Ajax
@@ -364,8 +353,8 @@ public class TaskController {
     Project project = null;
     List<Task> tasks;
     
-    Map<String, String> defOrders = resolve(Arrays.asList(TITLE, PRIORITY, DUEDATE, CREATED_TIME));
-    Map<String, String> defGroupBys = resolve(Arrays.asList(NONE, STATUS, ASSIGNEE));
+    Map<String, String> defOrders = TaskUtil.getDefOrders(bundle);
+    Map<String, String> defGroupBys = TaskUtil.getDefGroupBys(bundle);
 
     String currentUser = securityContext.getRemoteUser();
     if (currentUser == null || currentUser.isEmpty()) {
@@ -390,8 +379,8 @@ public class TaskController {
       tasks = taskService.getIncomingTasksByUser(currentUser, order);
     }
     else if (projectId == ProjectUtil.TODO_PROJECT_ID) {
-      defGroupBys = resolve(Arrays.asList(NONE, PROJECT, DUEDATE));
-      defOrders = resolve(Arrays.asList(TITLE, STATUS, DUEDATE, PRIORITY, RANK));
+      defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT, TaskUtil.DUEDATE), bundle);
+      defOrders = TaskUtil.resolve(Arrays.asList(TaskUtil.TITLE, TaskUtil.STATUS, TaskUtil.DUEDATE, TaskUtil.PRIORITY, TaskUtil.RANK), bundle);
       
       //TODO: process fiter here
       Date fromDueDate = null;
@@ -401,9 +390,9 @@ public class TaskController {
         fromDueDate = null;
         toDueDate = new Date();
         
-        defGroupBys = resolve(Arrays.asList(NONE, PROJECT));
-        defOrders = resolve(Arrays.asList(TITLE, PRIORITY, DUEDATE));
-        groupBy = groupBy == null || defGroupBys.containsKey(groupBy) ? PROJECT : groupBy;
+        defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT), bundle);
+        defOrders = TaskUtil.resolve(Arrays.asList(TaskUtil.TITLE, TaskUtil.PRIORITY, TaskUtil.DUEDATE), bundle);
+        groupBy = groupBy == null || defGroupBys.containsKey(groupBy) ? TaskUtil.PROJECT : groupBy;
       } else if ("today".equalsIgnoreCase(filter)) {
         Calendar c = Calendar.getInstance();
         c.set(Calendar.HOUR, 0);
@@ -413,12 +402,12 @@ public class TaskController {
         c.add(Calendar.HOUR, 24);
         toDueDate = c.getTime();
         
-        defGroupBys = resolve(Arrays.asList(NONE, PROJECT));
-        defOrders = resolve(Arrays.asList(TITLE, PRIORITY, RANK));
+        defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT), bundle);
+        defOrders = TaskUtil.resolve(Arrays.asList(TaskUtil.TITLE, TaskUtil.PRIORITY, TaskUtil.RANK), bundle);
         if (orderBy == null || !defOrders.containsKey(orderBy)) {
-          order = new OrderBy.DESC(PRIORITY);
+          order = new OrderBy.DESC(TaskUtil.PRIORITY);
         }
-        groupBy = groupBy == null || !defGroupBys.containsKey(groupBy) ? NONE : groupBy;
+        groupBy = groupBy == null || !defGroupBys.containsKey(groupBy) ? TaskUtil.NONE : groupBy;
       } else if ("tomorrow".equalsIgnoreCase(filter)) {
         Calendar c = Calendar.getInstance();
         c.set(Calendar.HOUR, 0);
@@ -429,12 +418,12 @@ public class TaskController {
         c.add(Calendar.HOUR, 24);
         toDueDate = c.getTime();
         
-        defGroupBys = resolve(Arrays.asList(NONE, PROJECT));
-        defOrders = resolve(Arrays.asList(TITLE, PRIORITY, RANK));
+        defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT), bundle);
+        defOrders = TaskUtil.resolve(Arrays.asList(TaskUtil.TITLE, TaskUtil.PRIORITY, TaskUtil.RANK), bundle);
         if (orderBy == null || !defOrders.containsKey(orderBy)) {
-          order = new OrderBy.DESC(PRIORITY);        
+          order = new OrderBy.DESC(TaskUtil.PRIORITY);        
         }
-        groupBy = groupBy == null || !defGroupBys.containsKey(groupBy) ? NONE : groupBy;
+        groupBy = groupBy == null || !defGroupBys.containsKey(groupBy) ? TaskUtil.NONE : groupBy;
       } else if ("upcoming".equalsIgnoreCase(filter)) {
         Calendar c = Calendar.getInstance();
         c.set(Calendar.HOUR, 0);
@@ -444,15 +433,15 @@ public class TaskController {
         fromDueDate = c.getTime();
         toDueDate = null;
         
-        defGroupBys = resolve(Arrays.asList(NONE, PROJECT));
-        defOrders = resolve(Arrays.asList(TITLE, PRIORITY, DUEDATE, RANK));
-        groupBy = groupBy == null || !defGroupBys.containsKey(groupBy) ? NONE : groupBy;
+        defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT), bundle);
+        defOrders = TaskUtil.resolve(Arrays.asList(TaskUtil.TITLE, TaskUtil.PRIORITY, TaskUtil.DUEDATE, TaskUtil.RANK), bundle);
+        groupBy = groupBy == null || !defGroupBys.containsKey(groupBy) ? TaskUtil.NONE : groupBy;
       }
       
       if (orderBy == null || !defOrders.containsKey(orderBy)) {
-        order = new OrderBy.ASC(DUEDATE);        
+        order = new OrderBy.ASC(TaskUtil.DUEDATE);        
       }
-      groupBy = groupBy == null || !defGroupBys.containsKey(groupBy) ? DUEDATE : groupBy;
+      groupBy = groupBy == null || !defGroupBys.containsKey(groupBy) ? TaskUtil.DUEDATE : groupBy;
       
       tasks = taskService.getToDoTasksByUser(currentUser, spaceProjectIds, order, fromDueDate, toDueDate);
     }
@@ -500,7 +489,7 @@ public class TaskController {
         .taskNum(taskNum)
         .groupTasks(groupTasks)
         .keyword(keyword == null ? "" : keyword)
-        .groupBy(groupBy == null ? "" : groupBy)
+        .groupBy(groupBy == null ? TaskUtil.NONE : groupBy)
         .orderBy(orderBy == null ? "" : orderBy)
         .filter(filter == null ? "" : filter)
         .bundle(bundle)
@@ -548,14 +537,4 @@ public class TaskController {
     }
   }
 
-  private Map<String, String> resolve(List<String> keys) {    
-    Map<String, String> labels = new LinkedHashMap<String, String>();
-    for (String k : keys) {
-      if (k.isEmpty()) {
-        k = NONE;
-      }
-      labels.put(k, bundle.getString("label." + k));
-    }
-    return labels;
-  }
 }

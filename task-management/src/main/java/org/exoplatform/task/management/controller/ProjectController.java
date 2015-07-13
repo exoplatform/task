@@ -319,7 +319,7 @@ public class ProjectController {
         .with()
         .userSetting(setting)
         .projects(projects)
-        .ok();
+        .ok().withCharset(Tools.UTF_8);
   }
   
   @Resource

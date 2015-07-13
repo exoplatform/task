@@ -135,16 +135,21 @@ public class TaskManagement {
 
     long taskNum = TaskUtil.getTaskNum(username, spaceProjectIds, currProject, taskService);
     
+    Map<String, String> defOrders = TaskUtil.getDefOrders(bundle);
+    Map<String, String> defGroupBys = TaskUtil.getDefGroupBys(bundle);
+    
     return index.with()
         .currentProjectId(currProject)
         .taskId(taskId)
         .taskModel(taskModel)
+        .orders(defOrders)
+        .groups(defGroupBys)
         .project(project)
         .tasks(tasks)
         .taskNum(taskNum)
         .groupTasks(groupTasks)
         .keyword("")
-        .groupBy("")
+        .groupBy(TaskUtil.NONE)
         .orderBy("")
         .filter("")
         .projects(projects)
