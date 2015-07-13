@@ -59,9 +59,10 @@ public class SpaceTaskDataInitializer extends SpaceListenerPlugin {
     List<String> memberships = UserUtils.getSpaceMemberships(space_group_id);
     Set<String> managers = new HashSet<String>(Arrays.asList(memberships.get(0)));
     Set<String> participators = new HashSet<String>(Arrays.asList(memberships.get(1)));
+
     //
     try {
-      projectService.createDefaultStatusProjectWithAttributes(0L, space.getPrettyName(), "", managers, participators);
+      projectService.createDefaultStatusProjectWithAttributes(0L, space.getDisplayName(), "", managers, participators);
     } catch (ProjectNotFoundException e) {
       log.error(e);
     }
