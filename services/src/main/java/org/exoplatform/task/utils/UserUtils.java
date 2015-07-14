@@ -23,14 +23,17 @@
 package org.exoplatform.task.utils;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.exoplatform.services.organization.Group;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.services.security.MembershipEntry;
+import org.exoplatform.task.model.UserGroup;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
@@ -98,5 +101,27 @@ public final class UserUtils {
       }
     }
     return memberships;
+  }
+
+  public static List<UserGroup> buildGroupTree(Collection<Group> groups) {
+    List<UserGroup> userGroups = new ArrayList<UserGroup>();
+
+    Map<String, UserGroup> temps = new HashMap<String, UserGroup>();
+    for (Group g : groups) {
+      UserGroup userGroup = new UserGroup(g.getId(), g.getGroupName(), g.getLabel());
+      temps.put(g.getId(), userGroup);
+    }
+
+    for(Group g : groups) {
+      UserGroup ug = temps.get(g.getId());
+      if (g.getParentId() == null || g.getParentId().isEmpty()) {
+        userGroups.add(ug);
+      } else {
+        UserGroup parent = temps.get(g.getParentId());
+        parent.addChild(ug);
+      }
+    }
+
+    return userGroups;
   }
 }

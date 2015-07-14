@@ -1,0 +1,32 @@
+#{param name=permissions/}
+#{param name=keyword/}
+
+<%
+    import org.exoplatform.task.utils.StringUtil;
+%>
+
+<% if (permissions.size() == 0) {%>
+    <div class="muted text-center">
+        &{message.noUserOrGroupFound}
+    </div>
+<%} else {%>
+<ul>
+    <%permissions.eachWithIndex {perm, index -> %>
+        <%
+            def display = perm.displayName;
+            display = StringUtil.highlight(display, keyword, '<strong>', '</strong>');
+        %>
+        <li class="data ${index == 0 ? 'active' : ''}"
+            data-suggest-permission="${perm.id}"
+            data-suggest-displayname="${perm.displayName}"
+            data-suggest-type="${perm.type}"
+            data-suggest-mstype="${perm.membershipType}"
+            data-suggest-groupid="${perm.groupId}"
+            data-suggest-groupname="${perm.groupName}">
+            ${display} (${perm.id})
+            <!--<span class="user-status"><i class="uiIconColorCircleOrange"></i></span>-->
+        </li>
+    <%}%>
+</ul>
+<%}%>
+

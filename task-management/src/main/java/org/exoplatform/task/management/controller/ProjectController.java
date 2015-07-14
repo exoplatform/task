@@ -31,19 +31,25 @@ import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.Group;
+import org.exoplatform.services.organization.MembershipHandler;
 import org.exoplatform.services.organization.MembershipType;
 import org.exoplatform.services.organization.OrganizationService;
+import org.exoplatform.services.organization.Query;
+import org.exoplatform.services.organization.UserHandler;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.UserSetting;
 import org.exoplatform.task.exception.AbstractEntityException;
 import org.exoplatform.task.exception.ProjectNotFoundException;
+import org.exoplatform.task.model.Permission;
 import org.exoplatform.task.model.User;
+import org.exoplatform.task.model.UserGroup;
 import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.UserService;
 import org.exoplatform.task.utils.ProjectUtil;
 import org.exoplatform.task.utils.UserUtils;
+import org.exoplatform.webui.organization.AccessGroupListAccess;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -51,6 +57,7 @@ import org.json.JSONObject;
 import javax.inject.Inject;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
@@ -100,6 +107,10 @@ public class ProjectController {
   @Inject
   @Path("projectSearchResult.gtmpl")
   org.exoplatform.task.management.templates.projectSearchResult projectSearchResult;
+
+  @Inject
+  @Path("permissionSuggest.gtmpl")
+  org.exoplatform.task.management.templates.permissionSuggest permissionSuggest;
 
   private static final Log LOG = ExoLogger.getExoLogger(ProjectController.class);
 
@@ -209,7 +220,7 @@ public class ProjectController {
 
     try {
       Project project = projectService.getProjectById(id); //Can throw ProjectNotFoundException
-      return renderShareDialog(project);
+      return renderShareDialog(project, "");
 
     } catch (AbstractEntityException e) {
       return Response.status(e.getHttpStatusCode()).body(e.getMessage());
@@ -224,7 +235,7 @@ public class ProjectController {
     try {
 
       Project project = projectService.removePermissionFromProjectId(id, permission, type); //Can throw ProjectNotFoundException & NotAllowedOperationOnEntityException
-      return renderShareDialog(project);
+      return renderShareDialog(project, type);
 
     } catch (AbstractEntityException e) {
       return Response.status(e.getHttpStatusCode()).body(e.getMessage());
@@ -234,25 +245,86 @@ public class ProjectController {
   @Resource
   @Ajax
   @MimeType.HTML
-  public Response openUserSelector(Long id, String type) {
+  public Response openUserSelector(Long id, String type, String groupId, String keyword, String filter) {
 
     try {
 
       Project project = projectService.getProjectById(id); //Can throw ProjectNotFoundException
 
-      ListAccess<org.exoplatform.services.organization.User> tmp = orgService.getUserHandler().findAllUsers(); //Can throw Exception
-      org.exoplatform.services.organization.User[] users = tmp.load(0, tmp.getSize());
+      UserHandler uHandler = orgService.getUserHandler();
+      List<org.exoplatform.services.organization.User> tmp = null;
+      if (keyword != null && !keyword.isEmpty()) {
+        String searchKeyword = keyword;
+        if (searchKeyword.indexOf("*") < 0) {
+          if (searchKeyword.charAt(0) != '*')
+            searchKeyword = "*" + searchKeyword;
+          if (searchKeyword.charAt(searchKeyword.length() - 1) != '*')
+            searchKeyword += "*";
+        }
+        searchKeyword = searchKeyword.replace('?', '_');
+        Query q = new Query();
+        if ("userName".equals(filter)) {
+          q.setUserName(searchKeyword);
+        }
+        if ("lastName".equals(filter)) {
+          q.setLastName(searchKeyword);
+        }
+        if ("firstName".equals(filter)) {
+          q.setFirstName(searchKeyword);
+        }
+        if ("email".equals(filter)) {
+          q.setEmail(searchKeyword);
+        }
+        ListAccess<org.exoplatform.services.organization.User> users = uHandler.findUsersByQuery(q);
+        tmp = new ArrayList<org.exoplatform.services.organization.User>();
+        for (org.exoplatform.services.organization.User u : users.load(0, users.getSize())) {
+          tmp.add(u);
+        }
+      }
 
-      Set<String> allUsers = new HashSet<String>();
-      if (users != null) {
-        for (org.exoplatform.services.organization.User u : users) {
-          allUsers.add(u.getUserName());
+      if (groupId != null && !groupId.isEmpty()) {
+        if (tmp == null) {
+          ListAccess<org.exoplatform.services.organization.User> users = uHandler.findUsersByGroupId(groupId);
+          tmp = new ArrayList<org.exoplatform.services.organization.User>();
+          for (org.exoplatform.services.organization.User u : users.load(0, users.getSize())) {
+            tmp.add(u);
+          }
+        } else {
+          MembershipHandler memberShipHandler = orgService.getMembershipHandler();
+          List<org.exoplatform.services.organization.User> results = new CopyOnWriteArrayList();
+          results.addAll(tmp);
+          for (org.exoplatform.services.organization.User u : tmp) {
+            if (memberShipHandler.findMembershipsByUserAndGroup(u.getUserName(), groupId).size() == 0) {
+              results.remove(u);
+            }
+          }
+          tmp = results;
+        }
+      }
+      if (tmp == null) {
+        ListAccess<org.exoplatform.services.organization.User> users = uHandler.findAllUsers();
+        tmp = new ArrayList<org.exoplatform.services.organization.User>();
+        for (org.exoplatform.services.organization.User u : users.load(0, users.getSize())) {
+          tmp.add(u);
+        }
+      }
+
+      Set<User> allUsers = new HashSet<User>();
+      if (tmp != null) {
+        for (org.exoplatform.services.organization.User u : tmp) {
+          User user = userService.loadUser(u.getUserName());
+          allUsers.add(user);
         }
       }
       allUsers.removeAll("manager".equals(type) ? project.getManager() : project.getParticipator());
 
-      return userSelectorDialog.with().type(type)
-          .users(allUsers).ok();
+      return userSelectorDialog.with()
+          .type(type)
+          .users(allUsers)
+          .groupId(groupId == null ? "" : groupId)
+          .keyword(keyword == null ? "" : keyword)
+          .filter(filter == null ? "" : filter)
+          .ok();
 
     } catch (AbstractEntityException e) {
       return Response.status(e.getHttpStatusCode()).body(e.getMessage());
@@ -265,7 +337,7 @@ public class ProjectController {
   @Resource
   @Ajax
   @MimeType.HTML
-  public Response openGroupSelector(String type) {
+  public Response openGroupSelector(String type, Boolean onlyGroup) {
 
     Collection groups, msTypes;
     try {
@@ -275,38 +347,82 @@ public class ProjectController {
       return Response.status(503).body(e.getMessage());
     }
 
-    Set<String> allGroups = new HashSet<String>();
+    List<UserGroup> allGroups = new ArrayList<UserGroup>();
     if (groups != null) {
-      for (Object g : groups) {
-        allGroups.add(((Group)g).getId());
-      }
+      allGroups = UserUtils.buildGroupTree(groups);
     }
 
-    Set<String> allMSTypes = new HashSet<String>();
+    List<String> allMSTypes = new ArrayList<String>();
     if (msTypes != null) {
       for (Object mst : msTypes) {
         allMSTypes.add(((MembershipType)mst).getName());
       }
     }
 
+    if (onlyGroup == null) {
+      onlyGroup = Boolean.FALSE;
+    }
+
     return groupSelectorDialog.with().type(type)
-        .groups(allGroups).membershipTypes(allMSTypes).ok();
+        .groups(allGroups)
+        .membershipTypes(allMSTypes)
+        .groupOnly(onlyGroup)
+        .ok();
 
   }
 
   @Resource
   @Ajax
   @MimeType.HTML
-  public Response addPermission(Long id, String permissions, String type) {
+  public Response findPermission(String keyword) {
+    List<Permission> permissions = new ArrayList<Permission>();
 
     try {
+      String userKeyword = "*" + keyword + "*";
+      Query query = new Query();
+      query.setUserName(userKeyword);
+      //query.setFirstName(userKeyword);
+      //query.setLastName(userKeyword);
+      ListAccess<org.exoplatform.services.organization.User> users = orgService.getUserHandler().findUsersByQuery(query);
+      for(org.exoplatform.services.organization.User u : users.load(0, users.getSize())) {
+        permissions.add(Permission.parse(u.getUserName(), orgService));
+      }
+    } catch (Exception ex) {
+      LOG.warn(ex);
+    }
 
-      Project project = projectService.addPermissionsFromProjectId(id,permissions, type); //Can throw ProjectNotFoundException & NotAllowedOperationOnEntityException
-      return renderShareDialog(project);
+    try {
+      for(Group g : orgService.getGroupHandler().getAllGroups()) {
+        if (g.getLabel().contains(keyword)) {
+          String perm = "*:" + g.getId();
+          permissions.add(Permission.parse(perm, orgService));
+        }
+      }
+    } catch (Exception ex) {
+      LOG.warn(ex);
+    }
+
+    return permissionSuggest.with()
+            .keyword(keyword)
+            .permissions(permissions)
+            .ok()
+            .withCharset(Tools.UTF_8);
+  }
+
+  @Resource
+  @Ajax
+  @MimeType.HTML
+  public Response savePermission(Long id, String[] permissions, String type) {
+    try {
+
+      String name = "manager".equals(type) ? type : "participator";
+      Project project = projectService.updateProjectInfo(id, name, permissions); //Can throw ProjectNotFoundException & NotAllowedOperationOnEntityException
+      return renderShareDialog(project, "");
 
     } catch (AbstractEntityException e) {
       return Response.status(e.getHttpStatusCode()).body(e.getMessage());
     }
+
   }
 
   @Resource
@@ -441,10 +557,43 @@ public class ProjectController {
             .ok();
   }
 
-  private Response renderShareDialog(Project project) {
+  private Response renderShareDialog(Project project, String editingField) {
+    List<Permission> managers = new ArrayList<Permission>();
+    List<Permission> participants = new ArrayList<Permission>();
+
+    if (project.getManager() != null && project.getManager().size() > 0) {
+      for (String permission : project.getManager()) {
+        Permission p = Permission.parse(permission, orgService);
+        if (p != null) {
+          managers.add(p);
+        }
+      }
+    }
+
+    if (project.getParticipator() != null && project.getParticipator().size() > 0) {
+      for (String permission : project.getParticipator()) {
+        Permission p = Permission.parse(permission, orgService);
+        if (p != null) {
+          participants.add(p);
+        }
+      }
+    }
+
+    List<String> msTypes = new ArrayList<String>();
+    try {
+      Collection<MembershipType> membershipTypes = orgService.getMembershipTypeHandler().findMembershipTypes();
+      for(MembershipType type : membershipTypes) {
+        msTypes.add(type.getName());
+      }
+    } catch (Exception ex) {//NOSONAR
+      LOG.error(ex);
+    }
+
     return shareDialog.with().pid(project.getId())
-        .participants(project.getParticipator())
-        .managers(project.getManager())
+        .participants(participants)
+        .managers(managers)
+        .msTypes(msTypes)
+        .editingField(editingField == null ? "" : editingField)
         .ok().withCharset(Tools.UTF_8);
   }
 }

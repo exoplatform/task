@@ -43,8 +43,8 @@ import org.exoplatform.task.service.UserService;
  */
 @Singleton
 public class UserServiceImpl implements UserService {
-  private static final User GUEST = new User("guest", "Guest", LinkProvider.PROFILE_DEFAULT_AVATAR_URL, "#");
-  private static final User NULL = new User(null, "Guest", LinkProvider.PROFILE_DEFAULT_AVATAR_URL, "#");
+  private static final User GUEST = new User("guest", null, "", "", "Guest", LinkProvider.PROFILE_DEFAULT_AVATAR_URL, "#");
+  private static final User NULL = new User(null, null, "", "", "Guest", LinkProvider.PROFILE_DEFAULT_AVATAR_URL, "#");
 
   private static final Log LOG = ExoLogger.getExoLogger(UserServiceImpl.class);
 
@@ -80,7 +80,7 @@ public class UserServiceImpl implements UserService {
       if (avatarURL == null) {
         avatarURL = LinkProvider.PROFILE_DEFAULT_AVATAR_URL;
       }
-      return new User(username, profile.getFullName(), avatarURL, profile.getUrl());
+      return new User(username, u.getEmail(), u.getFirstName(), u.getLastName(), profile.getFullName(), avatarURL, profile.getUrl());
 
     } catch (Exception ex) {// NOSONAR Throw by orgService
       LOG.debug("User not find, return GUEST", ex);

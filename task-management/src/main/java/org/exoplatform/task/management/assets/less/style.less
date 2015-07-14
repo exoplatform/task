@@ -930,3 +930,34 @@ li[data-hiddenproject="false"] {
 .commentBox .exo-mentions .autocomplete-menu li.msg {   
     white-space: normal;
 }
+
+.nodeGroup {
+  li.node.collapsed {
+    > .childrenContainer {
+      display: none;
+    }
+  }
+}
+.exo-mentions .replaceTextArea {
+  .groupMembership {
+    display: inline-block;
+    position: relative;
+    > span {
+      background: #e2eafa;
+      border-radius: 3px;
+      color: #215ab2;
+      border: 1px solid #215ab2;
+      padding: 1px 5px;
+      display: inline-block;
+    }
+  }
+  .cursorText input {
+    display: inline;
+    width: 3em;
+    border: none;
+    outline: none;
+    box-shadow: none;
+    margin-bottom: 0px;
+    padding: 0;
+  }
+}
