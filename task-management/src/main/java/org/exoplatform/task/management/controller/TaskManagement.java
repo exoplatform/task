@@ -102,13 +102,13 @@ public class TaskManagement {
       try {
         taskModel = TaskUtil.getTaskModel(taskId, false, bundle, username, taskService,
                                                     orgService, userService, projectService);
+        if (taskModel.getTask().getStatus() != null) {
+          project = taskModel.getTask().getStatus().getProject();
+          currProject = project.getId();
+          tasks = projectService.getTasksByProjectId(Arrays.asList(currProject), null);      
+        }
       } catch (TaskNotFoundException e) {
-        LOG.error(e);
-      }
-      if (taskModel.getTask().getStatus() != null) {
-        project = taskModel.getTask().getStatus().getProject();
-        currProject = project.getId();
-        tasks = projectService.getTasksByProjectId(Arrays.asList(currProject), null);      
+        taskId = -1;
       }
     }
 
