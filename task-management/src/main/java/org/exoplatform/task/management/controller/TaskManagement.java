@@ -38,6 +38,7 @@ import juzu.request.SecurityContext;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
+import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.domain.UserSetting;
@@ -124,7 +125,7 @@ public class TaskManagement {
       if (space_group_id != null) {
         tasks = taskService.getToDoTasksByUser(username, spaceProjectIds, null, null, null);
       } else {
-        tasks = taskService.getIncomingTasksByUser(username, null);
+        tasks = taskService.getIncomingTasksByUser(username, new OrderBy.DESC("createdTime"));
       }
     }
 
@@ -136,7 +137,7 @@ public class TaskManagement {
     long taskNum = TaskUtil.getTaskNum(username, spaceProjectIds, currProject, taskService);
     
     Map<String, String> defOrders = TaskUtil.getDefOrders(bundle);
-    Map<String, String> defGroupBys = TaskUtil.getDefGroupBys(bundle);
+    Map<String, String> defGroupBys = TaskUtil.getDefGroupBys(currProject, bundle);
     
     return index.with()
         .currentProjectId(currProject)
@@ -150,7 +151,7 @@ public class TaskManagement {
         .groupTasks(groupTasks)
         .keyword("")
         .groupBy(TaskUtil.NONE)
-        .orderBy("")
+        .orderBy("createdTime")
         .filter("")
         .projects(projects)
         .userSetting(setting)

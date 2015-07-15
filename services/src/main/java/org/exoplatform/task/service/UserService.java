@@ -25,6 +25,8 @@ import org.exoplatform.task.exception.NotAllowedOperationOnEntityException;
 import org.exoplatform.task.exception.ProjectNotFoundException;
 import org.exoplatform.task.model.User;
 
+import java.util.TimeZone;
+
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
@@ -37,4 +39,6 @@ public interface UserService {
   void showHiddenProject(String username, boolean show);
 
   void hideProject(Identity identity, Long projectId, boolean hide) throws ProjectNotFoundException, NotAllowedOperationOnEntityException;
+
+  TimeZone getUserTimezone(String username);
 }

@@ -31,6 +31,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.TimeZone;
 
 import javax.inject.Inject;
 
@@ -354,7 +355,7 @@ public class TaskController {
     List<Task> tasks;
     
     Map<String, String> defOrders = TaskUtil.getDefOrders(bundle);
-    Map<String, String> defGroupBys = TaskUtil.getDefGroupBys(bundle);
+    Map<String, String> defGroupBys = TaskUtil.getDefGroupBys(projectId, bundle);
 
     String currentUser = securityContext.getRemoteUser();
     if (currentUser == null || currentUser.isEmpty()) {
@@ -464,7 +465,8 @@ public class TaskController {
     Map<String, org.exoplatform.task.model.User> userMap = null;
     Map<String, List<Task>> groupTasks = new HashMap<String, List<Task>>();
     if(groupBy != null && !groupBy.isEmpty()) {
-      groupTasks = TaskUtil.groupTasks(tasks, groupBy);
+      TimeZone tz = userService.getUserTimezone(currentUser);
+      groupTasks = TaskUtil.groupTasks(tasks, groupBy, tz, bundle);
       if("assignee".equalsIgnoreCase(groupBy)) {
         userMap = new HashMap<String, org.exoplatform.task.model.User>();
         for(String assignee : groupTasks.keySet()) {

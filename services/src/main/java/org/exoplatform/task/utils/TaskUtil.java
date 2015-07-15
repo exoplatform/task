@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.TimeZone;
+import java.util.TreeMap;
 
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -71,8 +73,12 @@ public final class TaskUtil {
     return resolve(Arrays.asList(TITLE, PRIORITY, DUEDATE, CREATED_TIME), bundle);
   }
   
-  public static Map<String, String> getDefGroupBys(ResourceBundle bundle) {
-    return resolve(Arrays.asList(NONE, STATUS, ASSIGNEE), bundle);
+  public static Map<String, String> getDefGroupBys(long currentProject, ResourceBundle bundle) {
+    if (currentProject == -1) {
+      return resolve(Arrays.asList(NONE, ASSIGNEE, DUEDATE), bundle);
+    } else {
+      return resolve(Arrays.asList(NONE, STATUS, ASSIGNEE), bundle);
+    }
   }
   
   public static Map<String, String> resolve(List<String> keys, ResourceBundle bundle) {    
@@ -167,10 +173,10 @@ public final class TaskUtil {
     }
   }
 
-  public static Map<String, List<Task>> groupTasks(List<Task> tasks, String groupBy) {
-    Map<String, List<Task>> maps = new HashMap<String, List<Task>>();
+  public static Map<String, List<Task>> groupTasks(List<Task> tasks, String groupBy, TimeZone userTimezone, ResourceBundle bundle) {
+    Map<String, List<Task>> maps = new TreeMap<String, List<Task>>();
     for(Task task : tasks) {
-      for (String key : getGroupName(task, groupBy)) {
+      for (String key : getGroupName(task, groupBy, userTimezone, bundle)) {
         List<Task> list = maps.get(key);
         if(list == null) {
           list = new LinkedList<Task>();
@@ -287,7 +293,7 @@ public final class TaskUtil {
     return result;
   }
 
-  private static String[] getGroupName(Task task, String groupBy) {
+  private static String[] getGroupName(Task task, String groupBy, TimeZone userTimezone, ResourceBundle bundle) {
     if("project".equalsIgnoreCase(groupBy)) {
       Status s = task.getStatus();
       if(s == null) {
@@ -308,6 +314,14 @@ public final class TaskUtil {
     } else if ("assignee".equalsIgnoreCase(groupBy)) {
       String assignee = task.getAssignee();
       return new String[] {assignee != null ? assignee : "Unassigned"};
+    } else if ("dueDate".equalsIgnoreCase(groupBy)) {
+      Date dueDate = task.getDueDate();
+      Calendar calendar = null;
+      if (dueDate != null) {
+        calendar = Calendar.getInstance(userTimezone);
+        calendar.setTime(dueDate);
+      }
+      return new String[] {DateUtil.getDueDateLabel(calendar, bundle)};
     }
     return new String[0];
   }

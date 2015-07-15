@@ -38,6 +38,8 @@ import org.exoplatform.task.model.User;
 import org.exoplatform.task.service.DAOHandler;
 import org.exoplatform.task.service.UserService;
 
+import java.util.TimeZone;
+
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
@@ -119,5 +121,11 @@ public class UserServiceImpl implements UserService {
     UserSetting setting = daoHandler.getUserSettingHandler().getOrCreate(username);
     setting.setShowHiddenProject(show);
     daoHandler.getUserSettingHandler().update(setting);
+  }
+
+  @Override
+  public TimeZone getUserTimezone(String username) {
+    //TODO: how to get user timezone
+    return TimeZone.getDefault();
   }
 }
