@@ -361,13 +361,21 @@ public class TaskController {
     if (currentUser == null || currentUser.isEmpty()) {
       return Response.status(401);
     }    
-    List<Long> spaceProjectIds = null;
+    List<Long> spaceProjectIds = null;    
     if (space_group_id != null) {
       spaceProjectIds = new LinkedList<Long>();
       List<Project> projects = ProjectUtil.getProjectTree(space_group_id, projectService);
       for (Project p : projects) {
         spaceProjectIds.add(p.getId());
       }      
+    }
+    List<Long> allProjectIds = null;
+    if (projectId == 0) {
+      allProjectIds = new LinkedList<Long>();
+      List<Project> projects = ProjectUtil.getProjectTree(null, projectService);
+      for (Project p : projects) {
+        allProjectIds.add(p.getId());
+      }
     }
 
     OrderBy order = null;
@@ -447,8 +455,12 @@ public class TaskController {
       tasks = taskService.getToDoTasksByUser(currentUser, spaceProjectIds, order, fromDueDate, toDueDate);
     }
     else {
-      if (spaceProjectIds != null && projectId == 0) {
-        tasks = projectService.getTasksWithKeywordByProjectId(spaceProjectIds, order, keyword);        
+      if (projectId == 0) {
+        if (spaceProjectIds != null) {
+          tasks = projectService.getTasksWithKeywordByProjectId(spaceProjectIds, order, keyword);                  
+        } else {          
+          tasks = projectService.getTasksWithKeywordByProjectId(allProjectIds, order, keyword);
+        }
       } else {
         tasks = projectService.getTasksWithKeywordByProjectId(Arrays.asList(projectId), order, keyword);
       }
@@ -479,7 +491,12 @@ public class TaskController {
       groupTasks.put("", tasks);
     }
     
-    long taskNum = TaskUtil.getTaskNum(currentUser, spaceProjectIds, projectId, taskService);
+    long taskNum = 0;
+    if (allProjectIds != null) {
+      taskNum = TaskUtil.getTaskNum(currentUser, allProjectIds, projectId, taskService);
+    } else {
+      taskNum = TaskUtil.getTaskNum(currentUser, spaceProjectIds, projectId, taskService);
+    }
 
     return taskListView
         .with()
