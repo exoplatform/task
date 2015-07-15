@@ -38,7 +38,11 @@
         <div class="row-fluid prjAuthor">
             <div class="span3">&{label.manager}:</div>
             <div class="span9">
-                <a class="avatarSmall" href="#"><img alt="avatar" src="/eXoSkin/skin/images/system/UserAvtDefault.png">  Root Root</a>
+            <%userMap.each { username, u ->%>
+                <a class="avatarSmall" href="<%=u.getUrl()%>"><img alt="avatar" src="<%=u.getAvatar()%>">
+                <%=u.getDisplayName()%>
+                </a>            
+            <%}%>
             </div>
         </div>
         <div class="prjDescription uiEditableInline inactive" data-original-title="Click to edit" data-toggle="tooltip" rel="tooltip" data-placement="bottom">
