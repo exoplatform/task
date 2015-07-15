@@ -150,11 +150,11 @@ $(document).ready(function() {
             content: $rightPanelContent.find('.taskPermalinkPopoverContent').html()
         });
         $(document).on('click', function(e) {
-            if ($(e.target).closest('.taskPermalinkContainer').length > 0) {
+            if ($(e.target).closest('.taskPermalink, .popover').length > 0) {
                 e.stopPropagation();
                 return false;
             } else {
-                $permalink.popover('hide');
+              $permalink.popover('hide');
             }
         });
         $rightPanelContent.find('textarea').exoMentions({
@@ -199,12 +199,10 @@ $(document).ready(function() {
         taskLoadedCallback(taskId, false);
     }
 
-    $rightPanel.on('click', 'a.task-completed-field', function(e){
-        var $a = $(e.target || e.srcElement).closest('a');
-        $a.toggleClass('icon-completed');
-        var taskId = $a.closest('.task-detail').attr('task-id');
-        taApp.setTaskComplete(taskId, $a.hasClass('icon-completed'));
-        return false;
+    $rightPanel.on('click', '.taskName .uiCheckbox', function(e){
+        var $a = $(e.target || e.srcElement);
+        var taskId = $a.closest('.uiBox').data('taskid');
+        taApp.setTaskComplete(taskId, $a.is(':checked'));
     });
     $rightPanel.on('click', 'a.action-clone-task', function(e){
         var $a = $(e.target).closest('a');
