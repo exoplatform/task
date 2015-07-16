@@ -364,7 +364,7 @@ public class TaskController {
     List<Long> spaceProjectIds = null;    
     if (space_group_id != null) {
       spaceProjectIds = new LinkedList<Long>();
-      List<Project> projects = ProjectUtil.getProjectTree(space_group_id, projectService);
+      List<Project> projects = flattenTree(ProjectUtil.getProjectTree(space_group_id, projectService));
       for (Project p : projects) {
         spaceProjectIds.add(p.getId());
       }      
@@ -372,7 +372,7 @@ public class TaskController {
     List<Long> allProjectIds = null;
     if (projectId == 0) {
       allProjectIds = new LinkedList<Long>();
-      List<Project> projects = ProjectUtil.getProjectTree(null, projectService);
+      List<Project> projects = flattenTree(ProjectUtil.getProjectTree(null, projectService));
       for (Project p : projects) {
         allProjectIds.add(p.getId());
       }
@@ -515,6 +515,17 @@ public class TaskController {
         .set("userMap", userMap)
         .ok()
         .withCharset(Tools.UTF_8);
+  }
+
+  private List<Project> flattenTree(List<Project> projectTree) {
+    List<Project> projects = new LinkedList<Project>();
+    for (Project p : projectTree) {
+      projects.add(p);
+      if (!p.getChildren().isEmpty()) {
+        projects.addAll(flattenTree(p.getChildren()));
+      }
+    }    
+    return projects;
   }
 
   @Resource(method = HttpMethod.POST)
