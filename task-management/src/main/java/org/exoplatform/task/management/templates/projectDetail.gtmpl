@@ -46,7 +46,7 @@
             </div>
         </div>
         <div class="prjDescription uiEditableInline inactive" data-original-title="Click to edit" data-toggle="tooltip" rel="tooltip" data-placement="bottom">
-            <div class="hoverStatusBlock ${editableClasses}" data-name="description" data-type="textarea">
+            <div class="hoverStatusBlock ${editableClasses}" data-name="description" data-type="ckeditor">
                 ${project.description}
             </div>
         </div>

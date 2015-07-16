@@ -145,7 +145,7 @@
     </div>
 </div>
 <div class="taskDescription">
-    <div data-type="textarea" data-name="description" class="${editableClasses}"
+    <div data-type="ckeditor" data-name="description" class="${editableClasses}"
          data-original-title="&{tooltip.clickToEdit}" rel="tooltip">
         ${task.description == null ? "" : task.description}
     </div>

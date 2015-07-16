@@ -1,6 +1,6 @@
 define('ta_edit_inline',
     ['jquery', 'task_ui_calendar', 'SHARED/edit_inline_js', 'selectize',
-        'x_editable_select3', 'x_editable_selectize', 'x_editable_calendar'],
+        'x_editable_select3', 'x_editable_selectize', 'x_editable_calendar', 'x_editable_ckeditor'],
     function($, uiCalendar, editinline, selectize) {
 
         /**
@@ -533,7 +533,7 @@ define('ta_edit_inline',
                 var dataType = $this.attr('data-type');
                 var fieldName = $this.attr('data-name');
                 var editOptions = getDefaultOptionForType(dataType);
-                var editOptions = $.extend({}, editOptions, {
+                editOptions = $.extend({}, editOptions, {
                     pk: taskId,
                     url: editInline.saveTaskDetailFunction
                 });
@@ -614,7 +614,10 @@ define('ta_edit_inline',
                 var dataType = $this.attr('data-type');
                 var fieldName = $this.attr('data-name');
                 var editOptions = getDefaultOptionForType(dataType);
-
+                editOptions = $.extend({}, editOptions, {
+                    pk: projectId,
+                    url: editInline.saveProjectDetailFunction
+                });
                 if(fieldName == 'manager' || fieldName == 'participator') {
                     var findUserURL = $this.jzURL('UserController.findUser');
                     var getDisplayNameURL = $this.jzURL('UserController.getDisplayNameOfUser');

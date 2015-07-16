@@ -34,7 +34,8 @@
     @WebJar("x-editable-bootstrap"),
     @WebJar("bootstrap-datepicker"),
     @WebJar("selectize.js"),
-    @WebJar("select2")
+    @WebJar("select2"),
+    @WebJar("ckeditor")
 })
 @Scripts({
     @Script(id = "jquery-adapter", value = "javascripts/jquery-adapter.js"),
@@ -45,8 +46,9 @@
             depends = {"selectize-js"}),
     @Script(id = "x-editable-customfield-js", value = "javascripts/x-editable-parentProject.js"),
     @Script(id = "x-editable-calendar", value = "javascripts/x-editable-calendar.js", depends = {"uicalendar"}),
+    @Script(id = "x-editable-ckeditor", value = "javascripts/x-editable-ckeditor.js"),
     @Script(id = "task-edit-inline", value = "javascripts/editinline.js",
-            depends = {"x-editable-selectize-field","x-editable-customfield-js", "x-editable-calendar"}),
+            depends = {"x-editable-selectize-field","x-editable-customfield-js", "x-editable-calendar", "x-editable-ckeditor"}),
     @Script(id = "task-management-js", value = "javascripts/task-management.js",
             depends = {"task-edit-inline"}),
     @Script(id = "project-menu-js", value = "javascripts/project-menu.js")
@@ -59,6 +61,7 @@
     @Stylesheet(id = "bootstrap-datepicker.css", value = "bootstrap-datepicker/1.4.0/css/bootstrap-datepicker.css"),
     @Stylesheet(id = "selectize-css", value = "selectize.js/0.12.1/css/selectize.css"),
     @Stylesheet(id = "select2-css", value = "select2/3.5.2/select2.css"),
+    @Stylesheet(id = "ckeditor-css", value = "ckeditor/4.4.7-1/basic/skins/moono/editor.css"),
     @Stylesheet(id = "edit-inline-css", value = "x-editable-bootstrap/1.4.6/css/bootstrap-editable.css")
 })
 @Assets({"*"})

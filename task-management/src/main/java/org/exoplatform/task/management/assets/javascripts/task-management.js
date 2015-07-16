@@ -1,8 +1,10 @@
 // TODO: Move juzu-ajax, mentionsPlugin module into task management project if need
 require(['project-menu', 'ta_edit_inline', 'SHARED/jquery',
-        'SHARED/juzu-ajax', 'SHARED/mentionsPlugin', 'SHARED/bts_modal', 'SHARED/bts_tab'
+        'SHARED/juzu-ajax', 'SHARED/mentionsPlugin', 'SHARED/bts_modal', 'SHARED/bts_tab', 'SHARED/task_ck_editor'
         ], function(pMenu, editInline, $) {
   var taApp = {};
+
+    console.warn($.fn.ckeditor);
 
   taApp.getUI = function() {
     var $taskManagement = $('#taskManagement');
