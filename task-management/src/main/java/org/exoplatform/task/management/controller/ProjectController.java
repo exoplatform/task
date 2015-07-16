@@ -482,14 +482,19 @@ public class ProjectController {
   @MimeType.HTML
   public Response projectDetail(Long id) {
     try {
-
       Project project = projectService.getProjectById(id); //Can throw ProjectNotFoundException
 
+      List<String> groups = new LinkedList<String>();
       Map<String, User> users = new HashMap<String, User>();
       if(project.getManager() != null && !project.getManager().isEmpty()) {
-        for(String username : project.getManager()) {
-          User user = userService.loadUser(username);
-          users.put(username, user);
+        for(String man : project.getManager()) {
+          Permission per = Permission.parse(man, orgService);
+          if (per.getType() == Permission.USER) {
+            User user = userService.loadUser(man);
+            users.put(man, user);            
+          } else {
+            groups.add(per.getDisplayName());
+          }
         }
       }
 
@@ -504,6 +509,7 @@ public class ProjectController {
           .parent(parent)
           .project(project)
           .userMap(users)
+          .groups(groups)
           .ok()
           .withCharset(Tools.UTF_8);
 

@@ -1,6 +1,7 @@
 #{param name=parent/}
 #{param name=project/}
 #{param name=userMap/}
+#{param name=groups/}
 #{param name=breadcumbs/}
 <%
     import org.exoplatform.services.security.ConversationState;
@@ -41,8 +42,13 @@
             <%userMap.each { username, u ->%>
                 <a class="avatarSmall" href="<%=u.getUrl()%>"><img alt="avatar" src="<%=u.getAvatar()%>">
                 <%=u.getDisplayName()%>
-                </a>            
+                </a><br/>
             <%}%>
+            <%for (def g : groups) { %>
+              <a class="avatarSmall" href="#">
+            	${g}
+              </a><br/>
+            <%} %>
             </div>
         </div>
         <div class="prjDescription uiEditableInline inactive" data-original-title="Click to edit" data-toggle="tooltip" rel="tooltip" data-placement="bottom">
