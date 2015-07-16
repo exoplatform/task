@@ -1,6 +1,5 @@
 #{param name=parent/}
-#{param name=project/}
-#{param name=userMap/}
+#{param name=user/}
 #{param name=breadcumbs/}
 
 <div class="addProject uiBox" data-projectid="0">
@@ -24,7 +23,9 @@
             <div class="row-fluid prjAuthor">
                 <div class="span3">&{label.manager}:</div>
                 <div class="span9">
-                    <a class="avatarSmall" href="#"><img alt="avatar" src="/eXoSkin/skin/images/system/UserAvtDefault.png">  Root Root</a>
+                	<a class="avatarSmall" href="<%=user.getUrl()%>"><img alt="avatar" src="<%=user.getAvatar()%>">
+                   <%=user.getDisplayName()%>
+                  </a>            
                 </div>
             </div>
             <div class="">

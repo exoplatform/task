@@ -117,7 +117,7 @@ public class ProjectController {
   @Resource
   @Ajax
   @MimeType.HTML
-  public Response projectForm(Long parentId) {    
+  public Response projectForm(Long parentId, SecurityContext securityContext) {    
     Project parent;
     try {
       parent = projectService.getProjectById(parentId);
@@ -125,11 +125,14 @@ public class ProjectController {
       parent = new Project();
     }
     
+    User user = userService.loadUser(securityContext.getRemoteUser());    
+    
     return form
         .with()
         .breadcumbs(ProjectUtil.buildBreadcumbs(parent.getId(), projectService, bundle))
-        .parent(parent)
-        .ok();
+        .parent(parent)        
+        .user(user)
+        .ok().withCharset(Tools.UTF_8);
   }
 
   @Resource
