@@ -47,6 +47,8 @@ import org.exoplatform.commons.juzu.ajax.Ajax;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
+import org.exoplatform.services.security.ConversationState;
+import org.exoplatform.services.security.Identity;
 import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Project;
@@ -357,16 +359,19 @@ public class TaskController {
     Map<String, String> defOrders = TaskUtil.getDefOrders(bundle);
     Map<String, String> defGroupBys = TaskUtil.getDefGroupBys(projectId, bundle);
 
-    String currentUser = securityContext.getRemoteUser();
+    String currentUser = securityContext.getRemoteUser();        
     if (currentUser == null || currentUser.isEmpty()) {
       return Response.status(401);
     }    
+    Identity currIdentity = ConversationState.getCurrent().getIdentity();
     List<Long> spaceProjectIds = null;    
     if (space_group_id != null) {
       spaceProjectIds = new LinkedList<Long>();
       List<Project> projects = flattenTree(ProjectUtil.getProjectTree(space_group_id, projectService));
       for (Project p : projects) {
-        spaceProjectIds.add(p.getId());
+        if (p.canView(currIdentity)) {
+          spaceProjectIds.add(p.getId());          
+        }
       }      
     }
     List<Long> allProjectIds = null;
@@ -374,7 +379,9 @@ public class TaskController {
       allProjectIds = new LinkedList<Long>();
       List<Project> projects = flattenTree(ProjectUtil.getProjectTree(null, projectService));
       for (Project p : projects) {
-        allProjectIds.add(p.getId());
+        if (p.canView(currIdentity)) {
+          allProjectIds.add(p.getId());          
+        }
       }
     }
 
