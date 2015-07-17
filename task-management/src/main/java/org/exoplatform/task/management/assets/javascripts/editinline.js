@@ -183,6 +183,9 @@ define('ta_edit_inline',
                 traditional: true,
                 success: function(response) {
                     d.resolve(response);
+                    if (params.name == 'title') {
+                        $centerPanel.find('[data-taskid="'+data.taskId+'"] .taskName').text(params.value);
+                    }
                 },
                 error: function(jqXHR, textStatus, errorThrown ) {
                     d.reject('update failure: ' + jqXHR.responseText);
@@ -598,6 +601,9 @@ define('ta_edit_inline',
                         $leftPanel
                             .find('li.project-item a.project-name[data-id="'+ data.projectId +'"]')
                             .html(data.value);
+                        $centerPanel.find('[data-projectid="'+data.projectId+'"] .projectName').html(data.value);
+                    } else if (params.name == 'parent') {
+                        editInline.taApp.reloadProjectTree(data.projectId);
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown ) {

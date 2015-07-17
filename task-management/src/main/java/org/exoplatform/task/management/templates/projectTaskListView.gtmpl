@@ -59,7 +59,7 @@
             	  name = bundle.getString("label.project.todo");
             	}
             %>
-            <div class="label-title pull-left">${name}</div>
+            <div class="label-title pull-left projectName">${name}</div>
             <div class="alignBtnGroup center">
                     <%if (currentProjectId != 0) { %>
                 <ul class="btn-group normal-group">
@@ -195,7 +195,7 @@
                                                                 <i class="${isDueDateToday ? "uiIconColorWarningInBlue" : (isOverDue ? "uiIconColorWarningInRed" : "")}">&nbsp;</i>
                                                             </span>
                                                         </div>
-                                                        <div class="column-item column-title">${task.title}</div>
+                                                        <div class="column-item column-title taskName">${task.title}</div>
                                                         <div class="column-item column-time">
                                                             <span class="text-time inline-block-show">${task.dueDate != null ? task.dueDate : "&nbsp;"}</span>
                                                             <!--<span class="inline-block-hide labels">
