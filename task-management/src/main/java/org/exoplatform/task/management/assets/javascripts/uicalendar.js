@@ -13,6 +13,9 @@ define('task_ui_calendar', ['jquery', 'SHARED/uiCalendar', 'SHARED/bootstrap_dat
             hide: function() {
                 // Do not hide calendar
             },
+            destroy: function() {
+                uiCalendar.hide.apply(this, arguments);
+            },
             create : function() {
                 uiCalendar.create.apply(this, arguments);
                 var clndr = document.getElementById(this.calendarId);

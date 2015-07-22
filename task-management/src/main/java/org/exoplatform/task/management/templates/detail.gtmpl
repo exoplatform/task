@@ -44,7 +44,7 @@
 </div>
 <div class="taskName uiEditableInline clearfix taskPermalinkContainer">
     <div class="pull-right">
-        <span  title="&{label.permalink}" data-toggle="tooltip" data-placement="bottom">
+        <span class="taskPermalinkContainer" title="&{label.permalink}" data-toggle="tooltip" data-placement="bottom">
             <a href="@{TaskManagement.permalink(space_group_id=null, taskId=task.id)}" data-toggle="popover" data-placement="left"
             class="permalink actionIcon taskPermalink" style="position: relative;">
                 <i class="uiIconPermalink"></i>           

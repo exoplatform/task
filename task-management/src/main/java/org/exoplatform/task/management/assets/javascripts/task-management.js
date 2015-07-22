@@ -152,7 +152,7 @@ $(document).ready(function() {
             content: $rightPanelContent.find('.taskPermalinkPopoverContent').html()
         });
         $(document).on('click', function(e) {
-            if ($(e.target).closest('.taskPermalink, .popover').length > 0) {
+            if ($(e.target).closest('.taskPermalinkContainer').length > 0) {
                 e.stopPropagation();
                 return false;
             } else {

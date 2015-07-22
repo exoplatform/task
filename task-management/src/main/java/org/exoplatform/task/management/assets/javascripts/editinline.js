@@ -238,7 +238,10 @@ define('ta_edit_inline',
 
             $(document).on('click', function(e) {
                 if ($(e.target).closest('.fieldWorkPlan').length == 0) {
+                    UICalendarFrom.destroy();
+                    UICalendarTo.destroy();
                     $popover.popover('hide');
+                    $popover.closest('.uiEditableInline').removeClass('active').addClass('inactive');
                 }
             });
             $popover.popover({
@@ -249,7 +252,10 @@ define('ta_edit_inline',
                 }
             }).on("shown.bs.popover", function(e) {
                 var $pop = $(this).parent().find('.popover');
-                $popover.parent().removeClass('inactive').addClass('active');
+                if ($pop.length == 0) {
+                    return;
+                }
+                $popover.closest('.uiEditableInline').removeClass('inactive').addClass('active');
 
                 var updatePopoverPossition = function() {
                     var height = $pop.outerHeight();
@@ -281,6 +287,12 @@ define('ta_edit_inline',
                         UICalendarFrom.show();
                         UICalendarTo.show();
 
+                        var isAllDay = $inputAllday.is(':checked');
+                        if (isAllDay) {
+                            $inputFromTime.val('00:00').attr('value', '00:00');
+                            $inputToTime.val('23:59').attr('value', '23:59');
+                        }
+
                         var fromDate = $.trim($inputFrom.val());
                         var toDate = $.trim($inputTo.val());
                         var fromTime = $.trim($inputFromTime.val());
@@ -290,19 +302,13 @@ define('ta_edit_inline',
                             return;
                         }
 
-                        var isAllDay = $inputAllday.is(':checked');
-                        if (isAllDay) {
-                            $inputFromTime.val('00:00');
-                            $inputToTime.val('23:59');
-                        }
-
                         var fromDates = fromDate.split('-');
                         var toDates = toDate.split('-');
                         var fromTimes = fromTime.split(':');
                         var toTimes = toTime.split(':');
 
-                        var fDate = new Date(fromDates[0], fromDates[1], fromDates[2], fromTimes[0], fromTimes[1], 0).getTime();
-                        var tDate = new Date(toDates[0], toDates[1], toDates[2], toTimes[0], toTimes[1], 0).getTime();
+                        var fDate = new Date(fromDates[0], fromDates[1] - 1, fromDates[2], fromTimes[0], fromTimes[1], 0).getTime();
+                        var tDate = new Date(toDates[0], toDates[1] - 1, toDates[2], toTimes[0], toTimes[1], 0).getTime();
 
                         if (fDate >= tDate) {
                             $pop.find('.errorMessage').html('To time can not be lesser than from time');
@@ -314,8 +320,8 @@ define('ta_edit_inline',
                             var $rangeCalendar = $fieldWorkPlan.find('.rangeCalendar');
                             $rangeCalendar.find('[name="fromDate"]').val(fromDate);
                             $rangeCalendar.find('[name="toDate"]').val(toDate);
-                            $rangeCalendar.find('[name="fromTime"]').val(fromTime);
-                            $rangeCalendar.find('[name="toTime"]').val(toTime);
+                            $rangeCalendar.find('[name="fromTime"]').val(fromTime).attr('value', fromTime);
+                            $rangeCalendar.find('[name="toTime"]').val(toTime).attr('value', toTime);
                         }
                     });
                 $pop.off('click', '[data-time]')
@@ -328,9 +334,7 @@ define('ta_edit_inline',
                     });
 
                 updatePopoverPossition();
-            }).on('hidden.bs.popover', function(e) {
-                $popover.parent().removeClass('active').addClass('inactive');
-            });
+            })
         };
 
         var selectizeOptions = {
