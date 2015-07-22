@@ -100,10 +100,12 @@ public final class ProjectUtil {
   //TODO: should move this method to web module
   public static String buildBreadcumbs(Long id, ProjectService projectService, ResourceBundle bundle) {
     Project project = null;
-    try {
-      project = projectService.getProjectById(id);
-    } catch (ProjectNotFoundException e) {
-      LOG.warn("project {} not found", id);
+    if (id > 0) {
+      try {
+        project = projectService.getProjectById(id);
+      } catch (ProjectNotFoundException e) {
+        LOG.warn("project {} not found", id);
+      }
     }
 
     StringBuilder builder = new StringBuilder();
