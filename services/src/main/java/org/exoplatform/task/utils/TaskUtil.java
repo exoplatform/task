@@ -77,7 +77,7 @@ public final class TaskUtil {
     if (currentProject == -1) {
       return resolve(Arrays.asList(NONE, ASSIGNEE, DUEDATE), bundle);
     } else {
-      return resolve(Arrays.asList(NONE, STATUS, ASSIGNEE), bundle);
+      return resolve(Arrays.asList(NONE, DUEDATE, STATUS, ASSIGNEE), bundle);
     }
   }
   

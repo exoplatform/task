@@ -105,7 +105,9 @@
                                 </a>
                                 <ul class="dropdown-menu">
                                     <%groups.each{k,v -> %>
-                                        <li><a href="javascript:void(0)" data-groupby="${k}">${v}</a></li>
+                                        <% if (k != groupBy) {%>
+                                            <li><a href="javascript:void(0)" data-groupby="${k}">${v}</a></li>
+                                        <%}%>
                                     <%}%>
                                 </ul>
                              </span>
