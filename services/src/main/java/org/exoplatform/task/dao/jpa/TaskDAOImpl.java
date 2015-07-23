@@ -195,10 +195,13 @@ public class TaskDAOImpl extends GenericDAOJPAImpl<Task, Long> implements TaskHa
   @Override
   public List<Task> getToDoTask(String username, List<Long> projectIds, OrderBy orderBy, Date fromDueDate, Date toDueDate) {
     StringBuilder jql = new StringBuilder();
-    jql.append("SELECT ta FROM Task ta ")
+    jql.append("SELECT ta FROM Task ta LEFT JOIN ta.status st ")
         .append("WHERE ta.assignee = :userName ")
-        .append("AND ta.completed = FALSE ")
-        .append("AND ta.dueDate IS NOT NULL ");
+        .append("AND ta.completed = FALSE ");
+
+    if (fromDueDate != null || toDueDate != null) {
+      jql.append("AND ta.dueDate IS NOT NULL ");
+    }
 
     if (projectIds != null && !projectIds.isEmpty()) {
       jql.append("AND ta.status.project.id IN (:projectIds) ");
@@ -212,7 +215,13 @@ public class TaskDAOImpl extends GenericDAOJPAImpl<Task, Long> implements TaskHa
     }
 
     if(orderBy != null && !orderBy.getFieldName().isEmpty()) {
-      jql.append(" ORDER BY ta.").append(orderBy.getFieldName()).append(" ").append(orderBy.isAscending() ?
+      String fieldName = orderBy.getFieldName();
+      if (fieldName.startsWith("status.")) {
+        fieldName = fieldName.replace("status.", "st.");
+      } else {
+        fieldName = "ta." + fieldName;
+      }
+      jql.append(" ORDER BY ").append(fieldName).append(" ").append(orderBy.isAscending() ?
           "ASC"
           : " DESC");
     }

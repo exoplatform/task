@@ -73,4 +73,9 @@ public class DateUtil {
 
     return bundle.getString("label.upcoming");
   }
+
+  public static Calendar newCalendarInstance(TimeZone timeZone) {
+    Calendar calendar = Calendar.getInstance(timeZone);
+    return calendar;
+  }
 }

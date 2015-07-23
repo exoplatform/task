@@ -39,13 +39,13 @@
                 </span>
             </div>
             <div class="pull-right search-container">
-                <form class="UIForm" action="#" onsubmit="javascript:void(0)">
+                <form class="UIForm taskSearchForm" action="#" onsubmit="javascript:void(0)">
                     <div class="uiSearchForm uiSearchInput searchWithIcon">
                          <a title="" class="advancedSearch" rel="tooltip" data-placement="bottom" href="javascript:void(0)" data-original-title="Search"><i class="uiIconSearch uiIconLightGray"></i></a>
                          <input type="text"  name="keyword" value="${keyword}" placeholder="Search" >
                          <input type="hidden" name="groupBy" value="${groupBy}"/>
                          <input type="hidden" name="orderBy" value="${orderBy}"/>
-                         <input type="hidden" name="filter" value=""/>
+                         <input type="hidden" name="filter" value="${filter}"/>
                      </div>
                 </form>
             </div>
@@ -113,37 +113,6 @@
                              </span>
                             <%}%>
                         </div>
-
-                        <!-- Only display filter when current view is TODO -->
-                        <% if (currentProjectId == -2) {%>
-                        <div class="all-task center ">
-                            <%
-                                def filters = [
-                                    "": bundle.getString("label.allTask"),
-                                    overdue: bundle.getString("label.overdue"),
-                                    today: bundle.getString("label.today"),
-                                    tomorrow: bundle.getString("label.tomorrow"),
-                                    upcoming: bundle.getString("label.upcoming")
-                                ];
-                            %>
-                            <span class="all-task-action-toggle nav-inline">
-                                <% filters.each{k,v -> %>
-                                    <a href="javascript:void(0);" class="${filter == k ? "active" : ""}" data-taskfilter="${k}">${v}</a>
-                                <%}%>
-                            </span>
-
-                            <span class="dropdown all-task-action">
-                                <a href="" data-toggle="dropdown" class="actionIcon dropdown-toggle">
-                                    <strong>${filters[filter]}</strong> <i class="uiIconArrowDown uiIconLightGray"></i>
-                                </a>
-                                <ul class="dropdown-menu">
-                                    <%filters.each{k,v -> %>
-                                    <li><a href="javascript:void(0);" data-taskfilter="${k}">${v}</a></li>
-                                    <%}%>
-                                </ul>
-                            </span>
-                        </div>
-                        <%}%>
                     </div>
                     <div class="input-field">
                         <form action="#" method="GET" class="form-create-task">

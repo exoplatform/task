@@ -57,9 +57,17 @@ require(['project-menu', 'ta_edit_inline', 'SHARED/jquery',
     $centerPanel.removeClass('span5').addClass('span9');
   };
   
-  taApp.reloadTaskList = function(projectId, callback) {
+  taApp.reloadTaskList = function(projectId, filter, callback) {
     var $centerPanelContent = taApp.getUI().$centerPanelContent;
-    $centerPanelContent.jzLoad('TaskController.listTasks()', {projectId: projectId}, function() {
+    if ($.isFunction(filter)) {
+        filter = '';
+        callback = filter;
+    }
+    if (typeof filter !== 'string') {
+        filter = '';
+    }
+    var data = {projectId: projectId, filter: filter};
+    $centerPanelContent.jzLoad('TaskController.listTasks()', data, function() {
       if (callback) {
         callback();
       }
@@ -357,10 +365,11 @@ $(document).ready(function() {
     $leftPanel.on('click', 'a.project-name', function(e) {
         var $a = $(e.target).closest('a');
         var projectId = $a.data('id');
+        var filter = $a.data('filter');
         var currentProject = $centerPanel.find('.projectListView').data('projectid');
 
-        if (currentProject != projectId && ($a.data('canview') || projectId <= 0)) {
-            taApp.reloadTaskList(projectId, function() {
+        if ((currentProject != projectId || filter != undefined) && ($a.data('canview') || projectId <= 0)) {
+            taApp.reloadTaskList(projectId, filter, function() {
               $a.closest('.leftPanel > ul').find('li.active').removeClass('active');
               $a.closest('li').addClass('active');
 
@@ -445,7 +454,7 @@ $(document).ready(function() {
         );
     };
 
-    $centerPanel.on('submit', '.projectListView form.form-search', function(e) {
+    $centerPanel.on('submit', '.projectListView form.taskSearchForm', function(e) {
         submitFilter(e);
         return false;
     });

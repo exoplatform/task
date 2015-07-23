@@ -21,11 +21,58 @@
 	    <div class="leftPanel uiAccordion span3">
 	        <ul class="left-menu">
 	        		<%if (!isInSpace) {%>
-	            <li class="accordion-heading active">
+	            <li class="accordion-heading active" style="display: none">
 	                <a class="project-name" data-id="-1" href="@{TaskManagement.index()}">&{label.incoming}&nbsp;<span class="badgeDefault badgePrimary mini top">1</span></a>
 	            </li>
 	            <%} %>
-	            <li class="accordion-heading">
+                <li class="accordion-heading dropdown">
+                    <div class="item">
+                        <a class="project-name" href="javascript:void(0)">&{label.tasks}</a>
+                    </div>
+                    <ul class="list-projects">
+                        <li class="dropdown project-item active">
+                            <div class="sub-item">
+                                <a class="project-name" data-id="-1" href="@{TaskManagement.index()}">&{label.incoming}&nbsp;<span class="badgeDefault badgePrimary mini top">1</span></a>
+                            </div>
+                        </li>
+                        <li class="dropdown project-item">
+                            <div class="sub-item">
+                                <a href="javascript:void(0)" class="project-name" data-id="-2" data-filter="">
+                                    &{label.allTasks}
+                                </a>
+                            </div>
+                        </li>
+                        <li class="dropdown project-item">
+                            <div class="sub-item">
+                                <a href="javascript:void(0)" class="project-name" class="project-name" data-id="-2" data-filter="overdue">
+                                    &{label.overdue}
+                                </a>
+                            </div>
+                        </li>
+                        <li class="dropdown project-item">
+                            <div class="sub-item">
+                                <a href="javascript:void(0)" class="project-name" class="project-name" data-id="-2"  data-filter="today">
+                                    &{label.today}
+                                </a>
+                            </div>
+                        </li>
+                        <li class="dropdown project-item">
+                            <div class="sub-item">
+                                <a href="javascript:void(0)" class="project-name" class="project-name" data-id="-2"  data-filter="tomorrow">
+                                    &{label.tomorrow}
+                                </a>
+                            </div>
+                        </li>
+                        <li class="dropdown project-item">
+                            <div class="sub-item">
+                                <a href="javascript:void(0)" class="project-name" class="project-name" data-id="-2"  data-filter="upcoming">
+                                    &{label.upcoming}
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
+                </li>
+	            <li class="accordion-heading" style="display: none">
 	                <a class="project-name" data-id="-2" href="#">&{label.todo}</a>
 	            </li>
 	            <li class="accordion-heading dropdown" data-showhiddenproject="${userSetting.showHiddenProject}">

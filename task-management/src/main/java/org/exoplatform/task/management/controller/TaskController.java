@@ -65,6 +65,7 @@ import org.exoplatform.task.service.TaskParser;
 import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.service.UserService;
 import org.exoplatform.task.utils.CommentUtils;
+import org.exoplatform.task.utils.DateUtil;
 import org.exoplatform.task.utils.ProjectUtil;
 import org.exoplatform.task.utils.TaskUtil;
 import org.json.JSONException;
@@ -359,7 +360,9 @@ public class TaskController {
     Map<String, String> defOrders = TaskUtil.getDefOrders(bundle);
     Map<String, String> defGroupBys = TaskUtil.getDefGroupBys(projectId, bundle);
 
-    String currentUser = securityContext.getRemoteUser();        
+    String currentUser = securityContext.getRemoteUser();
+    TimeZone userTimezone = userService.getUserTimezone(currentUser);
+
     if (currentUser == null || currentUser.isEmpty()) {
       return Response.status(401);
     }    
@@ -408,12 +411,29 @@ public class TaskController {
         
         defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT), bundle);
         defOrders = TaskUtil.resolve(Arrays.asList(TaskUtil.TITLE, TaskUtil.PRIORITY, TaskUtil.DUEDATE), bundle);
-        groupBy = groupBy == null || defGroupBys.containsKey(groupBy) ? TaskUtil.PROJECT : groupBy;
+        groupBy = groupBy == null || !defGroupBys.containsKey(groupBy) ? TaskUtil.PROJECT : groupBy;
       } else if ("today".equalsIgnoreCase(filter)) {
-        Calendar c = Calendar.getInstance();
+        Calendar c = DateUtil.newCalendarInstance(userTimezone);
         c.set(Calendar.HOUR, 0);
         c.set(Calendar.MINUTE, 0);
         c.set(Calendar.SECOND, 0);
+        fromDueDate = c.getTime();
+        c.add(Calendar.HOUR, 24);
+        toDueDate = c.getTime();
+        
+        defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT), bundle);
+        defOrders = TaskUtil.resolve(Arrays.asList(TaskUtil.TITLE, TaskUtil.PRIORITY, TaskUtil.RANK), bundle);
+        if (orderBy == null) {
+          order = new OrderBy.DESC(TaskUtil.PRIORITY);
+          orderBy = TaskUtil.PRIORITY;
+        }
+        groupBy = groupBy == null || !defGroupBys.containsKey(groupBy) ? TaskUtil.NONE : groupBy;
+      } else if ("tomorrow".equalsIgnoreCase(filter)) {
+        Calendar c = DateUtil.newCalendarInstance(userTimezone);
+        c.set(Calendar.HOUR, 0);
+        c.set(Calendar.MINUTE, 0);
+        c.set(Calendar.SECOND, 0);
+        c.add(Calendar.HOUR, 24);
         fromDueDate = c.getTime();
         c.add(Calendar.HOUR, 24);
         toDueDate = c.getTime();
@@ -422,26 +442,11 @@ public class TaskController {
         defOrders = TaskUtil.resolve(Arrays.asList(TaskUtil.TITLE, TaskUtil.PRIORITY, TaskUtil.RANK), bundle);
         if (orderBy == null || !defOrders.containsKey(orderBy)) {
           order = new OrderBy.DESC(TaskUtil.PRIORITY);
-        }
-        groupBy = groupBy == null || !defGroupBys.containsKey(groupBy) ? TaskUtil.NONE : groupBy;
-      } else if ("tomorrow".equalsIgnoreCase(filter)) {
-        Calendar c = Calendar.getInstance();
-        c.set(Calendar.HOUR, 0);
-        c.set(Calendar.MINUTE, 0);
-        c.set(Calendar.SECOND, 0);
-        c.add(Calendar.HOUR, 24);
-        fromDueDate = c.getTime();
-        c.add(Calendar.HOUR, 24);
-        toDueDate = c.getTime();
-        
-        defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT), bundle);
-        defOrders = TaskUtil.resolve(Arrays.asList(TaskUtil.TITLE, TaskUtil.PRIORITY, TaskUtil.RANK), bundle);
-        if (orderBy == null || !defOrders.containsKey(orderBy)) {
-          order = new OrderBy.DESC(TaskUtil.PRIORITY);        
+          orderBy = TaskUtil.PRIORITY;
         }
         groupBy = groupBy == null || !defGroupBys.containsKey(groupBy) ? TaskUtil.NONE : groupBy;
       } else if ("upcoming".equalsIgnoreCase(filter)) {
-        Calendar c = Calendar.getInstance();
+        Calendar c = DateUtil.newCalendarInstance(userTimezone);
         c.set(Calendar.HOUR, 0);
         c.set(Calendar.MINUTE, 0);
         c.set(Calendar.SECOND, 0);
@@ -460,6 +465,9 @@ public class TaskController {
       groupBy = groupBy == null || !defGroupBys.containsKey(groupBy) ? TaskUtil.DUEDATE : groupBy;
       
       tasks = taskService.getToDoTasksByUser(currentUser, spaceProjectIds, order, fromDueDate, toDueDate);
+      if (tasks.size() < 2) {
+        groupBy = "";
+      }
     }
     else {
       if (projectId == 0) {
