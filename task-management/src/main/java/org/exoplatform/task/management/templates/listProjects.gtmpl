@@ -80,7 +80,7 @@ def displayListProjectItem(project, level) {
 
 
 def displayListProjects(projects, parentId, level) { %>
-    <ul class="list-projects" parentId="${parentId}">
+    <ul class="list-projects projectTree" parentId="${parentId}">
         <%
             def allProjectAreHidden = true;
         %>

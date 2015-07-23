@@ -76,7 +76,7 @@ require(['project-menu', 'ta_edit_inline', 'SHARED/jquery',
     
   taApp.reloadProjectTree = function(id) {
     var $leftPanel = taApp.getUI().$leftPanel;
-    var $listProject = $leftPanel.find('ul.list-projects');
+    var $listProject = $leftPanel.find('ul.list-projects.projectTree');
     $listProject.jzLoad('ProjectController.projectTree()', function() {
         if (id) {
           $listProject.find('a.project-name[data-id="' + id+ '"]').click();          
