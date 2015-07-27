@@ -24,7 +24,8 @@ import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.service.DAOHandler;
+import org.exoplatform.task.service.ProjectService;
+import org.exoplatform.task.service.TaskService;
 
 import java.util.*;
 
@@ -84,7 +85,8 @@ public class TaskInjector extends DataInjector {
 
   //Service
 
-  private final DAOHandler DAOHandler;
+  private final TaskService taskService;
+  private final ProjectService projectService;
 
   //
 
@@ -115,7 +117,8 @@ public class TaskInjector extends DataInjector {
 
   public TaskInjector() {
     PortalContainer container = PortalContainer.getInstance();
-    DAOHandler = (DAOHandler)container.getComponentInstanceOfType(DAOHandler.class);
+    taskService = (TaskService)container.getComponentInstanceOfType(TaskService.class);
+    projectService = (ProjectService)container.getComponentInstanceOfType(ProjectService.class);
   }
 
   private void init() {
@@ -206,17 +209,18 @@ public class TaskInjector extends DataInjector {
           task.setStatus(randomStatus);
           randomStatus.getTasks().add(task);
         }
-        DAOHandler.getProjectHandler().create(project);
+        projectService.createProject(project);
+        //DAOHandler.getProjectHandler().create(project);
       }
 
       //Create Incoming Task (not attached to project) of the user
-      List<Task> tasks = new ArrayList<Task>();
       for (int j = 0; j < nbIncomingTasks; j++) {
         Task task = createTask(userName, "Incoming-"+userName, j);
         task.setCompleted(false);
-        tasks.add(task);
+        taskService.createTask(task);
       }
-      DAOHandler.getTaskHandler().createAll(tasks);
+
+      //DAOHandler.getTaskHandler().createAll(tasks);
 
     }
 
@@ -258,7 +262,8 @@ public class TaskInjector extends DataInjector {
           task.setStatus(randomStatus);
           randomStatus.getTasks().add(task);
         }
-        DAOHandler.getProjectHandler().create(project);
+        projectService.createProject(project);
+        //DAOHandler.getProjectHandler().create(project);
       }
 
     }
