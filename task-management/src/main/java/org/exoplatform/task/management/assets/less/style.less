@@ -175,100 +175,6 @@ li[data-hiddenproject="false"] {
     }
 }
 
-.table-project{
-    display: table;
-    width: 100%;
-    table-layout: fixed;
-    .row-item {
-        display: table-row;
-        cursor: pointer;
-        &.heading {
-            font-weight: bold;
-            .column-item {
-                > * {
-                    vertical-align: middle;
-                }
-            }
-        }
-        &.group {
-            border-bottom: none;
-            > .column-item {
-                padding: 0;
-            }
-            .table-project {
-                margin-bottom: 30px;
-            }
-        }
-        .text-time {
-            height: 26px;
-            line-height: 26px;
-        }
-        &:hover,&.selected {
-            &.group {
-                background: none;
-            }
-        }
-        &.selected {
-            .column-title {
-                font-weight: bold;
-            }
-        }
-        .column-title {
-            .text-overflow();
-        }
-    }
-    .row-group {
-        display: table-row-group;
-        margin-bottom: 30px;
-    }
-    .column-item {
-        display: table-cell;
-        padding: 4px;
-        vertical-align: middle;
-        position: relative;
-        .project-color {
-            position: absolute;
-            left: 1px;
-            top: 0;
-            bottom: 1px;
-            width: 5px;
-        }
-         .labels {
-            margin: 0 0px 0 0;
-            .label {
-                margin: 0;
-            }
-        }   
-        &:first-child{
-            padding-left: 13px;
-        }
-        &:last-child{
-            padding-right: 8px;
-        }
-    }
-    .column-checkbox {
-        width: 24px;
-        .status-task {
-            margin-left: 4px;
-        }
-    }
-    .column-time {
-        text-align: right;
-    }
-    .column-action {
-        width: 26px;
-    }
-}
-
-.table-project-collapse {
-    margin-bottom: 30px;
-    .heading {
-        padding: 4px 8px;
-        .group-name {
-            font-weight: bold;
-        }
-    }
-}
 
 // Icomming
 
@@ -652,12 +558,16 @@ li[data-hiddenproject="false"] {
 .list-projects .no-project {
     padding: 6px 0px;
 }
-.column-item {
+.row-item {
     .dragable {
         width: 6px;
         height: 22px;
         background: url('../images/icons/dragable.png');
-        left: 8px;cursor: move;
+        left: 8px;
+        cursor: move;
+        top: 50%;
+        -webkit-transform: translateY(-50%);
+        transform: translateY(-50%);
         position: absolute;
     }
 }
@@ -963,4 +873,29 @@ li[data-hiddenproject="false"] {
     margin-bottom: 0px;
     padding: 0;
   }
+}
+.header-right .action-bar + .action-bar {
+    margin-right: 2px;
+}
+
+.new-col {
+    padding-left: 8px!important;
+}
+
+.leftPanel  {
+   &.uiAccordion {
+       border-top: none;
+    }
+}
+
+.taskBoardView {
+    overflow-x: auto;
+    .body.relative {
+        min-width:650px;
+    }
+    .heading {
+        .label {
+           vertical-align: 1px;
+        }
+    }
 }

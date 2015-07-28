@@ -50,14 +50,14 @@
                 </form>
             </div>
             <%
-            	def name = bundle.getString("label.projects");
-            	if (currentProjectId > 0) {
-            	  name = project.name;
-            	} else if (currentProjectId == -1) {
-            	  name = bundle.getString("label.project.incomming");
-            	} else if (currentProjectId == -2) {
-            	  name = bundle.getString("label.project.todo");
-            	}
+              def name = bundle.getString("label.projects");
+              if (currentProjectId > 0) {
+                name = project.name;
+              } else if (currentProjectId == -1) {
+                name = bundle.getString("label.project.incomming");
+              } else if (currentProjectId == -2) {
+                name = bundle.getString("label.project.todo");
+              }
             %>
             <div class="label-title pull-left projectName">${name}</div>
             <div class="alignBtnGroup center">
@@ -77,7 +77,7 @@
     <div class="uiContentBox">
             <div class="taskList">
                 <%
-                	if (currentProjectId != 0) {
+                  if (currentProjectId != 0) {
                 %>
                 <div class="header ">
                     <div class="clearfix">
@@ -118,13 +118,13 @@
                         <form action="#" method="GET" class="form-create-task">
                             <input type="text" name="taskTitle" placeholder="Untiled Task" 
                             <%if (taskNum == 0) { %>
-                            		data-content="&{label.welcome.firstTask}"  
-                            		data-placement="bottom"
+                                data-content="&{label.welcome.firstTask}"  
+                                data-placement="bottom"
                             <%} %>
                              />
                         </form>
                     </div>
-                </div><!-- /.header -->
+                </div>
                 <%} %>
                 <div class="body relative">
                     <!-- The default list -->
@@ -182,7 +182,7 @@
                             <%}%>
                         </div>
                     <%} else {
-                    		if (currentProjectId < 0) {            		
+                        if (currentProjectId < 0) {               
                     %>
                         <div class="empty-box no-project ">
                            <div class="empty-content">
@@ -191,41 +191,41 @@
                            </div>
                         </div>
                     <%} else if (currentProjectId == 0) {%>
-                      	<div class="empty-box no-project ">
+                        <div class="empty-box no-project ">
                            <div class="empty-content">
                                <img class="image" src="/task-management/assets/org/exoplatform/task/management/assets/images/img-task.png" alt="no-task" />
                                <div class="text-notify muted">&{label.noTask}</div>
                            </div>
                         </div>
                     <%} else {
-                    		if (project.getManager() != null && project.getManager().size() == 1 && 
-                    		    (project.getParticipator() == null || project.getParticipator().isEmpty())) {
+                        if (project.getManager() != null && project.getManager().size() == 1 && 
+                            (project.getParticipator() == null || project.getParticipator().isEmpty())) {
                     %>
-                    		<div class="empty-box no-project ">
+                        <div class="empty-box no-project ">
                            <div class="empty-content">
                                <img class="image" src="/task-management/assets/org/exoplatform/task/management/assets/images/img-folder.png" alt="no-project" />
                                <div class="text-notify muted">
-                               	&{label.welcome.personal.description1}</br>
-											&{label.welcome.personal.description2}
+                                &{label.welcome.personal.description1}</br>
+                      &{label.welcome.personal.description2}
                                </div>
                            </div>
                         </div>
-                    <%	} else {
-                    		def des1 = bundle.getString("label.welcome.share.description1");
+                    <%  } else {
+                        def des1 = bundle.getString("label.welcome.share.description1");
                     %>
-                    		<div class="empty-box no-project ">
+                        <div class="empty-box no-project ">
                            <div class="empty-content">
                                <img class="image" src="/task-management/assets/org/exoplatform/task/management/assets/images/img-folder.png" alt="no-project" />
                                <div class="text-notify muted">
-                               	<%=des1.replace("{}", project.getManager().iterator().next()) %></br>
-											&{label.welcome.share.description2}
+                                <%=des1.replace("{}", project.getManager().iterator().next()) %></br>
+                      &{label.welcome.share.description2}
                                </div>
                            </div>
                         </div>
-                    <%                    		  
-                    		}
-							 }
-                    	} %>
+                    <%                          
+                        }
+               }
+                      } %>
                 </div>
                 <div data-template="list-task-item" style="display: none">
                     <li class="row-item row-odd hover-action-reveal has-border has-background taskItem" data-taskid="{{taskid}}">
@@ -252,6 +252,269 @@
                     </li>
                 </div>
             </div>
+
+
+
+
+
+
+            <!-- /.board view  -->
+
+            <div class="taskBoardView">
+                 <div class="body relative">
+                      <div class="table-project-collapse">
+                        <div class="caption-heading table-project">
+                            <div class="row-item  has-border taskItem">                                  
+                              <div class="col col1 hover-action-reveal">
+                                  <strong>To Do </strong>(10) <a href="#" class=" inline-block-hide pull-right"><i class="uiIcon uiIconDelete "></i></a>
+                              </div>
+                              <div class="col col2 hover-action-reveal">
+                                  <strong>In Progress  </strong>(3) <a href="#" class=" inline-block-hide pull-right"><i class="uiIcon uiIconDelete "></i></a>
+                              </div>            
+                              <div class="col col3 hover-action-reveal">
+                                  <strong>Waiting For </strong>(1) <a href="#" class=" inline-block-hide pull-right"><i class="uiIcon uiIconDelete "></i></a>
+                              </div>              
+                              <div class="col col4 hover-action-reveal">
+                                  <strong>Done</strong>(6) 
+                                  <a href="#" data-toggle="tooltip"  data-original-title="Add a Status" data-placement="left" class=" inline-block-hide pull-right mgL5"><i class="uiIcon uiIconPlus "></i></a>               
+                                  <a href="#" class=" inline-block-hide pull-right"><i class="uiIcon uiIconDelete "></i></a>
+                                    
+                              </div>
+                            </div>                     
+                        </div>
+                        <div class="heading primaryBackground">                                                
+                              <a href="#" class="toggle-collapse-group"><i class="uiIcon uiIconArrowDown"></i></a>
+                              <img width="20px" height="20px" alt="Root Root" src="/eXoSkin/skin/images/system/UserAvtDefault.png"> 
+                              <a href="javascript:void(0)"><span class="group-name">Root Root</span> <span class="amount-item">(6)</span></a>
+                        </div>
+                        <div class="collapse-content">
+                            <ul class="table-project">
+                                <li  class="row-item  hover-action-reveal has-border taskItem">
+                                  <div class="col col1">
+                                      <form  method="GET" action="#">
+                                          <input type="text" placeholder="Untiled Task" name="taskTitle">
+                                      </form>
+                                  </div>
+                                  <div class="col col2"></div>
+                                  <div class="col col3"></div>
+                                  <div class="col col4"></div>
+                                </li>                                                                            
+                          </ul>
+                        </div>
+                        <div class="heading primaryBackground">                                                
+							<a href="#" class="toggle-collapse-group"><i class="uiIcon uiIconArrowDown"></i></a>
+							<img width="20px" height="20px" alt="Root Root" src="/eXoSkin/skin/images/system/UserAvtDefault.png"> 
+							<a href="javascript:void(0)"><span class="group-name">Root Root</span> <span class="amount-item">(6)</span></a>
+                        </div>
+                        <div class="collapse-content">
+                            <ul class="table-project">
+                                <li  class="row-item  has-border taskItem">
+									<div class="col col1 active">
+										<div class="box-small has-background hover-action-reveal">											
+											<span class="project-color Orange ">&nbsp;</span>
+											<div class="box-small-inner  ">
+												  <span class="inline-block-hide dragable">&nbsp;</span>
+												  <div class="media">
+													  <i class="uiIconColorWarningInRed pull-left"></i>
+													 <div class="media-body"> choose speaker voice</div> 
+												</div>    
+											</div>
+										</div>
+										<div class="box-small has-background hover-action-reveal ">
+											<span class="project-color Orange ">&nbsp;</span>
+											<div class="box-small-inner ">
+												  
+												  <span class="inline-block-hide dragable">&nbsp;</span>
+												  <div class="media">
+													  <i class="uiIconColorWarningInBlue pull-left"></i>
+													  <div class="media-body"> submit scripts to agency</div> 
+												</div>    
+											</div>
+                                        </div>
+                                        <form class="create-task"  method="GET" action="#">
+                                          <input type="text" placeholder="Untiled Task" name="taskTitle">
+										</form>
+									</div>
+									<div class="col col2"></div>
+									<div class="col col3"></div>
+									<div class="col col4">
+										<div class="box-small has-background hover-action-reveal">									
+											<span class="project-color Orange ">&nbsp;</span>
+											<div class="box-small-inner  ">
+												<span class="inline-block-hide dragable">&nbsp;</span>
+												<div class="media">
+													<i class="uiIconValidate uiIconBlue pull-right"></i>
+													<div class="media-body done">record quick and dirty screencast</div> 
+												</div>    
+											</div>
+										</div>
+                                        <form class="create-task"  method="GET" action="#">
+                                          <input type="text" placeholder="Untiled Task" name="taskTitle">
+										</form>
+                                  </div>
+                                </li>                                                                            
+                          </ul>
+                        </div>
+
+
+                          <div class="heading primaryBackground">                                                
+                              <a href="#" class="toggle-collapse-group"><i class="uiIcon uiIconArrowDown"></i></a>
+                              <img width="20px" height="20px" alt="Root Root" src="/eXoSkin/skin/images/system/UserAvtDefault.png"> 
+                              <a href="javascript:void(0)"><span class="group-name">Root Root</span> <span class="amount-item">(6)</span></a>
+                        </div>
+                        <div class="collapse-content">
+                            <ul class="table-project">
+                                <li  class="row-item  has-border taskItem">
+                                  <div class="col col1">
+                                  </div>
+                                  <div class="col col2"></div>
+                                  <div class="col col3">
+                                    <div class="box-small has-background hover-action-reveal selected ">										
+										<span class="project-color Orange ">&nbsp;</span>
+										<div class="box-small-inner">
+											<span class="inline-block-hide dragable">&nbsp;</span>
+											<div class="media">
+											  <i class="uiIconValidate uiIconBlue pull-right"></i>
+											  <div class="media-body ">check competitors</div> 
+											</div>    
+                                        </div>    
+                                    </div>
+                                    <form class="create-task"  method="GET" action="#">
+                                          <input type="text" placeholder="Untiled Task" name="taskTitle">
+                                      </form>
+                                  </div>
+                                  <div class="col col4">
+                                    
+                                  </div>
+                                </li>                                                                            
+                          </ul>
+                        </div>
+
+
+                         <div class="heading primaryBackground">                                                
+                              <a href="#" class="toggle-collapse-group"><i class="uiIcon uiIconArrowDown"></i></a>
+                              <span class="label red">Next</span>
+                               <span class="label moss_green">Writing</span>
+                              <span class="label">No Label</span>
+                        </div>
+                        <div class="collapse-content">
+                            <ul class="table-project">
+                                <li  class="row-item  has-border taskItem">
+                                  <div class="col col1">
+                                  </div>
+                                  <div class="col col2">
+                                    <div class="box-small has-background hover-action-reveal  ">
+										<div class="box-small-inner">
+											<span class="project-color Orange ">&nbsp;</span>
+											<span class="inline-block-hide dragable">&nbsp;</span>
+											<div class="media">
+											  <div class="media-body ">contact agencies</div> 
+											</div>    
+										</div>
+                                    </div>
+                                    <form class="create-task"  method="GET" action="#">
+                                        <input type="text" placeholder="Untiled Task" name="taskTitle">
+                                    </form>
+                                  </div>
+
+                                  <div class="col col3"></div>
+                                  <div class="col col4">
+                                    
+                                  </div>
+                                </li>                                                                            
+                          </ul>
+                        </div>
+
+
+
+
+
+
+                      </div>
+                 </div>
+            </div>
+
+            <!-- end /.board view  -->
+
+
+
+              <!-- /.board view  -->
+
+            <div class="taskBoardView">
+                 <div class="body relative">
+                      <div class="table-project-collapse">
+                        <div class="caption-heading table-project">
+                            <div class="row-item  has-border taskItem">                                  
+                              <div class="col col1 hover-action-reveal">
+                                  <strong>To Do </strong>(10) <a href="#" class=" inline-block-hide pull-right"><i class="uiIcon uiIconDelete "></i></a>
+                              </div>
+                              <div class="col col2 hover-action-reveal">
+                                  <strong>In Progress  </strong>(3) <a href="#" class=" inline-block-hide pull-right"><i class="uiIcon uiIconDelete "></i></a>
+                              </div>            
+                              <div class="col col3 hover-action-reveal">
+                                  <strong>Waiting For </strong>(1) <a href="#" class=" inline-block-hide pull-right"><i class="uiIcon uiIconDelete "></i></a>
+                              </div>              
+                              <div class="col col4 hover-action-reveal">
+                                  <strong>Done</strong>(6) 
+                                  <a href="#" data-toggle="tooltip"  data-original-title="Add a Status" data-placement="left" class=" inline-block-hide pull-right mgL5"><i class="uiIcon uiIconPlus "></i></a>               
+                                  <a href="#" class=" inline-block-hide pull-right"><i class="uiIcon uiIconDelete "></i></a>
+                                    
+                              </div> 
+                              <div class="col col5 new-col">
+                                 <form class="create-staus"  method="GET" action="#">
+									  <input type="text" placeholder="Untitled Status" name="taskTitle">
+								  </form>
+                                    
+                              </div>
+                            </div>                     
+                        </div>
+                        
+
+
+
+                         <div class="heading primaryBackground">                                                
+                              <a href="#" class="toggle-collapse-group"><i class="uiIcon uiIconArrowDown"></i></a>
+                              <span class="label red">Next</span>
+                               <span class="label moss_green">Writing</span>
+                              <span class="label">No Label</span>
+                        </div>
+                        <div class="collapse-content">
+                            <ul class="table-project">
+                                <li  class="row-item  has-border taskItem">
+                                  <div class="col col1">
+                                  </div>
+                                  <div class="col col2">
+                                    <div class="box-small has-background hover-action-reveal  ">
+										<div class="box-small-inner">
+											<span class="project-color Orange ">&nbsp;</span>
+											<span class="inline-block-hide dragable">&nbsp;</span>
+											<div class="media">
+											  <div class="media-body ">contact agencies</div> 
+											</div>    
+										</div>
+                                    </div>
+                                    <form class="create-task"  method="GET" action="#">
+                                        <input type="text" placeholder="Untiled Task" name="taskTitle">
+                                    </form>
+                                  </div>
+
+                                  <div class="col col3"></div>
+                                  <div class="col col4"></div>
+                                  <div class="col col5"></div>
+                                </li>                                                                            
+                          </ul>
+                        </div>
+                      </div>
+                 </div>
+            </div>
+
+            <!-- end /.board view  -->
+
+
+
+
+
     </div>
 </div>
+
 
