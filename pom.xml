@@ -73,7 +73,7 @@
       <dependency>
         <groupId>org.exoplatform.platform</groupId>
         <artifactId>platform</artifactId>
-        <version>${platform.version}</version>
+        <version>4.3.x-plf-task-SNAPSHOT</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
