@@ -27,6 +27,9 @@
 	            <%} %>
                 <li class="accordion-heading dropdown">
                     <div class="item">
+                        <a class="dropdownIcon pull-right" href="javascript:void(0)">
+                            <i class="uiIconLightGray uiIconArrowDown"></i>
+                        </a>
                         <a class="project-name" href="javascript:void(0)">&{label.tasks}</a>
                     </div>
                     <ul class="list-projects">
@@ -72,17 +75,23 @@
                         </li>
                     </ul>
                 </li>
-	            <li class="accordion-heading" style="display: none">
-	                <a class="project-name" data-id="-2" href="#">&{label.todo}</a>
-	            </li>
+	            <!-- <li class="accordion-heading" style="display: none">
+	              <a class="dropdownIcon pull-right" href="javascript:void(0)">
+                      <i class="uiIconLightGray uiIconArrowDown"></i>
+                  </a>  
+                  <a class="project-name" data-id="-2" href="#">&{label.todo}</a>
+	            </li> -->
 	            <li class="accordion-heading dropdown" data-showhiddenproject="${userSetting.showHiddenProject}">
 	                <div class="item">
-		                <a class="dropdown-toggle actionIconSmall add-new-project pull-right"
+		                <a class="dropdownIcon pull-right" href="javascript:void(0)">
+                            <i class="uiIconLightGray uiIconArrowDown" ></i>
+                        </a>
+                        <a class="dropdown-toggle actionIconSmall dropdownIcon add-new-project pull-right"
 		                   data-toggle="dropdown" data-content="&{label.welcome.firstProject}" data-placement="bottom"
 		                   href="javascript:void(0)">
 		                    <i class="uiIconLightGray uiIconSimplePlusMini addProject" ></i>
                         </a>
-		                <div class="dropdown-menu uiDropdownWithIcon" style="left: 100%; top: -22px">
+		                <div class="dropdown-menu uiDropdownWithIcon" style="left: 88%; top: -22px">
 		                	<span class="arrowLeft"></span>
 		                	<ul class="uiDropdownMenu">
 			                    <li>
@@ -107,7 +116,38 @@
 	                #{include path=listProjects.gtmpl /}
 	            </li>
 	            <li class="accordion-heading">
-	                <a class="project-name" href="#">Label</a>
+	               <div class="item">  
+                      <a class="dropdownIcon pull-right" href="javascript:void(0)">
+                          <i class="uiIconLightGray uiIconArrowDown"></i>
+                      </a>
+                      <a href="javascript:void(0)" data-placement="bottom" data-content="Click here to create your first label." data-toggle="dropdown" class="dropdown-toggle actionIconSmall dropdownIcon add-new-label pull-right">
+                        <i class="uiIconLightGray uiIconSimplePlusMini addLabel"></i>
+                      </a>
+                      <div class="dropdown-menu uiDropdownWithIcon" style="left: 88%; top: -22px">
+                        <span class="arrowLeft"></span>
+                        <ul class="uiDropdownMenu">
+                            <li>
+                              <a class="new-label" data-projectId="0" href="#">
+                                <i class="uiIconAddLabel uiIconLightGray"></i>Add label
+                              </a>
+                            </li>
+                            <li>
+                              <a href="javascript:void(0)" class="actionShowHiddenProject">
+                                <i class="uiIconHide uiIconLightGray"></i>
+                                <span class="label-showHiddenLabel">
+                                    Hide hidden label
+                                </span>
+                                <i class="uiIconShowLabel uiIconLightGray"></i>
+                                <span class="label-hideHiddenLabel">
+                                    Show hidden label
+                                </span>
+                              </a>
+	                         </li>
+                          </ul>
+                      </div>
+                      <a class="project-name" href="#">Label</a>
+                   </div>
+                   <div class="noLabel center muted">No label</div>
 	            </li>
 	        </ul>
 	        <div class="resizeButton " id="ShowHideLeft">
