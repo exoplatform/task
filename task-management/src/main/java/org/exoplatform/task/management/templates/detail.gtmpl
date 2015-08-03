@@ -23,6 +23,23 @@
 <div class="uiContentBox">
 <div class="clearfix">
     <div class="pull-right action-buttons dropdown">
+        <span class="taskPermalinkContainer" title="&{label.permalink}" data-toggle="tooltip" data-placement="bottom">
+            <a href="@{TaskManagement.permalink(space_group_id=null, taskId=task.id)}" data-toggle="popover" data-placement="left"
+            class="permalink actionIcon taskPermalink" style="position: relative;">
+                <i class="uiIconPermalink"></i>           
+            </a>
+        </span>
+        <div class="taskPermalinkPopoverContent" style="display:none">
+            <div>
+                <i class="uiIconPermalink"></i>
+                &{popover.title.linkToShare}
+            </div>
+            <div class="input-field input-xlarge">
+                <form method="GET" action="#">
+                    <input readonly type="text" name="" value="">
+                </form>
+            </div>
+        </div>
         <a data-toggle="dropdown" class="dropdown-toggle actionIconSmall" href="#"><i class="uiIconArrowDown"></i></a>
         <ul class="dropdown-menu">
             <li><a class="action-clone-task" href="#"><i class="uiIconCloneNode"></i> &{label.clone}</a></li>
@@ -43,45 +60,20 @@
     </div>
 </div>
 <div class="taskName uiEditableInline clearfix taskPermalinkContainer">
-    <div class="pull-right">
-        <span class="taskPermalinkContainer" title="&{label.permalink}" data-toggle="tooltip" data-placement="bottom">
-            <a href="@{TaskManagement.permalink(space_group_id=null, taskId=task.id)}" data-toggle="popover" data-placement="left"
-            class="permalink actionIcon taskPermalink" style="position: relative;">
-                <i class="uiIconPermalink"></i>           
-            </a>
-        </span>
-        <div class="taskPermalinkPopoverContent" style="display:none">
-            <div>
-                <i class="uiIconPermalink"></i>
-                &{popover.title.linkToShare}
-            </div>
-            <div class="input-field input-xlarge">
-                <form method="GET" action="#">
-                    <input readonly type="text" name="" value="">
-                </form>
-            </div>
-        </div>
-    </div>
     <div class="title-container clearfix">
-        <span class="uiCheckbox pull-left">
-            <input type="checkbox" class="checkbox">
-            <span></span>
-        </span>
-        <div class="title-task">
-            <span  class="projectName ${editableClasses} small"
-                   data-original-title="&{tooltip.clickToEdit}" rel="tooltip" data-placement="bottom"
-              data-name="title" data-type="text">
-                ${task.title}
-            </span>
-        </div>
-        
+      <span class="pull-left" data-placement="top" rel="tooltip" data-original-title="Mark as completed"><i class="uiIconValidate uiIconLightGray"></i></span>
+      <span class="projectName ${editableClasses} small pull-left"
+             data-original-title="&{tooltip.clickToEdit}" rel="tooltip" data-placement="bottom"
+        data-name="title" data-type="text">
+          ${task.title}
+      </span>
     </div>
 </div>
 <div class="inforBar1 clearfix">
     <div class="pull-left">
         <div class="uiEditableInline">
-            <i  class="uiIconClock"></i>
-            <span  class="${editableClasses} small dueDateField"
+            <i class="uiIconClock"></i>
+            <span class="${editableClasses} small dueDateField"
                   data-original-title="&{tooltip.clickToEdit}" rel="tooltip" data-placement="top"
                   data-type="calendar" data-name="duedate"
                   data-value="${task.dueDate != null ? task.dueDate.format('yyyy-MM-dd') : ''}"
@@ -254,7 +246,7 @@
             </div>
         </div>
     </div>
-     <div class="priority pull-left">
+     <div class="priority pull-right">
         <div class="uiEditableInline">
             <i  class="uiIconColorPriority${task.priority != null ?  task.priority : Priority.UNDEFINED}"></i>
             <%

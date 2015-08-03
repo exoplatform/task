@@ -290,7 +290,7 @@ li[data-hiddenproject="false"] {
         }
         .action-buttons {
             & + .uiEditableInline  {
-                margin-right: 50px;
+                margin-right: 75px;
             }
         }
         .breadcrumbCont {
@@ -315,20 +315,22 @@ li[data-hiddenproject="false"] {
                  word-wrap: break-word;
                  display: block;
             }
-            span.uiCheckbox {
-                margin-left: 2px;
-                margin-right: 0;
-                margin-top: 10px;
-                vertical-align: top;
-
-                span {
-                    width: 0;
-                    top: 6px;
-                }
+            .title-container span {
+              &:nth-child(1){
+                margin: 8px 0 0;
+              }
+              &.projectName {
+                margin-left: 5px;
+                border: none;
+              }
+              &:nth-child(3){
+                margin-left: 5px; 
+              }
             }
             .editable-container.editable-inline {
                 display: inline-block;
             }
+            
             input.blackLarge {
                 padding: 0 4px;
             }
