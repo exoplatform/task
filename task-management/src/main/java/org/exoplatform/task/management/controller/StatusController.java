@@ -52,6 +52,9 @@ public class StatusController {
   @Inject
   ProjectService projectService;
 
+  @Inject
+  StatusService statusService;
+
   @Resource
   @Ajax
   @MimeType.JSON
@@ -79,6 +82,24 @@ public class StatusController {
     } catch (JSONException ex) {
       LOG.warn("JSONException while create reporting", ex);
       return Response.status(500).body("JSONException while create reporting");
+    }
+  }
+
+  @Resource
+  @Ajax
+  @MimeType.JSON
+  public Response updateStatus(Long id, String name) {
+    try {
+      Status status = statusService.updateStatus(id, name);
+      JSONObject json = new JSONObject();
+      json.put("id", status.getId());
+      json.put("name", status.getName());
+      json.put("rank", status.getRank());
+      return Response.ok(json.toString());
+    } catch (AbstractEntityException e) {
+      return Response.status(e.getHttpStatusCode()).body(e.getMessage());
+    } catch (JSONException e) {
+      return Response.status(500).body(e.getMessage());
     }
   }
 }

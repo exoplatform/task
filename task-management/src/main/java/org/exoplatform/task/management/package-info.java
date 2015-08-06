@@ -39,6 +39,7 @@
 })
 @Scripts({
     @Script(id = "jquery-adapter", value = "javascripts/jquery-adapter.js"),
+    @Script(id = "taskManagementCommon", value = "javascripts/taskManagement.js", depends = {"jquery-adapter"}),
     @Script(id = "uicalendar", value = "javascripts/uicalendar.js", depends = {"jquery-adapter"}),
     @Script(id = "selectize-js", value = "selectize.js/0.12.1/js/standalone/selectize.js",
             depends = {"jquery-adapter"}),
@@ -48,10 +49,11 @@
     @Script(id = "x-editable-calendar", value = "javascripts/x-editable-calendar.js", depends = {"uicalendar"}),
     @Script(id = "x-editable-ckeditor", value = "javascripts/x-editable-ckeditor.js"),
     @Script(id = "task-edit-inline", value = "javascripts/editinline.js",
-            depends = {"x-editable-selectize-field","x-editable-customfield-js", "x-editable-calendar", "x-editable-ckeditor"}),
+            depends = {"taskManagementCommon", "x-editable-selectize-field","x-editable-customfield-js", "x-editable-calendar", "x-editable-ckeditor"}),
     @Script(id = "task-management-js", value = "javascripts/task-management.js",
-            depends = {"task-edit-inline"}),
-    @Script(id = "project-menu-js", value = "javascripts/project-menu.js")
+            depends = {"taskManagementCommon", "task-edit-inline"}),
+    @Script(id = "project-menu-js", value = "javascripts/project-menu.js", depends = {"taskManagementCommon"}),
+    @Script(id = "taskBoardView", value = "javascripts/taskBoardView.js", depends = {"taskManagementCommon"})
 })
 @Less({
     @Stylesheet(id = "style-less", value = "less/style.less")

@@ -10,6 +10,8 @@ import org.exoplatform.task.exception.StatusNotFoundException;
 public interface StatusService {
   
   List<String> getDefaultStatus();
+
+  Status getStatusById(long statusId);
     
   Status createStatus(Project project, String status);
   

@@ -1,0 +1,195 @@
+<%
+    import java.util.List;
+    import java.util.ArrayList;
+    import java.util.Collections;
+    import java.util.TimeZone;
+    import java.util.Calendar;
+    import org.exoplatform.task.domain.Status;
+    import org.exoplatform.task.utils.TaskUtil;
+    import org.exoplatform.task.utils.DateUtil;
+%>
+<div class="taskList">
+    <%
+        if (currentProjectId != 0) {
+    %>
+    <div class="header ">
+        <div class="clearfix">
+            <div class="header-left pull-left">
+                <a href="#" class="btn btn-primary btn-add-task"><i class="uiIconSimplePlusMini"></i> New task</a>
+            </div>
+            <div class="header-right pull-right">
+                <!-- this is filter action-->
+                <% if (tasks.size() > 2) { %>
+                             <span class="action-bar dropdown pull-right" data-currentorderby="${orderBy}">
+                                <a href="" class="actionIcon dropdown-toggle" data-original-title="Due date" data-toggle="dropdown"  rel="tooltip" data-placement="bottom">
+                                    <i class="uiIconSortDown uiIconLightGray"></i>
+                                    <span>${orderBy != null && orderBy != "" ? orders[orderBy] : orders["dueDate"]}</span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <%orders.each{k,v -> %>
+                                    <li><a href="javascript:void(0)" data-orderby="${k}">${v}</a></li>
+                                    <%}%>
+                                </ul>
+                             </span>
+                             <span class="action-bar dropdown pull-right" data-currentgroupby="${groupBy}">
+                                <a href="" class="actionIcon dropdown-toggle"  data-original-title="group By" data-toggle="dropdown"  rel="tooltip" data-placement="bottom">
+                                    <i class="uiIconViewList uiIconLightGray"></i>
+                                    <span>${groups[groupBy]}</span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <%groups.each{k,v -> %>
+                                    <% if (k != groupBy) {%>
+                                    <li><a href="javascript:void(0)" data-groupby="${k}">${v}</a></li>
+                                    <%}%>
+                                    <%}%>
+                                </ul>
+                             </span>
+                <%}%>
+            </div>
+        </div>
+        <div class="input-field">
+            <form action="#" method="GET" class="form-create-task">
+                <input type="text" name="taskTitle" placeholder="Untiled Task"
+                        <%if (taskNum == 0) { %>
+                       data-content="&{label.welcome.firstTask}"
+                       data-placement="bottom"
+                        <%} %>
+                        />
+            </form>
+        </div>
+    </div>
+    <%} %>
+    <div class="body relative">
+        <!-- The default list -->
+        <% if (tasks.size() > 0) { %>
+        <div class="table-project-collapse">
+            <% groupTasks.each {group -> %>
+            <% if (groupBy != null && !groupBy.isEmpty() && !"none".equals(groupBy)) { %>
+            <div class="heading primaryBackground">
+                <% if (groupBy == 'assignee') {%>
+                <a class="toggle-collapse-group" href="#"><i class="uiIcon uiIconArrowDown"></i></a>
+                <%
+                    def user = userMap[group.key];
+                %>
+                <% if (user.username != 'guest') {%>
+                <img width="20px" height="20px" src="${user.avatar}" alt="${user.displayName}">
+                <%}%>
+                <a href="javascript:void(0)"><span class="group-name">${user.username == "guest" ? "UnAssigned" : user.displayName}</span> <span class="amount-item">(${group.value.size()})</span></a>
+                <% } else { %>
+                <div class="heading-title"><span class="group-name">${group.key}</span> <span class="amount-item">(${group.value.size()})</span></div>
+                <% } %>
+            </div>
+            <%}%>
+            <div class="collapse-content">
+                <ul class="table-project">
+                    <%group.value.eachWithIndex { task, index -> %>
+                    <%
+                        def colorClass = '';
+                        if (task.dueDate != null) {
+                            def calendar = DateUtil.newCalendarInstance(userTimezone);
+                            calendar.setTime(task.dueDate);
+                            if (DateUtil.isOverdue(calendar)) {
+                                colorClass = 'uiIconColorWarningInRed';
+                            } else if (DateUtil.isToday(calendar)) {
+                                colorClass = 'uiIconColorWarningInBlue';
+                            }
+                        }
+                    %>
+                    <li class="row-item row-odd hover-action-reveal has-border has-background taskItem" data-taskid="${task.id}">
+                        <div class="column-item column-checkbox">
+                            <span class="project-color ${task.status != null ? task.status.project.color : ''}">&nbsp;</span>
+                            <span class="inline-block-hide dragable">&nbsp;</span>
+                                                            <span class="uiCheckbox inline-block-hide">
+                                                                <input type="checkbox" class="checkbox" ${task.completed == true ? "checked=\"checked\"" : ""}>
+                                                                <span></span>
+                                                            </span>
+                                                             <span class="status-task inline-block-show">
+                                                                <i class="${colorClass}">&nbsp;</i>
+                                                            </span>
+                        </div>
+                        <div class="column-item column-title taskName">${task.title}</div>
+                        <div class="column-item column-time">
+                            <span class="text-time inline-block-show">${task.dueDate != null ? task.dueDate : "&nbsp;"}</span>
+                            <!--<span class="inline-block-hide labels">
+                                <a href="#" class="navy_blue label">Next</a>
+                                <a href="#" class="orange label">Writing</a>
+                             </span>-->
+                            <a class="actionIcon inline-block-hide" href="#"><i class="uiIcon uiIconClock"></i></a>
+                        </div>
+                    </li>
+                    <%}%>
+                </ul>
+            </div>
+            <%}%>
+        </div>
+        <%} else {
+            if (currentProjectId < 0) {
+        %>
+        <div class="empty-box no-project ">
+            <div class="empty-content">
+                <img class="image" src="/task-management/assets/org/exoplatform/task/management/assets/images/img-folder.png" alt="no-project" />
+                <div class="text-notify muted">&{label.welcome}</div>
+            </div>
+        </div>
+        <%} else if (currentProjectId == 0) {%>
+        <div class="empty-box no-project ">
+            <div class="empty-content">
+                <img class="image" src="/task-management/assets/org/exoplatform/task/management/assets/images/img-task.png" alt="no-task" />
+                <div class="text-notify muted">&{label.noTask}</div>
+            </div>
+        </div>
+        <%} else {
+            if (project.getManager() != null && project.getManager().size() == 1 &&
+                    (project.getParticipator() == null || project.getParticipator().isEmpty())) {
+        %>
+        <div class="empty-box no-project ">
+            <div class="empty-content">
+                <img class="image" src="/task-management/assets/org/exoplatform/task/management/assets/images/img-folder.png" alt="no-project" />
+                <div class="text-notify muted">
+                    &{label.welcome.personal.description1}</br>
+                    &{label.welcome.personal.description2}
+                </div>
+            </div>
+        </div>
+        <%  } else {
+            def des1 = bundle.getString("label.welcome.share.description1");
+        %>
+        <div class="empty-box no-project ">
+            <div class="empty-content">
+                <img class="image" src="/task-management/assets/org/exoplatform/task/management/assets/images/img-folder.png" alt="no-project" />
+                <div class="text-notify muted">
+                        <%=des1.replace("{}", project.getManager().iterator().next()) %></br>
+                    &{label.welcome.share.description2}
+                </div>
+            </div>
+        </div>
+        <%
+                    }
+                }
+            } %>
+    </div>
+    <div data-template="list-task-item" style="display: none">
+        <li class="row-item row-odd hover-action-reveal has-border has-background taskItem" data-taskid="{{taskid}}">
+            <div class="column-item column-checkbox">
+                <span class="project-color null">&nbsp;</span>
+                <span class="inline-block-hide dragable">&nbsp;</span>
+                          <span class="uiCheckbox inline-block-hide">
+                              <input type="checkbox" class="checkbox">
+                              <span></span>
+                          </span>
+                          <span class="status-task inline-block-show">
+                              <i class="">&nbsp;</i>
+                          </span>
+            </div>
+            <div class="column-item column-title">{{title}}</div>
+            <div class="column-item column-time">
+                <span class="text-time inline-block-show">&nbsp;</span>
+                            <span class="inline-block-hide labels" style="display: none">
+                              <a href="#" class="navy_blue label">Next</a>
+                              <a href="#" class="orange label">Writing</a>
+                            </span>
+                <a class="actionIcon inline-block-hide" href="#"><i class="uiIcon uiIconClock"></i></a>
+            </div>
+        </li>
+    </div>
+</div>

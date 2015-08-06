@@ -157,6 +157,7 @@ public class TaskManagement {
         .userSetting(setting)
         .bundle(bundle)
         .isInSpace(space_group_id != null)
+        .viewType("")
         .ok().withCharset(Tools.UTF_8);
   }
   

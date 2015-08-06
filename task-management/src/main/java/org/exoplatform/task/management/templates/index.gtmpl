@@ -15,6 +15,7 @@
 #{param name=isInSpace/}
 #{param name=orders /}
 #{param name=groups /}
+#{param name=viewType/}
 
 <div class="taskMngCont">
 	<div id="taskManagement" class="row-fluid">
@@ -27,9 +28,9 @@
 	            <%} %>
                 <li class="accordion-heading dropdown">
                     <div class="item">
-                        <a class="dropdownIcon pull-right" href="javascript:void(0)">
+                        <!--<a class="dropdownIcon pull-right" href="javascript:void(0)">
                             <i class="uiIconLightGray uiIconArrowDown"></i>
-                        </a>
+                        </a>-->
                         <a class="project-name" href="javascript:void(0)">&{label.tasks}</a>
                     </div>
                     <ul class="list-projects">

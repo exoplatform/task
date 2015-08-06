@@ -52,6 +52,7 @@ import org.exoplatform.services.security.Identity;
 import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Project;
+import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.domain.TaskLog;
 import org.exoplatform.task.exception.AbstractEntityException;
@@ -61,6 +62,7 @@ import org.exoplatform.task.model.CommentModel;
 import org.exoplatform.task.model.TaskModel;
 import org.exoplatform.task.model.User;
 import org.exoplatform.task.service.ProjectService;
+import org.exoplatform.task.service.StatusService;
 import org.exoplatform.task.service.TaskParser;
 import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.service.UserService;
@@ -82,6 +84,9 @@ public class TaskController {
 
   @Inject
   ProjectService projectService;
+
+  @Inject
+  StatusService statusService;
 
   @Inject
   TaskParser taskParser;
@@ -352,13 +357,24 @@ public class TaskController {
   @Resource
   @Ajax
   @MimeType.HTML
-  public Response listTasks(String space_group_id, Long projectId, String keyword, String groupBy, String orderBy, String filter,
-                            SecurityContext securityContext) {
+  public Response listTasks(String space_group_id, Long projectId, String keyword, String groupBy, String orderBy,
+                            String filter, String viewType, SecurityContext securityContext) {
     Project project = null;
     List<Task> tasks;
+
+    final List<String> VIEW_TYPES = Arrays.asList("list", "board");
+    if (projectId <= 0 || viewType == null || !VIEW_TYPES.contains(viewType)) {
+      viewType = VIEW_TYPES.get(0);
+    }
+    boolean isBoardView = viewType.equals(VIEW_TYPES.get(1));
     
     Map<String, String> defOrders = TaskUtil.getDefOrders(bundle);
-    Map<String, String> defGroupBys = TaskUtil.getDefGroupBys(projectId, bundle);
+    Map<String, String> defGroupBys;
+    if (isBoardView) {
+      defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.DUEDATE, TaskUtil.ASSIGNEE), bundle);
+    } else {
+      defGroupBys = TaskUtil.getDefGroupBys(projectId, bundle);
+    }
 
     String currentUser = securityContext.getRemoteUser();
     TimeZone userTimezone = userService.getUserTimezone(currentUser);
@@ -488,6 +504,20 @@ public class TaskController {
       }
     }
 
+    // Count task by status
+    Map<Long, Integer> numberTasks = new HashMap<Long, Integer>();
+    if (isBoardView) {
+      for(Task task : tasks) {
+        Status st = task.getStatus();
+        int num = 0;
+        if (numberTasks.containsKey(st.getId())) {
+          num = numberTasks.get(st.getId());
+        }
+        num++;
+        numberTasks.put(st.getId(), num);
+      }
+    }
+
     //Group Tasks
     Map<String, org.exoplatform.task.model.User> userMap = null;
     Map<String, List<Task>> groupTasks = new HashMap<String, List<Task>>();
@@ -527,7 +557,10 @@ public class TaskController {
         .orderBy(orderBy == null ? "" : orderBy)
         .filter(filter == null ? "" : filter)
         .bundle(bundle)
+        .viewType(viewType)
+        .userTimezone(userTimezone)
         .set("userMap", userMap)
+        .set("numberTasksByStatus", numberTasks)
         .ok()
         .withCharset(Tools.UTF_8);
   }
@@ -582,4 +615,30 @@ public class TaskController {
     }
   }
 
+  @Resource(method = HttpMethod.POST)
+  @Ajax
+  @MimeType.HTML
+  public Response removeStatus(Long statusId, SecurityContext securityContext) {
+    try {
+      Status status = statusService.getStatusById(statusId);
+      Project project = status.getProject();
+      statusService.deleteStatus(statusId);
+      return listTasks(null, project.getId(), null, null, null, null, "board", securityContext);
+    } catch (AbstractEntityException e) {
+      return Response.status(e.getHttpStatusCode()).body(e.getMessage());
+    }
+  }
+
+  @Resource(method = HttpMethod.POST)
+  @Ajax
+  @MimeType.HTML
+  public Response createStatus(String name, Long projectId, SecurityContext securityContext) {
+    try {
+      Project project = projectService.getProjectById(projectId);
+      Status status = statusService.createStatus(project, name);
+      return listTasks(null, projectId, null, null, null, null, "board", securityContext);
+    } catch (AbstractEntityException e) {
+      return Response.status(e.getHttpStatusCode()).body(e.getMessage());
+    }
+  }
 }
