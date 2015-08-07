@@ -19,13 +19,12 @@
  02110-1301 USA, or see the FSF site: http://www.fsf.org.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.exoplatform.addons.task</groupId>
     <artifactId>task-management-parent</artifactId>
-    <version>1.0.x-SNAPSHOT</version>
+    <version>1.0.0-M1</version>
   </parent>
   <artifactId>task-management</artifactId>
   <packaging>war</packaging>
@@ -208,12 +207,12 @@
           <driver>com.mysql.jdbc.Driver</driver>
           <url>jdbc:mysql://localhost:3306/plf?autoReconnect=true</url>
           <username>root</username>
-          <password></password>
+          <password />
           <!-- $ mvn liquibase:diff -->
           <referenceDriver>com.mysql.jdbc.Driver</referenceDriver>
           <referenceUrl>jdbc:mysql://localhost:3306/plf?autoReconnect=true</referenceUrl>
           <referenceUsername>root</referenceUsername>
-          <referencePassword></referencePassword>
+          <referencePassword />
           <!-- db.changelog file -->
           <changeLogFile>src/main/resources/db/changelog/db.changelog-master.xml</changeLogFile>
         </configuration>
