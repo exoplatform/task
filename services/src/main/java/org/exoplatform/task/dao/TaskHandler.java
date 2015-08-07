@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.exoplatform.commons.api.persistence.GenericDAO;
+import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
 
 /**
@@ -46,5 +47,6 @@ public interface TaskHandler extends GenericDAO<Task, Long> {
 
   long getTaskNum(String username, List<Long> projectIds);
 
+  void updateTaskOrder(long currentTaskId, Status newStatus, long[] orders);
 }
 

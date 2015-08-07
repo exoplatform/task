@@ -237,4 +237,13 @@
     </createIndex>
   </changeSet>
 
+  <!-- Definition of TASK_TASKS table -->
+  <changeSet author="tuyennt@exoplatform.com" id="1.0.0-16">
+    <addColumn tableName="TASK_TASKS">
+      <column name="RANK" type="INT" defaultValue="0">
+        <constraints nullable="true"/>
+      </column>
+    </addColumn>
+  </changeSet>
+
 </databaseChangeLog>

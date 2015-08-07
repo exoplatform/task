@@ -5,6 +5,21 @@
 	xmlns="http://www.gatein.org/xml/ns/gatein_resources_1_3">
 
   <module>
+    <name>task_jquery_ui</name>
+    <script>
+      <adapter>
+        (function() {
+        <include>/WEB-INF/classes/org/exoplatform/task/management/assets/jquery-ui/1.11.4/jquery-ui.js</include>
+        return jQuery;
+        })();
+      </adapter>
+    </script>
+    <depends>
+      <module>jquery</module>
+      <as>jQuery</as>
+    </depends>
+  </module>
+  <module>
     <name>bootstrap_tooltip</name>
     <script>
       <adapter>

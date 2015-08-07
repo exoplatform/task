@@ -233,7 +233,33 @@ public class TaskServiceImpl implements TaskService {
 
     Task result = updateTask(task);
     triggerEvent(builder.build());
+
+    //TODO: save order of task here?
+
+    //.
+    if ("status".equalsIgnoreCase(param) && values.length > 2) {
+      //TODO: need save order of task (update rank)
+      long[] taskIds = new long[values.length - 1];
+      int currentTaskIndex = -1;
+      for (int i = 1; i < values.length; i++) {
+        taskIds[i - 1] = Long.parseLong(values[i]);
+        if (taskIds[i - 1] == id) {
+          currentTaskIndex = i - 1;
+        }
+      }
+      if (currentTaskIndex > -1) {
+        //. Update here
+
+      }
+    }
+
     return result;
+  }
+
+  @Override
+  @Transactional
+  public void updateTaskOrder(long currentTaskId, Status newStatus, long[] orders) {
+      daoHandler.getTaskHandler().updateTaskOrder(currentTaskId, newStatus, orders);
   }
 
   @Override

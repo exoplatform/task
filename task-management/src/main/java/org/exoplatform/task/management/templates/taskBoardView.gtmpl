@@ -99,6 +99,10 @@
             </div>
 
             <% groupTasks.each {group -> %>
+                <%
+                    def groupKey = group.key;
+                    groupKey = groupKey.replaceAll(' ', '-');
+                %>
                 <% if (groupBy != null && !groupBy.isEmpty() && !"none".equals(groupBy)) { %>
                     <div class="heading primaryBackground">
                         <% if (groupBy == 'assignee') {%>
@@ -120,7 +124,7 @@
                         <li  class="row-item  has-border taskItem">
                             <% def subGroups = TaskUtil.groupTasks(group.value, "status", TimeZone.getDefault(), bundle);%>
                             <%status.eachWithIndex {st, index -> %>
-                                <div class="col col${index + 1} active">
+                                <div class="col col${index + 1} taskBoardContainer taskContainer${groupKey} taskContainer${groupKey}${st.id}" data-connected=".taskContainer${groupKey}" data-statusid="${st.id}">
                                     <% subGroups[st.name].each {task -> %>
                                         <div class="box-small has-background hover-action-reveal taskItem" data-taskid="${task.id}">
                                             <span class="project-color ${task.status.project.color} ">&nbsp;</span>
@@ -140,7 +144,7 @@
                                                         }
                                                     %>
                                                     <i class="${colorClass} pull-left"></i>
-                                                    <div class="media-body"> ${task.title}</div>
+                                                    <div class="media-body taskName"> ${task.title}</div>
                                                 </div>
                                             </div>
                                         </div>

@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -31,11 +32,13 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.exoplatform.commons.api.persistence.Transactional;
 import org.exoplatform.commons.persistence.impl.EntityManagerService;
 import org.exoplatform.commons.persistence.impl.GenericDAOJPAImpl;
 import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.dao.TaskHandler;
 import org.exoplatform.task.dao.TaskQuery;
+import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
 
 /**
@@ -285,6 +288,102 @@ public class TaskDAOImpl extends GenericDAOJPAImpl<Task, Long> implements TaskHa
       query.setParameter("projectIds", projectIds);    
     }
     return (Long)query.getSingleResult();    
+  }
+
+  @Override
+  public void updateTaskOrder(long currentTaskId, Status newStatus, long[] orders) {
+      int currentTaskIndex = -1;
+      for (int i = 0; i < orders.length; i++) {
+          if (orders[i] == currentTaskId) {
+              currentTaskIndex = i;
+              break;
+          }
+      }
+      if (currentTaskIndex == -1) {
+          return;
+      }
+
+      Task currentTask = find(currentTaskId);
+      Task prevTask = null;
+      Task nextTask = null;
+      if (currentTaskIndex < orders.length - 1) {
+          prevTask = find(orders[currentTaskIndex + 1]);
+      }
+      if (currentTaskIndex > 0) {
+          nextTask = find(orders[currentTaskIndex - 1]);
+      }
+
+      int oldRank = currentTask.getRank();
+      int prevRank = prevTask != null ? prevTask.getRank() : 0;
+      int nextRank = nextTask != null ? nextTask.getRank() : 0;
+      int newRank = prevRank + 1;
+      if (newStatus != null && currentTask.getStatus().getId() != newStatus.getId()) {
+          oldRank = 0;
+          currentTask.setStatus(newStatus);
+      }
+
+      EntityManager em = getEntityManager();
+      StringBuilder sql = null;
+
+      if (newRank == 1 || oldRank == 0) {
+          int increment = 1;
+          StringBuilder exclude = new StringBuilder();
+          if (nextRank == 0) {
+              for (int i = currentTaskIndex - 1; i >= 0; i--) {
+                  Task task = find(orders[i]);
+                  if (task.getRank() > 0) {
+                    break;
+                  }
+                  task.setRank(newRank + currentTaskIndex - i);
+                  update(task);
+                  if (exclude.length() > 0) {
+                      exclude.append(',');
+                  }
+                  exclude.append(task.getId());
+                  increment++;
+              }
+          }
+          //Update rank of tasks have rank >= newRank with rank := rank + increment
+          sql = new StringBuilder("UPDATE Task as ta SET ta.rank = ta.rank + ").append(increment)
+                                .append(" WHERE ta.rank >= ").append(newRank);
+          if (exclude.length() > 0) {
+              sql.append(" AND ta.id NOT IN (").append(exclude.toString()).append(")");
+          }
+
+      } else if (oldRank < newRank) {
+          //Update all task where oldRank < rank < newRank: rank = rank - 1
+          sql = new StringBuilder("UPDATE Task as ta SET ta.rank = ta.rank - 1")
+                                .append(" WHERE ta.rank > ").append(oldRank)
+                                .append(" AND ta.rank < ").append(newRank);
+          newRank --;
+      } else if (oldRank > newRank) {
+          //Update all task where newRank <= rank < oldRank: rank = rank + 1
+          sql = new StringBuilder("UPDATE Task as ta SET ta.rank = ta.rank + 1")
+                  .append(" WHERE ta.rank >= ").append(newRank)
+                  .append(" AND ta.rank < ").append(oldRank);
+          newRank ++;
+      }
+
+      if (sql != null && sql.length() > 0) {
+          // Add common condition
+          sql.append(" AND ta.completed = FALSE AND ta.status.id = ").append(currentTask.getStatus().getId());
+
+          //TODO: This block code is temporary workaround because the update is require transaction
+          EntityTransaction trans = em.getTransaction();
+          boolean active = false;
+          if (!trans.isActive()) {
+            trans.begin();
+            active = true;
+          }
+
+          em.createQuery(sql.toString()).executeUpdate();
+
+          if (active) {
+            trans.commit();
+          }
+      }
+      currentTask.setRank(newRank);
+      update(currentTask);
   }
 }
 

@@ -64,7 +64,7 @@ public final class TaskUtil {
   public static final String STATUS = "status";
   public static final String ASSIGNEE = "assignee";
   public static final String PROJECT = "project";
-  public static final String RANK = "status.rank";
+  public static final String RANK = "rank";
   
   private TaskUtil() {
   }

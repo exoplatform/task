@@ -256,6 +256,25 @@ public class TaskController {
   @Resource
   @Ajax
   @MimeType("text/plain")
+  public Response saveTaskOrder(Long taskId, Long newStatusId, Long[] orders) {
+    if (taskId == null || taskId == 0) {
+      return Response.status(404).body("Task not found");
+    }
+    Status newStatus = null;
+    if (newStatusId != null && newStatusId > 0) {
+      newStatus = statusService.getStatusById(newStatusId);
+    }
+    long[] ids = new long[orders.length];
+    for (int i = 0; i < ids.length; i++) {
+      ids[i] = orders[i];
+    }
+    taskService.updateTaskOrder(taskId, newStatus, ids);
+    return Response.ok("Update successfully");
+  }
+
+  @Resource
+  @Ajax
+  @MimeType("text/plain")
   public Response updateCompleted(Long taskId, Boolean completed) {
 
     try {
@@ -372,6 +391,7 @@ public class TaskController {
     Map<String, String> defGroupBys;
     if (isBoardView) {
       defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.DUEDATE, TaskUtil.ASSIGNEE), bundle);
+      defOrders = TaskUtil.resolve(Arrays.asList(TaskUtil.DUEDATE, TaskUtil.PRIORITY, TaskUtil.RANK), bundle);
     } else {
       defGroupBys = TaskUtil.getDefGroupBys(projectId, bundle);
     }

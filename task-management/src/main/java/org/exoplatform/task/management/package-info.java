@@ -35,6 +35,7 @@
     @WebJar("bootstrap-datepicker"),
     @WebJar("selectize.js"),
     @WebJar("select2"),
+    @WebJar("jquery-ui"),
     @WebJar("ckeditor")
 })
 @Scripts({
