@@ -63,6 +63,57 @@ define('taskBoardView', ['jquery', 'taskManagementApp', 'SHARED/edit_inline_js',
                 }
                 return false;
             });
+
+            $centerPanel.on('click', '[data-taskid]', function(e) {
+                $('[name="taskTitle"]:focus').blur();
+                e.stopPropagation();
+            });
+            $centerPanel.off('click', '.taskBoardContainer').on('click', '.taskBoardContainer', function(e) {
+                var $container = $(e.target).closest('.taskBoardContainer');
+                $container.find('form.createTaskInListView').css('visibility', 'visible');
+                $container.find('[name="taskTitle"]').focus()
+                    .one('blur', function(e) {
+                        var $this = $(e.target);
+                        var $form = $(e.target).closest('form');
+                        setTimeout(function() {
+                            if (!$this.is(':focus')) {
+                                var val = $this.val();
+                                if (val == '') {
+                                    $form.css('visibility', 'hidden');
+                                } else {
+                                    $form.submit();
+                                }
+                            }
+                        }, 50);
+                    });
+            });
+            $centerPanel.off('submit', '.taskBoardContainer').on('submit', '.taskBoardContainer', function(e) {
+                var $form = $(e.target);
+                var data = {};
+                $form.find('input').each(function() {
+                    var $input = $(this);
+                    var name = $input.attr('name');
+                    var val = $input.val();
+                    if ($input.attr('type') == 'text') {
+                        $input.val('');
+                    }
+                    data[name] = val;
+                });
+                if (data.taskTitle != undefined && data.taskTitle != '') {
+                    $centerPanel.jzAjax('TaskController.createTaskInListView()', {
+                        method: 'POST',
+                        data: data,
+                        success: function(response) {
+                            $centerPanelContent.html(response);
+                        },
+                        error: function() {
+                            alert('error while create new task');
+                        }
+                    });
+                }
+                $form.css('visibility', 'hidden');
+                return false;
+            });
         };
 
         boardView.initEditInline = function() {
@@ -117,45 +168,26 @@ define('taskBoardView', ['jquery', 'taskManagementApp', 'SHARED/edit_inline_js',
             var placeHoderClass = isSortable ? 'draggableHighlight' : 'draggableFullContainer';
             $centerPanelContent.find('.taskBoardContainer').each(function() {
                 var $this = $(this);
-                var connected = '.taskBoardContainer' + $this.data('connected');
+                var connected = '.taskBoardContainer' + $this.data('connected') + '';
                 $this.sortable({
+                    items: ".taskItem",
                     connectWith: connected,
                     revert: true,
                     placeholder: placeHoderClass,
-                    //handle: ".dragable",
+                    handle: ".dragable",
                     containment: '.taskBoardView .table-project-collapse',
                     opacity: 0.9,
                     receive: function( event, ui ) {
-                        if (isSortable) {
-                            return;
+                        var $container = $(event.target);
+                        if ($container.find('div.taskItem').length <= 1) {
+                            //. Force Form to add task always at bottom of container
+                            var $form = $container.find('form');
+                            var $clone = $form.clone();
+                            $form.remove();
+                            $container.append($clone);
                         }
-                        var $task = ui.item;
-                        var $status = $(event.target).closest('[data-statusid]');
-                        var taskId = $task.data('taskid');
-                        var statusId = $status.data('statusid');
-
-                        $centerPanelContent.jzAjax('TaskController.saveTaskInfo()',{
-                            data: {
-                                taskId: taskId,
-                                name: 'status',
-                                value: statusId
-                            },
-                            method: 'POST',
-                            traditional: true,
-                            success: function(response) {
-
-                            },
-                            error: function(jqXHR, textStatus, errorThrown ) {
-                                alert('can not update task status');
-                                $status.sortable('cancel');
-                                $(ui.sender).sortable('cancel');
-                            }
-                        });
                     },
                     update: function(event, ui) {
-                        if (!isSortable) {
-                            return;
-                        }
                         var $task = ui.item;
                         var taskId = $task.data('taskid');
                         var $status = $(event.target).closest('[data-statusid]');
@@ -169,24 +201,53 @@ define('taskBoardView', ['jquery', 'taskManagementApp', 'SHARED/edit_inline_js',
                         for(var i = 0; i < listItem.length; i++) {
                             listItem[i] = parseInt(listItem[i]);
                         }
+                        if (isSortable) {
+                            $centerPanelContent.jzAjax('TaskController.saveTaskOrder()',{
+                                data: {
+                                    taskId: taskId,
+                                    newStatusId: statusId,
+                                    orders: listItem
+                                },
+                                method: 'POST',
+                                traditional: true,
+                                success: function(response) {
 
-                        $centerPanelContent.jzAjax('TaskController.saveTaskOrder()',{
-                            data: {
-                                taskId: taskId,
-                                newStatusId: statusId,
-                                orders: listItem
-                            },
-                            method: 'POST',
-                            traditional: true,
-                            success: function(response) {
+                                },
+                                error: function(jqXHR, textStatus, errorThrown ) {
+                                    alert('can not update task status and order');
+                                    $status.sortable('cancel');
+                                    $(ui.sender).sortable('cancel');
+                                }
+                            });
+                        } else {
+                            $centerPanelContent.jzAjax('TaskController.saveTaskInfo()',{
+                                data: {
+                                    taskId: taskId,
+                                    name: 'status',
+                                    value: statusId
+                                },
+                                method: 'POST',
+                                traditional: true,
+                                success: function(response) {
 
-                            },
-                            error: function(jqXHR, textStatus, errorThrown ) {
-                                alert('can not update task status and order');
-                                $status.sortable('cancel');
-                                $(ui.sender).sortable('cancel');
-                            }
-                        });
+                                },
+                                error: function(jqXHR, textStatus, errorThrown ) {
+                                    alert('can not update task status');
+                                    $status.sortable('cancel');
+                                    $(ui.sender).sortable('cancel');
+                                }
+                            });
+                        }
+                    },
+                    over: function(event, ui) {
+                        var $container = $(event.target);
+                        var $form = $container.find('form');
+                        $form.hide();
+                    },
+                    out: function(event, ui) {
+                        var $container = $(event.target);
+                        var $form = $container.find('form');
+                        $form.show();
                     }
                 });
             });

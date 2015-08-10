@@ -5,6 +5,7 @@
     import java.util.TimeZone;
     import java.util.Calendar;
     import org.exoplatform.task.domain.Status;
+    import org.exoplatform.task.model.GroupKey;
     import org.exoplatform.task.utils.TaskUtil;
     import org.exoplatform.task.utils.DateUtil;
     import org.exoplatform.services.security.ConversationState;
@@ -29,9 +30,9 @@
     %>
     <div class="header ">
         <div class="clearfix">
-            <div class="header-left pull-left">
+            <!--<div class="header-left pull-left">
                 <a href="#" class="btn btn-primary btn-add-task"><i class="uiIconSimplePlusMini"></i> New task</a>
-            </div>
+            </div>-->
             <div class="header-right pull-right">
                 <!-- this is filter action-->
                 <% if (tasks.size() > 2) { %>
@@ -62,7 +63,7 @@
                 <%}%>
             </div>
         </div>
-        <div class="input-field">
+        <!--<div class="input-field">
             <form action="#" method="GET" class="form-create-task">
                 <input type="text" name="taskTitle" placeholder="Untiled Task"
                         <%if (taskNum == 0) { %>
@@ -71,7 +72,7 @@
                         <%} %>
                         />
             </form>
-        </div>
+        </div>-->
     </div>
     <%} %>
     <div class="body relative">
@@ -100,7 +101,7 @@
 
             <% groupTasks.each {group -> %>
                 <%
-                    def groupKey = group.key;
+                    def groupKey = group.key.toString();
                     groupKey = groupKey.replaceAll(' ', '-');
                 %>
                 <% if (groupBy != null && !groupBy.isEmpty() && !"none".equals(groupBy)) { %>
@@ -108,7 +109,7 @@
                         <% if (groupBy == 'assignee') {%>
                         <a class="toggle-collapse-group" href="#"><i class="uiIcon uiIconArrowDown"></i></a>
                         <%
-                            def user = userMap[group.key];
+                            def user = userMap[group.key.value];
                         %>
                         <% if (user.username != 'guest') {%>
                         <img width="20px" height="20px" src="${user.avatar}" alt="${user.displayName}">
@@ -124,8 +125,11 @@
                         <li  class="row-item  has-border taskItem">
                             <% def subGroups = TaskUtil.groupTasks(group.value, "status", TimeZone.getDefault(), bundle);%>
                             <%status.eachWithIndex {st, index -> %>
+                                <%
+                                    def key = new GroupKey(st.name, st, 0);
+                                %>
                                 <div class="col col${index + 1} taskBoardContainer taskContainer${groupKey} taskContainer${groupKey}${st.id}" data-connected=".taskContainer${groupKey}" data-statusid="${st.id}">
-                                    <% subGroups[st.name].each {task -> %>
+                                    <% subGroups[key].each {task -> %>
                                         <div class="box-small has-background hover-action-reveal taskItem" data-taskid="${task.id}">
                                             <span class="project-color ${task.status.project.color} ">&nbsp;</span>
                                             <div class="box-small-inner  ">
@@ -149,9 +153,17 @@
                                             </div>
                                         </div>
                                     <%}%>
-                                    <!--<form class="create-task"  method="GET" action="#">
+                                    <form class="create-task createTaskInListView" method="POST" action="#" style="visibility: hidden">
                                         <input type="text" placeholder="Untiled Task" name="taskTitle">
-                                    </form>-->
+                                        <input type="hidden" name="statusId" value="${st.id}"/>
+                                        <input type="hidden" name="projectId" value="${st.project.id}"/>
+                                        <input type="hidden" name="groupBy" value="${groupBy}"/>
+                                        <input type="hidden" name="orderBy" value="${orderBy}"/>
+                                        <input type="hidden" name="viewType" value="board"/>
+                                        <% if (groupBy != null && groupBy != 'none' && groupBy != '') {%>
+                                            <input type="hidden" name="${groupBy}" value="${group.key.value}"/>
+                                        <%}%>
+                                    </form>
                                 </div>
                             <%}%>
                             <div class="col col-new" style="display:none">

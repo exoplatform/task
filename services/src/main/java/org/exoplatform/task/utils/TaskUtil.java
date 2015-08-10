@@ -41,6 +41,7 @@ import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.exception.TaskNotFoundException;
 import org.exoplatform.task.model.CommentModel;
+import org.exoplatform.task.model.GroupKey;
 import org.exoplatform.task.model.TaskModel;
 import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.TaskService;
@@ -173,10 +174,10 @@ public final class TaskUtil {
     }
   }
 
-  public static Map<String, List<Task>> groupTasks(List<Task> tasks, String groupBy, TimeZone userTimezone, ResourceBundle bundle) {
-    Map<String, List<Task>> maps = new TreeMap<String, List<Task>>();
+  public static Map<GroupKey, List<Task>> groupTasks(List<Task> tasks, String groupBy, TimeZone userTimezone, ResourceBundle bundle) {
+    Map<GroupKey, List<Task>> maps = new TreeMap<GroupKey, List<Task>>();
     for(Task task : tasks) {
-      for (String key : getGroupName(task, groupBy, userTimezone, bundle)) {
+      for (GroupKey key : getGroupName(task, groupBy, userTimezone, bundle)) {
         List<Task> list = maps.get(key);
         if(list == null) {
           list = new LinkedList<Task>();
@@ -293,27 +294,36 @@ public final class TaskUtil {
     return result;
   }
 
-  private static String[] getGroupName(Task task, String groupBy, TimeZone userTimezone, ResourceBundle bundle) {
+  private static GroupKey[] getGroupName(Task task, String groupBy, TimeZone userTimezone, ResourceBundle bundle) {
     if("project".equalsIgnoreCase(groupBy)) {
       Status s = task.getStatus();
       if(s == null) {
-        return new String[] {"No Project"};
+        return new GroupKey[] {new GroupKey("No Project", null, 1)};
       } else {
-        return new String[] {s.getProject().getName()};
+        return new GroupKey[] {new GroupKey(s.getProject().getName(), s.getProject(), 0)};
       }
     } else if("status".equalsIgnoreCase(groupBy)) {
       Status s = task.getStatus();
       if(s == null) {
-        return new String[] {"TODO"};
+        return new GroupKey[] {new GroupKey("TODO", null, -1)};
       } else {
-        return new String[] {s.getName()};
+        return new GroupKey[] {new GroupKey(s.getName(), s, 0)};
       }
     } else if("tag".equalsIgnoreCase(groupBy)) {
       Set<String> tags = task.getTags();
-      return tags == null || tags.size() == 0 ? new String[] {"Un tagged"} : tags.toArray(new String[0]);
+      GroupKey[] keys = new GroupKey[tags != null && tags.size() > 0 ? tags.size() : 1];
+      if (tags == null || tags.size() == 0) {
+        keys[0] = new GroupKey("Un tagged", null, 1);
+      } else {
+        int index = 0;
+        for (String tag : tags) {
+          keys[index++] = new GroupKey(tag, tag, 0);
+        }
+      }
+      return keys;
     } else if ("assignee".equalsIgnoreCase(groupBy)) {
       String assignee = task.getAssignee();
-      return new String[] {assignee != null ? assignee : "Unassigned"};
+      return assignee != null ? new GroupKey[]{new GroupKey(assignee, assignee, 0)} : new GroupKey[]{new GroupKey("Unassigned", "", 1)};
     } else if ("dueDate".equalsIgnoreCase(groupBy)) {
       Date dueDate = task.getDueDate();
       Calendar calendar = null;
@@ -321,9 +331,9 @@ public final class TaskUtil {
         calendar = Calendar.getInstance(userTimezone);
         calendar.setTime(dueDate);
       }
-      return new String[] {DateUtil.getDueDateLabel(calendar, bundle)};
+      return new GroupKey[] {new GroupKey(DateUtil.getDueDateLabel(calendar, bundle), dueDate, calendar != null ? 0 : 1)};
     }
-    return new String[0];
+    return new GroupKey[0];
   }
 
 }

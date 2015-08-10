@@ -12,6 +12,8 @@ public interface StatusService {
   List<String> getDefaultStatus();
 
   Status getStatusById(long statusId);
+
+  Status findLowestRankStatusByProject(long projectId);
     
   Status createStatus(Project project, String status);
   

@@ -81,6 +81,11 @@ public class StatusServiceImpl implements StatusService {
   }
 
   @Override
+  public Status findLowestRankStatusByProject(long projectId) {
+    return daoHandler.getStatusHandler().findLowestRankStatusByProject(projectId);
+  }
+
+  @Override
   @Transactional
   public Status createStatus(Project project, String name) {
     if (name == null || (name = name.trim()).isEmpty() || project == null) {

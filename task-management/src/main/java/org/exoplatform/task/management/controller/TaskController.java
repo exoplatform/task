@@ -59,6 +59,7 @@ import org.exoplatform.task.exception.AbstractEntityException;
 import org.exoplatform.task.exception.ProjectNotFoundException;
 import org.exoplatform.task.exception.TaskNotFoundException;
 import org.exoplatform.task.model.CommentModel;
+import org.exoplatform.task.model.GroupKey;
 import org.exoplatform.task.model.TaskModel;
 import org.exoplatform.task.model.User;
 import org.exoplatform.task.service.ProjectService;
@@ -390,7 +391,7 @@ public class TaskController {
     Map<String, String> defOrders = TaskUtil.getDefOrders(bundle);
     Map<String, String> defGroupBys;
     if (isBoardView) {
-      defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.DUEDATE, TaskUtil.ASSIGNEE), bundle);
+      defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, /*TaskUtil.DUEDATE,*/ TaskUtil.ASSIGNEE), bundle);
       defOrders = TaskUtil.resolve(Arrays.asList(TaskUtil.DUEDATE, TaskUtil.PRIORITY, TaskUtil.RANK), bundle);
     } else {
       defGroupBys = TaskUtil.getDefGroupBys(projectId, bundle);
@@ -540,20 +541,21 @@ public class TaskController {
 
     //Group Tasks
     Map<String, org.exoplatform.task.model.User> userMap = null;
-    Map<String, List<Task>> groupTasks = new HashMap<String, List<Task>>();
+    Map<GroupKey, List<Task>> groupTasks = new HashMap<GroupKey, List<Task>>();
     if(groupBy != null && !groupBy.isEmpty()) {
       TimeZone tz = userService.getUserTimezone(currentUser);
       groupTasks = TaskUtil.groupTasks(tasks, groupBy, tz, bundle);
       if("assignee".equalsIgnoreCase(groupBy)) {
         userMap = new HashMap<String, org.exoplatform.task.model.User>();
-        for(String assignee : groupTasks.keySet()) {
+        for(GroupKey key : groupTasks.keySet()) {
+          String assignee = (String)key.getValue();
           org.exoplatform.task.model.User user = userService.loadUser(assignee);
           userMap.put(assignee, user);
         }
       }
     }
     if(groupTasks.isEmpty()) {
-      groupTasks.put("", tasks);
+      groupTasks.put(new GroupKey("", null, 0), tasks);
     }
     
     long taskNum = 0;
@@ -633,6 +635,36 @@ public class TaskController {
     } catch (JSONException ex) {
       return Response.status(500).body("JSONException: " + ex);
     }
+  }
+
+  @Resource
+  @Ajax
+  @MimeType.HTML
+  public Response createTaskInListView(String taskTitle, Long projectId, Long statusId, String assignee,
+                                       String viewType, String groupBy, String orderBy, SecurityContext securityContext) {
+    if (taskTitle == null || taskTitle.isEmpty()) {
+      return Response.status(406).body("Task title is required");
+    }
+    Task task = new Task();
+    task.setTitle(taskTitle);
+    if (assignee != null && !assignee.isEmpty()) {
+      task.setAssignee(assignee);
+    }
+    if (statusId != null) {
+      Status status = statusService.getStatusById(statusId);
+      if (status != null) {
+        task.setStatus(status);
+      }
+    } else if (projectId != null) {
+      Status status = statusService.findLowestRankStatusByProject(projectId);
+      if (status != null) {
+        task.setStatus(status);
+      }
+    }
+
+    taskService.createTask(task);
+
+    return listTasks(null, projectId, null, groupBy, orderBy, null, viewType, securityContext);
   }
 
   @Resource(method = HttpMethod.POST)

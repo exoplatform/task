@@ -69,7 +69,7 @@
                 <% if (groupBy == 'assignee') {%>
                 <a class="toggle-collapse-group" href="#"><i class="uiIcon uiIconArrowDown"></i></a>
                 <%
-                    def user = userMap[group.key];
+                    def user = userMap[group.key.value];
                 %>
                 <% if (user.username != 'guest') {%>
                 <img width="20px" height="20px" src="${user.avatar}" alt="${user.displayName}">
