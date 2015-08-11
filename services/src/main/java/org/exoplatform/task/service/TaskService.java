@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.domain.Comment;
+import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.domain.TaskLog;
 import org.exoplatform.task.exception.CommentNotFoundException;
@@ -21,6 +22,8 @@ public interface TaskService {
 
   Task updateTaskInfo(long id, String param, String[] values)
       throws TaskNotFoundException, ParameterEntityException, StatusNotFoundException;
+
+  void updateTaskOrder(long currentTaskId, Status newStatus, long[] orders);
 
   Task updateTaskCompleted(long id, Boolean completed)
       throws TaskNotFoundException, ParameterEntityException, StatusNotFoundException;

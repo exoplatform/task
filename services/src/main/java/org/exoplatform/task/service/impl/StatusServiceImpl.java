@@ -76,6 +76,16 @@ public class StatusServiceImpl implements StatusService {
   }
 
   @Override
+  public Status getStatusById(long statusId) {
+    return daoHandler.getStatusHandler().find(statusId);
+  }
+
+  @Override
+  public Status findLowestRankStatusByProject(long projectId) {
+    return daoHandler.getStatusHandler().findLowestRankStatusByProject(projectId);
+  }
+
+  @Override
   @Transactional
   public Status createStatus(Project project, String name) {
     if (name == null || (name = name.trim()).isEmpty() || project == null) {
@@ -125,8 +135,12 @@ public class StatusServiceImpl implements StatusService {
       t.setStatus(altStatus);
       daoHandler.getTaskHandler().update(t);
     }
+
     //
     st.getTasks().clear();
+    project.getStatus().remove(st);
+    st.setProject(null);
+
     handler.delete(st);
     return st;
   }

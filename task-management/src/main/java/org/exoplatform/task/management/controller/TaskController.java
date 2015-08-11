@@ -52,15 +52,18 @@ import org.exoplatform.services.security.Identity;
 import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Project;
+import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.domain.TaskLog;
 import org.exoplatform.task.exception.AbstractEntityException;
 import org.exoplatform.task.exception.ProjectNotFoundException;
 import org.exoplatform.task.exception.TaskNotFoundException;
 import org.exoplatform.task.model.CommentModel;
+import org.exoplatform.task.model.GroupKey;
 import org.exoplatform.task.model.TaskModel;
 import org.exoplatform.task.model.User;
 import org.exoplatform.task.service.ProjectService;
+import org.exoplatform.task.service.StatusService;
 import org.exoplatform.task.service.TaskParser;
 import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.service.UserService;
@@ -82,6 +85,9 @@ public class TaskController {
 
   @Inject
   ProjectService projectService;
+
+  @Inject
+  StatusService statusService;
 
   @Inject
   TaskParser taskParser;
@@ -251,6 +257,25 @@ public class TaskController {
   @Resource
   @Ajax
   @MimeType("text/plain")
+  public Response saveTaskOrder(Long taskId, Long newStatusId, Long[] orders) {
+    if (taskId == null || taskId == 0) {
+      return Response.status(404).body("Task not found");
+    }
+    Status newStatus = null;
+    if (newStatusId != null && newStatusId > 0) {
+      newStatus = statusService.getStatusById(newStatusId);
+    }
+    long[] ids = new long[orders.length];
+    for (int i = 0; i < ids.length; i++) {
+      ids[i] = orders[i];
+    }
+    taskService.updateTaskOrder(taskId, newStatus, ids);
+    return Response.ok("Update successfully");
+  }
+
+  @Resource
+  @Ajax
+  @MimeType("text/plain")
   public Response updateCompleted(Long taskId, Boolean completed) {
 
     try {
@@ -352,13 +377,25 @@ public class TaskController {
   @Resource
   @Ajax
   @MimeType.HTML
-  public Response listTasks(String space_group_id, Long projectId, String keyword, String groupBy, String orderBy, String filter,
-                            SecurityContext securityContext) {
+  public Response listTasks(String space_group_id, Long projectId, String keyword, String groupBy, String orderBy,
+                            String filter, String viewType, SecurityContext securityContext) {
     Project project = null;
     List<Task> tasks;
+
+    final List<String> VIEW_TYPES = Arrays.asList("list", "board");
+    if (projectId <= 0 || viewType == null || !VIEW_TYPES.contains(viewType)) {
+      viewType = VIEW_TYPES.get(0);
+    }
+    boolean isBoardView = viewType.equals(VIEW_TYPES.get(1));
     
     Map<String, String> defOrders = TaskUtil.getDefOrders(bundle);
-    Map<String, String> defGroupBys = TaskUtil.getDefGroupBys(projectId, bundle);
+    Map<String, String> defGroupBys;
+    if (isBoardView) {
+      defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, /*TaskUtil.DUEDATE,*/ TaskUtil.ASSIGNEE), bundle);
+      defOrders = TaskUtil.resolve(Arrays.asList(TaskUtil.DUEDATE, TaskUtil.PRIORITY, TaskUtil.RANK), bundle);
+    } else {
+      defGroupBys = TaskUtil.getDefGroupBys(projectId, bundle);
+    }
 
     String currentUser = securityContext.getRemoteUser();
     TimeZone userTimezone = userService.getUserTimezone(currentUser);
@@ -488,22 +525,37 @@ public class TaskController {
       }
     }
 
+    // Count task by status
+    Map<Long, Integer> numberTasks = new HashMap<Long, Integer>();
+    if (isBoardView) {
+      for(Task task : tasks) {
+        Status st = task.getStatus();
+        int num = 0;
+        if (numberTasks.containsKey(st.getId())) {
+          num = numberTasks.get(st.getId());
+        }
+        num++;
+        numberTasks.put(st.getId(), num);
+      }
+    }
+
     //Group Tasks
     Map<String, org.exoplatform.task.model.User> userMap = null;
-    Map<String, List<Task>> groupTasks = new HashMap<String, List<Task>>();
+    Map<GroupKey, List<Task>> groupTasks = new HashMap<GroupKey, List<Task>>();
     if(groupBy != null && !groupBy.isEmpty()) {
       TimeZone tz = userService.getUserTimezone(currentUser);
       groupTasks = TaskUtil.groupTasks(tasks, groupBy, tz, bundle);
       if("assignee".equalsIgnoreCase(groupBy)) {
         userMap = new HashMap<String, org.exoplatform.task.model.User>();
-        for(String assignee : groupTasks.keySet()) {
+        for(GroupKey key : groupTasks.keySet()) {
+          String assignee = (String)key.getValue();
           org.exoplatform.task.model.User user = userService.loadUser(assignee);
           userMap.put(assignee, user);
         }
       }
     }
     if(groupTasks.isEmpty()) {
-      groupTasks.put("", tasks);
+      groupTasks.put(new GroupKey("", null, 0), tasks);
     }
     
     long taskNum = 0;
@@ -527,7 +579,10 @@ public class TaskController {
         .orderBy(orderBy == null ? "" : orderBy)
         .filter(filter == null ? "" : filter)
         .bundle(bundle)
+        .viewType(viewType)
+        .userTimezone(userTimezone)
         .set("userMap", userMap)
+        .set("numberTasksByStatus", numberTasks)
         .ok()
         .withCharset(Tools.UTF_8);
   }
@@ -582,4 +637,60 @@ public class TaskController {
     }
   }
 
+  @Resource
+  @Ajax
+  @MimeType.HTML
+  public Response createTaskInListView(String taskTitle, Long projectId, Long statusId, String assignee,
+                                       String viewType, String groupBy, String orderBy, SecurityContext securityContext) {
+    if (taskTitle == null || taskTitle.isEmpty()) {
+      return Response.status(406).body("Task title is required");
+    }
+    Task task = new Task();
+    task.setTitle(taskTitle);
+    if (assignee != null && !assignee.isEmpty()) {
+      task.setAssignee(assignee);
+    }
+    if (statusId != null) {
+      Status status = statusService.getStatusById(statusId);
+      if (status != null) {
+        task.setStatus(status);
+      }
+    } else if (projectId != null) {
+      Status status = statusService.findLowestRankStatusByProject(projectId);
+      if (status != null) {
+        task.setStatus(status);
+      }
+    }
+
+    taskService.createTask(task);
+
+    return listTasks(null, projectId, null, groupBy, orderBy, null, viewType, securityContext);
+  }
+
+  @Resource(method = HttpMethod.POST)
+  @Ajax
+  @MimeType.HTML
+  public Response removeStatus(Long statusId, SecurityContext securityContext) {
+    try {
+      Status status = statusService.getStatusById(statusId);
+      Project project = status.getProject();
+      statusService.deleteStatus(statusId);
+      return listTasks(null, project.getId(), null, null, null, null, "board", securityContext);
+    } catch (AbstractEntityException e) {
+      return Response.status(e.getHttpStatusCode()).body(e.getMessage());
+    }
+  }
+
+  @Resource(method = HttpMethod.POST)
+  @Ajax
+  @MimeType.HTML
+  public Response createStatus(String name, Long projectId, SecurityContext securityContext) {
+    try {
+      Project project = projectService.getProjectById(projectId);
+      Status status = statusService.createStatus(project, name);
+      return listTasks(null, projectId, null, null, null, null, "board", securityContext);
+    } catch (AbstractEntityException e) {
+      return Response.status(e.getHttpStatusCode()).body(e.getMessage());
+    }
+  }
 }

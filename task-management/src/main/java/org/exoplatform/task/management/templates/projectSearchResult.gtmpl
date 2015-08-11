@@ -3,6 +3,10 @@
 #{param name=currentProjectId/}
 
 <%
+import org.exoplatform.task.utils.StringUtil;
+%>
+
+<%
 def displayProject(project, level) {%>
     <%
         //. If current project is match, we do not shot its tree
@@ -13,9 +17,9 @@ def displayProject(project, level) {%>
         boolean isMatched = false;
         if (keyword == "") {
             isMatched = true;
-        } else if (name.contains(keyword)) {
+        } else if (name.toLowerCase().contains(keyword.toLowerCase())) {
             isMatched = true;
-            name = name.replace(keyword, "<strong>"+ keyword + "</strong>");
+            name = StringUtil.highlight(name, keyword, "<strong>", "</strong>");
         }
         def padding = level * 20 + 20;
     %>

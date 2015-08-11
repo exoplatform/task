@@ -9,24 +9,24 @@
 #{param name=filter /}
 #{param name=projects/}
 #{param name=userSetting/}
+#{param name=userTimezone/}
 #{param name=bundle/}
 #{param name=taskId/}
 #{param name=taskModel/}
 #{param name=isInSpace/}
 #{param name=orders /}
 #{param name=groups /}
+#{param name=viewType/}
 
 <div class="taskMngCont">
 	<div id="taskManagement" class="row-fluid">
 	    <div class="leftPanel uiAccordion span3">
 	        <ul class="left-menu">
-	        		<%if (!isInSpace) {%>
-	            <li class="accordion-heading active" style="display: none">
-	                <a class="project-name" data-id="-1" href="@{TaskManagement.index()}">&{label.incoming}&nbsp;<span class="badgeDefault badgePrimary mini top">1</span></a>
-	            </li>
-	            <%} %>
                 <li class="accordion-heading dropdown">
                     <div class="item">
+                        <a class="dropdownIcon collapseTree pull-right" href="javascript:void(0)">
+                            <i class="uiIconLightGray uiIconArrowDownMini"></i>
+                        </a>
                         <a class="project-name" href="javascript:void(0)">&{label.tasks}</a>
                     </div>
                     <ul class="list-projects">
@@ -72,17 +72,23 @@
                         </li>
                     </ul>
                 </li>
-	            <li class="accordion-heading" style="display: none">
-	                <a class="project-name" data-id="-2" href="#">&{label.todo}</a>
-	            </li>
+	            <!-- <li class="accordion-heading" style="display: none">
+	              <a class="dropdownIcon pull-right" href="javascript:void(0)">
+                      <i class="uiIconLightGray uiIconArrowDown"></i>
+                  </a>  
+                  <a class="project-name" data-id="-2" href="#">&{label.todo}</a>
+	            </li> -->
 	            <li class="accordion-heading dropdown" data-showhiddenproject="${userSetting.showHiddenProject}">
 	                <div class="item">
-		                <a class="dropdown-toggle actionIconSmall add-new-project pull-right"
+		                <a class="dropdownIcon pull-right collapseTree" href="javascript:void(0)">
+                            <i class="uiIconLightGray uiIconArrowDownMini" ></i>
+                        </a>
+                        <a class="dropdown-toggle actionIconSmall dropdownIcon add-new-project pull-right"
 		                   data-toggle="dropdown" data-content="&{label.welcome.firstProject}" data-placement="bottom"
 		                   href="javascript:void(0)">
 		                    <i class="uiIconLightGray uiIconSimplePlusMini addProject" ></i>
                         </a>
-		                <div class="dropdown-menu uiDropdownWithIcon" style="left: 100%; top: -22px">
+		                <div class="dropdown-menu uiDropdownWithIcon" style="left: 88%; top: -22px">
 		                	<span class="arrowLeft"></span>
 		                	<ul class="uiDropdownMenu">
 			                    <li>
@@ -106,8 +112,43 @@
 	
 	                #{include path=listProjects.gtmpl /}
 	            </li>
-	            <li class="accordion-heading">
-	                <a class="project-name" href="#">Label</a>
+	            <li class="accordion-heading dropdown">
+	               <div class="item">  
+                      <a class="dropdownIcon collapseTree pull-right" href="javascript:void(0)">
+                          <i class="uiIconLightGray uiIconArrowDownMini"></i>
+                      </a>
+                      <a href="javascript:void(0)" data-placement="bottom" data-content="Click here to create your first label." data-toggle="dropdown" class="dropdown-toggle actionIconSmall dropdownIcon add-new-label pull-right">
+                        <i class="uiIconLightGray uiIconSimplePlusMini addLabel"></i>
+                      </a>
+                      <div class="dropdown-menu uiDropdownWithIcon" style="left: 88%; top: -22px">
+                        <span class="arrowLeft"></span>
+                        <ul class="uiDropdownMenu">
+                            <li>
+                              <a class="new-label" data-projectId="0" href="#">
+                                <i class="uiIconAddLabel uiIconLightGray"></i>Add label
+                              </a>
+                            </li>
+                            <li>
+                              <a href="javascript:void(0)" class="actionShowHiddenProject">
+                                <i class="uiIconHide uiIconLightGray"></i>
+                                <span class="label-showHiddenLabel">
+                                    Hide hidden label
+                                </span>
+                                <i class="uiIconShowLabel uiIconLightGray"></i>
+                                <span class="label-hideHiddenLabel">
+                                    Show hidden label
+                                </span>
+                              </a>
+	                         </li>
+                          </ul>
+                      </div>
+                      <a class="project-name" href="#">Label</a>
+                   </div>
+                   <ul class="list-projects">
+                       <li>
+                           <div class="noLabel center muted">No label</div>
+                       </li>
+                   </ul>
 	            </li>
 	        </ul>
 	        <div class="resizeButton " id="ShowHideLeft">

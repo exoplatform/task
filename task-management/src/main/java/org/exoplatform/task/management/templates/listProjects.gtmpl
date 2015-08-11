@@ -10,6 +10,7 @@ def displayListProjectItem(project, level) {
     def hasChildClass = hasChild  ? 'has-child' : '';
 	def indent = (level - 1) * 20;
     def isHidden = userSetting.isHiddenProject(project);
+    def canEdit = project.canEdit(identity);
     def isAllChildHidden = true;
     if (hasChild) {
         project.children.each {p ->
@@ -67,10 +68,16 @@ def displayListProjectItem(project, level) {
 		        </ul>
 		    </div>
 		    <%}%>
-	        <a href="#" class="${project.color} colorPie"><span class=""></span></a>
-	        <a href="#" class="project-name" data-id="${project.id}" data-canEdit="<%=project.canEdit(identity)%>" data-canView="<%=project.canView(identity)%>">
-	        		<i class="${hasChild ? "uiIconArrowDownMini uiIconLightGray" : ""}"></i>${project.name}
-	        </a>
+	        <a href="javascript:void(0)" class="${project.color == null ? '' : project.color} colorPie"><span class=""></span></a>
+            <span>
+                <a href="javascript:void(0);" class="collapseSubProject">
+                    <i class="${hasChild ? "uiIconArrowDownMini uiIconLightGray" : ""}"></i>
+                </a>
+                <a href="javascript:void(0);" class="project-name" data-id="${project.id}" data-canEdit="<%=project.canEdit(identity)%>" data-canView="<%=project.canView(identity)%>"
+                        style="vertical-align: middle;display:inline-block;">
+                    ${project.name}
+                </a>
+            </span>
 		</div>
         <% if (project.children != null && project.children.size() > 0) {
             displayListProjects(project.children, project.getId(), level);

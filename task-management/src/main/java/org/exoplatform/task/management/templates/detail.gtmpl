@@ -23,27 +23,6 @@
 <div class="uiContentBox">
 <div class="clearfix">
     <div class="pull-right action-buttons dropdown">
-        <a data-toggle="dropdown" class="dropdown-toggle actionIconSmall" href="#"><i class="uiIconArrowDown"></i></a>
-        <ul class="dropdown-menu">
-            <li><a class="action-clone-task" href="#"><i class="uiIconCloneNode"></i> &{label.clone}</a></li>
-            <li><a class="action-watch-task" href="#"><i class="uiIconWatch"></i> &{label.watch}</a></li>
-            <li><a class="action-delete-task" href="#"><i class="uiIconDelete"></i> &{label.delete}</a></li>
-        </ul>
-        <a class="actionIconSmall close-right-panel" href="#"><i class="uiIconClose"></i></a>
-    </div>
-
-    <div class="uiEditableInline clearfix ">
-        <span class="iconTaskName pull-left"><i title="&{tooltip.clickToEdit}" data-toggle="tooltip" data-placement="bottom" class="uiIconFolder"></i></span>
-        <div class="breadcrumbCont uiEditableInline" data-original-title="Click to edit" data-toggle="tooltip" data-placement="bottom">
-            <ul class="breadcrumb ${editableClasses} small"
-                data-name="project" data-type="ParentProject" data-value="${task.status == null ? 0 : task.status.project.id}">
-                ${breadcumbs}
-            </ul>
-        </div>
-    </div>
-</div>
-<div class="taskName uiEditableInline clearfix taskPermalinkContainer">
-    <div class="pull-right">
         <span class="taskPermalinkContainer" title="&{label.permalink}" data-toggle="tooltip" data-placement="bottom">
             <a href="@{TaskManagement.permalink(space_group_id=null, taskId=task.id)}" data-toggle="popover" data-placement="left"
             class="permalink actionIcon taskPermalink" style="position: relative;">
@@ -61,27 +40,40 @@
                 </form>
             </div>
         </div>
+        <a data-toggle="dropdown" class="dropdown-toggle actionIconSmall" href="#"><i class="uiIconArrowDown"></i></a>
+        <ul class="dropdown-menu">
+            <li><a class="action-clone-task" href="#"><i class="uiIconCloneNode"></i> &{label.clone}</a></li>
+            <li><a class="action-watch-task" href="#"><i class="uiIconWatch"></i> &{label.watch}</a></li>
+            <li><a class="action-delete-task" href="#"><i class="uiIconDelete"></i> &{label.delete}</a></li>
+        </ul>
+        <a class="actionIconSmall close-right-panel" href="#"><i class="uiIconClose"></i></a>
     </div>
-    <div class="title-container clearfix">
-        <span class="uiCheckbox pull-left">
-            <input type="checkbox" class="checkbox">
-            <span></span>
-        </span>
-        <div class="title-task">
-            <span  class="projectName ${editableClasses} small"
-                   data-original-title="&{tooltip.clickToEdit}" rel="tooltip" data-placement="bottom"
-              data-name="title" data-type="text">
-                ${task.title}
-            </span>
+
+    <div class="uiEditableInline clearfix ">
+        <span class="iconTaskName pull-left"><i title="&{tooltip.clickToEdit}" data-toggle="tooltip" data-placement="bottom" class="uiIconFolder"></i></span>
+        <div class="breadcrumbCont uiEditableInline" data-original-title="Click to edit" data-toggle="tooltip" data-placement="bottom">
+            <ul class=" ${editableClasses} small"
+                data-name="project" data-type="ParentProject" data-breadcrumb="false" data-value="${task.status == null ? 0 : task.status.project.id}">
+                ${breadcumbs}
+            </ul>
         </div>
-        
+    </div>
+</div>
+<div class="taskName uiEditableInline clearfix taskPermalinkContainer">
+    <div class="title-container clearfix">
+      <a href="javascript:void(0);" data-taskcompleted="${task.completed}" class="pull-left validate-action" data-placement="top" rel="tooltip" data-original-title="&{message.markAsCompleted}"><i class="uiIconValidate uiIconLightGray"></i></a>
+      <span class="projectName ${editableClasses} small "
+             data-original-title="&{tooltip.clickToEdit}" rel="tooltip" data-placement="bottom"
+        data-name="title" data-type="text">
+          ${task.title}
+      </span>
     </div>
 </div>
 <div class="inforBar1 clearfix">
     <div class="pull-left">
         <div class="uiEditableInline">
-            <i  class="uiIconClock"></i>
-            <span  class="${editableClasses} small dueDateField"
+            <i class="uiIconClock"></i>
+            <span class="${editableClasses} small dueDateField"
                   data-original-title="&{tooltip.clickToEdit}" rel="tooltip" data-placement="top"
                   data-type="calendar" data-name="duedate"
                   data-value="${task.dueDate != null ? task.dueDate.format('yyyy-MM-dd') : ''}"
@@ -94,7 +86,7 @@
         <div class="uiEditableInline inactive">
             <span class = "unassigned ${!hasAssignee ? "" : "hidden"}" style = "">
                 <i class="uiIconUser"></i>
-                <a data-original-title="&{tooltip.clickToEdit}" rel="tooltip" data-placement="bottom" class="hoverStatus small editableField editAssignee">&{label.unassigned}</a>
+                <a data-original-title="&{tooltip.clickToEdit}" rel="tooltip" data-placement="bottom" class="hoverStatus muted small editableField editAssignee">&{label.unassigned}</a>
             </span>
             <span class = "assigned ${!hasAssignee ? "hidden" : ""}">
                 <a class="avatarMini" href="#"><img alt="avatar" src="${hasAssignee ? assignee.avatar : ""}"></a>
@@ -254,7 +246,7 @@
             </div>
         </div>
     </div>
-     <div class="priority pull-left">
+     <div class="priority pull-right">
         <div class="uiEditableInline">
             <i  class="uiIconColorPriority${task.priority != null ?  task.priority : Priority.UNDEFINED}"></i>
             <%

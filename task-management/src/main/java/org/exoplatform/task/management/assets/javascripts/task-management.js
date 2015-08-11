@@ -1,10 +1,8 @@
 // TODO: Move juzu-ajax, mentionsPlugin module into task management project if need
-require(['project-menu', 'ta_edit_inline', 'SHARED/jquery',
+require(['taskManagementApp', 'project-menu', 'ta_edit_inline', 'SHARED/jquery',
         'SHARED/juzu-ajax', 'SHARED/mentionsPlugin', 'SHARED/bts_modal', 'SHARED/bts_tab', 'SHARED/task_ck_editor'
-        ], function(pMenu, editInline, $) {
-  var taApp = {};
-
-    console.warn($.fn.ckeditor);
+        ], function(taApp, pMenu, editInline, $) {
+  /*var taApp = {};
 
   taApp.getUI = function() {
     var $taskManagement = $('#taskManagement');
@@ -118,7 +116,7 @@ require(['project-menu', 'ta_edit_inline', 'SHARED/jquery',
         console.error && console.error('update failure: ' + jqXHR.responseText);
       }
     });
-  }
+  }*/
   
 $(document).ready(function() {
     var ui = taApp.getUI();
@@ -148,8 +146,8 @@ $(document).ready(function() {
     });
 
     var taskLoadedCallback = function(taskId, isAjax) {
-        var $li = $centerPanel.find('li[data-taskid="'+taskId+'"]');
-        $centerPanel.find('li.selected').removeClass('selected');
+        var $li = $centerPanel.find('[data-taskid="'+taskId+'"]');
+        $centerPanel.find('[data-taskid].selected').removeClass('selected');
         $li.addClass('selected');
         editInline.initEditInline(taskId);
         var $permalink = $rightPanelContent.find('.taskPermalink');
@@ -186,11 +184,11 @@ $(document).ready(function() {
             }
         });
 
-        if (isAjax) {
+        /*if (isAjax) {
             if(window.history.pushState) {
                 window.history.pushState('', '', link);
             }
-        }
+        }*/
 
         return false;
     };
@@ -209,10 +207,10 @@ $(document).ready(function() {
         taskLoadedCallback(taskId, false);
     }
 
-    $rightPanel.on('click', '.taskName .uiCheckbox', function(e){
-        var $a = $(e.target || e.srcElement);
+    $rightPanel.on('click', '[data-taskcompleted]', function(e){
+        var $a = $(e.target).closest('[data-taskcompleted]');
         var taskId = $a.closest('.uiBox').data('taskid');
-        taApp.setTaskComplete(taskId, $a.is(':checked'));
+        taApp.setTaskComplete(taskId, !$a.data('taskcompleted'));
     });
     $rightPanel.on('click', 'a.action-clone-task', function(e){
         var $a = $(e.target).closest('a');
@@ -362,6 +360,24 @@ $(document).ready(function() {
         return false;
     });
 
+    $leftPanel.on('click', 'a.collapseTree', function(e) {
+        var $a = $(e.target).closest('a');
+        var $icon = $a.find('.uiIconLightGray');
+        var $list = $a.closest('.dropdown').find('> .list-projects');
+        $list.slideToggle(300, 'linear', function() {
+            $icon.toggleClass('uiIconArrowDownMini').toggleClass('uiIconArrowRightMini');
+        });
+    });
+    $leftPanel.on('click', 'a.collapseSubProject', function(e){
+        var $a = $(e.target).closest('a');
+        var $icon = $a.find('.uiIconLightGray');
+        var $list = $a.closest('.dropdown').find('> .list-projects');
+
+        $list.slideToggle(300, 'linear', function() {
+            $icon.toggleClass('uiIconArrowDownMini').toggleClass('uiIconArrowRightMini');
+        });
+    });
+
     $leftPanel.on('click', 'a.project-name', function(e) {
         var $a = $(e.target).closest('a');
         var projectId = $a.data('id');
@@ -439,6 +455,10 @@ $(document).ready(function() {
         if (filter == undefined) {
             filter = '';
         }
+        var viewType = $projectListView.find('[name="viewType"]').val();
+        if (viewType == undefined) {
+            viewType = 'list';
+        }
         var keyword = $projectListView.closest('.projectListView').find('input[name="keyword"]').val();
         $centerPanelContent.jzLoad('TaskController.listTasks()',
             {
@@ -446,7 +466,8 @@ $(document).ready(function() {
                 keyword: keyword,
                 groupBy: groupBy,
                 orderBy: orderBy,
-                filter: filter
+                filter: filter,
+                viewType: viewType
             },
             function() {
                 taApp.hideRightPanel($centerPanel, $rightPanel, $rightPanelContent);
@@ -479,6 +500,16 @@ $(document).ready(function() {
         var $searchForm = $centerPanel.find('form.form-search');
         var $a = $(e.target || e.srcElement).closest('[data-taskfilter]');
         $('[name="filter"]').val($a.data('taskfilter'));
+        submitFilter(e);
+    });
+    $centerPanel.on('click', 'a[data-viewtype]', function(e) {
+        var $a = $(e.target || e.srcElement).closest('[data-viewtype]');
+        var $li = $a.parent();
+        if ($li.hasClass('disabled') || $li.hasClass('active')) {
+            return;
+        }
+        var viewType = $a.data('viewtype');
+        $('[name="viewType"]').val(viewType);
         submitFilter(e);
     });
 
@@ -531,13 +562,13 @@ $(document).ready(function() {
         return false;
     });
 
-    $centerPanel.on('change', '.taskItem input[type="checkbox"]', function(e) {
-        var $input = $(e.target);
-        var $taskItem = $input.closest('.taskItem');
+    $centerPanel.on('click', '[data-taskcompleted]', function(e) {
+        var $a = $(e.target).closest('[data-taskcompleted]');
+        var $taskItem = $a.closest('.taskItem');
         var taskId = $taskItem.data('taskid');
-        var isCompleted = this.checked;
+        var isCompleted = $a.data('taskcompleted');
         //
-        taApp.setTaskComplete(taskId, isCompleted);
+        taApp.setTaskComplete(taskId, !isCompleted);
     });
 
     // Table Project Collapse

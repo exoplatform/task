@@ -90,6 +90,8 @@ public class Task {
   @JoinColumn(name = "STATUS_ID")
   private Status      status;
 
+  private int         rank;
+
   private boolean completed = false;
 
   @ElementCollection
@@ -184,6 +186,14 @@ public class Task {
 
   public void setStatus(Status status) {
     this.status = status;
+  }
+
+  public int getRank() {
+    return rank;
+  }
+
+  public void setRank(int rank) {
+    this.rank = rank;
   }
 
   public boolean isCompleted() {
