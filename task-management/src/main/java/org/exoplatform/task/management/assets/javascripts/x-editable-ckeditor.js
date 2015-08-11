@@ -24,7 +24,6 @@ define('x_editable_ckeditor', ['SHARED/jquery', 'SHARED/edit_inline_js', 'SHARED
                 });
                 var _this = this;
                 CKEDITOR.on('instanceReady', function(e) {
-                    console.error(e);
                     _this.$input.parent().find('> .cke').removeClass('cke');
                 });
             },

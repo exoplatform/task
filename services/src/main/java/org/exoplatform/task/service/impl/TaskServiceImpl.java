@@ -216,12 +216,16 @@ public class TaskServiceImpl implements TaskService {
         builder.withType(Type.EDIT_PROJECT).withOldVal(task.getStatus() != null ? task.getStatus().getProject() : null);
         try {
           Long projectId = Long.parseLong(value);
-          Status st = daoHandler.getStatusHandler().findLowestRankStatusByProject(projectId);
-          if (st == null) {
-            throw new ParameterEntityException(id, "Task", param, value, "Status for project is not found", null);
+          if (projectId > 0) {
+            Status st = daoHandler.getStatusHandler().findLowestRankStatusByProject(projectId);
+            if (st == null) {
+              throw new ParameterEntityException(id, "Task", param, value, "Status for project is not found", null);
+            }
+            task.setStatus(st);
+            builder.withNewVal(task.getStatus().getProject());
+          } else {
+            task.setStatus(null);
           }
-          task.setStatus(st);
-          builder.withNewVal(task.getStatus().getProject());
         } catch (NumberFormatException ex) {
           throw new ParameterEntityException(id, "Task", param, value, "ProjectID must be long", ex);
         }

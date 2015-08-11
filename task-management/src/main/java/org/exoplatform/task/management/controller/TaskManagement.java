@@ -155,6 +155,7 @@ public class TaskManagement {
         .filter("")
         .projects(projects)
         .userSetting(setting)
+        .userTimezone(userService.getUserTimezone(username))
         .bundle(bundle)
         .isInSpace(space_group_id != null)
         .viewType("")

@@ -92,7 +92,7 @@
                     <%}%>
                     <div class="col col-new hover-action-reveal" data-statusid="0" style="display:none">
                         <form class="inline-form formCreateNewStatus" action="#" method="POST" style="display: inline-block">
-                            <input class="input-small" name="statusName" value="" placeholder="Untitled status">
+                            <input class="input-small" name="statusName" type="text" value="" placeholder="Untitled status">
                         </form>
                         <a href="#" class=" inline-block-hide pull-right actionRemoveStatus"><i class="uiIcon uiIconDelete "></i></a>
                     </div>

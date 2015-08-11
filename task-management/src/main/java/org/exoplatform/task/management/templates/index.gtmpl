@@ -9,6 +9,7 @@
 #{param name=filter /}
 #{param name=projects/}
 #{param name=userSetting/}
+#{param name=userTimezone/}
 #{param name=bundle/}
 #{param name=taskId/}
 #{param name=taskModel/}
@@ -21,16 +22,11 @@
 	<div id="taskManagement" class="row-fluid">
 	    <div class="leftPanel uiAccordion span3">
 	        <ul class="left-menu">
-	        		<%if (!isInSpace) {%>
-	            <li class="accordion-heading active" style="display: none">
-	                <a class="project-name" data-id="-1" href="@{TaskManagement.index()}">&{label.incoming}&nbsp;<span class="badgeDefault badgePrimary mini top">1</span></a>
-	            </li>
-	            <%} %>
                 <li class="accordion-heading dropdown">
                     <div class="item">
-                        <!--<a class="dropdownIcon pull-right" href="javascript:void(0)">
-                            <i class="uiIconLightGray uiIconArrowDown"></i>
-                        </a>-->
+                        <a class="dropdownIcon collapseTree pull-right" href="javascript:void(0)">
+                            <i class="uiIconLightGray uiIconArrowDownMini"></i>
+                        </a>
                         <a class="project-name" href="javascript:void(0)">&{label.tasks}</a>
                     </div>
                     <ul class="list-projects">
@@ -84,8 +80,8 @@
 	            </li> -->
 	            <li class="accordion-heading dropdown" data-showhiddenproject="${userSetting.showHiddenProject}">
 	                <div class="item">
-		                <a class="dropdownIcon pull-right" href="javascript:void(0)">
-                            <i class="uiIconLightGray uiIconArrowDown" ></i>
+		                <a class="dropdownIcon pull-right collapseTree" href="javascript:void(0)">
+                            <i class="uiIconLightGray uiIconArrowDownMini" ></i>
                         </a>
                         <a class="dropdown-toggle actionIconSmall dropdownIcon add-new-project pull-right"
 		                   data-toggle="dropdown" data-content="&{label.welcome.firstProject}" data-placement="bottom"
@@ -116,10 +112,10 @@
 	
 	                #{include path=listProjects.gtmpl /}
 	            </li>
-	            <li class="accordion-heading">
+	            <li class="accordion-heading dropdown">
 	               <div class="item">  
-                      <a class="dropdownIcon pull-right" href="javascript:void(0)">
-                          <i class="uiIconLightGray uiIconArrowDown"></i>
+                      <a class="dropdownIcon collapseTree pull-right" href="javascript:void(0)">
+                          <i class="uiIconLightGray uiIconArrowDownMini"></i>
                       </a>
                       <a href="javascript:void(0)" data-placement="bottom" data-content="Click here to create your first label." data-toggle="dropdown" class="dropdown-toggle actionIconSmall dropdownIcon add-new-label pull-right">
                         <i class="uiIconLightGray uiIconSimplePlusMini addLabel"></i>
@@ -148,7 +144,11 @@
                       </div>
                       <a class="project-name" href="#">Label</a>
                    </div>
-                   <div class="noLabel center muted">No label</div>
+                   <ul class="list-projects">
+                       <li>
+                           <div class="noLabel center muted">No label</div>
+                       </li>
+                   </ul>
 	            </li>
 	        </ul>
 	        <div class="resizeButton " id="ShowHideLeft">

@@ -83,9 +83,13 @@ define('x_editable_select3', ['SHARED/jquery', 'SHARED/edit_inline_js'], functio
              @method value2html(value, element)
              **/
             value2html: function(value, element) {
+                var options = this.options;
                 $(element).data('value', value);
-                $(element).jzLoad('ProjectController.getBreadCumbs()', {id: value}, function() {
-
+                $(element).jzLoad('ProjectController.getBreadCumbs()', {id: value, isBreadcrumb: options.breadcrumb}, function() {
+                    if(!options.breadcrumb && value > 0) {
+                        var $close = $('<a class="removeProject" href="javascript:void(0)"><i class="uiIconClose"></i></a>');
+                        $(element).find('li').append($close);
+                    }
                 });
             },
 
@@ -175,7 +179,8 @@ define('x_editable_select3', ['SHARED/jquery', 'SHARED/edit_inline_js'], functio
                  '   </div>' +
                  '   <div class="uiDropdownMenu dropdown-menu " style="z-index: 9; display: none;width:100%"></div>'+
                  '</div>',
-            inputclass: ''
+            inputclass: '',
+            breadcrumb: true
         });
 
         $.fn.editabletypes.ParentProject = ParentProject;

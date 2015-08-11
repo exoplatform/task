@@ -145,7 +145,7 @@ define('taskBoardView', ['jquery', 'taskManagementApp', 'SHARED/edit_inline_js',
                 onblur: 'submit',
                 emptyclass: 'muted',
                 highlight: false,
-                inputclass: 'blackLarge',
+                inputclass: 'input-small input-board',
                 clear: false
             };
             $centerPanelContent.find('.taskBoardView .editable').each(function() {

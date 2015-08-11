@@ -52,8 +52,8 @@
     <div class="uiEditableInline clearfix ">
         <span class="iconTaskName pull-left"><i title="&{tooltip.clickToEdit}" data-toggle="tooltip" data-placement="bottom" class="uiIconFolder"></i></span>
         <div class="breadcrumbCont uiEditableInline" data-original-title="Click to edit" data-toggle="tooltip" data-placement="bottom">
-            <ul class="breadcrumb ${editableClasses} small"
-                data-name="project" data-type="ParentProject" data-value="${task.status == null ? 0 : task.status.project.id}">
+            <ul class=" ${editableClasses} small"
+                data-name="project" data-type="ParentProject" data-breadcrumb="false" data-value="${task.status == null ? 0 : task.status.project.id}">
                 ${breadcumbs}
             </ul>
         </div>
@@ -61,8 +61,8 @@
 </div>
 <div class="taskName uiEditableInline clearfix taskPermalinkContainer">
     <div class="title-container clearfix">
-      <span class="pull-left" data-placement="top" rel="tooltip" data-original-title="Mark as completed"><i class="uiIconValidate uiIconLightGray"></i></span>
-      <span class="projectName ${editableClasses} small pull-left"
+      <a href="javascript:void(0);" data-taskcompleted="${task.completed}" class="pull-left validate-action" data-placement="top" rel="tooltip" data-original-title="&{message.markAsCompleted}"><i class="uiIconValidate uiIconLightGray"></i></a>
+      <span class="projectName ${editableClasses} small "
              data-original-title="&{tooltip.clickToEdit}" rel="tooltip" data-placement="bottom"
         data-name="title" data-type="text">
           ${task.title}

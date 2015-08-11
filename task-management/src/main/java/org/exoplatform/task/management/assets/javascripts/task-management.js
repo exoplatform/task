@@ -207,10 +207,10 @@ $(document).ready(function() {
         taskLoadedCallback(taskId, false);
     }
 
-    $rightPanel.on('click', '.taskName .uiCheckbox', function(e){
-        var $a = $(e.target || e.srcElement);
+    $rightPanel.on('click', '[data-taskcompleted]', function(e){
+        var $a = $(e.target).closest('[data-taskcompleted]');
         var taskId = $a.closest('.uiBox').data('taskid');
-        taApp.setTaskComplete(taskId, $a.is(':checked'));
+        taApp.setTaskComplete(taskId, !$a.data('taskcompleted'));
     });
     $rightPanel.on('click', 'a.action-clone-task', function(e){
         var $a = $(e.target).closest('a');
@@ -358,6 +358,24 @@ $(document).ready(function() {
         });
 
         return false;
+    });
+
+    $leftPanel.on('click', 'a.collapseTree', function(e) {
+        var $a = $(e.target).closest('a');
+        var $icon = $a.find('.uiIconLightGray');
+        var $list = $a.closest('.dropdown').find('> .list-projects');
+        $list.slideToggle(300, 'linear', function() {
+            $icon.toggleClass('uiIconArrowDownMini').toggleClass('uiIconArrowRightMini');
+        });
+    });
+    $leftPanel.on('click', 'a.collapseSubProject', function(e){
+        var $a = $(e.target).closest('a');
+        var $icon = $a.find('.uiIconLightGray');
+        var $list = $a.closest('.dropdown').find('> .list-projects');
+
+        $list.slideToggle(300, 'linear', function() {
+            $icon.toggleClass('uiIconArrowDownMini').toggleClass('uiIconArrowRightMini');
+        });
     });
 
     $leftPanel.on('click', 'a.project-name', function(e) {
@@ -544,13 +562,13 @@ $(document).ready(function() {
         return false;
     });
 
-    $centerPanel.on('change', '.taskItem input[type="checkbox"]', function(e) {
-        var $input = $(e.target);
-        var $taskItem = $input.closest('.taskItem');
+    $centerPanel.on('click', '[data-taskcompleted]', function(e) {
+        var $a = $(e.target).closest('[data-taskcompleted]');
+        var $taskItem = $a.closest('.taskItem');
         var taskId = $taskItem.data('taskid');
-        var isCompleted = this.checked;
+        var isCompleted = $a.data('taskcompleted');
         //
-        taApp.setTaskComplete(taskId, isCompleted);
+        taApp.setTaskComplete(taskId, !isCompleted);
     });
 
     // Table Project Collapse

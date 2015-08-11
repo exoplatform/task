@@ -45,7 +45,7 @@ li[data-showhiddenproject="false"] {
     display: none;
   }
   li.all-children-hided {
-    a.project-name > i {
+    a.collapseSubProject {
       display: none;
     }
   }
@@ -267,6 +267,7 @@ li[data-hiddenproject="false"] {
             input {
                 width: 100%;
             }
+
         }
         .prjAuthor { 
             padding: 0 10px;
@@ -296,6 +297,12 @@ li[data-hiddenproject="false"] {
         .breadcrumbCont {
             display: block;
             margin-left: 22px;
+             li {
+                font-weight: bold;
+                    i {
+                        font-weight: normal;
+                    }
+            }
 
         .breadcrumb  {
             display: block;
@@ -315,17 +322,22 @@ li[data-hiddenproject="false"] {
                  word-wrap: break-word;
                  display: block;
             }
-            .title-container span {
-              &:nth-child(1){
-                margin: 8px 0 0;
-              }
-              &.projectName {
-                margin-left: 5px;
-                border: none;
-              }
-              &:nth-child(3){
-                margin-left: 5px; 
-              }
+            .title-container{
+                .validate-action {
+                    margin-top: 6px;
+                }
+                 span {
+                  &:nth-child(1){
+                    margin: 8px 0 0;
+                  }
+                  &.projectName {
+                    margin-left: 22px;
+                    border: none;
+                  }
+                  &:nth-child(3){
+                    margin-left: 5px; 
+                  }
+                }
             }
             .editable-container.editable-inline {
                 display: inline-block;
@@ -791,7 +803,7 @@ li[data-hiddenproject="false"] {
 }
 
 .title-container{
-    margin-right: 28px;
+    
 }
 .title-task {
     margin-left: 20px;
@@ -886,7 +898,7 @@ li[data-hiddenproject="false"] {
 
 .leftPanel  {
    &.uiAccordion {
-       border-top: none;
+       
     }
 }
 
@@ -908,7 +920,7 @@ li[data-hiddenproject="false"] {
 .taskBoardContainer .draggableHighlight {
   height: 1.5em;
   line-height: 1.2em;
-  background: #ffff99;
+   background: url("/eXoSkin/skin/images/themes/default/Container/DragAndDropPreview4x4.gif") repeat  0 0;
 }
 .taskBoardContainer .draggableFullContainer {
   position: absolute;
@@ -918,5 +930,44 @@ li[data-hiddenproject="false"] {
   right: 0;
   bottom: 0;
   z-index: 10;
-  background: #ffff99;
+  background: url("/eXoSkin/skin/images/themes/default/Container/DragAndDropPreview4x4.gif") repeat  0 0;
+}
+
+
+.collapseSubProject {
+    left: 10px;
+    position: absolute;
+    top: 5px;
+}
+.uiAccordion.leftPanel .accordion-heading .sub-item .project-name {
+    padding-left: 30px;
+}
+
+.project-item.active .collapseSubProject .uiIconLightGray  {
+     background-image: url("/eXoSkin/skin/images/themes/default/Icons/uiIconsSecondary.png");
+}
+
+.taskBoardView .uiEditableInline.active  {
+    .number-tasks,.actionRemoveStatus,.actionAddStatus {display: none!important;}
+}
+.taskBoardView .table-project-collapse .caption-heading .col {
+    padding: 10px 18px;
+}
+.taskBoardView {
+    .table-project-collapse  .col-new {
+        .formCreateNewStatus {
+            width: 78%;
+        }
+         .actionRemoveStatus {
+            display: block;
+            margin-top: 3px;
+         }
+    }
+}
+.table-project .column-checkbox .status-task.block-hide {
+    margin-left: 8px;
+}
+.breadcrumb .removeProject {
+    display: inline;
+    float: none;
 }

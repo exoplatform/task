@@ -458,9 +458,25 @@ public class ProjectController {
   @Resource
   @Ajax
   @MimeType.HTML
-  public Response getBreadCumbs(Long id) {
-    String breadcumbs = ProjectUtil.buildBreadcumbs(id, projectService, bundle);
-    return Response.ok(breadcumbs.toString()).withCharset(Tools.UTF_8);
+  public Response getBreadCumbs(Long id, Boolean isBreadcrumb) {
+    String breadcrumbs = "";
+    if (isBreadcrumb == null || isBreadcrumb) {
+      breadcrumbs = ProjectUtil.buildBreadcumbs(id, projectService, bundle);
+    } else {
+      try {
+        Project p = projectService.getProjectById(id);
+        breadcrumbs = new StringBuilder("<li class=\"active\"><a class=\"project-name\" href=\"javascript:void(0)\">")
+                          .append(p.getName())
+                          .append("</a></li>")
+                          .toString();
+      } catch (ProjectNotFoundException ex) {
+        breadcrumbs = new StringBuilder("<li class=\"muted\">")
+                .append(bundle.getString("label.noProject"))
+                .append("</li>")
+                .toString();
+      }
+    }
+    return Response.ok(breadcrumbs.toString()).withCharset(Tools.UTF_8);
   }
 
   private JSONArray buildJSON(JSONArray array, List<Project> projects) throws JSONException {

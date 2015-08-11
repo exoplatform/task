@@ -99,13 +99,9 @@
                         <div class="column-item column-checkbox">
                             <span class="project-color ${task.status != null ? task.status.project.color : ''}">&nbsp;</span>
                             <span class="inline-block-hide dragable">&nbsp;</span>
-                                                            <span class="uiCheckbox inline-block-hide">
-                                                                <input type="checkbox" class="checkbox" ${task.completed == true ? "checked=\"checked\"" : ""}>
-                                                                <span></span>
-                                                            </span>
-                                                             <span class="status-task inline-block-show">
-                                                                <i class="${colorClass}">&nbsp;</i>
-                                                            </span>
+                            <span class="status-task block-hide">
+                                <i class="${colorClass}">&nbsp;</i>
+                            </span>
                         </div>
                         <div class="column-item column-title taskName">${task.title}</div>
                         <div class="column-item column-time">
@@ -114,7 +110,13 @@
                                 <a href="#" class="navy_blue label">Next</a>
                                 <a href="#" class="orange label">Writing</a>
                              </span>-->
-                            <a class="actionIcon inline-block-hide" href="#"><i class="uiIcon uiIconClock"></i></a>
+                            <a class="actionIcon inline-block-hide" href="javascript:void(0)"><i class="uiIcon uiIconClock"></i></a>
+                            <% if (orderBy == 'priority') {%>
+                                <a class="actionIcon inline-block" href="javascript:void(0)"><i class="uiIconColorPriority${task.priority == null ? 'UNDEFINED' : task.priority.name()}"></i></a>
+                            <% }%>
+                            <a class="actionIcon inline-block-hide" data-taskcompleted="${task.completed}" href="javascript:void(0)">
+                                <i class="uiIconValidate uiIconLightGray"></i>
+                            </a>
                         </div>
                     </li>
                     <%}%>
