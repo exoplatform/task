@@ -80,6 +80,10 @@ import org.json.JSONObject;
 public class TaskController {
   private static final Log LOG = ExoLogger.getExoLogger(TaskController.class);
 
+  private static final List<String> VIEW_TYPES = Arrays.asList("list", "board");
+
+  public static final int MIN_NUMBER_TASK_GROUPABLE = 2;
+
   @Inject
   TaskService taskService;
 
@@ -382,19 +386,25 @@ public class TaskController {
     Project project = null;
     List<Task> tasks;
 
-    final List<String> VIEW_TYPES = Arrays.asList("list", "board");
     if (projectId <= 0 || viewType == null || !VIEW_TYPES.contains(viewType)) {
       viewType = VIEW_TYPES.get(0);
     }
     boolean isBoardView = viewType.equals(VIEW_TYPES.get(1));
     
-    Map<String, String> defOrders = TaskUtil.getDefOrders(bundle);
+    Map<String, String> defOrders;
     Map<String, String> defGroupBys;
     if (isBoardView) {
       defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, /*TaskUtil.DUEDATE,*/ TaskUtil.ASSIGNEE), bundle);
       defOrders = TaskUtil.resolve(Arrays.asList(TaskUtil.DUEDATE, TaskUtil.PRIORITY, TaskUtil.RANK), bundle);
+      if (orderBy == null || !defOrders.containsKey(orderBy)) {
+        orderBy = TaskUtil.DUEDATE;
+      }
+      if (groupBy == null || !defGroupBys.containsKey(groupBy)) {
+        groupBy = TaskUtil.NONE;
+      }
     } else {
       defGroupBys = TaskUtil.getDefGroupBys(projectId, bundle);
+      defOrders = TaskUtil.getDefOrders(bundle);
     }
 
     String currentUser = securityContext.getRemoteUser();
@@ -402,7 +412,8 @@ public class TaskController {
 
     if (currentUser == null || currentUser.isEmpty()) {
       return Response.status(401);
-    }    
+    }
+
     Identity currIdentity = ConversationState.getCurrent().getIdentity();
     List<Long> spaceProjectIds = null;    
     if (space_group_id != null) {
@@ -427,11 +438,17 @@ public class TaskController {
 
     OrderBy order = null;
     if(orderBy != null && !orderBy.trim().isEmpty()) {
-      order = "title".equals(orderBy) ? new OrderBy.ASC(orderBy) : new OrderBy.DESC(orderBy);
+      order = TaskUtil.TITLE.equals(orderBy) || TaskUtil.DUEDATE.equals(orderBy) ? new OrderBy.ASC(orderBy) : new OrderBy.DESC(orderBy);
     }
 
     //Get Tasks in good order
     if(projectId == ProjectUtil.INCOMING_PROJECT_ID) {
+      //. Default order by CreatedDate
+      if (orderBy == null || orderBy.isEmpty()) {
+        orderBy = TaskUtil.CREATED_TIME;
+        order = new OrderBy.DESC(orderBy);
+      }
+
       tasks = taskService.getIncomingTasksByUser(currentUser, order);
     }
     else if (projectId == ProjectUtil.TODO_PROJECT_ID) {
@@ -497,23 +514,35 @@ public class TaskController {
       }
       
       if (orderBy == null || !defOrders.containsKey(orderBy)) {
+        orderBy = TaskUtil.DUEDATE;
         order = new OrderBy.ASC(TaskUtil.DUEDATE);        
       }
-      groupBy = groupBy == null || !defGroupBys.containsKey(groupBy) ? TaskUtil.DUEDATE : groupBy;
+      if (groupBy == null || !defGroupBys.containsKey(groupBy)) {
+        groupBy = TaskUtil.DUEDATE;
+      }
       
       tasks = taskService.getToDoTasksByUser(currentUser, spaceProjectIds, order, fromDueDate, toDueDate);
-      if (tasks.size() < 2) {
-        groupBy = "";
-      }
     }
     else {
       if (projectId == 0) {
+        //. Default order by CreatedDate
+        if (orderBy == null || orderBy.isEmpty()) {
+          orderBy = TaskUtil.DUEDATE;
+          order = new OrderBy.ASC(orderBy);
+        }
+
         if (spaceProjectIds != null) {
           tasks = projectService.getTasksWithKeywordByProjectId(spaceProjectIds, order, keyword);                  
         } else {          
           tasks = projectService.getTasksWithKeywordByProjectId(allProjectIds, order, keyword);
         }
       } else {
+        //. Default order by CreatedDate
+        if (orderBy == null || orderBy.isEmpty()) {
+          orderBy = TaskUtil.DUEDATE;
+          order = new OrderBy.ASC(orderBy);
+        }
+
         tasks = projectService.getTasksWithKeywordByProjectId(Arrays.asList(projectId), order, keyword);
       }
       if (projectId > 0) {
@@ -523,6 +552,11 @@ public class TaskController {
           return Response.notFound("not found project " + projectId);
         }          
       }
+    }
+
+    if (tasks.size() < MIN_NUMBER_TASK_GROUPABLE) {
+      //. We do not have enough tasks for grouping, so, set groupBy to empty
+      groupBy = "";
     }
 
     // Count task by status

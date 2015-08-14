@@ -7,28 +7,30 @@
     import org.exoplatform.task.domain.Status;
     import org.exoplatform.task.utils.TaskUtil;
     import org.exoplatform.task.utils.DateUtil;
+    import org.exoplatform.task.management.controller.TaskController;
 %>
 <div class="taskList">
-    <%
-        if (currentProjectId != 0) {
-    %>
     <div class="header ">
         <div class="clearfix">
-            <div class="header-left pull-left">
-                <a href="#" class="btn btn-primary btn-add-task"><i class="uiIconSimplePlusMini"></i> New task</a>
-            </div>
+            <% if (currentProjectId != 0 && filter != 'overdue') {%>
+                <div class="header-left pull-left">
+                    <a href="#" class="btn btn-primary btn-add-task"><i class="uiIconSimplePlusMini"></i> New task</a>
+                </div>
+            <%}%>
             <div class="header-right pull-right">
                 <!-- this is filter action-->
-                <% if (tasks.size() > 2) { %>
+                <% if (tasks.size() >= TaskController.MIN_NUMBER_TASK_GROUPABLE) { %>
                              <span class="action-bar dropdown pull-right" data-currentorderby="${orderBy}">
                                 <a href="" class="actionIcon dropdown-toggle" data-original-title="Due date" data-toggle="dropdown"  rel="tooltip" data-placement="bottom">
                                     <i class="uiIconSortDown uiIconLightGray"></i>
                                     <span>${orderBy != null && orderBy != "" ? orders[orderBy] : orders["dueDate"]}</span>
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <%orders.each{k,v -> %>
-                                    <li><a href="javascript:void(0)" data-orderby="${k}">${v}</a></li>
-                                    <%}%>
+                                    <%orders.each{k,v ->
+                                        if (k != orderBy) {%>
+                                            <li><a href="javascript:void(0)" data-orderby="${k}">${v}</a></li>
+                                      <%}
+                                    }%>
                                 </ul>
                              </span>
                              <span class="action-bar dropdown pull-right" data-currentgroupby="${groupBy}">
@@ -47,18 +49,19 @@
                 <%}%>
             </div>
         </div>
-        <div class="input-field">
-            <form action="#" method="GET" class="form-create-task">
-                <input type="text" name="taskTitle" placeholder="Untiled Task"
-                        <%if (taskNum == 0) { %>
-                       data-content="&{label.welcome.firstTask}"
-                       data-placement="bottom"
-                        <%} %>
-                        />
-            </form>
-        </div>
+        <% if (currentProjectId != 0 && filter != 'overdue') {%>
+            <div class="input-field">
+                <form action="#" method="GET" class="form-create-task">
+                    <input type="text" name="taskTitle" placeholder="Untiled Task"
+                            <%if (taskNum == 0) { %>
+                           data-content="&{label.welcome.firstTask}"
+                           data-placement="bottom"
+                            <%} %>
+                            />
+                </form>
+            </div>
+        <%}%>
     </div>
-    <%} %>
     <div class="body relative">
         <!-- The default list -->
         <% if (tasks.size() > 0) { %>
