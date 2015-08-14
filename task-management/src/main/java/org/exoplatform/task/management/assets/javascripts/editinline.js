@@ -140,7 +140,7 @@ define('ta_edit_inline',
                 options.emptytext = "Description";
             } else if (type == 'calendar') {
                 options.mode = 'popup';
-                options.emptytext = 'No Duedate';
+                options.emptytext = 'No Due Date';
             }
 
             return options;
@@ -545,7 +545,7 @@ define('ta_edit_inline',
                     url: editInline.saveTaskDetailFunction
                 });
                 if (fieldName == 'dueDate') {
-                    editOptions.emptytext = "no Duedate";
+                    editOptions.emptytext = "No Due Date";
                     editOptions.mode = 'popup';
                 }
                 if (fieldName == 'status') {
@@ -705,7 +705,7 @@ define('ta_edit_inline',
                     };
                 }
                 if(fieldName == 'dueDate') {
-                    editOptions.emptytext = "no Duedate";
+                    editOptions.emptytext = "No Due Date";
                     editOptions.mode = 'popup';
                 }
                 $this.editable(editOptions);
