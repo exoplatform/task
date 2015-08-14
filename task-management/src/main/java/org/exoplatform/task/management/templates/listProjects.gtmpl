@@ -11,6 +11,7 @@ def displayListProjectItem(project, level) {
 	def indent = (level - 1) * 20;
     def isHidden = userSetting.isHiddenProject(project);
     def canEdit = project.canEdit(identity);
+    def canView = project.canView(identity);
     def isAllChildHidden = true;
     if (hasChild) {
         project.children.each {p ->
@@ -24,19 +25,21 @@ def displayListProjectItem(project, level) {
 %>
     <li class="dropdown project-item ${project.color == '' ? 'no-color' : ''} ${isAllChildHidden ? "all-children-hided" : ""}" data-projectId="${project.id}" data-hiddenproject="${isHidden}">
         <div class="sub-item" style="padding-left: <%=indent%>px">
-        <%if (project.canEdit(identity)) { %>
-	        <a class="dropdown-toggle pull-right"
-	           data-toggle="dropdown"
-	           href="#">
-	            <i class="uiIconRightMenu uiIconLightGray"></i>
-	        </a>
-	        <div class="dropdown-menu uiDropdownWithIcon" style="left: 100%;top: -100px;">
-	        	<span class="arrowLeft" style = "top: 115px;"></span>
+            <% if (canView) {%>
+                <a class="dropdown-toggle pull-right"
+                   data-toggle="dropdown"
+                   href="#">
+                    <i class="uiIconRightMenu uiIconLightGray"></i>
+                </a>
+                <div class="dropdown-menu uiDropdownWithIcon" style="left: 100%;top: -10px;">
+	        	<span class="arrowLeft" style = "top: 22px;"></span>
 	        	<ul class="uiDropdownMenu project-menu" data-projectId="${project.id}">
-		            <li><a href="#"><i class="uiIconEditMini uiIconLightGray"></i>&{label.addTask}</a></li>
-		            <li><a href="#" class="share-project"><i class="uiIconShare uiIconLightGray"></i>&{label.share}</a></li>
-		            <li><a class="clone-project" data-projectId="${project.id}" href="#"><i class="uiIconCloneNode uiIconLightGray"></i>&{label.clone}</a></li>
-		            <li><a class="delete-project" href="#"><i class="uiIconTrash uiIconLightGray"></i>&{label.delete}</a></li>
+                    <%if (canEdit) { %>
+                        <li><a href="#"><i class="uiIconEditMini uiIconLightGray"></i>&{label.edit}</a></li>
+                        <li><a href="#" class="share-project"><i class="uiIconShare uiIconLightGray"></i>&{label.share}</a></li>
+                        <li><a class="clone-project" data-projectId="${project.id}" href="#"><i class="uiIconCloneNode uiIconLightGray"></i>&{label.clone}</a></li>
+                    <%}%>
+
 		            <li>
                         <a href="javascript:void(0)" class="actionHideProject">
                             <i class="uiIconHide uiIconLightGray"></i>
@@ -44,30 +47,34 @@ def displayListProjectItem(project, level) {
                             <span class="label-hide">&{label.hide}</span>
                         </a>
                     </li>
-		            <li><a class="new-project" data-projectId="${project.id}" href="#"><i class="uiIconAddProject uiIconLightGray"></i>&{label.addProject}</a></li>
-		            <li class="noColor changeProjectColor" data-color="">No Color</li>
-		            <li class="calendarTableColor">
-                        <%
-                            def colors = [
-                                ['asparagus', 'munsell_blue', 'navy_blue', 'purple', 'red', 'brown'],
-                                ['laurel_green', 'sky_blue', 'blue_gray', 'light_purple', 'hot_pink', 'light_brown'],
-                                ['moss_green', 'powder_blue', 'light_blue', 'pink', 'Orange', 'gray'],
-                                ['green', 'baby_blue', 'light_gray', 'beige', 'yellow', 'plum']
-                            ];
-                        %>
-                        <%
-                            colors.each {c -> %>
-                                <div>
-                                    <%c.each {color ->%>
-                                    <a class="${color} colorCell changeProjectColor" data-color="${color}" href="#" style="display: block;"><i class="${project.color == color ? "iconCheckBox" : ""}"></i></a>
-                                    <%}%>
-                                </div>
-                            <%}
-                        %>
-					</li>
+
+                    <%if (canEdit) { %>
+                        <li><a class="delete-project" href="#"><i class="uiIconTrash uiIconLightGray"></i>&{label.delete}</a></li>
+                        <li><a class="new-project" data-projectId="${project.id}" href="#"><i class="uiIconAddProject uiIconLightGray"></i>&{label.addProject}</a></li>
+                        <li class="noColor changeProjectColor" data-color="">No Color</li>
+                        <li class="calendarTableColor">
+                            <%
+                                def colors = [
+                                    ['asparagus', 'munsell_blue', 'navy_blue', 'purple', 'red', 'brown'],
+                                    ['laurel_green', 'sky_blue', 'blue_gray', 'light_purple', 'hot_pink', 'light_brown'],
+                                    ['moss_green', 'powder_blue', 'light_blue', 'pink', 'Orange', 'gray'],
+                                    ['green', 'baby_blue', 'light_gray', 'beige', 'yellow', 'plum']
+                                ];
+                            %>
+                            <%
+                                colors.each {c -> %>
+                                    <div>
+                                        <%c.each {color ->%>
+                                        <a class="${color} colorCell changeProjectColor" data-color="${color}" href="#" style="display: block;"><i class="${project.color == color ? "iconCheckBox" : ""}"></i></a>
+                                        <%}%>
+                                    </div>
+                                <%}
+                            %>
+                        </li>
+                    <%}%>
 		        </ul>
 		    </div>
-		    <%}%>
+            <%}%>
 	        <a href="javascript:void(0)" class="${project.color == null ? '' : project.color} colorPie"><span class=""></span></a>
             <span>
                 <a href="javascript:void(0);" class="collapseSubProject">
