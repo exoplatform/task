@@ -265,6 +265,13 @@
                              referencedTableName="TASK_PROJECTS"
                              referencedColumnNames="PROJECT_ID"
                              onDelete="CASCADE" />
+
+    <rollback>
+      <!--
+        Do not execute any sql rollback here because we just re-create FK constraint.
+        If we let it default (drop FK constraint), the rollback of change set [author="tuyennt@exoplatform.com" id="1.0.0-13"] will be failure
+       -->
+    </rollback>
   </changeSet>
 
 </databaseChangeLog>
