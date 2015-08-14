@@ -237,13 +237,34 @@
     </createIndex>
   </changeSet>
 
-  <!-- Definition of TASK_TASKS table -->
+  <!-- Definition column RANK for TASK_TASKS table -->
   <changeSet author="tuyennt@exoplatform.com" id="1.0.0-16">
     <addColumn tableName="TASK_TASKS">
       <column name="RANK" type="INT" defaultValue="0">
         <constraints nullable="true"/>
       </column>
     </addColumn>
+  </changeSet>
+
+  <!-- Update FK for TASK_HIDDEN_PROJECT table -->
+  <changeSet author="tuyennt@exoplatform.com" id="1.0.0-17">
+    <!-- Drop old FK -->
+    <dropForeignKeyConstraint baseTableName="TASK_HIDDEN_PROJECT" constraintName="FK_TASK_HIDDEN_PROJECT_TASK_USER_SETTING_01"/>
+    <dropForeignKeyConstraint baseTableName="TASK_HIDDEN_PROJECT" constraintName="FK_TASK_HIDDEN_PROJECT_TASK_PROJECTS_01"/>
+
+    <!-- ReAdd FK with adding onDelete Cascade-->
+    <addForeignKeyConstraint constraintName="FK_TASK_HIDDEN_PROJECT_TASK_USER_SETTING_01"
+                             baseTableName="TASK_HIDDEN_PROJECT"
+                             baseColumnNames="USERNAME"
+                             referencedTableName="TASK_USER_SETTING"
+                             referencedColumnNames="USERNAME"
+                             onDelete="CASCADE" />
+    <addForeignKeyConstraint constraintName="FK_TASK_HIDDEN_PROJECT_TASK_PROJECTS_01"
+                             baseTableName="TASK_HIDDEN_PROJECT"
+                             baseColumnNames="PROJECT_ID"
+                             referencedTableName="TASK_PROJECTS"
+                             referencedColumnNames="PROJECT_ID"
+                             onDelete="CASCADE" />
   </changeSet>
 
 </databaseChangeLog>

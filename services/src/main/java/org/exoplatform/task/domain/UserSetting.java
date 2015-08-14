@@ -22,6 +22,7 @@ package org.exoplatform.task.domain;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -43,7 +44,7 @@ public class UserSetting {
   @Column(name = "SHOW_HIDDEN_PROJECT")
   private boolean showHiddenProject = false;
 
-  @ManyToMany
+  @ManyToMany(cascade = CascadeType.REMOVE)
   @JoinTable(
           name = "TASK_HIDDEN_PROJECT",
           joinColumns = {@JoinColumn(name = "USERNAME", referencedColumnName = "USERNAME")},
