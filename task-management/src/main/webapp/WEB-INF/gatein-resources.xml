@@ -95,10 +95,10 @@
         (function() {
         var oldJQuery = window.jQuery;
         window.jQuery = $;
-        <include>/WEB-INF/classes/org/exoplatform/task/management/assets/ckeditor/4.4.7-1/basic/ckeditor.js</include>
-        <include>/WEB-INF/classes/org/exoplatform/task/management/assets/ckeditor/4.4.7-1/basic/adapters/jquery.js</include>
-        <include>/WEB-INF/classes/org/exoplatform/task/management/assets/ckeditor/4.4.7-1/basic/lang/en.js</include>
-        <include>/WEB-INF/classes/org/exoplatform/task/management/assets/ckeditor/4.4.7-1/basic/styles.js</include>
+        <include>/WEB-INF/classes/org/exoplatform/task/management/assets/ckeditorCustom/ckeditor.js</include>
+        <include>/WEB-INF/classes/org/exoplatform/task/management/assets/ckeditorCustom/adapters/jquery.js</include>
+        <include>/WEB-INF/classes/org/exoplatform/task/management/assets/ckeditorCustom/lang/en.js</include>
+        <include>/WEB-INF/classes/org/exoplatform/task/management/assets/ckeditorCustom/styles.js</include>
         window.jQuery = oldJQuery;
         return $;
         })();

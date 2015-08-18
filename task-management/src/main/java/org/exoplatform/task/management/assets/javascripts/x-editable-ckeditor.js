@@ -2,6 +2,7 @@ define('x_editable_ckeditor', ['SHARED/jquery', 'SHARED/edit_inline_js', 'SHARED
     (function ($) {
         "use strict";
 
+        CKEDITOR.basePath = '/task-management/assets/org/exoplatform/task/management/assets/ckeditorCustom/';
         var CKEditor = function (options) {
             this.init('ckeditor', options, CKEditor.defaults);
         };
@@ -18,9 +19,7 @@ define('x_editable_ckeditor', ['SHARED/jquery', 'SHARED/edit_inline_js', 'SHARED
             render: function() {
 
                 this.$input.ckeditor({
-                    customConfig: '',
-                    stylesSet: [],
-                    removeButtons: 'Cut,Copy,Paste,Undo,Redo,Anchor,Underline,Subscript,Superscript,Link,Unlink,About'
+                    customConfig: '/task-management/assets/org/exoplatform/task/management/assets/ckeditorCustom/config.js'
                 });
                 var _this = this;
                 CKEDITOR.on('instanceReady', function(e) {
