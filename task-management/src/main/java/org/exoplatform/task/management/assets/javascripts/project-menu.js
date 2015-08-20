@@ -54,23 +54,31 @@ define('project-menu', ['SHARED/jquery'], function($) {
     });    
     //end clone-project
 
-    $leftPanel.on('click', 'a.new-project', function(e) {
-      var parentId = $(e.target).closest('a').attr('data-projectId');
-      $rightPanelContent.jzLoad('ProjectController.projectForm()', {parentId: parentId}, function() {
-        taApp.showRightPanel($centerPanel, $rightPanel);
-        $rightPanel.find('[name="name"]').on('blur', function(e) {
-            $(e.target || e.srcElement).closest('form').submit();
-        });
-        var $ancestors = $rightPanel.find('.editable');
-        $ancestors.editable({
-          mode : 'inline',
-          showbuttons: false
-        });
+      $leftPanel.on('click', 'a.new-project', function(e) {
+          var parentId = $(e.target).closest('a').attr('data-projectId');
+          $rightPanelContent.jzLoad('ProjectController.projectForm()', {parentId: parentId}, function() {
+              taApp.showRightPanel($centerPanel, $rightPanel);
+              $rightPanel.find('[name="name"]').on('blur', function(e) {
+                  $(e.target || e.srcElement).closest('form').submit();
+              });
+              var $ancestors = $rightPanel.find('.editable');
+              $ancestors.editable({
+                  mode : 'inline',
+                  showbuttons: false
+              });
+
+              CKEDITOR.basePath = '/task-management/assets/org/exoplatform/task/management/assets/ckeditorCustom/';
+              $rightPanel.find('textarea').ckeditor({
+                  customConfig: '/task-management/assets/org/exoplatform/task/management/assets/ckeditorCustom/config.js'
+              });
+              CKEDITOR.on('instanceReady', function(e) {
+                  $rightPanel.find('.cke').removeClass('cke');
+              });
+          });
+          return true;
       });
-      return true;
-    });        
-   
-    $leftPanel.on('click', '.delete-project', function(e) {
+
+      $leftPanel.on('click', '.delete-project', function(e) {
       var $deleteBtn = $(e.target);
       var pid = $deleteBtn.closest('.project-menu').attr('data-projectId');
       taApp.showDialog('ProjectController.openConfirmDelete()', {id : pid});
