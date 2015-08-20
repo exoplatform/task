@@ -16,14 +16,19 @@
 */
 package org.exoplatform.task.utils;
 
+import org.exoplatform.calendar.model.Calendar;
+import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.task.domain.Project;
+import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.exception.ProjectNotFoundException;
 import org.exoplatform.task.service.ProjectService;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -43,6 +48,27 @@ public final class ProjectUtil {
   public static final int TODO_PROJECT_ID = -2;
 
   private ProjectUtil() {
+  }
+  
+  public static Calendar buildCalendar(Calendar calendar, Project project) {
+    if (project == null || calendar == null) {
+      return null;
+    }
+
+    calendar.setCalendarColor(project.getColor());
+    calendar.setDescription(project.getDescription());
+    calendar.setEditPermission(null);
+    ProjectService service = ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(ProjectService.class);
+    List<Task> tasks = service.getTasksByProjectId(Arrays.asList(project.getId()), null);
+    calendar.setHasChildren(tasks.size() > 0);    
+    calendar.setId(String.valueOf(project.getId()));
+    calendar.setName(project.getName());
+    Set<String> permissions = new HashSet<String>();
+    permissions.addAll(project.getManager());
+    permissions.addAll(project.getParticipator());
+    calendar.setViewPermission(permissions.toArray(new String[permissions.size()]));    
+
+    return calendar;
   }
   
   public static List<Project> getProjectTree(String space_group_id, ProjectService projectService) {

@@ -24,7 +24,6 @@ import java.util.List;
 import org.exoplatform.calendar.model.Calendar;
 import org.exoplatform.calendar.model.query.CalendarQuery;
 import org.exoplatform.calendar.storage.CalendarDAO;
-import org.exoplatform.calendar.storage.Storage;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.security.Identity;
@@ -35,14 +34,11 @@ import org.exoplatform.task.utils.ProjectUtil;
 
 public class TasksCalendarDAOImpl implements CalendarDAO {
   
-  private Storage context;
-  
   private ProjectService projectService;
 
   private static final Log          LOG   = ExoLogger.getExoLogger(TasksCalendarDAOImpl.class);
 
-  public TasksCalendarDAOImpl(TasksStorage context, ProjectService projectService) {
-    this.context = context;
+  public TasksCalendarDAOImpl(ProjectService projectService) {
     this.projectService = projectService;
   }
 
@@ -51,11 +47,11 @@ public class TasksCalendarDAOImpl implements CalendarDAO {
     try {
       Project project = projectService.getProjectById(Long.valueOf(id));      
       Calendar cal = newInstance();
-      return CalendarHelpers.buildCalendar(cal, project);
+      return ProjectUtil.buildCalendar(cal, project);        
     } catch (Exception ex) {
       LOG.error("Exception while loading calendar by ID", ex);
       return null;    
-    }
+    }    
   }
 
   @Override
@@ -79,7 +75,7 @@ public class TasksCalendarDAOImpl implements CalendarDAO {
     List<Calendar> calendars = new LinkedList<Calendar>();
     for (Project p : projects) {
       Calendar cal = newInstance();
-      calendars.add(CalendarHelpers.buildCalendar(cal, p));
+      calendars.add(ProjectUtil.buildCalendar(cal, p));
     }    
     
     return calendars;

@@ -21,6 +21,8 @@ import org.exoplatform.calendar.storage.CalendarDAO;
 import org.exoplatform.calendar.storage.EventDAO;
 import org.exoplatform.calendar.storage.Storage;
 import org.exoplatform.container.component.BaseComponentPlugin;
+import org.exoplatform.task.service.ProjectService;
+import org.exoplatform.task.service.TaskService;
 
 public class TasksStorage extends BaseComponentPlugin implements Storage {
 
@@ -34,9 +36,9 @@ public class TasksStorage extends BaseComponentPlugin implements Storage {
     return TASKS_STORAGE;
   }
 
-  public TasksStorage() {
-    calendarDAO = new TasksCalendarDAOImpl(this);
-    eventDAO = new TasksEventDAOImpl(this);
+  public TasksStorage(ProjectService projectService, TaskService taskService) {
+    calendarDAO = new TasksCalendarDAOImpl(projectService);
+    eventDAO = new TasksEventDAOImpl(taskService, projectService);
   }
 
   @Override

@@ -44,6 +44,9 @@ import org.exoplatform.portal.mop.navigation.NavigationService;
 import org.exoplatform.portal.mop.navigation.NodeContext;
 import org.exoplatform.portal.mop.navigation.NodeModel;
 import org.exoplatform.portal.mop.navigation.Scope;
+import org.exoplatform.calendar.model.Event;
+import org.exoplatform.calendar.service.CalendarEvent;
+import org.exoplatform.calendar.service.impl.NewUserListener;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
@@ -88,6 +91,8 @@ public final class TaskUtil {
   
   private TaskUtil() {
   }
+  
+  
 
   public static Map<String, String> getDefOrders(ResourceBundle bundle) {
     return resolve(Arrays.asList(TITLE, PRIORITY, DUEDATE, CREATED_TIME), bundle);
@@ -434,6 +439,30 @@ public final class TaskUtil {
       return new GroupKey[] {new GroupKey(DateUtil.getDueDateLabel(calendar, bundle), dueDate, calendar != null ? 0 : 1)};
     }
     return new GroupKey[0];
+  }
+
+  public static Event buildEvent(Event event, Task task) {
+    event.setCalendarId(String.valueOf(task.getStatus().getProject().getId()));
+    event.setDescription(task.getDescription());
+    event.setEventCategoryId(NewUserListener.DEFAULT_EVENTCATEGORY_ID_ALL);
+    event.setEventCategoryName(NewUserListener.DEFAULT_EVENTCATEGORY_NAME_ALL);
+    event.setEventState(task.getStatus().getName());
+    event.setEventType(CalendarEvent.TYPE_TASK);
+    if (task.getStartDate() != null) {
+      event.setFromDateTime(task.getStartDate());
+      Date endDate = new Date(task.getStartDate().getTime() + task.getDuration());
+      event.setToDateTime(endDate);
+    } else if (task.getDueDate() != null) {
+      event.setFromDateTime(task.getCreatedTime());
+      event.setToDateTime(task.getDueDate());
+    } else {
+      throw new IllegalStateException("Can't build event with a task that doesn't have workplan");
+    }
+    event.setId(String.valueOf(task.getId()));
+    event.setPriority(task.getPriority().name());
+    event.setSummary(task.getTitle());
+    event.setTaskDelegator(task.getAssignee());    
+    return event;
   }
 
 }
