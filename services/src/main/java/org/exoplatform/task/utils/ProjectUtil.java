@@ -95,6 +95,21 @@ public final class ProjectUtil {
 
     return new LinkedList<Project>(rootPRJs);
   }
+  
+  public static List<Project> flattenTree(List<Project> projectTree) {
+    if (projectTree == null) {
+      return null;
+    }
+
+    List<Project> projects = new LinkedList<Project>();
+    for (Project p : projectTree) {
+      projects.add(p);
+      if (!p.getChildren().isEmpty()) {
+        projects.addAll(flattenTree(p.getChildren()));
+      }
+    }    
+    return projects;
+  }
 
 
   //TODO: should move this method to web module
