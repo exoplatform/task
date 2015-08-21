@@ -17,6 +17,7 @@
 
 package org.exoplatform.task.integration.calendar;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,17 +38,29 @@ public class TasksCalendarDAOImpl implements CalendarDAO {
   private ProjectService projectService;
 
   private static final Log          LOG   = ExoLogger.getExoLogger(TasksCalendarDAOImpl.class);
+  
+  public final Calendar DF_CALENDAR;
+  {
+    DF_CALENDAR = newInstance();
+    DF_CALENDAR.setId(String.valueOf(ProjectUtil.TODO_PROJECT_ID));
+    DF_CALENDAR.setHasChildren(true);
+    DF_CALENDAR.setName("Tasks");
+  }
 
   public TasksCalendarDAOImpl(ProjectService projectService) {
-    this.projectService = projectService;
+    this.projectService = projectService;    
   }
 
   @Override
-  public Calendar getById(String id) {    
+  public Calendar getById(String id) {
     try {
-      Project project = projectService.getProjectById(Long.valueOf(id));      
       Calendar cal = newInstance();
-      return ProjectUtil.buildCalendar(cal, project);        
+      if (DF_CALENDAR.getId().equals(id)) {
+        return DF_CALENDAR;
+      } else {
+        Project project = projectService.getProjectById(Long.valueOf(id));      
+        return ProjectUtil.buildCalendar(cal, project);
+      }
     } catch (Exception ex) {
       LOG.error("Exception while loading calendar by ID", ex);
       return null;    
@@ -73,6 +86,9 @@ public class TasksCalendarDAOImpl implements CalendarDAO {
     }
     
     List<Calendar> calendars = new LinkedList<Calendar>();
+    if (query.getExclusions() == null || !Arrays.asList(query.getExclusions()).contains(DF_CALENDAR.getId())) {
+      calendars.add(DF_CALENDAR);
+    }
     for (Project p : projects) {
       Calendar cal = newInstance();
       calendars.add(ProjectUtil.buildCalendar(cal, p));
@@ -111,7 +127,7 @@ public class TasksCalendarDAOImpl implements CalendarDAO {
 
   @Override
   public Calendar newInstance() {
-    Calendar c = new Calendar();
+    Calendar c = new Calendar("");
     c.setDS(TasksStorage.TASKS_STORAGE);
     return c;
   }

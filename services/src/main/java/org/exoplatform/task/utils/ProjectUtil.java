@@ -64,8 +64,12 @@ public final class ProjectUtil {
     calendar.setId(String.valueOf(project.getId()));
     calendar.setName(project.getName());
     Set<String> permissions = new HashSet<String>();
-    permissions.addAll(project.getManager());
-    permissions.addAll(project.getParticipator());
+    if (project.getManager() != null) {
+      permissions.addAll(project.getManager());      
+    }
+    if (project.getParticipator() != null) {
+      permissions.addAll(project.getParticipator());      
+    }
     calendar.setViewPermission(permissions.toArray(new String[permissions.size()]));    
 
     return calendar;
