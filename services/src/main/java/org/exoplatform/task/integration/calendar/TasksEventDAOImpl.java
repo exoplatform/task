@@ -84,7 +84,20 @@ public class TasksEventDAOImpl implements EventDAO {
      if (query.getOrderBy() != null) {
        boolean ascending = Utils.ASCENDING.equals(query.getOrderType()); 
        for (String by : query.getOrderBy()) {
-         orderBy.add(new OrderBy(by, ascending));
+         if (Utils.EXO_SUMMARY.equals(by)) {
+           by = "title";
+         } else if (Utils.EXO_DESCRIPTION.equals(by)) {
+           by = "description";
+         } else if (Utils.EXO_FROM_DATE_TIME.equals(by)) {
+           by = "startDate";
+         } else if (Utils.EXO_TO_DATE_TIME.equals(by)) {
+           by = "endDate";
+         } else {
+           by = null;
+         }
+         if (by != null) {
+           orderBy.add(new OrderBy(by, ascending));           
+         }
        }
      }
      
