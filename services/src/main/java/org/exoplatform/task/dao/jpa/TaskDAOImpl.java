@@ -33,7 +33,6 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.exoplatform.commons.api.persistence.Transactional;
 import org.exoplatform.commons.persistence.impl.EntityManagerService;
 import org.exoplatform.commons.persistence.impl.GenericDAOJPAImpl;
 import org.exoplatform.task.dao.OrderBy;
@@ -41,6 +40,7 @@ import org.exoplatform.task.dao.TaskHandler;
 import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.utils.ProjectUtil;
 
 /**
  * Created by The eXo Platform SAS
@@ -121,17 +121,29 @@ public class TaskDAOImpl extends GenericDAOJPAImpl<Task, Long> implements TaskHa
       predicates.add(cb.like(task.<String>get("description"), '%' + query.getDescription() + '%'));
     }
 
+    Predicate assignPred =null; 
     if (query.getAssignee() != null && !query.getAssignee().isEmpty()) {
-      predicates.add(cb.like(task.<String>get("assignee"), '%' + query.getAssignee() + '%'));
+      assignPred = cb.like(task.<String>get("assignee"), '%' + query.getAssignee() + '%');
     }
-
+    Predicate projectPred = null;
     if (query.getProjectIds() != null) {
       if (query.getProjectIds().size() == 1 && query.getProjectIds().get(0) == 0) {
-        predicates.add(cb.isNotNull(task.get("status")));
+        projectPred = cb.isNotNull(task.get("status"));
       } else if (query.getProjectIds().isEmpty()) {
         return Collections.emptyList();
       } else {
-        predicates.add(task.get("status").get("project").get("id").in(query.getProjectIds()));
+        projectPred = task.get("status").get("project").get("id").in(query.getProjectIds());
+      }
+    }
+    
+    if (projectPred != null && query.getProjectIds().contains(ProjectUtil.TODO_PROJECT_ID) && assignPred != null) {
+      predicates.add(cb.or(assignPred, projectPred));
+    } else {
+      if (assignPred != null) {
+        predicates.add(assignPred);        
+      }
+      if (projectPred != null) {
+        predicates.add(projectPred);        
       }
     }
 
@@ -153,13 +165,20 @@ public class TaskDAOImpl extends GenericDAOJPAImpl<Task, Long> implements TaskHa
         predicates.add(cb.notEqual(task.get("completed"), !query.getCompleted()));
       }
     }
+    
+    if (query.getStartDate() != null) {
+      predicates.add(cb.greaterThanOrEqualTo(task.<Date>get("endDate"), query.getStartDate()));
+    }
+    if (query.getEndDate() != null) {
+      predicates.add(cb.lessThanOrEqualTo(task.<Date>get("startDate"), query.getEndDate()));
+    }
 
     if(predicates.size() > 0) {
       Iterator<Predicate> it = predicates.iterator();
       Predicate p = it.next();
       while(it.hasNext()) {
         p = cb.and(p, it.next());
-      }
+      }      
       q.where(p);
     }
 

@@ -245,7 +245,7 @@ public class TaskController {
 
       String response = "Update successfully";
       if ("workPlan".equalsIgnoreCase(name)) {
-        response = TaskUtil.getWorkPlan(task.getStartDate(), task.getDuration(), bundle);
+        response = TaskUtil.getWorkPlan(task.getStartDate(), task.getEndDate(), bundle);
         if (response == null) {
           response = bundle.getString("label.noWorkPlan");
         }

@@ -34,6 +34,7 @@ import org.exoplatform.commons.api.persistence.Transactional;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.task.dao.OrderBy;
+import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Priority;
 import org.exoplatform.task.domain.Status;
@@ -112,11 +113,15 @@ public class TaskServiceImpl implements TaskService {
       if (task.getStartDate() != null) {
         oldStartTime = task.getStartDate().getTime();
       }
-      builder.withType(Type.EDIT_WORKPLAN).withOldVal(oldStartTime + "/" + task.getDuration());
+      long oldEndTime = -1;
+      if (task.getEndDate() != null) {
+        oldEndTime = task.getEndDate().getTime();
+      }
+      builder.withType(Type.EDIT_WORKPLAN).withOldVal(oldStartTime + "/" + oldEndTime);
       //
       if (values == null) {
         task.setStartDate(null);
-        task.setDuration(0);
+        task.setEndDate(null);
       } else {
         if (values.length != 2) {
           LOG.error("workPlan updating lack of params");
@@ -129,8 +134,8 @@ public class TaskServiceImpl implements TaskService {
           dateTo.setTimeInMillis(Long.parseLong(values[1]));
 
           task.setStartDate(dateFrom.getTime());
-          task.setDuration(dateTo.getTimeInMillis() - dateFrom.getTimeInMillis());
-          builder.withNewVal(task.getStartDate().getTime() + "/" + task.getDuration());
+          task.setEndDate(dateTo.getTime());
+          builder.withNewVal(dateFrom.getTimeInMillis() + "/" + dateTo.getTimeInMillis());
         } catch (NumberFormatException ex) {
           LOG.info("Can parse date time value: "+values[0]+" or "+values[1]+" for Task with ID: "+id);
           throw new ParameterEntityException(id, "Task", param, values[0]+" or "+values[1],
@@ -383,6 +388,11 @@ public class TaskServiceImpl implements TaskService {
     return daoHandler.getTaskHandler().getToDoTask(username, projectIds, orderBy, fromDueDate, toDueDate);
   }
   
+  @Override
+  public List<Task> findTaskByQuery(TaskQuery query) {
+    return daoHandler.getTaskHandler().findTaskByQuery(query);
+  }
+
   @Override
   public long getTaskNum(String username, List<Long> projectIds) {
     return daoHandler.getTaskHandler().getTaskNum(username, projectIds);

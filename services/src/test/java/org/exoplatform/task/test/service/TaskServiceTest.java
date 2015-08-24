@@ -262,7 +262,7 @@ public class TaskServiceTest {
     assertEquals(defaultTask.getCreatedBy(), taskCaptor.getValue().getCreatedBy());
     //Only the createdTime must be different for the cloned task
     assertFalse(defaultTask.getCreatedTime() == taskCaptor.getValue().getCreatedTime());
-    assertEquals(defaultTask.getDuration(), taskCaptor.getValue().getDuration());
+    assertEquals(defaultTask.getEndDate(), taskCaptor.getValue().getEndDate());
     assertEquals(defaultTask.getStartDate(), taskCaptor.getValue().getStartDate());
     assertEquals(defaultTask.getDueDate(), taskCaptor.getValue().getDueDate());
   }

@@ -113,11 +113,13 @@ public class Task {
   @Column(name = "CREATED_TIME")
   private Date        createdTime;
 
-  private long        duration;
-
   @Temporal(TemporalType.TIMESTAMP)
   @Column(name = "START_DATE")
   private Date        startDate;
+  
+  @Temporal(TemporalType.TIMESTAMP)
+  @Column(name = "END_DATE")
+  private Date        endDate;
 
   @Temporal(TemporalType.TIMESTAMP)
   @Column(name = "DUE_DATE")
@@ -240,12 +242,12 @@ public class Task {
     this.createdTime = createdTime;
   }
 
-  public long getDuration() {
-    return duration;
+  public Date getEndDate() {
+    return endDate;
   }
 
-  public void setDuration(long duration) {
-    this.duration = duration;
+  public void setEndDate(Date endDate) {
+    this.endDate = endDate;
   }
 
   public Date getStartDate() {
@@ -305,7 +307,7 @@ public class Task {
         .withDueDate(this.getDueDate())
         .withPriority(this.getPriority())
         .withStartDate(this.getStartDate())
-        .withDuration(this.getDuration())
+        .withEndDate(this.getEndDate())
         .withStatus(this.status)
         .build();
     newTask.setCoworker(new HashSet<String>(this.getCoworker()));
@@ -321,7 +323,6 @@ public class Task {
     Task task = (Task) o;
 
     if (completed != task.completed) return false;
-    if (duration != task.duration) return false;
     if (id != task.id) return false;
     if (assignee != null ? !assignee.equals(task.assignee) : task.assignee != null) return false;
     if (comments != null ? !comments.equals(task.comments) : task.comments != null) return false;
@@ -333,6 +334,7 @@ public class Task {
     if (dueDate != null ? !dueDate.equals(task.dueDate) : task.dueDate != null) return false;
     if (priority != task.priority) return false;
     if (startDate != null ? !startDate.equals(task.startDate) : task.startDate != null) return false;
+    if (endDate != null ? !endDate.equals(task.endDate) : task.endDate != null) return false;
     if (status != null ? !status.equals(task.status) : task.status != null) return false;
     if (tags != null ? !tags.equals(task.tags) : task.tags != null) return false;
     if (title != null ? !title.equals(task.title) : task.title != null) return false;

@@ -45,7 +45,7 @@ public class TaskBuilder {
   private String createdBy;
   private Date createdTime = new Date();
 
-  private long duration;
+  private Date endDate;
   private Date startDate;
   private Date dueDate;
 
@@ -62,7 +62,7 @@ public class TaskBuilder {
     task.setTags(tags);
     task.setCreatedBy(createdBy);
     task.setCreatedTime(createdTime);
-    task.setDuration(duration);
+    task.setEndDate(endDate);
     task.setStartDate(startDate);
     task.setDueDate(dueDate);
 
@@ -123,8 +123,8 @@ public class TaskBuilder {
     return this;
   }
 
-  public TaskBuilder withDuration(long duration) {
-    this.duration = duration;
+  public TaskBuilder withEndDate(Date endDate) {
+    this.endDate = endDate;
     return this;
   }
 

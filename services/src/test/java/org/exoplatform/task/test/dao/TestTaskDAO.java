@@ -16,13 +16,9 @@
 */
 package org.exoplatform.task.test.dao;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.task.dao.TaskHandler;
@@ -36,16 +32,10 @@ import org.exoplatform.task.service.DAOHandler;
 import org.exoplatform.task.service.TaskParser;
 import org.exoplatform.task.service.impl.TaskParserImpl;
 import org.exoplatform.task.test.AbstractTest;
-import org.exoplatform.task.service.jpa.DAOHandlerJPAImpl;
-import org.exoplatform.task.test.TestUtils;
-import org.junit.*;
-
-import javax.persistence.Persistence;
-
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author <a href="trongtt@exoplatform.com">Trong Tran</a>

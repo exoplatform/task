@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.exoplatform.task.dao.OrderBy;
+import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
@@ -50,6 +51,8 @@ public interface TaskService {
 
   List<Task> getToDoTasksByUser(String username, List<Long> projectIds, OrderBy orderBy, Date fromDueDate, Date toDueDate);
 
+  List<Task> findTaskByQuery(TaskQuery query);
+  
   long getTaskNum(String username, List<Long> projectIds);
 
   TaskLog addTaskLog(long taskId, String username, String msg, String target) throws TaskNotFoundException;

@@ -166,10 +166,13 @@
     <div class="pull-left">
         <%
             def startDate = task.getStartDate();
-            def duration = task.getDuration();
-            def workplan = TaskUtil.getWorkPlan(startDate, duration, bundle);
+        		def endDate = task.getEndDate();
+            def workplan = TaskUtil.getWorkPlan(startDate, endDate, bundle);
+            def duration = 0;
             if(workplan == null) {
                 workplan = bundle.getString("label.noWorkPlan");
+            } else {
+            	duration = startDate.getTime() - endDate.getTime();              
             }
             def hasPlan = true;
             if(startDate == null) {
@@ -178,7 +181,7 @@
                 startDate.setMinutes(0);
                 duration = 30 * 60 * 1000;
             }
-            def endDate = new Date(startDate.getTime() + duration);
+            endDate = new Date(startDate.getTime() + duration);
             def df = new SimpleDateFormat("YYYY-MM-dd-HH-mm");
             int halfHour = 30 * 60 * 1000;
             def isAllday = false;

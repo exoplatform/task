@@ -20,6 +20,7 @@
 package org.exoplatform.task.dao;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -33,6 +34,8 @@ public class TaskQuery {
   private String assignee = null;
   private String keyword = null;
   private Boolean completed;
+  private Date startDate;
+  private Date endDate;
   
   private List<OrderBy> orderBy = new ArrayList<OrderBy>();
 
@@ -99,4 +102,21 @@ public class TaskQuery {
   public void setCompleted(Boolean completed) {
     this.completed = completed;
   }
+
+  public Date getStartDate() {
+    return startDate;
+  }
+
+  public void setStartDate(Date startDate) {
+    this.startDate = startDate;
+  }
+
+  public Date getEndDate() {
+    return endDate;
+  }
+
+  public void setEndDate(Date endDate) {
+    this.endDate = endDate;
+  }
+  
 }

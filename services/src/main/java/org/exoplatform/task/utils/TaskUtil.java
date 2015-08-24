@@ -260,17 +260,17 @@ public final class TaskUtil {
    }
  }
 
-  public static String getWorkPlan(Date startDate, long duration, ResourceBundle bundle) {
-    if (startDate == null || duration <= 0) {
+  public static String getWorkPlan(Date startDate, Date endDate, ResourceBundle bundle) {
+    if (startDate == null || endDate == null) {
       return null;
     }
     
     Calendar start = Calendar.getInstance();
     start.setTimeInMillis(startDate.getTime());
     Calendar end = Calendar.getInstance();
-    end.setTimeInMillis(startDate.getTime() + duration);
+    end.setTimeInMillis(endDate.getTime());
     //
-    duration = normalizeDate(end).getTimeInMillis() - normalizeDate(start).getTimeInMillis();
+    long duration = normalizeDate(end).getTimeInMillis() - normalizeDate(start).getTimeInMillis();
     
     SimpleDateFormat df = new SimpleDateFormat("dd MMMM YYYY");
 
@@ -450,11 +450,7 @@ public final class TaskUtil {
     event.setEventType(CalendarEvent.TYPE_TASK);
     if (task.getStartDate() != null) {
       event.setFromDateTime(task.getStartDate());
-      Date endDate = new Date(task.getStartDate().getTime() + task.getDuration());
-      event.setToDateTime(endDate);
-    } else if (task.getDueDate() != null) {
-      event.setFromDateTime(task.getCreatedTime());
-      event.setToDateTime(task.getDueDate());
+      event.setToDateTime(task.getEndDate());
     } else {
       throw new IllegalStateException("Can't build event with a task that doesn't have workplan");
     }

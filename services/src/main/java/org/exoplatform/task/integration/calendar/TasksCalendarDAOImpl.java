@@ -48,7 +48,7 @@ public class TasksCalendarDAOImpl implements CalendarDAO {
   }
 
   public TasksCalendarDAOImpl(ProjectService projectService) {
-    this.projectService = projectService;    
+    this.projectService = projectService;
   }
 
   @Override
@@ -68,11 +68,13 @@ public class TasksCalendarDAOImpl implements CalendarDAO {
   }
 
   @Override
-  public List<Calendar> findCalendars(CalendarQuery query) {            
+  public List<Calendar> findCalendars(CalendarQuery query) {   
     Identity identity = query.getIdentity();
     List<String> permissions = new LinkedList<String>();
     if (identity != null) {
+      //add user
       permissions.add(identity.getUserId());
+      //add memberships
       for (MembershipEntry entry : identity.getMemberships()) {
         permissions.add(entry.toString());
       }
