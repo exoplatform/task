@@ -26,6 +26,7 @@ import java.util.List;
 import org.exoplatform.calendar.model.Event;
 import org.exoplatform.calendar.model.query.EventQuery;
 import org.exoplatform.calendar.service.Utils;
+import org.exoplatform.calendar.service.impl.NewUserListener;
 import org.exoplatform.calendar.storage.EventDAO;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.log.ExoLogger;
@@ -92,7 +93,9 @@ public class TasksEventDAOImpl implements EventDAO {
            by = "startDate";
          } else if (Utils.EXO_TO_DATE_TIME.equals(by)) {
            by = "endDate";
-         } else {
+         } else if (Utils.EXO_PRIORITY.equals(by)) {
+           by = "priority";
+         } else {           
            by = null;
          }
          if (by != null) {
@@ -113,7 +116,12 @@ public class TasksEventDAOImpl implements EventDAO {
      taskQuery.setKeyword(query.getText());
      taskQuery.setAssignee(query.getOwner());
 
-     List<Task> tasks = taskService.findTaskByQuery(taskQuery);
+     List<Task> tasks = new LinkedList<Task>();
+     if ((query.getCategoryIds() == null || (query.getCategoryIds().length == 1 && 
+         query.getCategoryIds()[0].equals(NewUserListener.DEFAULT_EVENTCATEGORY_ID_ALL))) &&  
+         (query.getEventType() == null || query.getEventType().equals(Event.TYPE_TASK))) {
+       tasks = taskService.findTaskByQuery(taskQuery);
+     }
      final List<Event> events = new LinkedList<Event>();
      for (Task t : tasks) {
        Event event = newInstance();

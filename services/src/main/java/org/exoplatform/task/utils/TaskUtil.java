@@ -45,7 +45,6 @@ import org.exoplatform.portal.mop.navigation.NodeContext;
 import org.exoplatform.portal.mop.navigation.NodeModel;
 import org.exoplatform.portal.mop.navigation.Scope;
 import org.exoplatform.calendar.model.Event;
-import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.impl.NewUserListener;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -442,12 +441,14 @@ public final class TaskUtil {
   }
 
   public static Event buildEvent(Event event, Task task) {
-    event.setCalendarId(String.valueOf(task.getStatus().getProject().getId()));
+    if (task.getStatus() != null) {
+      event.setCalendarId(String.valueOf(task.getStatus().getProject().getId()));      
+      event.setEventState(task.getStatus().getName());
+    }
     event.setDescription(task.getDescription());
     event.setEventCategoryId(NewUserListener.DEFAULT_EVENTCATEGORY_ID_ALL);
     event.setEventCategoryName(NewUserListener.DEFAULT_EVENTCATEGORY_NAME_ALL);
-    event.setEventState(task.getStatus().getName());
-    event.setEventType(CalendarEvent.TYPE_TASK);
+    event.setEventType(Event.TYPE_TASK);
     if (task.getStartDate() != null) {
       event.setFromDateTime(task.getStartDate());
       event.setToDateTime(task.getEndDate());
@@ -455,11 +456,24 @@ public final class TaskUtil {
       throw new IllegalStateException("Can't build event with a task that doesn't have workplan");
     }
     event.setId(String.valueOf(task.getId()));
-    event.setPriority(task.getPriority().name());
+    if (task.getPriority() != null) {      
+      switch (task.getPriority()) {
+        case HIGH :
+          event.setPriority(Event.PRIORITY_HIGH);
+          break;
+        case MEDIUM:
+          event.setPriority(Event.PRIORITY_NORMAL);
+          break;
+        case LOW:
+          event.setPriority(Event.PRIORITY_LOW);
+          break;
+        default:
+          event.setPriority(Event.PRIORITY_NONE);
+      }   
+    }
     event.setSummary(task.getTitle());
     event.setTaskDelegator(task.getAssignee());    
     return event;
   }
-
 }
 
