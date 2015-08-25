@@ -54,8 +54,9 @@ public final class ProjectUtil {
     if (project == null || calendar == null) {
       return null;
     }
-
-    calendar.setCalendarColor(project.getColor());
+    if (project.getColor() != null) {
+      calendar.setCalendarColor(project.getColor());      
+    }
     calendar.setDescription(project.getDescription());
     calendar.setEditPermission(null);
     ProjectService service = ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(ProjectService.class);

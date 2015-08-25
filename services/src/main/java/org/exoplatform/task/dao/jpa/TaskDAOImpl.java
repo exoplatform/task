@@ -135,12 +135,12 @@ public class TaskDAOImpl extends GenericDAOJPAImpl<Task, Long> implements TaskHa
         projectPred = task.get("status").get("project").get("id").in(query.getProjectIds());
       }
     }
-    
-    if (projectPred != null && query.getProjectIds().contains(ProjectUtil.TODO_PROJECT_ID) && assignPred != null) {
+
+    if (projectPred != null && query.getProjectIds().contains((long)ProjectUtil.TODO_PROJECT_ID) && assignPred != null) {
       predicates.add(cb.or(assignPred, projectPred));
     } else {
       if (assignPred != null) {
-        predicates.add(assignPred);        
+        predicates.add(assignPred);
       }
       if (projectPred != null) {
         predicates.add(projectPred);        
