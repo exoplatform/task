@@ -35,6 +35,9 @@ import juzu.View;
 import juzu.impl.common.Tools;
 import juzu.request.SecurityContext;
 
+import org.exoplatform.portal.application.PortalRequestContext;
+import org.exoplatform.portal.application.RequestNavigationData;
+import org.exoplatform.portal.webui.util.Util;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
@@ -97,6 +100,17 @@ public class TaskManagement {
     List<Task> tasks = null;
     Project project = null;
     long taskId = navState.getTaskId();
+
+    if (taskId <= 0) {
+      //. Load task ID from URL
+      PortalRequestContext prc = Util.getPortalRequestContext();
+      String requestPath = prc.getControllerContext().getParameter(RequestNavigationData.REQUEST_PATH);
+      long id = TaskUtil.getTaskIdFromURI(requestPath);
+      if (id > 0) {
+        taskId = id;
+      }
+    }
+
     //
     if (taskId != -1) {
       try {

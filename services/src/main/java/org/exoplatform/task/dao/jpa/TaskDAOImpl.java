@@ -24,6 +24,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
+import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -244,6 +245,21 @@ public class TaskDAOImpl extends GenericDAOJPAImpl<Task, Long> implements TaskHa
     }
 
     return query.getResultList();
+  }
+
+  @Override
+  public Task findTaskByActivityId(String activityId) {
+    if (activityId == null || activityId.isEmpty()) {
+      return null;
+    }
+    EntityManager em = getEntityManager();
+    Query query = em.createNamedQuery("Task.findTaskByActivityId", Task.class);
+    query.setParameter("activityId", activityId);
+    try {
+      return (Task) query.getSingleResult();
+    } catch (PersistenceException e) {
+      return null;
+    }
   }
   
   @Override

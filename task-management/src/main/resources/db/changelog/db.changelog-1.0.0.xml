@@ -274,4 +274,13 @@
     </rollback>
   </changeSet>
 
+  <!-- Definition column ACTIVITY_ID for TASK_TASKS table -->
+  <changeSet author="tuyennt@exoplatform.com" id="1.0.0-18">
+    <addColumn tableName="TASK_TASKS">
+      <column name="ACTIVITY_ID" type="VARCHAR(50)" defaultValue="">
+        <constraints nullable="true"/>
+      </column>
+    </addColumn>
+  </changeSet>
+
 </databaseChangeLog>

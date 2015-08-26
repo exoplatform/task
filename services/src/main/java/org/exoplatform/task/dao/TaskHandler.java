@@ -45,6 +45,8 @@ public interface TaskHandler extends GenericDAO<Task, Long> {
 
   List<Task> getToDoTask(String username, List<Long> projectIds, OrderBy orderBy, Date fromDueDate, Date toDueDate);
 
+  Task findTaskByActivityId(String activityId);
+
   long getTaskNum(String username, List<Long> projectIds);
 
   void updateTaskOrder(long currentTaskId, Status newStatus, long[] orders);

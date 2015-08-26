@@ -64,7 +64,9 @@ import org.exoplatform.task.service.TaskBuilder;
             "WHERE participators IN :memberships) " +
             ") "),
     @NamedQuery(name = "Task.findTaskByProject",
-        query = "SELECT t FROM Task t WHERE t.status.project.id = :projectId")
+        query = "SELECT t FROM Task t WHERE t.status.project.id = :projectId"),
+    @NamedQuery(name = "Task.findTaskByActivityId",
+        query = "SELECT t FROM Task t WHERE t.activityId = :activityId")
 })
 public class Task {
 
@@ -128,6 +130,9 @@ public class Task {
   @CollectionTable(name = "TASK_LOGS",
       joinColumns = @JoinColumn(name = "TASK_ID"))
   private Set<TaskLog> taskLogs = new HashSet<TaskLog>();
+
+  @Column(name = "ACTIVITY_ID")
+  private String activityId;
 
   public Task() {
   }
@@ -281,6 +286,14 @@ public class Task {
 
   public void setTaskLogs(Set<TaskLog> taskLogs) {
     this.taskLogs = taskLogs;
+  }
+
+  public String getActivityId() {
+    return activityId;
+  }
+
+  public void setActivityId(String activityId) {
+    this.activityId = activityId;
   }
 
   public Task clone() {
