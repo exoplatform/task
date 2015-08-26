@@ -95,6 +95,9 @@ public class Task {
   private int         rank;
 
   private boolean completed = false;
+  
+  @Column(name = "CALENDAR_INTEGRATED")
+  private boolean calendarIntegrated = true;
 
   @ElementCollection
   @CollectionTable(name = "TASK_TASK_COWORKERS",
@@ -209,6 +212,14 @@ public class Task {
 
   public void setCompleted(boolean completed) {
     this.completed = completed;
+  }
+
+  public boolean isCalendarIntegrated() {
+    return calendarIntegrated;
+  }
+
+  public void setCalendarIntegrated(boolean calendarIntegrated) {
+    this.calendarIntegrated = calendarIntegrated;
   }
 
   public Set<String> getTags() {

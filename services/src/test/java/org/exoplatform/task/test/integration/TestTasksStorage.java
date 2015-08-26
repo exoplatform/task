@@ -66,12 +66,15 @@ public class TestTasksStorage extends AbstractTest {
     Set<String> users = new HashSet<String>();
     users.add("root");
     p1 = new Project("Test project 1", null, null, users, null);
+    p1.setCalendarIntegrated(true);
     pDAO.create(p1);
     p2 = new Project("Test project 2", null, null, null, users);
+    p2.setCalendarIntegrated(true);    
     pDAO.create(p2);
     Set<String> memberships = new HashSet<String>();
     memberships.add("*:/platform/administrators");
     p3 = new Project("Test project 3", null, null, memberships, null);
+    p3.setCalendarIntegrated(true);
     pDAO.create(p3);
   }
 

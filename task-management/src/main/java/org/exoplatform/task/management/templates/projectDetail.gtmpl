@@ -56,7 +56,10 @@
                 ${project.description}
             </div>
         </div>
-        <div class="uiGroupBoundCheckBox"><label class="uiCheckbox mg-0-10"><input type="checkbox" title="Enable Calendar integration" class="checkbox"><span>Enable Calendar integration</span></label></div>
+        <div class="uiGroupBoundCheckBox"><label class="uiCheckbox mg-0-10">
+	        <input type="checkbox" title="Enable Calendar integration" name="calendarIntegrated" class="checkbox calInteg" <%=project.isCalendarIntegrated() ? "checked" : "" %>>
+	        <span>Enable Calendar integration</span></label>
+        </div>
         <div class="viewInCal" style="display: none">
             <i class="uiIconPLFCalendar"></i>
             <a data-placement="bottom" data-toggle="tooltip" href="#" data-original-title="View in Calendar">Sub Project 1</a>

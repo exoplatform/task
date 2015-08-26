@@ -234,6 +234,8 @@ public class TaskServiceImpl implements TaskService {
         } catch (NumberFormatException ex) {
           throw new ParameterEntityException(id, "Task", param, value, "ProjectID must be long", ex);
         }
+      } else if ("calendarIntegrated".equalsIgnoreCase(param)) {
+        task.setCalendarIntegrated(Boolean.parseBoolean(value));
       } else {
         LOG.info("Field name: " + param + " is not supported for entity Task");
         throw new ParameterEntityException(id, "Task", param, value, "is not supported for the entity Task", null);
@@ -241,7 +243,10 @@ public class TaskServiceImpl implements TaskService {
     }
 
     Task result = updateTask(task);
-    triggerEvent(builder.build());
+    TaskEvent event = builder.build();
+    if (event.getType() != null) {      
+      triggerEvent(builder.build());
+    }
 
     //TODO: save order of task here?
 

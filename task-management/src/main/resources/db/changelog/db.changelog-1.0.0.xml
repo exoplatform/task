@@ -24,6 +24,9 @@
       <column name="COLOR" type="VARCHAR(100)">
         <constraints nullable="true"/>
       </column>
+      <column name="CALENDAR_INTEGRATED" type="BIT" defaultValue="0">
+        <constraints nullable="false"/>
+      </column>
       <column name="DUE_DATE" type="TIMESTAMP">
         <constraints nullable="true"/>
       </column>
@@ -121,6 +124,9 @@
         <constraints nullable="true"/>
       </column>
       <column name="COMPLETED" type="BIT" defaultValue="0">
+        <constraints nullable="false"/>
+      </column>
+      <column name="CALENDAR_INTEGRATED" type="BIT" defaultValue="1">
         <constraints nullable="false"/>
       </column>
     </createTable>

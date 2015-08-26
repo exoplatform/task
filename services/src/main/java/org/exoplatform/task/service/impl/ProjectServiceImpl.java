@@ -193,6 +193,8 @@ public class ProjectServiceImpl implements ProjectService {
       project.setDescription(val);
     } else if ("color".equalsIgnoreCase(param)) {
       project.setColor(val);
+    } else if ("calendarIntegrated".equalsIgnoreCase(param)) {
+      project.setCalendarIntegrated(Boolean.parseBoolean(val));
     } else if ("parent".equalsIgnoreCase(param)) {
       try {
         long projectId = Long.parseLong(val);

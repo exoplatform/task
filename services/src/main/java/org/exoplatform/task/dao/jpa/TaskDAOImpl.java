@@ -166,6 +166,14 @@ public class TaskDAOImpl extends GenericDAOJPAImpl<Task, Long> implements TaskHa
       }
     }
     
+    if (query.getCalendarIntegrated() != null) {
+      if (query.getCalendarIntegrated()) {
+        predicates.add(cb.equal(task.get("calendarIntegrated"), query.getCalendarIntegrated()));
+      } else {
+        predicates.add(cb.notEqual(task.get("calendarIntegrated"), !query.getCalendarIntegrated()));
+      }
+    }
+    
     if (query.getStartDate() != null) {
       predicates.add(cb.greaterThanOrEqualTo(task.<Date>get("endDate"), query.getStartDate()));
     }

@@ -515,6 +515,22 @@ define('ta_edit_inline',
         editInline.initEditInline = function(taskId) {
             editInline.initWorkPlan(taskId);
 
+            var calIcon = $('.date-work-plan .uiIconPLFCalendar');
+            calIcon.click(function() {
+              if (calIcon.data('integrated')) {
+                calIcon.data('integrated', false);
+                calIcon.removeClass('uiIconPLFBlue');
+                calIcon.attr('data-original-title', calIcon.data('title-add'));
+              } else {
+                calIcon.data('integrated', true);
+                calIcon.addClass('uiIconPLFBlue');
+                calIcon.attr('data-original-title', calIcon.data('title-remove'));
+              }
+              calIcon.tooltip('show');
+              
+              editInline.saveTaskDetailFunction({'name': 'calendarIntegrated', 'value': calIcon.data('integrated')});
+            });
+            
             //tabs in task detail
             $('.taskTabs a').click(function(e) {
                 e.preventDefault();
@@ -715,6 +731,10 @@ define('ta_edit_inline',
                 }).on('hidden', function(e, editable) {
                     $this.parent().removeClass('active').addClass('inactive');
                 });
+            });
+            
+            $project.find('.calInteg').on('change', function() {
+              editInline.saveProjectDetailFunction({'pk': projectId, 'name': $(this).attr('name'), 'value': $(this).is(':checked')});
             });
         };
 

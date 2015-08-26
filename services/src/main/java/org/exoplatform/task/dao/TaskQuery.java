@@ -33,6 +33,7 @@ public class TaskQuery {
   private List<Long> projectIds;
   private String assignee = null;
   private String keyword = null;
+  private Boolean calendarIntegrated;
   private Boolean completed;
   private Date startDate;
   private Date endDate;
@@ -118,5 +119,13 @@ public class TaskQuery {
   public void setEndDate(Date endDate) {
     this.endDate = endDate;
   }
-  
+
+  public Boolean getCalendarIntegrated() {
+    return calendarIntegrated;
+  }
+
+  public void setCalendarIntegrated(Boolean calendarIntegrated) {
+    this.calendarIntegrated = calendarIntegrated;
+  }
+
 }

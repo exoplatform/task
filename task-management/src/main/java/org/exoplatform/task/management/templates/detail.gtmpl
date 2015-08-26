@@ -193,7 +193,12 @@
              data-startdate="<%=df.format(startDate)%>" data-duration="${duration}">
             <div class="pull-right"><span title="Remove" data-placement="bottom" data-toggle="tooltip"  class="actionIcon inline-hide removeWorkPlan ${hasPlan ? "" : "hidden"}"><i class="uiIcon uiIconTrashMini"></i></span></div>
             <div class="date-work-plan">
-            <i class="uiIconPLFCalendar pull-left"></i>
+            <%
+            	def inCal = task.isCalendarIntegrated();
+            	def iconIntegCal = inCal ? "uiIconPLFBlue" : "";
+            	def title = inCal ? bundle.getString("tooltip.removeFromCalendar") : bundle.getString("tooltip.addToCalendar");
+            %>
+            <i class="uiIconPLFCalendar pull-left ${iconIntegCal}" rel="tooltip" title="${title}" data-integrated="${inCal}" data-title-add="&{tooltip.addToCalendar}" data-title-remove="&{tooltip.removeFromCalendar}"></i>
             <span data-original-title="&{tooltip.clickToEdit}" rel="tooltip" data-placement="bottom" class="hoverStatus hoverStatusBlock small editableField">${workplan}</span></div>
             <div class = "rangeCalendar" style = "display: none">
                 <div class="rangeCalendar-container">

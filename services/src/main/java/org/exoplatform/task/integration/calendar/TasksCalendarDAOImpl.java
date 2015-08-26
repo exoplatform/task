@@ -59,12 +59,14 @@ public class TasksCalendarDAOImpl implements CalendarDAO {
         return DF_CALENDAR;
       } else {
         Project project = projectService.getProjectById(Long.valueOf(id));      
-        return ProjectUtil.buildCalendar(cal, project);
+        if (project.isCalendarIntegrated()) {
+          return ProjectUtil.buildCalendar(cal, project);          
+        }
       }
     } catch (Exception ex) {
       LOG.error("Exception while loading calendar by ID", ex);
-      return null;    
     }    
+    return null;    
   }
 
   @Override
@@ -90,10 +92,12 @@ public class TasksCalendarDAOImpl implements CalendarDAO {
     List<Calendar> calendars = new LinkedList<Calendar>();
     if (query.getExclusions() == null || !Arrays.asList(query.getExclusions()).contains(DF_CALENDAR.getId())) {
       calendars.add(DF_CALENDAR);
-    }
+    }    
     for (Project p : projects) {
-      Calendar cal = newInstance();
-      calendars.add(ProjectUtil.buildCalendar(cal, p));
+      if (p.isCalendarIntegrated()) {
+        Calendar cal = newInstance();
+        calendars.add(ProjectUtil.buildCalendar(cal, p));        
+      }
     }    
     
     return calendars;

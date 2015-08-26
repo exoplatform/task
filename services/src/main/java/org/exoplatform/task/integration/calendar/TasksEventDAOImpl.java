@@ -34,22 +34,18 @@ import org.exoplatform.services.log.Log;
 import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.utils.ProjectUtil;
 import org.exoplatform.task.utils.TaskUtil;
 
 public class TasksEventDAOImpl implements EventDAO {
-
-  private ProjectService projectService;
-
+  
   private TaskService taskService;
 
   private static final Log LOG = ExoLogger.getExoLogger(TasksCalendarDAOImpl.class);
 
-  public TasksEventDAOImpl(TaskService taskService, ProjectService projectService) {
+  public TasksEventDAOImpl(TaskService taskService) {
     this.taskService = taskService;
-    this.projectService = projectService;
   }
 
   @Override
@@ -57,8 +53,10 @@ public class TasksEventDAOImpl implements EventDAO {
     try {
       Task task = taskService.getTaskById(Long.valueOf(id));
       if (task.getStartDate() != null) {
-        Event event = newInstance();
-        return TaskUtil.buildEvent(event, task);
+        if (task.isCalendarIntegrated()) {
+          Event event = newInstance();
+          return TaskUtil.buildEvent(event, task);          
+        }
       } else {
         LOG.warn("Can't map task: {} to event due to no workplan", id);
       }
@@ -115,6 +113,7 @@ public class TasksEventDAOImpl implements EventDAO {
      }
      taskQuery.setKeyword(query.getText());
      taskQuery.setAssignee(query.getOwner());
+     taskQuery.setCalendarIntegrated(true);
 
      List<Task> tasks = new LinkedList<Task>();
      if ((query.getCategoryIds() == null || (query.getCategoryIds().length == 1 && 
