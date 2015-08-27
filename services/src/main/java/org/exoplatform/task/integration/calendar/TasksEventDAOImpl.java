@@ -19,6 +19,7 @@
 
 package org.exoplatform.task.integration.calendar;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -114,6 +115,7 @@ public class TasksEventDAOImpl implements EventDAO {
      taskQuery.setKeyword(query.getText());
      taskQuery.setAssignee(query.getOwner());
      taskQuery.setCalendarIntegrated(true);
+     taskQuery.setOrFields(Arrays.asList(TaskUtil.ASSIGNEE, TaskUtil.PROJECT));
 
      List<Task> tasks = new LinkedList<Task>();
      if ((query.getCategoryIds() == null || (query.getCategoryIds().length == 1 && 

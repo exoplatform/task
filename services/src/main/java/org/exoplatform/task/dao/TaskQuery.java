@@ -21,6 +21,7 @@ package org.exoplatform.task.dao;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -39,6 +40,8 @@ public class TaskQuery {
   private Date endDate;
   
   private List<OrderBy> orderBy = new ArrayList<OrderBy>();
+  private List<String> memberships;
+  private List<String> orFields = new LinkedList<String>();  
 
   public long getTaskId() {
     return taskId;
@@ -128,4 +131,19 @@ public class TaskQuery {
     this.calendarIntegrated = calendarIntegrated;
   }
 
+  public void setMemberships(List<String> permissions) {
+    this.memberships =  permissions;
+  }
+
+  public List<String> getMemberships() {
+    return memberships;
+  }  
+
+  public List<String> getOrFields() {
+    return orFields;
+  }
+
+  public void setOrFields(List<String> orFields) {
+    this.orFields = orFields;
+  }
 }

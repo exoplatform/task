@@ -19,10 +19,21 @@
 
 package org.exoplatform.task.utils;
 
+import java.text.SimpleDateFormat;
+import java.util.regex.Pattern;
+
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
 public class StringUtil {
+  public static String  ORDERBY_DATE  = "date" ;
+  public static String  ORDERBY_TITLE  = "title" ;  
+  public static String ASC = "asc";
+  public static String DESC = "desc";
+  public static SimpleDateFormat  DATE_TIME_FORMAT = new SimpleDateFormat("EEEEE, MMMMMMMM d, yyyy K:mm a");
+  
+  public static final  Pattern FUZZY = Pattern.compile(".[~][0]([\\.][0-9])");
+  
   public static String highlight(String text, String keyword, String before, String after) {
     if (text == null || text.isEmpty() || keyword == null || keyword.isEmpty()) {
       return text;

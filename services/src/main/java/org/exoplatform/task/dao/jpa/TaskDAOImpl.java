@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -28,6 +29,7 @@ import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
@@ -40,7 +42,7 @@ import org.exoplatform.task.dao.TaskHandler;
 import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.utils.ProjectUtil;
+import org.exoplatform.task.utils.TaskUtil;
 
 /**
  * Created by The eXo Platform SAS
@@ -121,10 +123,17 @@ public class TaskDAOImpl extends GenericDAOJPAImpl<Task, Long> implements TaskHa
       predicates.add(cb.like(task.<String>get("description"), '%' + query.getDescription() + '%'));
     }
 
-    Predicate assignPred =null; 
+    Predicate assignPred = null;
     if (query.getAssignee() != null && !query.getAssignee().isEmpty()) {
       assignPred = cb.like(task.<String>get("assignee"), '%' + query.getAssignee() + '%');
     }
+    
+    Predicate msPred = null;
+    if (query.getMemberships() != null) {
+      msPred = cb.or(task.join("status").join("project").join("manager", JoinType.LEFT).in(query.getMemberships()), 
+                             task.join("status").join("project").join("participator", JoinType.LEFT).in(query.getMemberships()));
+    }
+    
     Predicate projectPred = null;
     if (query.getProjectIds() != null) {
       if (query.getProjectIds().size() == 1 && query.getProjectIds().get(0) == 0) {
@@ -133,29 +142,49 @@ public class TaskDAOImpl extends GenericDAOJPAImpl<Task, Long> implements TaskHa
         return Collections.emptyList();
       } else {
         projectPred = task.get("status").get("project").get("id").in(query.getProjectIds());
+      }             
+    }
+
+    List<Predicate> tmp = new LinkedList<Predicate>();
+    for (String or : query.getOrFields()) {
+      if (or.equals(TaskUtil.ASSIGNEE)) {
+        tmp.add(assignPred);
+      } 
+      if (or.equals(TaskUtil.MEMBERSHIP)) {
+        tmp.add(msPred);
+      }
+      if (or.equals(TaskUtil.PROJECT)) {
+        tmp.add(projectPred);
       }
     }
 
-    if (projectPred != null && query.getProjectIds().contains((long)ProjectUtil.TODO_PROJECT_ID) && assignPred != null) {
-      predicates.add(cb.or(assignPred, projectPred));
-    } else {
-      if (assignPred != null) {
-        predicates.add(assignPred);
-      }
-      if (projectPred != null) {
-        predicates.add(projectPred);        
-      }
+    if (!tmp.isEmpty()) {
+      predicates.add(cb.or(tmp.toArray(new Predicate[tmp.size()])));
+    }
+    
+    if (!query.getOrFields().contains(TaskUtil.ASSIGNEE) && assignPred != null) {
+      predicates.add(assignPred);
+    }
+    if (!query.getOrFields().contains(TaskUtil.MEMBERSHIP) && msPred != null) {
+      predicates.add(msPred);      
+    }
+    if (!query.getOrFields().contains(TaskUtil.PROJECT) && projectPred != null) {
+      predicates.add(projectPred);      
     }
 
     if(query.getKeyword() != null && !query.getKeyword().isEmpty()) {
-      String keyword = "%" + query.getKeyword() + "%";
-      predicates.add(
-          cb.or(
-              cb.like(task.<String>get("title"), keyword),
-              cb.like(task.<String>get("description"), keyword),
-              cb.like(task.<String>get("assignee"), keyword)
-          )
-      );
+      List<Predicate> keyConditions = new LinkedList<Predicate>();
+      for (String k : query.getKeyword().split(" ")) {
+        if (!(k = k.trim()).isEmpty()) {
+          k = "%" + k.toLowerCase() + "%";
+          keyConditions.add(cb.or(
+                                  cb.like(cb.lower(task.<String>get("title")), k),
+                                  cb.like(cb.lower(task.<String>get("description")), k),
+                                  cb.like(cb.lower(task.<String>get("assignee")), k)
+                              ));          
+        }
+      }
+      predicates.add(cb.or(keyConditions.toArray(new Predicate[keyConditions.size()])));
     }
 
     if (query.getCompleted() != null) {

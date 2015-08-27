@@ -356,9 +356,9 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   @Override
-  public List<Project> findProjectByKeyWord(Identity identity, String keyword) {
+  public List<Project> findProjectByKeyWord(Identity identity, String keyword, OrderBy order) {
     List<String> memberships = UserUtils.getMemberships(identity);
-    return daoHandler.getProjectHandler().findAllByMembershipsAndKeyword(memberships, keyword);
+    return daoHandler.getProjectHandler().findAllByMembershipsAndKeyword(memberships, keyword, order);
   }
 }
 

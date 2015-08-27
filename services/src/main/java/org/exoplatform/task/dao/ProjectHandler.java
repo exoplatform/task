@@ -16,5 +16,5 @@ public interface ProjectHandler extends GenericDAO<Project, Long> {
 
   List<Project> findAllByMemberships(List<String> memberships);
 
-  List<Project> findAllByMembershipsAndKeyword(List<String> membership, String keyword);
+  List<Project> findAllByMembershipsAndKeyword(List<String> membership, String keyword, OrderBy order);
 }

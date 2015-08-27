@@ -16,14 +16,24 @@
 */
 package org.exoplatform.task.dao.jpa;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import org.exoplatform.commons.persistence.impl.EntityManagerService;
 import org.exoplatform.commons.persistence.impl.GenericDAOJPAImpl;
+import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.dao.ProjectHandler;
 import org.exoplatform.task.domain.Project;
 
@@ -80,17 +90,43 @@ public class ProjectDAOImpl extends GenericDAOJPAImpl<Project, Long> implements 
   }
 
   @Override
-  public List<Project> findAllByMembershipsAndKeyword(List<String> memberships, String keyword) {
-    Query query = getEntityManager().createNamedQuery("Project.findAllByMembershipAndKeyword", Project.class);
-    query.setParameter("memberships", memberships);
-    if (keyword == null || keyword.isEmpty()) {
-      keyword = "%";
-    } else {
-      keyword = "%" + keyword.toUpperCase() + "%";
-    }
-    query.setParameter("keyword", keyword);
+  public List<Project> findAllByMembershipsAndKeyword(List<String> memberships, String keyword, OrderBy order) {
+    EntityManager em = getEntityManager();
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+    CriteriaQuery<Project> q = cb.createQuery(Project.class);
 
-    return query.getResultList();
+    Root<Project> project = q.from(Project.class);
+    q.select(project);
+
+    List<Predicate> predicates = new ArrayList<Predicate>();
+    predicates.add(cb.or(project.join("manager", JoinType.LEFT).in(memberships), project.join("participator", JoinType.LEFT).in(memberships)));
+    //
+    if(keyword != null && !keyword.isEmpty()) {
+      List<Predicate> keyConditions = new LinkedList<Predicate>();
+      for (String k : keyword.split(" ")) {
+        if (!(k = k.trim()).isEmpty()) {
+          k = "%" + k.toLowerCase() + "%";
+          keyConditions.add(cb.like(cb.lower(project.<String>get("name")), k));          
+        }
+      }
+      predicates.add(cb.or(keyConditions.toArray(new Predicate[keyConditions.size()])));        
+    }
+
+    if(predicates.size() > 0) {
+      Iterator<Predicate> it = predicates.iterator();
+      Predicate p = it.next();
+      while(it.hasNext()) {
+        p = cb.and(p, it.next());
+      }
+      q.where(p);
+    }
+    
+    if(order != null) {
+      Path p = project.get(order.getFieldName());      
+      q.orderBy(order.isAscending() ? cb.asc(p) : cb.desc(p));
+    }
+    
+    return em.createQuery(q).getResultList();
   }
 }
 

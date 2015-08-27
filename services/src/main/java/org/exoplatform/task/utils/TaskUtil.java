@@ -87,6 +87,7 @@ public final class TaskUtil {
   public static final String ASSIGNEE = "assignee";
   public static final String PROJECT = "project";
   public static final String RANK = "rank";
+  public static final String MEMBERSHIP = "membership";
   
   private TaskUtil() {
   }

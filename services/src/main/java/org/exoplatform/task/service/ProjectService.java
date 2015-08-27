@@ -52,6 +52,6 @@ public interface ProjectService {
   
   List<Project> getProjectTreeByMembership(List<String> memberships);
  
-  List<Project> findProjectByKeyWord(Identity identity, String keyword);
+  List<Project> findProjectByKeyWord(Identity identity, String keyword, OrderBy order);
 
 }

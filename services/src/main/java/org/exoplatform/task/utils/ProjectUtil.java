@@ -47,6 +47,10 @@ public final class ProjectUtil {
   public static final int INCOMING_PROJECT_ID = -1;
   public static final int TODO_PROJECT_ID = -2;
 
+  public static final String NAME = "name";
+
+  public static final String DUE_DATE = "dueDate";
+
   private ProjectUtil() {
   }
   

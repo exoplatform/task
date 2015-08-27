@@ -16,14 +16,16 @@
 */
 package org.exoplatform.task.test.dao;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import junit.framework.Assert;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.task.dao.ProjectHandler;
 import org.exoplatform.task.domain.Project;
@@ -87,6 +89,17 @@ public class TestProjectDAO extends AbstractTest {
 
     projects = pDAO.findSubProjects(null);
     Assert.assertTrue(projects.size() >= 1);
+  }
+  
+  @Test
+  public void testFindProjectByKeyword() {
+    Set<String> manager = new HashSet<String>();
+    manager.add("root");
+    Project parent = new Project("Parent project", null, null, manager, null);
+    pDAO.create(parent);
+
+    List<Project> projects = pDAO.findAllByMembershipsAndKeyword(Arrays.asList("root"), "parenT ProJecT", null);
+    Assert.assertEquals(1, projects.size());
   }
 }
 

@@ -18,6 +18,7 @@ package org.exoplatform.task.test.dao;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 import org.exoplatform.container.PortalContainer;
@@ -127,6 +128,31 @@ public class TestTaskDAO extends AbstractTest {
     query.setKeyword("testFindTaskByQuery0123456789");
     tasks = tDAO.findTaskByQuery(query);
     Assert.assertEquals(0, tasks.size());
+    
+    query = new TaskQuery();
+    query.setKeyword(" Find  QUERY");
+    tasks = tDAO.findTaskByQuery(query);
+    Assert.assertEquals(1, tasks.size());
+  }
+  
+  @Test
+  public void testFindTaskByMembership() {
+    Project project = new Project();
+    project.setName("Project1");
+    project.setParticipator(new HashSet<String>(Arrays.asList("root")));
+    Status status = newStatusInstance("TO DO", 1);
+    status.setProject(project);
+    project.getStatus().add(status);
+    taskService.getProjectHandler().create(project);
+    
+    Task task1 = newTaskInstance("Task 1", "", username);
+    task1.setStatus(status);
+    tDAO.create(task1);
+    
+    TaskQuery query = new TaskQuery();
+    query.setMemberships(Arrays.asList("root"));
+    List<Task> tasks = tDAO.findTaskByQuery(query);
+    Assert.assertEquals(1, tasks.size());
   }
 
   @Test
