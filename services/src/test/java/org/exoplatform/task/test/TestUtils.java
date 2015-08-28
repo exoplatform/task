@@ -28,6 +28,7 @@ import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
+import liquibase.resource.ClassLoaderResourceAccessor;
 import liquibase.resource.FileSystemResourceAccessor;
 
 import org.exoplatform.task.domain.Comment;
@@ -80,9 +81,7 @@ public class TestUtils {
     Database database = DatabaseFactory.getInstance()
         .findCorrectDatabaseImplementation(new JdbcConnection(conn));
 
-    // TODO: We should not point to a relative file outside of the project.
-    liquibase = new Liquibase("../task-management/src/main/resources/db/changelog/db.changelog-1.0.0.xml",
-        new FileSystemResourceAccessor(), database);
+    liquibase = new Liquibase("db/changelog/db.changelog-1.0.0.xml", new ClassLoaderResourceAccessor(), database);
     liquibase.update((String)null);
   }
 
