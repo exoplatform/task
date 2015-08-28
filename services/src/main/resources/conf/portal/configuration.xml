@@ -4,6 +4,20 @@
                xmlns="http://www.exoplatform.org/xml/ns/kernel_1_2.xsd">
 
   <component>
+    <type>org.exoplatform.task.integration.DataInitializer</type>
+    <init-params>
+      <value-param>
+        <name>liquibase.datasource</name>
+        <value>exo-jcr_portal</value>
+      </value-param>
+      <value-param>
+        <name>liquibase.contexts</name>
+        <value>production</value>
+      </value-param>
+    </init-params>
+  </component>
+
+  <component>
     <type>org.exoplatform.commons.persistence.impl.EntityManagerService</type>
     <init-params>
       <value-param>
@@ -46,7 +60,7 @@
   <component>
     <type>org.exoplatform.task.integration.SpaceTaskAppInstaller</type>
   </component>
-  
+
   <external-component-plugins>
     <target-component>org.exoplatform.social.core.manager.ActivityManager</target-component>
     <component-plugin>
