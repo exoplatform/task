@@ -24,22 +24,30 @@ import java.util.List;
 import org.exoplatform.commons.api.search.SearchServiceConnector;
 import org.exoplatform.commons.api.search.data.SearchContext;
 import org.exoplatform.commons.api.search.data.SearchResult;
+import org.exoplatform.container.ExoContainer;
+import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.xml.InitParams;
+import org.exoplatform.portal.mop.SiteKey;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.utils.ProjectUtil;
+import org.exoplatform.task.utils.ResourceUtil;
 import org.exoplatform.task.utils.StringUtil;
+import org.exoplatform.web.WebAppController;
 
 public class ProjectSearchConnector extends SearchServiceConnector {
 
   private ProjectService projectService;  
   
-  public ProjectSearchConnector(InitParams initParams, ProjectService projectService) {
+  private WebAppController controller;
+  
+  public ProjectSearchConnector(InitParams initParams, ProjectService projectService, WebAppController controller) {
     super(initParams);
     this.projectService = projectService;
+    this.controller = controller;
   }
   
   @Override
@@ -63,7 +71,7 @@ public class ProjectSearchConnector extends SearchServiceConnector {
       result.add(buildResult(p));
     }
     
-    return result;
+    return ResourceUtil.subList(result, offset, limit);
   }
 
   private SearchResult buildResult(Project p) {
@@ -78,7 +86,8 @@ public class ProjectSearchConnector extends SearchServiceConnector {
   }
 
   private String buildUrl(Project p) {
-    return "";
+    ExoContainer container = ExoContainerContext.getCurrentContainer();
+    return ProjectUtil.buildProjectURL(p, SiteKey.portal("intranet"), container, controller.getRouter());
   }
 
   private OrderBy buildOrderBy(String sort, String order) {

@@ -36,6 +36,7 @@ import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.service.TaskService;
+import org.exoplatform.task.utils.ResourceUtil;
 import org.exoplatform.task.utils.StringUtil;
 import org.exoplatform.task.utils.TaskUtil;
 import org.exoplatform.task.utils.UserUtils;
@@ -84,8 +85,8 @@ public class TaskSearchConnector extends SearchServiceConnector {
     for (Task t : tasks) {
       result.add(buildResult(t));
     }
-    
-    return result;
+
+    return ResourceUtil.subList(result, offset, limit);
   }
 
   private SearchResult buildResult(Task t) {
@@ -105,7 +106,10 @@ public class TaskSearchConnector extends SearchServiceConnector {
   }
 
   private String buildDetail(Task t) {
-    StringBuilder detail = new StringBuilder(t.getDescription());
+    StringBuilder detail = new StringBuilder();
+    if (t.getDescription() != null) {
+      detail.append(t.getDescription());
+    }
     if (t.getStartDate() != null) {
       detail.append(" - From: ");
       detail.append(StringUtil.DATE_TIME_FORMAT.format(t.getStartDate()));
@@ -118,7 +122,7 @@ public class TaskSearchConnector extends SearchServiceConnector {
 
   private OrderBy buildOrderBy(String sort, String order) {
     String orderBy = null;
-    if (StringUtil.ORDERBY_DATE.equals(sort)) {
+    if (StringUtil.ORDERBY_DATE.equals(sort) || StringUtil.ORDERBY_RELEVANCY.equals(sort)) {
       orderBy = TaskUtil.CREATED_TIME;
     } else if (StringUtil.ORDERBY_TITLE.equals(sort)) {
       orderBy = TaskUtil.TITLE;

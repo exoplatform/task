@@ -377,6 +377,38 @@ $(document).ready(function() {
             $icon.toggleClass('uiIconArrowDownMini').toggleClass('uiIconArrowRightMini');
         });
     });
+    
+    var projectLoaded = function(id, $a) {
+      if (!$a) {        
+        $a = $leftPanel.find('.project-item[data-projectid=' + id + '] .project-name');      
+      }
+      $a.closest('.leftPanel > ul').find('li.active').removeClass('active');
+      $a.closest('li').addClass('active');
+
+      //welcome
+      if ($a.data('id') == '0' && $leftPanel.find('.project-item').length == 0) {
+        var $addProject = $taskManagement.find('.add-new-project');
+        taApp.showOneTimePopover($addProject);
+      }
+      
+      var $inputTask = $centerPanelContent.find('input[name="taskTitle"]');
+      taApp.showOneTimePopover($inputTask);
+      $inputTask.focus();
+    }
+    
+    var loadProjectDetail = function(id) {
+      var $a = $leftPanel.find('.project-item[data-projectid=' + id + '] .project-name');      
+      $a.closest('.leftPanel > ul').find('li.active').removeClass('active');
+      $a.closest('li').addClass('active');
+
+      $rightPanelContent.jzLoad('ProjectController.projectDetail()', {id: id}, function () {
+        taApp.showRightPanel($centerPanel, $rightPanel);
+        //TODO: check can edit to init editInline
+        if($rightPanelContent.find('[data-projectid]').data('canedit')) {
+            editInline.initEditInlineForProject(id);
+        }
+      });
+    }
 
     $leftPanel.on('click', 'a.project-name', function(e) {
         var $a = $(e.target).closest('a');
@@ -386,35 +418,25 @@ $(document).ready(function() {
 
         if ((currentProject != projectId || filter != undefined) && ($a.data('canview') || projectId <= 0)) {
             taApp.reloadTaskList(projectId, filter, function() {
-              $a.closest('.leftPanel > ul').find('li.active').removeClass('active');
-              $a.closest('li').addClass('active');
-
-              //welcome
-              if ($a.data('id') == '0' && $leftPanel.find('.project-item').length == 0) {
-                var $addProject = $taskManagement.find('.add-new-project');
-                taApp.showOneTimePopover($addProject);
-              }
-              
-              var $inputTask = $centerPanelContent.find('input[name="taskTitle"]');
-              taApp.showOneTimePopover($inputTask);
-              $inputTask.focus();
+              projectLoaded(projectId, $a);
             });
         }
         // Show project summary at right panel
         if(projectId > 0 && $a.data('canedit') && (currentProject != projectId || $rightPanel.is(':hidden') || !$rightPanelContent.children().first().data('projectid'))) {
-            $rightPanelContent.jzLoad('ProjectController.projectDetail()', {id: projectId}, function () {
-                $a.closest('ul.list-projects[parentid="0"]').find('li.active').removeClass('active');
-                $a.closest('li').addClass('active');
-                taApp.showRightPanel($centerPanel, $rightPanel);
-                //TODO: check can edit to init editInline
-                if($rightPanelContent.find('[data-projectid]').data('canedit')) {
-                    editInline.initEditInlineForProject(projectId);
-                }
-            });
+          loadProjectDetail(projectId);
         } else {
             taApp.hideRightPanel($centerPanel, $rightPanel, $rightPanelContent);
         }
     });
+    
+    var currentProject = $centerPanel.find('.projectListView').data('projectid');
+    if (currentProject > 0 && !$rightPanel.is(':visible')) {
+      var $a = $leftPanel.find('.project-item[data-projectid=' + currentProject + '] .project-name');
+      projectLoaded(currentProject);
+      if(currentProject > 0 && $a.data('canedit')) {
+        loadProjectDetail(currentProject);        
+      }
+    }
 
     $centerPanel.on('click', 'a.btn-add-task', function(e) {
         $centerPanel.find('.input-field input').focus();

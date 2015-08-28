@@ -71,13 +71,10 @@ import org.exoplatform.web.controller.router.Router;
  * 6/3/15
  */
 public final class TaskUtil {
-
-  private static final Log LOG = ExoLogger.getExoLogger(TaskUtil.class.getName());
-
-  public static final String TASK_PAGE_NAME = "tasks";
-  public static final String TASK_PORTLET_NAME = "TaskManagementApplication";
   public static final String URL_TASK_DETAIL = "/taskDetail/";
   
+  private static final Log LOG = ExoLogger.getExoLogger(TaskUtil.class.getName());
+
   public static final String TITLE = "title";  
   public static final String PRIORITY = "priority";
   public static final String DUEDATE = "dueDate";
@@ -312,61 +309,17 @@ public final class TaskUtil {
   }
 
   public static String buildTaskURL(Task task, SiteKey siteKey, ExoContainer container, Router router) {
-    if (task == null || siteKey == null) {
+    if (task == null) {
       return "#";
     }
 
-    // Check taskPage is exist or not
-    NodeContext<?> page = null;
-    NavigationService navService = container.getComponentInstanceOfType(NavigationService.class);
-    NavigationContext ctx = navService.loadNavigation(siteKey);
-    Scope scope;
-    if (siteKey.getType().equals(SiteType.GROUP)) {
-      scope = Scope.GRANDCHILDREN;
+    StringBuilder urlBuilder = new StringBuilder(ResourceUtil.buildBaseURL(siteKey, container, router));
+    if (urlBuilder.length() <= 1) {
+      return urlBuilder.toString();
     } else {
-      scope = Scope.CHILDREN;
-    }
-    NodeContext<NodeContext<?>> nodeCtx = navService.loadNode(NodeModel.SELF_MODEL, ctx, scope, null);
-    if (nodeCtx.getNodeSize() > 0) {
-      Collection<NodeContext<?>> children = nodeCtx.getNodes();
-      if (siteKey.getType() == SiteType.GROUP) {
-        children = nodeCtx.get(0).getNodes();
-      }
-      Iterator<NodeContext<?>> it = children.iterator();
-      NodeContext<?> child = null;
-      while (it.hasNext()) {
-        child = it.next();
-        if (TASK_PAGE_NAME.equals(child.getName()) || child.getName().indexOf(TASK_PORTLET_NAME) >= 0) {
-          page = child;
-          break;
-        }
-      }
-    }
-
-    // Task page does not exist
-    if (page == null) {
-      return "#";
-    }
-
-    String portalName = container.getComponentInstanceOfType(ExoContainerContext.class).getPortalContainerName();
-
-    HashedMap qualifiedName = new HashedMap();
-    qualifiedName.put(QualifiedName.create("gtn", "handler"), portalName);
-    qualifiedName.put(QualifiedName.create("gtn", "sitetype"), siteKey.getTypeName());
-    qualifiedName.put(QualifiedName.create("gtn", "sitename"), siteKey.getName());
-    qualifiedName.put(QualifiedName.create("gtn", "path"), page.getName());
-    qualifiedName.put(QualifiedName.create("gtn", "lang"), "");
-
-    try {
-    return new StringBuilder("/")
-            .append(portalName)
-            .append(URLDecoder.decode(router.render(qualifiedName), "UTF-8"))
-            .append(URL_TASK_DETAIL)
-            .append(task.getId())
-            .toString();
-
-    } catch (UnsupportedEncodingException e) {
-      return "";
+      return urlBuilder.append(URL_TASK_DETAIL)
+          .append(task.getId())
+          .toString();
     }
   }
 

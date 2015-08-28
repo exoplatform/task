@@ -94,17 +94,30 @@ public class TaskManagement {
   public Response.Content index(String space_group_id, SecurityContext securityContext) throws ProjectNotFoundException {
     //TODO: should check if username is null?
     String username = securityContext.getRemoteUser();
-    
-    long currProject = space_group_id == null ? -1 : -2;
+    PortalRequestContext prc = Util.getPortalRequestContext();
+    String requestPath = prc.getControllerContext().getParameter(RequestNavigationData.REQUEST_PATH);
+
     TaskModel taskModel = null;
     List<Task> tasks = null;
     Project project = null;
-    long taskId = navState.getTaskId();
+    
+    long currProject = space_group_id == null ? -1 : -2;
+    if (space_group_id == null) {
+      //. Load project ID from URL
+      long id = ProjectUtil.getProjectIdFromURI(requestPath);
+      if (id > 0 && prc.getControllerContext().getRequest().getQueryString() == null) {
+        currProject = id;
+        project = projectService.getProjectById(currProject);
+      } else {
+        currProject = -1;
+      }
+    } else {
+      currProject = -2;
+    }        
 
+    long taskId = navState.getTaskId();
     if (taskId <= 0) {
       //. Load task ID from URL
-      PortalRequestContext prc = Util.getPortalRequestContext();
-      String requestPath = prc.getControllerContext().getParameter(RequestNavigationData.REQUEST_PATH);
       long id = TaskUtil.getTaskIdFromURI(requestPath);
       if (id > 0) {
         taskId = id;
@@ -138,6 +151,8 @@ public class TaskManagement {
     if (tasks == null) {
       if (space_group_id != null) {
         tasks = taskService.getToDoTasksByUser(username, spaceProjectIds, null, null, null);
+      } else if (currProject > 0) {
+        tasks = projectService.getTasksByProjectId(Arrays.asList(currProject), null);
       } else {
         tasks = taskService.getIncomingTasksByUser(username, new OrderBy.DESC("createdTime"));
       }

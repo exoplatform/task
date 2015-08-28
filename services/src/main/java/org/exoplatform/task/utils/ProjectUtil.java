@@ -16,8 +16,18 @@
 */
 package org.exoplatform.task.utils;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ResourceBundle;
+import java.util.Set;
+
 import org.exoplatform.calendar.model.Calendar;
+import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
+import org.exoplatform.portal.mop.SiteKey;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.security.ConversationState;
@@ -26,14 +36,7 @@ import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.exception.ProjectNotFoundException;
 import org.exoplatform.task.service.ProjectService;
-
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.Set;
+import org.exoplatform.web.controller.router.Router;
 
 /**
  * Created by The eXo Platform SAS
@@ -44,6 +47,7 @@ import java.util.Set;
 public final class ProjectUtil {
   private static final Log LOG = ExoLogger.getExoLogger(ProjectUtil.class);
 
+  public static final String URL_PROJECT_DETAIL = "/projectDetail/";
   public static final int INCOMING_PROJECT_ID = -1;
   public static final int TODO_PROJECT_ID = -2;
 
@@ -197,6 +201,42 @@ public final class ProjectUtil {
     builder.insert(0, el.toString());
 
     return builder.toString();
+  }
+
+  public static String buildProjectURL(Project project, SiteKey siteKey, ExoContainer container, Router router) {
+    if (project == null) {
+      return "#";
+    }
+
+    StringBuilder urlBuilder = new StringBuilder(ResourceUtil.buildBaseURL(siteKey, container, router));
+    if (urlBuilder.length() <= 1) {
+      return urlBuilder.toString();
+    } else {
+      return urlBuilder.append(URL_PROJECT_DETAIL)
+          .append(project.getId())
+          .toString();
+    }
+  }
+
+  public static long getProjectIdFromURI(String requestPath) {
+    long taskId = -1;
+    int index = requestPath.indexOf(URL_PROJECT_DETAIL);
+    if (index >= 0) {
+      index = index + URL_PROJECT_DETAIL.length();
+      int lastIndex = requestPath.indexOf('/', index);
+      String id;
+      if (lastIndex > 0) {
+        id = requestPath.substring(index, lastIndex);
+      } else {
+        id = requestPath.substring(index);
+      }
+      try {
+        taskId = Long.parseLong(id);
+      } catch (NumberFormatException ex) {
+        taskId = -1;
+      }
+    }
+    return taskId;
   }
 }
 

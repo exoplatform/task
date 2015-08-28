@@ -26,11 +26,12 @@ import java.util.regex.Pattern;
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
 public class StringUtil {
-  public static String  ORDERBY_DATE  = "date" ;
-  public static String  ORDERBY_TITLE  = "title" ;  
-  public static String ASC = "asc";
-  public static String DESC = "desc";
-  public static SimpleDateFormat  DATE_TIME_FORMAT = new SimpleDateFormat("EEEEE, MMMMMMMM d, yyyy K:mm a");
+  public static final String  ORDERBY_DATE  = "date" ;
+  public static final String  ORDERBY_TITLE  = "title" ;  
+  public static final String ORDERBY_RELEVANCY = "relevancy";
+  public static final String ASC = "asc";
+  public static final String DESC = "desc";
+  public static final SimpleDateFormat  DATE_TIME_FORMAT = new SimpleDateFormat("EEEEE, MMMMMMMM d, yyyy K:mm a");
   
   public static final  Pattern FUZZY = Pattern.compile(".[~][0]([\\.][0-9])");
   
