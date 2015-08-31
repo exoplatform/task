@@ -20,7 +20,6 @@ package org.exoplatform.task.integration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 import org.exoplatform.commons.api.search.SearchServiceConnector;
@@ -34,6 +33,7 @@ import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.dao.TaskQuery;
+import org.exoplatform.task.domain.Priority;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.utils.ResourceUtil;
@@ -43,6 +43,11 @@ import org.exoplatform.task.utils.UserUtils;
 import org.exoplatform.web.WebAppController;
 
 public class TaskSearchConnector extends SearchServiceConnector {
+
+  private static final int MAX_EXCERPT_LENGTH = 430;
+  
+  public static final String DUE_FOR = "Due for: ";
+  public static final String PRIORITY = "Priority: ";
 
   private TaskService taskService;
   
@@ -93,9 +98,23 @@ public class TaskSearchConnector extends SearchServiceConnector {
     String detail = buildDetail(t);
     String url = buildUrl(t);
     String imageUrl = buildImageUrl(t);
-    return new SearchResult(url, t.getTitle(), "", detail, imageUrl, t.getCreatedTime().getTime(), 0);
+    String excerpt = buildExcerpt(t);    
+    return new SearchResult(url, t.getTitle(), excerpt, detail, imageUrl, t.getCreatedTime().getTime(), 0);
   }
   
+  private String buildExcerpt(Task t) {
+    String description = t.getDescription();
+    if (description != null) {
+      if (description.length() > MAX_EXCERPT_LENGTH) {
+        return description.substring(0, MAX_EXCERPT_LENGTH) + "...";        
+      } else {
+        return description;
+      }
+    }
+
+    return null;
+  }
+
   private String buildImageUrl(Task t) {
     return null;
   }
@@ -107,16 +126,17 @@ public class TaskSearchConnector extends SearchServiceConnector {
 
   private String buildDetail(Task t) {
     StringBuilder detail = new StringBuilder();
-    if (t.getDescription() != null) {
-      detail.append(t.getDescription());
+    
+    if (t.getStatus() != null) {
+      detail.append(t.getStatus().getProject().getName()).append(" - ");
     }
-    if (t.getStartDate() != null) {
-      detail.append(" - From: ");
-      detail.append(StringUtil.DATE_TIME_FORMAT.format(t.getStartDate()));
-      detail.append(" - To : ");
-      Date to = new Date(t.getEndDate().getTime());
-      detail.append(StringUtil.DATE_TIME_FORMAT.format(to));
+    if (t.getPriority() != null && !t.getPriority().equals(Priority.UNDEFINED)) {
+      detail.append(PRIORITY).append(t.getPriority().name()).append(" - ");      
     }
+    if (t.getDueDate() != null) {
+      detail.append(DUE_FOR).append(StringUtil.DATE_TIME_FORMAT.format(t.getDueDate()));
+    }
+
     return detail.toString();
   }
 
