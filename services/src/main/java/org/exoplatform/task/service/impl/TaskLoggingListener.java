@@ -23,6 +23,8 @@ import org.apache.commons.lang.StringUtils;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.security.ConversationState;
+import org.exoplatform.task.domain.Project;
+import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.exception.TaskNotFoundException;
 import org.exoplatform.task.service.TaskListener;
 import org.exoplatform.task.service.TaskService;
@@ -79,11 +81,11 @@ public class TaskLoggingListener implements TaskListener {
       break;
     case  EDIT_PROJECT:
       msg = "log.edit_project";
-      val = event.getNewVal().toString();
+      val = ((Project)event.getNewVal()).getName();
       break;
     case EDIT_STATUS:
       msg = "log.edit_status";
-      val = event.getNewVal().toString();
+      val = ((Status)event.getNewVal()).getName();
       break;
     case  EDIT_TITLE:
       msg = "log.edit_title";
