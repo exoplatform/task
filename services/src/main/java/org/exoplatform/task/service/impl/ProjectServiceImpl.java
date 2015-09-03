@@ -30,7 +30,7 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.exoplatform.commons.api.persistence.Transactional;
+import org.exoplatform.commons.api.persistence.ExoTransactional;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.security.Identity;
@@ -81,7 +81,7 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   @Override
-  @Transactional
+  @ExoTransactional
   public Project createDefaultStatusProjectWithManager(String name, String description, Long parentId, String username)
       throws ProjectNotFoundException {
 
@@ -93,7 +93,7 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   @Override
-  @Transactional
+  @ExoTransactional
   public Project createDefaultStatusProjectWithAttributes(Long parentId, String name, String description,
                                                           Set<String> managers, Set<String> participators)
       throws ProjectNotFoundException {
@@ -128,7 +128,7 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   @Override
-  @Transactional
+  @ExoTransactional
   public Project createDefaultStatusProject(Project project) {
     Project newProject = daoHandler.getProjectHandler().create(project);
     
@@ -139,14 +139,14 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   @Override
-  @Transactional
+  @ExoTransactional
   public Project createProject(Project project) {
     Project obj = daoHandler.getProjectHandler().create(project);
     return obj;
   }
 
   @Override
-  @Transactional
+  @ExoTransactional
   public Project updateProjectInfo(long id, String param, String[] values)
       throws ProjectNotFoundException, ParameterEntityException {
 
@@ -220,7 +220,7 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   @Override
-  @Transactional
+  @ExoTransactional
   public void deleteProjectById(long id, boolean deleteChild) throws ProjectNotFoundException {
     Project project = getProjectById(id); //Can throw ProjectNotFoundException
 
@@ -228,7 +228,7 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   @Override
-  @Transactional
+  @ExoTransactional
   public void deleteProject(Project project, boolean deleteChild) {    
     if (!deleteChild && project.getChildren() != null) {
       Project parent = project.getParent();
@@ -241,7 +241,7 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   @Override
-  @Transactional
+  @ExoTransactional
   public Project cloneProjectById(long id, boolean cloneTask) throws ProjectNotFoundException {
 
     Project project = getProjectById(id); //Can throw ProjectNotFoundException
@@ -264,7 +264,7 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   @Override
-  @Transactional
+  @ExoTransactional
   public Task createTaskToProjectId(long id, Task task) throws ProjectNotFoundException {
     Status status = daoHandler.getStatusHandler().findLowestRankStatusByProject(id);
     task.setStatus(status);
@@ -289,7 +289,7 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   @Override
-  @Transactional
+  @ExoTransactional
   public Project removePermissionFromProjectId(Long id, String permission, String type)
       throws ProjectNotFoundException, NotAllowedOperationOnEntityException {
 
@@ -315,7 +315,7 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   @Override
-  @Transactional
+  @ExoTransactional
   public Project addPermissionsFromProjectId(Long id, String permissions, String type)
       throws ProjectNotFoundException, NotAllowedOperationOnEntityException {
 

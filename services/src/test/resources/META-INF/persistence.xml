@@ -3,7 +3,7 @@
              xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
              version="2.0">
 
-  <persistence-unit name="org.exoplatform.task" transaction-type="RESOURCE_LOCAL">
+  <persistence-unit name="exo-pu" transaction-type="RESOURCE_LOCAL">
     <provider>org.hibernate.ejb.HibernatePersistence</provider>
 
     <class>org.exoplatform.task.domain.Project</class>

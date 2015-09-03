@@ -30,7 +30,7 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.exoplatform.commons.api.persistence.Transactional;
+import org.exoplatform.commons.api.persistence.ExoTransactional;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.task.dao.OrderBy;
@@ -81,7 +81,7 @@ public class TaskServiceImpl implements TaskService {
   }
 
   @Override
-  @Transactional
+  @ExoTransactional
   public Task createTask(Task task) {
     Task result = daoHandler.getTaskHandler().create(task);
     //
@@ -93,7 +93,7 @@ public class TaskServiceImpl implements TaskService {
   }
 
   @Override
-  @Transactional
+  @ExoTransactional
   public Task updateTaskInfo(long id, String param, String[] values)
       throws TaskNotFoundException, ParameterEntityException, StatusNotFoundException {
 
@@ -271,13 +271,13 @@ public class TaskServiceImpl implements TaskService {
   }
 
   @Override
-  @Transactional
+  @ExoTransactional
   public void updateTaskOrder(long currentTaskId, Status newStatus, long[] orders) {
       daoHandler.getTaskHandler().updateTaskOrder(currentTaskId, newStatus, orders);
   }
 
   @Override
-  @Transactional
+  @ExoTransactional
   public Task updateTaskCompleted(long id, Boolean completed)
       throws TaskNotFoundException, ParameterEntityException, StatusNotFoundException {
 
@@ -287,13 +287,13 @@ public class TaskServiceImpl implements TaskService {
   }
 
   @Override
-  @Transactional
+  @ExoTransactional
   public void deleteTask(Task task) {    
     daoHandler.getTaskHandler().delete(task);
   }
 
   @Override
-  @Transactional
+  @ExoTransactional
   public void deleteTaskById(long id) throws TaskNotFoundException {
 
     Task task = getTaskById(id);// Can throw TaskNotFoundException
@@ -303,7 +303,7 @@ public class TaskServiceImpl implements TaskService {
   }
 
   @Override
-  @Transactional
+  @ExoTransactional
   public Task cloneTaskById(long id) throws TaskNotFoundException {
 
     Task task = getTaskById(id);// Can throw TaskNotFoundException
@@ -342,7 +342,7 @@ public class TaskServiceImpl implements TaskService {
   }
 
   @Override
-  @Transactional
+  @ExoTransactional
   public Comment addCommentToTaskId(long id, String username, String comment) throws TaskNotFoundException {
 
     Task task = getTaskById(id); //Can throws TaskNotFoundException
@@ -370,7 +370,7 @@ public class TaskServiceImpl implements TaskService {
   }
 
   @Override
-  @Transactional
+  @ExoTransactional
   public void deleteCommentById(long commentId) throws CommentNotFoundException {
 
     Comment comment = daoHandler.getCommentHandler().find(commentId);

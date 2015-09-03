@@ -29,7 +29,7 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.exoplatform.commons.api.persistence.Transactional;
+import org.exoplatform.commons.api.persistence.ExoTransactional;
 import org.exoplatform.commons.utils.PropertyManager;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -86,7 +86,7 @@ public class StatusServiceImpl implements StatusService {
   }
 
   @Override
-  @Transactional
+  @ExoTransactional
   public Status createStatus(Project project, String name) {
     if (name == null || (name = name.trim()).isEmpty() || project == null) {
       throw new IllegalArgumentException("project must be not null and status must not be null or empty");
@@ -115,7 +115,7 @@ public class StatusServiceImpl implements StatusService {
   }
 
   @Override
-  @Transactional
+  @ExoTransactional
   public Status deleteStatus(long statusID) throws StatusNotFoundException, NotAllowedOperationOnEntityException {
     StatusHandler handler = daoHandler.getStatusHandler();
     Status st = handler.find(statusID);
@@ -146,7 +146,7 @@ public class StatusServiceImpl implements StatusService {
   }
 
   @Override
-  @Transactional
+  @ExoTransactional
   public Status updateStatus(long id, String name) throws StatusNotFoundException, NotAllowedOperationOnEntityException {
     if (name == null || (name = name.trim()).isEmpty()) {
       throw new IllegalArgumentException("status name can't be null or empty");

@@ -22,7 +22,7 @@ public class TestEntityManager extends AbstractTest {
 
   @Before
   public void initEntityManager() throws Exception {
-    entityManagerFactory = Persistence.createEntityManagerFactory("org.exoplatform.task");
+    entityManagerFactory = Persistence.createEntityManagerFactory("exo-pu");
     entityManager = entityManagerFactory.createEntityManager();
     // Start transaction
     entityManager.getTransaction().begin();
