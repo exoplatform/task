@@ -19,6 +19,8 @@
 
 package org.exoplatform.task.domain;
 
+import org.exoplatform.commons.api.persistence.ExoEntity;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -35,6 +37,7 @@ import javax.persistence.Table;
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
 @Entity
+@ExoEntity
 @Table(name = "TASK_USER_SETTING")
 public class UserSetting {
   @Id

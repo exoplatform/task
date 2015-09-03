@@ -19,6 +19,8 @@
 
 package org.exoplatform.task.domain;
 
+import org.exoplatform.commons.api.persistence.ExoEntity;
+
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -38,6 +40,7 @@ import javax.persistence.TemporalType;
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
 @Entity
+@ExoEntity
 @Table(name = "TASK_COMMENTS")
 @NamedQueries({
     @NamedQuery(name = "Comment.countCommentOfTask",

@@ -43,12 +43,14 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.exoplatform.commons.api.persistence.ExoEntity;
 import org.exoplatform.task.service.TaskBuilder;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>
  */
 @Entity
+@ExoEntity
 @Table(name = "TASK_TASKS")
 @NamedQueries({
     @NamedQuery(name = "Task.findByMemberships",

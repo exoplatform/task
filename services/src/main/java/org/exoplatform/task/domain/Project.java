@@ -42,6 +42,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.exoplatform.commons.api.persistence.ExoEntity;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.services.security.MembershipEntry;
 
@@ -49,6 +50,7 @@ import org.exoplatform.services.security.MembershipEntry;
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>
  */
 @Entity
+@ExoEntity
 @Table(name = "TASK_PROJECTS")
 @NamedQueries({
     @NamedQuery(name = "Project.getRootProjects",
