@@ -60,7 +60,13 @@ define('project-menu', ['SHARED/jquery'], function($) {
               taApp.showRightPanel($centerPanel, $rightPanel);
               $rightPanel.find('[name="name"]').on('blur', function(e) {
                   $(e.target || e.srcElement).closest('form').submit();
+              }).on('keydown', function(e) {
+                if (e.which == 13) {
+                  //submit form by enter key, remove listener for blur that submit the form second time
+                  $(this).off('blur');
+                }
               });
+              
               var $ancestors = $rightPanel.find('.editable');
               $ancestors.editable({
                   mode : 'inline',
