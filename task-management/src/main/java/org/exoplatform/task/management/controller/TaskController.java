@@ -697,8 +697,12 @@ public class TaskController {
     try {
       Status status = statusService.getStatusById(statusId);
       Project project = status.getProject();
-      statusService.deleteStatus(statusId);
-      return listTasks(null, project.getId(), null, null, null, null, "board", securityContext);
+      if (project.getStatus().size() > 1) {
+        statusService.deleteStatus(statusId);
+        return listTasks(null, project.getId(), null, null, null, null, "board", securityContext);
+      } else {
+        return Response.error("Can't delete last status");
+      }
     } catch (AbstractEntityException e) {
       return Response.status(e.getHttpStatusCode()).body(e.getMessage());
     }

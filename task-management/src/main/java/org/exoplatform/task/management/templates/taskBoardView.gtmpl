@@ -88,14 +88,14 @@
                             <% if (index == numberStatus - 1 && canEdit) {%>
                                 <a href="#" rel="tooltip"  data-original-title="Add a Status" data-placement="left" class=" inline-block-hide pull-right mgL5 actionAddStatus"><i class="uiIcon uiIconPlus "></i></a>
                             <%}%>
-                            <% if (canEdit) {%>
+                            <% if (canEdit && numberStatus > 1) {%>
                                 <a href="#" class=" inline-block-hide pull-right actionRemoveStatus"><i class="uiIcon uiIconDelete "></i></a>
                             <%}%>
                         </div>
                     <%}%>
                     <div class="col col-new hover-action-reveal" data-statusid="0" style="display:none">
                         <form class="inline-form formCreateNewStatus" action="#" method="POST" style="display: inline-block">
-                            <input class="input-small" name="statusName" type="text" value="" placeholder="Untitled status">
+                            <input class="input-small" name="statusName" type="text" value="" placeholder="&{board.placeholder.newStatus}">
                         </form>
                         <a href="#" class=" inline-block-hide pull-right actionRemoveStatus"><i class="uiIcon uiIconDelete "></i></a>
                     </div>
