@@ -447,13 +447,17 @@ $(document).ready(function() {
         var $form = $(e.target).closest('form');
         var projectId = $form.closest('.projectListView').attr('data-projectId');
         var taskInput = $form.find('input[name="taskTitle"]').val();
+        var filter = $leftPanel.find('.active .project-name[data-id="' + projectId + '"]').data('filter');
+        if (filter == undefined) {
+            filter = '';
+        }
         $form.jzAjax('TaskController.createTask()', {
             method: 'POST',
-            data: {projectId: projectId, taskInput: taskInput},
+            data: {projectId: projectId, taskInput: taskInput, filter: filter},
             success: function(task) {
                 var id = task.id;
                 var projectId = $leftPanel.find('.active .project-name').data('id');
-                taApp.reloadTaskList(projectId, function() {
+                taApp.reloadTaskList(projectId, filter, function() {
                     $centerPanel.find('.taskItem[data-taskid="' + id + '"]').click();
                     $centerPanel.find('input[name="taskTitle"]').focus();
                 });

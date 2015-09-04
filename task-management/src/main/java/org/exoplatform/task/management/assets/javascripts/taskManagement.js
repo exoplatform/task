@@ -74,8 +74,8 @@ define('taskManagementApp', ['jquery', 'SHARED/juzu-ajax'],
         taApp.reloadTaskList = function(projectId, filter, callback) {
             var $centerPanelContent = taApp.getUI().$centerPanelContent;
             if ($.isFunction(filter)) {
-                filter = '';
-                callback = filter;
+              callback = filter;
+              filter = '';
             }
             if (typeof filter !== 'string') {
                 filter = '';

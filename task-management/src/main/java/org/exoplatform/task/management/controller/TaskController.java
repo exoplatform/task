@@ -624,7 +624,7 @@ public class TaskController {
   @Resource(method = HttpMethod.POST)
   @Ajax
   @MimeType.JSON
-  public Response createTask(String space_group_id, Long projectId, String taskInput, SecurityContext securityContext) {
+  public Response createTask(Long projectId, String taskInput, String filter, SecurityContext securityContext) {
 
     if(taskInput == null || taskInput.isEmpty()) {
       return Response.content(406, "Task input must not be null or empty");
@@ -646,8 +646,22 @@ public class TaskController {
         return Response.status(e.getHttpStatusCode()).body(e.getMessage());
       }
     }
-    //Incoming Task
     else {
+      task.setAssignee(currentUser);
+      
+      TimeZone userTimezone = userService.getUserTimezone(currentUser);
+      Calendar dueDate =  DateUtil.newCalendarInstance(userTimezone);
+      if ("tomorrow".equalsIgnoreCase(filter)) {
+        dueDate.add(Calendar.DATE, 1);
+      } else if ("upcoming".equalsIgnoreCase(filter)) {
+        dueDate.add(Calendar.DATE, 7);
+      } else if (!"today".equalsIgnoreCase(filter)) {
+        dueDate = null;
+      }
+      if (dueDate != null) {
+        task.setDueDate(dueDate.getTime());
+      }
+      
       taskService.createTask(task);
     }
 
