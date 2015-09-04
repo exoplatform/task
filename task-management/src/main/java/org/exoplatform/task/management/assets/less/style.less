@@ -374,9 +374,13 @@ li[data-hiddenproject="false"] {
                 .popover-content {
                     .header {
                         &.nav-inline {
+                            white-space: nowrap;
                             a {
                                 padding-left: 5px;
                                 margin:10px 0 10px 2px;
+                                &.active {
+                                    font-weight: bold;
+                                }
                             }
                             a:first-child {
                                 margin-left: 0;padding-left: 0;

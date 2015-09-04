@@ -315,9 +315,15 @@ li[data-hiddenproject="false"] > .sub-item .label-show {
 .rightPanel .addTask .inforBar1 .uiEditableInline .popover {
   min-width: 252px;
 }
+.rightPanel .addTask .inforBar1 .uiEditableInline .popover .popover-content .header.nav-inline {
+  white-space: nowrap;
+}
 .rightPanel .addTask .inforBar1 .uiEditableInline .popover .popover-content .header.nav-inline a {
   padding-left: 5px;
   margin: 10px 0 10px 2px;
+}
+.rightPanel .addTask .inforBar1 .uiEditableInline .popover .popover-content .header.nav-inline a.active {
+  font-weight: bold;
 }
 .rightPanel .addTask .inforBar1 .uiEditableInline .popover .popover-content .header.nav-inline a:first-child {
   margin-left: 0;
