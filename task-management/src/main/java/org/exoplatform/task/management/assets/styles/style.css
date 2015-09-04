@@ -790,3 +790,6 @@ li[data-hiddenproject="false"] > .sub-item .label-show {
   display: inline;
   float: none;
 }
+.sharePrjDialog .table tr td {
+  width: 50%;
+}
