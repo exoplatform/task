@@ -759,7 +759,7 @@ li[data-hiddenproject="false"] > .sub-item .label-show {
 .uiAccordion.leftPanel .accordion-heading .sub-item .project-name {
   padding-left: 30px;
 }
-.project-item.active .collapseSubProject .uiIconLightGray {
+.project-item.active > .sub-item .collapseSubProject .uiIconLightGray {
   background-image: url("/eXoSkin/skin/images/themes/default/Icons/uiIconsSecondary.png");
 }
 .taskBoardView .uiEditableInline.active .number-tasks,
