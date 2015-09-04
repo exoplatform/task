@@ -57,9 +57,13 @@
               if (currentProjectId > 0) {
                 name = project.name;
               } else if (currentProjectId == -1) {
-                name = bundle.getString("label.project.incomming");
+                name = bundle.getString("label.incoming");
               } else if (currentProjectId == -2) {
-                name = bundle.getString("label.project.todo");
+                if (filter.isEmpty()) {
+	               name = bundle.getString("label.allTasks");               
+                } else {
+                  name = bundle.getString("label." + filter);
+                }
               }
             %>
             <div class="label-title pull-left projectName">${name}</div>
