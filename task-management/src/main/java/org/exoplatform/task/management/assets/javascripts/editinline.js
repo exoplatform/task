@@ -140,7 +140,7 @@ define('ta_edit_inline',
                 options.emptytext = "Description";
             } else if (type == 'calendar') {
                 options.mode = 'popup';
-                options.emptytext = 'No Due Date';
+                options.emptytext = ' Due date';
             }
 
             return options;
@@ -561,7 +561,7 @@ define('ta_edit_inline',
                     url: editInline.saveTaskDetailFunction
                 });
                 if (fieldName == 'dueDate') {
-                    editOptions.emptytext = "No Due Date";
+                    editOptions.emptytext = " Due date";
                     editOptions.mode = 'popup';
                 }
                 if (fieldName == 'status') {
@@ -580,7 +580,7 @@ define('ta_edit_inline',
                     }
                 }
                 if (fieldName == 'tags') {
-                    editOptions.emptytext = 'No Tags';
+                    editOptions.emptytext = 'Tags';
                     editOptions.success = function (response, newValue) {
                         var isEmpty = newValue.length == 0 || newValue[0] == '';
                         var $i = $this.parent().find('.icon-hash');
@@ -721,7 +721,7 @@ define('ta_edit_inline',
                     };
                 }
                 if(fieldName == 'dueDate') {
-                    editOptions.emptytext = "No Due Date";
+                    editOptions.emptytext = " Due date";
                     editOptions.mode = 'popup';
                 }
                 $this.editable(editOptions);
