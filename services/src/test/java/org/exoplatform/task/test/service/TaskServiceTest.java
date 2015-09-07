@@ -206,7 +206,7 @@ public class TaskServiceTest {
     for(String v : newTags) {
       tags.add(v);
     }
-    assertEquals(tags, taskCaptor.getValue().getTags());
+    assertEquals(tags, taskCaptor.getValue().getTag());
 
   }
 
@@ -258,7 +258,7 @@ public class TaskServiceTest {
     assertEquals(defaultTask.getAssignee(), taskCaptor.getValue().getAssignee());
     assertEquals(defaultTask.getCoworker(), taskCaptor.getValue().getCoworker());
     assertEquals(defaultTask.getStatus(), taskCaptor.getValue().getStatus());
-    assertEquals(defaultTask.getTags(), taskCaptor.getValue().getTags());
+    assertEquals(defaultTask.getTag(), taskCaptor.getValue().getTag());
     assertEquals(defaultTask.getCreatedBy(), taskCaptor.getValue().getCreatedBy());
     //Only the createdTime must be different for the cloned task
     assertFalse(defaultTask.getCreatedTime() == taskCaptor.getValue().getCreatedTime());

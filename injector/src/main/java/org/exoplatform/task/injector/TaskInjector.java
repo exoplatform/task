@@ -283,7 +283,7 @@ public class TaskInjector extends DataInjector {
       String tag = randomWords(1)+k;
       tags.add(tag);
     }
-    task.setTags(tags);
+    task.setTag(tags);
     //Add comments to Task
     Set<Comment> comments = new HashSet<Comment>();
     for (int i = 0; i < nbComments; i++) {

@@ -224,7 +224,7 @@ public class TestTaskParser {
   public void testParseTag() {
     Task task = creator.parse("Test task tomorrow #tag1 #tag2 #tag3");
     Assert.assertNotNull(task);
-    Set<String> labels = task.getTags();
+    Set<String> labels = task.getTag();
     Assert.assertEquals(3, labels.size());
     assertEqual(Arrays.asList("tag1", "tag2", "tag3"), labels);
   }

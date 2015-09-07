@@ -205,14 +205,14 @@ public class TaskServiceImpl implements TaskService {
         }
         task.setCoworker(coworker);
       } else if("tags".equalsIgnoreCase(param)) {
-        Set<String> old = task.getTags();
+        Set<String> old = task.getTag();
         Set<String> tags = new HashSet<String>();
         for(String t : values) {
           tags.add(t);
         }
-        task.setTags(tags);
+        task.setTag(tags);
 
-        Set<String> newTags = new HashSet<String>(task.getTags());
+        Set<String> newTags = new HashSet<String>(task.getTag());
         builder.withType(Type.ADD_LABEL).withNewVal(newTags.removeAll(old));
       } else if ("priority".equalsIgnoreCase(param)) {
         Priority priority = Priority.valueOf(value);
