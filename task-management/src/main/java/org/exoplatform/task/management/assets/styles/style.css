@@ -619,6 +619,8 @@ li[data-hiddenproject="false"] > .sub-item .label-show {
 }
 .taskList .heading img {
   max-width: 20px;
+  border-radius: 2px;
+  vertical-align: top;
 }
 .prjDescription ul,
 .taskDescription ul,
