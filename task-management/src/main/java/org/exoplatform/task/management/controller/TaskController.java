@@ -665,9 +665,17 @@ public class TaskController {
       taskService.createTask(task);
     }
 
+    long taskNum = -1;
+    if (projectId == -1) {
+      //incomming
+      taskNum = TaskUtil.getTaskNum(currentUser, null, projectId, taskService);
+    }
+
     try {
       JSONObject json = new JSONObject();
       json.put("id", task.getId());
+      json.put("taskNum", taskNum);
+      
       return Response.ok(json.toString());
     } catch (JSONException ex) {
       return Response.status(500).body("JSONException: " + ex);

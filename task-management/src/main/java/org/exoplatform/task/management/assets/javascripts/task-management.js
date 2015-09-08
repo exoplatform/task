@@ -459,8 +459,11 @@ $(document).ready(function() {
                 var projectId = $leftPanel.find('.active .project-name').data('id');
                 taApp.reloadTaskList(projectId, filter, function() {
                     $centerPanel.find('.taskItem[data-taskid="' + id + '"]').click();
-                    $centerPanel.find('input[name="taskTitle"]').focus();
-                });
+                    $centerPanel.find('input[name="taskTitle"]').focus();                    
+                });                
+                if (task.taskNum != -1) {
+                  $('.project-name[data-id="-1"] .badgeDefault').text(task.taskNum);
+                }
             }
         });
         return false;
