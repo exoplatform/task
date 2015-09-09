@@ -30,8 +30,7 @@ public class StringUtil {
   public static final String  ORDERBY_TITLE  = "title" ;  
   public static final String ORDERBY_RELEVANCY = "relevancy";
   public static final String ASC = "asc";
-  public static final String DESC = "desc";
-  public static final SimpleDateFormat  DATE_TIME_FORMAT = new SimpleDateFormat("EEEEE, MMMMMMMM d, yyyy K:mm a");
+  public static final String DESC = "desc";  
   
   public static final  Pattern FUZZY = Pattern.compile(".[~][0]([\\.][0-9])");
   

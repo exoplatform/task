@@ -24,13 +24,14 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Set;
+import java.util.TimeZone;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.exoplatform.task.domain.Priority;
 import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.service.ParserContext;
 import org.exoplatform.task.service.TaskParser;
 import org.exoplatform.task.service.impl.TaskParserImpl;
 
@@ -39,6 +40,7 @@ import org.exoplatform.task.service.impl.TaskParserImpl;
  */
 public class TestTaskParser {
   private TaskParser creator;
+  private ParserContext context = new ParserContext(TimeZone.getDefault());
 
   @Before
   public void setup() {
@@ -47,23 +49,23 @@ public class TestTaskParser {
 
   @Test
   public void testParserHighPriority() {
-    Task task = creator.parse("Test task !High tomorrow");
+    Task task = creator.parse("Test task !High tomorrow", context);
     Assert.assertNotNull(task);
     Assert.assertEquals("Test task tomorrow", task.getTitle());
     Assert.assertEquals("Priority must be high", Priority.HIGH, task.getPriority());
 
-    task = creator.parse("Test task !HIGH tomorrow");
+    task = creator.parse("Test task !HIGH tomorrow", context);
     Assert.assertNotNull(task);
     Assert.assertEquals("Test task tomorrow", task.getTitle());
     Assert.assertEquals("Priority must be High", Priority.HIGH, task.getPriority());
 
-    task = creator.parse("Test task !higH tomorrow");
+    task = creator.parse("Test task !higH tomorrow", context);
     Assert.assertNotNull(task);
     Assert.assertEquals("", "Test task tomorrow", task.getTitle());
     Assert.assertEquals("Priority must be High", Priority.HIGH, task.getPriority());
 
     
-    task = creator.parse("Test task !Low tomorrow !higH");
+    task = creator.parse("Test task !Low tomorrow !higH", context);
     Assert.assertNotNull(task);
     Assert.assertEquals("", "Test task tomorrow", task.getTitle());
     Assert.assertEquals("Priority must be High", Priority.HIGH, task.getPriority());
@@ -71,17 +73,17 @@ public class TestTaskParser {
 
   @Test
   public void testParserLowPriority() {
-    Task task = creator.parse("Test task !Low tomorrow");
+    Task task = creator.parse("Test task !Low tomorrow", context);
     Assert.assertNotNull(task);
     Assert.assertEquals("", "Test task tomorrow", task.getTitle());
     Assert.assertEquals("Priority must be low", Priority.LOW, task.getPriority());
 
-    task = creator.parse("Test task !LOW tomorrow");
+    task = creator.parse("Test task !LOW tomorrow", context);
     Assert.assertNotNull(task);
     Assert.assertEquals("", "Test task tomorrow", task.getTitle());
     Assert.assertEquals("Priority must be low", Priority.LOW, task.getPriority());
 
-    task = creator.parse("Test task !loW tomorrow");
+    task = creator.parse("Test task !loW tomorrow", context);
     Assert.assertNotNull(task);
     Assert.assertEquals("", "Test task tomorrow", task.getTitle());
     Assert.assertEquals("Priority must be low", Priority.LOW, task.getPriority());
@@ -89,12 +91,12 @@ public class TestTaskParser {
 
   @Test
   public void testParserAssignee() {
-    Task task = creator.parse("Test task @john tomorrow");
+    Task task = creator.parse("Test task @john tomorrow", context);
     Assert.assertNotNull(task);
     Assert.assertEquals("", "Test task tomorrow", task.getTitle());
     Assert.assertEquals("Assignee must be john", "john", task.getAssignee());
 
-    task = creator.parse("Test task tomorrow @john");
+    task = creator.parse("Test task tomorrow @john", context);
     Assert.assertNotNull(task);
     Assert.assertEquals("", "Test task tomorrow", task.getTitle());
     Assert.assertEquals("Assignee must be john", "john", task.getAssignee());
@@ -103,7 +105,7 @@ public class TestTaskParser {
   @Test
   public void testParserDueDate() {
     Calendar current = Calendar.getInstance();
-    Task task = creator.parse("Test task ^today tomorrow");
+    Task task = creator.parse("Test task ^today tomorrow", context);
     Assert.assertNotNull(task);
     Assert.assertEquals("", "Test task tomorrow", task.getTitle());
     Date dueDate = task.getDueDate();
@@ -119,7 +121,7 @@ public class TestTaskParser {
   public void testParserDueDateTomorrow() {
     Calendar tomorrow = Calendar.getInstance();
     tomorrow.add(Calendar.DATE, 1);
-    Task task = creator.parse("Test task ^tomorrow need to do");
+    Task task = creator.parse("Test task ^tomorrow need to do", context);
     Assert.assertNotNull(task);
     Assert.assertEquals("", "Test task need to do", task.getTitle());
     Date dueDate = task.getDueDate();
@@ -139,7 +141,7 @@ public class TestTaskParser {
       nextFriday.add(Calendar.DATE, 1);
     }
 
-    Task task = creator.parse("Test task ^Friday need to do");
+    Task task = creator.parse("Test task ^Friday need to do", context);
     Assert.assertNotNull(task);
     Assert.assertEquals("", "Test task need to do", task.getTitle());
     Date dueDate = task.getDueDate();
@@ -156,7 +158,7 @@ public class TestTaskParser {
     Calendar nextFriday = Calendar.getInstance();
     nextFriday.add(Calendar.DATE, 7);
 
-    Task task = creator.parse("Test task ^next week need to do");
+    Task task = creator.parse("Test task ^next week need to do", context);
     Assert.assertNotNull(task);
     Assert.assertEquals("", "Test task need to do", task.getTitle());
     Date dueDate = task.getDueDate();
@@ -173,7 +175,7 @@ public class TestTaskParser {
     Calendar nextMonth = Calendar.getInstance();
     nextMonth.add(Calendar.MONTH, 1);
 
-    Task task = creator.parse("Test task ^next month need to do");
+    Task task = creator.parse("Test task ^next month need to do", context);
     Assert.assertNotNull(task);
     Assert.assertEquals("", "Test task need to do", task.getTitle());
     Date dueDate = task.getDueDate();
@@ -190,7 +192,7 @@ public class TestTaskParser {
     Calendar calendar = Calendar.getInstance();
     calendar.add(Calendar.DATE, 2);
 
-    Task task = creator.parse("Test task ^" + calendar.get(Calendar.DATE) + " need to do");
+    Task task = creator.parse("Test task ^" + calendar.get(Calendar.DATE) + " need to do", context);
     Assert.assertNotNull(task);
     Assert.assertEquals("", "Test task need to do", task.getTitle());
     Date dueDate = task.getDueDate();
@@ -208,7 +210,7 @@ public class TestTaskParser {
     nextMonth.set(Calendar.MONTH, Calendar.MARCH);
     nextMonth.set(Calendar.DATE, 24);
 
-    Task task = creator.parse("Test task ^24-mar need to do");
+    Task task = creator.parse("Test task ^24-mar need to do", context);
     Assert.assertNotNull(task);
     Assert.assertEquals("", "Test task need to do", task.getTitle());
     Date dueDate = task.getDueDate();
@@ -222,7 +224,7 @@ public class TestTaskParser {
 
   @Test
   public void testParseTag() {
-    Task task = creator.parse("Test task tomorrow #tag1 #tag2 #tag3");
+    Task task = creator.parse("Test task tomorrow #tag1 #tag2 #tag3", context);
     Assert.assertNotNull(task);
     Set<String> labels = task.getTag();
     Assert.assertEquals(3, labels.size());

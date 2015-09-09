@@ -316,7 +316,7 @@ define('ta_edit_inline',
                         } else {
                             $pop.find('.errorMessage').html('');
                             updatePopoverPossition();
-                            saveWorkPlan([fDate, tDate]);
+                            saveWorkPlan([fromDate + " " + fromTime, toDate + " " + toTime]);
                             var $rangeCalendar = $fieldWorkPlan.find('.rangeCalendar');
                             $rangeCalendar.find('[name="fromDate"]').val(fromDate);
                             $rangeCalendar.find('[name="toDate"]').val(toDate);

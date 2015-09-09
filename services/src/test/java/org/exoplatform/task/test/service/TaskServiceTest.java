@@ -133,7 +133,7 @@ public class TaskServiceTest {
 
     String newTitle = "newTitle";
 
-    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "title", new String[]{newTitle});
+    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "title", new String[]{newTitle}, null);
     //capture the object that was passed into the TaskHandler.updateTask(task) method
     //times(1) verify that the method update has been invoked only one time
     verify(taskHandler, times(1)).update(taskCaptor.capture());
@@ -147,7 +147,7 @@ public class TaskServiceTest {
 
     String newDescription = "This is a new description";
 
-    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "description", new String[]{newDescription});
+    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "description", new String[]{newDescription}, null);
     verify(taskHandler, times(1)).update(taskCaptor.capture());
 
     assertEquals(newDescription, taskCaptor.getValue().getDescription());
@@ -171,7 +171,7 @@ public class TaskServiceTest {
 
     String newAssignee = "Tib";
 
-    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "assignee", new String[]{newAssignee});
+    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "assignee", new String[]{newAssignee}, null);
     verify(taskHandler, times(1)).update(taskCaptor.capture());
 
     assertEquals(newAssignee, taskCaptor.getValue().getAssignee());
@@ -183,7 +183,7 @@ public class TaskServiceTest {
 
     String[] newCoworkers =  {"Tib","Trong","Phuong","Tuyen"};
 
-    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "coworker", newCoworkers);
+    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "coworker", newCoworkers, null);
     verify(taskHandler, times(1)).update(taskCaptor.capture());
 
     Set<String> coworker = new HashSet<String>();
@@ -199,7 +199,7 @@ public class TaskServiceTest {
 
     String[] newTags = {"Flip","Flop"};
 
-    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "tags", newTags);
+    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "tags", newTags, null);
     verify(taskHandler, times(1)).update(taskCaptor.capture());
 
     Set<String> tags = new HashSet<String>();
@@ -213,7 +213,7 @@ public class TaskServiceTest {
   @Test
   public void testUpdateTaskStatus() throws ParameterEntityException, StatusNotFoundException, TaskNotFoundException {
 
-    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "status", new String[]{String.valueOf(TestUtils.EXISTING_STATUS_ID)});
+    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "status", new String[]{String.valueOf(TestUtils.EXISTING_STATUS_ID)}, null);
     verify(taskHandler, times(1)).update(taskCaptor.capture());
 
     assertEquals(TestUtils.getDefaultStatus(), taskCaptor.getValue().getStatus());
@@ -227,7 +227,7 @@ public class TaskServiceTest {
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     Date date = sdf.parse(dueDate);
 
-    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "dueDate", new String[]{dueDate});
+    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "dueDate", new String[]{dueDate}, null);
     verify(taskHandler, times(1)).update(taskCaptor.capture());
 
     assertEquals(date, taskCaptor.getValue().getDueDate());
@@ -294,7 +294,7 @@ public class TaskServiceTest {
 
   @Test(expected = StatusNotFoundException.class)
   public void testStatusNotFoundException() throws ParameterEntityException, StatusNotFoundException, TaskNotFoundException {
-    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "status", new String[]{String.valueOf(TestUtils.UNEXISTING_STATUS_ID)});
+    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "status", new String[]{String.valueOf(TestUtils.UNEXISTING_STATUS_ID)}, null);
   }
 
   @Test(expected = CommentNotFoundException.class)
@@ -304,17 +304,17 @@ public class TaskServiceTest {
 
   @Test(expected = ParameterEntityException.class)
   public void testWrongDateFormatException() throws ParameterEntityException, StatusNotFoundException, TaskNotFoundException {
-    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "dueDate", new String[]{"this-is-not-a-date"});
+    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "dueDate", new String[]{"this-is-not-a-date"}, null);
   }
 
   @Test(expected = ParameterEntityException.class)
   public void testWrongStatusException() throws ParameterEntityException, StatusNotFoundException, TaskNotFoundException {
-    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "status", new String[]{"this-is-not-a-long-id"});
+    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "status", new String[]{"this-is-not-a-long-id"}, null);
   }
 
   @Test(expected = ParameterEntityException.class)
   public void testUnknownParameterException() throws ParameterEntityException, StatusNotFoundException, TaskNotFoundException {
-    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "status", new String[]{"this-is-not-a-know-parameter"});
+    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "status", new String[]{"this-is-not-a-know-parameter"}, null);
   }
 
 }

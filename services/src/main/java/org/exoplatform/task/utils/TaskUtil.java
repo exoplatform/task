@@ -244,19 +244,16 @@ public final class TaskUtil {
    }
  }
 
-  public static String getWorkPlan(Date startDate, Date endDate, ResourceBundle bundle) {
-    if (startDate == null || endDate == null) {
+  public static String getWorkPlan(Calendar start, Calendar end, ResourceBundle bundle) {
+    if (start == null || start == null) {
       return null;
-    }
+    }    
     
-    Calendar start = Calendar.getInstance();
-    start.setTimeInMillis(startDate.getTime());
-    Calendar end = Calendar.getInstance();
-    end.setTimeInMillis(endDate.getTime());
     //
     long duration = normalizeDate(end).getTimeInMillis() - normalizeDate(start).getTimeInMillis();
     
     SimpleDateFormat df = new SimpleDateFormat("dd MMMM YYYY");
+    df.setTimeZone(start.getTimeZone());
 
     StringBuilder workplan = new StringBuilder(bundle.getString("label.workPlaned")).append(" ");
     if (start.get(Calendar.MONTH) == end.get(Calendar.MONTH) && start.get(Calendar.YEAR) == end.get(Calendar.YEAR)) {
@@ -267,7 +264,7 @@ public final class TaskUtil {
         workplan.append(" ").append(bundle.getString("label.to")).append(" ").append("<strong>").append(df.format(end.getTime())).append("</strong>");
       }
     } else {
-      workplan.append(bundle.getString("label.from")).append(" ").append("<strong>").append(df.format(startDate)).append("</strong>");
+      workplan.append(bundle.getString("label.from")).append(" ").append("<strong>").append(df.format(start.getTime())).append("</strong>");
       workplan.append(" ").append(bundle.getString("label.to")).append(" ").append("<strong>").append(df.format(end.getTime())).append("</strong>");
     }
     buildHour(duration, workplan, bundle);

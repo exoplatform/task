@@ -2,6 +2,7 @@ package org.exoplatform.task.service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.dao.TaskQuery;
@@ -21,7 +22,7 @@ public interface TaskService {
 
   Task createTask(Task task);
 
-  Task updateTaskInfo(long id, String param, String[] values)
+  Task updateTaskInfo(long id, String param, String[] values, TimeZone timezone)
       throws TaskNotFoundException, ParameterEntityException, StatusNotFoundException;
 
   void updateTaskOrder(long currentTaskId, Status newStatus, long[] orders);

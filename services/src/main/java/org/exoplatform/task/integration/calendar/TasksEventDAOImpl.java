@@ -56,7 +56,7 @@ public class TasksEventDAOImpl implements EventDAO {
       if (task.getStartDate() != null) {
         if (task.isCalendarIntegrated()) {
           Event event = newInstance();
-          return TaskUtil.buildEvent(event, task);          
+          return TaskUtil.buildEvent(event, task);
         }
       } else {
         LOG.warn("Can't map task: {} to event due to no workplan", id);

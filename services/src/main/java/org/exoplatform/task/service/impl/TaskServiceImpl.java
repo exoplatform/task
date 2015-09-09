@@ -26,6 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.Set;
+import java.util.TimeZone;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -94,7 +95,7 @@ public class TaskServiceImpl implements TaskService {
 
   @Override
   @ExoTransactional
-  public Task updateTaskInfo(long id, String param, String[] values)
+  public Task updateTaskInfo(long id, String param, String[] values, TimeZone timezone)
       throws TaskNotFoundException, ParameterEntityException, StatusNotFoundException {
 
     Task task = getTaskById(id);
@@ -102,6 +103,10 @@ public class TaskServiceImpl implements TaskService {
     if(task == null) {
       LOG.info("Can not find task with ID: " + id);
       throw new TaskNotFoundException(id);
+    }
+
+    if (timezone == null) {
+      timezone = TimeZone.getDefault();
     }
 
     //
@@ -128,15 +133,15 @@ public class TaskServiceImpl implements TaskService {
         }
 
         try {
-          Calendar dateFrom = Calendar.getInstance();
-          dateFrom.setTimeInMillis(Long.parseLong(values[0]));
-          Calendar dateTo = Calendar.getInstance();
-          dateTo.setTimeInMillis(Long.parseLong(values[1]));
-
-          task.setStartDate(dateFrom.getTime());
-          task.setEndDate(dateTo.getTime());
-          builder.withNewVal(dateFrom.getTimeInMillis() + "/" + dateTo.getTimeInMillis());
-        } catch (NumberFormatException ex) {
+          SimpleDateFormat wpf = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+          wpf.setTimeZone(timezone);
+          Date startDate = wpf.parse(values[0]);
+          Date endDate = wpf.parse(values[1]);
+          
+          task.setStartDate(startDate);
+          task.setEndDate(endDate);
+          builder.withNewVal(startDate.getTime() + "/" + endDate.getTime());
+        } catch (ParseException ex) {
           LOG.info("Can parse date time value: "+values[0]+" or "+values[1]+" for Task with ID: "+id);
           throw new ParameterEntityException(id, "Task", param, values[0]+" or "+values[1],
               "cannot be parse to date", ex);
@@ -157,6 +162,7 @@ public class TaskServiceImpl implements TaskService {
           task.setDueDate(null);
         } else {
           DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+          df.setTimeZone(timezone);
           try {
             Date date = df.parse(value);
             task.setDueDate(date);
@@ -283,7 +289,7 @@ public class TaskServiceImpl implements TaskService {
 
     String[] values = new String[1];
     values[0] = completed.toString();
-    return updateTaskInfo(id, "completed", values);
+    return updateTaskInfo(id, "completed", values, null);
   }
 
   @Override

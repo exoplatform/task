@@ -22,6 +22,8 @@ package org.exoplatform.task.service.impl;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.exoplatform.calendar.service.CalendarService;
+import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
@@ -58,11 +60,14 @@ public class UserServiceImpl implements UserService {
 
   @Inject
   private DAOHandler daoHandler;
+  
+  private CalendarService calService;
 
-  public UserServiceImpl(OrganizationService orgService, IdentityManager idMgr, DAOHandler handler) {
+  public UserServiceImpl(OrganizationService orgService, CalendarService calService, IdentityManager idMgr, DAOHandler handler) {
     this.orgService = orgService;
     this.identityManager = idMgr;
     this.daoHandler = handler;
+    this.calService = calService;
   }
 
   @Override
@@ -125,7 +130,12 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public TimeZone getUserTimezone(String username) {
-    //TODO: how to get user timezone
-    return TimeZone.getDefault();
+    try {
+      CalendarSetting setting = calService.getCalendarSetting(username);
+      return TimeZone.getTimeZone(setting.getTimeZone());
+    } catch (Exception e) {
+      LOG.error("Can't retrieve timezone", e);
+    }
+    return null;
   }
 }

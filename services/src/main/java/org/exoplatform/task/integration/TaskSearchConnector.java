@@ -17,6 +17,7 @@
   
 package org.exoplatform.task.integration;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -36,6 +37,7 @@ import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.domain.Priority;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.service.TaskService;
+import org.exoplatform.task.service.UserService;
 import org.exoplatform.task.utils.ResourceUtil;
 import org.exoplatform.task.utils.StringUtil;
 import org.exoplatform.task.utils.TaskUtil;
@@ -53,10 +55,13 @@ public class TaskSearchConnector extends SearchServiceConnector {
   
   private WebAppController controller;
   
-  public TaskSearchConnector(InitParams initParams, TaskService taskService, WebAppController controller) {
+  private UserService userService;
+  
+  public TaskSearchConnector(InitParams initParams, TaskService taskService, WebAppController controller, UserService userService) {
     super(initParams);
     this.taskService = taskService;
     this.controller = controller;    
+    this.userService = userService;
   }
   
   @Override
@@ -87,15 +92,18 @@ public class TaskSearchConnector extends SearchServiceConnector {
       taskQuery.setOrderBy(Arrays.asList(orderBy));      
     }
     List<Task> tasks = taskService.findTaskByQuery(taskQuery);
+    
+    SimpleDateFormat  df = new SimpleDateFormat("EEEEE, MMMMMMMM d, yyyy K:mm a");
+    df.setTimeZone(userService.getUserTimezone(currentUser.getUserId()));
     for (Task t : tasks) {
-      result.add(buildResult(t));
+      result.add(buildResult(t, df));
     }
 
     return ResourceUtil.subList(result, offset, limit);
   }
 
-  private SearchResult buildResult(Task t) {
-    String detail = buildDetail(t);
+  private SearchResult buildResult(Task t, SimpleDateFormat df) {    
+    String detail = buildDetail(t, df);
     String url = buildUrl(t);
     String imageUrl = buildImageUrl(t);
     String excerpt = buildExcerpt(t);    
@@ -124,7 +132,7 @@ public class TaskSearchConnector extends SearchServiceConnector {
     return TaskUtil.buildTaskURL(t, SiteKey.portal("intranet"), container, controller.getRouter());
   }
 
-  private String buildDetail(Task t) {
+  private String buildDetail(Task t, SimpleDateFormat df) {
     StringBuilder detail = new StringBuilder();
     
     if (t.getStatus() != null) {
@@ -133,8 +141,8 @@ public class TaskSearchConnector extends SearchServiceConnector {
     if (t.getPriority() != null && !t.getPriority().equals(Priority.UNDEFINED)) {
       detail.append(PRIORITY).append(t.getPriority().name()).append(" - ");      
     }
-    if (t.getDueDate() != null) {
-      detail.append(DUE_FOR).append(StringUtil.DATE_TIME_FORMAT.format(t.getDueDate()));
+    if (t.getDueDate() != null) {      
+      detail.append(DUE_FOR).append(df.format(t.getDueDate()));
     }
 
     return detail.toString();
