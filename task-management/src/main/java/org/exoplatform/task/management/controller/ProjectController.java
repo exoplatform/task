@@ -371,7 +371,10 @@ public class ProjectController {
         total -= project.getParticipator().size();
       }
 
-      int totalPage = total >= 0 ? (int)Math.ceil(total / pageSize) : -1;
+      int totalPage = 0;
+      if (pageSize > 0) {
+        totalPage = total >= 0 ? (int)Math.ceil(total / pageSize) : -1;
+      }      
       
       return userSelectorDialog.with()
           .type(type)
