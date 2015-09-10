@@ -121,6 +121,9 @@ li[data-hiddenproject="false"] > .sub-item .label-show {
   margin: 20px;
 }
 /* Projects Area */
+#taskManagement .tooltip {
+  white-space: nowrap;
+}
 #taskManagement .centerPanel.uiBox .projectListView .title {
   padding: 4px 5px;
   line-height: 28px;
@@ -208,6 +211,10 @@ li[data-hiddenproject="false"] > .sub-item .label-show {
   position: absolute;
   top: 50%;
 }
+/* To Override z-idex tooltip */
+.breadcrumbCont .dropdown-menu {
+  z-index: 1050!important;
+}
 .rightPanel .resizeButton {
   left: -18px;
   right: auto;
@@ -245,8 +252,7 @@ li[data-hiddenproject="false"] > .sub-item .label-show {
   margin-right: 75px;
 }
 .rightPanel .addTask .breadcrumbCont {
-  display: block;
-  margin-left: 22px;
+  display: inline-block;
 }
 .rightPanel .addTask .breadcrumbCont li {
   font-weight: bold;

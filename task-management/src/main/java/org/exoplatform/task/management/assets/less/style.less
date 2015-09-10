@@ -144,6 +144,9 @@ li[data-hiddenproject="false"] {
 
 /* Projects Area */
 #taskManagement {
+    .tooltip {
+        white-space: nowrap;
+    }
     .centerPanel.uiBox .projectListView {
         .title {
             padding:4px 5px;
@@ -255,6 +258,12 @@ li[data-hiddenproject="false"] {
 
     }
 }
+/* To Override z-idex tooltip */
+.breadcrumbCont {
+    .dropdown-menu {
+        z-index: 1050!important;
+    }
+}
 .rightPanel{
     .resizeButton {
         left: -18px;
@@ -297,8 +306,7 @@ li[data-hiddenproject="false"] {
             }
         }
         .breadcrumbCont {
-            display: block;
-            margin-left: 22px;
+            display: inline-block;
              li {
                 font-weight: bold;
                     i {
