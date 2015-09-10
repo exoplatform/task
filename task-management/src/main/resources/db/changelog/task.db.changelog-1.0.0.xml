@@ -34,6 +34,9 @@
         <constraints foreignKeyName="FK_TASK__PROJECTS_TASK_PROJECTS_01" references="TASK_PROJECTS(PROJECT_ID)" nullable="true"/>
       </column>
     </createTable>
+    <modifySql dbms="mysql">
+      <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
+    </modifySql>
   </changeSet>
   <changeSet author="tclement@exoplatform.com" id="1.0.0-2" dbms="oracle,postgresql">
     <createSequence sequenceName="SEQ_TASK_PROJECTS_PROJECT_ID" startValue="1"/>
@@ -49,6 +52,9 @@
         <constraints nullable="false"/>
       </column>
     </createTable>
+    <modifySql dbms="mysql">
+      <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
+    </modifySql>
   </changeSet>
 
   <!-- Definition of TASK_PROJECT_PARTICIPATOR table -->
@@ -61,6 +67,9 @@
         <constraints nullable="false"/>
       </column>
     </createTable>
+    <modifySql dbms="mysql">
+      <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
+    </modifySql>
   </changeSet>
 
   <!-- Definition of TASK_STATUS table -->
@@ -79,6 +88,9 @@
         <constraints foreignKeyName="FK_TASK_STATUS_TASK_PROJECTS_01" references="TASK_PROJECTS(PROJECT_ID)" nullable="false"/>
       </column>
     </createTable>
+    <modifySql dbms="mysql">
+      <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
+    </modifySql>
   </changeSet>
   <changeSet author="tclement@exoplatform.com" id="1.0.0-6" dbms="oracle,postgresql">
     <createSequence sequenceName="SEQ_TASK_STATUS_STATUS_ID" startValue="1"/>
@@ -130,6 +142,9 @@
         <constraints nullable="false"/>
       </column>
     </createTable>
+    <modifySql dbms="mysql">
+      <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
+    </modifySql>
   </changeSet>
   <changeSet author="tclement@exoplatform.com" id="1.0.0-8" dbms="oracle,postgresql">
     <createSequence sequenceName="SEQ_TASK_TASKS_TASK_ID" startValue="1"/>
@@ -145,6 +160,9 @@
         <constraints nullable="false"/>
       </column>
     </createTable>
+    <modifySql dbms="mysql">
+      <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
+    </modifySql>
   </changeSet>
 
   <!-- Definition of TASK_TAGS table -->
@@ -157,6 +175,9 @@
         <constraints nullable="false"/>
       </column>
     </createTable>
+    <modifySql dbms="mysql">
+      <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
+    </modifySql>
   </changeSet>
 
   <!-- Definition of TASK_COMMENTS table -->
@@ -178,6 +199,9 @@
         <constraints nullable="false" foreignKeyName="FK_COMMENT_TASK" references="TASK_TASKS(TASK_ID)"/>
       </column>
     </createTable>
+    <modifySql dbms="mysql">
+      <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
+    </modifySql>
   </changeSet>
 
   <!-- Definition of TASK_USER_SETTINGS table -->
@@ -190,6 +214,9 @@
         <constraints nullable="true"/>
       </column>
     </createTable>
+    <modifySql dbms="mysql">
+      <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
+    </modifySql>
   </changeSet>
   <!-- Definition of TASK_HIDDEN_PROJECTS table -->
   <changeSet author="tuyennt@exoplatform.com" id="1.0.0-13">
@@ -201,6 +228,9 @@
         <constraints foreignKeyName="FK_TASK_HIDDEN_PROJECTS_TASK_PROJECTS_01" references="TASK_PROJECTS(PROJECT_ID)" nullable="false"/>
       </column>
     </createTable>
+    <modifySql dbms="mysql">
+      <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
+    </modifySql>
   </changeSet>
   
   <!-- Definition of TASK_LOGS table -->
@@ -221,6 +251,9 @@
         <constraints nullable="false"/>
       </column>
     </createTable>
+    <modifySql dbms="mysql">
+      <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
+    </modifySql>
   </changeSet>
 
   <!-- Add index for performance -->

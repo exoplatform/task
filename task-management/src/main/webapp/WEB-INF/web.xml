@@ -30,7 +30,7 @@
 
   <context-param>
     <param-name>liquibase.datasource</param-name>
-    <param-value>java:comp/env/exo-jcr_portal</param-value>
+    <param-value>java:comp/env/exo-jpa_portal</param-value>
   </context-param>
 
   <context-param>

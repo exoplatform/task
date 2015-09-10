@@ -220,7 +220,7 @@
           <referenceUsername>root</referenceUsername>
           <referencePassword></referencePassword>
           <!-- db.changelog file -->
-          <changeLogFile>src/main/resources/db/changelog/db.changelog-master.xml</changeLogFile>
+          <changeLogFile>src/main/resources/db/changelog/task.db.changelog-master.xml</changeLogFile>
         </configuration>
         <!--<executions>
           <execution>
