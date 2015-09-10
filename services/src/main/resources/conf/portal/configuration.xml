@@ -5,12 +5,6 @@
 
   <component>
     <type>org.exoplatform.commons.persistence.impl.EntityManagerService</type>
-    <init-params>
-      <value-param>
-        <name>persistence.unit.name</name>
-        <value>org.exoplatform.task</value>
-      </value-param>
-    </init-params>
   </component>
 
   <component>
