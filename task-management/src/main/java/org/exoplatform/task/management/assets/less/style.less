@@ -144,6 +144,9 @@ li[data-hiddenproject="false"] {
 
 /* Projects Area */
 #taskManagement {
+    .tooltip {
+        white-space: nowrap;
+    }
     .centerPanel.uiBox .projectListView {
         .title {
             padding:4px 5px;
@@ -255,6 +258,12 @@ li[data-hiddenproject="false"] {
 
     }
 }
+/* To Override z-idex tooltip */
+.breadcrumbCont {
+    .dropdown-menu {
+        z-index: 1050!important;
+    }
+}
 .rightPanel{
     .resizeButton {
         left: -18px;
@@ -297,8 +306,7 @@ li[data-hiddenproject="false"] {
             }
         }
         .breadcrumbCont {
-            display: block;
-            margin-left: 22px;
+            display: inline-block;
              li {
                 font-weight: bold;
                     i {
@@ -325,24 +333,33 @@ li[data-hiddenproject="false"] {
                  display: block;
             }
             .title-container{
+                position: relative;
                 .validate-action {
-                    margin-top: 6px;
+                    //margin-top: 6px;
+                    position: absolute;
+                    top: 50%;
+                    left: 0;
+                    -webkit-transform: translate(0, -50%);
+                    -moz-transform: translate(0, -50%);
+                    -ms-transform: translate(0, -50%);
+                    -o-transform: translate(0, -50%);
+                    transform: translate(0, -50%);
                 }
                  span {
                   &:nth-child(1){
                     margin: 8px 0 0;
                   }
                   &.projectName {
-                    margin-left: 22px;
+                    margin-left: 22px!important;
                     border: none;
                   }
                   &:nth-child(3){
-                    margin-left: 5px; 
+                    margin-left: 22px; 
                   }
                 }
             }
             .editable-container.editable-inline {
-                display: inline-block;
+                margin-left: 22px;
             }
             
             input.blackLarge {
@@ -374,9 +391,13 @@ li[data-hiddenproject="false"] {
                 .popover-content {
                     .header {
                         &.nav-inline {
+                            white-space: nowrap;
                             a {
                                 padding-left: 5px;
                                 margin:10px 0 10px 2px;
+                                &.active {
+                                    font-weight: bold;
+                                }
                             }
                             a:first-child {
                                 margin-left: 0;padding-left: 0;
@@ -400,6 +421,9 @@ li[data-hiddenproject="false"] {
             > .icon-hash {
                 margin-top: 8px;
                 margin-right: 6px;
+            }
+            &.uiEditableInline .hoverStatus {
+                color: #999;
             }
             &.active {
                 .icon-hash {
@@ -738,7 +762,11 @@ li[data-hiddenproject="false"] {
 }
 .taskList {
     .heading  {
-        img {max-width: 20px;}
+        img {
+            max-width: 20px;
+            border-radius: 2px;
+            vertical-align: top;
+        }
     }
 }
 .prjDescription,
@@ -822,6 +850,14 @@ li[data-hiddenproject="false"] {
          .removeWorkPlan  {
             margin-top: 4px;
          }
+    }
+    .pull-right .removeWorkPlan{
+        display: none;
+    }
+    &:hover {
+        .pull-right .removeWorkPlan{
+            display: block;
+        }
     }
 }
 .date-work-plan {
@@ -945,7 +981,7 @@ li[data-hiddenproject="false"] {
     padding-left: 30px;
 }
 
-.project-item.active .collapseSubProject .uiIconLightGray  {
+.project-item.active > .sub-item .collapseSubProject .uiIconLightGray  {
      background-image: url("/eXoSkin/skin/images/themes/default/Icons/uiIconsSecondary.png");
 }
 
@@ -972,4 +1008,12 @@ li[data-hiddenproject="false"] {
 .breadcrumb .removeProject {
     display: inline;
     float: none;
+}
+
+.sharePrjDialog {
+    .table {
+        tr td {
+            width: 50%;
+        }
+    }
 }
