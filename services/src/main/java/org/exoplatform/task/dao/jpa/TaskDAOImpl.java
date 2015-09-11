@@ -30,6 +30,7 @@ import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
@@ -182,7 +183,7 @@ public class TaskDAOImpl extends GenericDAOJPAImpl<Task, Long> implements TaskHa
 
     if(query.getKeyword() != null && !query.getKeyword().isEmpty()) {      
       List<Predicate> keyConditions = new LinkedList<Predicate>();
-      Join<Task, String> tagJoin = task.<Task, String>join("tag");
+      Join<Task, String> tagJoin = task.<Task, String>join("tag", JoinType.LEFT);
       
       for (String k : query.getKeyword().split(" ")) {
         if (!(k = k.trim()).isEmpty()) {
