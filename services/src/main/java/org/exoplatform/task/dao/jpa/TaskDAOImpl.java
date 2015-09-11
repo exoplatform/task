@@ -29,7 +29,7 @@ import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
@@ -180,16 +180,19 @@ public class TaskDAOImpl extends GenericDAOJPAImpl<Task, Long> implements TaskHa
       predicates.add(projectPred);      
     }
 
-    if(query.getKeyword() != null && !query.getKeyword().isEmpty()) {
+    if(query.getKeyword() != null && !query.getKeyword().isEmpty()) {      
       List<Predicate> keyConditions = new LinkedList<Predicate>();
+      Join<Task, String> tagJoin = task.<Task, String>join("tag");
+      
       for (String k : query.getKeyword().split(" ")) {
         if (!(k = k.trim()).isEmpty()) {
           k = "%" + k.toLowerCase() + "%";
           keyConditions.add(cb.or(
                                   cb.like(cb.lower(task.<String>get("title")), k),
                                   cb.like(cb.lower(task.<String>get("description")), k),
-                                  cb.like(cb.lower(task.<String>get("assignee")), k)
-                              ));          
+                                  cb.like(cb.lower(task.<String>get("assignee")), k),
+                                  cb.like(cb.lower(tagJoin), k)
+                              ));
         }
       }
       predicates.add(cb.or(keyConditions.toArray(new Predicate[keyConditions.size()])));
