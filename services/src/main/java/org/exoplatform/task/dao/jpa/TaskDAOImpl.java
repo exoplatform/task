@@ -34,6 +34,7 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
 import org.exoplatform.commons.persistence.impl.EntityManagerService;
 import org.exoplatform.commons.persistence.impl.GenericDAOJPAImpl;
@@ -105,7 +106,7 @@ public class TaskDAOImpl extends GenericDAOJPAImpl<Task, Long> implements TaskHa
     EntityManager em = getEntityManager();
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<Task> q = cb.createQuery(Task.class);
-
+    
     Root<Task> task = q.from(Task.class);
     q.select(task);
 
@@ -130,10 +131,17 @@ public class TaskDAOImpl extends GenericDAOJPAImpl<Task, Long> implements TaskHa
     
     Predicate msPred = null;
     if (query.getMemberships() != null) {
-      msPred = cb.or(task.join("status").join("project").join("manager", JoinType.LEFT).in(query.getMemberships()), 
-                             task.join("status").join("project").join("participator", JoinType.LEFT).in(query.getMemberships()));
+      Subquery<Long> subm = q.subquery(Long.class);
+      Root<Status> m = subm.from(Status.class);
+      subm.select(m.<Long>get("id")).where(m.join("project").join("manager").in(query.getMemberships()));
+
+      Subquery<Long> subp = q.subquery(Long.class);
+      Root<Status> p = subp.from(Status.class);
+      subp.select(p.<Long>get("id")).where(p.join("project").join("participator").in(query.getMemberships()));      
+      
+      msPred = cb.or(cb.in(task.get("status").get("id")).value(subm), cb.in(task.get("status").get("id")).value(subp));
     }
-    
+
     Predicate projectPred = null;
     if (query.getProjectIds() != null) {
       if (query.getProjectIds().size() == 1 && query.getProjectIds().get(0) == 0) {
