@@ -3,6 +3,9 @@
 #{param name=groupId/}
 #{param name=keyword/}
 #{param name=filter/}
+#{param name=totalPage /}
+#{param name=currentPage /}
+#{param name=hasNext /}
 
 <!-- selectGroupModal -->
 <div id="userSelectorDialog" class="userSelectorDialog modal hide fade in uiPopup modal8" style="display:block" data-type="${type}" tabindex="-1" role="dialog" aria-labelledby="userSelectorLabel" aria-hidden="true" >
@@ -40,6 +43,9 @@
               </span>
             </span>
           </span>
+          
+          <input type="hidden" name="selectedUsers"/>
+          <input type="hidden" name="page"/>
       </form>
       </div>
       <table class="uiGrid table table-hover table-striped" id="UIListUsers">
@@ -79,6 +85,12 @@
         <%}%>
       </tbody>
     </table>
+
+    <%if (totalPage < 0 || totalPage > 1) {%>
+		<div class="pageIteratorBorder">
+			#{include path=pageIterator.gtmpl}#{/include}
+		</div>
+	 <% } %>
     <div class="uiAction uiActionBorder">    
       <a class="btn addUser"  href="javascript:void(0);" >&{popup.add}</a>  
       <a class="btn close"  href="javascript:void(0);">&{popup.close}</a>

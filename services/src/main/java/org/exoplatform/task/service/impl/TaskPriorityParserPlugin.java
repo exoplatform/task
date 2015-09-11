@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.task.domain.Priority;
+import org.exoplatform.task.service.ParserContext;
 import org.exoplatform.task.service.TaskBuilder;
 import org.exoplatform.task.service.TaskParserPlugin;
 
@@ -36,7 +37,7 @@ public class TaskPriorityParserPlugin implements TaskParserPlugin {
   private static final Log LOG = ExoLogger.getExoLogger(TaskPriorityParserPlugin.class);
 
   @Override
-  public String parse(String input, TaskBuilder builder) {
+  public String parse(String input, ParserContext context, TaskBuilder builder) {
     Pattern p = Pattern.compile("(\\s)(!)([a-zA-Z]+)");
     Matcher m = p.matcher(input);
     while(m.find()) {

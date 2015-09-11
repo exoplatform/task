@@ -62,6 +62,7 @@ import org.exoplatform.task.model.CommentModel;
 import org.exoplatform.task.model.GroupKey;
 import org.exoplatform.task.model.TaskModel;
 import org.exoplatform.task.model.User;
+import org.exoplatform.task.service.ParserContext;
 import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.StatusService;
 import org.exoplatform.task.service.TaskParser;
@@ -133,9 +134,11 @@ public class TaskController {
     try {
 
       TaskModel model = TaskUtil.getTaskModel(id, false, bundle, securityContext.getRemoteUser(), taskService, orgService, userService, projectService);
-
+      TimeZone timezone = userService.getUserTimezone(securityContext.getRemoteUser());
+      
       return detail.with()
           .taskModel(model)
+          .timezone(timezone)
           .bundle(bundle)
           .ok().withCharset(Tools.UTF_8);
 
@@ -237,15 +240,20 @@ public class TaskController {
   @Resource
   @Ajax
   @MimeType("text/plain")
-  public Response saveTaskInfo(Long taskId, String name, String[] value) {
+  public Response saveTaskInfo(Long taskId, String name, String[] value, SecurityContext context) {
 
     try {
-
-      Task task = taskService.updateTaskInfo(taskId, name, value); //Can throw TaskNotFoundException & ParameterEntityException & StatusNotFoundException
+      TimeZone timezone = userService.getUserTimezone(context.getRemoteUser());
+      Task task = taskService.updateTaskInfo(taskId, name, value, timezone); //Can throw TaskNotFoundException & ParameterEntityException & StatusNotFoundException
 
       String response = "Update successfully";
-      if ("workPlan".equalsIgnoreCase(name)) {
-        response = TaskUtil.getWorkPlan(task.getStartDate(), task.getEndDate(), bundle);
+      if ("workPlan".equalsIgnoreCase(name)) {        
+        Calendar start = DateUtil.newCalendarInstance(timezone);
+        start.setTime(task.getStartDate());
+        Calendar end = DateUtil.newCalendarInstance(timezone);
+        end.setTime(task.getEndDate());
+        
+        response = TaskUtil.getWorkPlan(start, end, bundle);
         if (response == null) {
           response = bundle.getString("label.noWorkPlan");
         }
@@ -310,6 +318,7 @@ public class TaskController {
       CommentModel model = new CommentModel(cmt, userService.loadUser(cmt.getAuthor()), CommentUtils.formatMention(cmt.getComment(), userService));
 
       DateFormat df = new SimpleDateFormat("MMM dd, yyyy HH:mm");
+      df.setTimeZone(userService.getUserTimezone(currentUser));
 
       JSONObject json = new JSONObject();
       json.put("id", model.getId()); //Can throw JSONException (same for all #json.put methods below)
@@ -635,7 +644,8 @@ public class TaskController {
       return Response.status(401);
     }
 
-    Task task = taskParser.parse(taskInput);
+    ParserContext context = new ParserContext(userService.getUserTimezone(currentUser));
+    Task task = taskParser.parse(taskInput, context);
     task.setCreatedBy(currentUser);
 
     //Project task
@@ -665,9 +675,17 @@ public class TaskController {
       taskService.createTask(task);
     }
 
+    long taskNum = -1;
+    if (projectId == -1) {
+      //incomming
+      taskNum = TaskUtil.getTaskNum(currentUser, null, projectId, taskService);
+    }
+
     try {
       JSONObject json = new JSONObject();
       json.put("id", task.getId());
+      json.put("taskNum", taskNum);
+      
       return Response.ok(json.toString());
     } catch (JSONException ex) {
       return Response.status(500).body("JSONException: " + ex);

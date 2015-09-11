@@ -5,12 +5,6 @@
 
   <component>
     <type>org.exoplatform.commons.persistence.impl.EntityManagerService</type>
-    <init-params>
-      <value-param>
-        <name>persistence.unit.name</name>
-        <value>org.exoplatform.task</value>
-      </value-param>
-    </init-params>
   </component>
 
   <component>
@@ -47,6 +41,23 @@
     <type>org.exoplatform.task.integration.SpaceTaskAppInstaller</type>
   </component>
   
+  <external-component-plugins>
+    <target-component>org.exoplatform.commons.api.persistence.DataInitializer</target-component>
+    <component-plugin>
+      <name>TaskManagementChangeLogsPlugin</name>
+      <set-method>addChangeLogsPlugin</set-method>
+      <type>org.exoplatform.commons.persistence.impl.ChangeLogsPlugin</type>
+      <init-params>
+        <values-param>
+          <name>changelogs</name>
+          <description>Change logs of task management</description>
+          <value>db/changelog/task.db.changelog-1.0.0.xml</value>
+          <value>db/changelog/demo/task.db.demo-data-1.0.0.xml</value>
+        </values-param>
+      </init-params>
+    </component-plugin>
+  </external-component-plugins>
+
   <external-component-plugins>
     <target-component>org.exoplatform.social.core.manager.ActivityManager</target-component>
     <component-plugin>
@@ -99,6 +110,24 @@
       <name>addTasksStorage</name>
       <set-method>addDataStore</set-method>
       <type>org.exoplatform.task.integration.calendar.TasksStorage</type>
+    </component-plugin>
+  </external-component-plugins>
+  
+  <external-component-plugins>
+    <target-component>org.exoplatform.commons.api.search.SearchService</target-component>
+    <!-- Task -->
+    <component-plugin profiles="all">
+      <name>TaskInTasksSearchConnector</name>
+      <set-method>addConnector</set-method>
+      <type>org.exoplatform.task.integration.TaskSearchConnector</type>
+      <description>eXo Tasks tasks</description>
+      <init-params>
+        <properties-param>
+           <name>constructor.params</name>
+           <property name="searchType" value="tasksInTasks"/>
+           <property name="displayName" value="Tasks in Tasks"/>
+        </properties-param>
+      </init-params>      
     </component-plugin>
   </external-component-plugins>
 </configuration>

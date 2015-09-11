@@ -26,7 +26,9 @@ import org.exoplatform.social.core.manager.IdentityManager;
 import org.exoplatform.social.core.service.LinkProvider;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.service.DAOHandler;
+import org.exoplatform.task.service.ParserContext;
 import org.exoplatform.task.service.TaskParser;
+import org.exoplatform.task.service.UserService;
 
 public class ActivityTaskCreationListener extends ActivityListenerPlugin {
 
@@ -36,14 +38,16 @@ public class ActivityTaskCreationListener extends ActivityListenerPlugin {
 
   private final IdentityManager identityManager;
   private final ActivityManager activityManager;
+  private UserService userService;
   
   public static final String PREFIX = "++";
   
-  public ActivityTaskCreationListener(DAOHandler DAOHandler, TaskParser parser, IdentityManager identityManager, ActivityManager activityManager) {
+  public ActivityTaskCreationListener(DAOHandler DAOHandler, UserService userService, TaskParser parser, IdentityManager identityManager, ActivityManager activityManager) {
     this.DAOHandler = DAOHandler;
     this.parser = parser;
     this.identityManager = identityManager;
     this.activityManager = activityManager;
+    this.userService = userService;
   }
 
   @Override
@@ -66,6 +70,8 @@ public class ActivityTaskCreationListener extends ActivityListenerPlugin {
 
   private void createTask(ActivityLifeCycleEvent event) {
     ExoSocialActivity activity = event.getActivity();
+    Identity identity = identityManager.getIdentity(activity.getPosterId(), false);    
+    ParserContext context = new ParserContext(userService.getUserTimezone(identity.getRemoteId()));
     String comment = activity.getTitle();
     //
     if (comment != null && !comment.isEmpty()) {
@@ -83,12 +89,12 @@ public class ActivityTaskCreationListener extends ActivityListenerPlugin {
         } else {
           title = text.trim();
           description = "";
-        }
-        Task task = parser.parse(title);
+        }        
+        Task task = parser.parse(title, context);
         task.setDescription(description);
         task.setContext(LinkProvider.getSingleActivityUrl(activity.getId()));
 
-        Identity identity = identityManager.getIdentity(activity.getPosterId(), false);
+        
         task.setCreatedBy(identity.getRemoteId());
 
         task.setActivityId(activity.getId());

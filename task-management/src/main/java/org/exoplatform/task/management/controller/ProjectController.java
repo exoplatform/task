@@ -19,6 +19,20 @@
 
 package org.exoplatform.task.management.controller;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import javax.inject.Inject;
+
 import juzu.MimeType;
 import juzu.Path;
 import juzu.Resource;
@@ -49,15 +63,9 @@ import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.UserService;
 import org.exoplatform.task.utils.ProjectUtil;
 import org.exoplatform.task.utils.UserUtils;
-import org.exoplatform.webui.organization.AccessGroupListAccess;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import javax.inject.Inject;
-
-import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
@@ -248,10 +256,15 @@ public class ProjectController {
   @Resource
   @Ajax
   @MimeType.HTML
-  public Response openUserSelector(Long id, String type, String groupId, String keyword, String filter) {
+  public Response openUserSelector(Long id, String type, Integer page, String groupId, String keyword, String filter) {
 
     try {
-
+      int pageSize = 10;
+      int total = 0;
+      if (page == null) {
+        page = 0;
+      }
+      boolean hasNext = true;
       Project project = projectService.getProjectById(id); //Can throw ProjectNotFoundException
 
       UserHandler uHandler = orgService.getUserHandler();
@@ -279,8 +292,21 @@ public class ProjectController {
           q.setEmail(searchKeyword);
         }
         ListAccess<org.exoplatform.services.organization.User> users = uHandler.findUsersByQuery(q);
+        total = users.getSize();
+        if (pageSize > total) {
+          pageSize = total;
+        }
         tmp = new ArrayList<org.exoplatform.services.organization.User>();
-        for (org.exoplatform.services.organization.User u : users.load(0, users.getSize())) {
+        org.exoplatform.services.organization.User[] uArr = new org.exoplatform.services.organization.User[0];
+        try {          
+          uArr = users.load(page * pageSize, pageSize);          
+        } catch (IllegalArgumentException ex) {
+          //workaround because uHandler doesn't support search using keyword and group in one query
+          page = page - 1;
+          uArr = users.load(page * pageSize, pageSize);
+          hasNext = false;
+        }
+        for (org.exoplatform.services.organization.User u : uArr) {
           tmp.add(u);
         }
       }
@@ -288,8 +314,21 @@ public class ProjectController {
       if (groupId != null && !groupId.isEmpty()) {
         if (tmp == null) {
           ListAccess<org.exoplatform.services.organization.User> users = uHandler.findUsersByGroupId(groupId);
+          total = users.getSize();
+          if (pageSize > total) {
+            pageSize = total;
+          }
           tmp = new ArrayList<org.exoplatform.services.organization.User>();
-          for (org.exoplatform.services.organization.User u : users.load(0, users.getSize())) {
+          org.exoplatform.services.organization.User[] uArr = new org.exoplatform.services.organization.User[0];
+          try {
+            uArr = users.load(page * pageSize, pageSize); 
+          } catch (IllegalArgumentException ex) {
+            //workaround because uHandler doesn't support search using keyword and group in one query
+            page = page - 1;
+            uArr = users.load(page * pageSize, pageSize);
+            hasNext = false;            
+          }
+          for (org.exoplatform.services.organization.User u : uArr) {
             tmp.add(u);
           }
         } else {
@@ -302,12 +341,17 @@ public class ProjectController {
             }
           }
           tmp = results;
+          total = tmp.size() == 0 ? 0 : -1;
         }
       }
       if (tmp == null) {
         ListAccess<org.exoplatform.services.organization.User> users = uHandler.findAllUsers();
+        total = users.getSize();
+        if (pageSize > total) {
+          pageSize = total;
+        }
         tmp = new ArrayList<org.exoplatform.services.organization.User>();
-        for (org.exoplatform.services.organization.User u : users.load(0, users.getSize())) {
+        for (org.exoplatform.services.organization.User u : users.load(page * pageSize, pageSize)) {
           tmp.add(u);
         }
       }
@@ -319,14 +363,28 @@ public class ProjectController {
           allUsers.add(user);
         }
       }
-      allUsers.removeAll("manager".equals(type) ? project.getManager() : project.getParticipator());
+      if ("manager".equals(type)) {
+        allUsers.removeAll(project.getManager());
+        total -= project.getManager().size();
+      } else {
+        allUsers.removeAll(project.getParticipator());
+        total -= project.getParticipator().size();
+      }
 
+      int totalPage = 0;
+      if (pageSize > 0) {
+        totalPage = total >= 0 ? (int)Math.ceil(total / pageSize) : -1;
+      }      
+      
       return userSelectorDialog.with()
           .type(type)
           .users(allUsers)
           .groupId(groupId == null ? "" : groupId)
           .keyword(keyword == null ? "" : keyword)
           .filter(filter == null ? "" : filter)
+          .currentPage(page)
+          .totalPage(totalPage)
+          .hasNext(hasNext)
           .ok();
 
     } catch (AbstractEntityException e) {

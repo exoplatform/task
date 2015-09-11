@@ -255,6 +255,12 @@ define('project-menu', ['SHARED/jquery'], function($) {
       });
     });
     
+    $modalPlace.on('click', '.sharePrjDialog .uiPageIterator [data-page]', function() {
+      var page = $(this).data('page');
+      var $form = $('.userSelectorDialog form.formSearchUser');
+      openUserSelector($form, page);
+    });
+    
     $modalPlace.on('click', '.sharePrjDialog .openGroupSelector', function(e) {
       var $openGroupSelector = $(e.target);
       var pid = $openGroupSelector.closest('.sharePrjDialog').attr('data-projectId');
@@ -288,11 +294,21 @@ define('project-menu', ['SHARED/jquery'], function($) {
     $modalPlace.on('change', '.userSelectorDialog input[name="selectall"]', function(e) {
         var $checkbox = $(e.target);
         var isChecked = $checkbox.is(':checked');
-        $checkbox.closest('.userSelectorDialog').find('input[name="username"]').attr('checked', isChecked);
+        $checkbox.closest('.userSelectorDialog').find('input[name="username"]').click();
     });
 
     $modalPlace.on('change', '.userSelectorDialog input[name="username"]', function(e) {
       var $checkbox = $(e.target);
+      
+      var users = $modalPlace.data('selected_users');
+      users = users || {};
+      if ($checkbox.is(':checked')) {
+        users[$checkbox.val()] = $checkbox.data('dispayname');
+      } else {
+        users[$checkbox.val()] = null;
+      }
+      $modalPlace.data('selected_users', users);
+      
       var $container = $checkbox.closest('.userSelectorDialog');
       var $unchecked = $container.find('input[name="username"]:not(:checked)');
       var isCheckall = $unchecked.length == 0;
@@ -304,12 +320,14 @@ define('project-menu', ['SHARED/jquery'], function($) {
       var pid = $add.closest('.sharePrjDialog').attr('data-projectId');
       var type = $add.closest('.userSelectorDialog').attr('data-type');
       var users = [];
-      $('.userSelectorDialog .chkUser:checked').each(function(idx, elem) {
-          var $el = $(elem);
-          var username = $el.val();
-          var displayName = $el.data('dispayname');
-            users.push({username: username, displayName: displayName});
-      });
+      var selected = $modalPlace.data('selected_users');
+      if (selected) {
+        for (var uid in selected) {
+          if (selected[uid]) {
+            users.push({username: uid, displayName: selected[uid]});            
+          }
+        }
+      }      
       
       //
       if (users.length == 0) {
@@ -320,33 +338,46 @@ define('project-menu', ['SHARED/jquery'], function($) {
           });
           $add.closest('.modal').remove();
       }
+      $modalPlace.data('selected_users', null);
     });
 
     $modalPlace.on('click', '.userSelectorDialog form.formSearchUser a[type="submit"]', function(e) {
         $(e.target).closest('form').submit();
-    });
+    });    
+    
+    var openUserSelector = function($form, page) {
+      // Submit form search user      
+      var keyword = $form.find('[name="keyword"]').val();
+      var groupId = $form.find('[name="group"]').val();
+      var filter = $form.find('[name="filter"]').val();        
+
+      var pid = $form.closest('.sharePrjDialog').attr('data-projectId');
+      var type = $form.closest('[data-type]').data('type');
+
+      $('.sharePrjDialog .selectorDialog').jzLoad('ProjectController.openUserSelector()',
+          {'id': pid, 'type': type, groupId: groupId, keyword: keyword, filter: filter, page: page},
+          function() {
+              var $dialog = $('.userSelectorDialog');
+              $dialog.modal({'backdrop': false});
+              var users = $modalPlace.data('selected_users');
+              if (users) {
+                for (var uid in users) {
+                  if (users[uid]) {
+                    $('.userSelectorDialog .chkUser[value="' + uid + '"]').click();                    
+                  }
+                }
+              }
+          }
+      );
+    }
 
     $modalPlace.on('submit', '.userSelectorDialog form.formSearchUser', function(e) {
-        // Submit form search user
+        $modalPlace.data('selected_users', null);
         var $form = $(e.target);
-        var keyword = $form.find('[name="keyword"]').val();
-        var groupId = $form.find('[name="group"]').val();
-        var filter = $form.find('[name="filter"]').val();
-
-        var pid = $form.closest('.sharePrjDialog').attr('data-projectId');
-        var type = $form.closest('[data-type]').data('type');
-
-        $('.sharePrjDialog .selectorDialog').jzLoad('ProjectController.openUserSelector()',
-            {'id': pid, 'type': type, groupId: groupId, keyword: keyword, filter: filter},
-            function() {
-                var $dialog = $('.userSelectorDialog');
-                $dialog.modal({'backdrop': false});
-            }
-        );
-
+        openUserSelector($form, 0);
         return false;
     });
-    
+
     $modalPlace.on('click', '.groupSelectorDialog [data-membershiptype]', function(e) {
       var $msItem = $(e.target);
       var pid = $msItem.closest('.sharePrjDialog').attr('data-projectId');

@@ -22,6 +22,7 @@ package org.exoplatform.task.service.impl;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.exoplatform.task.service.ParserContext;
 import org.exoplatform.task.service.TaskBuilder;
 import org.exoplatform.task.service.TaskParserPlugin;
 
@@ -30,7 +31,7 @@ import org.exoplatform.task.service.TaskParserPlugin;
  */
 public class TaskTagParserPlugin implements TaskParserPlugin {
   @Override
-  public String parse(String input, TaskBuilder builder) {
+  public String parse(String input, ParserContext context, TaskBuilder builder) {
     Pattern p = Pattern.compile("(\\s)(#)([0-9a-zA-Z_]+)");
     Matcher m = p.matcher(input);
     while(m.find()) {

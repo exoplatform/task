@@ -19,32 +19,14 @@
 
 package org.exoplatform.task.domain;
 
+import org.exoplatform.commons.api.persistence.ExoEntity;
+import org.exoplatform.task.service.TaskBuilder;
+
+import javax.persistence.*;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-
-import javax.persistence.CascadeType;
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
-import org.exoplatform.commons.api.persistence.ExoEntity;
-import org.exoplatform.task.service.TaskBuilder;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>
@@ -109,7 +91,7 @@ public class Task {
   @ElementCollection
   @CollectionTable(name = "TASK_TAGS",
       joinColumns = @JoinColumn(name = "TASK_ID"))
-  private Set<String> tags = new HashSet<String>();
+  private Set<String> tag = new HashSet<String>();
 
   @Column(name = "CREATED_BY")
   private String      createdBy;
@@ -224,19 +206,19 @@ public class Task {
     this.calendarIntegrated = calendarIntegrated;
   }
 
-  public Set<String> getTags() {
-    return tags != null ? Collections.unmodifiableSet(tags) : Collections.<String> emptySet();
+  public Set<String> getTag() {
+    return tag != null ? Collections.unmodifiableSet(tag) : Collections.<String> emptySet();
   }
 
-  public void setTags(Set<String> tags) {
-    this.tags = tags;
+  public void setTag(Set<String> tag) {
+    this.tag = tag;
   }
 
   public void addTag(String tag) {
-    if (this.tags == null) {
-      this.tags = new HashSet<String>();
+    if (this.tag == null) {
+      this.tag = new HashSet<String>();
     }
-    this.tags.add(tag);
+    this.tag.add(tag);
   }
 
   public String getCreatedBy() {
@@ -324,7 +306,7 @@ public class Task {
         .withStatus(this.status)
         .build();
     newTask.setCoworker(new HashSet<String>(this.getCoworker()));
-    newTask.setTags(new HashSet<String>(this.getTags()));
+    newTask.setTag(new HashSet<String>(this.getTag()));
     return newTask;
   }
 
@@ -349,7 +331,7 @@ public class Task {
     if (startDate != null ? !startDate.equals(task.startDate) : task.startDate != null) return false;
     if (endDate != null ? !endDate.equals(task.endDate) : task.endDate != null) return false;
     if (status != null ? !status.equals(task.status) : task.status != null) return false;
-    if (tags != null ? !tags.equals(task.tags) : task.tags != null) return false;
+    if (tag != null ? !tag.equals(task.tag) : task.tag != null) return false;
     if (title != null ? !title.equals(task.title) : task.title != null) return false;
 
     return true;

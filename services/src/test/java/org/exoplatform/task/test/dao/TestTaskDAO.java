@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.task.dao.TaskHandler;
@@ -30,6 +31,7 @@ import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.domain.TaskLog;
 import org.exoplatform.task.service.DAOHandler;
+import org.exoplatform.task.service.ParserContext;
 import org.exoplatform.task.service.TaskParser;
 import org.exoplatform.task.service.impl.TaskParserImpl;
 import org.exoplatform.task.test.AbstractTest;
@@ -47,6 +49,7 @@ public class TestTaskDAO extends AbstractTest {
   private TaskHandler tDAO;
   private DAOHandler taskService;
   private TaskParser parser = new TaskParserImpl();
+  private ParserContext context = new ParserContext(TimeZone.getDefault());
 
   private final String username = "root";
 
@@ -65,14 +68,14 @@ public class TestTaskDAO extends AbstractTest {
 
   @Test
   public void testTaskCreation() {
-    Task task = parser.parse("Testing task creation");
+    Task task = parser.parse("Testing task creation", context);
     tDAO.create(task);
 
     List<Task> list = tDAO.findAll();
     Assert.assertEquals(1, list.size());
 
     //
-    task = parser.parse("There is an important meeting tomorrow !high");
+    task = parser.parse("There is an important meeting tomorrow !high", context);
     tDAO.create(task);
     list = tDAO.findAll();
     Assert.assertEquals(2, list.size());

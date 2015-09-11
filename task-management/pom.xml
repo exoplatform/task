@@ -105,13 +105,6 @@
       <version>1.11.4</version>
     </dependency>
 
-    <!-- Liquibase -->
-    <dependency>
-      <groupId>org.liquibase</groupId>
-      <artifactId>liquibase-core</artifactId>
-      <version>3.3.2</version>
-    </dependency>
-
     <dependency>
       <groupId>org.exoplatform.core</groupId>
       <artifactId>exo.core.component.organization.api</artifactId>
@@ -220,7 +213,7 @@
           <referenceUsername>root</referenceUsername>
           <referencePassword></referencePassword>
           <!-- db.changelog file -->
-          <changeLogFile>src/main/resources/db/changelog/db.changelog-master.xml</changeLogFile>
+          <changeLogFile>src/main/resources/db/changelog/task.db.changelog-master.xml</changeLogFile>
         </configuration>
         <!--<executions>
           <execution>

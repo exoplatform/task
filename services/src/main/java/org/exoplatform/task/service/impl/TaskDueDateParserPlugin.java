@@ -24,9 +24,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.TimeZone;
 
+import org.exoplatform.task.service.ParserContext;
 import org.exoplatform.task.service.TaskBuilder;
 import org.exoplatform.task.service.TaskParserPlugin;
+import org.exoplatform.task.utils.DateUtil;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
@@ -94,7 +97,7 @@ public class TaskDueDateParserPlugin implements TaskParserPlugin {
     }
 
     @Override
-    public String parse(String input, TaskBuilder builder) {
+    public String parse(String input, ParserContext context, TaskBuilder builder) {
         StringTokenizer tokenizer = new StringTokenizer(input);
         StringBuilder retInput = new StringBuilder();
         while(tokenizer.hasMoreElements()) {
@@ -103,9 +106,9 @@ public class TaskDueDateParserPlugin implements TaskParserPlugin {
                 Date dueDate = null;
                 String param = element.substring(1).toLowerCase();
                 if(param.startsWith("next") && tokenizer.hasMoreElements()) {
-                    dueDate = this.parseNextDateOf((String)tokenizer.nextElement());
+                    dueDate = this.parseNextDateOf((String)tokenizer.nextElement(), context.getTimezone());
                 } else {
-                    dueDate = this.parseDate(param);
+                    dueDate = this.parseDate(param, context.getTimezone());
                 }
                 if(dueDate != null) {
                     builder.withDueDate(dueDate);
@@ -119,8 +122,8 @@ public class TaskDueDateParserPlugin implements TaskParserPlugin {
         return retInput.toString().trim();
     }
 
-    private Date parseNextDateOf(String token) {
-        Calendar calendar = this.getCalendar();
+    private Date parseNextDateOf(String token, TimeZone timezone) {
+        Calendar calendar = this.getCalendar(timezone);
         if("week".equalsIgnoreCase(token)) {
             calendar.add(Calendar.DATE, 7);
         } else if("month".equalsIgnoreCase(token)) {
@@ -129,8 +132,8 @@ public class TaskDueDateParserPlugin implements TaskParserPlugin {
         return calendar.getTime();
     }
 
-    private Date parseDate(String dateString) {
-        Calendar calendar = this.getCalendar();
+    private Date parseDate(String dateString, TimeZone timezone) {
+        Calendar calendar = this.getCalendar(timezone);
 
         if(dateString.equalsIgnoreCase("today")) {
             return calendar.getTime();
@@ -174,9 +177,8 @@ public class TaskDueDateParserPlugin implements TaskParserPlugin {
         return calendar.getTime();
     }
 
-    private Calendar getCalendar() {
-        //TODO: how to process timezone
-        Calendar calendar = Calendar.getInstance();
+    private Calendar getCalendar(TimeZone timezone) {
+        Calendar calendar = DateUtil.newCalendarInstance(timezone);
         calendar.set(Calendar.HOUR_OF_DAY, 23);
         calendar.set(Calendar.MINUTE, 59);
         calendar.set(Calendar.SECOND, 59);

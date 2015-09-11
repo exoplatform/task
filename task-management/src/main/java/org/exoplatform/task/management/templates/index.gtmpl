@@ -32,7 +32,7 @@
                     <ul class="list-projects">
                         <li class="dropdown project-item active">
                             <div class="sub-item">
-                                <a class="project-name" data-id="-1" href="@{TaskManagement.index()}">&{label.incoming}&nbsp;<span class="badgeDefault badgePrimary mini top">1</span></a>
+                                <a class="project-name" data-id="-1" href="@{TaskManagement.index()}">&{label.incoming}&nbsp;<span class="badgeDefault badgePrimary mini top">${taskNum}</span></a>
                             </div>
                         </li>
                         <li class="dropdown project-item">
@@ -142,7 +142,7 @@
 	                         </li>
                           </ul>
                       </div>
-                      <a class="project-name" href="#">Label</a>
+                      <a class="project-name" href="#">&{label.label}</a>
                    </div>
                    <ul class="list-projects">
                        <li>

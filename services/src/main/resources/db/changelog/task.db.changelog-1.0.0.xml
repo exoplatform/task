@@ -34,6 +34,9 @@
         <constraints foreignKeyName="FK_TASK__PROJECTS_TASK_PROJECTS_01" references="TASK_PROJECTS(PROJECT_ID)" nullable="true"/>
       </column>
     </createTable>
+    <modifySql dbms="mysql">
+      <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
+    </modifySql>
   </changeSet>
   <changeSet author="tclement@exoplatform.com" id="1.0.0-2" dbms="oracle,postgresql">
     <createSequence sequenceName="SEQ_TASK_PROJECTS_PROJECT_ID" startValue="1"/>
@@ -49,6 +52,9 @@
         <constraints nullable="false"/>
       </column>
     </createTable>
+    <modifySql dbms="mysql">
+      <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
+    </modifySql>
   </changeSet>
 
   <!-- Definition of TASK_PROJECT_PARTICIPATOR table -->
@@ -61,6 +67,9 @@
         <constraints nullable="false"/>
       </column>
     </createTable>
+    <modifySql dbms="mysql">
+      <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
+    </modifySql>
   </changeSet>
 
   <!-- Definition of TASK_STATUS table -->
@@ -79,6 +88,9 @@
         <constraints foreignKeyName="FK_TASK_STATUS_TASK_PROJECTS_01" references="TASK_PROJECTS(PROJECT_ID)" nullable="false"/>
       </column>
     </createTable>
+    <modifySql dbms="mysql">
+      <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
+    </modifySql>
   </changeSet>
   <changeSet author="tclement@exoplatform.com" id="1.0.0-6" dbms="oracle,postgresql">
     <createSequence sequenceName="SEQ_TASK_STATUS_STATUS_ID" startValue="1"/>
@@ -130,6 +142,9 @@
         <constraints nullable="false"/>
       </column>
     </createTable>
+    <modifySql dbms="mysql">
+      <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
+    </modifySql>
   </changeSet>
   <changeSet author="tclement@exoplatform.com" id="1.0.0-8" dbms="oracle,postgresql">
     <createSequence sequenceName="SEQ_TASK_TASKS_TASK_ID" startValue="1"/>
@@ -145,6 +160,9 @@
         <constraints nullable="false"/>
       </column>
     </createTable>
+    <modifySql dbms="mysql">
+      <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
+    </modifySql>
   </changeSet>
 
   <!-- Definition of TASK_TAGS table -->
@@ -153,10 +171,13 @@
       <column name="TASK_ID" type="BIGINT">
         <constraints foreignKeyName="FK_TASK_TAGS_TASK_TASKS_01" references="TASK_TASKS(TASK_ID)" nullable="false"/>
       </column>
-      <column name="TAGS" type="VARCHAR(50)">
+      <column name="TAG" type="VARCHAR(50)">
         <constraints nullable="false"/>
       </column>
     </createTable>
+    <modifySql dbms="mysql">
+      <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
+    </modifySql>
   </changeSet>
 
   <!-- Definition of TASK_COMMENTS table -->
@@ -178,29 +199,38 @@
         <constraints nullable="false" foreignKeyName="FK_COMMENT_TASK" references="TASK_TASKS(TASK_ID)"/>
       </column>
     </createTable>
+    <modifySql dbms="mysql">
+      <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
+    </modifySql>
   </changeSet>
 
-  <!-- Definition of TASK_USER_SETTING table -->
+  <!-- Definition of TASK_USER_SETTINGS table -->
   <changeSet author="tuyennt@exoplatform.com" id="1.0.0-12">
-    <createTable tableName="TASK_USER_SETTING">
+    <createTable tableName="TASK_USER_SETTINGS">
       <column name="USERNAME" type="VARCHAR(50)">
-        <constraints primaryKey="true" primaryKeyName="PK_TASK_USER_SETTING" nullable="false" unique="true"/>
+        <constraints primaryKey="true" primaryKeyName="PK_TASK_USER_SETTINGS" nullable="false" unique="true"/>
       </column>
       <column name="SHOW_HIDDEN_PROJECT" type="BIT" defaultValue="0">
         <constraints nullable="true"/>
       </column>
     </createTable>
+    <modifySql dbms="mysql">
+      <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
+    </modifySql>
   </changeSet>
-  <!-- Definition of TASK_HIDDEN_PROJECT table -->
+  <!-- Definition of TASK_HIDDEN_PROJECTS table -->
   <changeSet author="tuyennt@exoplatform.com" id="1.0.0-13">
-    <createTable tableName="TASK_HIDDEN_PROJECT">
+    <createTable tableName="TASK_HIDDEN_PROJECTS">
       <column name="USERNAME" type="VARCHAR(50)">
-        <constraints foreignKeyName="FK_TASK_HIDDEN_PROJECT_TASK_USER_SETTING_01" references="TASK_USER_SETTING(USERNAME)" nullable="false"/>
+        <constraints foreignKeyName="FK_TASK_HIDDEN_PROJECTS_TASK_USER_SETTINGS_01" references="TASK_USER_SETTINGS(USERNAME)" nullable="false"/>
       </column>
       <column name="PROJECT_ID" type="BIGINT">
-        <constraints foreignKeyName="FK_TASK_HIDDEN_PROJECT_TASK_PROJECTS_01" references="TASK_PROJECTS(PROJECT_ID)" nullable="false"/>
+        <constraints foreignKeyName="FK_TASK_HIDDEN_PROJECTS_TASK_PROJECTS_01" references="TASK_PROJECTS(PROJECT_ID)" nullable="false"/>
       </column>
     </createTable>
+    <modifySql dbms="mysql">
+      <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
+    </modifySql>
   </changeSet>
   
   <!-- Definition of TASK_LOGS table -->
@@ -221,6 +251,9 @@
         <constraints nullable="false"/>
       </column>
     </createTable>
+    <modifySql dbms="mysql">
+      <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
+    </modifySql>
   </changeSet>
 
   <!-- Add index for performance -->
@@ -252,21 +285,21 @@
     </addColumn>
   </changeSet>
 
-  <!-- Update FK for TASK_HIDDEN_PROJECT table -->
+  <!-- Update FK for TASK_HIDDEN_PROJECTS table -->
   <changeSet author="tuyennt@exoplatform.com" id="1.0.0-17">
     <!-- Drop old FK -->
-    <dropForeignKeyConstraint baseTableName="TASK_HIDDEN_PROJECT" constraintName="FK_TASK_HIDDEN_PROJECT_TASK_USER_SETTING_01"/>
-    <dropForeignKeyConstraint baseTableName="TASK_HIDDEN_PROJECT" constraintName="FK_TASK_HIDDEN_PROJECT_TASK_PROJECTS_01"/>
+    <dropForeignKeyConstraint baseTableName="TASK_HIDDEN_PROJECTS" constraintName="FK_TASK_HIDDEN_PROJECTS_TASK_USER_SETTINGS_01"/>
+    <dropForeignKeyConstraint baseTableName="TASK_HIDDEN_PROJECTS" constraintName="FK_TASK_HIDDEN_PROJECTS_TASK_PROJECTS_01"/>
 
     <!-- ReAdd FK with adding onDelete Cascade-->
-    <addForeignKeyConstraint constraintName="FK_TASK_HIDDEN_PROJECT_TASK_USER_SETTING_01"
-                             baseTableName="TASK_HIDDEN_PROJECT"
+    <addForeignKeyConstraint constraintName="FK_TASK_HIDDEN_PROJECTS_TASK_USER_SETTINGS_01"
+                             baseTableName="TASK_HIDDEN_PROJECTS"
                              baseColumnNames="USERNAME"
-                             referencedTableName="TASK_USER_SETTING"
+                             referencedTableName="TASK_USER_SETTINGS"
                              referencedColumnNames="USERNAME"
                              onDelete="CASCADE" />
-    <addForeignKeyConstraint constraintName="FK_TASK_HIDDEN_PROJECT_TASK_PROJECTS_01"
-                             baseTableName="TASK_HIDDEN_PROJECT"
+    <addForeignKeyConstraint constraintName="FK_TASK_HIDDEN_PROJECTS_TASK_PROJECTS_01"
+                             baseTableName="TASK_HIDDEN_PROJECTS"
                              baseColumnNames="PROJECT_ID"
                              referencedTableName="TASK_PROJECTS"
                              referencedColumnNames="PROJECT_ID"

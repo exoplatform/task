@@ -20,12 +20,12 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TimeZone;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.task.dao.ProjectHandler;
 import org.exoplatform.task.dao.TaskHandler;
@@ -33,6 +33,7 @@ import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.service.DAOHandler;
+import org.exoplatform.task.service.ParserContext;
 import org.exoplatform.task.service.TaskParser;
 import org.exoplatform.task.service.impl.TaskParserImpl;
 import org.exoplatform.task.test.AbstractTest;
@@ -49,6 +50,7 @@ public class TestPermission extends AbstractTest {
   private ProjectHandler pDAO;
   private DAOHandler taskService;
   private TaskParser parser = new TaskParserImpl();
+  private ParserContext context = new ParserContext(TimeZone.getDefault());
 
   @Before
   public void setup() {
@@ -75,11 +77,11 @@ public class TestPermission extends AbstractTest {
 
     //Task
     List<Task> tasks = new ArrayList<Task>();
-    Task task1 = parser.parse("Task of User 1");
+    Task task1 = parser.parse("Task of User 1", context);
     task1.setCreatedBy(user1);
     task1.setAssignee(user1);
     tasks.add(task1);
-    Task task2 = parser.parse("Task of User 1 assign to user 2");
+    Task task2 = parser.parse("Task of User 1 assign to user 2", context);
     task2.setCreatedBy(user1);
     task2.setAssignee(user2);
     tasks.add(task2);
@@ -104,11 +106,11 @@ public class TestPermission extends AbstractTest {
 
     //Task
     List<Task> tasks = new ArrayList<Task>();
-    Task task1 = parser.parse("Task of User 1");
+    Task task1 = parser.parse("Task of User 1", context);
     task1.setCreatedBy(user1);
     task1.setAssignee(user1);
     tasks.add(task1);
-    Task task2 = parser.parse("Task of User 1 with user2 as coworker");
+    Task task2 = parser.parse("Task of User 1 with user2 as coworker", context);
     task2.setCreatedBy(user1);
     task2.setAssignee(user1);
     task2.setCoworker(coworkers);
@@ -145,12 +147,12 @@ public class TestPermission extends AbstractTest {
     project.getStatus().add(status);
 
     //Task
-    Task task1 = parser.parse("Task of User 1");
+    Task task1 = parser.parse("Task of User 1", context);
     task1.setCreatedBy(user1);
     task1.setAssignee(user1);
 
     //Task attached to project
-    Task task2 = parser.parse("Task of User 1 in project user 2 manage");
+    Task task2 = parser.parse("Task of User 1 in project user 2 manage", context);
     task2.setCreatedBy(user1);
     task2.setAssignee(user1);
     task2.setStatus(status);
@@ -191,12 +193,12 @@ public class TestPermission extends AbstractTest {
     project.getStatus().add(status);
 
     //Task
-    Task task1 = parser.parse("Task of User 1");
+    Task task1 = parser.parse("Task of User 1", context);
     task1.setCreatedBy(user1);
     task1.setAssignee(user1);
 
     //Task attached to project
-    Task task2 = parser.parse("Task of User 1 in project user 2 member");
+    Task task2 = parser.parse("Task of User 1 in project user 2 member", context);
     task2.setCreatedBy(user1);
     task2.setAssignee(user1);
     task2.setStatus(status);

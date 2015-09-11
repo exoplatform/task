@@ -16,15 +16,11 @@
 */
 package org.exoplatform.task.utils;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -34,16 +30,8 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeMap;
 
-import org.apache.commons.collections.map.HashedMap;
 import org.exoplatform.container.ExoContainer;
-import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.portal.mop.SiteKey;
-import org.exoplatform.portal.mop.SiteType;
-import org.exoplatform.portal.mop.navigation.NavigationContext;
-import org.exoplatform.portal.mop.navigation.NavigationService;
-import org.exoplatform.portal.mop.navigation.NodeContext;
-import org.exoplatform.portal.mop.navigation.NodeModel;
-import org.exoplatform.portal.mop.navigation.Scope;
 import org.exoplatform.calendar.model.Event;
 import org.exoplatform.calendar.service.impl.NewUserListener;
 import org.exoplatform.services.log.ExoLogger;
@@ -61,7 +49,6 @@ import org.exoplatform.task.model.TaskModel;
 import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.service.UserService;
-import org.exoplatform.web.controller.QualifiedName;
 import org.exoplatform.web.controller.router.Router;
 
 /**
@@ -257,19 +244,16 @@ public final class TaskUtil {
    }
  }
 
-  public static String getWorkPlan(Date startDate, Date endDate, ResourceBundle bundle) {
-    if (startDate == null || endDate == null) {
+  public static String getWorkPlan(Calendar start, Calendar end, ResourceBundle bundle) {
+    if (start == null || start == null) {
       return null;
-    }
+    }    
     
-    Calendar start = Calendar.getInstance();
-    start.setTimeInMillis(startDate.getTime());
-    Calendar end = Calendar.getInstance();
-    end.setTimeInMillis(endDate.getTime());
     //
     long duration = normalizeDate(end).getTimeInMillis() - normalizeDate(start).getTimeInMillis();
     
     SimpleDateFormat df = new SimpleDateFormat("dd MMMM YYYY");
+    df.setTimeZone(start.getTimeZone());
 
     StringBuilder workplan = new StringBuilder(bundle.getString("label.workPlaned")).append(" ");
     if (start.get(Calendar.MONTH) == end.get(Calendar.MONTH) && start.get(Calendar.YEAR) == end.get(Calendar.YEAR)) {
@@ -280,7 +264,7 @@ public final class TaskUtil {
         workplan.append(" ").append(bundle.getString("label.to")).append(" ").append("<strong>").append(df.format(end.getTime())).append("</strong>");
       }
     } else {
-      workplan.append(bundle.getString("label.from")).append(" ").append("<strong>").append(df.format(startDate)).append("</strong>");
+      workplan.append(bundle.getString("label.from")).append(" ").append("<strong>").append(df.format(start.getTime())).append("</strong>");
       workplan.append(" ").append(bundle.getString("label.to")).append(" ").append("<strong>").append(df.format(end.getTime())).append("</strong>");
     }
     buildHour(duration, workplan, bundle);
@@ -368,7 +352,7 @@ public final class TaskUtil {
         return new GroupKey[] {new GroupKey(s.getName(), s, 0)};
       }
     } else if("tag".equalsIgnoreCase(groupBy)) {
-      Set<String> tags = task.getTags();
+      Set<String> tags = task.getTag();
       GroupKey[] keys = new GroupKey[tags != null && tags.size() > 0 ? tags.size() : 1];
       if (tags == null || tags.size() == 0) {
         keys[0] = new GroupKey("Un tagged", null, 1);

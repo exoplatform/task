@@ -17,6 +17,7 @@
   
 package org.exoplatform.task.integration;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,9 +34,9 @@ import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.dao.TaskQuery;
-import org.exoplatform.task.domain.Priority;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.service.TaskService;
+import org.exoplatform.task.service.UserService;
 import org.exoplatform.task.utils.ResourceUtil;
 import org.exoplatform.task.utils.StringUtil;
 import org.exoplatform.task.utils.TaskUtil;
@@ -47,16 +48,18 @@ public class TaskSearchConnector extends SearchServiceConnector {
   private static final int MAX_EXCERPT_LENGTH = 430;
   
   public static final String DUE_FOR = "Due for: ";
-  public static final String PRIORITY = "Priority: ";
 
   private TaskService taskService;
   
   private WebAppController controller;
   
-  public TaskSearchConnector(InitParams initParams, TaskService taskService, WebAppController controller) {
+  private UserService userService;
+  
+  public TaskSearchConnector(InitParams initParams, TaskService taskService, WebAppController controller, UserService userService) {
     super(initParams);
     this.taskService = taskService;
     this.controller = controller;    
+    this.userService = userService;
   }
   
   @Override
@@ -87,19 +90,24 @@ public class TaskSearchConnector extends SearchServiceConnector {
       taskQuery.setOrderBy(Arrays.asList(orderBy));      
     }
     List<Task> tasks = taskService.findTaskByQuery(taskQuery);
+    
+    SimpleDateFormat  df = new SimpleDateFormat("EEEEE, MMMMMMMM d, yyyy");
+    df.setTimeZone(userService.getUserTimezone(currentUser.getUserId()));
     for (Task t : tasks) {
-      result.add(buildResult(t));
+      result.add(buildResult(t, df));
     }
 
     return ResourceUtil.subList(result, offset, limit);
   }
 
-  private SearchResult buildResult(Task t) {
-    String detail = buildDetail(t);
+  private SearchResult buildResult(Task t, SimpleDateFormat df) {    
     String url = buildUrl(t);
     String imageUrl = buildImageUrl(t);
-    String excerpt = buildExcerpt(t);    
-    return new SearchResult(url, t.getTitle(), excerpt, detail, imageUrl, t.getCreatedTime().getTime(), 0);
+    String excerpt = buildExcerpt(t);
+    String projectName = t.getStatus() != null ? t.getStatus().getProject().getName() : null;
+    String priority = t.getPriority() != null ? t.getPriority().name() : null;
+    String dueDate = t.getDueDate() != null ? DUE_FOR + df.format(t.getDueDate()) : null;    
+    return new TaskSearchResult(url, t.getTitle(), excerpt, imageUrl,  projectName, priority, dueDate, t.isCompleted(), t.getCreatedTime().getTime(), 0);
   }
   
   private String buildExcerpt(Task t) {
@@ -122,22 +130,6 @@ public class TaskSearchConnector extends SearchServiceConnector {
   private String buildUrl(Task t) {
     ExoContainer container = ExoContainerContext.getCurrentContainer();
     return TaskUtil.buildTaskURL(t, SiteKey.portal("intranet"), container, controller.getRouter());
-  }
-
-  private String buildDetail(Task t) {
-    StringBuilder detail = new StringBuilder();
-    
-    if (t.getStatus() != null) {
-      detail.append(t.getStatus().getProject().getName()).append(" - ");
-    }
-    if (t.getPriority() != null && !t.getPriority().equals(Priority.UNDEFINED)) {
-      detail.append(PRIORITY).append(t.getPriority().name()).append(" - ");      
-    }
-    if (t.getDueDate() != null) {
-      detail.append(DUE_FOR).append(StringUtil.DATE_TIME_FORMAT.format(t.getDueDate()));
-    }
-
-    return detail.toString();
   }
 
   private OrderBy buildOrderBy(String sort, String order) {

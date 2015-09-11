@@ -14,7 +14,7 @@
         <div class="clearfix">
             <% if (currentProjectId != 0 && filter != 'overdue') {%>
                 <div class="header-left pull-left">
-                    <a href="#" class="btn btn-primary btn-add-task"><i class="uiIconSimplePlusMini"></i> New task</a>
+                    <a href="#" class="btn btn-primary btn-add-task"><i class="uiIconSimplePlusMini"></i> &{list.label.newTask}</a>
                 </div>
             <%}%>
             <div class="header-right pull-right">

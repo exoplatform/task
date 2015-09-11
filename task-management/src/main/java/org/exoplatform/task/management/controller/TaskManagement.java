@@ -48,6 +48,7 @@ import org.exoplatform.task.domain.UserSetting;
 import org.exoplatform.task.exception.ProjectNotFoundException;
 import org.exoplatform.task.exception.TaskNotFoundException;
 import org.exoplatform.task.model.TaskModel;
+import org.exoplatform.task.service.ParserContext;
 import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.TaskParser;
 import org.exoplatform.task.service.TaskService;
@@ -203,9 +204,11 @@ public class TaskManagement {
   }
 
   @Action
-  public Response createTask(String space_group_id, String taskInput, String groupBy, String orderBy) {
+  public Response createTask(String space_group_id, String taskInput, String groupBy, String orderBy, SecurityContext securityContext) {    
     if(taskInput != null && !taskInput.isEmpty()) {
-      taskService.createTask(taskParser.parse(taskInput));
+      String currentUser = securityContext.getRemoteUser();
+      ParserContext context = new ParserContext(userService.getUserTimezone(currentUser));
+      taskService.createTask(taskParser.parse(taskInput, context));
     } else {
 
     }

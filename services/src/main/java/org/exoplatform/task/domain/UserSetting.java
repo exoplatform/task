@@ -21,24 +21,16 @@ package org.exoplatform.task.domain;
 
 import org.exoplatform.commons.api.persistence.ExoEntity;
 
+import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
 @Entity
 @ExoEntity
-@Table(name = "TASK_USER_SETTING")
+@Table(name = "TASK_USER_SETTINGS")
 public class UserSetting {
   @Id
   @Column(name = "USERNAME")
@@ -49,7 +41,7 @@ public class UserSetting {
 
   @ManyToMany(cascade = CascadeType.REMOVE)
   @JoinTable(
-          name = "TASK_HIDDEN_PROJECT",
+          name = "TASK_HIDDEN_PROJECTS",
           joinColumns = {@JoinColumn(name = "USERNAME", referencedColumnName = "USERNAME")},
           inverseJoinColumns = {@JoinColumn(name = "PROJECT_ID", referencedColumnName = "PROJECT_ID")}
   )

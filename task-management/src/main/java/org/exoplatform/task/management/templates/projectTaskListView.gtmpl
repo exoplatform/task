@@ -68,7 +68,7 @@
             %>
             <div class="label-title pull-left projectName">${name}</div>
             <div class="alignBtnGroup center">
-                    <%if (currentProjectId != 0) { %>
+                    <%if (currentProjectId > 0) { %>
                 <ul class="btn-group normal-group">
                     <li class="btn ${viewType != 'board' ? 'active' : ''}">
                         <a href="javascript:void(0);" data-viewtype="list">&{label.listView}</a>
