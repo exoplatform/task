@@ -1,5 +1,5 @@
 #{param name=taskModel/}
-#{param name=timezone/}
+#{param name=userTimezone/}
 #{param name=bundle/}
 
 <%
@@ -173,9 +173,9 @@
         		def workplan = bundle.getString("label.noWorkPlan");
             def duration = 0;
         		if (startDate != null) {
-	            def start = DateUtil.newCalendarInstance(timezone);
+	            def start = DateUtil.newCalendarInstance(userTimezone);
 	            start.setTime(task.getStartDate());
-	            def end = DateUtil.newCalendarInstance(timezone);
+	            def end = DateUtil.newCalendarInstance(userTimezone);
 	            end.setTime(task.getEndDate());
 					workplan = TaskUtil.getWorkPlan(start, end, bundle);
             	duration = endDate.getTime() - startDate.getTime();              
@@ -184,23 +184,23 @@
             def hasPlan = true;
             if(startDate == null) {
                 hasPlan = false;
-                def startTmp = DateUtil.newCalendarInstance(timezone);
+                def startTmp = DateUtil.newCalendarInstance(userTimezone);
                 startTmp.set(Calendar.MINUTE, 0);
                 startDate = startTmp.getTime();
                 duration = 30 * 60 * 1000;
             }
-            def endTmp = DateUtil.newCalendarInstance(timezone);
+            def endTmp = DateUtil.newCalendarInstance(userTimezone);
             endTmp.setTimeInMillis(startDate.getTime() + duration);
             endDate = endTmp.getTime();
 
             def df = new SimpleDateFormat("YYYY-MM-dd-HH-mm");
-            df.setTimeZone(timezone);
+            df.setTimeZone(userTimezone);
 
             def dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            dateFormat.setTimeZone(timezone);
+            dateFormat.setTimeZone(userTimezone);
 
             def timeFormat = new SimpleDateFormat("hh:mm");
-        		timeFormat.setTimeZone(timezone);
+        		timeFormat.setTimeZone(userTimezone);
             
             int halfHour = 30 * 60 * 1000;
             def isAllday = false;
@@ -365,7 +365,7 @@
     </ul>
     <%
     	def commentDF = new SimpleDateFormat("MMM dd, yyyy HH:mm");
-    	commentDF.setTimeZone(timezone);    	
+    	commentDF.setTimeZone(userTimezone);    	
     %>
     <div class="tab-content">
 	    <div class="row-fluid task-comment-row tab-pane active" id="task-comment">

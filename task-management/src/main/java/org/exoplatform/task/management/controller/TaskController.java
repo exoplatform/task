@@ -134,11 +134,11 @@ public class TaskController {
     try {
 
       TaskModel model = TaskUtil.getTaskModel(id, false, bundle, securityContext.getRemoteUser(), taskService, orgService, userService, projectService);
-      TimeZone timezone = userService.getUserTimezone(securityContext.getRemoteUser());
+      TimeZone userTimezone = userService.getUserTimezone(securityContext.getRemoteUser());
       
       return detail.with()
           .taskModel(model)
-          .timezone(timezone)
+          .userTimezone(userTimezone)
           .bundle(bundle)
           .ok().withCharset(Tools.UTF_8);
 
