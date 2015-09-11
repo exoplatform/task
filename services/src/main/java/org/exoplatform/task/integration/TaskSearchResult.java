@@ -68,4 +68,12 @@ public class TaskSearchResult extends SearchResult {
     this.dueDate = dueDate;
   }
 
+  public boolean isCompleted() {
+    return completed;
+  }
+
+  public void setCompleted(boolean completed) {
+    this.completed = completed;
+  }
+
 }
