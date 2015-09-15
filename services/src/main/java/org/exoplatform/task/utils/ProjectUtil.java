@@ -54,6 +54,8 @@ public final class ProjectUtil {
   public static final String NAME = "name";
 
   public static final String DUE_DATE = "dueDate";
+  
+  private static final String NAME_SUFFIX = " Tasks";
 
   private ProjectUtil() {
   }
@@ -71,7 +73,7 @@ public final class ProjectUtil {
     List<Task> tasks = service.getTasksByProjectId(Arrays.asList(project.getId()), null);
     calendar.setHasChildren(tasks.size() > 0);    
     calendar.setId(String.valueOf(project.getId()));
-    calendar.setName(project.getName());
+    calendar.setName(project.getName() + NAME_SUFFIX);
     Set<String> permissions = new HashSet<String>();
     if (project.getManager() != null) {
       permissions.addAll(project.getManager());      
