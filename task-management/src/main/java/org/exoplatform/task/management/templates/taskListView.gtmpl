@@ -34,7 +34,7 @@
                                 </ul>
                              </span>
                              <span class="action-bar dropdown pull-right" data-currentgroupby="${groupBy}">
-                                <a href="" class="actionIcon dropdown-toggle"  data-original-title="group By" data-toggle="dropdown"  rel="tooltip" data-placement="bottom">
+                                <a href="" class="actionIcon dropdown-toggle"  data-original-title="Group by" data-toggle="dropdown"  rel="tooltip" data-placement="bottom">
                                     <i class="uiIconViewList uiIconLightGray"></i>
                                     <span>${groups[groupBy]}</span>
                                 </a>

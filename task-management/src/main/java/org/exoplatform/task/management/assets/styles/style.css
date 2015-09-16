@@ -99,8 +99,8 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
 .empty-box {
   position: relative;
   text-align: center;
-  padding-top: 100px !important;
-  padding-bottom: 100px !important;
+  padding-top: 100px!important;
+  padding-bottom: 100px!important;
   min-height: 200px;
 }
 .empty-box .empty-content {
@@ -134,8 +134,8 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
   position: relative;
 }
 .projectListView .header .input-field .popover {
-  left: 0 !important;
-  top: 43px !important;
+  left: 0!important;
+  top: 43px!important;
 }
 .projectListView .header .input-field .popover .arrow {
   left: 50px;
@@ -245,7 +245,7 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
 }
 /* To Override z-idex tooltip */
 .breadcrumbCont .dropdown-menu {
-  z-index: 1050 !important;
+  z-index: 1050!important;
 }
 .rightPanel .resizeButton {
   left: -18px;
@@ -327,7 +327,7 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
   margin: 8px 0 0;
 }
 .rightPanel .addTask .taskName .title-container span.projectName {
-  margin-left: 22px !important;
+  margin-left: 22px!important;
   border: none;
 }
 .rightPanel .addTask .taskName .title-container span:nth-child(3) {
@@ -580,7 +580,7 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
   margin: 5px 0;
 }
 .tags .label {
-  margin: 1px 1px 1px;
+  margin: 1px 1px 1px ;
 }
 .tags .hoverStatus > .label {
   float: left;
@@ -640,7 +640,7 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
   line-height: 13px;
   max-width: 200px;
   overflow: hidden;
-  padding-right: 20px !important;
+  padding-right: 20px!important;
   position: relative;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -654,7 +654,7 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
 }
 .selectize-input .label + input[type="text"] {
   height: 16px;
-  margin-left: 2px !important;
+  margin-left: 2px!important;
 }
 .taskList .heading img {
   max-width: 20px;
@@ -687,7 +687,7 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
   font-weight: normal;
 }
 .selectize-input.replaceTextArea {
-  width: 100% !important;
+  width: 100%!important;
   height: auto;
 }
 .selectize-input.replaceTextArea input {
@@ -721,7 +721,7 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
   padding: 5px 0;
 }
 .pull-right + .date-work-plan {
-  margin: 0 28px 0 0;
+  margin: 0 28px 0 0 ;
 }
 .fieldWorkPlan > .pull-right .removeWorkPlan {
   margin-top: 4px;
@@ -788,7 +788,7 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
   margin-right: 2px;
 }
 .new-col {
-  padding-left: 8px !important;
+  padding-left: 8px!important;
 }
 .taskBoardView {
   overflow-x: auto;
@@ -834,7 +834,7 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
 .taskBoardView .uiEditableInline.active .number-tasks,
 .taskBoardView .uiEditableInline.active .actionRemoveStatus,
 .taskBoardView .uiEditableInline.active .actionAddStatus {
-  display: none !important;
+  display: none!important;
 }
 .taskBoardView .table-project-collapse .caption-heading .col {
   padding: 10px 18px;
@@ -856,7 +856,13 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
 .sharePrjDialog .table tr td {
   width: 50%;
 }
+.form-add-label {
+  padding: 5px 20px;
+}
+.form-add-label .input-add-label {
+  max-width: 100%;
+  margin: 5px 0;
+}
 .uiEditableInline .highlight {
   font-weight: bold;
 }
-/*# sourceMappingURL=style.css.map */
