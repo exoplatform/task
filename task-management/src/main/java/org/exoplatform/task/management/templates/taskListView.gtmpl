@@ -122,12 +122,12 @@
                             <!--<span class="inline-block-hide labels">
                                 <a href="#" class="navy_blue label">Next</a>
                                 <a href="#" class="orange label">Writing</a>
-                            </span>-->
-                            <a class="actionIcon inline-block-hide" href="javascript:void(0)"><i class="uiIcon uiIconClock"></i></a>
+                             </span>-->
+                            <a class="actionIcon inline-block-hide" data-placement="bottom" data-original-title="Snooze due date" rel="tooltip" href="javascript:void(0)"><i class="uiIcon uiIconClock"></i></a>
                             <% if (orderBy == 'priority') {%>
                                 <a class="actionIcon inline-block" href="javascript:void(0)"><i class="uiIconColorPriority${task.priority == null ? 'UNDEFINED' : task.priority.name()}"></i></a>
                             <% }%>
-                            <a class="actionIcon inline-block-hide" data-taskcompleted="${task.completed}" href="javascript:void(0)">
+                            <a class="actionIcon inline-block-hide" data-placement="left" data-original-title="Mark as completed" rel="tooltip" data-taskcompleted="${task.completed}" href="javascript:void(0)">
                                 <i class="uiIconValidate uiIconLightGray"></i>
                             </a>
                         </div>
