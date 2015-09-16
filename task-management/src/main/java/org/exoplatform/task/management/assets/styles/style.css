@@ -453,7 +453,7 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
   background-position: -39px -120px;
 }
 .table-project .column-item .actionIcon .uiIconClock {
-  background-position: -160px -81px;
+  background-position: -160px -80px;
 }
 .rightPanel .title .actionIconSmall {
   line-height: 10px;
@@ -660,6 +660,7 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
   max-width: 20px;
   border-radius: 2px;
   vertical-align: top;
+  margin-right: 5px;
 }
 .prjDescription ul,
 .taskDescription ul,
