@@ -127,7 +127,7 @@ public class TasksEventDAOImpl implements EventDAO {
      for (Task t : tasks) {
        Event event = newInstance();
        events.add(TaskUtil.buildEvent(event, t));       
-       if (!ids.contains(Long.valueOf(event.getCalendarId())) && ids.contains((long)ProjectUtil.TODO_PROJECT_ID)) {
+       if (event.getCalendarId() == null || (!ids.contains(Long.valueOf(event.getCalendarId())) && ids.contains((long)ProjectUtil.TODO_PROJECT_ID))) {
          event.setCalendarId(String.valueOf(ProjectUtil.TODO_PROJECT_ID));
        }
      }     
