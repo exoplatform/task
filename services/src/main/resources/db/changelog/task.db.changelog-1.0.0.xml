@@ -31,7 +31,7 @@
         <constraints nullable="true"/>
       </column>
       <column name="PARENT_PROJECT_ID" type="BIGINT">
-        <constraints foreignKeyName="FK_TASK__PROJECTS_TASK_PROJECTS_01" references="TASK_PROJECTS(PROJECT_ID)" nullable="true"/>
+        <constraints foreignKeyName="FK_TASK_PRJ_TASK_PRJ_01" references="TASK_PROJECTS(PROJECT_ID)" nullable="true"/>
       </column>
     </createTable>
     <modifySql dbms="mysql">
@@ -46,7 +46,7 @@
   <changeSet author="tclement@exoplatform.com" id="1.0.0-3">
     <createTable tableName="TASK_PROJECT_MANAGERS">
       <column name="PROJECT_ID" type="BIGINT">
-        <constraints foreignKeyName="FK_TASK_PROJECT_MANAGER_TASK_PROJECTS_01" references="TASK_PROJECTS(PROJECT_ID)" nullable="false"/>
+        <constraints foreignKeyName="FK_TASK_PRJ_MGR_TASK_PRJ_01" references="TASK_PROJECTS(PROJECT_ID)" nullable="false"/>
       </column>
       <column name="MANAGER" type="VARCHAR(50)">
         <constraints nullable="false"/>
@@ -61,7 +61,7 @@
   <changeSet author="tclement@exoplatform.com" id="1.0.0-4">
     <createTable tableName="TASK_PROJECT_PARTICIPATORS">
       <column name="PROJECT_ID" type="BIGINT">
-        <constraints foreignKeyName="FK_TASK_PROJECT_PARTICIPATOR_TASK_PROJECTS_01" references="TASK_PROJECTS(PROJECT_ID)" nullable="false"/>
+        <constraints foreignKeyName="FK_TASK_PRJ_PTOR_TASK_PRJ_01" references="TASK_PROJECTS(PROJECT_ID)" nullable="false"/>
       </column>
       <column name="PARTICIPATOR" type="VARCHAR(50)">
         <constraints nullable="false"/>
@@ -85,7 +85,7 @@
         <constraints nullable="false"/>
       </column>
       <column name="PROJECT_ID" type="BIGINT">
-        <constraints foreignKeyName="FK_TASK_STATUS_TASK_PROJECTS_01" references="TASK_PROJECTS(PROJECT_ID)" nullable="false"/>
+        <constraints foreignKeyName="FK_TASK_STATUS_TASK_PRJ_01" references="TASK_PROJECTS(PROJECT_ID)" nullable="false"/>
       </column>
     </createTable>
     <modifySql dbms="mysql">
@@ -154,7 +154,7 @@
   <changeSet author="tclement@exoplatform.com" id="1.0.0-9">
     <createTable tableName="TASK_TASK_COWORKERS">
       <column name="TASK_ID" type="BIGINT">
-        <constraints foreignKeyName="FK_TASK_TASK_COWORKER_TASK_TASKS_01" references="TASK_TASKS(TASK_ID)" nullable="false"/>
+        <constraints foreignKeyName="FK_TK_TK_COWKR_TK_TK_01" references="TASK_TASKS(TASK_ID)" nullable="false"/>
       </column>
       <column name="COWORKER" type="VARCHAR(50)">
         <constraints nullable="false"/>
@@ -196,7 +196,7 @@
         <constraints nullable="true"/>
       </column>
       <column name="TASK_ID" type="BIGINT">
-        <constraints nullable="false" foreignKeyName="FK_COMMENT_TASK" references="TASK_TASKS(TASK_ID)"/>
+        <constraints nullable="false" foreignKeyName="FK_COMMENT_TASK_01" references="TASK_TASKS(TASK_ID)"/>
       </column>
     </createTable>
     <modifySql dbms="mysql">
@@ -222,10 +222,10 @@
   <changeSet author="tuyennt@exoplatform.com" id="1.0.0-13">
     <createTable tableName="TASK_HIDDEN_PROJECTS">
       <column name="USERNAME" type="VARCHAR(50)">
-        <constraints foreignKeyName="FK_TASK_HIDDEN_PROJECTS_TASK_USER_SETTINGS_01" references="TASK_USER_SETTINGS(USERNAME)" nullable="false"/>
+        <constraints foreignKeyName="FK_TK_HID_PRJ_TK_USR_SET_01" references="TASK_USER_SETTINGS(USERNAME)" nullable="false"/>
       </column>
       <column name="PROJECT_ID" type="BIGINT">
-        <constraints foreignKeyName="FK_TASK_HIDDEN_PROJECTS_TASK_PROJECTS_01" references="TASK_PROJECTS(PROJECT_ID)" nullable="false"/>
+        <constraints foreignKeyName="FK_TASK_HID_PRJ_TK_PRJ_01" references="TASK_PROJECTS(PROJECT_ID)" nullable="false"/>
       </column>
     </createTable>
     <modifySql dbms="mysql">
@@ -262,11 +262,11 @@
                  tableName="TASK_TASKS">
       <column name="COMPLETED" type="BIT"/>
     </createIndex>
-    <createIndex indexName="IDX_TASK_PROJECT_MANAGERS_01"
+    <createIndex indexName="IDX_TASK_PRJ_MGR_01"
                  tableName="TASK_PROJECT_MANAGERS">
       <column name="MANAGER" type="VARCHAR(50)"/>
     </createIndex>
-    <createIndex indexName="IDX_TASK_PROJECT_PARTICIPATORS_01"
+    <createIndex indexName="IDX_TASK_PRJ_PTOR_01"
                  tableName="TASK_PROJECT_PARTICIPATORS">
       <column name="PARTICIPATOR" type="VARCHAR(50)"/>
     </createIndex>
@@ -288,17 +288,17 @@
   <!-- Update FK for TASK_HIDDEN_PROJECTS table -->
   <changeSet author="tuyennt@exoplatform.com" id="1.0.0-17">
     <!-- Drop old FK -->
-    <dropForeignKeyConstraint baseTableName="TASK_HIDDEN_PROJECTS" constraintName="FK_TASK_HIDDEN_PROJECTS_TASK_USER_SETTINGS_01"/>
-    <dropForeignKeyConstraint baseTableName="TASK_HIDDEN_PROJECTS" constraintName="FK_TASK_HIDDEN_PROJECTS_TASK_PROJECTS_01"/>
+    <dropForeignKeyConstraint baseTableName="TASK_HIDDEN_PROJECTS" constraintName="FK_TK_HID_PRJ_TK_USR_SET_01"/>
+    <dropForeignKeyConstraint baseTableName="TASK_HIDDEN_PROJECTS" constraintName="FK_TASK_HID_PRJ_TK_PRJ_01"/>
 
     <!-- ReAdd FK with adding onDelete Cascade-->
-    <addForeignKeyConstraint constraintName="FK_TASK_HIDDEN_PROJECTS_TASK_USER_SETTINGS_01"
+    <addForeignKeyConstraint constraintName="FK_TK_HID_PRJ_TK_USR_SET_01"
                              baseTableName="TASK_HIDDEN_PROJECTS"
                              baseColumnNames="USERNAME"
                              referencedTableName="TASK_USER_SETTINGS"
                              referencedColumnNames="USERNAME"
                              onDelete="CASCADE" />
-    <addForeignKeyConstraint constraintName="FK_TASK_HIDDEN_PROJECTS_TASK_PROJECTS_01"
+    <addForeignKeyConstraint constraintName="FK_TASK_HID_PRJ_TK_PRJ_01"
                              baseTableName="TASK_HIDDEN_PROJECTS"
                              baseColumnNames="PROJECT_ID"
                              referencedTableName="TASK_PROJECTS"
