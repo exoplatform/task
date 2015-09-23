@@ -101,7 +101,7 @@ public class TaskLoggingListener implements TaskListener {
       }
       break;
     default:
-      throw new IllegalArgumentException(type.name() + " event not support");
+      msg  = null;
     }
     
     return new String[] {msg, val};

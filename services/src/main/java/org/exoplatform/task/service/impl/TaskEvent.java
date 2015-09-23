@@ -28,6 +28,7 @@ public class TaskEvent {
     EDIT_DUEDATE,
     EDIT_PROJECT,
     EDIT_ASSIGNEE,
+    EDIT_COWORKER,
     EDIT_STATUS,
     ADD_LABEL,
     EDIT_WORKPLAN,

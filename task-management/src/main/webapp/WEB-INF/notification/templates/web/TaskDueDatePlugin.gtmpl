@@ -1,0 +1,37 @@
+<li class="$READ clearfix" data-id="$NOTIFICATION_ID">
+  <div class="media">
+    <div class="avatarXSmall pull-left">
+      <img src="$AVATAR" alt="$USER" />
+    </div> 
+    <div class="media-body">
+      <%
+      	String msg = "";
+      	String profileUrl = "<a class=\"user-name text-bold\" href=\"" + PROFILE_URL + "\">" + USER + "</a>";
+       	if (COUNT != null && Integer.parseInt(COUNT) > 1) {
+       	 msg = _ctx.appRes("Notification.message.more.TaskDueDatePlugin", profileUrl, COUNT);
+       	} else {
+       	 msg = _ctx.appRes("Notification.message.TaskDueDatePlugin", profileUrl);
+       	}
+       	if (PROJECT_NAME != null && !PROJECT_NAME.isEmpty()) {
+       	  msg += " " + _ctx.appRes("Notification.message.inProject", "<b>" + PROJECT_NAME + "</b>");
+       	}
+      %> 
+      <div class="contentSmall" data-link="$PROJECT_URL">
+        <div class="status"><%=msg%></div>
+        <%if (TASK_TITLE != null && !TASK_TITLE.isEmpty()) {%>
+        <div class="content"><i class="uiIcon uiIconTick uiIconLightGray"></i>$TASK_TITLE</div>
+        <%} %>
+        <%if (DUE_DATE != null && !DUE_DATE.isEmpty()) {%>
+        <div class="content-normal">
+        	<%=_ctx.appRes("Notification.label.dueOn")%> <strong>$DUE_DATE</strong>       
+        </div>
+        <%} %>
+        <div class="lastUpdatedTime">
+        	<i class="uiIcon uiIconClock uiIconLightGray"></i>
+        	$LAST_UPDATED_TIME
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="remove-item" data-rest=""><i class="uiIconClose uiIconLightGray"></i></span>
+</li>

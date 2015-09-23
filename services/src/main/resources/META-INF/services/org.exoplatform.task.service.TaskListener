@@ -1,1 +1,2 @@
 org.exoplatform.task.service.impl.TaskLoggingListener
+org.exoplatform.task.integration.notification.TaskNotificationListener

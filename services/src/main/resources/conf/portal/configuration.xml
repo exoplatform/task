@@ -131,4 +131,6 @@
       </init-params>      
     </component-plugin>
   </external-component-plugins>
+
+  <import>jar:/conf/portal/task-notification-plugin.xml</import>
 </configuration>

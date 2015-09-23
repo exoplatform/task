@@ -285,4 +285,3 @@ public class TestTaskDAO extends AbstractTest {
     }
   }
 }
-
