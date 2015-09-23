@@ -19,32 +19,12 @@
 
 package org.exoplatform.task.domain;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
-import javax.persistence.CascadeType;
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
 import org.exoplatform.commons.api.persistence.ExoEntity;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.services.security.MembershipEntry;
+
+import javax.persistence.*;
+import java.util.*;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>
@@ -80,7 +60,8 @@ public class Project {
   private static final String PREFIX_CLONE = "Copy of ";
 
   @Id
-  @GeneratedValue
+  @SequenceGenerator(name="SEQ_TASK_PROJECTS_PROJECT_ID", sequenceName="SEQ_TASK_PROJECTS_PROJECT_ID")
+  @GeneratedValue(strategy=GenerationType.AUTO, generator="SEQ_TASK_PROJECTS_PROJECT_ID")
   @Column(name = "PROJECT_ID")
   private long      id;
 

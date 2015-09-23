@@ -57,7 +57,8 @@ public class Task {
   private static final String PREFIX_CLONE = "Copy of ";
 
   @Id
-  @GeneratedValue
+  @SequenceGenerator(name="SEQ_TASK_TASKS_TASK_ID", sequenceName="SEQ_TASK_TASKS_TASK_ID")
+  @GeneratedValue(strategy=GenerationType.AUTO, generator="SEQ_TASK_TASKS_TASK_ID")
   @Column(name = "TASK_ID")
   private long        id;
 

@@ -21,20 +21,8 @@ package org.exoplatform.task.domain;
 
 import org.exoplatform.commons.api.persistence.ExoEntity;
 
+import javax.persistence.*;
 import java.util.Date;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
@@ -50,7 +38,8 @@ import javax.persistence.TemporalType;
 })
 public class Comment {
   @Id
-  @GeneratedValue
+  @SequenceGenerator(name="SEQ_TASK_COMMENTS_COMMENT_ID", sequenceName="SEQ_TASK_COMMENTS_COMMENT_ID")
+  @GeneratedValue(strategy=GenerationType.AUTO, generator="SEQ_TASK_COMMENTS_COMMENT_ID")
   @Column(name = "COMMENT_ID")
   private long id;
 

@@ -13,12 +13,12 @@
   <changeSet author="tclement@exoplatform.com" id="1.0.0-1">
     <createTable tableName="TASK_PROJECTS">
       <column name="PROJECT_ID" type="BIGINT" autoIncrement="${autoIncrement}" startWith="1">
-        <constraints nullable="false" primaryKey="true" primaryKeyName="PK_TASK_PROJECTS" unique="true"/>
+        <constraints nullable="false" primaryKey="true" primaryKeyName="PK_TASK_PROJECTS" />
       </column>
       <column name="NAME" type="VARCHAR(50)">
         <constraints nullable="false"/>
       </column>
-      <column name="DESCRIPTION" type="VARCHAR(1000)">
+      <column name="DESCRIPTION" type="VARCHAR(4000)">
         <constraints nullable="true"/>
       </column>
       <column name="COLOR" type="VARCHAR(100)">
@@ -76,7 +76,7 @@
   <changeSet author="tclement@exoplatform.com" id="1.0.0-5">
     <createTable tableName="TASK_STATUS">
       <column name="STATUS_ID" type="BIGINT" autoIncrement="${autoIncrement}" startWith="1">
-        <constraints nullable="false" primaryKey="true" primaryKeyName="PK_TASK_STATUS" unique="true"/>
+        <constraints nullable="false" primaryKey="true" primaryKeyName="PK_TASK_STATUS"/>
       </column>
       <column name="NAME" type="VARCHAR(50)">
         <constraints nullable="false"/>
@@ -100,12 +100,12 @@
   <changeSet author="tclement@exoplatform.com" id="1.0.0-7">
     <createTable tableName="TASK_TASKS">
       <column name="TASK_ID" type="BIGINT" autoIncrement="${autoIncrement}" startWith="1">
-        <constraints primaryKey="true" primaryKeyName="PK_TASK_TASKS" nullable="false" unique="true"/>
+        <constraints primaryKey="true" primaryKeyName="PK_TASK_TASKS" nullable="false"/>
       </column>
       <column name="TITLE" type="VARCHAR(50)">
         <constraints nullable="false"/>
       </column>
-      <column name="DESCRIPTION" type="VARCHAR(10000)">
+      <column name="DESCRIPTION" type="VARCHAR(4000)">
         <constraints nullable="true"/>
       </column>
       <column name="PRIORITY" type="VARCHAR(10)">
@@ -184,12 +184,12 @@
   <changeSet author="tuyennt@exoplatform.com" id="1.0.0-11">
     <createTable tableName="TASK_COMMENTS">
       <column name="COMMENT_ID" type="BIGINT" autoIncrement="${autoIncrement}" startWith="1">
-        <constraints primaryKey="true" primaryKeyName="PK_TASK_COMMENTS" nullable="false" unique="true"/>
+        <constraints primaryKey="true" primaryKeyName="PK_TASK_COMMENTS" nullable="false"/>
       </column>
       <column name="AUTHOR" type="VARCHAR(100)">
         <constraints nullable="false"/>
       </column>
-      <column name="COMMENT" type="VARCHAR(10000)">
+      <column name="COMMENT" type="VARCHAR(4000)">
         <constraints nullable="false"/>
       </column>
       <column name="CREATED_TIME" type="TIMESTAMP">
@@ -208,7 +208,7 @@
   <changeSet author="tuyennt@exoplatform.com" id="1.0.0-12">
     <createTable tableName="TASK_USER_SETTINGS">
       <column name="USERNAME" type="VARCHAR(50)">
-        <constraints primaryKey="true" primaryKeyName="PK_TASK_USER_SETTINGS" nullable="false" unique="true"/>
+        <constraints primaryKey="true" primaryKeyName="PK_TASK_USER_SETTINGS" nullable="false"/>
       </column>
       <column name="SHOW_HIDDEN_PROJECT" type="BIT" defaultValue="0">
         <constraints nullable="true"/>
@@ -242,7 +242,7 @@
       <column name="AUTHOR" type="VARCHAR(100)">
         <constraints nullable="false"/>
       </column>
-      <column name="MSG" type="VARCHAR(10000)">
+      <column name="MSG" type="VARCHAR(4000)">
         <constraints nullable="false"/>
       </column>
       <column name="TARGET" type="VARCHAR(100)">
@@ -320,6 +320,11 @@
         <constraints nullable="true"/>
       </column>
     </addColumn>
+  </changeSet>
+
+  <!-- Definition of sequence for TASK_COMMENTS -->
+  <changeSet author="tclement@exoplatform.com" id="1.0.0-19" dbms="oracle,postgresql">
+    <createSequence sequenceName="SEQ_TASK_COMMENTS_COMMENT_ID" startValue="1"/>
   </changeSet>
 
 </databaseChangeLog>

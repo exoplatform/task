@@ -21,20 +21,9 @@ package org.exoplatform.task.domain;
 
 import org.exoplatform.commons.api.persistence.ExoEntity;
 
+import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>
@@ -54,7 +43,8 @@ import javax.persistence.Table;
 })
 public class Status implements Comparable<Status>{
   @Id
-  @GeneratedValue
+  @SequenceGenerator(name="SEQ_TASK_STATUS_STATUS_ID", sequenceName="SEQ_TASK_STATUS_STATUS_ID")
+  @GeneratedValue(strategy=GenerationType.AUTO, generator="SEQ_TASK_STATUS_STATUS_ID")
   @Column(name = "STATUS_ID")
   private long id;
 
