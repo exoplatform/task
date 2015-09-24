@@ -36,6 +36,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.PreRemove;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -44,6 +45,7 @@ import javax.persistence.TemporalType;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.exoplatform.commons.api.persistence.ExoEntity;
@@ -372,4 +374,14 @@ public class Task {
     return true;
   }
 
+  @PreRemove
+  private void removeLabel() {
+    if (getLabels() != null) {
+      for (Label lbl : getLabels()) {
+        if (lbl.getTasks() != null) {
+          lbl.getTasks().remove(this);
+        }
+      }      
+    }
+  }
 }
