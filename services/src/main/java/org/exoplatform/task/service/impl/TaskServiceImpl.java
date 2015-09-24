@@ -19,7 +19,6 @@ package org.exoplatform.task.service.impl;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -37,11 +36,13 @@ import org.exoplatform.services.log.Log;
 import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.domain.Comment;
+import org.exoplatform.task.domain.Label;
 import org.exoplatform.task.domain.Priority;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.domain.TaskLog;
 import org.exoplatform.task.exception.CommentNotFoundException;
+import org.exoplatform.task.exception.LabelNotFoundException;
 import org.exoplatform.task.exception.ParameterEntityException;
 import org.exoplatform.task.exception.StatusNotFoundException;
 import org.exoplatform.task.exception.TaskNotFoundException;
@@ -419,6 +420,82 @@ public class TaskServiceImpl implements TaskService {
     return daoHandler.getTaskHandler().update(task);
   }
   
+  @Override
+  public List<Task> findTasksByLabel(long labelId, OrderBy orderBy) throws LabelNotFoundException {
+    Label label = getLabelById(labelId);
+    if (label == null) {
+      throw new LabelNotFoundException(labelId);
+    }
+    return daoHandler.getTaskHandler().findTasksByLabel(labelId, orderBy);
+  }
+
+  @Override
+  public List<Label> findLabelsByUser(String username) {
+    return daoHandler.getLabelHandler().findLabelsByUser(username);
+  }
+
+  @Override
+  public List<Label> findLabelsByTask(long taskId, String username) throws TaskNotFoundException {
+    if (username == null) {
+      throw new NullPointerException("username can't be null");
+    }
+    //
+    Task task = getTaskById(taskId);
+    if (task == null) {
+      throw new TaskNotFoundException(taskId);
+    }
+    
+    List<Label> labels = new LinkedList<Label>();
+    Set<Label> tmp = task.getLabels();
+    if (tmp != null) {
+      for (Label lbl : tmp) {
+        if (username.equals(lbl.getUsername())) {
+          labels.add(lbl);
+        }
+      }
+    }
+    return labels;
+  }
+
+  @Override
+  public Label getLabelById(long labelId) {
+    return daoHandler.getLabelHandler().find(labelId);
+  }
+
+  @Override
+  public Label createLabel(Label label) {
+    return daoHandler.getLabelHandler().create(label);
+  }
+
+  @Override
+  public Label updateLabel(Label label, Label.FIELDS field) throws LabelNotFoundException {
+    Label lb = getLabelById(label.getId());
+    if (lb == null) {
+      throw new LabelNotFoundException(label.getId());
+    }
+    
+    //Todo: validate input and throw exception if need
+    switch (field) {
+    case NAME:
+      lb.setName(label.getName());
+      break;
+    case COLOR:
+      lb.setColor(label.getColor());
+      break;
+    case PARENT:      
+      lb.setParent(label.getParent());
+      break;
+    case TASK:
+      lb.setTasks(label.getTasks());
+    }
+    return daoHandler.getLabelHandler().update(lb);
+  }
+
+  @Override
+  public void deleteLabel(long labelId) {    
+    daoHandler.getLabelHandler().delete(getLabelById(labelId));
+  }
+
   private void triggerEvent(TaskEvent event) {
     for (TaskListener listener : listeners) {
       listener.event(event);

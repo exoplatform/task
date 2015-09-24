@@ -25,6 +25,7 @@ import java.util.TimeZone;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.task.dao.TaskHandler;
 import org.exoplatform.task.dao.TaskQuery;
+import org.exoplatform.task.domain.Label;
 import org.exoplatform.task.domain.Priority;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
@@ -156,6 +157,19 @@ public class TestTaskDAO extends AbstractTest {
     query.setMemberships(Arrays.asList("root"));
     List<Task> tasks = tDAO.findTaskByQuery(query);
     Assert.assertEquals(1, tasks.size());
+  }
+  
+  @Test
+  public void testFindTasksByLabel() {
+    Task task = newTaskInstance("task1", "", username);
+    tDAO.create(task);
+    Label label = new Label("label1", username);
+    label.getTasks().add(task);
+    taskService.getLabelHandler().create(label);
+    
+    List<Task> tasks = tDAO.findTasksByLabel(label.getId(), null);
+    Assert.assertEquals(1, tasks.size());
+    Assert.assertEquals(task.getId(), tasks.get(0).getId());
   }
 
   @Test

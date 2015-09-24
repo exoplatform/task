@@ -17,6 +17,7 @@
 package org.exoplatform.task.service.impl;
 
 import org.exoplatform.task.dao.CommentHandler;
+import org.exoplatform.task.dao.LabelHandler;
 import org.exoplatform.task.dao.ProjectHandler;
 import org.exoplatform.task.dao.StatusHandler;
 import org.exoplatform.task.dao.TaskHandler;
@@ -39,6 +40,8 @@ abstract public class AbstractDAOHandler implements DAOHandler {
 
   protected UserSettingHandler uHandler;
 
+  protected LabelHandler lHandler;
+  
   public ProjectHandler getProjectHandler() {
     return pHandler;
   }
@@ -59,5 +62,11 @@ abstract public class AbstractDAOHandler implements DAOHandler {
   public UserSettingHandler getUserSettingHandler() {
     return uHandler;
   }
+
+  @Override
+  public LabelHandler getLabelHandler() {
+    return lHandler;
+  }
+  
 }
 

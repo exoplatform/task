@@ -39,6 +39,8 @@ public interface TaskHandler extends GenericDAO<Task, Long> {
 
   List<Task> findByTags(List<String> tags);
 
+  List<Task> findTasksByLabel(long labelId, OrderBy orderBy);
+ 
   List<Task> findTaskByQuery(TaskQuery query);
 
   List<Task> getIncomingTask(String username, OrderBy orderBy);
@@ -50,5 +52,6 @@ public interface TaskHandler extends GenericDAO<Task, Long> {
   long getTaskNum(String username, List<Long> projectIds);
 
   void updateTaskOrder(long currentTaskId, Status newStatus, long[] orders);
+  
 }
 

@@ -7,10 +7,12 @@ import java.util.TimeZone;
 import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.domain.Comment;
+import org.exoplatform.task.domain.Label;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.domain.TaskLog;
 import org.exoplatform.task.exception.CommentNotFoundException;
+import org.exoplatform.task.exception.LabelNotFoundException;
 import org.exoplatform.task.exception.ParameterEntityException;
 import org.exoplatform.task.exception.StatusNotFoundException;
 import org.exoplatform.task.exception.TaskNotFoundException;
@@ -52,9 +54,23 @@ public interface TaskService {
 
   List<Task> getToDoTasksByUser(String username, List<Long> projectIds, OrderBy orderBy, Date fromDueDate, Date toDueDate);
 
+  List<Task> findTasksByLabel(long labelId, OrderBy orderBy) throws LabelNotFoundException;
+  
   List<Task> findTaskByQuery(TaskQuery query);
   
   long getTaskNum(String username, List<Long> projectIds);
 
   TaskLog addTaskLog(long taskId, String username, String msg, String target) throws TaskNotFoundException;
+  
+  List<Label> findLabelsByUser(String username);
+  
+  List<Label> findLabelsByTask(long taskId, String username) throws TaskNotFoundException;
+  
+  Label getLabelById(long labelId);
+  
+  Label createLabel(Label label);
+  
+  Label updateLabel(Label label, Label.FIELDS field) throws LabelNotFoundException;
+
+  void deleteLabel(long labelId);
 }

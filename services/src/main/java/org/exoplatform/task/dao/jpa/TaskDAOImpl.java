@@ -473,5 +473,18 @@ public class TaskDAOImpl extends GenericDAOJPAImpl<Task, Long> implements TaskHa
       currentTask.setRank(newRank);
       update(currentTask);
   }
+
+  @Override
+  public List<Task> findTasksByLabel(long labelId, OrderBy orderBy) {    
+    EntityManager em = getEntityManager();
+    Query query = em.createNamedQuery("Task.findTasksByLabel", Task.class);
+    query.setParameter("labelId", labelId);
+    try {
+      return query.getResultList();
+    } catch (PersistenceException e) {
+      return Collections.emptyList();
+    }
+  }  
+   
 }
 

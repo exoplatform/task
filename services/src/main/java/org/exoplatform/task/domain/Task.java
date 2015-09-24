@@ -19,14 +19,35 @@
 
 package org.exoplatform.task.domain;
 
-import org.exoplatform.commons.api.persistence.ExoEntity;
-import org.exoplatform.task.service.TaskBuilder;
+import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
-import javax.persistence.*;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.exoplatform.commons.api.persistence.ExoEntity;
+import org.exoplatform.task.service.TaskBuilder;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>
@@ -50,7 +71,9 @@ import java.util.Set;
     @NamedQuery(name = "Task.findTaskByProject",
         query = "SELECT t FROM Task t WHERE t.status.project.id = :projectId"),
     @NamedQuery(name = "Task.findTaskByActivityId",
-        query = "SELECT t FROM Task t WHERE t.activityId = :activityId")
+        query = "SELECT t FROM Task t WHERE t.activityId = :activityId"),
+    @NamedQuery(name = "Task.findTasksByLabel",
+    query = "SELECT t FROM Task t INNER JOIN t.labels lbl WHERE lbl.id = :labelId")
 })
 public class Task {
 
@@ -120,6 +143,9 @@ public class Task {
   @CollectionTable(name = "TASK_LOGS",
       joinColumns = @JoinColumn(name = "TASK_ID"))
   private Set<TaskLog> taskLogs = new HashSet<TaskLog>();
+  
+  @ManyToMany(fetch = FetchType.LAZY, mappedBy="tasks")
+  private Set<Label> labels = new HashSet<Label>();
 
   @Column(name = "ACTIVITY_ID")
   private String activityId;
@@ -224,6 +250,14 @@ public class Task {
 
   public String getCreatedBy() {
     return createdBy;
+  }
+
+  public Set<Label> getLabels() {
+    return labels;
+  }
+
+  public void setLabels(Set<Label> labels) {
+    this.labels = labels;
   }
 
   public void setCreatedBy(String createdBy) {

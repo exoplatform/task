@@ -22,6 +22,7 @@ import org.exoplatform.commons.persistence.impl.EntityManagerService;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.task.dao.jpa.CommentDAOImpl;
+import org.exoplatform.task.dao.jpa.LabelDAOImpl;
 import org.exoplatform.task.dao.jpa.ProjectDAOImpl;
 import org.exoplatform.task.dao.jpa.StatusDAOImpl;
 import org.exoplatform.task.dao.jpa.TaskDAOImpl;
@@ -47,6 +48,7 @@ public class DAOHandlerJPAImpl extends AbstractDAOHandler implements DAOHandler 
     cHandler = new CommentDAOImpl(entityService);
     sHandler = new StatusDAOImpl(entityService);
     uHandler = new UserSettingDAO(entityService);
+    lHandler = new LabelDAOImpl(entityService);
     LOG.info("DAOHandlerJPAImpl is created");
   }
 }

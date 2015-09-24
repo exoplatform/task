@@ -20,6 +20,7 @@
 package org.exoplatform.task.service;
 
 import org.exoplatform.task.dao.CommentHandler;
+import org.exoplatform.task.dao.LabelHandler;
 import org.exoplatform.task.dao.ProjectHandler;
 import org.exoplatform.task.dao.StatusHandler;
 import org.exoplatform.task.dao.TaskHandler;
@@ -32,6 +33,8 @@ public interface DAOHandler {
   public ProjectHandler getProjectHandler();
 
   public TaskHandler getTaskHandler();
+  
+  public LabelHandler getLabelHandler();
 
   public CommentHandler getCommentHandler();
 

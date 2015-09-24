@@ -321,6 +321,45 @@
       </column>
     </addColumn>
   </changeSet>
+  
+  <!-- Definition of TASK_LABELS table -->
+  <changeSet author="phuong_vu@exoplatform.com" id="1.0.0-19">
+    <createTable tableName="TASK_LABELS">
+      <column name="LABEL_ID" type="BIGINT" autoIncrement="${autoIncrement}" startWith="1">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="PK_TASK_LABELS" unique="true"/>
+      </column>
+      <column name="NAME" type="VARCHAR(50)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="USERNAME" type="VARCHAR(50)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="COLOR" type="VARCHAR(100)">
+        <constraints nullable="true"/>
+      </column>
+      <column name="PARENT_LABEL_ID" type="BIGINT">
+        <constraints foreignKeyName="FK_TASK_LBL_TASK_LBL_01" references="TASK_LABELS(LABEL_ID)" nullable="true"/>
+      </column>
+    </createTable>
+    <modifySql dbms="mysql">
+      <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
+    </modifySql>
+  </changeSet>
+  
+  <!-- Definition of TASK_LABEL_TASK table -->
+  <changeSet author="phuong_vu@exoplatform.com" id="1.0.0-20">
+    <createTable tableName="TASK_LABEL_TASK">
+      <column name="LABEL_ID" type="BIGINT">
+        <constraints foreignKeyName="FK_TK_LBL_TK_LBL_TK_LBL__01" references="TASK_LABELS(LABEL_ID)" nullable="false"/>
+      </column>
+      <column name="TASK_ID" type="BIGINT">
+        <constraints foreignKeyName="FK_TK_LBL_TK_TK_TK_01" references="TASK_TASKS(TASK_ID)" nullable="false"/>
+      </column>
+    </createTable>
+    <modifySql dbms="mysql">
+      <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
+    </modifySql>
+  </changeSet>
 
   <!-- Definition of sequence for TASK_COMMENTS -->
   <changeSet author="tclement@exoplatform.com" id="1.0.0-19" dbms="oracle,postgresql">
