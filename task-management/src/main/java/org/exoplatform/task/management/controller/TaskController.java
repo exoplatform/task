@@ -403,7 +403,7 @@ public class TaskController {
     Map<String, String> defOrders;
     Map<String, String> defGroupBys;
     if (isBoardView) {
-      defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, /*TaskUtil.DUEDATE,*/ TaskUtil.ASSIGNEE), bundle);
+      defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.LABEL, /*TaskUtil.DUEDATE,*/ TaskUtil.ASSIGNEE), bundle);
       defOrders = TaskUtil.resolve(Arrays.asList(TaskUtil.DUEDATE, TaskUtil.PRIORITY, TaskUtil.RANK), bundle);
       if (orderBy == null || !defOrders.containsKey(orderBy)) {
         orderBy = TaskUtil.DUEDATE;
@@ -461,7 +461,7 @@ public class TaskController {
       tasks = taskService.getIncomingTasksByUser(currentUser, order);
     }
     else if (projectId == ProjectUtil.TODO_PROJECT_ID) {
-      defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT, TaskUtil.DUEDATE), bundle);
+      defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT, TaskUtil.LABEL, TaskUtil.DUEDATE), bundle);
       defOrders = TaskUtil.resolve(Arrays.asList(TaskUtil.TITLE, TaskUtil.STATUS, TaskUtil.DUEDATE, TaskUtil.PRIORITY, TaskUtil.RANK), bundle);
       
       //TODO: process fiter here
@@ -472,7 +472,7 @@ public class TaskController {
         fromDueDate = null;
         toDueDate = new Date();
         
-        defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT), bundle);
+        defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT, TaskUtil.LABEL), bundle);
         defOrders = TaskUtil.resolve(Arrays.asList(TaskUtil.TITLE, TaskUtil.PRIORITY, TaskUtil.DUEDATE), bundle);
         groupBy = groupBy == null || !defGroupBys.containsKey(groupBy) ? TaskUtil.PROJECT : groupBy;
       } else if ("today".equalsIgnoreCase(filter)) {
@@ -484,7 +484,7 @@ public class TaskController {
         c.add(Calendar.HOUR, 24);
         toDueDate = c.getTime();
         
-        defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT), bundle);
+        defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT, TaskUtil.LABEL), bundle);
         defOrders = TaskUtil.resolve(Arrays.asList(TaskUtil.TITLE, TaskUtil.PRIORITY, TaskUtil.RANK), bundle);
         if (orderBy == null) {
           order = new OrderBy.DESC(TaskUtil.PRIORITY);
@@ -501,7 +501,7 @@ public class TaskController {
         c.add(Calendar.HOUR, 24);
         toDueDate = c.getTime();
         
-        defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT), bundle);
+        defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT, TaskUtil.LABEL), bundle);
         defOrders = TaskUtil.resolve(Arrays.asList(TaskUtil.TITLE, TaskUtil.PRIORITY, TaskUtil.RANK), bundle);
         if (orderBy == null || !defOrders.containsKey(orderBy)) {
           order = new OrderBy.DESC(TaskUtil.PRIORITY);
@@ -517,7 +517,7 @@ public class TaskController {
         fromDueDate = c.getTime();
         toDueDate = null;
         
-        defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT), bundle);
+        defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT, TaskUtil.LABEL), bundle);
         defOrders = TaskUtil.resolve(Arrays.asList(TaskUtil.TITLE, TaskUtil.PRIORITY, TaskUtil.DUEDATE, TaskUtil.RANK), bundle);
         groupBy = groupBy == null || !defGroupBys.containsKey(groupBy) ? TaskUtil.NONE : groupBy;
       }
@@ -534,6 +534,8 @@ public class TaskController {
     }
     else {
       if (projectId == 0) {
+        defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.ASSIGNEE, TaskUtil.PROJECT, TaskUtil.LABEL, TaskUtil.STATUS), bundle);
+
         //. Default order by CreatedDate
         if (orderBy == null || orderBy.isEmpty()) {
           orderBy = TaskUtil.DUEDATE;
@@ -587,7 +589,7 @@ public class TaskController {
     Map<GroupKey, List<Task>> groupTasks = new HashMap<GroupKey, List<Task>>();
     if(groupBy != null && !groupBy.isEmpty()) {
       TimeZone tz = userService.getUserTimezone(currentUser);
-      groupTasks = TaskUtil.groupTasks(tasks, groupBy, tz, bundle);
+      groupTasks = TaskUtil.groupTasks(tasks, groupBy, currentUser, tz, bundle, taskService);
       if("assignee".equalsIgnoreCase(groupBy)) {
         userMap = new HashMap<String, org.exoplatform.task.model.User>();
         for(GroupKey key : groupTasks.keySet()) {

@@ -71,6 +71,7 @@ public final class TaskUtil {
   public static final String STATUS = "status";
   public static final String ASSIGNEE = "assignee";
   public static final String PROJECT = "project";
+  public static final String LABEL = "label";
   public static final String RANK = "rank";
   public static final String MEMBERSHIP = "membership";
   
@@ -85,9 +86,9 @@ public final class TaskUtil {
   
   public static Map<String, String> getDefGroupBys(long currentProject, ResourceBundle bundle) {
     if (currentProject == -1) {
-      return resolve(Arrays.asList(NONE, ASSIGNEE, DUEDATE), bundle);
+      return resolve(Arrays.asList(NONE, ASSIGNEE, LABEL, DUEDATE), bundle);
     } else {
-      return resolve(Arrays.asList(NONE, DUEDATE, STATUS, ASSIGNEE), bundle);
+      return resolve(Arrays.asList(NONE, ASSIGNEE, LABEL, DUEDATE, STATUS), bundle);
     }
   }
   
@@ -189,10 +190,10 @@ public final class TaskUtil {
     }
   }
 
-  public static Map<GroupKey, List<Task>> groupTasks(List<Task> tasks, String groupBy, TimeZone userTimezone, ResourceBundle bundle) {
+  public static Map<GroupKey, List<Task>> groupTasks(List<Task> tasks, String groupBy, String username, TimeZone userTimezone, ResourceBundle bundle, TaskService taskService) {
     Map<GroupKey, List<Task>> maps = new TreeMap<GroupKey, List<Task>>();
     for(Task task : tasks) {
-      for (GroupKey key : getGroupName(task, groupBy, userTimezone, bundle)) {
+      for (GroupKey key : getGroupName(task, groupBy, username, userTimezone, bundle, taskService)) {
         List<Task> list = maps.get(key);
         if(list == null) {
           list = new LinkedList<Task>();
@@ -342,7 +343,7 @@ public final class TaskUtil {
     return result;
   }
 
-  private static GroupKey[] getGroupName(Task task, String groupBy, TimeZone userTimezone, ResourceBundle bundle) {
+  private static GroupKey[] getGroupName(Task task, String groupBy, String username, TimeZone userTimezone, ResourceBundle bundle, TaskService taskService) {
     if("project".equalsIgnoreCase(groupBy)) {
       Status s = task.getStatus();
       if(s == null) {
@@ -380,6 +381,25 @@ public final class TaskUtil {
         calendar.setTime(dueDate);
       }
       return new GroupKey[] {new GroupKey(DateUtil.getDueDateLabel(calendar, bundle), dueDate, calendar != null ? 0 : 1)};
+    } else if (TaskUtil.LABEL.equalsIgnoreCase(groupBy)) {
+      //TODO:
+      List<Label> labels;
+      try {
+        labels = taskService.findLabelsByTask(task.getId(), username);
+      } catch (TaskNotFoundException ex) {
+        labels = new ArrayList<Label>();
+      }
+      if (labels.isEmpty()) {
+        return new GroupKey[] {new GroupKey("No label", null, Integer.MAX_VALUE)};
+      } else {
+        GroupKey[] keys = new GroupKey[labels.size()];
+        for (int i = 0; i < keys.length; i++) {
+          Label label = labels.get(i);
+          keys[i] = new GroupKey(label.getName(), label, (int)label.getId());
+        }
+        return keys;
+      }
+
     }
     return new GroupKey[0];
   }
