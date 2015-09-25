@@ -24,8 +24,8 @@ public interface TaskService {
 
   Task createTask(Task task);
 
-  Task updateTaskInfo(long id, String param, String[] values, TimeZone timezone)
-      throws TaskNotFoundException, ParameterEntityException, StatusNotFoundException;
+  Task updateTaskInfo(long id, String param, String[] values, TimeZone timezone, String username)
+      throws TaskNotFoundException, ParameterEntityException, StatusNotFoundException, LabelNotFoundException;
 
   void updateTaskOrder(long currentTaskId, Status newStatus, long[] orders);
 

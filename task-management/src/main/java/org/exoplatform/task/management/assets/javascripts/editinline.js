@@ -579,8 +579,7 @@ define('ta_edit_inline',
                         $this.parent().find('i').attr('class', 'uiIconColorPriority' + newValue);
                     }
                 }
-                if (fieldName == 'tags') {
-                    editOptions.emptytext = 'Tags';
+                if (fieldName == 'tags' || fieldName == 'labels') {
                     editOptions.success = function (response, newValue) {
                         var isEmpty = newValue.length == 0 || newValue[0] == '';
                         var $i = $this.parent().find('.icon-hash');
@@ -589,6 +588,64 @@ define('ta_edit_inline',
                         } else {
                             $i.addClass('hidden');
                         }
+                    }
+                }
+                if (fieldName == 'tags') {
+                    editOptions.emptytext = 'Tags';
+                } else if (fieldName == 'labels') {
+                    var isLoaded = false;
+                    var allLabels = {};
+                    var opts = $this.data('selectizie-opts');
+                    $.each(opts, function(index, val) {
+                        allLabels[val.id] = val;
+                    });
+
+                    editOptions.emptyText = 'Labels';
+                    editOptions.selectize = {
+                        create: false,
+                        options: opts,
+                        valueField: 'id',
+                        labelField: 'text',
+                        searchField: 'text',
+                        highlight: true,
+                        openOnFocus: true,
+                        load: function(query, callback) {
+                            if (isLoaded) {
+                                return callback();
+                            }
+                            //. Load all label of user
+                            $.ajax({
+                                url: $rightPanel.jzURL('UserController.findLabel'),
+                                data: {},
+                                type: 'GET',
+                                error: function() {
+                                    callback();
+                                },
+                                success: function(res) {
+                                    callback(res);
+                                    isLoaded = true;
+                                    $.each(res, function(index, val) {
+                                        allLabels[val.id] = val;
+                                    });
+                                }
+                            });
+                        },
+                        render: {
+                            option: function(item, escape) {
+                                var it = allLabels[item.id] != undefined ? allLabels[item.id] : item;
+                                return '<li class="data">' +
+                                    '<a href="" class="text">' + escape(it.text) + '</a>'
+                                '</li>';
+                            },
+                            item: function(item, escape) {
+                                var it = allLabels[item.id] != undefined ? allLabels[item.id] : item;
+                                return '<div class="label '+it.color+'">' + escape(it.text) +'</div>';
+                            }
+                        }
+                    };
+                    editOptions.value2html = function(val) {
+                        var label = allLabels[val];
+                        return '<span class="'+label.color+' label">'+label.text+'</span>';
                     }
                 }
 

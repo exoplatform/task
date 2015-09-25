@@ -17,8 +17,10 @@
   
 package org.exoplatform.task.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.exoplatform.task.domain.Label;
 import org.exoplatform.task.domain.Task;
 
 public class TaskModel {
@@ -29,6 +31,7 @@ public class TaskModel {
   private long commentCount;
   private List<CommentModel> comments;
   private User currentUser;
+  private List<Label> labels = new ArrayList<Label>();
   
   public Task getTask() {
     return task;
@@ -73,5 +76,13 @@ public class TaskModel {
 
   public void setNumberCoworkers(int numberCoworkers) {
     this.numberCoworkers = numberCoworkers;
+  }
+
+  public List<Label> getLabels() {
+    return labels;
+  }
+
+  public void setLabels(List<Label> labels) {
+    this.labels = labels;
   }
 }

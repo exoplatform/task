@@ -32,14 +32,19 @@ import org.exoplatform.services.organization.User;
 import org.exoplatform.services.organization.UserHandler;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
+import org.exoplatform.task.domain.Label;
 import org.exoplatform.task.exception.NotAllowedOperationOnEntityException;
 import org.exoplatform.task.exception.ProjectNotFoundException;
+import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.utils.UserUtils;
 import org.exoplatform.task.service.UserService;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
@@ -50,6 +55,9 @@ public class UserController {
 
     @Inject
     private UserService userService;
+
+    @Inject
+    private TaskService taskService;
 
     @Resource
     @Ajax
@@ -152,5 +160,57 @@ public class UserController {
         } catch (NotAllowedOperationOnEntityException ex) {
             return Response.status(403).body(ex.getMessage());
         }
+    }
+
+    @Resource
+    @Ajax
+    @MimeType.JSON
+    public Response findLabel(SecurityContext securityContext) throws JSONException {
+      String username = securityContext.getRemoteUser();
+      List<Label> labels = taskService.findLabelsByUser(username);
+
+      //TODO: this block code is mock data
+      if (labels == null || labels.isEmpty()) {
+        Label label1 = new Label();
+        label1.setUsername(username);
+        label1.setName("Next");
+        label1.setColor("sky_blue");
+
+        Label label2 = new Label();
+        label2.setUsername(username);
+        label2.setName("Writing");
+        label2.setColor("purple");
+
+        Label label3 = new Label();
+        label3.setUsername(username);
+        label3.setName("Develop");
+        label3.setColor("yellow");
+
+        Label label4 = new Label();
+        label4.setUsername(username);
+        label4.setName("Next week");
+        label4.setColor("yellow");
+
+        taskService.createLabel(label1);
+        taskService.createLabel(label2);
+        taskService.createLabel(label3);
+        taskService.createLabel(label4);
+
+        labels = taskService.findLabelsByUser(username);
+      }
+
+      JSONArray array = new JSONArray();
+      if (labels != null) {
+        for (Label label : labels) {
+          JSONObject json = new JSONObject();
+          json.put("id", label.getId());
+          json.put("text", label.getName());
+          json.put("name", label.getName());
+          json.put("color", label.getColor());
+
+          array.put(json);
+        }
+      }
+      return Response.ok(array.toString()).withCharset(Tools.UTF_8);
     }
 }

@@ -820,3 +820,6 @@ li[data-hiddenproject="false"] > .sub-item .label-show {
 .sharePrjDialog .table tr td {
   width: 50%;
 }
+.uiEditableInline .highlight {
+  font-weight: bold;
+}

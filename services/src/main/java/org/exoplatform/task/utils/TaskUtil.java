@@ -39,6 +39,7 @@ import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.task.domain.Comment;
+import org.exoplatform.task.domain.Label;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
@@ -170,6 +171,11 @@ public final class TaskUtil {
       breadcumbs = "<li><a class=\"project-name\" href=\"javascript:void(0)\">" + p.getName() + "</a></li>";
     }
     taskModel.setBreadcumbs(breadcumbs);
+
+    List<Label> labels = taskService.findLabelsByTask(id, username);
+    if (labels != null) {
+      taskModel.setLabels(labels);
+    }
 
     return taskModel;
   }

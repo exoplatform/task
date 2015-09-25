@@ -19,6 +19,7 @@
 	def commentCount = taskModel.getCommentCount();
 	def comments = taskModel.getComments();
 	def currentUser = taskModel.getCurrentUser();
+    def labels = taskModel.getLabels();
    def editableClasses = "hoverStatus editableField editable";
 %>
 <div class="addTask uiBox" data-taskid="${task.id}">
@@ -59,6 +60,32 @@
                 ${breadcumbs}
             </ul>
         </div>
+    </div>
+</div>
+<div class="tags uiEditableInline clearfix">
+    <%
+        def labelHtml = "Labels";
+        def labelIds = '';
+        def labelOptions = '';
+        if (labels != null && !labels.isEmpty()) {
+            labelHtml = "";
+            labels.each{label ->
+                labelHtml += '<span class="'+label.color+' label">' + label.name +'</span>';
+                if (labelIds.length() > 0) {
+                    labelIds += ',';
+                }
+                labelIds += label.id;
+                if (labelOptions.length() > 0) {
+                    labelOptions += ',';
+                }
+                labelOptions += '{"id": "'+label.id+'", "text":"' + label.name + '","color":"' + label.color + '"}';
+            };
+        }
+
+    %>
+    <span class="pull-left icon-hash "><i class="uiIconTag"></i></span>
+    <div class="${editableClasses} small pull-left" data-original-title="Click to edit" rel="tooltip" data-name="labels" data-type="selectize" data-inputclass="input-large" data-selectizie-opts='[${labelOptions}]' data-value="${labelIds}">
+        ${labelHtml}
     </div>
 </div>
 <div class="taskName uiEditableInline clearfix taskPermalinkContainer">

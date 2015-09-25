@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.exoplatform.task.exception.LabelNotFoundException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -129,11 +130,11 @@ public class TaskServiceTest {
   }
 
   @Test
-  public void testUpdateTaskTitle() throws ParameterEntityException, StatusNotFoundException, TaskNotFoundException {
+  public void testUpdateTaskTitle() throws ParameterEntityException, StatusNotFoundException, TaskNotFoundException, LabelNotFoundException {
 
     String newTitle = "newTitle";
 
-    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "title", new String[]{newTitle}, null);
+    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "title", new String[]{newTitle}, null, null);
     //capture the object that was passed into the TaskHandler.updateTask(task) method
     //times(1) verify that the method update has been invoked only one time
     verify(taskHandler, times(1)).update(taskCaptor.capture());
@@ -143,11 +144,11 @@ public class TaskServiceTest {
   }
 
   @Test
-  public void testUpdateTaskDescription() throws ParameterEntityException, StatusNotFoundException, TaskNotFoundException {
+  public void testUpdateTaskDescription() throws ParameterEntityException, StatusNotFoundException, TaskNotFoundException, LabelNotFoundException {
 
     String newDescription = "This is a new description";
 
-    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "description", new String[]{newDescription}, null);
+    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "description", new String[]{newDescription}, null, null);
     verify(taskHandler, times(1)).update(taskCaptor.capture());
 
     assertEquals(newDescription, taskCaptor.getValue().getDescription());
@@ -167,11 +168,11 @@ public class TaskServiceTest {
   }
 
   @Test
-  public void testUpdateTaskAssignee() throws ParameterEntityException, StatusNotFoundException, TaskNotFoundException {
+  public void testUpdateTaskAssignee() throws ParameterEntityException, StatusNotFoundException, TaskNotFoundException, LabelNotFoundException {
 
     String newAssignee = "Tib";
 
-    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "assignee", new String[]{newAssignee}, null);
+    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "assignee", new String[]{newAssignee}, null, null);
     verify(taskHandler, times(1)).update(taskCaptor.capture());
 
     assertEquals(newAssignee, taskCaptor.getValue().getAssignee());
@@ -179,11 +180,11 @@ public class TaskServiceTest {
   }
 
   @Test
-  public void testUpdateTaskCoworker() throws ParameterEntityException, StatusNotFoundException, TaskNotFoundException {
+  public void testUpdateTaskCoworker() throws ParameterEntityException, StatusNotFoundException, TaskNotFoundException, LabelNotFoundException {
 
     String[] newCoworkers =  {"Tib","Trong","Phuong","Tuyen"};
 
-    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "coworker", newCoworkers, null);
+    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "coworker", newCoworkers, null, null);
     verify(taskHandler, times(1)).update(taskCaptor.capture());
 
     Set<String> coworker = new HashSet<String>();
@@ -195,11 +196,11 @@ public class TaskServiceTest {
   }
 
   @Test
-  public void testUpdateTaskTag() throws ParameterEntityException, StatusNotFoundException, TaskNotFoundException {
+  public void testUpdateTaskTag() throws ParameterEntityException, StatusNotFoundException, TaskNotFoundException, LabelNotFoundException {
 
     String[] newTags = {"Flip","Flop"};
 
-    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "tags", newTags, null);
+    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "tags", newTags, null, null);
     verify(taskHandler, times(1)).update(taskCaptor.capture());
 
     Set<String> tags = new HashSet<String>();
@@ -211,9 +212,9 @@ public class TaskServiceTest {
   }
 
   @Test
-  public void testUpdateTaskStatus() throws ParameterEntityException, StatusNotFoundException, TaskNotFoundException {
+  public void testUpdateTaskStatus() throws ParameterEntityException, StatusNotFoundException, TaskNotFoundException, LabelNotFoundException {
 
-    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "status", new String[]{String.valueOf(TestUtils.EXISTING_STATUS_ID)}, null);
+    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "status", new String[]{String.valueOf(TestUtils.EXISTING_STATUS_ID)}, null, null);
     verify(taskHandler, times(1)).update(taskCaptor.capture());
 
     assertEquals(TestUtils.getDefaultStatus(), taskCaptor.getValue().getStatus());
@@ -221,13 +222,13 @@ public class TaskServiceTest {
   }
 
   @Test
-  public void testUpdateTaskDueDate() throws ParameterEntityException, StatusNotFoundException, TaskNotFoundException, ParseException {
+  public void testUpdateTaskDueDate() throws ParameterEntityException, StatusNotFoundException, TaskNotFoundException, ParseException, LabelNotFoundException {
 
     String dueDate = "1989-01-19";
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     Date date = sdf.parse(dueDate);
 
-    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "dueDate", new String[]{dueDate}, null);
+    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "dueDate", new String[]{dueDate}, null, null);
     verify(taskHandler, times(1)).update(taskCaptor.capture());
 
     assertEquals(date, taskCaptor.getValue().getDueDate());
@@ -293,8 +294,8 @@ public class TaskServiceTest {
   }
 
   @Test(expected = StatusNotFoundException.class)
-  public void testStatusNotFoundException() throws ParameterEntityException, StatusNotFoundException, TaskNotFoundException {
-    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "status", new String[]{String.valueOf(TestUtils.UNEXISTING_STATUS_ID)}, null);
+  public void testStatusNotFoundException() throws ParameterEntityException, StatusNotFoundException, TaskNotFoundException, LabelNotFoundException {
+    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "status", new String[]{String.valueOf(TestUtils.UNEXISTING_STATUS_ID)}, null, null);
   }
 
   @Test(expected = CommentNotFoundException.class)
@@ -303,18 +304,18 @@ public class TaskServiceTest {
   }
 
   @Test(expected = ParameterEntityException.class)
-  public void testWrongDateFormatException() throws ParameterEntityException, StatusNotFoundException, TaskNotFoundException {
-    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "dueDate", new String[]{"this-is-not-a-date"}, null);
+  public void testWrongDateFormatException() throws ParameterEntityException, StatusNotFoundException, TaskNotFoundException, LabelNotFoundException {
+    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "dueDate", new String[]{"this-is-not-a-date"}, null, null);
   }
 
   @Test(expected = ParameterEntityException.class)
-  public void testWrongStatusException() throws ParameterEntityException, StatusNotFoundException, TaskNotFoundException {
-    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "status", new String[]{"this-is-not-a-long-id"}, null);
+  public void testWrongStatusException() throws ParameterEntityException, StatusNotFoundException, TaskNotFoundException, LabelNotFoundException {
+    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "status", new String[]{"this-is-not-a-long-id"}, null, null);
   }
 
   @Test(expected = ParameterEntityException.class)
-  public void testUnknownParameterException() throws ParameterEntityException, StatusNotFoundException, TaskNotFoundException {
-    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "status", new String[]{"this-is-not-a-know-parameter"}, null);
+  public void testUnknownParameterException() throws ParameterEntityException, StatusNotFoundException, TaskNotFoundException, LabelNotFoundException {
+    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "status", new String[]{"this-is-not-a-know-parameter"}, null, null);
   }
 
 }

@@ -244,7 +244,7 @@ public class TaskController {
 
     try {
       TimeZone timezone = userService.getUserTimezone(context.getRemoteUser());
-      Task task = taskService.updateTaskInfo(taskId, name, value, timezone); //Can throw TaskNotFoundException & ParameterEntityException & StatusNotFoundException
+      Task task = taskService.updateTaskInfo(taskId, name, value, timezone, context.getRemoteUser()); //Can throw TaskNotFoundException & ParameterEntityException & StatusNotFoundException
 
       String response = "Update successfully";
       if ("workPlan".equalsIgnoreCase(name)) {        

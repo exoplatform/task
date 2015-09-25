@@ -19,6 +19,8 @@ package org.exoplatform.task.service.impl;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -29,6 +31,7 @@ import java.util.TimeZone;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.persistence.EntityNotFoundException;
 
 import org.exoplatform.commons.api.persistence.ExoTransactional;
 import org.exoplatform.services.log.ExoLogger;
@@ -96,8 +99,8 @@ public class TaskServiceImpl implements TaskService {
 
   @Override
   @ExoTransactional
-  public Task updateTaskInfo(long id, String param, String[] values, TimeZone timezone)
-      throws TaskNotFoundException, ParameterEntityException, StatusNotFoundException {
+  public Task updateTaskInfo(long id, String param, String[] values, TimeZone timezone, String username)
+      throws TaskNotFoundException, ParameterEntityException, StatusNotFoundException, LabelNotFoundException {
 
     Task task = getTaskById(id);
 
@@ -227,6 +230,40 @@ public class TaskServiceImpl implements TaskService {
 
         Set<String> newTags = new HashSet<String>(task.getTag());
         builder.withType(Type.ADD_LABEL).withNewVal(newTags.removeAll(old));
+      } else if ("labels".equalsIgnoreCase(param)) {
+        List<Long> ids = new ArrayList<Long>(values.length);
+        for (int i = 0; i < values.length; i++) {
+          try {
+            if (values[i] == null || values[i].isEmpty()) {
+              continue;
+            }
+            ids.add(Long.parseLong(values[i]));
+          } catch (NumberFormatException ex) {
+            throw new ParameterEntityException(id, "Task", param, values[i], "LabelID must be long", ex);
+          }
+        }
+
+        for (Long labelId : ids) {
+          Label label = getLabelById(labelId);
+          if (label == null) {
+            throw new LabelNotFoundException(labelId);
+          }
+          username = label.getUsername();
+          task.getLabels().add(label);
+          label.getTasks().add(task);
+        }
+
+        List<Label> remove = new ArrayList<Label>();
+        for(Label label : task.getLabels()) {
+          if (label.getUsername().equals(username) && !ids.contains(label.getId())) {
+            remove.add(label);
+          }
+        }
+        for (Label l : remove) {
+          l.getTasks().remove(task);
+          task.getLabels().remove(l);
+        }
+
       } else if ("priority".equalsIgnoreCase(param)) {
         Priority priority = Priority.valueOf(value);
         task.setPriority(priority);
@@ -294,9 +331,14 @@ public class TaskServiceImpl implements TaskService {
   public Task updateTaskCompleted(long id, Boolean completed)
       throws TaskNotFoundException, ParameterEntityException, StatusNotFoundException {
 
-    String[] values = new String[1];
-    values[0] = completed.toString();
-    return updateTaskInfo(id, "completed", values, null);
+    try {
+      String[] values = new String[1];
+      values[0] = completed.toString();
+      return updateTaskInfo(id, "completed", values, null, null);
+    } catch (LabelNotFoundException ex) {
+      // Ignore this exception, we never meet it
+      return null;
+    }
   }
 
   @Override

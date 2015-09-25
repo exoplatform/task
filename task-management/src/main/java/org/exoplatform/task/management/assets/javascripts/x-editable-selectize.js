@@ -31,9 +31,16 @@ define('x_editable_selectize', ['jquery', 'SHARED/edit_inline_js', 'selectize'],
                     $(element).html(this.options.emptytext);
                     return;
                 }
+
+                var _this = this;
                 var html = [];
                 $.each(value, function(index, val) {
-                    var span = '<div  class="label primary">'+ val +'</div>';
+                    var span;
+                    if (_this.options.value2html) {
+                        span = _this.options.value2html(val);
+                    } else {
+                        span = '<div  class="label primary">'+ val +'</div>';
+                    }
                     html.push(span);
                 });
                 var $html = html.join("\n");
@@ -165,7 +172,8 @@ define('x_editable_selectize', ['jquery', 'SHARED/edit_inline_js', 'selectize'],
             score: function(search) {
                 var score = this.getScoreFunction(search);
                 return function(item) {
-                    return score(item) * (1 + Math.min(item.watchers / 100, 1));
+                    var s = score(item);
+                    return s;
                 };
             }
         });
@@ -176,7 +184,8 @@ define('x_editable_selectize', ['jquery', 'SHARED/edit_inline_js', 'selectize'],
                  '</div>',
             inputclass: '',
             emptytext: '',
-            selectize: {}
+            selectize: {},
+            value2html: false
         });
 
         $.fn.editabletypes.selectize = Selectize;
