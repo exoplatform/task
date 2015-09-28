@@ -5,9 +5,10 @@
 <div class="edit-label-dialog uiPopup modal hide fade" data-id="${lbl.id}" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="popupHeader clearfix">
   	<a href="#" title="Close Window" data-dismiss="modal" aria-hidden="true" class="uiIconClose pull-right"></a>    
+  	<span class="PopupTitle popupTitle">Edit Label</span>
   </div>
   <div class="PopupContent popupContent">
-	  <div>
+	  <div class="form-horizontal">
 	   <%
 	   	def printOption(l) {
 	   %>
@@ -18,20 +19,30 @@
 	   	  }
 	   	}
 	   %>
-	   <select class="lblParent">
-	   <option value="0"></option>
-	  	<%
-	  	def printTree(tree) {
-	  		for (def l : tree) {
-	   		printOption(l);
-	  		}
-	  	}
-	  	//
-	  	printTree(lblTree);
-	  	%>
-	  	</select>
-	  	
-	  	<input type="text" class="lblName" value="<%=lbl.getName()%>"/>
+	   <div class="form-horizontal">
+	  	<div class="control-group">
+	  		<label class="control-label" for="lblParent:">Label Parent:</label>
+	  		<div class="controls">
+			   <select id="lblParent" class="lblParent">
+			   <option value="0"></option>
+			  	<%
+			  	def printTree(tree) {
+			  		for (def l : tree) {
+			   		printOption(l);
+			  		}
+			  	}
+			  	//
+			  	printTree(lblTree);
+			  	%>
+			  	</select>
+	  		</div>
+	  	</div>
+	  	<div class="control-group">
+	  		<label class="control-label" for="lblName:">Label Name:</label>
+	  		<div class="controls">
+	  			<input type="text" id="lblName" class="lblName" value="<%=lbl.getName()%>"/>
+	  		</div>
+	  	</div>
 	  </div>
 	  <div class="uiAction uiActionBorder">
 	    <button class="btn btn-primary saveLabel" data-dismiss="modal">&{label.save}</button>

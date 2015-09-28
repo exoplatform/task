@@ -61,7 +61,8 @@ li[data-showhiddenproject="true"] {
   }
 }
 li[data-hiddenproject="true"] {
-  a.project-name {
+  a.project-name,
+  a.label-name {
     opacity: 0.5;
   }
   > .sub-item {
@@ -641,9 +642,7 @@ li[data-hiddenlabel="false"] {
     }
 }
 
-.list-projects .no-project {
-    padding: 6px 0px;
-}
+.list-projects .no-project,
 .list-labels .no-label {
     padding: 6px 0px;
 }
@@ -1022,16 +1021,18 @@ li[data-hiddenlabel="false"] {
 }
 
 
-.collapseSubProject {
+.collapseSubProject, .collapseSubLabel {
     left: 10px;
     position: absolute;
     top: 5px;
 }
-.uiAccordion.leftPanel .accordion-heading .sub-item .project-name {
+.uiAccordion.leftPanel .accordion-heading .sub-item .project-name,
+.uiAccordion.leftPanel .accordion-heading .sub-item .label-name {
     padding-left: 30px;
 }
 
-.project-item.active > .sub-item .collapseSubProject .uiIconLightGray  {
+.project-item.active > .sub-item .collapseSubProject .uiIconLightGray,
+.label-item.active > .sub-item .collapseSubLabel .uiIconLightGray  {
      background-image: url("/eXoSkin/skin/images/themes/default/Icons/uiIconsSecondary.png");
 }
 

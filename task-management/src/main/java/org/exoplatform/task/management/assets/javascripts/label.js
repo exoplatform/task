@@ -14,7 +14,7 @@ require(['jquery', 'taskManagementApp'], function($, taApp) {
       $leftPanel.on('click', '.new-label', function() {        
         var $listLabels = $leftPanel.find('.list-labels');
         if (!$listLabels.find('input').length) {
-          var input = '<li><div class="noLabel center muted"><input type="text" class="addLabelInput"/></div></li>'
+          var input = '<li><div class="noLabel center muted form-add-label"><input type="text" class="addLabelInput"/></div></li>'
           $listLabels.html(input + $listLabels.html());
           $listLabels.find('input').focus();
         }
@@ -27,7 +27,7 @@ require(['jquery', 'taskManagementApp'], function($, taApp) {
           $subList = $('<ul class="list-labels" data-parentId="' + $lblItem.data('labelid') + '"></ul>');
           $lblItem.append($subList);
         }
-        var input = '<li><div class="noLabel center muted"><input type="text" class="addLabelInput"/></div></li>';
+        var input = '<li><div class="noLabel center muted form-add-label"><input type="text" class="addLabelInput"/></div></li>';
         $subList.html(input + $subList.html());
         $subList.find('input').focus();        
       });
