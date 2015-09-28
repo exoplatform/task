@@ -189,6 +189,9 @@ public class TaskManagement {
         .bundle(bundle)
         .isInSpace(space_group_id != null)
         .viewType("")
+        .currentLabelId(-1)
+        .taskService(taskService)
+        .currentUser(username)
         .ok().withCharset(Tools.UTF_8);
   }
   

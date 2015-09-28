@@ -17,6 +17,8 @@ import org.exoplatform.task.exception.ParameterEntityException;
 import org.exoplatform.task.exception.StatusNotFoundException;
 import org.exoplatform.task.exception.TaskNotFoundException;
 
+import javax.persistence.criteria.Order;
+
 /**
  * Created by TClement on 6/3/15.
  */
@@ -54,7 +56,7 @@ public interface TaskService {
 
   List<Task> getToDoTasksByUser(String username, List<Long> projectIds, OrderBy orderBy, Date fromDueDate, Date toDueDate);
 
-  List<Task> findTasksByLabel(long labelId, OrderBy orderBy) throws LabelNotFoundException;
+  List<Task> findTasksByLabel(long labelId, String username, OrderBy orderBy) throws LabelNotFoundException;
   
   List<Task> findTaskByQuery(TaskQuery query);
   

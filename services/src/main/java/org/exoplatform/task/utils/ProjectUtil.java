@@ -50,6 +50,7 @@ public final class ProjectUtil {
   public static final String URL_PROJECT_DETAIL = "/projectDetail/";
   public static final int INCOMING_PROJECT_ID = -1;
   public static final int TODO_PROJECT_ID = -2;
+  public static final int LABEL_PROJECT_ID = -5;
 
   public static final String NAME = "name";
 

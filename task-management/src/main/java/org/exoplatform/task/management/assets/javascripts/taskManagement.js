@@ -71,7 +71,7 @@ define('taskManagementApp', ['jquery', 'SHARED/juzu-ajax'],
             $centerPanel.removeClass('span5').addClass('span9');
         };
 
-        taApp.reloadTaskList = function(projectId, filter, callback) {
+        taApp.reloadTaskList = function(projectId, labelId, filter, callback) {
             var $centerPanelContent = taApp.getUI().$centerPanelContent;
             if ($.isFunction(filter)) {
               callback = filter;
@@ -80,7 +80,7 @@ define('taskManagementApp', ['jquery', 'SHARED/juzu-ajax'],
             if (typeof filter !== 'string') {
                 filter = '';
             }
-            var data = {projectId: projectId, filter: filter};
+            var data = {projectId: projectId, labelId: labelId, filter: filter};
             $centerPanelContent.jzLoad('TaskController.listTasks()', data, function() {
                 if (callback) {
                     callback();

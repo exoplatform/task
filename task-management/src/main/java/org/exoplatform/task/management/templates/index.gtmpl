@@ -17,6 +17,11 @@
 #{param name=orders /}
 #{param name=groups /}
 #{param name=viewType/}
+#{param name=currentLabelId/}
+
+<!-- Consider this -->
+#{param name=taskService/}
+#{param name=currentUser/}
 
 <div class="taskMngCont">
 	<div id="taskManagement" class="row-fluid">
@@ -142,11 +147,13 @@
 	                         </li>
                           </ul>
                       </div>
-                      <a class="project-name" href="#">&{label.label}</a>
+                      <a class="project-name" data-id="-3" data-labelid="0" href="#">&{label.label}</a>
                    </div>
                    <ul class="list-projects">
                        <li>
-                           <div class="noLabel center muted">No label</div>
+                           <div class="noLabel center muted">
+                               <a class="project-name" data-id="-3" data-labelid="2" href="#">Test label</a>
+                           </div>
                        </li>
                    </ul>
 	            </li>

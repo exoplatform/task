@@ -39,7 +39,7 @@ public interface TaskHandler extends GenericDAO<Task, Long> {
 
   List<Task> findByTags(List<String> tags);
 
-  List<Task> findTasksByLabel(long labelId, OrderBy orderBy);
+  List<Task> findTasksByLabel(long labelId, String username, OrderBy orderBy);
  
   List<Task> findTaskByQuery(TaskQuery query);
 

@@ -83,7 +83,7 @@
         }
 
     %>
-    <span class="pull-left icon-hash "><i class="uiIconTag"></i></span>
+    <span class="pull-left icon-hash ${labelIds == "" ? "" : "hidden"}"><i class="uiIconTag"></i></span>
     <div class="${editableClasses} small pull-left" data-original-title="Click to edit" rel="tooltip" data-name="labels" data-type="selectize" data-inputclass="input-large" data-selectizie-opts='[${labelOptions}]' data-value="${labelIds}">
         ${labelHtml}
     </div>

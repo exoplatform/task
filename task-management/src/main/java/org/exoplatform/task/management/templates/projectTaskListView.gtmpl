@@ -12,8 +12,13 @@
 #{param name=groups /}
 #{param name=userTimezone/}
 #{param name=viewType/}
+#{param name=currentLabelId/}
 
-<div class="projectListView" data-projectid="${currentProjectId}">
+<!-- Consider this -->
+#{param name=taskService/}
+#{param name=currentUser/}
+
+<div class="projectListView" data-projectid="${currentProjectId}" data-labelid="${currentLabelId}">
     <div class="title">
         <div class="uiHeaderBar clearfix">
             <div class="settingActionButtons pull-right">

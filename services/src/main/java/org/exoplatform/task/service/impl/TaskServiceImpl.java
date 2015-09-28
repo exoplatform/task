@@ -32,6 +32,7 @@ import java.util.TimeZone;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.criteria.Order;
 
 import org.exoplatform.commons.api.persistence.ExoTransactional;
 import org.exoplatform.services.log.ExoLogger;
@@ -461,14 +462,16 @@ public class TaskServiceImpl implements TaskService {
   private Task updateTask(Task task) {
     return daoHandler.getTaskHandler().update(task);
   }
-  
+
   @Override
-  public List<Task> findTasksByLabel(long labelId, OrderBy orderBy) throws LabelNotFoundException {
-    Label label = getLabelById(labelId);
-    if (label == null) {
-      throw new LabelNotFoundException(labelId);
+  public List<Task> findTasksByLabel(long labelId, String username, OrderBy orderBy) throws LabelNotFoundException {
+    if (labelId > 0) {
+      Label label = getLabelById(labelId);
+      if (label == null) {
+        throw new LabelNotFoundException(labelId);
+      }
     }
-    return daoHandler.getTaskHandler().findTasksByLabel(labelId, orderBy);
+    return daoHandler.getTaskHandler().findTasksByLabel(labelId, username, orderBy);
   }
 
   @Override

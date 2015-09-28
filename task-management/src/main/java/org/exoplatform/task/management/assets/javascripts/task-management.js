@@ -220,7 +220,7 @@ $(document).ready(function() {
             success: function(response) {
               var id = response.id; 
               var projectId = $leftPanel.find('.active .project-name').data('id');
-              taApp.reloadTaskList(projectId, function() {
+              taApp.reloadTaskList(projectId, -1, function() {
                 $centerPanel.find('.taskItem[data-taskid="' + id + '"]').click();
               });
             }
@@ -410,14 +410,18 @@ $(document).ready(function() {
       });
     }
 
-    $leftPanel.on('click', 'a.project-name', function(e) {
+    $leftPanel.on('click', 'a.project-name, a[data-labelid]', function(e) {
         var $a = $(e.target).closest('a');
         var projectId = $a.data('id');
+        var labelId = $a.data('labelid');
+        if (labelId == undefined) {
+            labelId = -1;
+        }
         var filter = $a.data('filter');
         var currentProject = $centerPanel.find('.projectListView').data('projectid');
-
-        if ((currentProject != projectId || filter != undefined) && ($a.data('canview') || projectId <= 0)) {
-            taApp.reloadTaskList(projectId, filter, function() {
+        if ((currentProject != projectId || filter != undefined || labelId >= 0) && ($a.data('canview') || projectId <= 0)) {
+            alert('this?');
+            taApp.reloadTaskList(projectId, labelId, filter, function() {
               projectLoaded(projectId, $a);
             });
         }
@@ -446,18 +450,20 @@ $(document).ready(function() {
     $centerPanel.on('submit', 'form.form-create-task', function(e) {
         var $form = $(e.target).closest('form');
         var projectId = $form.closest('.projectListView').attr('data-projectId');
+        var labelId = $form.closest('[data-labelid]').data('labelid');
         var taskInput = $form.find('input[name="taskTitle"]').val();
         var filter = $leftPanel.find('.active .project-name[data-id="' + projectId + '"]').data('filter');
         if (filter == undefined) {
             filter = '';
         }
+        //TODO: How to create task in label view
         $form.jzAjax('TaskController.createTask()', {
             method: 'POST',
-            data: {projectId: projectId, taskInput: taskInput, filter: filter},
+            data: {projectId: projectId, labelId: labelId, taskInput: taskInput, filter: filter},
             success: function(task) {
                 var id = task.id;
                 var projectId = $leftPanel.find('.active .project-name').data('id');
-                taApp.reloadTaskList(projectId, filter, function() {
+                taApp.reloadTaskList(projectId, labelId, filter, function() {
                     $centerPanel.find('.taskItem[data-taskid="' + id + '"]').click();
                     $centerPanel.find('input[name="taskTitle"]').focus();                    
                 });                

@@ -12,7 +12,7 @@
 <div class="taskList">
     <div class="header ">
         <div class="clearfix">
-            <% if (currentProjectId != 0 && filter != 'overdue') {%>
+            <% if (currentLabelId != 0 && currentProjectId != 0 && filter != 'overdue') {%>
                 <div class="header-left pull-left">
                     <a href="#" class="btn btn-primary btn-add-task"><i class="uiIconSimplePlusMini"></i> &{list.label.newTask}</a>
                 </div>
@@ -49,7 +49,7 @@
                 <%}%>
             </div>
         </div>
-        <% if (currentProjectId != 0 && filter != 'overdue') {%>
+        <% if (currentLabelId != 0 && currentProjectId != 0 && filter != 'overdue') {%>
             <div class="input-field">
                 <form action="#" method="GET" class="form-create-task">
                     <input type="text" name="taskTitle" placeholder="Untiled Task"
@@ -109,10 +109,20 @@
                         <div class="column-item column-title taskName">${task.title}</div>
                         <div class="column-item column-time">
                             <span class="text-time inline-block-show">${task.dueDate != null ? task.dueDate : "&nbsp;"}</span>
+                            <%
+                                def taskLabels = taskService.findLabelsByTask(task.id, currentUser);
+                            %>
+                            <%if(taskLabels != null && taskLabels.size() > 0) {%>
+                                <span class="inline-block-hide labels">
+                                    <%taskLabels.each {label ->%>
+                                        <a href="#" class="${label.color} label">${label.name}</a>
+                                    <%}%>
+                                </span>
+                            <%}%>
                             <!--<span class="inline-block-hide labels">
                                 <a href="#" class="navy_blue label">Next</a>
                                 <a href="#" class="orange label">Writing</a>
-                             </span>-->
+                            </span>-->
                             <a class="actionIcon inline-block-hide" href="javascript:void(0)"><i class="uiIcon uiIconClock"></i></a>
                             <% if (orderBy == 'priority') {%>
                                 <a class="actionIcon inline-block" href="javascript:void(0)"><i class="uiIconColorPriority${task.priority == null ? 'UNDEFINED' : task.priority.name()}"></i></a>

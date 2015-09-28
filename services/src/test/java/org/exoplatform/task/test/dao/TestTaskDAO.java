@@ -167,7 +167,7 @@ public class TestTaskDAO extends AbstractTest {
     label.getTasks().add(task);
     taskService.getLabelHandler().create(label);
     
-    List<Task> tasks = tDAO.findTasksByLabel(label.getId(), null);
+    List<Task> tasks = tDAO.findTasksByLabel(label.getId(), username, null);
     Assert.assertEquals(1, tasks.size());
     Assert.assertEquals(task.getId(), tasks.get(0).getId());
   }

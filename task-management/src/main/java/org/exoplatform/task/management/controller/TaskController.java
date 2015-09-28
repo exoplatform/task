@@ -27,10 +27,12 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.TimeZone;
 
 import javax.inject.Inject;
@@ -51,11 +53,13 @@ import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.domain.Comment;
+import org.exoplatform.task.domain.Label;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.domain.TaskLog;
 import org.exoplatform.task.exception.AbstractEntityException;
+import org.exoplatform.task.exception.LabelNotFoundException;
 import org.exoplatform.task.exception.ProjectNotFoundException;
 import org.exoplatform.task.exception.TaskNotFoundException;
 import org.exoplatform.task.model.CommentModel;
@@ -390,7 +394,7 @@ public class TaskController {
   @Resource
   @Ajax
   @MimeType.HTML
-  public Response listTasks(String space_group_id, Long projectId, String keyword, String groupBy, String orderBy,
+  public Response listTasks(String space_group_id, Long projectId, Long labelId, String keyword, String groupBy, String orderBy,
                             String filter, String viewType, SecurityContext securityContext) {
     Project project = null;
     List<Task> tasks;
@@ -532,6 +536,33 @@ public class TaskController {
       
       tasks = taskService.getToDoTasksByUser(currentUser, spaceProjectIds, order, fromDueDate, toDueDate);
     }
+    else if (labelId != null && labelId >= 0) {
+      defOrders = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.TITLE, TaskUtil.CREATED_TIME, TaskUtil.DUEDATE), bundle);
+      if (orderBy == null || orderBy.isEmpty() || defOrders.containsKey(orderBy)) {
+        orderBy = TaskUtil.NONE;
+        order = null;
+      }
+
+      //Case label view
+      if (labelId == 0) {
+        defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT, TaskUtil.LABEL, TaskUtil.DUEDATE, TaskUtil.STATUS), bundle);
+        if (groupBy == null || groupBy.isEmpty() || !defGroupBys.containsKey(groupBy)) {
+          groupBy = TaskUtil.LABEL;
+        }
+      } else {
+        defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT, TaskUtil.DUEDATE, TaskUtil.STATUS), bundle);
+        if (groupBy == null || groupBy.isEmpty() || !defGroupBys.containsKey(groupBy)) {
+          groupBy = TaskUtil.NONE;
+        }
+      }
+
+      try {
+        tasks = taskService.findTasksByLabel(labelId, currentUser, order);
+      } catch (LabelNotFoundException ex) {
+        tasks = new ArrayList<Task>();
+      }
+
+    }
     else {
       if (projectId == 0) {
         defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.ASSIGNEE, TaskUtil.PROJECT, TaskUtil.LABEL, TaskUtil.STATUS), bundle);
@@ -606,6 +637,8 @@ public class TaskController {
     long taskNum = 0;
     if (allProjectIds != null) {
       taskNum = TaskUtil.getTaskNum(currentUser, allProjectIds, projectId, taskService);
+    } else if (labelId != null && labelId >= 0) {
+      taskNum = tasks.size();
     } else {
       taskNum = TaskUtil.getTaskNum(currentUser, spaceProjectIds, projectId, taskService);
     }
@@ -626,6 +659,9 @@ public class TaskController {
         .bundle(bundle)
         .viewType(viewType)
         .userTimezone(userTimezone)
+        .taskService(taskService)
+        .currentUser(currentUser)
+        .currentLabelId(labelId == null ? -1 : labelId)
         .set("userMap", userMap)
         .set("numberTasksByStatus", numberTasks)
         .ok()
@@ -635,7 +671,7 @@ public class TaskController {
   @Resource(method = HttpMethod.POST)
   @Ajax
   @MimeType.JSON
-  public Response createTask(Long projectId, String taskInput, String filter, SecurityContext securityContext) {
+  public Response createTask(Long projectId, Long labelId, String taskInput, String filter, SecurityContext securityContext) {
 
     if(taskInput == null || taskInput.isEmpty()) {
       return Response.content(406, "Task input must not be null or empty");
@@ -657,6 +693,13 @@ public class TaskController {
       } catch (AbstractEntityException e) {
         return Response.status(e.getHttpStatusCode()).body(e.getMessage());
       }
+    } else if (labelId != null && labelId > 0){
+      Label label = taskService.getLabelById(labelId);
+      Set<Label> labels = new HashSet<Label>();
+      labels.add(label);
+      task.setLabels(labels);
+      label.getTasks().add(task);
+      taskService.createTask(task);
     }
     else {
       task.setAssignee(currentUser);
@@ -721,7 +764,7 @@ public class TaskController {
 
     taskService.createTask(task);
 
-    return listTasks(null, projectId, null, groupBy, orderBy, null, viewType, securityContext);
+    return listTasks(null, projectId, null, null, groupBy, orderBy, null, viewType, securityContext);
   }
 
   @Resource(method = HttpMethod.POST)
@@ -733,7 +776,7 @@ public class TaskController {
       Project project = status.getProject();
       if (project.getStatus().size() > 1) {
         statusService.deleteStatus(statusId);
-        return listTasks(null, project.getId(), null, null, null, null, "board", securityContext);
+        return listTasks(null, project.getId(), null, null, null, null, null, "board", securityContext);
       } else {
         return Response.error("Can't delete last status");
       }
@@ -749,7 +792,7 @@ public class TaskController {
     try {
       Project project = projectService.getProjectById(projectId);
       Status status = statusService.createStatus(project, name);
-      return listTasks(null, projectId, null, null, null, null, "board", securityContext);
+      return listTasks(null, projectId, null, null, null, null, null, "board", securityContext);
     } catch (AbstractEntityException e) {
       return Response.status(e.getHttpStatusCode()).body(e.getMessage());
     }

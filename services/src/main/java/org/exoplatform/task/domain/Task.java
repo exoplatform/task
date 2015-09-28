@@ -74,6 +74,8 @@ import org.exoplatform.task.service.TaskBuilder;
         query = "SELECT t FROM Task t WHERE t.status.project.id = :projectId"),
     @NamedQuery(name = "Task.findTaskByActivityId",
         query = "SELECT t FROM Task t WHERE t.activityId = :activityId"),
+    @NamedQuery(name = "Task.findTasksHasLabel",
+            query = "SELECT t FROM Task t INNER JOIN t.labels lbl WHERE lbl.username = :username"),
     @NamedQuery(name = "Task.findTasksByLabel",
     query = "SELECT t FROM Task t INNER JOIN t.labels lbl WHERE lbl.id = :labelId")
 })

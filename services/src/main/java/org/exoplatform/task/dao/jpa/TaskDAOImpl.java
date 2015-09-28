@@ -29,6 +29,7 @@ import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
@@ -37,11 +38,13 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import groovy.time.BaseDuration;
 import org.exoplatform.commons.persistence.impl.EntityManagerService;
 import org.exoplatform.commons.persistence.impl.GenericDAOJPAImpl;
 import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.dao.TaskHandler;
 import org.exoplatform.task.dao.TaskQuery;
+import org.exoplatform.task.domain.Label;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.utils.TaskUtil;
@@ -475,12 +478,27 @@ public class TaskDAOImpl extends GenericDAOJPAImpl<Task, Long> implements TaskHa
   }
 
   @Override
-  public List<Task> findTasksByLabel(long labelId, OrderBy orderBy) {    
+  public List<Task> findTasksByLabel(long labelId, String username, OrderBy orderBy) {
     EntityManager em = getEntityManager();
-    Query query = em.createNamedQuery("Task.findTasksByLabel", Task.class);
-    query.setParameter("labelId", labelId);
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+    CriteriaQuery<Task> query = cb.createQuery(Task.class);
+    From task = query.from(Task.class);
+    Join<Task, Label> label = task.join("labels", JoinType.INNER);
+    query.select(task).distinct(true);
+
+    if (labelId > 0) {
+      query.where(cb.equal(label.get("id"), labelId));
+    } else {
+      query.where(cb.equal(label.get("username"), username));
+    }
+
+    if (orderBy != null) {
+      Order order = orderBy.isAscending() ? cb.asc(task.get(orderBy.getFieldName())) : cb.desc(task.get(orderBy.getFieldName()));
+      query.orderBy(order);
+    }
+
     try {
-      return query.getResultList();
+      return em.createQuery(query).getResultList();
     } catch (PersistenceException e) {
       return Collections.emptyList();
     }
