@@ -642,6 +642,14 @@ public class TaskController {
     } else {
       taskNum = TaskUtil.getTaskNum(currentUser, spaceProjectIds, projectId, taskService);
     }
+    
+    String currentLabelName = "";
+    if (labelId != null && labelId > 0) {
+      Label label = taskService.getLabelById(labelId);
+      if (label != null) {
+        currentLabelName = label.getName();
+      }
+    }
 
     return taskListView
         .with()
@@ -662,6 +670,7 @@ public class TaskController {
         .taskService(taskService)
         .currentUser(currentUser)
         .currentLabelId(labelId == null ? -1 : labelId)
+        .currentLabelName(currentLabelName)
         .set("userMap", userMap)
         .set("numberTasksByStatus", numberTasks)
         .ok()

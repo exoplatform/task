@@ -127,6 +127,13 @@ public class UserServiceImpl implements UserService {
     setting.setShowHiddenProject(show);
     daoHandler.getUserSettingHandler().update(setting);
   }
+  
+  @Override
+  public void showHiddenLabel(String username, boolean show) {
+    UserSetting setting = daoHandler.getUserSettingHandler().getOrCreate(username);
+    setting.setShowHiddenLabel(show);
+    daoHandler.getUserSettingHandler().update(setting);
+  }
 
   @Override
   public TimeZone getUserTimezone(String username) {

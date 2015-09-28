@@ -52,6 +52,7 @@
             depends = {"taskManagementCommon", "x-editable-selectize-field","x-editable-customfield-js", "x-editable-calendar", "x-editable-ckeditor"}),
     @Script(id = "task-management-js", value = "javascripts/task-management.js",
             depends = {"taskManagementCommon", "task-edit-inline"}),
+    @Script(id = "label.js", value = "javascripts/label.js", depends = {"jquery-adapter", "taskManagementCommon"}),
     @Script(id = "project-menu-js", value = "javascripts/project-menu.js", depends = {"taskManagementCommon"}),
     @Script(id = "taskBoardView", value = "javascripts/taskBoardView.js", depends = {"taskManagementCommon"})
 })

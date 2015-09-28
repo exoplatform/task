@@ -13,6 +13,7 @@
 #{param name=userTimezone/}
 #{param name=viewType/}
 #{param name=currentLabelId/}
+#{param name=currentLabelName/}
 
 <!-- Consider this -->
 #{param name=taskService/}
@@ -69,6 +70,10 @@
                 } else {
                   name = bundle.getString("label." + filter);
                 }
+              } else if (currentLabelId == 0) {
+                name = bundle.getString("label.label");
+              } else if (currentLabelId > 0) {
+                name = currentLabelName;
               }
             %>
             <div class="label-title pull-left projectName">${name}</div>

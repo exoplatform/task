@@ -72,7 +72,7 @@ public interface TaskService {
   
   Label createLabel(Label label);
   
-  Label updateLabel(Label label, Label.FIELDS field) throws LabelNotFoundException;
+  Label updateLabel(Label label, List<Label.FIELDS> fields) throws LabelNotFoundException;
 
   void deleteLabel(long labelId);
 }

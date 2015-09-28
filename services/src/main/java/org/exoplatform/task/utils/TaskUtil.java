@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -438,6 +439,65 @@ public final class TaskUtil {
     event.setSummary(task.getTitle());
     event.setTaskDelegator(task.getAssignee());    
     return event;
+  }
+  
+  public static List<Label> buildRootLabels(List<Label> labels) {
+    if (labels == null) return labels;
+
+    Set<Label> rootLBLs = new LinkedHashSet<Label>();
+    Set<Label> childs = new LinkedHashSet<Label>();
+    for (Label p : labels) {
+      while(true) {
+        Label parent = p.getParent();
+        if (parent == null) {
+          rootLBLs.add(p);
+          break;
+        } else {
+          childs.add(p);
+          p = parent;
+        }
+      }
+    }
+
+    List<Label> parents = new LinkedList<Label>(rootLBLs);
+    do {
+      List<Label> tmpParents = new LinkedList<Label>();
+      for (Label p : parents) {
+        List<Label> tmp = new LinkedList<Label>();
+        for (Label c : childs) {
+          if (c.getParent().equals(p)) {
+            tmp.add(c);
+          }
+        }
+        p.setChildren(tmp);
+        tmpParents.addAll(tmp);
+        childs.removeAll(tmp);
+      }
+      parents = tmpParents;
+    } while (!parents.isEmpty() && !childs.isEmpty());
+
+    return new LinkedList<Label>(rootLBLs);
+  }
+  
+  public static List<Label> filterLabelTree(List<Label> allLabels, Label lbl) {
+    List<Label> tmp = new LinkedList<Label>();
+    for (Label l : allLabels) {
+      if (!TaskUtil.isLabelIn(l, lbl)) {
+        tmp.add(l);
+      }
+    }
+    return tmp;
+  }
+  
+  private static boolean isLabelIn(Label child, Label parent) {
+    Label pr = child;
+    while (pr != null) {
+      if (pr.getId() == parent.getId()) {
+        return true;
+      }
+      pr = pr.getParent();
+    }
+    return false;
   }
 }
 

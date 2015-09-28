@@ -513,25 +513,30 @@ public class TaskServiceImpl implements TaskService {
   }
 
   @Override
-  public Label updateLabel(Label label, Label.FIELDS field) throws LabelNotFoundException {
+  public Label updateLabel(Label label, List<Label.FIELDS> fields) throws LabelNotFoundException {
     Label lb = getLabelById(label.getId());
     if (lb == null) {
       throw new LabelNotFoundException(label.getId());
     }
     
     //Todo: validate input and throw exception if need
-    switch (field) {
-    case NAME:
-      lb.setName(label.getName());
-      break;
-    case COLOR:
-      lb.setColor(label.getColor());
-      break;
-    case PARENT:      
-      lb.setParent(label.getParent());
-      break;
-    case TASK:
-      lb.setTasks(label.getTasks());
+    for (Label.FIELDS field : fields) {
+      switch (field) {
+      case NAME:
+        lb.setName(label.getName());
+        break;
+      case COLOR:
+        lb.setColor(label.getColor());
+        break;
+      case PARENT:      
+        lb.setParent(label.getParent());
+        break;
+      case TASK:
+        lb.setTasks(label.getTasks());
+        break;
+      case HIDDEN:
+        lb.setHidden(label.isHidden());
+      }      
     }
     return daoHandler.getLabelHandler().update(lb);
   }

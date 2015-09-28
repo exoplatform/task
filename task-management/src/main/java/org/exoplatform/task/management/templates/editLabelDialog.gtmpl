@@ -1,0 +1,42 @@
+#{param name=lblTree /}
+#{param name=lbl /}
+
+<!-- edit-label-dialog -->
+<div class="edit-label-dialog uiPopup modal hide fade" data-id="${lbl.id}" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="popupHeader clearfix">
+  	<a href="#" title="Close Window" data-dismiss="modal" aria-hidden="true" class="uiIconClose pull-right"></a>    
+  </div>
+  <div class="PopupContent popupContent">
+	  <div>
+	   <%
+	   	def printOption(l) {
+	   %>
+	   	<option value="${l.id}">${l.name}</option>
+	   <%	
+	   	  if (l.getChildren() != null && l.getChildren().size() > 0) {
+	   	    printTree(l.getChildren());
+	   	  }
+	   	}
+	   %>
+	   <select class="lblParent">
+	   <option value="0"></option>
+	  	<%
+	  	def printTree(tree) {
+	  		for (def l : tree) {
+	   		printOption(l);
+	  		}
+	  	}
+	  	//
+	  	printTree(lblTree);
+	  	%>
+	  	</select>
+	  	
+	  	<input type="text" class="lblName" value="<%=lbl.getName()%>"/>
+	  </div>
+	  <div class="uiAction uiActionBorder">
+	    <button class="btn btn-primary saveLabel" data-dismiss="modal">&{label.save}</button>
+	    <button class="btn" data-dismiss="modal" aria-hidden="true">&{popup.close}</button>
+	  </div>
+  </div>
+  <span class="uiIconResize pull-right uiIconLightGray"></span>
+</div>

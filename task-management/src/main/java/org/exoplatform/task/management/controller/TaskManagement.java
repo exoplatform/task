@@ -42,6 +42,7 @@ import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.task.dao.OrderBy;
+import org.exoplatform.task.domain.Label;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.domain.UserSetting;
@@ -169,6 +170,8 @@ public class TaskManagement {
     Map<String, String> defOrders = TaskUtil.getDefOrders(bundle);
     Map<String, String> defGroupBys = TaskUtil.getDefGroupBys(currProject, bundle);
     
+    List<Label> labels = TaskUtil.buildRootLabels(taskService.findLabelsByUser(username));
+    
     return index.with()
         .currentProjectId(currProject)
         .taskId(taskId)
@@ -184,6 +187,7 @@ public class TaskManagement {
         .orderBy("createdTime")
         .filter("")
         .projects(projects)
+        .labels(labels)
         .userSetting(setting)
         .userTimezone(userService.getUserTimezone(username))
         .bundle(bundle)

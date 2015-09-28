@@ -81,6 +81,52 @@ li[data-hiddenproject="false"] {
   display: none;
 }
 
+/*for label*/
+li[data-showhiddenlabel="false"] {
+  li[data-hiddenlabel="true"] {
+    display: none;
+  }
+  .label-hideHiddenLabel {
+    display: none;
+  }
+  li.all-children-hided {
+    a.collapseSubLabel {
+      display: none;
+    }
+  }
+}
+li[data-showhiddenlabel="true"] {
+  .label-showHiddenLabel {
+    display: none;
+  }
+  .all-label-hidden {
+    display: none;
+  }
+}
+li[data-hiddenlabel="true"] {
+  a.label-name {
+    opacity: 0.5;
+  }
+  > .sub-item {
+    .label-hide {
+      display: none;
+    }
+  }
+}
+li[data-hiddenlabel="false"] {
+  > .sub-item {
+    .label-show {
+      display: none;
+    }
+  }
+}
+.not-all-label-hidden {
+  display: none;
+}
+.uiAccordion.leftPanel .accordion-heading .sub-item .label-name {
+    padding-left: 30px;
+}
+
 .empty-box {
     position: relative;
     text-align: center;
@@ -598,6 +644,10 @@ li[data-hiddenproject="false"] {
 .list-projects .no-project {
     padding: 6px 0px;
 }
+.list-labels .no-label {
+    padding: 6px 0px;
+}
+
 .row-item {
     .dragable {
         width: 6px;

@@ -410,18 +410,14 @@ $(document).ready(function() {
       });
     }
 
-    $leftPanel.on('click', 'a.project-name, a[data-labelid]', function(e) {
+    $leftPanel.on('click', 'a.project-name', function(e) {
         var $a = $(e.target).closest('a');
         var projectId = $a.data('id');
-        var labelId = $a.data('labelid');
-        if (labelId == undefined) {
-            labelId = -1;
-        }
+        
         var filter = $a.data('filter');
         var currentProject = $centerPanel.find('.projectListView').data('projectid');
-        if ((currentProject != projectId || filter != undefined || labelId >= 0) && ($a.data('canview') || projectId <= 0)) {
-            alert('this?');
-            taApp.reloadTaskList(projectId, labelId, filter, function() {
+        if ((currentProject != projectId || filter != undefined) && ($a.data('canview') || projectId <= 0)) {
+            taApp.reloadTaskList(projectId, -1, filter, function() {
               projectLoaded(projectId, $a);
             });
         }
@@ -462,7 +458,6 @@ $(document).ready(function() {
             data: {projectId: projectId, labelId: labelId, taskInput: taskInput, filter: filter},
             success: function(task) {
                 var id = task.id;
-                var projectId = $leftPanel.find('.active .project-name').data('id');
                 taApp.reloadTaskList(projectId, labelId, filter, function() {
                     $centerPanel.find('.taskItem[data-taskid="' + id + '"]').click();
                     $centerPanel.find('input[name="taskTitle"]').focus();                    
@@ -477,7 +472,8 @@ $(document).ready(function() {
 
     var submitFilter = function(e) {
         var $projectListView =  $(e.target).closest('.projectListView');
-        var projectId = $projectListView.attr('data-projectId');
+        var projectId = $projectListView.attr('data-projectid');
+        var labelId = $projectListView.attr('data-labelid');
         var groupBy = $projectListView.find('[name="groupBy"]').val();
         if(groupBy == undefined) {
             groupBy = '';
@@ -498,6 +494,7 @@ $(document).ready(function() {
         $centerPanelContent.jzLoad('TaskController.listTasks()',
             {
                 projectId: projectId,
+                labelId : labelId,
                 keyword: keyword,
                 groupBy: groupBy,
                 orderBy: orderBy,

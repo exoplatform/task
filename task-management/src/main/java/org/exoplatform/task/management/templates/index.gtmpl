@@ -8,6 +8,7 @@
 #{param name=orderBy /}
 #{param name=filter /}
 #{param name=projects/}
+#{param name=labels/}
 #{param name=userSetting/}
 #{param name=userTimezone/}
 #{param name=bundle/}
@@ -117,12 +118,12 @@
 	
 	                #{include path=listProjects.gtmpl /}
 	            </li>
-	            <li class="accordion-heading dropdown">
+	            <li class="accordion-heading dropdown" data-showhiddenlabel="${userSetting.showHiddenLabel}">
 	               <div class="item">  
                       <a class="dropdownIcon collapseTree pull-right" href="javascript:void(0)">
                           <i class="uiIconLightGray uiIconArrowDownMini"></i>
                       </a>
-                      <a href="javascript:void(0)" data-placement="bottom" data-content="Click here to create your first label." data-toggle="dropdown" class="dropdown-toggle actionIconSmall dropdownIcon add-new-label pull-right">
+                      <a href="javascript:void(0)" data-placement="bottom" data-content="&{label.welcome.firstLabel}" data-toggle="dropdown" class="dropdown-toggle actionIconSmall dropdownIcon add-new-label pull-right">
                         <i class="uiIconLightGray uiIconSimplePlusMini addLabel"></i>
                       </a>
                       <div class="dropdown-menu uiDropdownWithIcon" style="left: 88%; top: -22px">
@@ -130,32 +131,28 @@
                         <ul class="uiDropdownMenu">
                             <li>
                               <a class="new-label" data-projectId="0" href="#">
-                                <i class="uiIconAddLabel uiIconLightGray"></i>Add label
+                                <i class="uiIconAddLabel uiIconLightGray"></i>&{label.addLabel}
                               </a>
                             </li>
                             <li>
-                              <a href="javascript:void(0)" class="actionShowHiddenProject">
-                                <i class="uiIconHide uiIconLightGray"></i>
-                                <span class="label-showHiddenLabel">
-                                    Hide hidden label
-                                </span>
+                              <a href="javascript:void(0)" class="actionShowHiddenLabel">
                                 <i class="uiIconShowLabel uiIconLightGray"></i>
+                                <span class="label-showHiddenLabel">
+                                    &{label.showHiddenLabel}
+                                </span>
                                 <span class="label-hideHiddenLabel">
-                                    Show hidden label
+                                    &{label.hideHiddenLabel}
                                 </span>
                               </a>
 	                         </li>
                           </ul>
                       </div>
-                      <a class="project-name" data-id="-3" data-labelid="0" href="#">&{label.label}</a>
+                      <a class="label-name" data-labelid="0" href="#">&{label.label}</a>
                    </div>
-                   <ul class="list-projects">
-                       <li>
-                           <div class="noLabel center muted">
-                               <a class="project-name" data-id="-3" data-labelid="2" href="#">Test label</a>
-                           </div>
-                       </li>
-                   </ul>
+                   
+                   <div class="lblContainer">
+                   	#{include path=listLabels.gtmpl /}
+                   </div>
 	            </li>
 	        </ul>
 	        <div class="resizeButton " id="ShowHideLeft">

@@ -213,6 +213,9 @@
       <column name="SHOW_HIDDEN_PROJECT" type="BIT" defaultValue="0">
         <constraints nullable="true"/>
       </column>
+      <column name="SHOW_HIDDEN_LABEL" type="BIT" defaultValue="0">
+        <constraints nullable="true"/>
+      </column>
     </createTable>
     <modifySql dbms="mysql">
       <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
@@ -335,6 +338,9 @@
         <constraints nullable="false"/>
       </column>
       <column name="COLOR" type="VARCHAR(100)">
+        <constraints nullable="true"/>
+      </column>
+      <column name="HIDDEN" type="BIT" defaultValue="0">
         <constraints nullable="true"/>
       </column>
       <column name="PARENT_LABEL_ID" type="BIGINT">

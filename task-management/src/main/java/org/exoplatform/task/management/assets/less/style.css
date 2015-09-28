@@ -64,6 +64,37 @@ li[data-hiddenproject="false"] > .sub-item .label-show {
 .not-all-project-hidden {
   display: none;
 }
+/*for label*/
+li[data-showhiddenlabel="false"] li[data-hiddenlabel="true"] {
+  display: none;
+}
+li[data-showhiddenlabel="false"] .label-hideHiddenLabel {
+  display: none;
+}
+li[data-showhiddenlabel="false"] li.all-children-hided a.collapseSubLabel {
+  display: none;
+}
+li[data-showhiddenlabel="true"] .label-showHiddenLabel {
+  display: none;
+}
+li[data-showhiddenlabel="true"] .all-label-hidden {
+  display: none;
+}
+li[data-hiddenlabel="true"] a.label-name {
+  opacity: 0.5;
+}
+li[data-hiddenlabel="true"] > .sub-item .label-hide {
+  display: none;
+}
+li[data-hiddenlabel="false"] > .sub-item .label-show {
+  display: none;
+}
+.not-all-label-hidden {
+  display: none;
+}
+.uiAccordion.leftPanel .accordion-heading .sub-item .label-name {
+  padding-left: 30px;
+}
 .empty-box {
   position: relative;
   text-align: center;
@@ -121,6 +152,9 @@ li[data-hiddenproject="false"] > .sub-item .label-show {
   margin: 20px;
 }
 /* Projects Area */
+#taskManagement .tooltip {
+  white-space: nowrap;
+}
 #taskManagement .centerPanel.uiBox .projectListView .title {
   padding: 4px 5px;
   line-height: 28px;
@@ -208,6 +242,10 @@ li[data-hiddenproject="false"] > .sub-item .label-show {
   position: absolute;
   top: 50%;
 }
+/* To Override z-idex tooltip */
+.breadcrumbCont .dropdown-menu {
+  z-index: 1050 !important;
+}
 .rightPanel .resizeButton {
   left: -18px;
   right: auto;
@@ -245,8 +283,7 @@ li[data-hiddenproject="false"] > .sub-item .label-show {
   margin-right: 75px;
 }
 .rightPanel .addTask .breadcrumbCont {
-  display: block;
-  margin-left: 22px;
+  display: inline-block;
 }
 .rightPanel .addTask .breadcrumbCont li {
   font-weight: bold;
@@ -272,21 +309,31 @@ li[data-hiddenproject="false"] > .sub-item .label-show {
   word-wrap: break-word;
   display: block;
 }
+.rightPanel .addTask .taskName .title-container {
+  position: relative;
+}
 .rightPanel .addTask .taskName .title-container .validate-action {
-  margin-top: 6px;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  -webkit-transform: translate(0, -50%);
+  -moz-transform: translate(0, -50%);
+  -ms-transform: translate(0, -50%);
+  -o-transform: translate(0, -50%);
+  transform: translate(0, -50%);
 }
 .rightPanel .addTask .taskName .title-container span:nth-child(1) {
   margin: 8px 0 0;
 }
 .rightPanel .addTask .taskName .title-container span.projectName {
-  margin-left: 22px;
+  margin-left: 22px !important;
   border: none;
 }
 .rightPanel .addTask .taskName .title-container span:nth-child(3) {
-  margin-left: 5px;
+  margin-left: 22px;
 }
 .rightPanel .addTask .taskName .editable-container.editable-inline {
-  display: inline-block;
+  margin-left: 22px;
 }
 .rightPanel .addTask .taskName input.blackLarge {
   padding: 0 4px;
@@ -315,9 +362,15 @@ li[data-hiddenproject="false"] > .sub-item .label-show {
 .rightPanel .addTask .inforBar1 .uiEditableInline .popover {
   min-width: 252px;
 }
+.rightPanel .addTask .inforBar1 .uiEditableInline .popover .popover-content .header.nav-inline {
+  white-space: nowrap;
+}
 .rightPanel .addTask .inforBar1 .uiEditableInline .popover .popover-content .header.nav-inline a {
   padding-left: 5px;
   margin: 10px 0 10px 2px;
+}
+.rightPanel .addTask .inforBar1 .uiEditableInline .popover .popover-content .header.nav-inline a.active {
+  font-weight: bold;
 }
 .rightPanel .addTask .inforBar1 .uiEditableInline .popover .popover-content .header.nav-inline a:first-child {
   margin-left: 0;
@@ -335,6 +388,9 @@ li[data-hiddenproject="false"] > .sub-item .label-show {
 .rightPanel .addTask .tags > .icon-hash {
   margin-top: 8px;
   margin-right: 6px;
+}
+.rightPanel .addTask .tags.uiEditableInline .hoverStatus {
+  color: #999;
 }
 .rightPanel .addTask .tags.active .icon-hash {
   display: none;
@@ -455,6 +511,9 @@ li[data-hiddenproject="false"] > .sub-item .label-show {
   margin-top: 0;
 }
 .list-projects .no-project {
+  padding: 6px 0px;
+}
+.list-labels .no-label {
   padding: 6px 0px;
 }
 .row-item .dragable {
@@ -600,6 +659,8 @@ li[data-hiddenproject="false"] > .sub-item .label-show {
 }
 .taskList .heading img {
   max-width: 20px;
+  border-radius: 2px;
+  vertical-align: top;
 }
 .prjDescription ul,
 .taskDescription ul,
@@ -665,6 +726,12 @@ li[data-hiddenproject="false"] > .sub-item .label-show {
 }
 .fieldWorkPlan > .pull-right .removeWorkPlan {
   margin-top: 4px;
+}
+.fieldWorkPlan .pull-right .removeWorkPlan {
+  display: none;
+}
+.fieldWorkPlan:hover .pull-right .removeWorkPlan {
+  display: block;
 }
 .date-work-plan .hoverStatus {
   margin-left: 20px;
@@ -759,7 +826,7 @@ li[data-hiddenproject="false"] > .sub-item .label-show {
 .uiAccordion.leftPanel .accordion-heading .sub-item .project-name {
   padding-left: 30px;
 }
-.project-item.active .collapseSubProject .uiIconLightGray {
+.project-item.active > .sub-item .collapseSubProject .uiIconLightGray {
   background-image: url("/eXoSkin/skin/images/themes/default/Icons/uiIconsSecondary.png");
 }
 .taskBoardView .uiEditableInline.active .number-tasks,
@@ -783,5 +850,11 @@ li[data-hiddenproject="false"] > .sub-item .label-show {
 .breadcrumb .removeProject {
   display: inline;
   float: none;
+}
+.sharePrjDialog .table tr td {
+  width: 50%;
+}
+.uiEditableInline .highlight {
+  font-weight: bold;
 }
 /*# sourceMappingURL=style.css.map */

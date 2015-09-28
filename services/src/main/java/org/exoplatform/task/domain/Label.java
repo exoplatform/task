@@ -60,8 +60,10 @@ public class Label {
 
   private String    color;
   
+  private boolean hidden;
+  
   public static enum FIELDS {
-    NAME, COLOR, PARENT, TASK
+    NAME, COLOR, PARENT, TASK, HIDDEN
   }
 
   @ManyToOne(optional = true, fetch = FetchType.LAZY)
@@ -140,6 +142,14 @@ public class Label {
 
   public void setTasks(Set<Task> tasks) {
     this.tasks = tasks;
+  }
+
+  public boolean isHidden() {
+    return hidden;
+  }
+
+  public void setHidden(boolean hidden) {
+    this.hidden = hidden;
   }  
   
 }

@@ -38,6 +38,9 @@ public class UserSetting {
 
   @Column(name = "SHOW_HIDDEN_PROJECT")
   private boolean showHiddenProject = false;
+  
+  @Column(name = "SHOW_HIDDEN_LABEL")
+  private boolean showHiddenLabel = false;
 
   @ManyToMany(cascade = CascadeType.REMOVE)
   @JoinTable(
@@ -65,6 +68,14 @@ public class UserSetting {
 
   public void setShowHiddenProject(boolean showHiddenProject) {
     this.showHiddenProject = showHiddenProject;
+  }
+
+  public boolean isShowHiddenLabel() {
+    return showHiddenLabel;
+  }
+
+  public void setShowHiddenLabel(boolean showHiddenLabel) {
+    this.showHiddenLabel = showHiddenLabel;
   }
 
   public Set<Project> getHiddenProjects() {

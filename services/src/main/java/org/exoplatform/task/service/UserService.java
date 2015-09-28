@@ -37,6 +37,8 @@ public interface UserService {
   UserSetting getUserSetting(String username);
 
   void showHiddenProject(String username, boolean show);
+  
+  void showHiddenLabel(String username, boolean show);
 
   void hideProject(Identity identity, Long projectId, boolean hide) throws ProjectNotFoundException, NotAllowedOperationOnEntityException;
 
