@@ -23,6 +23,7 @@ import javax.inject.Inject;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import org.exoplatform.commons.juzu.ajax.Ajax;
 import org.exoplatform.services.log.ExoLogger;
@@ -54,12 +55,19 @@ public class LabelController {
   UserService userService;
   
   @Inject
+  ResourceBundle bundle;
+  
+  @Inject
   @Path("listLabels.gtmpl")
   org.exoplatform.task.management.templates.listLabels listLabels;
   
   @Inject
   @Path("editLabelDialog.gtmpl")
   org.exoplatform.task.management.templates.editLabelDialog editLabelDialog;
+  
+  @Inject
+  @Path("confirmDeleteLabel.gtmpl")
+  org.exoplatform.task.management.templates.confirmDeleteLabel confirmDeleteLabel;
 
   @Resource
   @Ajax
@@ -95,6 +103,20 @@ public class LabelController {
       }
     }
     return Response.status(503);
+  }
+  
+  @Resource
+  @Ajax
+  @MimeType.HTML
+  public Response openConfirmDeleteLabelDialog(Long labelId, SecurityContext context) {
+    Label label = taskService.getLabelById(labelId);
+    if (label != null) {
+      String username = label.getUsername();
+      if (username.equals(context.getRemoteUser())) {
+        return confirmDeleteLabel.with().label(label).bundle(bundle).ok().withCharset(Tools.UTF_8);
+      }
+    }
+    return Response.status(404);
   }
 
   @Resource

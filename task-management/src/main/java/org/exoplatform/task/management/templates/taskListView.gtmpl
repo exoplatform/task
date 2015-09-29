@@ -139,13 +139,33 @@
         </div>
         <%} else {
             if (currentProjectId < 0) {
+              if (currentLabelId == 0) {
+		  %>
+		  		<div class="empty-box no-label">
+	            <div class="empty-content">
+	                <img class="image" src="/task-management/assets/org/exoplatform/task/management/assets/images/img-label.png" alt="no-label" />
+	                <div class="text-notify muted">&{label.noLabel}</div>
+	            </div>
+	         </div>
+		  <%                
+              } else if (currentLabelId > 0) {
         %>
-        <div class="empty-box no-project ">
-            <div class="empty-content">
-                <img class="image" src="/task-management/assets/org/exoplatform/task/management/assets/images/img-folder.png" alt="no-project" />
-                <div class="text-notify muted">&{label.welcome}</div>
-            </div>
-        </div>
+        		<div class="empty-box no-project ">
+	            <div class="empty-content">
+	                <img class="image" src="/task-management/assets/org/exoplatform/task/management/assets/images/img-task.png" alt="no-task" />
+	                <div class="text-notify muted">&{label.noTask}</div>
+	            </div>
+	        </div>
+        <%    
+              } else {
+        %>
+	        <div class="empty-box no-project ">
+	            <div class="empty-content">
+	                <img class="image" src="/task-management/assets/org/exoplatform/task/management/assets/images/img-folder.png" alt="no-project" />
+	                <div class="text-notify muted">&{label.welcome}</div>
+	            </div>
+	        </div>
+        <%	  } %>
         <%} else if (currentProjectId == 0) {%>
         <div class="empty-box no-project ">
             <div class="empty-content">

@@ -52,7 +52,8 @@ li[data-showhiddenproject="true"] .label-showHiddenProject {
 li[data-showhiddenproject="true"] .all-project-hidden {
   display: none;
 }
-li[data-hiddenproject="true"] a.project-name {
+li[data-hiddenproject="true"] a.project-name,
+li[data-hiddenproject="true"] a.label-name {
   opacity: 0.5;
 }
 li[data-hiddenproject="true"] > .sub-item .label-hide {
@@ -510,9 +511,7 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
 .userSelectorDialog .uiSearch {
   margin-top: 0;
 }
-.list-projects .no-project {
-  padding: 6px 0px;
-}
+.list-projects .no-project,
 .list-labels .no-label {
   padding: 6px 0px;
 }
@@ -818,15 +817,18 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
   z-index: 10;
   background: url("/eXoSkin/skin/images/themes/default/Container/DragAndDropPreview4x4.gif") repeat 0 0;
 }
-.collapseSubProject {
+.collapseSubProject,
+.collapseSubLabel {
   left: 10px;
   position: absolute;
   top: 5px;
 }
-.uiAccordion.leftPanel .accordion-heading .sub-item .project-name {
+.uiAccordion.leftPanel .accordion-heading .sub-item .project-name,
+.uiAccordion.leftPanel .accordion-heading .sub-item .label-name {
   padding-left: 30px;
 }
-.project-item.active > .sub-item .collapseSubProject .uiIconLightGray {
+.project-item.active > .sub-item .collapseSubProject .uiIconLightGray,
+.label-item.active > .sub-item .collapseSubLabel .uiIconLightGray {
   background-image: url("/eXoSkin/skin/images/themes/default/Icons/uiIconsSecondary.png");
 }
 .taskBoardView .uiEditableInline.active .number-tasks,

@@ -474,7 +474,7 @@ public final class TaskUtil {
         childs.removeAll(tmp);
       }
       parents = tmpParents;
-    } while (!parents.isEmpty() && !childs.isEmpty());
+    } while (!parents.isEmpty() || !childs.isEmpty());
 
     return new LinkedList<Label>(rootLBLs);
   }

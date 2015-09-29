@@ -133,7 +133,7 @@ public final class ProjectUtil {
         childs.removeAll(tmp);
       }
       parents = tmpParents;
-    } while (!parents.isEmpty() && !childs.isEmpty());
+    } while (!parents.isEmpty() || !childs.isEmpty());
 
     return new LinkedList<Project>(rootPRJs);
   }

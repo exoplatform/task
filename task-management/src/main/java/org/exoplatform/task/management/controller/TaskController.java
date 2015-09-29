@@ -537,10 +537,10 @@ public class TaskController {
       tasks = taskService.getToDoTasksByUser(currentUser, spaceProjectIds, order, fromDueDate, toDueDate);
     }
     else if (labelId != null && labelId >= 0) {
-      defOrders = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.TITLE, TaskUtil.CREATED_TIME, TaskUtil.DUEDATE), bundle);
-      if (orderBy == null || orderBy.isEmpty() || defOrders.containsKey(orderBy)) {
-        orderBy = TaskUtil.NONE;
-        order = null;
+      defOrders = TaskUtil.resolve(Arrays.asList(TaskUtil.TITLE, TaskUtil.CREATED_TIME, TaskUtil.DUEDATE, TaskUtil.PRIORITY), bundle);
+      if (orderBy == null || orderBy.isEmpty() || !defOrders.containsKey(orderBy)) {
+        orderBy = TaskUtil.DUEDATE;
+        order = new OrderBy.ASC(TaskUtil.DUEDATE);;
       }
 
       //Case label view
@@ -548,7 +548,7 @@ public class TaskController {
         defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT, TaskUtil.LABEL, TaskUtil.DUEDATE, TaskUtil.STATUS), bundle);
         if (groupBy == null || groupBy.isEmpty() || !defGroupBys.containsKey(groupBy)) {
           groupBy = TaskUtil.LABEL;
-        }
+        }        
       } else {
         defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT, TaskUtil.DUEDATE, TaskUtil.STATUS), bundle);
         if (groupBy == null || groupBy.isEmpty() || !defGroupBys.containsKey(groupBy)) {

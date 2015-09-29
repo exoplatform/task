@@ -51,11 +51,38 @@ require(['jquery', 'taskManagementApp'], function($, taApp) {
         }
       });
 
-      //delete label
+      //delete label dialog      
       $leftPanel.on('click', '.delete-label', function(e) {
-        var $lblItem = $(e.target).closest('.label-item');
-        var id = $lblItem.data('labelid');
-        deleteLabel(id, reloadLabel);
+        var labelId = $(e.target).closest('.label-item').data('labelid');
+        //
+        $modalPlace.jzLoad('LabelController.openConfirmDeleteLabelDialog()', {'labelId': labelId}, function() {
+          var $dialog = $('.confirmDeleteLabel');
+          $dialog.modal({'backdrop': false});
+          //
+          $dialog.on('click', '.confirmDelete', function() {
+            //confirm delete
+            var $lblItem = $(e.target).closest('.label-item');        
+            var $active = $lblItem.closest('.accordion-heading').find('.active');
+            //choose next active label item 
+            var $next = $active;
+            if ($next.data('labelid') == $lblItem.data('labelid')) {
+              $next = $lblItem.prev('li').find('.label-name');          
+            }
+            if (!$next.length) {
+              $next = $lblItem.next('li').find('.label-name');          
+            }
+            if (!$next.length) {
+              $next = $('.label-name[data-labelid="0"]');
+            }
+            $next = $next.data('labelid');
+            
+            //delete current label
+            var id = $lblItem.data('labelid');        
+            deleteLabel(id, function() {
+              reloadLabel($active.length ? $next : "");
+            });            
+          });
+        });        
       });
 
       //open edit label dialog
@@ -65,6 +92,24 @@ require(['jquery', 'taskManagementApp'], function($, taApp) {
         $modalPlace.jzLoad('LabelController.openEditLabelDialog()', {'labelId': labelId}, function() {
           var $dialog = $('.edit-label-dialog');
           $dialog.modal({'backdrop': false});
+          
+          var $save = $dialog.find('.saveLabel');
+          var $select = $dialog.find('select'); 
+          var $text = $dialog.find('input');
+          var parentId = $select.val();
+          var name = $text.val();
+          //
+          $select.on('change', function() {
+            if ($select.val() != parentId) {
+              $save.attr('disabled', false);              
+            }
+          });
+          $text.on('keyup', function() {
+            if ($.trim($text.val()) != name) {
+              $save.attr('disabled', false);
+            }
+          });
+          
         });
       });
       //update label
@@ -72,10 +117,10 @@ require(['jquery', 'taskManagementApp'], function($, taApp) {
         var $dialog = $(e.target).closest('.edit-label-dialog');
         var labelId = $dialog.data('id');
         var parentId = $dialog.find('.lblParent').val();
-        var lblName = $dialog.find('.lblName').val();
-        if (lblName.trim().length) {
-          updateLabel(labelId, parentId, lblName, reloadLabel);
-        }
+        var lblName = $.trim($dialog.find('.lblName').val());
+        lblName = lblName.length ? lblName : "Untitled Label";
+        
+        updateLabel(labelId, parentId, lblName, reloadLabel);
       });
       //change color
       $leftPanel.on('click', '.changeLabelColor', function(e) {        
@@ -89,9 +134,25 @@ require(['jquery', 'taskManagementApp'], function($, taApp) {
       //toggle hidden
       $leftPanel.on('click', '.actionHideLabel', function(e) {
         var $lblItem = $(e.target).closest('.label-item');
-        var id = $lblItem.data('labelid');
+        if ($lblItem.data('hiddenlabel')) {
+          var parentId = $lblItem.closest('[data-parentid]').data('parentid');
+          if (parentId != 0) {
+            if ($('.label-item[data-labelid="' + parentId + '"]').data('hiddenlabel')) {
+              alert('To show a sub-label, please show its parent first.');
+              return;
+            }
+          }          
+        }
+        
+        var id = $lblItem.data('labelid');        
         //
-        requestController({'labelId': id}, 'LabelController.toggleHidden', reloadLabel);
+        requestController({'labelId': id}, 'LabelController.toggleHidden', function() {
+          var next = "";
+          if ($lblItem.hasClass('active') & !$lblItem.data('hiddenlabel') && $lblItem.closest('[data-showhiddenlabel]').attr('data-showhiddenlabel') == 'false') {
+            next = 0;
+          }
+          reloadLabel(next);
+        });
       });
       //show hidden label
       $leftPanel.on('click', '.actionShowHiddenLabel', function(e) {
@@ -99,12 +160,16 @@ require(['jquery', 'taskManagementApp'], function($, taApp) {
           var $showHidden = $(e.target).closest('*[data-showhiddenlabel]');
           var isShown = $showHidden.attr('data-showhiddenlabel') == 'true';
           $showHidden.attr('data-showhiddenlabel', isShown ? 'false' : 'true');
-//          alert($showHidden.data('showhiddenlabel'));
+          //
+          var $active = $('.label-name').closest('.accordion-heading').find('.active'); 
+          if ($active.length && $active.data('hiddenlabel')) {
+            $('.label-name[data-labelid="0"').click();
+          }
         });
       });
-      
+
       //show tasks of label
-      $leftPanel.on('click', 'a.label-name', function(e) {        
+      $leftPanel.on('click', 'a.label-name', function(e) {
         var $a = $(e.target);
         var labelId = $a.data('labelid');
         taApp.reloadTaskList(-5, labelId, null, function() {
@@ -122,15 +187,24 @@ require(['jquery', 'taskManagementApp'], function($, taApp) {
           var $addLabel = $taskManagement.find('.add-new-label');
           taApp.showOneTimePopover($addLabel);
         }
-        
+
         var $inputTask = $centerPanelContent.find('input[name="taskTitle"]');
         taApp.showOneTimePopover($inputTask);
         $inputTask.focus();
       }
 
-      function reloadLabel() {
+      function reloadLabel(selectLabel) {
         var $listLabels = $leftPanel.find('.list-labels');
-        $listLabels.parent().jzLoad("LabelController.getAllLabels()");
+        var $container = $listLabels.first().closest('.accordion-heading');
+        var $active = $container.hasClass('active') ? $container : $container.find('.active');
+        if (!$.isNumeric(selectLabel)) {
+          selectLabel = $active.find('.label-name').first().data('labelid');
+        }
+        $listLabels.parent().jzLoad("LabelController.getAllLabels()", {}, function() {
+          if ($active.length) {
+            $('.label-name[data-labelid="' + selectLabel + '"]').first().click();
+          }
+        });
       }
       
       function updateLabel(labelId, parentId, lblName, callback) {

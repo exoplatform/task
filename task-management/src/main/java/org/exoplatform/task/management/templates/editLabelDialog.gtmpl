@@ -10,12 +10,12 @@
   <div class="PopupContent popupContent">
 	  <div class="form-horizontal">
 	   <%
-	   	def printOption(l) {
+	   	def printOption(l, level) {
 	   %>
-	   	<option value="${l.id}">${l.name}</option>
+	   	<option value="${l.id}" style="padding-left: <%=level*10%>px;" <%= lbl.parent != null && l.id == lbl.parent.id ? "selected" : "" %>>${l.name}</option>	   	
 	   <%	
 	   	  if (l.getChildren() != null && l.getChildren().size() > 0) {
-	   	    printTree(l.getChildren());
+	   	    printTree(l.getChildren(), level + 1);
 	   	  }
 	   	}
 	   %>
@@ -24,15 +24,15 @@
 	  		<label class="control-label" for="lblParent:">Label Parent:</label>
 	  		<div class="controls">
 			   <select id="lblParent" class="lblParent">
-			   <option value="0"></option>
+			   <option value="0" style="padding-left: 10px;" <%= lbl.parent == null ? "selected" : "" %>>&{label.label}</option>
 			  	<%
-			  	def printTree(tree) {
+			  	def printTree(tree, level) {
 			  		for (def l : tree) {
-			   		printOption(l);
+			   		printOption(l, level);
 			  		}
 			  	}
 			  	//
-			  	printTree(lblTree);
+			  	printTree(lblTree, 2);
 			  	%>
 			  	</select>
 	  		</div>
@@ -40,12 +40,12 @@
 	  	<div class="control-group">
 	  		<label class="control-label" for="lblName:">Label Name:</label>
 	  		<div class="controls">
-	  			<input type="text" id="lblName" class="lblName" value="<%=lbl.getName()%>"/>
+	  			<input type="text" id="lblName" class="lblName" value="<%=lbl.getName()%>" maxlength="100"/>
 	  		</div>
 	  	</div>
 	  </div>
 	  <div class="uiAction uiActionBorder">
-	    <button class="btn btn-primary saveLabel" data-dismiss="modal">&{label.save}</button>
+	    <button class="btn btn-primary saveLabel" data-dismiss="modal" disabled>&{label.save}</button>
 	    <button class="btn" data-dismiss="modal" aria-hidden="true">&{popup.close}</button>
 	  </div>
   </div>
