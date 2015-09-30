@@ -18,23 +18,21 @@ define('taskManagementApp', ['jquery', 'SHARED/juzu-ajax'],
 
         var taskUI = false;
         taApp.getUI = function() {
-            if (!taskUI) {
-                var $taskManagement = $('#taskManagement');
-                var $leftPanel = $('#taskManagement > .leftPanel');
-                var $centerPanel = $('#taskManagement > .centerPanel');
-                var $rightPanel = $('#taskManagement > .rightPanel');
-                var $rightPanelContent = $rightPanel.find('.rightPanelContent');
-                var $centerPanelContent = $centerPanel.find('.centerPanelContent');
-
-                taskUI = {
-                    '$taskManagement' : $taskManagement,
-                    '$leftPanel' : $leftPanel,
-                    '$centerPanel' : $centerPanel,
-                    '$rightPanel' : $rightPanel,
-                    '$rightPanelContent' : $rightPanelContent,
-                    '$centerPanelContent' : $centerPanelContent
-                };
-            }
+            var $taskManagement = $('#taskManagement');
+            var $leftPanel = $('#taskManagement > .leftPanel');
+            var $centerPanel = $('#taskManagement > .centerPanel');
+            var $rightPanel = $('#taskManagement > .rightPanel');
+            var $rightPanelContent = $rightPanel.find('.rightPanelContent');
+            var $centerPanelContent = $centerPanel.find('.centerPanelContent');
+            
+            taskUI = {
+                '$taskManagement' : $taskManagement,
+                '$leftPanel' : $leftPanel,
+                '$centerPanel' : $centerPanel,
+                '$rightPanel' : $rightPanel,
+                '$rightPanelContent' : $rightPanelContent,
+                '$centerPanelContent' : $centerPanelContent
+            };
             return taskUI;
         }
 

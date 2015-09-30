@@ -588,6 +588,9 @@ define('ta_edit_inline',
                         } else {
                             $i.addClass('hidden');
                         }
+                        if (fieldName == 'labels') {
+                          $('.rightPanelContent ').trigger('saveLabel');
+                        }
                     }
                 }
                 if (fieldName == 'tags') {
@@ -609,6 +612,12 @@ define('ta_edit_inline',
                         searchField: 'text',
                         highlight: true,
                         openOnFocus: true,
+                        onItemRemove: function(value) {
+                          $this.trigger('labelRemoved', value);
+                        },
+                        onItemAdd: function(value, $item) {
+                          $this.trigger('labelAdded', value);
+                        },
                         load: function(query, callback) {
                             if (isLoaded) {
                                 return callback();

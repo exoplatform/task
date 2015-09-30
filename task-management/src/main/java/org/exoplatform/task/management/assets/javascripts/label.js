@@ -3,7 +3,7 @@ require(['jquery', 'taskManagementApp'], function($, taApp) {
       var ui = taApp.getUI();
       var $leftPanel = ui.$leftPanel;
       var $centerPanel = ui.$centerPanel;
-      var $rightPanel = ui.$rightPanel;      
+      var $rightPanel = ui.$rightPanel;
       var $taskManagement = ui.$taskManagement;
       var $rightPanelContent = ui.$rightPanelContent;
       var $centerPanelContent = ui.$centerPanelContent;
@@ -172,18 +172,39 @@ require(['jquery', 'taskManagementApp'], function($, taApp) {
       $leftPanel.on('click', 'a.label-name', function(e) {
         var $a = $(e.target);
         var labelId = $a.data('labelid');
-        taApp.reloadTaskList(-5, labelId, null, function() {
-          labelLoaded($a);
-          taApp.hideRightPanel($centerPanel, $rightPanel, $rightPanelContent);
-        });
+        reloadTaskList(labelId);
       });
 
-      function labelLoaded($a) {
-        $a.closest('.leftPanel > ul').find('li.active').removeClass('active');
-        $a.closest('li').addClass('active');
+      //listen to event of editing label of task
+      $rightPanelContent.on('labelAdded', '[data-name="labels"]', function(e, labelId) {
+        $rightPanelContent.data('edit_labelid', getActiveLabel());
+      });      
+      $rightPanelContent.on('labelRemoved', '[data-name="labels"]', function(e, labelId) {
+        $rightPanelContent.data('edit_labelid', getActiveLabel());
+      });
+      $rightPanelContent.on('saveLabel', function() {
+        var labelId = $rightPanelContent.data('edit_labelid'); 
+        if (labelId !== undefined && labelId != -1) {
+          reloadLabel(labelId);
+        }
+      });
+      
+      function getActiveLabel() {
+        var $container = $('.label-name[data-labelid="0"]').closest('.accordion-heading');
+        if ($container.hasClass('active')) {
+          return 0;
+        } else if ($container.find('.active').length) {
+          return $container.find('.active').data('labelid');
+        }
+        return -1;
+      }
+      
+      function labelLoaded(labelid) {
+        $('.label-name').closest('.accordion-heading').removeClass('active').find('.active').removeClass('active');
+        $('.label-name[data-labelid="' + labelid + '"]').closest('li').addClass('active');
 
         //welcome
-        if ($a.data('labelid') == '0' && $leftPanel.find('.label-item').length == 0) {
+        if (labelid == '0' && $leftPanel.find('.label-item').length == 0) {
           var $addLabel = $taskManagement.find('.add-new-label');
           taApp.showOneTimePopover($addLabel);
         }
@@ -202,7 +223,21 @@ require(['jquery', 'taskManagementApp'], function($, taApp) {
         }
         $listLabels.parent().jzLoad("LabelController.getAllLabels()", {}, function() {
           if ($active.length) {
-            $('.label-name[data-labelid="' + selectLabel + '"]').first().click();
+            var $task = $centerPanel.find('.taskItem.selected');
+            var selectTask = $task.length ? $task.data('taskid') : 0;
+            reloadTaskList(selectLabel, selectTask);
+          }
+        });
+      }
+      
+      function reloadTaskList(labelId, taskId) {
+        taApp.reloadTaskList(-5, labelId, null, function() {
+          labelLoaded(labelId);
+          var $task = taApp.getUI().$centerPanel.find('.taskItem[data-taskid="' + taskId + '"]'); 
+          if ($task.length) {
+            $task.click();
+          } else {
+            taApp.hideRightPanel($centerPanel, $rightPanel, $rightPanelContent);            
           }
         });
       }

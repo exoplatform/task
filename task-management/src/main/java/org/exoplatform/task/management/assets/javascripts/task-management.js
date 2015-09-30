@@ -363,15 +363,15 @@ $(document).ready(function() {
     $leftPanel.on('click', 'a.collapseTree', function(e) {
         var $a = $(e.target).closest('a');
         var $icon = $a.find('.uiIconLightGray');
-        var $list = $a.closest('.dropdown').find('> .list-projects');
+        var $list = $a.closest('.dropdown').find('> .list-projects, .list-labels').first();
         $list.slideToggle(300, 'linear', function() {
             $icon.toggleClass('uiIconArrowDownMini').toggleClass('uiIconArrowRightMini');
         });
     });
-    $leftPanel.on('click', 'a.collapseSubProject', function(e){
+    $leftPanel.on('click', 'a.collapseSubProject, .collapseSubLabel', function(e){
         var $a = $(e.target).closest('a');
         var $icon = $a.find('.uiIconLightGray');
-        var $list = $a.closest('.dropdown').find('> .list-projects');
+        var $list = $a.closest('.dropdown').find('> .list-projects, .list-labels').first();
 
         $list.slideToggle(300, 'linear', function() {
             $icon.toggleClass('uiIconArrowDownMini').toggleClass('uiIconArrowRightMini');
