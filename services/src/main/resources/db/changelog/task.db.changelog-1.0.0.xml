@@ -15,13 +15,13 @@
       <column name="PROJECT_ID" type="BIGINT" autoIncrement="${autoIncrement}" startWith="1">
         <constraints nullable="false" primaryKey="true" primaryKeyName="PK_TASK_PROJECTS" />
       </column>
-      <column name="NAME" type="VARCHAR(50)">
+      <column name="NAME" type="NVARCHAR(50)">
         <constraints nullable="false"/>
       </column>
-      <column name="DESCRIPTION" type="VARCHAR(4000)">
+      <column name="DESCRIPTION" type="NVARCHAR(2000)">
         <constraints nullable="true"/>
       </column>
-      <column name="COLOR" type="VARCHAR(100)">
+      <column name="COLOR" type="NVARCHAR(100)">
         <constraints nullable="true"/>
       </column>
       <column name="CALENDAR_INTEGRATED" type="BIT" defaultValue="0">
@@ -48,7 +48,7 @@
       <column name="PROJECT_ID" type="BIGINT">
         <constraints foreignKeyName="FK_TASK_PRJ_MGR_TASK_PRJ_01" references="TASK_PROJECTS(PROJECT_ID)" nullable="false"/>
       </column>
-      <column name="MANAGER" type="VARCHAR(50)">
+      <column name="MANAGER" type="NVARCHAR(50)">
         <constraints nullable="false"/>
       </column>
     </createTable>
@@ -63,7 +63,7 @@
       <column name="PROJECT_ID" type="BIGINT">
         <constraints foreignKeyName="FK_TASK_PRJ_PTOR_TASK_PRJ_01" references="TASK_PROJECTS(PROJECT_ID)" nullable="false"/>
       </column>
-      <column name="PARTICIPATOR" type="VARCHAR(50)">
+      <column name="PARTICIPATOR" type="NVARCHAR(50)">
         <constraints nullable="false"/>
       </column>
     </createTable>
@@ -78,7 +78,7 @@
       <column name="STATUS_ID" type="BIGINT" autoIncrement="${autoIncrement}" startWith="1">
         <constraints nullable="false" primaryKey="true" primaryKeyName="PK_TASK_STATUS"/>
       </column>
-      <column name="NAME" type="VARCHAR(50)">
+      <column name="NAME" type="NVARCHAR(50)">
         <constraints nullable="false"/>
       </column>
       <column name="RANK" type="INTEGER">
@@ -102,25 +102,25 @@
       <column name="TASK_ID" type="BIGINT" autoIncrement="${autoIncrement}" startWith="1">
         <constraints primaryKey="true" primaryKeyName="PK_TASK_TASKS" nullable="false"/>
       </column>
-      <column name="TITLE" type="VARCHAR(50)">
+      <column name="TITLE" type="NVARCHAR(50)">
         <constraints nullable="false"/>
       </column>
-      <column name="DESCRIPTION" type="VARCHAR(4000)">
+      <column name="DESCRIPTION" type="NVARCHAR(2000)">
         <constraints nullable="true"/>
       </column>
-      <column name="PRIORITY" type="VARCHAR(10)">
+      <column name="PRIORITY" type="NVARCHAR(10)">
         <constraints nullable="true"/>
       </column>
-      <column name="CONTEXT" type="VARCHAR(255)">
+      <column name="CONTEXT" type="NVARCHAR(255)">
         <constraints nullable="true"/>
       </column>
-      <column name="ASSIGNEE" type="VARCHAR(50)">
+      <column name="ASSIGNEE" type="NVARCHAR(50)">
         <constraints nullable="true"/>
       </column>
       <column name="STATUS_ID" type="BIGINT">
         <constraints foreignKeyName="FK_TASK_TASKS_TASK_STATUS_01" references="TASK_STATUS(STATUS_ID)" nullable="true"/>
       </column>
-      <column name="CREATED_BY" type="VARCHAR(50)">
+      <column name="CREATED_BY" type="NVARCHAR(50)">
         <constraints nullable="true"/>
       </column>
       <column name="CREATED_TIME" type="TIMESTAMP">
@@ -156,7 +156,7 @@
       <column name="TASK_ID" type="BIGINT">
         <constraints foreignKeyName="FK_TK_TK_COWKR_TK_TK_01" references="TASK_TASKS(TASK_ID)" nullable="false"/>
       </column>
-      <column name="COWORKER" type="VARCHAR(50)">
+      <column name="COWORKER" type="NVARCHAR(50)">
         <constraints nullable="false"/>
       </column>
     </createTable>
@@ -171,7 +171,7 @@
       <column name="TASK_ID" type="BIGINT">
         <constraints foreignKeyName="FK_TASK_TAGS_TASK_TASKS_01" references="TASK_TASKS(TASK_ID)" nullable="false"/>
       </column>
-      <column name="TAG" type="VARCHAR(50)">
+      <column name="TAG" type="NVARCHAR(50)">
         <constraints nullable="false"/>
       </column>
     </createTable>
@@ -186,10 +186,10 @@
       <column name="COMMENT_ID" type="BIGINT" autoIncrement="${autoIncrement}" startWith="1">
         <constraints primaryKey="true" primaryKeyName="PK_TASK_COMMENTS" nullable="false"/>
       </column>
-      <column name="AUTHOR" type="VARCHAR(100)">
+      <column name="AUTHOR" type="NVARCHAR(100)">
         <constraints nullable="false"/>
       </column>
-      <column name="COMMENT" type="VARCHAR(4000)">
+      <column name="CMT" type="NVARCHAR(2000)">
         <constraints nullable="false"/>
       </column>
       <column name="CREATED_TIME" type="TIMESTAMP">
@@ -207,7 +207,7 @@
   <!-- Definition of TASK_USER_SETTINGS table -->
   <changeSet author="tuyennt@exoplatform.com" id="1.0.0-12">
     <createTable tableName="TASK_USER_SETTINGS">
-      <column name="USERNAME" type="VARCHAR(50)">
+      <column name="USERNAME" type="NVARCHAR(50)">
         <constraints primaryKey="true" primaryKeyName="PK_TASK_USER_SETTINGS" nullable="false"/>
       </column>
       <column name="SHOW_HIDDEN_PROJECT" type="BIT" defaultValue="0">
@@ -224,7 +224,7 @@
   <!-- Definition of TASK_HIDDEN_PROJECTS table -->
   <changeSet author="tuyennt@exoplatform.com" id="1.0.0-13">
     <createTable tableName="TASK_HIDDEN_PROJECTS">
-      <column name="USERNAME" type="VARCHAR(50)">
+      <column name="USERNAME" type="NVARCHAR(50)">
         <constraints foreignKeyName="FK_TK_HID_PRJ_TK_USR_SET_01" references="TASK_USER_SETTINGS(USERNAME)" nullable="false"/>
       </column>
       <column name="PROJECT_ID" type="BIGINT">
@@ -242,13 +242,13 @@
       <column name="TASK_ID" type="BIGINT">
         <constraints nullable="false" foreignKeyName="FK_LOG_TASK" references="TASK_TASKS(TASK_ID)"/>
       </column>
-      <column name="AUTHOR" type="VARCHAR(100)">
+      <column name="AUTHOR" type="NVARCHAR(100)">
         <constraints nullable="false"/>
       </column>
-      <column name="MSG" type="VARCHAR(4000)">
+      <column name="MSG" type="NVARCHAR(2000)">
         <constraints nullable="false"/>
       </column>
-      <column name="TARGET" type="VARCHAR(100)">
+      <column name="TARGET" type="NVARCHAR(100)">
       </column>
       <column name="CREATED_TIME" type="BIGINT">
         <constraints nullable="false"/>
@@ -267,15 +267,15 @@
     </createIndex>
     <createIndex indexName="IDX_TASK_PRJ_MGR_01"
                  tableName="TASK_PROJECT_MANAGERS">
-      <column name="MANAGER" type="VARCHAR(50)"/>
+      <column name="MANAGER" type="NVARCHAR(50)"/>
     </createIndex>
     <createIndex indexName="IDX_TASK_PRJ_PTOR_01"
                  tableName="TASK_PROJECT_PARTICIPATORS">
-      <column name="PARTICIPATOR" type="VARCHAR(50)"/>
+      <column name="PARTICIPATOR" type="NVARCHAR(50)"/>
     </createIndex>
     <createIndex indexName="IDX_TASK_TASK_COWORKERS_01"
                  tableName="TASK_TASK_COWORKERS">
-      <column name="COWORKER" type="VARCHAR(50)"/>
+      <column name="COWORKER" type="NVARCHAR(50)"/>
     </createIndex>
   </changeSet>
 
@@ -319,7 +319,7 @@
   <!-- Definition column ACTIVITY_ID for TASK_TASKS table -->
   <changeSet author="tuyennt@exoplatform.com" id="1.0.0-18">
     <addColumn tableName="TASK_TASKS">
-      <column name="ACTIVITY_ID" type="VARCHAR(50)" defaultValue="">
+      <column name="ACTIVITY_ID" type="NVARCHAR(50)" defaultValue="">
         <constraints nullable="true"/>
       </column>
     </addColumn>
@@ -329,15 +329,15 @@
   <changeSet author="phuong_vu@exoplatform.com" id="1.0.0-19">
     <createTable tableName="TASK_LABELS">
       <column name="LABEL_ID" type="BIGINT" autoIncrement="${autoIncrement}" startWith="1">
-        <constraints nullable="false" primaryKey="true" primaryKeyName="PK_TASK_LABELS" unique="true"/>
+        <constraints nullable="false" primaryKey="true" primaryKeyName="PK_TASK_LABELS"/>
       </column>
-      <column name="NAME" type="VARCHAR(50)">
+      <column name="NAME" type="NVARCHAR(50)">
         <constraints nullable="false"/>
       </column>
-      <column name="USERNAME" type="VARCHAR(50)">
+      <column name="USERNAME" type="NVARCHAR(50)">
         <constraints nullable="false"/>
       </column>
-      <column name="COLOR" type="VARCHAR(100)">
+      <column name="COLOR" type="NVARCHAR(100)">
         <constraints nullable="true"/>
       </column>
       <column name="HIDDEN" type="BIT" defaultValue="0">

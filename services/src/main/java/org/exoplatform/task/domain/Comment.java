@@ -45,6 +45,7 @@ public class Comment {
 
   private String author;
 
+  @Column(name = "CMT")
   private String comment;
 
   @Temporal(TemporalType.TIMESTAMP)
