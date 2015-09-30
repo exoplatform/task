@@ -10,7 +10,7 @@
   <property name="autoIncrement" value="false" dbms="oracle,postgresql"/>
 
   <!-- Definition of TASK_PROJECTS table -->
-  <changeSet author="tclement@exoplatform.com" id="1.0.0-1">
+  <changeSet author="task" id="1.0.0-1">
     <createTable tableName="TASK_PROJECTS">
       <column name="PROJECT_ID" type="BIGINT" autoIncrement="${autoIncrement}" startWith="1">
         <constraints nullable="false" primaryKey="true" primaryKeyName="PK_TASK_PROJECTS" />
@@ -38,12 +38,12 @@
       <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
     </modifySql>
   </changeSet>
-  <changeSet author="tclement@exoplatform.com" id="1.0.0-2" dbms="oracle,postgresql">
+  <changeSet author="task" id="1.0.0-2" dbms="oracle,postgresql">
     <createSequence sequenceName="SEQ_TASK_PROJECTS_PROJECT_ID" startValue="1"/>
   </changeSet>
 
   <!-- Definition of TASK_PROJECT_MANAGER table -->
-  <changeSet author="tclement@exoplatform.com" id="1.0.0-3">
+  <changeSet author="task" id="1.0.0-3">
     <createTable tableName="TASK_PROJECT_MANAGERS">
       <column name="PROJECT_ID" type="BIGINT">
         <constraints foreignKeyName="FK_TASK_PRJ_MGR_TASK_PRJ_01" references="TASK_PROJECTS(PROJECT_ID)" nullable="false"/>
@@ -58,7 +58,7 @@
   </changeSet>
 
   <!-- Definition of TASK_PROJECT_PARTICIPATOR table -->
-  <changeSet author="tclement@exoplatform.com" id="1.0.0-4">
+  <changeSet author="task" id="1.0.0-4">
     <createTable tableName="TASK_PROJECT_PARTICIPATORS">
       <column name="PROJECT_ID" type="BIGINT">
         <constraints foreignKeyName="FK_TASK_PRJ_PTOR_TASK_PRJ_01" references="TASK_PROJECTS(PROJECT_ID)" nullable="false"/>
@@ -73,7 +73,7 @@
   </changeSet>
 
   <!-- Definition of TASK_STATUS table -->
-  <changeSet author="tclement@exoplatform.com" id="1.0.0-5">
+  <changeSet author="task" id="1.0.0-5">
     <createTable tableName="TASK_STATUS">
       <column name="STATUS_ID" type="BIGINT" autoIncrement="${autoIncrement}" startWith="1">
         <constraints nullable="false" primaryKey="true" primaryKeyName="PK_TASK_STATUS"/>
@@ -92,12 +92,12 @@
       <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
     </modifySql>
   </changeSet>
-  <changeSet author="tclement@exoplatform.com" id="1.0.0-6" dbms="oracle,postgresql">
+  <changeSet author="task" id="1.0.0-6" dbms="oracle,postgresql">
     <createSequence sequenceName="SEQ_TASK_STATUS_STATUS_ID" startValue="1"/>
   </changeSet>
 
   <!-- Definition of TASK_TASKS table -->
-  <changeSet author="tclement@exoplatform.com" id="1.0.0-7">
+  <changeSet author="task" id="1.0.0-7">
     <createTable tableName="TASK_TASKS">
       <column name="TASK_ID" type="BIGINT" autoIncrement="${autoIncrement}" startWith="1">
         <constraints primaryKey="true" primaryKeyName="PK_TASK_TASKS" nullable="false"/>
@@ -146,12 +146,12 @@
       <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
     </modifySql>
   </changeSet>
-  <changeSet author="tclement@exoplatform.com" id="1.0.0-8" dbms="oracle,postgresql">
+  <changeSet author="task" id="1.0.0-8" dbms="oracle,postgresql">
     <createSequence sequenceName="SEQ_TASK_TASKS_TASK_ID" startValue="1"/>
   </changeSet>
 
   <!-- Definition of TASK_TASK_COWORKER table -->
-  <changeSet author="tclement@exoplatform.com" id="1.0.0-9">
+  <changeSet author="task" id="1.0.0-9">
     <createTable tableName="TASK_TASK_COWORKERS">
       <column name="TASK_ID" type="BIGINT">
         <constraints foreignKeyName="FK_TK_TK_COWKR_TK_TK_01" references="TASK_TASKS(TASK_ID)" nullable="false"/>
@@ -166,7 +166,7 @@
   </changeSet>
 
   <!-- Definition of TASK_TAGS table -->
-  <changeSet author="tclement@exoplatform.com" id="1.0.0-10">
+  <changeSet author="task" id="1.0.0-10">
     <createTable tableName="TASK_TAGS">
       <column name="TASK_ID" type="BIGINT">
         <constraints foreignKeyName="FK_TASK_TAGS_TASK_TASKS_01" references="TASK_TASKS(TASK_ID)" nullable="false"/>
@@ -181,7 +181,7 @@
   </changeSet>
 
   <!-- Definition of TASK_COMMENTS table -->
-  <changeSet author="tuyennt@exoplatform.com" id="1.0.0-11">
+  <changeSet author="task" id="1.0.0-11">
     <createTable tableName="TASK_COMMENTS">
       <column name="COMMENT_ID" type="BIGINT" autoIncrement="${autoIncrement}" startWith="1">
         <constraints primaryKey="true" primaryKeyName="PK_TASK_COMMENTS" nullable="false"/>
@@ -205,7 +205,7 @@
   </changeSet>
 
   <!-- Definition of TASK_USER_SETTINGS table -->
-  <changeSet author="tuyennt@exoplatform.com" id="1.0.0-12">
+  <changeSet author="task" id="1.0.0-12">
     <createTable tableName="TASK_USER_SETTINGS">
       <column name="USERNAME" type="NVARCHAR(50)">
         <constraints primaryKey="true" primaryKeyName="PK_TASK_USER_SETTINGS" nullable="false"/>
@@ -222,7 +222,7 @@
     </modifySql>
   </changeSet>
   <!-- Definition of TASK_HIDDEN_PROJECTS table -->
-  <changeSet author="tuyennt@exoplatform.com" id="1.0.0-13">
+  <changeSet author="task" id="1.0.0-13">
     <createTable tableName="TASK_HIDDEN_PROJECTS">
       <column name="USERNAME" type="NVARCHAR(50)">
         <constraints foreignKeyName="FK_TK_HID_PRJ_TK_USR_SET_01" references="TASK_USER_SETTINGS(USERNAME)" nullable="false"/>
@@ -237,7 +237,7 @@
   </changeSet>
   
   <!-- Definition of TASK_LOGS table -->
-  <changeSet author="phuong_vu@exoplatform.com" id="1.0.0-14">
+  <changeSet author="task" id="1.0.0-14">
     <createTable tableName="TASK_LOGS">
       <column name="TASK_ID" type="BIGINT">
         <constraints nullable="false" foreignKeyName="FK_LOG_TASK" references="TASK_TASKS(TASK_ID)"/>
@@ -260,7 +260,7 @@
   </changeSet>
 
   <!-- Add index for performance -->
-  <changeSet author="tclement@exoplatform.com" id="1.0.0-15">
+  <changeSet author="task" id="1.0.0-15">
     <createIndex indexName="IDX_TASK_TASKS_01"
                  tableName="TASK_TASKS">
       <column name="COMPLETED" type="BIT"/>
@@ -280,7 +280,7 @@
   </changeSet>
 
   <!-- Definition column RANK for TASK_TASKS table -->
-  <changeSet author="tuyennt@exoplatform.com" id="1.0.0-16">
+  <changeSet author="task" id="1.0.0-16">
     <addColumn tableName="TASK_TASKS">
       <column name="RANK" type="INT" defaultValue="0">
         <constraints nullable="true"/>
@@ -289,7 +289,7 @@
   </changeSet>
 
   <!-- Update FK for TASK_HIDDEN_PROJECTS table -->
-  <changeSet author="tuyennt@exoplatform.com" id="1.0.0-17">
+  <changeSet author="task" id="1.0.0-17">
     <!-- Drop old FK -->
     <dropForeignKeyConstraint baseTableName="TASK_HIDDEN_PROJECTS" constraintName="FK_TK_HID_PRJ_TK_USR_SET_01"/>
     <dropForeignKeyConstraint baseTableName="TASK_HIDDEN_PROJECTS" constraintName="FK_TASK_HID_PRJ_TK_PRJ_01"/>
@@ -311,13 +311,13 @@
     <rollback>
       <!--
         Do not execute any sql rollback here because we just re-create FK constraint.
-        If we let it default (drop FK constraint), the rollback of change set [author="tuyennt@exoplatform.com" id="1.0.0-13"] will be failure
+        If we let it default (drop FK constraint), the rollback of change set [author="task" id="1.0.0-13"] will be failure
        -->
     </rollback>
   </changeSet>
 
   <!-- Definition column ACTIVITY_ID for TASK_TASKS table -->
-  <changeSet author="tuyennt@exoplatform.com" id="1.0.0-18">
+  <changeSet author="task" id="1.0.0-18">
     <addColumn tableName="TASK_TASKS">
       <column name="ACTIVITY_ID" type="NVARCHAR(50)" defaultValue="">
         <constraints nullable="true"/>
@@ -326,7 +326,7 @@
   </changeSet>
   
   <!-- Definition of TASK_LABELS table -->
-  <changeSet author="phuong_vu@exoplatform.com" id="1.0.0-19">
+  <changeSet author="task" id="1.0.0-19">
     <createTable tableName="TASK_LABELS">
       <column name="LABEL_ID" type="BIGINT" autoIncrement="${autoIncrement}" startWith="1">
         <constraints nullable="false" primaryKey="true" primaryKeyName="PK_TASK_LABELS"/>
@@ -353,7 +353,7 @@
   </changeSet>
   
   <!-- Definition of TASK_LABEL_TASK table -->
-  <changeSet author="phuong_vu@exoplatform.com" id="1.0.0-20">
+  <changeSet author="task" id="1.0.0-20">
     <createTable tableName="TASK_LABEL_TASK">
       <column name="LABEL_ID" type="BIGINT">
         <constraints foreignKeyName="FK_TK_LBL_TK_LBL_TK_LBL__01" references="TASK_LABELS(LABEL_ID)" nullable="false"/>
@@ -368,7 +368,7 @@
   </changeSet>
 
   <!-- Definition of sequence for TASK_COMMENTS -->
-  <changeSet author="tclement@exoplatform.com" id="1.0.0-19" dbms="oracle,postgresql">
+  <changeSet author="task" id="1.0.0-19" dbms="oracle,postgresql">
     <createSequence sequenceName="SEQ_TASK_COMMENTS_COMMENT_ID" startValue="1"/>
   </changeSet>
 
