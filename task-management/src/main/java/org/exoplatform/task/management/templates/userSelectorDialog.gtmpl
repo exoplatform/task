@@ -93,7 +93,7 @@
 	 <% } %>
     <div class="uiAction uiActionBorder">    
       <a class="btn addUser"  href="javascript:void(0);" >&{popup.add}</a>  
-      <a class="btn close"  href="javascript:void(0);">&{popup.close}</a>
+      <a class="btn"  href="javascript:void(0);">&{popup.close}</a>
     </div>
   </div>
   <span class="uiIconResize pull-right uiIconLightGray"></span>

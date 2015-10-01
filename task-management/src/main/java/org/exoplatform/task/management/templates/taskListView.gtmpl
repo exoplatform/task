@@ -34,7 +34,7 @@
                                 </ul>
                              </span>
                              <span class="action-bar dropdown pull-right" data-currentgroupby="${groupBy}">
-                                <a href="" class="actionIcon dropdown-toggle"  data-original-title="group By" data-toggle="dropdown"  rel="tooltip" data-placement="bottom">
+                                <a href="" class="actionIcon dropdown-toggle"  data-original-title="Group by" data-toggle="dropdown"  rel="tooltip" data-placement="bottom">
                                     <i class="uiIconViewList uiIconLightGray"></i>
                                     <span>${groups[groupBy]}</span>
                                 </a>
@@ -122,12 +122,22 @@
                             <!--<span class="inline-block-hide labels">
                                 <a href="#" class="navy_blue label">Next</a>
                                 <a href="#" class="orange label">Writing</a>
-                            </span>-->
-                            <a class="actionIcon inline-block-hide" href="javascript:void(0)"><i class="uiIcon uiIconClock"></i></a>
-                            <% if (orderBy == 'priority') {%>
-                                <a class="actionIcon inline-block" href="javascript:void(0)"><i class="uiIconColorPriority${task.priority == null ? 'UNDEFINED' : task.priority.name()}"></i></a>
-                            <% }%>
-                            <a class="actionIcon inline-block-hide" data-taskcompleted="${task.completed}" href="javascript:void(0)">
+                             </span>-->
+                            <span class="dropdown-group">
+                                <a class="actionIcon inline-block-hide" data-toggle="dropdown" data-placement="bottom" data-original-title="Snooze due date" rel="tooltip" href="javascript:void(0)">
+                                    <i class="uiIcon uiIconClock"></i>
+                                </a>
+                                <% if (orderBy == 'priority') {%>
+                                    <a class="actionIcon inline-block" href="javascript:void(0)"><i class="uiIconColorPriority${task.priority == null ? 'UNDEFINED' : task.priority.name()}"></i></a>
+                                <% }%>
+                                <ul class="dropdown-menu pull-right">
+                                    <li><a href="#">Later Today (+5 hours)</a></li>
+                                    <li><a href="#">Tomorrow Morning (9am the next day)</a></li>
+                                    <li><a href="#">Tomorrow Afternoon (1pm the next day)</a></li>
+                                    <li><a href="#">Next Week (next monday 9am)</a></li>
+                                </ul>
+                            </span>
+                            <a class="actionIcon inline-block-hide" data-placement="left" data-original-title="Mark as completed" rel="tooltip" data-taskcompleted="${task.completed}" href="javascript:void(0)">
                                 <i class="uiIconValidate uiIconLightGray"></i>
                             </a>
                         </div>
