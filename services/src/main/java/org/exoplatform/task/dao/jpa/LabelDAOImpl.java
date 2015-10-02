@@ -18,26 +18,12 @@ package org.exoplatform.task.dao.jpa;
 
 import java.util.List;
 
-import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
-import org.exoplatform.commons.persistence.impl.EntityManagerService;
-import org.exoplatform.commons.persistence.impl.GenericDAOJPAImpl;
 import org.exoplatform.task.dao.LabelHandler;
 import org.exoplatform.task.domain.Label;
 
-public class LabelDAOImpl extends GenericDAOJPAImpl<Label, Long> implements LabelHandler {
-
-  private EntityManagerService entityService;
-
-  public LabelDAOImpl(EntityManagerService entityService) {
-    this.entityService = entityService;
-  }
-
-  @Override
-  public EntityManager getEntityManager() {
-    return entityService.getEntityManager();
-  }
+public class LabelDAOImpl extends CommonJPADAO<Label, Long> implements LabelHandler {
 
   @Override
   public List<Label> findLabelsByUser(String username) {

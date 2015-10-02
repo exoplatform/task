@@ -97,4 +97,15 @@ public class Comment {
   public void setTask(Task task) {
     this.task = task;
   }
+
+  @Override
+  public Comment clone() {
+    Comment c = new Comment();
+    c.setId(getId());
+    c.setAuthor(getAuthor());
+    c.setComment(getComment());
+    c.setCreatedTime(getCreatedTime());
+    c.setTask(getTask().clone());
+    return c;
+  }
 }

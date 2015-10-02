@@ -3,13 +3,13 @@
 #{param name=bundle/}
 
 <%
-	import java.text.SimpleDateFormat;
+    import java.text.SimpleDateFormat;
 	import java.util.Date;
-	import org.exoplatform.task.utils.TaskUtil;
+	import org.exoplatform.task.util.TaskUtil;
 	import org.apache.commons.lang.StringUtils;
-   import org.exoplatform.task.utils.ResourceUtil;
+    import org.exoplatform.task.util.ResourceUtil;
 	import org.exoplatform.task.domain.Priority;
-	import org.exoplatform.task.utils.DateUtil;
+	import org.exoplatform.task.util.DateUtil;
 
 	def task = taskModel.getTask();
 	def breadcumbs = taskModel.getBreadcumbs();

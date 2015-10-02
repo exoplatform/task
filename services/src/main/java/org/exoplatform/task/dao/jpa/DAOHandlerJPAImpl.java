@@ -14,20 +14,19 @@
 * You should have received a copy of the GNU Lesser General Public License
 * along with this program. If not, see http://www.gnu.org/licenses/ .
 */
-package org.exoplatform.task.service.jpa;
+package org.exoplatform.task.dao.jpa;
 
 import javax.inject.Singleton;
 
-import org.exoplatform.commons.persistence.impl.EntityManagerService;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
-import org.exoplatform.task.dao.jpa.CommentDAOImpl;
-import org.exoplatform.task.dao.jpa.LabelDAOImpl;
-import org.exoplatform.task.dao.jpa.ProjectDAOImpl;
-import org.exoplatform.task.dao.jpa.StatusDAOImpl;
-import org.exoplatform.task.dao.jpa.TaskDAOImpl;
-import org.exoplatform.task.dao.jpa.UserSettingDAO;
-import org.exoplatform.task.service.DAOHandler;
+import org.exoplatform.task.dao.DAOHandler;
+import org.exoplatform.task.domain.Comment;
+import org.exoplatform.task.domain.Project;
+import org.exoplatform.task.domain.Status;
+import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.domain.TaskLog;
+import org.exoplatform.task.domain.UserSetting;
 import org.exoplatform.task.service.impl.AbstractDAOHandler;
 
 /**
@@ -41,15 +40,33 @@ public class DAOHandlerJPAImpl extends AbstractDAOHandler implements DAOHandler 
 
   private static final Log LOG = ExoLogger.getLogger("DAOHandlerJPAImpl");
 
-  public DAOHandlerJPAImpl(EntityManagerService entityService) {
+  public DAOHandlerJPAImpl() {
     LOG.info("DAOHandlerJPAImpl is creating...");
-    pHandler = new ProjectDAOImpl(entityService);
-    tHandler = new TaskDAOImpl(entityService);
-    cHandler = new CommentDAOImpl(entityService);
-    sHandler = new StatusDAOImpl(entityService);
-    uHandler = new UserSettingDAO(entityService);
-    lHandler = new LabelDAOImpl(entityService);
+    pHandler = new ProjectDAOImpl();
+    tHandler = new TaskDAOImpl();
+    cHandler = new CommentDAOImpl();
+    sHandler = new StatusDAOImpl();
+    uHandler = new UserSettingDAO();
+    lHandler = new LabelDAOImpl();
     LOG.info("DAOHandlerJPAImpl is created");
+  }
+  static <E> E clone(E e) {
+    if (e == null) return null;
+    if (e instanceof Task) {
+      return (E)((Task)e).clone();
+    } else if (e instanceof Status) {
+      return (E)((Status)e).clone();
+    } else if (e instanceof Project) {
+      return (E)((Project)e).clone(false);
+    } else if (e instanceof Comment) {
+      return (E)((Comment)e).clone();
+    } else if (e instanceof TaskLog) {
+      return (E)((TaskLog)e).clone();
+    } else if (e instanceof UserSetting) {
+      return (E)((UserSetting)e).clone();
+    }
+
+    return e;
   }
 }
 

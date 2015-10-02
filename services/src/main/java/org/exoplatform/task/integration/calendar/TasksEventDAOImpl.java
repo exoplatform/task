@@ -36,8 +36,9 @@ import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.service.TaskService;
-import org.exoplatform.task.utils.ProjectUtil;
-import org.exoplatform.task.utils.TaskUtil;
+import org.exoplatform.task.util.ListUtil;
+import org.exoplatform.task.util.ProjectUtil;
+import org.exoplatform.task.util.TaskUtil;
 
 public class TasksEventDAOImpl implements EventDAO {
   
@@ -52,7 +53,7 @@ public class TasksEventDAOImpl implements EventDAO {
   @Override
   public Event getById(String id) {
     try {
-      Task task = taskService.getTaskById(Long.valueOf(id));
+      Task task = taskService.getTask(Long.valueOf(id));
       if (task.getStartDate() != null) {
         if (task.isCalendarIntegrated()) {
           Event event = newInstance();
@@ -104,7 +105,7 @@ public class TasksEventDAOImpl implements EventDAO {
      }
      
      TaskQuery taskQuery = new TaskQuery();
-     taskQuery.setProjectIds(ids);
+     //taskQuery.setProjectIds(ids);
      taskQuery.setOrderBy(orderBy);
      if (query.getFromDate() != null) {
        taskQuery.setStartDate(new Date(query.getFromDate()));
@@ -113,15 +114,16 @@ public class TasksEventDAOImpl implements EventDAO {
        taskQuery.setEndDate(new Date(query.getToDate()));
      }
      taskQuery.setKeyword(query.getText());
-     taskQuery.setAssignee(query.getOwner());
+     //taskQuery.setAssignee(query.getOwner());
      taskQuery.setCalendarIntegrated(true);
-     taskQuery.setOrFields(Arrays.asList(TaskUtil.ASSIGNEE, TaskUtil.PROJECT));
+     //taskQuery.setOrFields(Arrays.asList(TaskUtil.ASSIGNEE, TaskUtil.PROJECT));
+     taskQuery.setAssigneeOrInProject(query.getOwner(), ids);
 
-     List<Task> tasks = new LinkedList<Task>();
+     Task[] tasks = new Task[0];
      if ((query.getCategoryIds() == null || (query.getCategoryIds().length == 1 && 
          query.getCategoryIds()[0].equals(NewUserListener.DEFAULT_EVENTCATEGORY_ID_ALL))) &&  
          (query.getEventType() == null || query.getEventType().equals(Event.TYPE_TASK))) {
-       tasks = taskService.findTaskByQuery(taskQuery);
+       tasks = ListUtil.load(taskService.findTasks(taskQuery), 0, -1); //taskService.findTaskByQuery(taskQuery);
      }
      final List<Event> events = new LinkedList<Event>();
      for (Task t : tasks) {

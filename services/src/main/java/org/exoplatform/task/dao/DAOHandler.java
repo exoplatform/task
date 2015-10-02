@@ -17,30 +17,21 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.exoplatform.task.model;
-
-import java.util.Collections;
-import java.util.List;
-
-import org.exoplatform.task.domain.Task;
+package org.exoplatform.task.dao;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
-public class GroupTask {
-  private final String name;
-  private final List<Task> tasks;
+public interface DAOHandler {
+  public ProjectHandler getProjectHandler();
 
-  public GroupTask(String name, List<Task> tasks) {
-    this.name = name;
-    this.tasks = Collections.unmodifiableList(tasks);
-  }
+  public TaskHandler getTaskHandler();
+  
+  public LabelHandler getLabelHandler();
 
-  public String getName() {
-    return name;
-  }
+  public CommentHandler getCommentHandler();
 
-  public List<Task> getTasks() {
-    return tasks;
-  }
+  public StatusHandler getStatusHandler();
+
+  public UserSettingHandler getUserSettingHandler();
 }

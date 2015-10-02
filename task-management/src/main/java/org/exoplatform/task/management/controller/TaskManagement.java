@@ -20,7 +20,6 @@
 package org.exoplatform.task.management.controller;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -35,27 +34,28 @@ import juzu.View;
 import juzu.impl.common.Tools;
 import juzu.request.SecurityContext;
 
+import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.portal.application.PortalRequestContext;
 import org.exoplatform.portal.application.RequestNavigationData;
 import org.exoplatform.portal.webui.util.Util;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
-import org.exoplatform.task.dao.OrderBy;
+import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.domain.Label;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.domain.UserSetting;
-import org.exoplatform.task.exception.ProjectNotFoundException;
-import org.exoplatform.task.exception.TaskNotFoundException;
+import org.exoplatform.task.exception.EntityNotFoundException;
+import org.exoplatform.task.model.GroupKey;
 import org.exoplatform.task.model.TaskModel;
 import org.exoplatform.task.service.ParserContext;
 import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.TaskParser;
 import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.service.UserService;
-import org.exoplatform.task.utils.ProjectUtil;
-import org.exoplatform.task.utils.TaskUtil;
+import org.exoplatform.task.util.ProjectUtil;
+import org.exoplatform.task.util.TaskUtil;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
@@ -93,7 +93,7 @@ public class TaskManagement {
   NavigationState navState;
 
   @View
-  public Response.Content index(String space_group_id, SecurityContext securityContext) throws ProjectNotFoundException {
+  public Response.Content index(String space_group_id, SecurityContext securityContext) throws EntityNotFoundException {
     //TODO: should check if username is null?
     String username = securityContext.getRemoteUser();
     PortalRequestContext prc = Util.getPortalRequestContext();
@@ -109,7 +109,7 @@ public class TaskManagement {
       long id = ProjectUtil.getProjectIdFromURI(requestPath);
       if (id > 0 && prc.getControllerContext().getRequest().getQueryString() == null) {
         currProject = id;
-        project = projectService.getProjectById(currProject);
+        project = projectService.getProject(currProject);
       } else {
         currProject = -1;
       }
@@ -126,6 +126,8 @@ public class TaskManagement {
       }
     }
 
+    TaskQuery taskQuery = new TaskQuery();
+
     //
     if (taskId != -1) {
       try {
@@ -134,9 +136,12 @@ public class TaskManagement {
         if (taskModel.getTask().getStatus() != null) {
           project = taskModel.getTask().getStatus().getProject();
           currProject = project.getId();
-          tasks = projectService.getTasksByProjectId(Arrays.asList(currProject), null);      
+          //TaskQuery taskQuery = new TaskQuery();
+          taskQuery.setProjectIds(Arrays.asList(currProject));
+          //ListAccess<Task> listTasks = taskService.findTasks(taskQuery);
+          //tasks = Arrays.asList(ListUtil.load(listTasks, 0, -1)); //taskService.findTaskByQuery(taskQuery);
         }
-      } catch (TaskNotFoundException e) {
+      } catch (EntityNotFoundException e) {
         taskId = -1;
       }
     }
@@ -150,23 +155,36 @@ public class TaskManagement {
       }            
     }
     
-    if (tasks == null) {
+    //if (tasks == null) {
+    if (taskId <= 0) {
       if (space_group_id != null) {
-        tasks = taskService.getToDoTasksByUser(username, spaceProjectIds, null, null, null);
+        //taskQuery.setIsTodo(Boolean.TRUE);
+        //taskQuery.setUsername(username);
+        taskQuery.setIsTodoOf(username);
+        taskQuery.setProjectIds(spaceProjectIds);
+        //ListAccess<Task> listTasks = taskService.getTodoTasks(username, spaceProjectIds, null, null, null);
+        //tasks = Arrays.asList(ListUtil.load(listTasks, 0, -1)); //taskService.getToDoTasksByUser(username, spaceProjectIds, null, null, null);
       } else if (currProject > 0) {
-        tasks = projectService.getTasksByProjectId(Arrays.asList(currProject), null);
+        //TaskQuery taskQuery = new TaskQuery();
+        taskQuery.setProjectIds(Arrays.asList(currProject));
+        //ListAccess<Task> listTasks = taskService.findTasks(taskQuery);
+        //tasks = Arrays.asList(ListUtil.load(listTasks, 0, -1)); //taskService.findTaskByQuery(taskQuery);
       } else {
-        tasks = taskService.getIncomingTasksByUser(username, new OrderBy.DESC("createdTime"));
+        //taskQuery.setIsIncoming(Boolean.TRUE);
+        //taskQuery.setUsername(username);
+        taskQuery.setIsIncomingOf(username);
+        //ListAccess<Task> listTasks = taskService.getIncomingTasks(username, new OrderBy.DESC("createdTime"));
+        //tasks = Arrays.asList(ListUtil.load(listTasks, 0, -1)); //taskService.getIncomingTasksByUser(username, new OrderBy.DESC("createdTime"));
       }
     }
 
-    Map<String, List<Task>> groupTasks = new HashMap<String, List<Task>>();
-    groupTasks.put("", tasks);
+    Map<GroupKey, ListAccess<Task>> groupTasks = TaskUtil.findTasks(taskService, taskQuery, "", null, userService);
 
     UserSetting setting = userService.getUserSetting(username);
 
-    long taskNum = TaskUtil.getTaskNum(username, spaceProjectIds, currProject, taskService);
-    
+    //long taskNum = TaskUtil.getTaskNum(username, spaceProjectIds, currProject, taskService);
+    long taskNum = TaskUtil.countTasks(taskService, taskQuery);
+
     Map<String, String> defOrders = TaskUtil.getDefOrders(bundle);
     Map<String, String> defGroupBys = TaskUtil.getDefGroupBys(currProject, bundle);
     
@@ -206,6 +224,7 @@ public class TaskManagement {
     return TaskManagement_.index(space_group_id);
   }
 
+  //TODO: this method is not used any more?
   @Action
   public Response changeViewState(String space_group_id, String groupBy, String orderBy) {
     return TaskManagement_.index(space_group_id);

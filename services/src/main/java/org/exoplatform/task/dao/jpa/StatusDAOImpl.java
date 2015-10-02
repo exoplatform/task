@@ -16,9 +16,11 @@
 */
 package org.exoplatform.task.dao.jpa;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -37,17 +39,9 @@ import org.exoplatform.task.domain.Status;
  * tclement@exoplatform.com
  * 4/10/15
  */
-public class StatusDAOImpl extends GenericDAOJPAImpl<Status, Long> implements StatusHandler {
+public class StatusDAOImpl extends CommonJPADAO<Status, Long> implements StatusHandler {
 
-  private EntityManagerService entityService;
-
-  public StatusDAOImpl(EntityManagerService entityService) {
-    this.entityService = entityService;
-  }
-  
-  @Override
-  public EntityManager getEntityManager() {
-    return entityService.getEntityManager();
+  public StatusDAOImpl() {
   }
 
   @Override
@@ -55,14 +49,14 @@ public class StatusDAOImpl extends GenericDAOJPAImpl<Status, Long> implements St
     EntityManager em = getEntityManager();
     Query query = em.createNamedQuery("Status.findLowestRankStatusByProject", Status.class);
     query.setParameter("projectId", projectId);
-    return (Status)query.getSingleResult();
+    return cloneEntity((Status)query.getSingleResult());
   }
   
   @Override
   public Status findHighestRankStatusByProject(long projectId) {
     Map<String, Object> params = new HashMap<String, Object>();
     params.put("projectId", projectId);
-    List<Status> sts = findByNamedQuery("Status.findHighestRankStatusByProject", params);
+    List<Status> sts = findByNamedQuery("Status.findHighestRankStatusByProject", params, 1);
     if (!sts.isEmpty()) {
       return sts.get(0);
     } else {
@@ -79,7 +73,7 @@ public class StatusDAOImpl extends GenericDAOJPAImpl<Status, Long> implements St
     Map<String, Object> params = new HashMap<String, Object>();
     params.put("name", name);
     params.put("projectID", projectID);
-    List<Status> sts = findByNamedQuery("Status.findByName", params);
+    List<Status> sts = findByNamedQuery("Status.findByName", params, 1);
     if (!sts.isEmpty()) {
       return sts.get(0);
     } else {
@@ -87,7 +81,14 @@ public class StatusDAOImpl extends GenericDAOJPAImpl<Status, Long> implements St
     }
   }
 
-  public List<Status> findByNamedQuery(String query, Map<String, Object> params) {
+  @Override
+  public List<Status> getStatuses(long projectId) {
+    Map<String, Object> param = new HashMap<String, Object>();
+    param.put("projectId", projectId);
+    return findByNamedQuery("Status.findStatusByProject", param, -1);
+  }
+
+  public List<Status> findByNamedQuery(String query, Map<String, Object> params, int limit) {
     EntityManager em = getEntityManager();
     TypedQuery<Status> q = em.createNamedQuery(query, Status.class);
     if (params != null) {
@@ -95,7 +96,10 @@ public class StatusDAOImpl extends GenericDAOJPAImpl<Status, Long> implements St
         q.setParameter(p.getKey(), p.getValue());      
       }      
     }
-    return q.getResultList();
+    if (limit > 0) {
+      q.setMaxResults(limit);
+    }
+    return cloneEntities(q.getResultList());
   }
 }
 

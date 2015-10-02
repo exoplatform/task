@@ -28,11 +28,10 @@ import org.exoplatform.calendar.storage.CalendarDAO;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.security.Identity;
-import org.exoplatform.services.security.MembershipEntry;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.service.ProjectService;
-import org.exoplatform.task.utils.ProjectUtil;
-import org.exoplatform.task.utils.UserUtils;
+import org.exoplatform.task.util.ProjectUtil;
+import org.exoplatform.task.util.UserUtil;
 
 public class TasksCalendarDAOImpl implements CalendarDAO {
   
@@ -59,7 +58,7 @@ public class TasksCalendarDAOImpl implements CalendarDAO {
       if (DF_CALENDAR.getId().equals(id)) {
         return DF_CALENDAR;
       } else {
-        Project project = projectService.getProjectById(Long.valueOf(id));      
+        Project project = projectService.getProject(Long.valueOf(id));
         if (project.isCalendarIntegrated()) {
           return ProjectUtil.buildCalendar(cal, project);          
         }
@@ -73,10 +72,12 @@ public class TasksCalendarDAOImpl implements CalendarDAO {
   @Override
   public List<Calendar> findCalendars(CalendarQuery query) {   
     Identity identity = query.getIdentity();
-    List<String> permissions = UserUtils.getMemberships(identity);
+    List<String> permissions = UserUtil.getMemberships(identity);
         
-    List<Project> projects = projectService.getProjectTreeByMembership(permissions);
-    projects = ProjectUtil.flattenTree(projects);
+    //List<Project> projects = projectService.getProjectTreeByMembership(permissions);
+    List<Project> projects = projectService.findProjects(permissions, null, null);
+
+    projects = ProjectUtil.flattenTree(projects, projectService);
 
     if (query.getExclusions() != null) {
       projects = filterExclusions(projects, query.getExclusions());      

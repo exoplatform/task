@@ -25,12 +25,10 @@ import static org.mockito.Mockito.when;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.exoplatform.task.exception.LabelNotFoundException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,22 +39,23 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import org.exoplatform.container.ExoContainer;
+import org.exoplatform.container.ExoContainerContext;
+import org.exoplatform.services.listener.Event;
+import org.exoplatform.services.listener.ListenerService;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.task.dao.CommentHandler;
+import org.exoplatform.task.dao.DAOHandler;
 import org.exoplatform.task.dao.StatusHandler;
 import org.exoplatform.task.dao.TaskHandler;
 import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.exception.CommentNotFoundException;
+import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.exception.ParameterEntityException;
-import org.exoplatform.task.exception.StatusNotFoundException;
-import org.exoplatform.task.exception.TaskNotFoundException;
-import org.exoplatform.task.service.DAOHandler;
-import org.exoplatform.task.service.TaskListener;
+import org.exoplatform.task.service.Payload;
 import org.exoplatform.task.service.TaskService;
-import org.exoplatform.task.service.impl.TaskEvent;
-import org.exoplatform.task.service.impl.TaskEvent.Type;
+import org.exoplatform.task.service.impl.TaskLoggingListener;
 import org.exoplatform.task.service.impl.TaskServiceImpl;
 import org.exoplatform.task.test.TestUtils;
 
@@ -71,6 +70,10 @@ public class TaskServiceTest {
 
   TaskService taskService;
 
+  ListenerService listenerService;
+
+  @Mock
+  ExoContainer container;
   @Mock
   TaskHandler taskHandler;
   @Mock
@@ -79,8 +82,6 @@ public class TaskServiceTest {
   StatusHandler statusHandler;
   @Mock
   DAOHandler daoHandler;
-  @Mock
-  TaskListener taskListener;
   
   //ArgumentCaptors are how you can retrieve objects that were passed into a method call
   @Captor
@@ -88,12 +89,17 @@ public class TaskServiceTest {
   @Captor
   ArgumentCaptor<Comment> commentCaptor;
   @Captor
-  ArgumentCaptor<TaskEvent> eventCaptor;
+  ArgumentCaptor<Event<TaskService, Payload>> eventCaptor;
+
+  @Mock TaskLoggingListener listener;
 
   @Before
-  public void setUp() {
+  public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
-    taskService = TaskServiceImpl.createInstance(daoHandler, Arrays.asList(taskListener));
+    listenerService = new ListenerService(new ExoContainerContext(container));
+    listenerService.addListener(TaskService.TASK_CREATION, listener);
+    listenerService.addListener(TaskService.TASK_UPDATE, listener);
+    taskService = new TaskServiceImpl(daoHandler, listenerService);
 
     //Mock DAO handler to return Mocked DAO
 
@@ -121,34 +127,40 @@ public class TaskServiceTest {
   }
   
   @Test
-  public void testTaskCreatedEvent() {
+  public void testTaskCreatedEvent() throws Exception {
     taskService.createTask(TestUtils.getDefaultTask());
-    verify(taskListener, times(1)).event(eventCaptor.capture());
-    
-    TaskEvent event = eventCaptor.getValue();
-    assertEquals(Type.CREATED, event.getType());
+    verify(listener, times(1)).onEvent(eventCaptor.capture());
+
+    Event<TaskService, Payload> event = eventCaptor.getValue();
+    assertEquals(TestUtils.getDefaultTask().getTitle(), event.getData().after().getTitle());
   }
 
   @Test
-  public void testUpdateTaskTitle() throws ParameterEntityException, StatusNotFoundException, TaskNotFoundException, LabelNotFoundException {
+  public void testUpdateTaskTitle() throws Exception {
 
     String newTitle = "newTitle";
 
-    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "title", new String[]{newTitle}, null, null);
+    Task task = taskService.getTask(TestUtils.EXISTING_TASK_ID);
+    task.setTitle(newTitle);
+    taskService.updateTask(task);
+
     //capture the object that was passed into the TaskHandler.updateTask(task) method
     //times(1) verify that the method update has been invoked only one time
     verify(taskHandler, times(1)).update(taskCaptor.capture());
 
     assertEquals(newTitle, taskCaptor.getValue().getTitle());
-
+    verify(listener, times(1)).onEvent(eventCaptor.capture());
   }
 
   @Test
-  public void testUpdateTaskDescription() throws ParameterEntityException, StatusNotFoundException, TaskNotFoundException, LabelNotFoundException {
+  public void testUpdateTaskDescription() throws ParameterEntityException, EntityNotFoundException {
 
     String newDescription = "This is a new description";
 
-    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "description", new String[]{newDescription}, null, null);
+    Task task = taskService.getTask(TestUtils.EXISTING_TASK_ID);
+    task.setDescription(newDescription);
+    taskService.updateTask(task);
+
     verify(taskHandler, times(1)).update(taskCaptor.capture());
 
     assertEquals(newDescription, taskCaptor.getValue().getDescription());
@@ -156,11 +168,14 @@ public class TaskServiceTest {
   }
 
   @Test
-  public void testUpdateTaskCompleted() throws ParameterEntityException, StatusNotFoundException, TaskNotFoundException {
+  public void testUpdateTaskCompleted() throws ParameterEntityException, EntityNotFoundException {
 
     Boolean newCompleted = true;
 
-    taskService.updateTaskCompleted(TestUtils.EXISTING_TASK_ID, newCompleted);
+    Task task = taskService.getTask(TestUtils.EXISTING_TASK_ID);
+    task.setCompleted(newCompleted);
+    taskService.updateTask(task);
+
     verify(taskHandler, times(1)).update(taskCaptor.capture());
 
     assertEquals(newCompleted, taskCaptor.getValue().isCompleted());
@@ -168,11 +183,14 @@ public class TaskServiceTest {
   }
 
   @Test
-  public void testUpdateTaskAssignee() throws ParameterEntityException, StatusNotFoundException, TaskNotFoundException, LabelNotFoundException {
+  public void testUpdateTaskAssignee() throws ParameterEntityException, EntityNotFoundException {
 
     String newAssignee = "Tib";
 
-    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "assignee", new String[]{newAssignee}, null, null);
+    Task task = taskService.getTask(TestUtils.EXISTING_TASK_ID);
+    task.setAssignee(newAssignee);
+    taskService.updateTask(task);
+
     verify(taskHandler, times(1)).update(taskCaptor.capture());
 
     assertEquals(newAssignee, taskCaptor.getValue().getAssignee());
@@ -180,11 +198,18 @@ public class TaskServiceTest {
   }
 
   @Test
-  public void testUpdateTaskCoworker() throws ParameterEntityException, StatusNotFoundException, TaskNotFoundException, LabelNotFoundException {
+  public void testUpdateTaskCoworker() throws ParameterEntityException, EntityNotFoundException {
 
-    String[] newCoworkers =  {"Tib","Trong","Phuong","Tuyen"};
+    Set<String> newCoworkers =  new HashSet<String>(); 
+    newCoworkers.add("Tib");
+    newCoworkers.add("Trong");
+    newCoworkers.add("Phuong");
+    newCoworkers.add("Tuyen");
 
-    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "coworker", newCoworkers, null, null);
+    Task task = taskService.getTask(TestUtils.EXISTING_TASK_ID);
+    task.setCoworker(newCoworkers);
+    taskService.updateTask(task);
+
     verify(taskHandler, times(1)).update(taskCaptor.capture());
 
     Set<String> coworker = new HashSet<String>();
@@ -196,11 +221,16 @@ public class TaskServiceTest {
   }
 
   @Test
-  public void testUpdateTaskTag() throws ParameterEntityException, StatusNotFoundException, TaskNotFoundException, LabelNotFoundException {
+  public void testUpdateTaskTag() throws ParameterEntityException, EntityNotFoundException {
 
-    String[] newTags = {"Flip","Flop"};
+    Set<String> newTags = new HashSet<String>();
+    newTags.add("Flip");
+    newTags.add("Flop");
 
-    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "tags", newTags, null, null);
+    Task task = taskService.getTask(TestUtils.EXISTING_TASK_ID);
+    task.setTag(newTags);
+    taskService.updateTask(task);
+
     verify(taskHandler, times(1)).update(taskCaptor.capture());
 
     Set<String> tags = new HashSet<String>();
@@ -212,9 +242,12 @@ public class TaskServiceTest {
   }
 
   @Test
-  public void testUpdateTaskStatus() throws ParameterEntityException, StatusNotFoundException, TaskNotFoundException, LabelNotFoundException {
+  public void testUpdateTaskStatus() throws ParameterEntityException, EntityNotFoundException {
 
-    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "status", new String[]{String.valueOf(TestUtils.EXISTING_STATUS_ID)}, null, null);
+    Task task = taskService.getTask(TestUtils.EXISTING_TASK_ID);
+    task.setStatus(statusHandler.find(TestUtils.EXISTING_STATUS_ID));;
+    taskService.updateTask(task);
+
     verify(taskHandler, times(1)).update(taskCaptor.capture());
 
     assertEquals(TestUtils.getDefaultStatus(), taskCaptor.getValue().getStatus());
@@ -222,13 +255,16 @@ public class TaskServiceTest {
   }
 
   @Test
-  public void testUpdateTaskDueDate() throws ParameterEntityException, StatusNotFoundException, TaskNotFoundException, ParseException, LabelNotFoundException {
+  public void testUpdateTaskDueDate() throws ParameterEntityException, EntityNotFoundException, ParseException {
 
     String dueDate = "1989-01-19";
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     Date date = sdf.parse(dueDate);
 
-    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "dueDate", new String[]{dueDate}, null, null);
+    Task task = taskService.getTask(TestUtils.EXISTING_TASK_ID);
+    task.setDueDate(date);
+    taskService.updateTask(task);
+
     verify(taskHandler, times(1)).update(taskCaptor.capture());
 
     assertEquals(date, taskCaptor.getValue().getDueDate());
@@ -236,19 +272,19 @@ public class TaskServiceTest {
   }
 
   @Test
-  public void testDeleteTaskById() throws TaskNotFoundException {
-    taskService.deleteTaskById(TestUtils.EXISTING_TASK_ID);
+  public void testDeleteTaskById() throws EntityNotFoundException {
+    taskService.removeTask(TestUtils.EXISTING_TASK_ID);
     verify(taskHandler, times(1)).delete(taskCaptor.capture());
 
     assertEquals(TestUtils.EXISTING_TASK_ID, taskCaptor.getValue().getId());
   }
 
   @Test
-  public void testCloneTaskById() throws TaskNotFoundException {
+  public void testCloneTaskById() throws EntityNotFoundException {
 
     Task defaultTask = TestUtils.getDefaultTask();
 
-    taskService.cloneTaskById(TestUtils.EXISTING_TASK_ID);
+    taskService.cloneTask(TestUtils.EXISTING_TASK_ID);
     ArgumentCaptor<Task> taskCaptor = ArgumentCaptor.forClass(Task.class);
     verify(taskHandler, times(1)).create(taskCaptor.capture());
 
@@ -269,10 +305,10 @@ public class TaskServiceTest {
   }
 
   @Test
-  public void testAddCommentsByTaskId() throws TaskNotFoundException {
+  public void testAddCommentsByTaskId() throws EntityNotFoundException {
     String username = "Tib";
     String comment = "Bla bla bla bla bla";
-    taskService.addCommentToTaskId(TestUtils.EXISTING_TASK_ID, username, comment);
+    taskService.addComment(TestUtils.EXISTING_TASK_ID, username, comment);
     verify(commentHandler, times(1)).create(commentCaptor.capture());
 
     assertEquals(TestUtils.EXISTING_TASK_ID, commentCaptor.getValue().getTask().getId());
@@ -281,41 +317,20 @@ public class TaskServiceTest {
   }
 
   @Test
-  public void testDeleteCommentById() throws CommentNotFoundException {
-    taskService.deleteCommentById(TestUtils.EXISTING_COMMENT_ID);
+  public void testDeleteCommentById() throws EntityNotFoundException {
+    taskService.removeComment(TestUtils.EXISTING_COMMENT_ID);
     verify(commentHandler, times(1)).delete(commentCaptor.capture());
 
     assertEquals(TestUtils.EXISTING_COMMENT_ID, commentCaptor.getValue().getId());
   }
 
-  @Test(expected = TaskNotFoundException.class)
-  public void testTaskNotFoundException() throws TaskNotFoundException {
-    taskService.getTaskById(TestUtils.UNEXISTING_TASK_ID);
+  @Test(expected = EntityNotFoundException.class)
+  public void testTaskNotFoundException() throws EntityNotFoundException {
+    taskService.getTask(TestUtils.UNEXISTING_TASK_ID);
   }
 
-  @Test(expected = StatusNotFoundException.class)
-  public void testStatusNotFoundException() throws ParameterEntityException, StatusNotFoundException, TaskNotFoundException, LabelNotFoundException {
-    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "status", new String[]{String.valueOf(TestUtils.UNEXISTING_STATUS_ID)}, null, null);
+  @Test(expected = EntityNotFoundException.class)
+  public void testCommentNotFoundException() throws EntityNotFoundException {
+    taskService.removeComment(TestUtils.UNEXISTING_COMMENT_ID);
   }
-
-  @Test(expected = CommentNotFoundException.class)
-  public void testCommentNotFoundException() throws CommentNotFoundException {
-    taskService.deleteCommentById(TestUtils.UNEXISTING_COMMENT_ID);
-  }
-
-  @Test(expected = ParameterEntityException.class)
-  public void testWrongDateFormatException() throws ParameterEntityException, StatusNotFoundException, TaskNotFoundException, LabelNotFoundException {
-    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "dueDate", new String[]{"this-is-not-a-date"}, null, null);
-  }
-
-  @Test(expected = ParameterEntityException.class)
-  public void testWrongStatusException() throws ParameterEntityException, StatusNotFoundException, TaskNotFoundException, LabelNotFoundException {
-    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "status", new String[]{"this-is-not-a-long-id"}, null, null);
-  }
-
-  @Test(expected = ParameterEntityException.class)
-  public void testUnknownParameterException() throws ParameterEntityException, StatusNotFoundException, TaskNotFoundException, LabelNotFoundException {
-    taskService.updateTaskInfo(TestUtils.EXISTING_TASK_ID, "status", new String[]{"this-is-not-a-know-parameter"}, null, null);
-  }
-
 }

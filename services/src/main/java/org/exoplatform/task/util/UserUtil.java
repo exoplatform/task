@@ -20,7 +20,7 @@
 * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 */
 
-package org.exoplatform.task.utils;
+package org.exoplatform.task.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,9 +38,9 @@ import org.exoplatform.task.model.UserGroup;
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
-public final class UserUtils {
+public final class UserUtil {
 
-  private UserUtils() {
+  private UserUtil() {
   }
 
   public static String getDisplayName(User user) {

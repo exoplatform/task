@@ -17,29 +17,36 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.exoplatform.task.service.impl;
+package org.exoplatform.task.util;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.exoplatform.task.service.ParserContext;
-import org.exoplatform.task.service.TaskBuilder;
-import org.exoplatform.task.service.TaskParserPlugin;
+import org.exoplatform.commons.utils.ListAccess;
+import org.exoplatform.task.dao.jpa.JPAQueryListAccess;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
-public class TaskAssigneeParserPlugin implements TaskParserPlugin {
-  @Override
-  public String parse(String input, ParserContext context, TaskBuilder builder) {
-    Pattern p = Pattern.compile("(\\s)(@)([a-zA-Z]+)");
-    Matcher m = p.matcher(input);
-    while(m.find()) {
-      String assignee = m.group(3);
-      builder.withAssignee(assignee.trim());
+public class ListUtil {
+  public static <E> int getSize(ListAccess<E> list) {
+    try {
+      return list.getSize();
+    } catch (Exception ex) {
+      return 0;
     }
+  }
 
-    String in = input.replaceAll("\\s@[a-zA-Z]+\\s*", " ").trim();
-    return in;
+  public static <E> E[] load(ListAccess<E> list, int start, int limit) {
+    try {
+      if (list instanceof JPAQueryListAccess) {
+        return list.load(start, limit);
+      } else {
+        if (limit < 0) {
+          start = 0;
+          limit = list.getSize();
+        }
+        return list.load(start, limit);
+      }
+    } catch (Exception ex) {
+      return (E[])(new Object[0]);
+    }
   }
 }

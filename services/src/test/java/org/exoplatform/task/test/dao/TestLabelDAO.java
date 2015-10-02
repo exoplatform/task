@@ -19,11 +19,12 @@ package org.exoplatform.task.test.dao;
 import java.util.List;
 
 import org.exoplatform.container.PortalContainer;
+import org.exoplatform.task.dao.DAOHandler;
 import org.exoplatform.task.dao.LabelHandler;
 import org.exoplatform.task.domain.Label;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.service.DAOHandler;
 import org.exoplatform.task.test.AbstractTest;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;

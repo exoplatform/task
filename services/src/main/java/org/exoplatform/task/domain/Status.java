@@ -25,6 +25,19 @@ import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>
  */
@@ -39,7 +52,9 @@ import java.util.Set;
             query = "SELECT s FROM Status s WHERE s.rank = (SELECT MAX(s2.rank) FROM Status s2 " +
                 "WHERE s2.project.id = :projectId) AND s.project.id = :projectId)"),
     @NamedQuery(name = "Status.findByName",
-                query = "SELECT s FROM Status s WHERE s.name = :name AND s.project.id = :projectID)")
+                query = "SELECT s FROM Status s WHERE s.name = :name AND s.project.id = :projectID"),
+    @NamedQuery(name = "Status.findStatusByProject",
+                query = "SELECT s FROM Status s WHERE s.project.id = :projectId ORDER BY s.rank ASC")
 })
 public class Status implements Comparable<Status>{
   @Id
@@ -52,7 +67,7 @@ public class Status implements Comparable<Status>{
 
   private Integer rank;
 
-  @OneToMany(mappedBy = "status", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "status", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
   private Set<Task> tasks = new HashSet<Task>();
 
   @ManyToOne
@@ -98,10 +113,13 @@ public class Status implements Comparable<Status>{
     this.name = name;
   }
 
+  //TODO: Get Tasks of status via TaskService
+  @Deprecated
   public Set<Task> getTasks() {
     return tasks;
   }
 
+  @Deprecated
   public void setTasks(Set<Task> tasks) {
     this.tasks = tasks;
   }
@@ -122,19 +140,9 @@ public class Status implements Comparable<Status>{
     this.project = project;
   }
 
-  public Status clone(boolean cloneTask) {
-    Status status = new Status(this.getName(), this.getRank(), new HashSet<Task>(), null);
+  public Status clone() {
+    Status status = new Status(getId(), getName(), getRank(), null, getProject().clone(false));
 
-    if (cloneTask) {
-      if (this.getTasks() != null) {
-        for (Task t : this.getTasks()) {
-          if(t.isCompleted()) continue;
-          Task cloned = t.clone();
-          status.getTasks().add(cloned);
-          cloned.setStatus(status);
-        }
-      }
-    }
     return status;
   }
 

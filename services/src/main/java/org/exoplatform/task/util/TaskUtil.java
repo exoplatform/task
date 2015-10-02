@@ -14,13 +14,17 @@
 * You should have received a copy of the GNU Lesser General Public License
 * along with this program. If not, see http://www.gnu.org/licenses/ .
 */
-package org.exoplatform.task.utils;
+package org.exoplatform.task.util;
 
+
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -31,24 +35,28 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeMap;
 
-import org.exoplatform.container.ExoContainer;
-import org.exoplatform.portal.mop.SiteKey;
 import org.exoplatform.calendar.model.Event;
 import org.exoplatform.calendar.service.impl.NewUserListener;
+import org.exoplatform.commons.utils.ListAccess;
+import org.exoplatform.container.ExoContainer;
+import org.exoplatform.portal.mop.SiteKey;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
-import org.exoplatform.services.organization.User;
+import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Label;
+import org.exoplatform.task.domain.Priority;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.exception.TaskNotFoundException;
+import org.exoplatform.task.exception.EntityNotFoundException;
+import org.exoplatform.task.exception.ParameterEntityException;
 import org.exoplatform.task.model.CommentModel;
 import org.exoplatform.task.model.GroupKey;
 import org.exoplatform.task.model.TaskModel;
 import org.exoplatform.task.service.ProjectService;
+import org.exoplatform.task.service.StatusService;
 import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.service.UserService;
 import org.exoplatform.web.controller.router.Router;
@@ -109,34 +117,12 @@ public final class TaskUtil {
     }
     return labels;
   }
-  
-  public static long getTaskNum(String username, List<Long> spaceProjectIds, Long projectId, TaskService taskService) {
-    long taskNum = 0;
-    if (projectId > 0) {
-      taskNum = taskService.getTaskNum(null, Arrays.asList(projectId));      
-    } else {
-      if (spaceProjectIds != null) {
-        if (projectId == 0) {
-          taskNum = taskService.getTaskNum(null, spaceProjectIds);
-        } else {
-          taskNum = taskService.getTaskNum(username, spaceProjectIds);
-        }
-      } else {
-        if (projectId == 0) {
-          taskNum = taskService.getTaskNum(null, Arrays.asList(projectId));
-        } else {
-          taskNum = taskService.getTaskNum(username, Arrays.asList(projectId));
-        }
-      }      
-    }
-    return taskNum;
-  }
 
   public static TaskModel getTaskModel(Long id, boolean loadAllComment, ResourceBundle bundle, String username,
-                                       TaskService taskService, OrganizationService orgService, UserService userService, ProjectService projectService) throws TaskNotFoundException {
+                                       TaskService taskService, OrganizationService orgService, UserService userService, ProjectService projectService) throws EntityNotFoundException {
     TaskModel taskModel = new TaskModel();
     
-    Task task = taskService.getTaskById(id); //Can throw TaskNotFoundException
+    Task task = taskService.getTask(id); //Can throw TaskNotFoundException
     taskModel.setTask(task);
 
     org.exoplatform.task.model.User assignee = null;
@@ -157,15 +143,16 @@ public final class TaskUtil {
     taskModel.setAssignee(assignee);
     taskModel.setNumberCoworkers(numberCoworkers);
 
-    long commentCount = taskService.getNbOfCommentsByTask(task);
+    ListAccess<Comment> listComments = taskService.getComments(task.getId());
+    long commentCount = ListUtil.getSize(listComments);
     taskModel.setCommentCount(commentCount);
 
     int limitComment = loadAllComment ? -1 : 2;
-    List<Comment> cmts = taskService.getCommentsByTask(task, 0, limitComment);
+    List<Comment> cmts = Arrays.asList(ListUtil.load(listComments, 0, limitComment));
     List<CommentModel> comments = new ArrayList<CommentModel>(cmts.size());
     for(Comment c : cmts) {
       org.exoplatform.task.model.User u = userService.loadUser(c.getAuthor());
-      comments.add(new CommentModel(c, u, CommentUtils.formatMention(c.getComment(), userService)));
+      comments.add(new CommentModel(c, u, CommentUtil.formatMention(c.getComment(), userService)));
     }
     taskModel.setComments(comments);
 
@@ -188,15 +175,6 @@ public final class TaskUtil {
     return taskModel;
   }
 
-  private static User findUserByName(String userName, OrganizationService orgService) {
-    try {
-      return orgService.getUserHandler().findUserByName(userName);
-    } catch (Exception e) {
-      LOG.error(e);
-      return null;
-    }
-  }
-
   public static Map<GroupKey, List<Task>> groupTasks(List<Task> tasks, String groupBy, String username, TimeZone userTimezone, ResourceBundle bundle, TaskService taskService) {
     Map<GroupKey, List<Task>> maps = new TreeMap<GroupKey, List<Task>>();
     for(Task task : tasks) {
@@ -207,6 +185,187 @@ public final class TaskUtil {
           maps.put(key, list);
         }
         list.add(task);
+      }
+    }
+    return maps;
+  }
+
+  public static int countTasks(TaskService taskService, TaskQuery taskQuery) {
+    ListAccess<Task> list = taskService.findTasks(taskQuery);
+    return ListUtil.getSize(list);
+  }
+
+  public static Map<GroupKey, ListAccess<Task>> findTasks(TaskService taskService, TaskQuery query, String groupBy,
+                                                          TimeZone userTimezone, UserService userService) {
+    Map<GroupKey, ListAccess<Task>> maps = new TreeMap<GroupKey, ListAccess<Task>>();
+    TaskQuery selectFieldQuery = query.clone();
+    if (groupBy == null || groupBy.trim().isEmpty() || NONE.equalsIgnoreCase(groupBy)) {
+
+      ListAccess<Task> tasks = taskService.findTasks(query);
+      GroupKey key = new GroupKey("", null, 0);
+      maps.put(key, tasks);
+      return maps;
+
+    } else if (DUEDATE.equalsIgnoreCase(groupBy)) {
+      Calendar c = Calendar.getInstance(userTimezone);
+      c.set(Calendar.HOUR_OF_DAY, 0);
+      c.set(Calendar.MINUTE, 0);
+      c.set(Calendar.SECOND, 0);
+      c.set(Calendar.MILLISECOND, 0);
+
+      Date fromDueDate = null;
+      Date toDueDate = null;
+      TaskQuery q;
+
+      GroupKey key;
+      ListAccess<Task> tasks;
+
+      // Overdue
+      c.add(Calendar.MILLISECOND, -1);
+      toDueDate = c.getTime();
+      q = query.clone();
+      q.setDueDateTo(toDueDate);
+      key = new GroupKey("Overdue", toDueDate, 0);
+      tasks = taskService.findTasks(q);
+      if (ListUtil.getSize(tasks) > 0) {
+          maps.put(key, tasks);
+      }
+
+      // Today
+      c.add(Calendar.MILLISECOND, 1);
+      fromDueDate = c.getTime();
+      c.add(Calendar.HOUR_OF_DAY, 24);
+      c.add(Calendar.MILLISECOND, -1);
+      toDueDate = c.getTime();
+
+      q = query.clone();
+      q.setDueDateFrom(fromDueDate);
+      q.setDueDateTo(toDueDate);
+
+      key = new GroupKey("Today", fromDueDate, 1);
+      tasks = taskService.findTasks(q);
+      if (ListUtil.getSize(tasks) > 0) {
+        maps.put(key, tasks);
+      }
+
+      // Tomorrow
+      c.add(Calendar.MILLISECOND, 1);
+      fromDueDate = c.getTime();
+      c.add(Calendar.HOUR_OF_DAY, 24);
+      c.add(Calendar.MILLISECOND, -1);
+      toDueDate = c.getTime();
+
+      q = query.clone();
+      q.setDueDateFrom(fromDueDate);
+      q.setDueDateTo(toDueDate);
+
+      key = new GroupKey("Tomorrow", fromDueDate, 2);
+      tasks = taskService.findTasks(q);
+      if (ListUtil.getSize(tasks) > 0) {
+        maps.put(key, tasks);
+      }
+
+      // Upcoming
+      c.add(Calendar.MILLISECOND, 1);
+      fromDueDate = c.getTime();
+      toDueDate = null;
+
+      q = query.clone();
+      q.setDueDateFrom(fromDueDate);
+      q.setDueDateTo(toDueDate);
+
+      key = new GroupKey("Upcoming", fromDueDate, 3);
+      tasks = taskService.findTasks(q);
+      if (ListUtil.getSize(tasks) > 0) {
+        maps.put(key, tasks);
+      }
+
+
+      // No Due date
+      q = query.clone();
+      q.setNullField(DUEDATE);
+      key = new GroupKey("No Due date", null, 4);
+      tasks = taskService.findTasks(q);
+      if (ListUtil.getSize(tasks) > 0) {
+        maps.put(key, tasks);
+      }
+
+    } else if (PROJECT.equalsIgnoreCase(groupBy)) {
+      List<Project> projects = taskService.selectTaskField(selectFieldQuery, "status.project");
+      for (int i = 0; i < projects.size(); i++) {
+        Project p = projects.get(i);
+        GroupKey key = new GroupKey(p.getName(), p, i);
+        TaskQuery q = query.clone();
+        q.setProjectIds(Arrays.asList(p.getId()));
+        ListAccess<Task> tasks = taskService.findTasks(q);
+        if (ListUtil.getSize(tasks) > 0) {
+          maps.put(key, tasks);
+        }
+      }
+
+      //
+      if (query.getProjectIds() == null || query.getProjectIds().isEmpty()) {
+        GroupKey key = new GroupKey("No Project", null, Integer.MAX_VALUE);
+        TaskQuery q = query.clone();
+        q.setNullField(STATUS);
+        ListAccess<Task> tasks = taskService.findTasks(q);
+        if (ListUtil.getSize(tasks) > 0) {
+          maps.put(key, tasks);
+        }
+      }
+
+    } else if (STATUS.equalsIgnoreCase(groupBy)) {
+      List<Status> statuses = taskService.selectTaskField(selectFieldQuery, STATUS);
+      TaskQuery q;
+      GroupKey key;
+      ListAccess<Task> tasks;
+
+      for (Status st : statuses) {
+        q = query.clone();
+        q.setStatus(st);
+        key = new GroupKey(st.getName(), st, st.getRank());
+        tasks = taskService.findTasks(q);
+        if (ListUtil.getSize(tasks) > 0) {
+          maps.put(key, tasks);
+        }
+      }
+      if (query.getProjectIds() == null || query.getProjectIds().isEmpty()) {
+        q = query.clone();
+        q.setNullField(STATUS);
+        key = new GroupKey("No Status", null, Integer.MAX_VALUE);
+        tasks = taskService.findTasks(q);
+        if (ListUtil.getSize(tasks) > 0) {
+          maps.put(key, tasks);
+        }
+      }
+
+    } else if (ASSIGNEE.equalsIgnoreCase(groupBy)) {
+      List<String> assignees = taskService.selectTaskField(selectFieldQuery, ASSIGNEE);
+      GroupKey key;
+      ListAccess<Task> tasks;
+      TaskQuery q;
+
+      for (int i = 0; i < assignees.size(); i++) {
+        String assignee = assignees.get(i);
+        if (assignee == null) continue;
+        q = query.clone();
+        q.setAssignee(assignee);
+        org.exoplatform.task.model.User user = userService.loadUser(assignee);
+        key = new GroupKey(user.getDisplayName(), user, i);
+        tasks = taskService.findTasks(q);
+        if (ListUtil.getSize(tasks) > 0) {
+          maps.put(key, tasks);
+        }
+      }
+
+      if (query.getAssignee() == null) {
+        q = query.clone();
+        q.setNullField(ASSIGNEE);
+        key = new GroupKey("Unassigned", null, Integer.MAX_VALUE);
+        tasks = taskService.findTasks(q);
+        if (ListUtil.getSize(tasks) > 0) {
+          maps.put(key, tasks);
+        }
       }
     }
     return maps;
@@ -354,32 +513,32 @@ public final class TaskUtil {
     if("project".equalsIgnoreCase(groupBy)) {
       Status s = task.getStatus();
       if(s == null) {
-        return new GroupKey[] {new GroupKey("No Project", null, 1)};
+        return new GroupKey[] {new GroupKey("No Project", null, Integer.MAX_VALUE)};
       } else {
-        return new GroupKey[] {new GroupKey(s.getProject().getName(), s.getProject(), 0)};
+        return new GroupKey[] {new GroupKey(s.getProject().getName(), s.getProject(), s.hashCode())};
       }
     } else if("status".equalsIgnoreCase(groupBy)) {
       Status s = task.getStatus();
       if(s == null) {
-        return new GroupKey[] {new GroupKey("TODO", null, -1)};
+        return new GroupKey[] {new GroupKey("TODO", null, Integer.MIN_VALUE)};
       } else {
-        return new GroupKey[] {new GroupKey(s.getName(), s, 0)};
+        return new GroupKey[] {new GroupKey(s.getName(), s, s.getRank())};
       }
     } else if("tag".equalsIgnoreCase(groupBy)) {
       Set<String> tags = task.getTag();
       GroupKey[] keys = new GroupKey[tags != null && tags.size() > 0 ? tags.size() : 1];
       if (tags == null || tags.size() == 0) {
-        keys[0] = new GroupKey("Un tagged", null, 1);
+        keys[0] = new GroupKey("Un tagged", null, Integer.MAX_VALUE);
       } else {
         int index = 0;
         for (String tag : tags) {
-          keys[index++] = new GroupKey(tag, tag, 0);
+          keys[index++] = new GroupKey(tag, tag, tag.hashCode());
         }
       }
       return keys;
     } else if ("assignee".equalsIgnoreCase(groupBy)) {
       String assignee = task.getAssignee();
-      return assignee != null ? new GroupKey[]{new GroupKey(assignee, assignee, 0)} : new GroupKey[]{new GroupKey("Unassigned", "", 1)};
+      return assignee != null ? new GroupKey[]{new GroupKey(assignee, assignee, assignee.hashCode())} : new GroupKey[]{new GroupKey("Unassigned", "", Integer.MAX_VALUE)};
     } else if ("dueDate".equalsIgnoreCase(groupBy)) {
       Date dueDate = task.getDueDate();
       Calendar calendar = null;
@@ -393,7 +552,7 @@ public final class TaskUtil {
       List<Label> labels;
       try {
         labels = taskService.findLabelsByTask(task.getId(), username);
-      } catch (TaskNotFoundException ex) {
+      } catch (EntityNotFoundException ex) {
         labels = new ArrayList<Label>();
       }
       if (labels.isEmpty()) {
@@ -504,6 +663,151 @@ public final class TaskUtil {
       pr = pr.getParent();
     }
     return false;
+  }
+
+  public static Task saveTaskField(Task task, String param, String[] values, TimeZone timezone, StatusService statusService)
+      throws EntityNotFoundException, ParameterEntityException {
+
+    if (timezone == null) {
+      timezone = TimeZone.getDefault();
+    }
+
+    //
+    if ("workPlan".equalsIgnoreCase(param)) {
+      long oldStartTime = -1;
+      if (task.getStartDate() != null) {
+        oldStartTime = task.getStartDate().getTime();
+      }
+      long oldEndTime = -1;
+      if (task.getEndDate() != null) {
+        oldEndTime = task.getEndDate().getTime();
+      }
+      //
+      if (values == null) {
+        task.setStartDate(null);
+        task.setEndDate(null);
+      } else {
+        if (values.length != 2) {
+          LOG.error("workPlan updating lack of params");
+        }
+
+        try {
+          SimpleDateFormat wpf = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+          wpf.setTimeZone(timezone);
+          Date startDate = wpf.parse(values[0]);
+          Date endDate = wpf.parse(values[1]);
+          
+          task.setStartDate(startDate);
+          task.setEndDate(endDate);
+        } catch (ParseException ex) {
+          LOG.info("Can parse date time value: "+values[0]+" or "+values[1]+" for Task with ID: " + task.getId());
+          throw new ParameterEntityException(task.getId(), Task.class, param, values[0]+" or "+values[1],
+              "cannot be parse to date", ex);
+        }
+      }
+    } else {
+      String value = values != null && values.length > 0 ? values[0] : null;
+
+      if("title".equalsIgnoreCase(param)) {
+        task.setTitle(value);
+      } else if("dueDate".equalsIgnoreCase(param)) {
+        //
+        if(value == null || value.trim().isEmpty()) {
+          task.setDueDate(null);
+        } else {
+          DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+          df.setTimeZone(timezone);
+          try {
+            Date date = df.parse(value);
+            task.setDueDate(date);
+          } catch (ParseException ex) {
+            LOG.info("Can parse date time value: "+value+" for Task with ID: "+ task.getId());
+            throw new ParameterEntityException(task.getId(), Task.class, param, value, "cannot be parse to date", ex);
+          }
+        }
+      } else if("status".equalsIgnoreCase(param)) {
+        //
+        try {
+          Long statusId = Long.parseLong(value);
+          Status status = statusService.getStatus(statusId);
+          if(status == null) {
+            LOG.info("Status does not exist with ID: " + value);
+            throw new EntityNotFoundException(task.getId(), Status.class);
+          }
+          task.setStatus(status);
+        } catch (NumberFormatException ex) {
+          LOG.info("Status is unacceptable: "+value+" for Task with ID: "+task.getId());
+          throw new ParameterEntityException(task.getId(), Task.class, param, value, "is unacceptable", ex);
+        }
+      } else if("description".equalsIgnoreCase(param)) {
+        task.setDescription(value);
+      } else if("completed".equalsIgnoreCase(param)) {
+        task.setCompleted(Boolean.parseBoolean(value));
+      } else if("assignee".equalsIgnoreCase(param)) {
+        task.setAssignee(value);
+      } else if("coworker".equalsIgnoreCase(param)) {
+        Set<String> coworker = new HashSet<String>();
+        if (values != null) {
+          for (String v : values) {
+            if (v != null && !v.isEmpty()) {
+              coworker.add(v);
+            }
+          }
+        }
+        task.setCoworker(coworker);
+      } else if("tags".equalsIgnoreCase(param)) {
+        Set<String> old = task.getTag();
+        Set<String> tags = new HashSet<String>();
+        for(String t : values) {
+          tags.add(t);
+        }
+        task.setTag(tags);
+
+        Set<String> newTags = new HashSet<String>(task.getTag());
+      } else if ("priority".equalsIgnoreCase(param)) {
+        Priority priority = Priority.valueOf(value);
+        task.setPriority(priority);
+      } else if ("project".equalsIgnoreCase(param)) {
+        try {
+          Long projectId = Long.parseLong(value);
+          if (projectId > 0) {
+            Status st = statusService.getDefaultStatus(projectId);
+            if (st == null) {
+              throw new ParameterEntityException(task.getId(), Task.class, param, value, "Status for project is not found", null);
+            }
+            task.setStatus(st);
+          } else {
+            task.setStatus(null);
+          }
+        } catch (NumberFormatException ex) {
+          throw new ParameterEntityException(task.getId(), Task.class, param, value, "ProjectID must be long", ex);
+        }
+      } else if ("calendarIntegrated".equalsIgnoreCase(param)) {
+        task.setCalendarIntegrated(Boolean.parseBoolean(value));
+      } else {
+        LOG.info("Field name: " + param + " is not supported for entity Task");
+        throw new ParameterEntityException(task.getId(), Task.class, param, value, "is not supported for the entity Task", null);
+      }
+    }
+
+    //.
+    if ("status".equalsIgnoreCase(param) && values.length > 2) {
+      //TODO: need save order of task (update rank)
+      long[] taskIds = new long[values.length - 1];
+      int currentTaskIndex = -1;
+      for (int i = 1; i < values.length; i++) {
+        taskIds[i - 1] = Long.parseLong(values[i]);
+        if (taskIds[i - 1] == task.getId()) {
+          currentTaskIndex = i - 1;
+        }
+      }
+      if (currentTaskIndex > -1) {
+        //. Update here
+
+      }
+    }
+
+    return task;
   }
 }
 

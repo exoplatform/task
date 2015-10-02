@@ -20,7 +20,7 @@
 package org.exoplatform.task.model;
 
 import org.exoplatform.services.organization.*;
-import org.exoplatform.task.utils.UserUtils;
+import org.exoplatform.task.util.UserUtil;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
@@ -52,7 +52,7 @@ public class Permission {
       String displayName = permission;
       try {
         org.exoplatform.services.organization.User user = orgService.getUserHandler().findUserByName(permission);
-        displayName = UserUtils.getDisplayName(user);
+        displayName = UserUtil.getDisplayName(user);
       } catch (Exception ex) {//NOSONAR
 
       }

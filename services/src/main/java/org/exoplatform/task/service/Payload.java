@@ -17,8 +17,27 @@
   
 package org.exoplatform.task.service;
 
-import org.exoplatform.task.service.impl.TaskEvent;
+import org.exoplatform.task.domain.Task;
 
-public interface TaskListener {
-  public void event(TaskEvent event);
+/**
+ * @author <a href="trongtt@gmail.com">Trong Tran</a>
+ * @version $Revision$
+ */
+public class Payload {
+
+  private Task before;
+  private Task after;
+
+  public Payload(Task before, Task after) {
+    this.before = before;
+    this.after = after;
+  }
+
+  public Task before() {
+    return before;
+  }
+
+  public Task after() {
+    return after;
+  }
 }

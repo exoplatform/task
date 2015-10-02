@@ -46,6 +46,7 @@ import juzu.impl.common.Tools;
 import juzu.request.SecurityContext;
 
 import org.exoplatform.commons.juzu.ajax.Ajax;
+import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
@@ -61,9 +62,9 @@ import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.domain.TaskLog;
 import org.exoplatform.task.exception.AbstractEntityException;
-import org.exoplatform.task.exception.LabelNotFoundException;
-import org.exoplatform.task.exception.ProjectNotFoundException;
-import org.exoplatform.task.exception.TaskNotFoundException;
+import org.exoplatform.task.exception.EntityNotFoundException;
+import org.exoplatform.task.exception.NotAllowedOperationOnEntityException;
+import org.exoplatform.task.exception.ParameterEntityException;
 import org.exoplatform.task.model.CommentModel;
 import org.exoplatform.task.model.GroupKey;
 import org.exoplatform.task.model.TaskModel;
@@ -74,19 +75,25 @@ import org.exoplatform.task.service.StatusService;
 import org.exoplatform.task.service.TaskParser;
 import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.service.UserService;
-import org.exoplatform.task.utils.CommentUtils;
-import org.exoplatform.task.utils.DateUtil;
-import org.exoplatform.task.utils.ProjectUtil;
-import org.exoplatform.task.utils.TaskUtil;
-import org.exoplatform.task.utils.TaskUtil.DUE;
+
+import org.exoplatform.task.util.CommentUtil;
+import org.exoplatform.task.util.DateUtil;
+import org.exoplatform.task.util.ProjectUtil;
+import org.exoplatform.task.util.TaskUtil;
+import org.exoplatform.task.util.TaskUtil.DUE;
+import org.exoplatform.task.util.CommentUtil;
+import org.exoplatform.task.util.DateUtil;
+import org.exoplatform.task.util.ListUtil;
+import org.exoplatform.task.util.ProjectUtil;
+import org.exoplatform.task.util.TaskUtil;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
-public class TaskController {
-  private static final Log LOG = ExoLogger.getExoLogger(TaskController.class);
+public class TaskController extends AbstractController {
 
   private static final List<String> VIEW_TYPES = Arrays.asList("list", "board");
 
@@ -136,31 +143,22 @@ public class TaskController {
   @Resource
   @Ajax
   @MimeType.HTML
-  public Response detail(Long id, SecurityContext securityContext) {
-
-    try {
-
-      TaskModel model = TaskUtil.getTaskModel(id, false, bundle, securityContext.getRemoteUser(), taskService, orgService, userService, projectService);
-      TimeZone userTimezone = userService.getUserTimezone(securityContext.getRemoteUser());
-      
-      return detail.with()
-          .taskModel(model)
-          .userTimezone(userTimezone)
-          .bundle(bundle)
-          .ok().withCharset(Tools.UTF_8);
-
-    } catch (AbstractEntityException e) {
-      return Response.status(e.getHttpStatusCode()).body(e.getMessage());
-    } catch (Exception ex) {// NOSONAR
-      return Response.status(500).body(ex.getMessage());
-    }
+  public Response detail(Long id, SecurityContext securityContext) throws EntityNotFoundException {
+    TaskModel model = TaskUtil.getTaskModel(id, false, bundle, securityContext.getRemoteUser(), taskService, orgService, userService, projectService);
+    TimeZone userTimezone = userService.getUserTimezone(securityContext.getRemoteUser());
+  
+  return detail.with()
+      .taskModel(model)
+      .userTimezone(userTimezone)
+      .bundle(bundle)
+      .ok().withCharset(Tools.UTF_8);
   }
   
   @Resource
   @Ajax
   @MimeType.HTML
-  public Response renderTaskLogs(Long taskId, SecurityContext securityContext) throws TaskNotFoundException {
-    Task task = taskService.getTaskById(taskId); //Can throw TaskNotFoundException
+  public Response renderTaskLogs(Long taskId, SecurityContext securityContext) throws EntityNotFoundException {
+    Task task = taskService.getTask(taskId); //Can throw TaskNotFoundException
     
     List<TaskLog> logs = new LinkedList<TaskLog>(task.getTaskLogs());
     Collections.sort(logs);
@@ -184,9 +182,7 @@ public class TaskController {
   @Resource
   @Ajax
   @MimeType.HTML
-  public Response renderTaskComments(Long id, Boolean loadAllComment, SecurityContext securityContext) {
-    try {
-
+  public Response renderTaskComments(Long id, Boolean loadAllComment, SecurityContext securityContext) throws EntityNotFoundException {
       if (loadAllComment == null) {
         loadAllComment = Boolean.FALSE;
       }
@@ -196,81 +192,53 @@ public class TaskController {
               .taskModel(model)
               .bundle(bundle)
               .ok().withCharset(Tools.UTF_8);
-
-    } catch (AbstractEntityException e) {
-      return Response.status(e.getHttpStatusCode()).body(e.getMessage());
-    } catch (Exception ex) {// NOSONAR
-      return Response.status(500).body(ex.getMessage());
-    }
   }
 
   @Resource
   @Ajax
   @MimeType.JSON
-  public Response clone(Long id) {
-
-    try {
-
-      Task newTask = taskService.cloneTaskById(id); //Can throw TaskNotFoundException
+  public Response clone(Long id) throws EntityNotFoundException, JSONException {
+      Task newTask = taskService.cloneTask(id); //Can throw TaskNotFoundException
 
       JSONObject json = new JSONObject();
       json.put("id", newTask.getId()); //Can throw JSONException
       return Response.ok(json.toString());
-
-    } catch (AbstractEntityException e) {
-      return Response.status(e.getHttpStatusCode()).body(e.getMessage());
-    } catch (JSONException ex) {
-      return Response.status(500).body(ex.getMessage());
-    }
   }
 
   @Resource
   @Ajax
   @MimeType.JSON
-  public Response delete(Long id) {
+  public Response delete(Long id) throws EntityNotFoundException, JSONException {
+    taskService.removeTask(id);//Can throw TaskNotFoundException
 
-    try {
-
-      taskService.deleteTaskById(id);//Can throw TaskNotFoundException
-
-      JSONObject json = new JSONObject();
-      json.put("id", id); //Can throw JSONException
-      return Response.ok(json.toString());
-
-    } catch (AbstractEntityException e) {
-      return Response.status(e.getHttpStatusCode()).body(e.getMessage());
-    } catch (JSONException ex) {
-      return Response.status(500).body(ex.getMessage());
-    }
+    JSONObject json = new JSONObject();
+    json.put("id", id); //Can throw JSONException
+    return Response.ok(json.toString());
   }
 
   @Resource
   @Ajax
   @MimeType("text/plain")
-  public Response saveTaskInfo(Long taskId, String name, String[] value, SecurityContext context) {
+  public Response saveTaskInfo(Long taskId, String name, String[] value, SecurityContext context) throws EntityNotFoundException, ParameterEntityException {
 
-    try {
-      TimeZone timezone = userService.getUserTimezone(context.getRemoteUser());
-      Task task = taskService.updateTaskInfo(taskId, name, value, timezone, context.getRemoteUser()); //Can throw TaskNotFoundException & ParameterEntityException & StatusNotFoundException
+    TimeZone timezone = userService.getUserTimezone(context.getRemoteUser());
+    Task task = taskService.getTask(taskId);
+    task = TaskUtil.saveTaskField(task, name, value, timezone, statusService);
 
-      String response = "Update successfully";
-      if ("workPlan".equalsIgnoreCase(name)) {        
-        Calendar start = DateUtil.newCalendarInstance(timezone);
-        start.setTime(task.getStartDate());
-        Calendar end = DateUtil.newCalendarInstance(timezone);
-        end.setTime(task.getEndDate());
-        
-        response = TaskUtil.getWorkPlan(start, end, bundle);
-        if (response == null) {
-          response = bundle.getString("label.noWorkPlan");
-        }
+    String response = "Update successfully";
+    if ("workPlan".equalsIgnoreCase(name)) {        
+      Calendar start = DateUtil.newCalendarInstance(timezone);
+      start.setTime(task.getStartDate());
+      Calendar end = DateUtil.newCalendarInstance(timezone);
+      end.setTime(task.getEndDate());
+      
+      response = TaskUtil.getWorkPlan(start, end, bundle);
+      if (response == null) {
+        response = bundle.getString("label.noWorkPlan");
       }
-
-      return Response.ok(response);
-
-    } catch (AbstractEntityException e) {
-      return Response.status(e.getHttpStatusCode()).body(e.getMessage());
     }
+
+    return Response.ok(response);
   }
 
   @Resource
@@ -282,7 +250,7 @@ public class TaskController {
     }
     Status newStatus = null;
     if (newStatusId != null && newStatusId > 0) {
-      newStatus = statusService.getStatusById(newStatusId);
+      newStatus = statusService.getStatus(newStatusId);
     }
     long[] ids = new long[orders.length];
     for (int i = 0; i < ids.length; i++) {
@@ -295,103 +263,78 @@ public class TaskController {
   @Resource
   @Ajax
   @MimeType("text/plain")
-  public Response updateCompleted(Long taskId, Boolean completed) {
-
-    try {
-
-      taskService.updateTaskCompleted(taskId, completed); //Can throw TaskNotFoundException & ParameterEntityException
-      return Response.ok("Update successfully");
-
-    } catch (AbstractEntityException e) {
-      return Response.status(e.getHttpStatusCode()).body(e.getMessage());
-    }
+  public Response updateCompleted(Long taskId, Boolean completed, SecurityContext securityContext) throws EntityNotFoundException, ParameterEntityException {
+    String currentUser = securityContext.getRemoteUser();
+    Task task = taskService.getTask(taskId);
+    task.setCompleted(completed);
+    taskService.updateTask(task);
+    return Response.ok("Update successfully");
   }
 
   @Resource
   @Ajax
   @MimeType.JSON
-  public Response comment(Long taskId, String comment, SecurityContext securityContext) {
+  public Response comment(Long taskId, String comment, SecurityContext securityContext) throws EntityNotFoundException, JSONException {
 
     String currentUser = securityContext.getRemoteUser();
     if (currentUser == null || currentUser.isEmpty()) {
       return Response.status(401);
     }
 
-    try {
+    Comment cmt = taskService.addComment(taskId, currentUser, comment); //Can throw TaskNotFoundException
 
-      Comment cmt = taskService.addCommentToTaskId(taskId, currentUser, comment); //Can throw TaskNotFoundException
+    //TODO:
+    CommentModel model = new CommentModel(cmt, userService.loadUser(cmt.getAuthor()), CommentUtil.formatMention(cmt.getComment(), userService));
 
-      //TODO:
-      CommentModel model = new CommentModel(cmt, userService.loadUser(cmt.getAuthor()), CommentUtils.formatMention(cmt.getComment(), userService));
+    DateFormat df = new SimpleDateFormat("MMM dd, yyyy HH:mm");
+    df.setTimeZone(userService.getUserTimezone(currentUser));
 
-      DateFormat df = new SimpleDateFormat("MMM dd, yyyy HH:mm");
-      df.setTimeZone(userService.getUserTimezone(currentUser));
-
-      JSONObject json = new JSONObject();
-      json.put("id", model.getId()); //Can throw JSONException (same for all #json.put methods below)
-      JSONObject user = new JSONObject();
-      user.put("username", model.getAuthor().getUsername());
-      user.put("displayName", model.getAuthor().getDisplayName());
-      user.put("avatar", model.getAuthor().getAvatar());
-      json.put("author", user);
-      json.put("comment", model.getComment());
-      json.put("formattedComment", model.getFormattedComment());
-      json.put("createdTime", model.getCreatedTime().getTime());
-      json.put("createdTimeString", df.format(model.getCreatedTime()));
-      return Response.ok(json.toString()).withCharset(Tools.UTF_8);
-
-    } catch (AbstractEntityException e) {
-      return Response.status(e.getHttpStatusCode()).body(e.getMessage());
-    }
-    catch (JSONException ex) {
-      return Response.status(500).body(ex.getMessage());
-    }
+    JSONObject json = new JSONObject();
+    json.put("id", model.getId()); //Can throw JSONException (same for all #json.put methods below)
+    JSONObject user = new JSONObject();
+    user.put("username", model.getAuthor().getUsername());
+    user.put("displayName", model.getAuthor().getDisplayName());
+    user.put("avatar", model.getAuthor().getAvatar());
+    json.put("author", user);
+    json.put("comment", model.getComment());
+    json.put("formattedComment", model.getFormattedComment());
+    json.put("createdTime", model.getCreatedTime().getTime());
+    json.put("createdTimeString", df.format(model.getCreatedTime()));
+    return Response.ok(json.toString()).withCharset(Tools.UTF_8);
   }
 
   @Resource
   @Ajax
   @MimeType.HTML
-  public Response loadAllComments(Long taskId, SecurityContext securityContext) {
+  public Response loadAllComments(Long taskId, SecurityContext securityContext) throws EntityNotFoundException {
+      // Verify task exists
+      Task task = taskService.getTask(taskId);
 
-    try {
+      ListAccess<Comment> cmtAccessList = taskService.getComments(task.getId());
+      Comment[] cmts = ListUtil.load(cmtAccessList, 0, -1); //Can throw TaskNotFoundException
 
-      List<Comment> cmts = taskService.getCommentsByTaskId(taskId, 0, -1); //Can throw TaskNotFoundException
-
-      List<CommentModel> listComments = new ArrayList<CommentModel>(cmts.size());
+      List<CommentModel> listComments = new ArrayList<CommentModel>(cmts.length);
       for(Comment cmt : cmts) {
         org.exoplatform.task.model.User u = userService.loadUser(cmt.getAuthor());
-        listComments.add(new CommentModel(cmt, u, CommentUtils.formatMention(cmt.getComment(), userService)));
+        listComments.add(new CommentModel(cmt, u, CommentUtil.formatMention(cmt.getComment(), userService)));
       }
 
       org.exoplatform.task.model.User currentUser = userService.loadUser(securityContext.getRemoteUser());
 
       return comments.with()
-          .commentCount(cmts.size())
+          .commentCount(cmts.length)
           .comments(listComments)
           .currentUser(currentUser)
           .ok()
           .withCharset(Tools.UTF_8);
-
-    } catch (AbstractEntityException e) {
-      return Response.status(e.getHttpStatusCode()).body(e.getMessage());
-    }
-
   }
 
   @Resource
   @Ajax
   @MimeType("text/plain")
-  public Response deleteComment(Long commentId) {
-
-    try {
-
-      taskService.deleteCommentById(commentId); //Can throw CommentNotFoundException
-      return Response.ok("Delete comment successfully!");
-
-    } catch (AbstractEntityException e) {
-      return Response.status(e.getHttpStatusCode()).body(e.getMessage());
-    }
-
+  public Response deleteComment(Long commentId) throws EntityNotFoundException {
+    taskService.removeComment(commentId); //Can throw CommentNotFoundException
+    return Response.ok("Delete comment successfully!");
   }
 
   @Resource
@@ -401,6 +344,7 @@ public class TaskController {
                             String assignee, Boolean completed, String keyword, Boolean advanceSearch, String groupBy, String orderBy, String filter, String viewType, SecurityContext securityContext) {
     Project project = null;
     List<Task> tasks = Collections.emptyList();
+    List<Status> projectStatuses = null;
 
     if (projectId <= 0 || viewType == null || !VIEW_TYPES.contains(viewType)) {
       viewType = VIEW_TYPES.get(0);
@@ -434,7 +378,7 @@ public class TaskController {
     List<Long> spaceProjectIds = null;    
     if (space_group_id != null) {
       spaceProjectIds = new LinkedList<Long>();
-      List<Project> projects = ProjectUtil.flattenTree(ProjectUtil.getProjectTree(space_group_id, projectService));
+      List<Project> projects = ProjectUtil.flattenTree(ProjectUtil.getProjectTree(space_group_id, projectService), projectService);
       for (Project p : projects) {
         if (p.canView(currIdentity)) {
           spaceProjectIds.add(p.getId());          
@@ -444,7 +388,7 @@ public class TaskController {
     List<Long> allProjectIds = null;
     if (projectId == 0) {
       allProjectIds = new LinkedList<Long>();
-      List<Project> projects = ProjectUtil.flattenTree(ProjectUtil.getProjectTree(null, projectService));
+      List<Project> projects = ProjectUtil.flattenTree(ProjectUtil.getProjectTree(null, projectService), projectService);
       for (Project p : projects) {
         if (p.canView(currIdentity)) {
           allProjectIds.add(p.getId());          
@@ -457,7 +401,11 @@ public class TaskController {
       order = TaskUtil.TITLE.equals(orderBy) || TaskUtil.DUEDATE.equals(orderBy) ? new OrderBy.ASC(orderBy) : new OrderBy.DESC(orderBy);
     }
     
-    TaskQuery advanceQuery = advanceSearch != null && advanceSearch ? buildTaskQuery(keyword, filterLabelIds, tags, statusId, dueDate, priority, assignee, completed, order, userTimezone) : null;
+    TaskQuery taskQuery = advanceSearch != null && advanceSearch ? buildTaskQuery(keyword, filterLabelIds, tags, statusId, dueDate, priority, assignee, completed, order, userTimezone) : null;
+
+    if (spaceProjectIds != null && !spaceProjectIds.isEmpty()) {
+      taskQuery.setProjectIds(spaceProjectIds);
+    }
 
     //Get Tasks in good order
     if(projectId == ProjectUtil.INCOMING_PROJECT_ID) {
@@ -467,21 +415,27 @@ public class TaskController {
         order = new OrderBy.DESC(orderBy);
       }
 
-      if (advanceQuery == null) {
-        tasks = taskService.getIncomingTasksByUser(currentUser, order);
-      } else {
-        advanceQuery.setStatusId(null);
-        advanceQuery.setAssignee(currentUser);
-        advanceQuery.setCoworker(currentUser);
-        advanceQuery.setCreatedBy(currentUser);
-        advanceQuery.setOrFields(Arrays.asList(TaskUtil.ASSIGNEE, TaskUtil.COWORKER, TaskUtil.CREATED_BY));
-        advanceQuery.setOrderBy(Arrays.asList(order));
-        tasks = taskService.findTaskByQuery(advanceQuery);
-      }
-    } else if (projectId == ProjectUtil.TODO_PROJECT_ID) {
+      taskQuery.setStatusId(null);
+      taskQuery.setAssignee(currentUser);
+      taskQuery.setCoworker(currentUser);
+      taskQuery.setCreatedBy(currentUser);
+//      taskQuery.setOrFields(Arrays.asList(TaskUtil.ASSIGNEE, TaskUtil.COWORKER, TaskUtil.CREATED_BY));      
+      //taskQuery.setIsIncoming(Boolean.TRUE);
+      //taskQuery.setUsername(currentUser);
+      taskQuery.setIsIncomingOf(currentUser);
+      taskQuery.setOrderBy(Arrays.asList(order));
+
+      //ListAccess<Task> listTasks = taskService.getIncomingTasks(currentUser, order);
+      //tasks = Arrays.asList(ListUtil.load(listTasks, 0, -1)); //taskService.getIncomingTasksByUser(currentUser, order);
+    }
+    else if (projectId == ProjectUtil.TODO_PROJECT_ID) {
       defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT, TaskUtil.LABEL, TaskUtil.DUEDATE), bundle);
       defOrders = TaskUtil.resolve(Arrays.asList(TaskUtil.TITLE, TaskUtil.STATUS, TaskUtil.DUEDATE, TaskUtil.PRIORITY, TaskUtil.RANK), bundle);
-      
+
+      //taskQuery.setIsTodo(Boolean.TRUE);
+      //taskQuery.setUsername(currentUser);
+      taskQuery.setIsTodoOf(currentUser);
+
       //TODO: process fiter here
       Date fromDueDate = null;
       Date toDueDate = null;
@@ -551,20 +505,24 @@ public class TaskController {
       if (groupBy == null || !defGroupBys.containsKey(groupBy)) {
         groupBy = TaskUtil.DUEDATE;
       }
+
+      Long[] due = convertDueDate(dueDate, userTimezone);
+      taskQuery.setDueDateFrom(due[0]);
+      taskQuery.setDueDateTo(due[1]);
+      taskQuery.setProjectIds(spaceProjectIds);
+      taskQuery.setAssignee(currentUser);
+      taskQuery.setStatusId(-1L);
       
-      if (advanceSearch == null) {
-        tasks = taskService.getToDoTasksByUser(currentUser, spaceProjectIds, order, fromDueDate, toDueDate);        
-      } else {
-        advanceQuery.setOrderBy(Arrays.asList(order));
-        Long[] due = convertDueDate(dueDate, userTimezone);
-        advanceQuery.setDueDateFrom(due[0]);
-        advanceQuery.setDueDateTo(due[1]);
-        advanceQuery.setProjectIds(spaceProjectIds);
-        advanceQuery.setAssignee(currentUser);
-        advanceQuery.setStatusId(-1L);
-        tasks = taskService.findTaskByQuery(advanceQuery);
-      }
-    } else if (projectId >= 0) {
+      taskQuery.setDueDateFrom(fromDueDate);
+      taskQuery.setDueDateTo(toDueDate);
+      taskQuery.setOrderBy(Arrays.asList(order));
+
+      //ListAccess<Task> listTasks = taskService.getTodoTasks(currentUser, spaceProjectIds, order, fromDueDate, toDueDate);
+      //tasks = Arrays.asList(ListUtil.load(listTasks, 0, -1)); //taskService.getToDoTasksByUser(currentUser, spaceProjectIds, order, fromDueDate, toDueDate);
+    }
+    else if (projectId >= 0) {
+      //TaskQuery taskQuery = new TaskQuery();
+      taskQuery.setKeyword(keyword);
       if (projectId == 0) {
         defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.ASSIGNEE, TaskUtil.PROJECT, TaskUtil.LABEL, TaskUtil.STATUS), bundle);
 
@@ -574,21 +532,13 @@ public class TaskController {
           order = new OrderBy.ASC(orderBy);
         }
 
-        if (advanceQuery == null) {
-          if (spaceProjectIds != null) {
-            tasks = projectService.getTasksWithKeywordByProjectId(spaceProjectIds, order, keyword);                  
-          } else {          
-            tasks = projectService.getTasksWithKeywordByProjectId(allProjectIds, order, keyword);
-          }          
+        taskQuery.setStatusId(-1L);        
+        if (spaceProjectIds != null) {
+          taskQuery.setProjectIds(spaceProjectIds);
+          //tasks = projectService.getTasksWithKeywordByProjectId(spaceProjectIds, order, keyword);
         } else {
-          advanceQuery.setOrderBy(Arrays.asList(order));
-          if (spaceProjectIds != null) {
-            advanceQuery.setProjectIds(spaceProjectIds);            
-          } else {
-            advanceQuery.setProjectIds(allProjectIds);
-          }
-          advanceQuery.setStatusId(-1L);
-          tasks = taskService.findTaskByQuery(advanceQuery);
+          taskQuery.setProjectIds(allProjectIds);
+          //tasks = projectService.getTasksWithKeywordByProjectId(allProjectIds, order, keyword);
         }
       } else {
         //. Default order by CreatedDate
@@ -596,23 +546,23 @@ public class TaskController {
           orderBy = TaskUtil.DUEDATE;
           order = new OrderBy.ASC(orderBy);
         }
-
-        if (advanceQuery == null) {
-          tasks = projectService.getTasksWithKeywordByProjectId(Arrays.asList(projectId), order, keyword);          
-        } else {
-          advanceQuery.setOrderBy(Arrays.asList(order));
-          advanceQuery.setProjectIds(Arrays.asList(projectId));
-          tasks = taskService.findTaskByQuery(advanceQuery);
-        }
+        taskQuery.setProjectIds(Arrays.asList(projectId));
+        //tasks = projectService.getTasksWithKeywordByProjectId(Arrays.asList(projectId), order, keyword);
       }
+      taskQuery.setOrderBy(Arrays.asList(order));
+      //tasks = Arrays.asList(ListUtil.load(taskService.findTasks(taskQuery), 0, -1)); //taskService.findTaskByQuery(taskQuery);
+
       if (projectId > 0) {
         try {
-          project = projectService.getProjectById(projectId);
-        } catch (ProjectNotFoundException e) {
+          project = projectService.getProject(projectId);
+          if (isBoardView) {
+            projectStatuses = statusService.getStatuses(projectId);
+          }
+        } catch (EntityNotFoundException e) {
           return Response.notFound("not found project " + projectId);
         }          
       }
-    } else if (labelId != null && labelId >= 0) {
+    } else if (labelId != null && labelId >= 0) {      
       defOrders = TaskUtil.resolve(Arrays.asList(TaskUtil.TITLE, TaskUtil.CREATED_TIME, TaskUtil.DUEDATE, TaskUtil.PRIORITY), bundle);
       if (orderBy == null || orderBy.isEmpty() || !defOrders.containsKey(orderBy)) {
         orderBy = TaskUtil.DUEDATE;
@@ -631,41 +581,41 @@ public class TaskController {
         }
       }
       
-      if (advanceQuery == null) {
-        try {
-          tasks = taskService.findTasksByLabel(labelId, spaceProjectIds, currentUser, order);
-        } catch (LabelNotFoundException ex) {
-          tasks = new ArrayList<Task>();
-        }
-      } else {
-        advanceQuery.setProjectIds(spaceProjectIds);
-        advanceQuery.setOrderBy(Arrays.asList(order));
-        advanceQuery.setStatusId(-1L);
-        tasks = taskService.findTaskByQuery(advanceQuery);
-      }
+      taskQuery.setProjectIds(spaceProjectIds);
+      taskQuery.setOrderBy(Arrays.asList(order));
+      taskQuery.setStatusId(-1L);
     }
 
-    if (tasks.size() < MIN_NUMBER_TASK_GROUPABLE) {
+    int countTasks = TaskUtil.countTasks(taskService, taskQuery);
+    //ListAccess<Task> listTask = taskService.findTasks(taskQuery);
+    //tasks = Arrays.asList(ListUtil.load(listTask, 0, -1));
+
+    if (countTasks < MIN_NUMBER_TASK_GROUPABLE) {
       //. We do not have enough tasks for grouping, so, set groupBy to empty
       groupBy = "";
     }
 
+    Map<GroupKey, ListAccess<Task>> groupTasks = TaskUtil.findTasks(taskService, taskQuery, groupBy, userTimezone, userService);
+
+    //TODO: this block code is not good
     // Count task by status
     Map<Long, Integer> numberTasks = new HashMap<Long, Integer>();
     if (isBoardView) {
-      for(Task task : tasks) {
-        Status st = task.getStatus();
-        int num = 0;
-        if (numberTasks.containsKey(st.getId())) {
-          num = numberTasks.get(st.getId());
+      for(ListAccess<Task> list : groupTasks.values()) {
+        for (Task task : ListUtil.load(list, 0, -1)) {
+          Status st = task.getStatus();
+          int num = 0;
+          if (numberTasks.containsKey(st.getId())) {
+            num = numberTasks.get(st.getId());
+          }
+          num++;
+          numberTasks.put(st.getId(), num);
         }
-        num++;
-        numberTasks.put(st.getId(), num);
       }
     }
 
     //Group Tasks
-    Map<String, org.exoplatform.task.model.User> userMap = null;
+    /*Map<String, org.exoplatform.task.model.User> userMap = null;
     Map<GroupKey, List<Task>> groupTasks = new HashMap<GroupKey, List<Task>>();
     if(groupBy != null && !groupBy.isEmpty()) {
       TimeZone tz = userService.getUserTimezone(currentUser);
@@ -681,28 +631,25 @@ public class TaskController {
     }
     if(groupTasks.isEmpty()) {
       groupTasks.put(new GroupKey("", null, 0), tasks);
+    }*/
+    
+    long taskNum = countTasks;
+    /*if (allProjectIds != null) {
+      taskNum = TaskUtil.getTaskNum(currentUser, allProjectIds, projectId, taskService);
+    } else if (labelId != null && labelId >= 0) {
+      taskNum = tasks.size();
+    } else {
+      taskNum = TaskUtil.getTaskNum(currentUser, spaceProjectIds, projectId, taskService);
     }
-
-    long taskNum = -1;
-    if (advanceQuery == null) {
-      if (allProjectIds != null) {
-        taskNum = TaskUtil.getTaskNum(currentUser, allProjectIds, projectId, taskService);
-      } else if (labelId != null && labelId >= 0) {
-        taskNum = tasks.size();
-      } else {
-        taskNum = TaskUtil.getTaskNum(currentUser, spaceProjectIds, projectId, taskService);
-      }      
-    }
+    */
 
     String currentLabelName = "";
-    if (advanceQuery == null) {
-      if (labelId != null && labelId > 0) {
-        Label label = taskService.getLabelById(labelId);
-        if (label != null) {
-          currentLabelName = label.getName();
-        }
-      }      
-    }
+    if (labelId != null && labelId > 0) {
+      Label label = taskService.getLabelById(labelId);
+      if (label != null) {
+        currentLabelName = label.getName();
+      }
+    }      
 
     return taskListView
         .with()
@@ -710,7 +657,8 @@ public class TaskController {
         .groups(defGroupBys)
         .currentProjectId(projectId)
         .project(project)
-        .tasks(tasks)
+        .projectStatuses(projectStatuses)
+        .tasks(new ArrayList<Task>())
         .taskNum(taskNum)
         .groupTasks(groupTasks)
         .keyword(keyword == null ? "" : keyword)
@@ -725,7 +673,7 @@ public class TaskController {
         .currentUser(currentUser)
         .currentLabelId(labelId == null ? -1 : labelId)
         .currentLabelName(currentLabelName)
-        .set("userMap", userMap)
+        .set("userMap", new HashMap<String, User>())
         .set("numberTasksByStatus", numberTasks)
         .ok()
         .withCharset(Tools.UTF_8);
@@ -769,7 +717,7 @@ public class TaskController {
   @Resource(method = HttpMethod.POST)
   @Ajax
   @MimeType.JSON
-  public Response createTask(Long projectId, Long labelId, String taskInput, String filter, SecurityContext securityContext) {
+  public Response createTask(Long projectId, Long labelId, String taskInput, String filter, SecurityContext securityContext) throws EntityNotFoundException, JSONException {
 
     if(taskInput == null || taskInput.isEmpty()) {
       return Response.content(406, "Task input must not be null or empty");
@@ -786,11 +734,13 @@ public class TaskController {
 
     //Project task
     if(projectId > 0) {
-      try {
-        projectService.createTaskToProjectId(projectId, task);
-      } catch (AbstractEntityException e) {
-        return Response.status(e.getHttpStatusCode()).body(e.getMessage());
+      Status status = statusService.getDefaultStatus(projectId);
+      if (status == null) {
+        throw new EntityNotFoundException(projectId, Project.class);
       }
+      task.setStatus(status);
+      //taskService.createTask(task);
+      //projectService.createTaskToProjectId(projectId, task);
     } else if (labelId != null && labelId > 0){
       Label label = taskService.getLabelById(labelId);
       Set<Label> labels = new HashSet<Label>();
@@ -815,24 +765,25 @@ public class TaskController {
         task.setDueDate(dueDate.getTime());
       }
       
-      taskService.createTask(task);
+      //taskService.createTask(task);
     }
+
+    taskService.createTask(task);
 
     long taskNum = -1;
     if (projectId == -1) {
       //incomming
-      taskNum = TaskUtil.getTaskNum(currentUser, null, projectId, taskService);
+      TaskQuery taskQuery = new TaskQuery();
+      taskQuery.setIsIncomingOf(currentUser);
+      ListAccess<Task> taskListAccess = taskService.findTasks(taskQuery);
+      taskNum = ListUtil.getSize(taskListAccess);
     }
 
-    try {
-      JSONObject json = new JSONObject();
-      json.put("id", task.getId());
-      json.put("taskNum", taskNum);
-      
-      return Response.ok(json.toString());
-    } catch (JSONException ex) {
-      return Response.status(500).body("JSONException: " + ex);
-    }
+    JSONObject json = new JSONObject();
+    json.put("id", task.getId());
+    json.put("taskNum", taskNum);
+
+    return Response.ok(json.toString());
   }
 
   @Resource
@@ -849,12 +800,12 @@ public class TaskController {
       task.setAssignee(assignee);
     }
     if (statusId != null) {
-      Status status = statusService.getStatusById(statusId);
+      Status status = statusService.getStatus(statusId);
       if (status != null) {
         task.setStatus(status);
       }
     } else if (projectId != null) {
-      Status status = statusService.findLowestRankStatusByProject(projectId);
+      Status status = statusService.getDefaultStatus(projectId);
       if (status != null) {
         task.setStatus(status);
       }
@@ -869,34 +820,26 @@ public class TaskController {
   @Resource(method = HttpMethod.POST)
   @Ajax
   @MimeType.HTML
-  public Response removeStatus(String space_group_id, Long statusId, SecurityContext securityContext) {
-    try {
-      Status status = statusService.getStatusById(statusId);
-      Project project = status.getProject();
-      if (project.getStatus().size() > 1) {
-        statusService.deleteStatus(statusId);
-        //spaceGrpId, projectId, currentLabelId, labelIds, tags, statusId, dueDate, priority, assignee, completed, keyword, advanceSearch, groupby, orderBy, filter, viewType, securityContext
-        return listTasks(space_group_id, project.getId(), null, null, null, null, null, null, null, null, null, null, null, null, null, "board", securityContext);
-      } else {
-        return Response.error("Can't delete last status");
-      }
-    } catch (AbstractEntityException e) {
-      return Response.status(e.getHttpStatusCode()).body(e.getMessage());
+  public Response removeStatus(String space_group_id, Long statusId, SecurityContext securityContext) throws EntityNotFoundException, NotAllowedOperationOnEntityException {
+    Status status = statusService.getStatus(statusId);
+    Project project = status.getProject();
+    if (project.getStatus().size() > 1) {
+      statusService.removeStatus(statusId);
+      //spaceGrpId, projectId, currentLabelId, labelIds, tags, statusId, dueDate, priority, assignee, completed, keyword, advanceSearch, groupby, orderBy, filter, viewType, securityContext
+      return listTasks(space_group_id, project.getId(), null, null, null, null, null, null, null, null, null, null, null, null, null, "board", securityContext);
+    } else {
+      return Response.error("Can't delete last status");
     }
   }
 
   @Resource(method = HttpMethod.POST)
   @Ajax
   @MimeType.HTML
-  public Response createStatus(String space_group_id, String name, Long projectId, SecurityContext securityContext) {
-    try {
-      Project project = projectService.getProjectById(projectId);
-      Status status = statusService.createStatus(project, name);
-      //spaceGrpId, projectId, currentLabelId, labelIds, tags, statusId, dueDate, priority, assignee, completed, keyword, advanceSearch, groupby, orderBy, filter, viewType, securityContext
-      return listTasks(space_group_id, projectId, null, null, null, null, null, null, null, null, null, null, null, null, null, "board", securityContext);
-    } catch (AbstractEntityException e) {
-      return Response.status(e.getHttpStatusCode()).body(e.getMessage());
-    }
+  public Response createStatus(String space_group_id, String name, Long projectId, SecurityContext securityContext) throws EntityNotFoundException {
+    Project project = projectService.getProject(projectId);
+    Status status = statusService.createStatus(project, name);
+    //spaceGrpId, projectId, currentLabelId, labelIds, tags, statusId, dueDate, priority, assignee, completed, keyword, advanceSearch, groupby, orderBy, filter, viewType, securityContext
+    return listTasks(space_group_id, projectId, null, null, null, null, null, null, null, null, null, null, null, null, null, "board", securityContext);
   }
   
   private TaskQuery buildTaskQuery(String keyword,

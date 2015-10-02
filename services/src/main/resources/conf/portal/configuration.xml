@@ -8,8 +8,8 @@
   </component>
 
   <component>
-    <key>org.exoplatform.task.service.DAOHandler</key>
-    <type>org.exoplatform.task.service.jpa.DAOHandlerJPAImpl</type>
+    <key>org.exoplatform.task.dao.DAOHandler</key>
+    <type>org.exoplatform.task.dao.jpa.DAOHandlerJPAImpl</type>
   </component>
 
   <component>
@@ -129,6 +129,20 @@
            <property name="enable" value="${exo.unified-search.connector.tasksInTasks.enable:true}"/>
         </properties-param>
       </init-params>      
+    </component-plugin>
+  </external-component-plugins>
+
+  <external-component-plugins>
+    <target-component>org.exoplatform.services.listener.ListenerService</target-component>
+    <component-plugin>
+      <name>exo.listener.task.taskCreation</name>
+      <set-method>addListener</set-method>
+      <type>org.exoplatform.task.service.impl.TaskLoggingListener</type>
+    </component-plugin>
+    <component-plugin>
+      <name>exo.listener.task.taskUpdate</name>
+      <set-method>addListener</set-method>
+      <type>org.exoplatform.task.service.impl.TaskLoggingListener</type>
     </component-plugin>
   </external-component-plugins>
 

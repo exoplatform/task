@@ -17,18 +17,19 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.exoplatform.task.utils;
+package org.exoplatform.task.util;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-import org.apache.commons.collections.map.HashedMap;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.portal.mop.SiteKey;
@@ -126,7 +127,7 @@ public class ResourceUtil {
 
     String portalName = container.getComponentInstanceOfType(ExoContainerContext.class).getPortalContainerName();
 
-    HashedMap qualifiedName = new HashedMap();
+    Map<QualifiedName, String> qualifiedName = new HashMap<QualifiedName, String>();
     qualifiedName.put(QualifiedName.create("gtn", "handler"), portalName);
     qualifiedName.put(QualifiedName.create("gtn", "sitetype"), siteKey.getTypeName());
     qualifiedName.put(QualifiedName.create("gtn", "sitename"), siteKey.getName());

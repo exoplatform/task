@@ -31,8 +31,6 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.exoplatform.commons.persistence.impl.EntityManagerService;
-import org.exoplatform.commons.persistence.impl.GenericDAOJPAImpl;
 import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.dao.ProjectHandler;
 import org.exoplatform.task.domain.Project;
@@ -43,19 +41,46 @@ import org.exoplatform.task.domain.Project;
  * tclement@exoplatform.com
  * 4/10/15
  */
-public class ProjectDAOImpl extends GenericDAOJPAImpl<Project, Long> implements ProjectHandler {
+public class ProjectDAOImpl extends CommonJPADAO<Project, Long> implements ProjectHandler {
 
   private static final Logger LOG = Logger.getLogger("ProjectDAOImpl");
 
-  private EntityManagerService entityService;
-
-  public ProjectDAOImpl(EntityManagerService entityService) {
-    this.entityService = entityService;
+  public ProjectDAOImpl() {
   }
-  
+
   @Override
-  public EntityManager getEntityManager() {
-    return entityService.getEntityManager();
+  public Project update(Project entity) {
+    Project p = getEntityManager().find(Project.class, entity.getId());
+    //TODO: this is workaround to keep status when update project,
+    // we should remove cascade ALL on the field "status" of Project
+    entity.setStatus(p.getStatus());
+    return cloneEntity(super.update(entity));
+  }
+
+  @Override
+  public void delete(Project entity) {
+    Project p = getEntityManager().find(Project.class, entity.getId());
+    if (p != null) {
+      super.delete(p);
+    }
+  }
+
+  @Override
+  public Project removeProject(long projectId, boolean deleteChild) {
+    Project p = getEntityManager().find(Project.class, projectId);
+    if (p == null) {
+      return null;
+    }
+    if (!deleteChild && p.getChildren() != null) {
+      for(Project pj : p.getChildren()) {
+        pj.setParent(p.getParent());
+        getEntityManager().persist(pj);
+      }
+      p.getChildren().clear();
+    }
+
+    super.delete(p);
+    return p;
   }
 
   @Override
@@ -65,7 +90,7 @@ public class ProjectDAOImpl extends GenericDAOJPAImpl<Project, Long> implements 
     if(project != null) {
       query.setParameter("projectId", project.getId());
     }
-    return query.getResultList();
+    return cloneEntities(query.getResultList());
   }
 
   @Override
@@ -78,7 +103,7 @@ public class ProjectDAOImpl extends GenericDAOJPAImpl<Project, Long> implements 
       query.setParameter("projectId", project.getId());
     }
     query.setParameter("memberships", memberships);
-    return query.getResultList();
+    return cloneEntities(query.getResultList());
   }
 
   @Override
@@ -86,7 +111,7 @@ public class ProjectDAOImpl extends GenericDAOJPAImpl<Project, Long> implements 
     Query query = getEntityManager().createNamedQuery("Project.findAllByMembership", Project.class);
     query.setParameter("memberships", memberships);
 
-    return query.getResultList();
+    return cloneEntities(query.getResultList());
   }
 
   @Override
@@ -126,7 +151,7 @@ public class ProjectDAOImpl extends GenericDAOJPAImpl<Project, Long> implements 
       q.orderBy(order.isAscending() ? cb.asc(p) : cb.desc(p));
     }
     
-    return em.createQuery(q).getResultList();
+    return cloneEntities(em.createQuery(q).getResultList());
   }
 }
 

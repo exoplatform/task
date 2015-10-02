@@ -18,21 +18,20 @@ package org.exoplatform.task.integration;
 
 import org.exoplatform.social.core.activity.ActivityLifeCycleEvent;
 import org.exoplatform.social.core.activity.ActivityListenerPlugin;
-import org.exoplatform.social.core.activity.model.ActivityStream;
 import org.exoplatform.social.core.activity.model.ExoSocialActivity;
 import org.exoplatform.social.core.identity.model.Identity;
 import org.exoplatform.social.core.manager.ActivityManager;
 import org.exoplatform.social.core.manager.IdentityManager;
 import org.exoplatform.social.core.service.LinkProvider;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.service.DAOHandler;
 import org.exoplatform.task.service.ParserContext;
 import org.exoplatform.task.service.TaskParser;
 import org.exoplatform.task.service.UserService;
+import org.exoplatform.task.service.TaskService;
 
 public class ActivityTaskCreationListener extends ActivityListenerPlugin {
 
-  private DAOHandler DAOHandler;
+  private TaskService taskService;
   
   private TaskParser parser;
 
@@ -41,9 +40,9 @@ public class ActivityTaskCreationListener extends ActivityListenerPlugin {
   private UserService userService;
   
   public static final String PREFIX = "++";
-  
-  public ActivityTaskCreationListener(DAOHandler DAOHandler, UserService userService, TaskParser parser, IdentityManager identityManager, ActivityManager activityManager) {
-    this.DAOHandler = DAOHandler;
+
+  public ActivityTaskCreationListener(TaskService taskServ, TaskParser parser, IdentityManager identityManager, ActivityManager activityManager, UserService userService) {
+    this.taskService = taskServ;
     this.parser = parser;
     this.identityManager = identityManager;
     this.activityManager = activityManager;
@@ -104,23 +103,11 @@ public class ActivityTaskCreationListener extends ActivityListenerPlugin {
         // which project will contains this task?
         //String spaceGroup = getSpaceGroup(activity);
 
-        DAOHandler.getTaskHandler().create(task);
+        taskService.createTask(task);
 
         //TODO: This is workaround: update to rebuild cache of this activity
         activityManager.updateActivity(activity);
       }
     }
-  }
-
-  private String getSpaceGroup(ExoSocialActivity activity) {
-    ExoSocialActivity parent = activity;
-    if (activity.isComment()) {
-      parent = activityManager.getActivity(activity.getParentId());
-    }
-    ActivityStream stream = parent.getActivityStream();
-    if (stream.getType() == ActivityStream.Type.SPACE) {
-      return "/spaces/" + stream.getPrettyId();
-    }
-    return null;
   }
 }

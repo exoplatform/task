@@ -30,10 +30,11 @@ import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.task.domain.Label;
 import org.exoplatform.task.domain.UserSetting;
-import org.exoplatform.task.exception.LabelNotFoundException;
+import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.service.UserService;
-import org.exoplatform.task.utils.TaskUtil;
+import org.exoplatform.task.util.TaskUtil;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -125,7 +126,7 @@ public class LabelController {
     String username = securityContext.getRemoteUser();
     Label label = taskService.getLabelById(labelId);
     if (label != null && label.getUsername().equals(username)) {
-      taskService.deleteLabel(labelId);
+      taskService.removeLabel(labelId);
       return Response.ok();
     } else {
       return Response.status(401);
@@ -150,7 +151,7 @@ public class LabelController {
   
   @Resource
   @Ajax
-  public Response changeColor(Long labelId, String color, SecurityContext securityContext) throws LabelNotFoundException {
+  public Response changeColor(Long labelId, String color, SecurityContext securityContext) throws EntityNotFoundException {
     String username = securityContext.getRemoteUser();
     Label label = taskService.getLabelById(labelId);
     if (label != null && label.getUsername().equals(username)) {
@@ -164,7 +165,7 @@ public class LabelController {
   
   @Resource
   @Ajax
-  public Response toggleHidden(Long labelId, SecurityContext securityContext) throws LabelNotFoundException {
+  public Response toggleHidden(Long labelId, SecurityContext securityContext) throws EntityNotFoundException {
     String username = securityContext.getRemoteUser();
     Label label = taskService.getLabelById(labelId);
     if (label != null && label.getUsername().equals(username)) {
@@ -178,7 +179,7 @@ public class LabelController {
   
   @Resource
   @Ajax
-  public Response toggleShowHiddenLabel(SecurityContext securityContext) throws LabelNotFoundException {
+  public Response toggleShowHiddenLabel(SecurityContext securityContext) throws EntityNotFoundException {
     String username = securityContext.getRemoteUser();
     UserSetting userSetting = userService.getUserSetting(username);
     userService.showHiddenLabel(username, !userSetting.isShowHiddenLabel());
@@ -187,7 +188,7 @@ public class LabelController {
   
   @Resource
   @Ajax
-  public Response updateLabel(Long labelId, String lblName, Long parentId, SecurityContext securityContext) throws LabelNotFoundException {
+  public Response updateLabel(Long labelId, String lblName, Long parentId, SecurityContext securityContext) throws EntityNotFoundException {
     String username = securityContext.getRemoteUser();
     Label label = taskService.getLabelById(labelId);
     if (label != null && label.getUsername().equals(username)) {

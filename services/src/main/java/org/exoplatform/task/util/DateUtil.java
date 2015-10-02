@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.exoplatform.task.utils;
+package org.exoplatform.task.util;
 
 import java.util.Calendar;
 import java.util.ResourceBundle;

@@ -27,12 +27,12 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.exoplatform.container.PortalContainer;
+import org.exoplatform.task.dao.DAOHandler;
 import org.exoplatform.task.dao.ProjectHandler;
 import org.exoplatform.task.dao.TaskHandler;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.service.DAOHandler;
 import org.exoplatform.task.service.ParserContext;
 import org.exoplatform.task.service.TaskParser;
 import org.exoplatform.task.service.impl.TaskParserImpl;
@@ -48,7 +48,7 @@ public class TestPermission extends AbstractTest {
 
   private TaskHandler tDAO;
   private ProjectHandler pDAO;
-  private DAOHandler taskService;
+  private DAOHandler daoHandler;
   private TaskParser parser = new TaskParserImpl();
   private ParserContext context = new ParserContext(TimeZone.getDefault());
 
@@ -56,10 +56,10 @@ public class TestPermission extends AbstractTest {
   public void setup() {
     PortalContainer container = PortalContainer.getInstance();
     
-    taskService = (DAOHandler) container.getComponentInstanceOfType(DAOHandler.class);
-    pDAO = taskService.getProjectHandler();
-    tDAO = taskService.getTaskHandler();
-    pDAO = taskService.getProjectHandler();
+    daoHandler = (DAOHandler) container.getComponentInstanceOfType(DAOHandler.class);
+    pDAO = daoHandler.getProjectHandler();
+    tDAO = daoHandler.getTaskHandler();
+    pDAO = daoHandler.getProjectHandler();
   }
 
   @After

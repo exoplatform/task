@@ -32,12 +32,11 @@ import org.exoplatform.services.log.Log;
 import org.exoplatform.task.domain.Label;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
-import org.exoplatform.task.exception.ProjectNotFoundException;
+import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.service.ProjectService;
-import org.exoplatform.task.service.StatusService;
 import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.service.UserService;
-import org.exoplatform.task.utils.ProjectUtil;
+import org.exoplatform.task.util.ProjectUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -72,14 +71,14 @@ public class FilterController {
   @Resource
   @Ajax
   @MimeType.HTML
-  public Response showFilter(Long projectId, Long labelId, String filter, SecurityContext securityContext) throws JSONException, ProjectNotFoundException {
+  public Response showFilter(Long projectId, Long labelId, String filter, SecurityContext securityContext) throws JSONException, EntityNotFoundException {
     String username = securityContext.getRemoteUser();
     //don't allow to filter label when user already select specific label
     boolean filterLabel = labelId == null || labelId <= 0;
 
     //only allow to filter status with concrete project 
     boolean filterStatus = projectId != null && projectId > 0;
-    Project project = filterStatus ? projectService.getProjectById(projectId) : null;
+    Project project = filterStatus ? projectService.getProject(projectId) : null;
     
     List<Status> status = Collections.emptyList();
     if (filterStatus && project != null) {

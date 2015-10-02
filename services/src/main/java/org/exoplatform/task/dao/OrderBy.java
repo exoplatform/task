@@ -22,7 +22,7 @@ package org.exoplatform.task.dao;
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
-public class OrderBy {
+public class OrderBy implements Cloneable {
   private final String fieldName;
   private final boolean ascending;
 

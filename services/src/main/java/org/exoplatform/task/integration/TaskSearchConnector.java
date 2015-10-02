@@ -37,10 +37,11 @@ import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.service.UserService;
-import org.exoplatform.task.utils.ResourceUtil;
-import org.exoplatform.task.utils.StringUtil;
-import org.exoplatform.task.utils.TaskUtil;
-import org.exoplatform.task.utils.UserUtils;
+import org.exoplatform.task.util.ListUtil;
+import org.exoplatform.task.util.ResourceUtil;
+import org.exoplatform.task.util.StringUtil;
+import org.exoplatform.task.util.TaskUtil;
+import org.exoplatform.task.util.UserUtil;
 import org.exoplatform.web.WebAppController;
 
 public class TaskSearchConnector extends SearchServiceConnector {
@@ -78,21 +79,21 @@ public class TaskSearchConnector extends SearchServiceConnector {
     query = StringUtil.FUZZY.matcher(query.trim()).replaceAll("");
     
     Identity currentUser = ConversationState.getCurrent().getIdentity(); 
-    List<String> permissions = UserUtils.getMemberships(currentUser);
+    List<String> permissions = UserUtil.getMemberships(currentUser);
 
     TaskQuery taskQuery = new TaskQuery();
-    taskQuery.setAssignee(currentUser.getUserId());
+    //taskQuery.setAssignee(currentUser.getUserId());
     taskQuery.setKeyword(query);
-    taskQuery.setMemberships(permissions);
-    taskQuery.setOrFields(Arrays.asList(TaskUtil.ASSIGNEE, TaskUtil.MEMBERSHIP));
+    //taskQuery.setMemberships(permissions);
+    //taskQuery.setOrFields(Arrays.asList(TaskUtil.ASSIGNEE, TaskUtil.MEMBERSHIP));
+    taskQuery.setAssigneeOrMembership(currentUser.getUserId(), permissions);
     OrderBy orderBy = buildOrderBy(sort, order);
     if (orderBy != null) {
       taskQuery.setOrderBy(Arrays.asList(orderBy));      
     }
-    List<Task> tasks = taskService.findTaskByQuery(taskQuery);
-    
     SimpleDateFormat  df = new SimpleDateFormat("EEEEE, MMMMMMMM d, yyyy");
     df.setTimeZone(userService.getUserTimezone(currentUser.getUserId()));
+    Task[] tasks = ListUtil.load(taskService.findTasks(taskQuery), 0, -1);
     for (Task t : tasks) {
       result.add(buildResult(t, df));
     }

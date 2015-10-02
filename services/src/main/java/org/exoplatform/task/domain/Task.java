@@ -81,7 +81,7 @@ import org.exoplatform.task.service.TaskBuilder;
 })
 public class Task {
 
-  private static final String PREFIX_CLONE = "Copy of ";
+  public static final String PREFIX_CLONE = "Copy of ";
 
   @Id
   @SequenceGenerator(name="SEQ_TASK_TASKS_TASK_ID", sequenceName="SEQ_TASK_TASKS_TASK_ID")
@@ -308,18 +308,24 @@ public class Task {
     this.coworker = coworker;
   }
 
+  //TODO: get comments of task via TaskService
+  @Deprecated
   public Set<Comment> getComments() {
     return comments;
   }
 
+  @Deprecated
   public void setComments(Set<Comment> comments) {
     this.comments = comments;
   }
 
+  //TODO: get TaskLogs via TaskService
+  @Deprecated
   public Set<TaskLog> getTaskLogs() {
     return taskLogs;
   }
 
+  @Deprecated
   public void setTaskLogs(Set<TaskLog> taskLogs) {
     this.taskLogs = taskLogs;
   }
@@ -333,7 +339,7 @@ public class Task {
   }
 
   public Task clone() {
-    Task newTask = new TaskBuilder().withTitle(PREFIX_CLONE+this.getTitle())
+    Task newTask = new TaskBuilder().withTitle(this.getTitle())
         .withAssignee(this.getAssignee())
         .withContext(this.getContext())
         .withCreatedBy(this.getCreatedBy())
@@ -342,10 +348,25 @@ public class Task {
         .withPriority(this.getPriority())
         .withStartDate(this.getStartDate())
         .withEndDate(this.getEndDate())
-        .withStatus(this.status)
+        .withStatus(this.getStatus() != null ? this.getStatus().clone() : null)
         .build();
-    newTask.setCoworker(new HashSet<String>(this.getCoworker()));
-    newTask.setTag(new HashSet<String>(this.getTag()));
+
+    //
+    Set<String> coworker = new HashSet<String>();
+    if (this.getCoworker() != null) {
+      coworker.addAll(getCoworker());
+    }
+    newTask.setCoworker(coworker);
+
+    //
+    Set<String> tags = new HashSet<String>();
+    if (getTag() != null) {
+      tags.addAll(getTag());
+    }
+    newTask.setTag(tags);
+
+    newTask.setId(getId());
+
     return newTask;
   }
 

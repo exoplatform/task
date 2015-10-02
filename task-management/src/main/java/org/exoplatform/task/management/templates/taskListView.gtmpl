@@ -5,8 +5,9 @@
     import java.util.TimeZone;
     import java.util.Calendar;
     import org.exoplatform.task.domain.Status;
-    import org.exoplatform.task.utils.TaskUtil;
-    import org.exoplatform.task.utils.DateUtil;
+    import org.exoplatform.task.util.TaskUtil;
+    import org.exoplatform.task.util.DateUtil;
+    import org.exoplatform.task.util.ListUtil;
     import org.exoplatform.task.management.controller.TaskController;
 %>
 <div class="taskList">
@@ -19,7 +20,7 @@
             <%}%>
             <div class="header-right pull-right">
                 <!-- this is filter action-->
-                <% if (tasks.size() >= TaskController.MIN_NUMBER_TASK_GROUPABLE) { %>
+                <% if (taskNum >= TaskController.MIN_NUMBER_TASK_GROUPABLE) { %>
                              <span class="action-bar dropdown pull-right" data-currentorderby="${orderBy}">
                                 <a href="" class="actionIcon dropdown-toggle" data-original-title="Due date" data-toggle="dropdown"  rel="tooltip" data-placement="bottom">
                                     <i class="uiIconSortDown uiIconLightGray"></i>
@@ -64,7 +65,7 @@
     </div>
     <div class="body relative">
         <!-- The default list -->
-        <% if (tasks.size() > 0) { %>
+        <% if (taskNum > 0) { %>
         <div class="table-project-collapse">
             <% groupTasks.each {group -> %>
             <% if (groupBy != null && !groupBy.isEmpty() && !"none".equals(groupBy)) { %>
@@ -72,20 +73,20 @@
                 <% if (groupBy == 'assignee') {%>
                 <a class="toggle-collapse-group" href="#"><i class="uiIcon uiIconArrowDown"></i></a>
                 <%
-                    def user = userMap[group.key.value];
+                    def user = group.key.value;
                 %>
-                <% if (user.username != 'guest') {%>
+                <% if (user != null && user.username != 'guest') {%>
                 <img width="20px" height="20px" src="${user.avatar}" alt="${user.displayName}">
                 <%}%>
-                <a href="javascript:void(0)"><span class="group-name">${user.username == "guest" ? "UnAssigned" : user.displayName}</span> <span class="amount-item">(${group.value.size()})</span></a>
+                <a href="javascript:void(0)"><span class="group-name">${user == null || user.username == "guest" ? "UnAssigned" : user.displayName}</span> <span class="amount-item">(${ListUtil.getSize(group.value)})</span></a>
                 <% } else { %>
-                <div class="heading-title"><span class="group-name">${group.key}</span> <span class="amount-item">(${group.value.size()})</span></div>
+                <div class="heading-title"><span class="group-name">${group.key}</span> <span class="amount-item">(${ListUtil.getSize(group.value)})</span></div>
                 <% } %>
             </div>
             <%}%>
             <div class="collapse-content">
                 <ul class="table-project">
-                    <%group.value.eachWithIndex { task, index -> %>
+                    <%ListUtil.load(group.value, 0, -1).eachWithIndex { task, index -> %>
                     <%
                         def colorClass = '';
                         if (task.dueDate != null) {

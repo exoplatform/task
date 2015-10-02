@@ -32,8 +32,8 @@ import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.portal.mop.SiteKey;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.utils.ProjectUtil;
-import org.exoplatform.task.utils.TaskUtil;
+import org.exoplatform.task.util.ProjectUtil;
+import org.exoplatform.task.util.TaskUtil;
 import org.exoplatform.web.WebAppController;
 
 public abstract class AbstractNotificationPlugin extends BaseNotificationPlugin {

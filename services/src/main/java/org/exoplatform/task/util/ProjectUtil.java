@@ -14,17 +14,25 @@
 * You should have received a copy of the GNU Lesser General Public License
 * along with this program. If not, see http://www.gnu.org/licenses/ .
 */
-package org.exoplatform.task.utils;
+package org.exoplatform.task.util;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 
 import org.exoplatform.calendar.model.Calendar;
+import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.portal.mop.SiteKey;
@@ -32,10 +40,14 @@ import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
+import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.domain.Project;
+import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.exception.ProjectNotFoundException;
+import org.exoplatform.task.exception.EntityNotFoundException;
+import org.exoplatform.task.exception.ParameterEntityException;
 import org.exoplatform.task.service.ProjectService;
+import org.exoplatform.task.service.TaskService;
 import org.exoplatform.web.controller.router.Router;
 
 /**
@@ -70,9 +82,13 @@ public final class ProjectUtil {
     }
     calendar.setDescription(project.getDescription());
     calendar.setEditPermission(null);
-    ProjectService service = ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(ProjectService.class);
-    List<Task> tasks = service.getTasksByProjectId(Arrays.asList(project.getId()), null);
-    calendar.setHasChildren(tasks.size() > 0);    
+    //ProjectService service = ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(ProjectService.class);
+    TaskService taskService = ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(TaskService.class);
+    TaskQuery taskQuery = new TaskQuery();
+    taskQuery.setProjectIds(Arrays.asList(project.getId()));
+    //List<Task> tasks = service.getTasksByProjectId(Arrays.asList(project.getId()), null);
+    ListAccess<Task> listTask = taskService.findTasks(taskQuery);
+    calendar.setHasChildren(ListUtil.getSize(listTask) > 0);
     calendar.setId(String.valueOf(project.getId()));
     calendar.setName(project.getName() + NAME_SUFFIX);
     Set<String> permissions = new HashSet<String>();
@@ -92,33 +108,45 @@ public final class ProjectUtil {
     if (space_group_id == null) {
       ConversationState state = ConversationState.getCurrent();
       Identity identity = state.getIdentity();
-      memberships.addAll(UserUtils.getMemberships(identity));      
+      memberships.addAll(UserUtil.getMemberships(identity));      
     } else {
-      memberships.addAll(UserUtils.getSpaceMemberships(space_group_id));
-    }    
-    
-    return projectService.getProjectTreeByMembership(memberships);
+      memberships.addAll(UserUtil.getSpaceMemberships(space_group_id));
+    }
+
+    List<Project> projects = projectService.findProjects(memberships, null, null);
+    return ProjectUtil.buildRootProjects(projects);
+
+    //return projectService.getProjectTreeByMembership(memberships);
   }
 
   public static List<Project> buildRootProjects(List<Project> projects) {
     if (projects == null) return projects;
 
+    Map<Long, Project> maps = new HashMap<Long, Project>();
     Set<Project> rootPRJs = new LinkedHashSet<Project>();
-    Set<Project> childs = new LinkedHashSet<Project>();
+    //Set<Project> childs = new LinkedHashSet<Project>();
     for (Project p : projects) {
       while(true) {
+        if (!maps.containsKey(p.getId())) {
+          maps.put(p.getId(), p);
+        }
         Project parent = p.getParent();
         if (parent == null) {
           rootPRJs.add(p);
           break;
         } else {
-          childs.add(p);
+          if (maps.containsKey(parent.getId())) {
+            parent = maps.get(parent.getId());
+          }
+          if (!parent.getChildren().contains(p)) {
+            parent.getChildren().add(p);
+          }
           p = parent;
         }
       }
     }
 
-    List<Project> parents = new LinkedList<Project>(rootPRJs);
+    /*List<Project> parents = new LinkedList<Project>(rootPRJs);
     do {
       List<Project> tmpParents = new LinkedList<Project>();
       for (Project p : parents) {
@@ -133,12 +161,12 @@ public final class ProjectUtil {
         childs.removeAll(tmp);
       }
       parents = tmpParents;
-    } while (!parents.isEmpty() || !childs.isEmpty());
+    } while (!parents.isEmpty() && !childs.isEmpty());*/
 
     return new LinkedList<Project>(rootPRJs);
   }
   
-  public static List<Project> flattenTree(List<Project> projectTree) {
+  public static List<Project> flattenTree(List<Project> projectTree, ProjectService projectService) {
     if (projectTree == null) {
       return null;
     }
@@ -146,8 +174,9 @@ public final class ProjectUtil {
     List<Project> projects = new LinkedList<Project>();
     for (Project p : projectTree) {
       projects.add(p);
-      if (!p.getChildren().isEmpty()) {
-        projects.addAll(flattenTree(p.getChildren()));
+      List<Project> children = projectService.getSubProjects(p.getId());
+      if (children != null && !children.isEmpty()) {
+        projects.addAll(flattenTree(children, projectService));
       }
     }    
     return projects;
@@ -159,8 +188,8 @@ public final class ProjectUtil {
     Project project = null;
     if (id > 0) {
       try {
-        project = projectService.getProjectById(id);
-      } catch (ProjectNotFoundException e) {
+        project = projectService.getProject(id);
+      } catch (EntityNotFoundException e) {
         LOG.warn("project {} not found", id);
       }
     }
@@ -240,6 +269,93 @@ public final class ProjectUtil {
       }
     }
     return taskId;
+  }
+
+  public static Project newProjectInstance(String name, String description, String username) {
+    Set<String> managers = new HashSet<String>();
+    managers.add(username);
+    return newProjectInstance(name, description, managers, Collections.<String>emptySet());
+  }
+
+  public static Project newProjectInstance(String name, String description, Set<String> managers, Set<String> participators) {
+    Project p = new Project(name, description, new HashSet<Status>(), managers, participators);
+    return p;
+  }
+
+  public static Project saveProjectField(ProjectService projService, long projectId, Map<String, String[]> fields)
+      throws EntityNotFoundException, ParameterEntityException {
+
+    Project project = projService.getProject(projectId);
+    //
+    for (Map.Entry<String, String[]> field : fields.entrySet()) {
+      String fieldName = field.getKey();
+      String[] values = field.getValue();
+      
+      String val = values != null && values.length > 0 ? values[0] : null;
+      
+      if("name".equalsIgnoreCase(fieldName)) {
+        if(val == null || val.isEmpty()) {
+          LOG.info("Name of project must not empty");
+          throw new ParameterEntityException(projectId, Project.class, fieldName, val, "must not be empty", null);
+        }
+        project.setName(val);
+      } else if("manager".equalsIgnoreCase(fieldName)) {
+        Set<String> manager = new HashSet<String>();
+        if(values != null) {
+          for (String v : values) {
+            manager.add(v);
+          }
+        }
+        project.setManager(manager);
+      } else if("participator".equalsIgnoreCase(fieldName)) {
+        Set<String> participator = new HashSet<String>();
+        if(values != null || true) {
+          for (String v : values) {
+            participator.add(v);
+          }
+        }
+        project.setParticipator(participator);
+      } else if("dueDate".equalsIgnoreCase(fieldName)) {
+        if(val == null || val.isEmpty()) {
+          project.setDueDate(null);
+        } else {
+          DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+          try {
+            Date date = df.parse(val);
+            project.setDueDate(date);
+          } catch (ParseException e) {
+            LOG.info("can not parse date string: " + val);
+            throw new ParameterEntityException(projectId, Project.class, fieldName, val, "cannot be parse to date", e);
+          }
+        }
+      } else if("description".equalsIgnoreCase(fieldName)) {
+        project.setDescription(val);
+      } else if ("color".equalsIgnoreCase(fieldName)) {
+        project.setColor(val);
+      } else if ("calendarIntegrated".equalsIgnoreCase(fieldName)) {
+        project.setCalendarIntegrated(Boolean.parseBoolean(val));
+      } else if ("parent".equalsIgnoreCase(fieldName)) {
+        try {
+          long pId = Long.parseLong(val);
+          if (pId == 0) {
+            project.setParent(null);
+          } else if (pId == project.getId()) {
+            throw new ParameterEntityException(pId, Project.class, fieldName, val, "project can not be child of itself", null);
+          } else {
+            Project parent = projService.getProject(pId);
+            project.setParent(parent);
+          }
+        } catch (NumberFormatException ex) {
+          LOG.info("can not parse date string: " + val);
+          throw new ParameterEntityException(projectId, Project.class, fieldName, val, "cannot be parse to Long", ex);
+        }
+      } else {
+        LOG.info("Field name: " + fieldName + " is not supported for entity Project");
+        throw new ParameterEntityException(projectId, Project.class, fieldName, val, "is not supported for the entity Project", null);
+      }      
+    }
+
+    return project;
   }
 }
 

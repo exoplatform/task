@@ -4,22 +4,29 @@ import java.util.List;
 
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
+import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.exception.NotAllowedOperationOnEntityException;
-import org.exoplatform.task.exception.StatusNotFoundException;
 
 public interface StatusService {
-  
-  List<String> getDefaultStatus();
 
-  Status getStatusById(long statusId);
+  void createDefaultStatuses(Project project);
 
-  Status findLowestRankStatusByProject(long projectId);
+  Status getStatus(long statusId);
+
+  /**
+   * Return the default status of the project which is ideally the first step in the project workflow.
+   *
+   * @param projectId
+   *
+   * @return the default status of the given project.
+   */
+  Status getDefaultStatus(long projectId);
+
+  List<Status> getStatuses(long projectId);
     
   Status createStatus(Project project, String status);
   
-  Status deleteStatus(long statusID) throws StatusNotFoundException, NotAllowedOperationOnEntityException;
+  Status removeStatus(long statusId) throws EntityNotFoundException, NotAllowedOperationOnEntityException;
   
-  Status updateStatus(long id, String name) throws StatusNotFoundException, NotAllowedOperationOnEntityException;
-  
-  Status swapPosition(long statusID, long otherID) throws NotAllowedOperationOnEntityException;
+  Status updateStatus(long statusId, String statusName) throws EntityNotFoundException, NotAllowedOperationOnEntityException;
 }

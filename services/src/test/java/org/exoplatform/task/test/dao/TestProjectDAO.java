@@ -21,15 +21,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import junit.framework.Assert;
-
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
 import org.exoplatform.container.PortalContainer;
+import org.exoplatform.task.dao.DAOHandler;
 import org.exoplatform.task.dao.ProjectHandler;
 import org.exoplatform.task.domain.Project;
-import org.exoplatform.task.service.DAOHandler;
 import org.exoplatform.task.test.AbstractTest;
 
 /**
@@ -39,14 +39,14 @@ import org.exoplatform.task.test.AbstractTest;
 public class TestProjectDAO extends AbstractTest {
 
   private ProjectHandler pDAO;
-  private DAOHandler taskService;
+  private DAOHandler daoHandler;
 
   @Before
   public void setup() {
     PortalContainer container = PortalContainer.getInstance();
     
-    taskService = (DAOHandler) container.getComponentInstanceOfType(DAOHandler.class);
-    pDAO = taskService.getProjectHandler();
+    daoHandler = (DAOHandler) container.getComponentInstanceOfType(DAOHandler.class);
+    pDAO = daoHandler.getProjectHandler();
   }
 
   @After

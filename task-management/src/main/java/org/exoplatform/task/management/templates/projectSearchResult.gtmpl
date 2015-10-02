@@ -3,7 +3,7 @@
 #{param name=currentProjectId/}
 
 <%
-import org.exoplatform.task.utils.StringUtil;
+import org.exoplatform.task.util.StringUtil;
 %>
 
 <%

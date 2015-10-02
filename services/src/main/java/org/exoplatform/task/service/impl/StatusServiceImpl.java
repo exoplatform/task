@@ -24,30 +24,32 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.exoplatform.commons.api.persistence.ExoTransactional;
+import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.commons.utils.PropertyManager;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.exoplatform.task.dao.DAOHandler;
 import org.exoplatform.task.dao.StatusHandler;
+import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.exception.NotAllowedOperationOnEntityException;
-import org.exoplatform.task.exception.StatusNotFoundException;
-import org.exoplatform.task.service.DAOHandler;
 import org.exoplatform.task.service.StatusService;
+import org.exoplatform.task.util.ListUtil;
 
 @Singleton
 public class StatusServiceImpl implements StatusService {
 
   @Inject
   private DAOHandler daoHandler;
-  
+
   private String[] DEFAULT_STATUS = {"To Do", "In Progress", "Waiting On", "Done"};
   
   private static Log LOG = ExoLogger.getExoLogger(StatusServiceImpl.class);  
@@ -70,19 +72,30 @@ public class StatusServiceImpl implements StatusService {
     this.daoHandler = daoHandler;
   }
 
-  @Override
-  public List<String> getDefaultStatus() {
+  private List<String> getDefaultStatus() {
     return Arrays.asList(DEFAULT_STATUS);
   }
 
   @Override
-  public Status getStatusById(long statusId) {
+  public void createDefaultStatuses(Project proj) {
+    for (String s : getDefaultStatus()) {
+      createStatus(proj, s);
+    }
+  }
+
+  @Override
+  public Status getStatus(long statusId) {
     return daoHandler.getStatusHandler().find(statusId);
   }
 
   @Override
-  public Status findLowestRankStatusByProject(long projectId) {
+  public Status getDefaultStatus(long projectId) {
     return daoHandler.getStatusHandler().findLowestRankStatusByProject(projectId);
+  }
+
+  @Override
+  public List<Status> getStatuses(long projectId) {
+    return daoHandler.getStatusHandler().getStatuses(projectId);
   }
 
   @Override
@@ -93,52 +106,49 @@ public class StatusServiceImpl implements StatusService {
     }
 
     //
-    if (project.getStatus() != null) {
-      for (Status st : project.getStatus()) {
+    List<Status> statuses = getStatuses(project.getId());
+    if (statuses != null) {
+      for (Status st : statuses) {
         if (st.getName().equalsIgnoreCase(name)) {
           LOG.warn("Status {} has already exists", name);
           return st;
         }
       }      
-    } else {
-      project.setStatus(new HashSet<Status>());
     }
 
     Status max = daoHandler.getStatusHandler().findHighestRankStatusByProject(project.getId());
     int maxRank = max != null && max.getRank() != null ? max.getRank() : -1;
     
     StatusHandler handler = daoHandler.getStatusHandler();
-    Status st = new Status(name, ++maxRank, new HashSet<Task>(), project);    
-    project.getStatus().add(st);
+    Status st = new Status(name, ++maxRank, new HashSet<Task>(), project);
     handler.create(st);
     return st;
   }
 
   @Override
   @ExoTransactional
-  public Status deleteStatus(long statusID) throws StatusNotFoundException, NotAllowedOperationOnEntityException {
+  public Status removeStatus(long statusID) throws EntityNotFoundException, NotAllowedOperationOnEntityException {
     StatusHandler handler = daoHandler.getStatusHandler();
     Status st = handler.find(statusID);
     if (st == null) {
-      throw new StatusNotFoundException(statusID);
+      throw new EntityNotFoundException(statusID, Status.class);
     }
     
     Project project = st.getProject();
     Status altStatus = findAltStatus(st, project);
     if (altStatus == null) {
-      throw new NotAllowedOperationOnEntityException(statusID, "status", "Delete last status");
+      throw new NotAllowedOperationOnEntityException(statusID, Status.class, "Delete last status");
     }
-    
-    Set<Task> tasks = st.getTasks();
-    altStatus.getTasks().addAll(tasks);
-    for (Task t : tasks) {
+
+    TaskQuery query = new TaskQuery();
+    query.setStatus(st);
+    ListAccess<Task> tasks = daoHandler.getTaskHandler().findTasks(query);
+    for (Task t : ListUtil.load(tasks, 0, -1)) {
       t.setStatus(altStatus);
       daoHandler.getTaskHandler().update(t);
     }
 
     //
-    st.getTasks().clear();
-    project.getStatus().remove(st);
     st.setProject(null);
 
     handler.delete(st);
@@ -147,7 +157,7 @@ public class StatusServiceImpl implements StatusService {
 
   @Override
   @ExoTransactional
-  public Status updateStatus(long id, String name) throws StatusNotFoundException, NotAllowedOperationOnEntityException {
+  public Status updateStatus(long id, String name) throws EntityNotFoundException, NotAllowedOperationOnEntityException {
     if (name == null || (name = name.trim()).isEmpty()) {
       throw new IllegalArgumentException("status name can't be null or empty");
     }
@@ -155,35 +165,19 @@ public class StatusServiceImpl implements StatusService {
     StatusHandler handler = daoHandler.getStatusHandler();
     Status status = handler.find(id);
     if (status == null) {
-      throw new StatusNotFoundException(id);
+      throw new EntityNotFoundException(id, Status.class);
     }
     Status curr = handler.findByName(name, status.getProject().getId());
     if (curr != null && !status.equals(curr)) {
-      throw new NotAllowedOperationOnEntityException(status.getId(), "status", "duplicate status name");
+      throw new NotAllowedOperationOnEntityException(status.getId(), Status.class, "duplicate status name");
     }
     
     status.setName(name);
     return daoHandler.getStatusHandler().update(status);
   }
 
-  @Override
-  public Status swapPosition(long statusID, long otherID) throws NotAllowedOperationOnEntityException {
-    StatusHandler handler = daoHandler.getStatusHandler();
-    Status status = handler.find(statusID);
-    Status other = handler.find(otherID);
-    //
-    if (status == null || other == null) {
-      throw new NotAllowedOperationOnEntityException(statusID, "status", "swap with null status");
-    }
-    
-    Integer rank = status.getRank();
-    status.setRank(other.getRank());
-    other.setRank(rank);
-    return status;
-  }
-
   private Status findAltStatus(Status st, Project project) {
-    List<Status> allSt = new LinkedList<Status>(project.getStatus());
+    List<Status> allSt = new LinkedList<Status>(getStatuses(project.getId()));
     Collections.sort(allSt);
     
     Status other = null;

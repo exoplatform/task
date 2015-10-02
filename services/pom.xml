@@ -69,6 +69,16 @@
       <artifactId>social-component-core</artifactId>
       <version>4.3.x-soc-task-SNAPSHOT</version>
       <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.chromattic</groupId>
+          <artifactId>chromattic.apt</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.chromattic</groupId>
+          <artifactId>chromattic.core</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.exoplatform.social</groupId>

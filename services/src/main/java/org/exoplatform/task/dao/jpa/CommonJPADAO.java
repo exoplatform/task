@@ -17,28 +17,40 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.exoplatform.task.service;
+package org.exoplatform.task.dao.jpa;
 
-import org.exoplatform.task.dao.CommentHandler;
-import org.exoplatform.task.dao.LabelHandler;
-import org.exoplatform.task.dao.ProjectHandler;
-import org.exoplatform.task.dao.StatusHandler;
-import org.exoplatform.task.dao.TaskHandler;
-import org.exoplatform.task.dao.UserSettingHandler;
+import org.exoplatform.commons.persistence.impl.GenericDAOJPAImpl;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
-public interface DAOHandler {
-  public ProjectHandler getProjectHandler();
+public class CommonJPADAO<E, K extends Serializable> extends GenericDAOJPAImpl<E, K> {
+  protected <E> List<E> cloneEntities(List<E> list) {
+    if (list == null || list.isEmpty()) return list;
 
-  public TaskHandler getTaskHandler();
-  
-  public LabelHandler getLabelHandler();
+    List<E> result = new ArrayList<E>(list.size());
+    for (E e : list) {
+      E cloned = cloneEntity(e);
+      result.add(cloned);
+    }
+    return result;
+  }
 
-  public CommentHandler getCommentHandler();
+  protected <E> E cloneEntity(E e) {
+    return DAOHandlerJPAImpl.clone(e);
+  }
 
-  public StatusHandler getStatusHandler();
+  @Override
+  public E find(K id) {
+    return cloneEntity(super.find(id));
+  }
 
-  public UserSettingHandler getUserSettingHandler();
+  @Override
+  public E create(E entity) {
+    return cloneEntity(super.create(entity));
+  }
 }

@@ -23,9 +23,17 @@ import javax.persistence.Table;
 
 @Embeddable
 @Table(name = "TASK_LOGS")
+//TODO Should be renamed to ChangeLog which is more meaning
 public class TaskLog implements Comparable<TaskLog> {
+
+  //TODO Should have primary key
+//  @Id
+//  @GeneratedValue
+//  private long id;
+  
   private String author;
 
+  //TODO It could be a kind of LogType with the integer datatype
   private String msg;
 
   private String target;
@@ -68,5 +76,15 @@ public class TaskLog implements Comparable<TaskLog> {
   @Override
   public int compareTo(TaskLog o) {
     return (int)(getCreatedTime() - o.getCreatedTime());
+  }
+
+  @Override
+  public TaskLog clone() {
+    TaskLog log = new TaskLog();
+    log.setAuthor(getAuthor());
+    log.setMsg(getMsg());
+    log.setCreatedTime(getCreatedTime());
+
+    return log;
   }
 }

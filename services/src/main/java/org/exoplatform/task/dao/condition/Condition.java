@@ -17,28 +17,18 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.exoplatform.task.service.impl;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.exoplatform.task.service.ParserContext;
-import org.exoplatform.task.service.TaskBuilder;
-import org.exoplatform.task.service.TaskParserPlugin;
+package org.exoplatform.task.dao.condition;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
-public class TaskTagParserPlugin implements TaskParserPlugin {
+public class Condition implements Cloneable {
   @Override
-  public String parse(String input, ParserContext context, TaskBuilder builder) {
-    Pattern p = Pattern.compile("(\\s)(#)([0-9a-zA-Z_]+)");
-    Matcher m = p.matcher(input);
-    while(m.find()) {
-      builder.addTag(m.group(3));
+  protected Condition clone() {
+    try {
+      return (Condition)super.clone();
+    } catch (CloneNotSupportedException e) {
+      return null;
     }
-
-    String in = input.replaceAll("\\s#[0-9a-zA-Z_]+\\s*", " ").trim();
-    return in;
   }
 }

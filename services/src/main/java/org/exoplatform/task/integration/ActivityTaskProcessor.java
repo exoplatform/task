@@ -25,21 +25,21 @@ import org.exoplatform.portal.mop.SiteKey;
 import org.exoplatform.social.core.BaseActivityProcessorPlugin;
 import org.exoplatform.social.core.activity.model.ExoSocialActivity;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.service.DAOHandler;
-import org.exoplatform.task.utils.TaskUtil;
+import org.exoplatform.task.service.TaskService;
+import org.exoplatform.task.util.TaskUtil;
 import org.exoplatform.web.WebAppController;
 import org.exoplatform.web.controller.router.Router;
 
 public class ActivityTaskProcessor extends BaseActivityProcessorPlugin {
 
-  private final DAOHandler daoHandler;
+  private final TaskService taskService;
   private final EntityManagerService entityManagerService;
   private final WebAppController webAppController;
   
-  public ActivityTaskProcessor(InitParams params, WebAppController controller, DAOHandler daoHandler, EntityManagerService entityManagerService) {
+  public ActivityTaskProcessor(InitParams params, WebAppController controller, TaskService taskServ, EntityManagerService entityManagerService) {
     super(params);
     this.entityManagerService = entityManagerService;
-    this.daoHandler = daoHandler;
+    this.taskService = taskServ;
     this.webAppController = controller;
   }
 
@@ -58,7 +58,7 @@ public class ActivityTaskProcessor extends BaseActivityProcessorPlugin {
     if (idx >=0) {
       try {
         RequestLifeCycle.begin(entityManagerService);
-        Task task = daoHandler.getTaskHandler().findTaskByActivityId(activity.getId());
+        Task task = taskService.findTaskByActivityId(activity.getId());
         if (task != null) {
           return substituteTask(task, message, webAppController.getRouter());
         }
