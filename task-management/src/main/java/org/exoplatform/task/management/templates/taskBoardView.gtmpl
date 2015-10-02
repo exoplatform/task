@@ -68,7 +68,7 @@
         </div>
         <!--<div class="input-field">
             <form action="#" method="GET" class="form-create-task">
-                <input type="text" name="taskTitle" placeholder="Untiled Task"
+                <input type="text" name="taskTitle" placeholder="Untitled Task"
                         <%if (taskNum == 0) { %>
                        data-content="&{label.welcome.firstTask}"
                        data-placement="bottom"
@@ -157,7 +157,7 @@
                                         </div>
                                     <%}%>
                                     <form class="create-task createTaskInListView" method="POST" action="#" style="visibility: hidden">
-                                        <input type="text" placeholder="Untiled Task" name="taskTitle">
+                                        <input type="text" placeholder="Untitled Task" name="taskTitle">
                                         <input type="hidden" name="statusId" value="${st.id}"/>
                                         <input type="hidden" name="projectId" value="${st.project.id}"/>
                                         <input type="hidden" name="groupBy" value="${groupBy}"/>
@@ -187,7 +187,7 @@
                     <li  class="row-item  hover-action-reveal has-border taskItem">
                         <div class="col col1">
                             <form  method="GET" action="#">
-                                <input type="text" placeholder="Untiled Task" name="taskTitle">
+                                <input type="text" placeholder="Untitled Task" name="taskTitle">
                             </form>
                         </div>
                         <div class="col col2"></div>
@@ -227,7 +227,7 @@
                                 </div>
                             </div>
                             <form class="create-task"  method="GET" action="#">
-                                <input type="text" placeholder="Untiled Task" name="taskTitle">
+                                <input type="text" placeholder="Untitled Task" name="taskTitle">
                             </form>
                         </div>
                         <div class="col col2"></div>
@@ -244,7 +244,7 @@
                                 </div>
                             </div>
                             <form class="create-task"  method="GET" action="#">
-                                <input type="text" placeholder="Untiled Task" name="taskTitle">
+                                <input type="text" placeholder="Untitled Task" name="taskTitle">
                             </form>
                         </div>
                     </li>
@@ -275,7 +275,7 @@
                                 </div>
                             </div>
                             <form class="create-task"  method="GET" action="#">
-                                <input type="text" placeholder="Untiled Task" name="taskTitle">
+                                <input type="text" placeholder="Untitled Task" name="taskTitle">
                             </form>
                         </div>
                         <div class="col col4">
@@ -308,7 +308,7 @@
                                 </div>
                             </div>
                             <form class="create-task"  method="GET" action="#">
-                                <input type="text" placeholder="Untiled Task" name="taskTitle">
+                                <input type="text" placeholder="Untitled Task" name="taskTitle">
                             </form>
                         </div>
 
@@ -394,7 +394,7 @@
                                 </div>
                             </div>
                             <form class="create-task"  method="GET" action="#">
-                                <input type="text" placeholder="Untiled Task" name="taskTitle">
+                                <input type="text" placeholder="Untitled Task" name="taskTitle">
                             </form>
                         </div>
 
