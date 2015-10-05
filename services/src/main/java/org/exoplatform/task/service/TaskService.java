@@ -56,7 +56,7 @@ public interface TaskService {
 
   List<Task> getToDoTasksByUser(String username, List<Long> projectIds, OrderBy orderBy, Date fromDueDate, Date toDueDate);
 
-  List<Task> findTasksByLabel(long labelId, String username, OrderBy orderBy) throws LabelNotFoundException;
+  List<Task> findTasksByLabel(long labelId, List<Long> projectIds, String username, OrderBy orderBy) throws LabelNotFoundException;
   
   List<Task> findTaskByQuery(TaskQuery query);
   

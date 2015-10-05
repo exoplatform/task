@@ -519,18 +519,29 @@ public class TaskDAOImpl extends GenericDAOJPAImpl<Task, Long> implements TaskHa
   }
 
   @Override
-  public List<Task> findTasksByLabel(long labelId, String username, OrderBy orderBy) {
+  public List<Task> findTasksByLabel(long labelId, List<Long> projectIds, String username, OrderBy orderBy) {
     EntityManager em = getEntityManager();
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<Task> query = cb.createQuery(Task.class);
     From task = query.from(Task.class);
+    //
     Join<Task, Label> label = task.join("labels", JoinType.INNER);
-    query.select(task).distinct(true);
-
+    Predicate labelPred;
     if (labelId > 0) {
-      query.where(cb.equal(label.get("id"), labelId));
+      labelPred = cb.equal(label.get("id"), labelId);
     } else {
-      query.where(cb.equal(label.get("username"), username));
+      labelPred = cb.equal(label.get("username"), username);
+    }
+    //
+    Predicate projectPred = null;
+    if (projectIds != null && !projectIds.isEmpty()) {      
+      projectPred = cb.in(task.join("status", JoinType.LEFT).get("project").get("id")).value(projectIds);
+    }
+    query.select(task).distinct(true);
+    if (projectPred == null) {
+      query.where(labelPred);
+    } else {
+      query.where(cb.and(labelPred, projectPred));      
     }
 
     if (orderBy != null) {

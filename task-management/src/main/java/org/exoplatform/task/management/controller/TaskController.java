@@ -633,12 +633,12 @@ public class TaskController {
       
       if (advanceQuery == null) {
         try {
-          //todo: space
-          tasks = taskService.findTasksByLabel(labelId, currentUser, order);
+          tasks = taskService.findTasksByLabel(labelId, spaceProjectIds, currentUser, order);
         } catch (LabelNotFoundException ex) {
           tasks = new ArrayList<Task>();
         }
       } else {
+        advanceQuery.setProjectIds(spaceProjectIds);
         advanceQuery.setOrderBy(Arrays.asList(order));
         advanceQuery.setStatusId(-1L);
         tasks = taskService.findTaskByQuery(advanceQuery);

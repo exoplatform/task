@@ -11,7 +11,7 @@ require(['jquery', 'taskManagementApp'], function($, taApp) {
       var $modalPlace = $('.modalPlace');
       
       //show input to create label
-      $leftPanel.on('click', '.new-label', function() {        
+      $leftPanel.on('click', '.new-label', function() {
         var $listLabels = $leftPanel.find('.list-labels');
         if (!$listLabels.find('input').length) {
           var input = '<li><div class="noLabel center muted form-add-label"><input type="text" class="addLabelInput"/></div></li>'
@@ -200,7 +200,7 @@ require(['jquery', 'taskManagementApp'], function($, taApp) {
       }
       
       function labelLoaded(labelid) {
-        $('.label-name').closest('.accordion-heading').removeClass('active').find('.active').removeClass('active');
+        $leftPanel.find('.active').removeClass('active');
         $('.label-name[data-labelid="' + labelid + '"]').closest('li').addClass('active');
 
         //welcome

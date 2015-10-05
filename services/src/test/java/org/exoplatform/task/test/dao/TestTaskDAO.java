@@ -248,13 +248,21 @@ public class TestTaskDAO extends AbstractTest {
   
   @Test
   public void testFindTasksByLabel() {
+    Project project = new Project();
+    project.setName("Project1");
+    Status status = newStatusInstance("TO DO", 1);
+    status.setProject(project);
+    project.getStatus().add(status);
+    taskService.getProjectHandler().create(project);
+    
     Task task = newTaskInstance("task1", "", username);
+    task.setStatus(status);
     tDAO.create(task);
     Label label = new Label("label1", username);
     label.getTasks().add(task);
     taskService.getLabelHandler().create(label);
     
-    List<Task> tasks = tDAO.findTasksByLabel(label.getId(), username, null);
+    List<Task> tasks = tDAO.findTasksByLabel(label.getId(), Arrays.asList(project.getId()), username, null);
     Assert.assertEquals(1, tasks.size());
     Assert.assertEquals(task.getId(), tasks.get(0).getId());
   }

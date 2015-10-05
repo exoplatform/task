@@ -464,14 +464,14 @@ public class TaskServiceImpl implements TaskService {
   }
 
   @Override
-  public List<Task> findTasksByLabel(long labelId, String username, OrderBy orderBy) throws LabelNotFoundException {
+  public List<Task> findTasksByLabel(long labelId, List<Long> projectIds, String username, OrderBy orderBy) throws LabelNotFoundException {
     if (labelId > 0) {
       Label label = getLabelById(labelId);
       if (label == null) {
         throw new LabelNotFoundException(labelId);
       }
     }
-    return daoHandler.getTaskHandler().findTasksByLabel(labelId, username, orderBy);
+    return daoHandler.getTaskHandler().findTasksByLabel(labelId, projectIds, username, orderBy);
   }
 
   @Override
