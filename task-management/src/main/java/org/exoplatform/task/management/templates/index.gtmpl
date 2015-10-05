@@ -19,6 +19,7 @@
 #{param name=groups /}
 #{param name=viewType/}
 #{param name=currentLabelId/}
+#{param name=advanceSearch/}
 
 <!-- Consider this -->
 #{param name=taskService/}

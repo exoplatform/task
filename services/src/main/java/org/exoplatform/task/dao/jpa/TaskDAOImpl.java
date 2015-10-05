@@ -17,6 +17,7 @@
 package org.exoplatform.task.dao.jpa;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
@@ -110,6 +111,7 @@ public class TaskDAOImpl extends GenericDAOJPAImpl<Task, Long> implements TaskHa
     EntityManager em = getEntityManager();
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<Task> q = cb.createQuery(Task.class);
+    q.distinct(true);
     
     Root<Task> task = q.from(Task.class);
     q.select(task);
@@ -128,9 +130,37 @@ public class TaskDAOImpl extends GenericDAOJPAImpl<Task, Long> implements TaskHa
       predicates.add(cb.like(task.<String>get("description"), '%' + query.getDescription() + '%'));
     }
 
+    if (query.getLabelIds() != null && !query.getLabelIds().isEmpty()) {
+      predicates.add(task.join("labels").get("id").in(query.getLabelIds()));
+    }
+
+    if (query.getTags() != null && !query.getTags().isEmpty()) {
+      predicates.add(task.join("tag").in(query.getTags()));
+    }
+
+    if (query.getStatusId() == null) {
+      predicates.add(cb.isNull(task.get("status")));
+    } else if (query.getStatusId() != -1) {      
+      predicates.add(cb.equal(task.get("status").get("id"), query.getStatusId()));
+    }
+    
+    if (query.getPriority() != null) {
+      predicates.add(cb.equal(task.get("priority"), query.getPriority()));
+    }
+
     Predicate assignPred = null;
     if (query.getAssignee() != null && !query.getAssignee().isEmpty()) {
       assignPred = cb.like(task.<String>get("assignee"), '%' + query.getAssignee() + '%');
+    }
+    
+    Predicate createdByPred = null;
+    if (query.getCreatedBy() != null && !query.getCreatedBy().isEmpty()) {
+      createdByPred = cb.equal(task.<String>get("createdBy"), query.getCreatedBy());
+    }
+    
+    Predicate coworkerPred = null;
+    if (query.getCoworker() != null && !query.getCoworker().isEmpty()) {
+      coworkerPred = cb.equal(task.join("coworker", JoinType.LEFT), query.getCoworker());
     }
     
     Predicate msPred = null;
@@ -172,6 +202,12 @@ public class TaskDAOImpl extends GenericDAOJPAImpl<Task, Long> implements TaskHa
       if (or.equals(TaskUtil.PROJECT)) {
         tmp.add(projectPred);
       }
+      if (or.equals(TaskUtil.CREATED_BY)) {
+        tmp.add(createdByPred);
+      }
+      if (or.equals(TaskUtil.COWORKER)) {
+        tmp.add(coworkerPred);
+      }
     }
 
     if (!tmp.isEmpty()) {
@@ -186,6 +222,12 @@ public class TaskDAOImpl extends GenericDAOJPAImpl<Task, Long> implements TaskHa
     }
     if (!query.getOrFields().contains(TaskUtil.PROJECT) && projectPred != null) {
       predicates.add(projectPred);      
+    }
+    if (!query.getOrFields().contains(TaskUtil.CREATED_BY) && createdByPred != null) {
+      predicates.add(createdByPred);      
+    }
+    if (!query.getOrFields().contains(TaskUtil.COWORKER) && coworkerPred != null) {
+      predicates.add(coworkerPred);      
     }
 
     if(query.getKeyword() != null && !query.getKeyword().isEmpty()) {      
@@ -207,20 +249,19 @@ public class TaskDAOImpl extends GenericDAOJPAImpl<Task, Long> implements TaskHa
     }
 
     if (query.getCompleted() != null) {
-      if (query.getCompleted()) {
-        predicates.add(cb.equal(task.get("completed"), query.getCompleted()));
-      } else {
-        predicates.add(cb.notEqual(task.get("completed"), !query.getCompleted()));
-      }
+      predicates.add(cb.equal(task.get("completed"), query.getCompleted()));
     }
     
     if (query.getCalendarIntegrated() != null) {
-      if (query.getCalendarIntegrated()) {
-        predicates.add(cb.equal(task.get("calendarIntegrated"), query.getCalendarIntegrated()));
-      } else {
-        predicates.add(cb.notEqual(task.get("calendarIntegrated"), !query.getCalendarIntegrated()));
-      }
+      predicates.add(cb.equal(task.get("calendarIntegrated"), query.getCalendarIntegrated()));
     }
+    
+    if (query.getDueDateFrom() != null) {
+      predicates.add(cb.greaterThanOrEqualTo(task.<Date>get("dueDate"), new Date(query.getDueDateFrom())));
+    }
+    if (query.getDueDateTo() != null) {
+      predicates.add(cb.lessThanOrEqualTo(task.<Date>get("dueDate"), new Date(query.getDueDateTo())));
+    }    
     
     if (query.getStartDate() != null) {
       predicates.add(cb.greaterThanOrEqualTo(task.<Date>get("endDate"), query.getStartDate()));

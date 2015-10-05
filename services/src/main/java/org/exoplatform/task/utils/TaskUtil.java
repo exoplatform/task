@@ -75,6 +75,12 @@ public final class TaskUtil {
   public static final String LABEL = "label";
   public static final String RANK = "rank";
   public static final String MEMBERSHIP = "membership";
+  public static final String CREATED_BY = "createdBy";
+  public static final String COWORKER = "coworker";
+  
+  public static enum DUE {
+    OVERDUE, TODAY, TOMORROW, UPCOMING
+  }
   
   private TaskUtil() {
   }

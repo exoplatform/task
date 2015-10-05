@@ -52,8 +52,10 @@ import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.task.dao.OrderBy;
+import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Label;
+import org.exoplatform.task.domain.Priority;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
@@ -76,6 +78,7 @@ import org.exoplatform.task.utils.CommentUtils;
 import org.exoplatform.task.utils.DateUtil;
 import org.exoplatform.task.utils.ProjectUtil;
 import org.exoplatform.task.utils.TaskUtil;
+import org.exoplatform.task.utils.TaskUtil.DUE;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -394,10 +397,10 @@ public class TaskController {
   @Resource
   @Ajax
   @MimeType.HTML
-  public Response listTasks(String space_group_id, Long projectId, Long labelId, String keyword, String groupBy, String orderBy,
-                            String filter, String viewType, SecurityContext securityContext) {
+  public Response listTasks(String space_group_id, Long projectId, Long labelId, String filterLabelIds, String tags, Long statusId, String dueDate, String priority,  
+                            String assignee, Boolean completed, String keyword, Boolean advanceSearch, String groupBy, String orderBy, String filter, String viewType, SecurityContext securityContext) {
     Project project = null;
-    List<Task> tasks;
+    List<Task> tasks = Collections.emptyList();
 
     if (projectId <= 0 || viewType == null || !VIEW_TYPES.contains(viewType)) {
       viewType = VIEW_TYPES.get(0);
@@ -453,6 +456,8 @@ public class TaskController {
     if(orderBy != null && !orderBy.trim().isEmpty()) {
       order = TaskUtil.TITLE.equals(orderBy) || TaskUtil.DUEDATE.equals(orderBy) ? new OrderBy.ASC(orderBy) : new OrderBy.DESC(orderBy);
     }
+    
+    TaskQuery advanceQuery = advanceSearch != null && advanceSearch ? buildTaskQuery(keyword, filterLabelIds, tags, statusId, dueDate, priority, assignee, completed, order, userTimezone) : null;
 
     //Get Tasks in good order
     if(projectId == ProjectUtil.INCOMING_PROJECT_ID) {
@@ -462,9 +467,18 @@ public class TaskController {
         order = new OrderBy.DESC(orderBy);
       }
 
-      tasks = taskService.getIncomingTasksByUser(currentUser, order);
-    }
-    else if (projectId == ProjectUtil.TODO_PROJECT_ID) {
+      if (advanceQuery == null) {
+        tasks = taskService.getIncomingTasksByUser(currentUser, order);
+      } else {
+        advanceQuery.setStatusId(null);
+        advanceQuery.setAssignee(currentUser);
+        advanceQuery.setCoworker(currentUser);
+        advanceQuery.setCreatedBy(currentUser);
+        advanceQuery.setOrFields(Arrays.asList(TaskUtil.ASSIGNEE, TaskUtil.COWORKER, TaskUtil.CREATED_BY));
+        advanceQuery.setOrderBy(Arrays.asList(order));
+        tasks = taskService.findTaskByQuery(advanceQuery);
+      }
+    } else if (projectId == ProjectUtil.TODO_PROJECT_ID) {
       defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT, TaskUtil.LABEL, TaskUtil.DUEDATE), bundle);
       defOrders = TaskUtil.resolve(Arrays.asList(TaskUtil.TITLE, TaskUtil.STATUS, TaskUtil.DUEDATE, TaskUtil.PRIORITY, TaskUtil.RANK), bundle);
       
@@ -479,6 +493,7 @@ public class TaskController {
         defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT, TaskUtil.LABEL), bundle);
         defOrders = TaskUtil.resolve(Arrays.asList(TaskUtil.TITLE, TaskUtil.PRIORITY, TaskUtil.DUEDATE), bundle);
         groupBy = groupBy == null || !defGroupBys.containsKey(groupBy) ? TaskUtil.PROJECT : groupBy;
+        dueDate = DUE.OVERDUE.name();
       } else if ("today".equalsIgnoreCase(filter)) {
         Calendar c = DateUtil.newCalendarInstance(userTimezone);
         c.set(Calendar.HOUR, 0);
@@ -495,6 +510,7 @@ public class TaskController {
           orderBy = TaskUtil.PRIORITY;
         }
         groupBy = groupBy == null || !defGroupBys.containsKey(groupBy) ? TaskUtil.NONE : groupBy;
+        dueDate = DUE.TODAY.name();
       } else if ("tomorrow".equalsIgnoreCase(filter)) {
         Calendar c = DateUtil.newCalendarInstance(userTimezone);
         c.set(Calendar.HOUR, 0);
@@ -512,6 +528,7 @@ public class TaskController {
           orderBy = TaskUtil.PRIORITY;
         }
         groupBy = groupBy == null || !defGroupBys.containsKey(groupBy) ? TaskUtil.NONE : groupBy;
+        dueDate = DUE.TOMORROW.name();
       } else if ("upcoming".equalsIgnoreCase(filter)) {
         Calendar c = DateUtil.newCalendarInstance(userTimezone);
         c.set(Calendar.HOUR, 0);
@@ -520,50 +537,34 @@ public class TaskController {
         c.add(Calendar.DATE, 2);
         fromDueDate = c.getTime();
         toDueDate = null;
-        
+
         defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT, TaskUtil.LABEL), bundle);
         defOrders = TaskUtil.resolve(Arrays.asList(TaskUtil.TITLE, TaskUtil.PRIORITY, TaskUtil.DUEDATE, TaskUtil.RANK), bundle);
         groupBy = groupBy == null || !defGroupBys.containsKey(groupBy) ? TaskUtil.NONE : groupBy;
+        dueDate = DUE.UPCOMING.name();
       }
-      
+
       if (orderBy == null || !defOrders.containsKey(orderBy)) {
         orderBy = TaskUtil.DUEDATE;
-        order = new OrderBy.ASC(TaskUtil.DUEDATE);        
+        order = new OrderBy.ASC(TaskUtil.DUEDATE);
       }
       if (groupBy == null || !defGroupBys.containsKey(groupBy)) {
         groupBy = TaskUtil.DUEDATE;
       }
       
-      tasks = taskService.getToDoTasksByUser(currentUser, spaceProjectIds, order, fromDueDate, toDueDate);
-    }
-    else if (labelId != null && labelId >= 0) {
-      defOrders = TaskUtil.resolve(Arrays.asList(TaskUtil.TITLE, TaskUtil.CREATED_TIME, TaskUtil.DUEDATE, TaskUtil.PRIORITY), bundle);
-      if (orderBy == null || orderBy.isEmpty() || !defOrders.containsKey(orderBy)) {
-        orderBy = TaskUtil.DUEDATE;
-        order = new OrderBy.ASC(TaskUtil.DUEDATE);;
-      }
-
-      //Case label view
-      if (labelId == 0) {
-        defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT, TaskUtil.LABEL, TaskUtil.DUEDATE, TaskUtil.STATUS), bundle);
-        if (groupBy == null || groupBy.isEmpty() || !defGroupBys.containsKey(groupBy)) {
-          groupBy = TaskUtil.LABEL;
-        }        
+      if (advanceSearch == null) {
+        tasks = taskService.getToDoTasksByUser(currentUser, spaceProjectIds, order, fromDueDate, toDueDate);        
       } else {
-        defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT, TaskUtil.DUEDATE, TaskUtil.STATUS), bundle);
-        if (groupBy == null || groupBy.isEmpty() || !defGroupBys.containsKey(groupBy)) {
-          groupBy = TaskUtil.NONE;
-        }
+        advanceQuery.setOrderBy(Arrays.asList(order));
+        Long[] due = convertDueDate(dueDate, userTimezone);
+        advanceQuery.setDueDateFrom(due[0]);
+        advanceQuery.setDueDateTo(due[1]);
+        advanceQuery.setProjectIds(spaceProjectIds);
+        advanceQuery.setAssignee(currentUser);
+        advanceQuery.setStatusId(-1L);
+        tasks = taskService.findTaskByQuery(advanceQuery);
       }
-
-      try {
-        tasks = taskService.findTasksByLabel(labelId, currentUser, order);
-      } catch (LabelNotFoundException ex) {
-        tasks = new ArrayList<Task>();
-      }
-
-    }
-    else {
+    } else if (projectId >= 0) {
       if (projectId == 0) {
         defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.ASSIGNEE, TaskUtil.PROJECT, TaskUtil.LABEL, TaskUtil.STATUS), bundle);
 
@@ -573,10 +574,21 @@ public class TaskController {
           order = new OrderBy.ASC(orderBy);
         }
 
-        if (spaceProjectIds != null) {
-          tasks = projectService.getTasksWithKeywordByProjectId(spaceProjectIds, order, keyword);                  
-        } else {          
-          tasks = projectService.getTasksWithKeywordByProjectId(allProjectIds, order, keyword);
+        if (advanceQuery == null) {
+          if (spaceProjectIds != null) {
+            tasks = projectService.getTasksWithKeywordByProjectId(spaceProjectIds, order, keyword);                  
+          } else {          
+            tasks = projectService.getTasksWithKeywordByProjectId(allProjectIds, order, keyword);
+          }          
+        } else {
+          advanceQuery.setOrderBy(Arrays.asList(order));
+          if (spaceProjectIds != null) {
+            advanceQuery.setProjectIds(spaceProjectIds);            
+          } else {
+            advanceQuery.setProjectIds(allProjectIds);
+          }
+          advanceQuery.setStatusId(-1L);
+          tasks = taskService.findTaskByQuery(advanceQuery);
         }
       } else {
         //. Default order by CreatedDate
@@ -585,7 +597,13 @@ public class TaskController {
           order = new OrderBy.ASC(orderBy);
         }
 
-        tasks = projectService.getTasksWithKeywordByProjectId(Arrays.asList(projectId), order, keyword);
+        if (advanceQuery == null) {
+          tasks = projectService.getTasksWithKeywordByProjectId(Arrays.asList(projectId), order, keyword);          
+        } else {
+          advanceQuery.setOrderBy(Arrays.asList(order));
+          advanceQuery.setProjectIds(Arrays.asList(projectId));
+          tasks = taskService.findTaskByQuery(advanceQuery);
+        }
       }
       if (projectId > 0) {
         try {
@@ -593,6 +611,37 @@ public class TaskController {
         } catch (ProjectNotFoundException e) {
           return Response.notFound("not found project " + projectId);
         }          
+      }
+    } else if (labelId != null && labelId >= 0) {
+      defOrders = TaskUtil.resolve(Arrays.asList(TaskUtil.TITLE, TaskUtil.CREATED_TIME, TaskUtil.DUEDATE, TaskUtil.PRIORITY), bundle);
+      if (orderBy == null || orderBy.isEmpty() || !defOrders.containsKey(orderBy)) {
+        orderBy = TaskUtil.DUEDATE;
+        order = new OrderBy.ASC(TaskUtil.DUEDATE);
+      }
+
+      if (labelId > 0) {
+        defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT, TaskUtil.DUEDATE, TaskUtil.STATUS), bundle);
+        if (groupBy == null || groupBy.isEmpty() || !defGroupBys.containsKey(groupBy)) {
+          groupBy = TaskUtil.NONE;
+        }        
+      } else {
+        defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT, TaskUtil.LABEL, TaskUtil.DUEDATE, TaskUtil.STATUS), bundle);
+        if (groupBy == null || groupBy.isEmpty() || !defGroupBys.containsKey(groupBy)) {
+          groupBy = TaskUtil.LABEL;
+        }
+      }
+      
+      if (advanceQuery == null) {
+        try {
+          //todo: space
+          tasks = taskService.findTasksByLabel(labelId, currentUser, order);
+        } catch (LabelNotFoundException ex) {
+          tasks = new ArrayList<Task>();
+        }
+      } else {
+        advanceQuery.setOrderBy(Arrays.asList(order));
+        advanceQuery.setStatusId(-1L);
+        tasks = taskService.findTaskByQuery(advanceQuery);
       }
     }
 
@@ -624,31 +673,35 @@ public class TaskController {
       if("assignee".equalsIgnoreCase(groupBy)) {
         userMap = new HashMap<String, org.exoplatform.task.model.User>();
         for(GroupKey key : groupTasks.keySet()) {
-          String assignee = (String)key.getValue();
-          org.exoplatform.task.model.User user = userService.loadUser(assignee);
-          userMap.put(assignee, user);
+          String asn = (String)key.getValue();
+          org.exoplatform.task.model.User user = userService.loadUser(asn);
+          userMap.put(asn, user);
         }
       }
     }
     if(groupTasks.isEmpty()) {
       groupTasks.put(new GroupKey("", null, 0), tasks);
     }
-    
-    long taskNum = 0;
-    if (allProjectIds != null) {
-      taskNum = TaskUtil.getTaskNum(currentUser, allProjectIds, projectId, taskService);
-    } else if (labelId != null && labelId >= 0) {
-      taskNum = tasks.size();
-    } else {
-      taskNum = TaskUtil.getTaskNum(currentUser, spaceProjectIds, projectId, taskService);
+
+    long taskNum = -1;
+    if (advanceQuery == null) {
+      if (allProjectIds != null) {
+        taskNum = TaskUtil.getTaskNum(currentUser, allProjectIds, projectId, taskService);
+      } else if (labelId != null && labelId >= 0) {
+        taskNum = tasks.size();
+      } else {
+        taskNum = TaskUtil.getTaskNum(currentUser, spaceProjectIds, projectId, taskService);
+      }      
     }
-    
+
     String currentLabelName = "";
-    if (labelId != null && labelId > 0) {
-      Label label = taskService.getLabelById(labelId);
-      if (label != null) {
-        currentLabelName = label.getName();
-      }
+    if (advanceQuery == null) {
+      if (labelId != null && labelId > 0) {
+        Label label = taskService.getLabelById(labelId);
+        if (label != null) {
+          currentLabelName = label.getName();
+        }
+      }      
     }
 
     return taskListView
@@ -664,6 +717,7 @@ public class TaskController {
         .groupBy(groupBy == null ? TaskUtil.NONE : groupBy)
         .orderBy(orderBy == null ? "" : orderBy)
         .filter(filter == null ? "" : filter)
+        .advanceSearch(advanceSearch == null ? false : advanceSearch)
         .bundle(bundle)
         .viewType(viewType)
         .userTimezone(userTimezone)
@@ -675,6 +729,41 @@ public class TaskController {
         .set("numberTasksByStatus", numberTasks)
         .ok()
         .withCharset(Tools.UTF_8);
+  }
+
+
+  private Long[] convertDueDate(String dueDate, TimeZone timezone) {
+    Long[] due = new Long[] {null, null};
+    
+    if (dueDate != null) {
+      Calendar today = Calendar.getInstance(timezone);
+      today.set(Calendar.HOUR_OF_DAY, 0);
+      today.set(Calendar.MINUTE, 0);
+      today.set(Calendar.SECOND, 0);
+      today.set(Calendar.MILLISECOND, 0);
+
+      switch (DUE.valueOf(dueDate)) {
+      case OVERDUE:
+        today.roll(Calendar.DATE, -1);
+        due[1] = today.getTimeInMillis();
+        break;
+      case TODAY:
+        due[0] = today.getTimeInMillis();
+        today.roll(Calendar.DATE, 1);
+        due[1] = today.getTimeInMillis() - 1;
+        break;
+      case TOMORROW:
+        today.roll(Calendar.DATE, 1);
+        due[0] = today.getTimeInMillis();
+        today.roll(Calendar.DATE, 1);
+        due[1] = today.getTimeInMillis() - 1;
+        break;
+      case UPCOMING:
+        today.roll(Calendar.DATE, 2);
+        due[0] = today.getTimeInMillis();
+      }       
+    }
+    return due;    
   }
 
   @Resource(method = HttpMethod.POST)
@@ -749,7 +838,7 @@ public class TaskController {
   @Resource
   @Ajax
   @MimeType.HTML
-  public Response createTaskInListView(String taskTitle, Long projectId, Long statusId, String assignee,
+  public Response createTaskInListView(String space_group_id, String taskTitle, Long projectId, Long statusId, String assignee,
                                        String viewType, String groupBy, String orderBy, SecurityContext securityContext) {
     if (taskTitle == null || taskTitle.isEmpty()) {
       return Response.status(406).body("Task title is required");
@@ -773,19 +862,21 @@ public class TaskController {
 
     taskService.createTask(task);
 
-    return listTasks(null, projectId, null, null, groupBy, orderBy, null, viewType, securityContext);
+    //spaceGrpId, projectId, currentLabelId, labelIds, tags, statusId, dueDate, priority, assignee, completed, keyword, advanceSearch, groupby, orderBy, filter, viewType, securityContext
+    return listTasks(space_group_id, projectId, null, null, null, null, null, null, null, null, null, null, groupBy, orderBy, null, viewType, securityContext);
   }
 
   @Resource(method = HttpMethod.POST)
   @Ajax
   @MimeType.HTML
-  public Response removeStatus(Long statusId, SecurityContext securityContext) {
+  public Response removeStatus(String space_group_id, Long statusId, SecurityContext securityContext) {
     try {
       Status status = statusService.getStatusById(statusId);
       Project project = status.getProject();
       if (project.getStatus().size() > 1) {
         statusService.deleteStatus(statusId);
-        return listTasks(null, project.getId(), null, null, null, null, null, "board", securityContext);
+        //spaceGrpId, projectId, currentLabelId, labelIds, tags, statusId, dueDate, priority, assignee, completed, keyword, advanceSearch, groupby, orderBy, filter, viewType, securityContext
+        return listTasks(space_group_id, project.getId(), null, null, null, null, null, null, null, null, null, null, null, null, null, "board", securityContext);
       } else {
         return Response.error("Can't delete last status");
       }
@@ -797,13 +888,58 @@ public class TaskController {
   @Resource(method = HttpMethod.POST)
   @Ajax
   @MimeType.HTML
-  public Response createStatus(String name, Long projectId, SecurityContext securityContext) {
+  public Response createStatus(String space_group_id, String name, Long projectId, SecurityContext securityContext) {
     try {
       Project project = projectService.getProjectById(projectId);
       Status status = statusService.createStatus(project, name);
-      return listTasks(null, projectId, null, null, null, null, null, "board", securityContext);
+      //spaceGrpId, projectId, currentLabelId, labelIds, tags, statusId, dueDate, priority, assignee, completed, keyword, advanceSearch, groupby, orderBy, filter, viewType, securityContext
+      return listTasks(space_group_id, projectId, null, null, null, null, null, null, null, null, null, null, null, null, null, "board", securityContext);
     } catch (AbstractEntityException e) {
       return Response.status(e.getHttpStatusCode()).body(e.getMessage());
     }
+  }
+  
+  private TaskQuery buildTaskQuery(String keyword,
+                                   String labelIds,
+                                   String tags,
+                                   Long statusId,
+                                   String dueDate,
+                                   String priority,
+                                   String assignee,
+                                   Boolean completed, OrderBy order, TimeZone timezone) {
+    TaskQuery query = new TaskQuery();
+    query.setKeyword(keyword);
+    if (labelIds != null) {
+      List<Long> tmp = new LinkedList<Long>();
+      for (String id : labelIds.split(",")) {
+        if (!(id = id.trim()).isEmpty()) {
+          tmp.add(Long.parseLong(id));          
+        }
+      }
+      query.setLabelIds(tmp);      
+    }
+    if (tags != null) {
+      List<String> tmp = new LinkedList<String>();
+      for (String t : tags.split(",")) {
+        if (!(t = t.trim()).isEmpty()) {
+          tmp.add(t);
+        }
+      }
+      query.setTags(tmp);                
+    }
+    query.setStatusId(statusId == null ? -1L : statusId);
+    Long[] due = convertDueDate(dueDate, timezone);
+    query.setDueDateFrom(due[0]);
+    query.setDueDateTo(due[1]);
+    if (priority != null) {
+      query.setPriority(Priority.valueOf(priority));      
+    }
+    query.setAssignee(assignee);
+    query.setCompleted(completed);
+    if (order != null) {
+      query.setOrderBy(Arrays.asList(order));      
+    }
+    
+    return query;
   }
 }

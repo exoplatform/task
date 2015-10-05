@@ -183,6 +183,7 @@ public class TaskManagement {
         .taskNum(taskNum)
         .groupTasks(groupTasks)
         .keyword("")
+        .advanceSearch(false)
         .groupBy(TaskUtil.NONE)
         .orderBy("createdTime")
         .filter("")

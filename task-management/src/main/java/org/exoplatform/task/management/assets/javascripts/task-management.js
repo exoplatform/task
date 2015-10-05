@@ -1,7 +1,7 @@
 // TODO: Move juzu-ajax, mentionsPlugin module into task management project if need
-require(['taskManagementApp', 'project-menu', 'ta_edit_inline', 'SHARED/jquery',
+require(['taskManagementApp', 'project-menu', 'taFilter', 'ta_edit_inline', 'SHARED/jquery',
         'SHARED/juzu-ajax', 'SHARED/mentionsPlugin', 'SHARED/bts_modal', 'SHARED/bts_tab', 'SHARED/task_ck_editor'
-        ], function(taApp, pMenu, editInline, $) {
+        ], function(taApp, pMenu, taFilter, editInline, $) {
   /*var taApp = {};
 
   taApp.getUI = function() {
@@ -129,6 +129,7 @@ $(document).ready(function() {
     
     pMenu.init(taApp);
     editInline.init(taApp);
+    taFilter.init(taApp);
 
     $('[data-toggle="tooltip"]').tooltip();
     $('*[rel="tooltip"]').tooltip({
@@ -520,13 +521,21 @@ $(document).ready(function() {
         var $searchForm = $centerPanel.find('form.form-search');
         var $a = $(e.target || e.srcElement).closest('[data-groupby]');
         var $input = $('[name="groupBy"]').val($a.data('groupby'));
-        submitFilter(e);
+        if (taFilter.isEnable()) {
+          taFilter.submitFilter();
+        } else {
+          submitFilter(e);          
+        }
     });
     $centerPanel.on('click', '[data-orderby]', function(e) {
         var $searchForm = $centerPanel.find('form.form-search');
         var $a = $(e.target || e.srcElement).closest('[data-orderby]');
         $('[name="orderBy"]').val($a.data('orderby'));
-        submitFilter(e);
+        if (taFilter.isEnable()) {
+          taFilter.submitFilter();
+        } else {
+          submitFilter(e);          
+        }
     });
     $centerPanel.on('click', '[data-taskfilter]', function(e) {
         var $searchForm = $centerPanel.find('form.form-search');

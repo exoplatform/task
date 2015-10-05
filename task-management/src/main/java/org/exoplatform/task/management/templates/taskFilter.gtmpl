@@ -1,0 +1,98 @@
+#{param name="labels"/}
+#{param name="filterLabel"/}
+#{param name="status"/}
+#{param name="filterStatus"/}
+#{param name="filterAssignee"/}
+#{param name="filterDueDate"/}
+
+<%
+	import org.exoplatform.task.utils.TaskUtil;
+	import org.exoplatform.task.domain.Priority;
+%>
+
+<div class="taskFilter uiBox" data-projectid="0" data-canedit="0">
+    <h5 class="title">        
+        <span>Filter</span>
+    </h5>
+    <div class="uiContentBox">        
+      <div class="form-horizontal">		   
+		   <div class="form-horizontal">
+		  	<div class="control-group">
+		  		<label class="control-label" for="keyword">Contains:</label>
+		  		<div class="controls">
+				   <input type="text" id="keyword" name="keyword" value="" maxlength="100"/>
+		  		</div>
+		  	</div>
+		  	<%if (filterLabel) { %>
+		  	<div class="control-group">
+		  		<label class="control-label" for="label">Labels:</label>
+		  		<div class="controls">
+		  			<input type="text" id="label" name="label" value="" maxlength="100"
+		  				data-options='${labels}'/>
+		  		</div>
+		  	</div>
+		  	<%} %>
+		  	<div class="control-group">
+		  		<label class="control-label" for="tag">Tags:</label>
+		  		<div class="controls">
+		  			<input type="text" id="tag" name="tag" value="" maxlength="100"/>
+		  		</div>
+		  	</div>
+		  	<%if (filterStatus) { %>
+		  	<div class="control-group">
+		  		<label class="control-label" for="status">Status:</label>
+		  		<div class="controls">
+		  			<select name="status">
+		  				<option value="">All</option>
+		  				<%for (def st : status) { %>
+		  				<option value="${st.id}">${st.name}</option>
+		  				<%} %>			
+		  			</select>
+		  		</div>
+		  	</div>
+		  	<%}%>
+		  	<%if (filterAssignee) { %>
+		  	<div class="control-group">
+		  		<label class="control-label" for="assignee">Assignee:</label>
+		  		<div class="controls">
+		  			<input type="text" id="assignee" name="assignee" value="" maxlength="100"/>
+		  		</div>
+		  	</div>
+		  	<%} %>
+		  	<%if (filterDueDate) { %>
+		  	<div class="control-group">
+		  		<label class="control-label" for="due">Due:</label>
+		  		<div class="controls">
+		  			<select name="due">
+		  				<option value="">All</option>
+		  				<%for (def due : TaskUtil.DUE.values()) {%>		  				
+		  				<option value="<%=due.name()%>"><%=due.name()%></option>
+		  				<%} %>
+		  			</select>
+		  		</div>
+		  	</div>
+		  	<%} %>
+		  	<div class="control-group">
+		  		<label class="control-label" for="priority">Priority:</label>
+		  		<div class="controls">
+		  			<select name="priority">
+		  				<option value="">All</option>
+		  				<%for (def priority : Priority.values()) {
+		  					if (!priority.equals(Priority.UNDEFINED)) {
+		  				%>										  					  				
+		  				<option value="<%=priority.name()%>"><%=priority.name()%></option>
+		  				<% }
+		  				} %>
+		  			</select>
+		  		</div>
+		  	</div>
+		  	<div class="control-group">
+		  		<label class="control-label" for="completed">Show completed:</label>
+		  		<div class="controls">
+		  			<input type="checkbox" id="completed" name="completed"/>
+		  		</div>
+		  	</div>
+		  </div>
+  	  </div>
+    </div>
+</div>

@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.TimeZone;
 
 import org.exoplatform.container.PortalContainer;
+import org.exoplatform.task.dao.LabelHandler;
 import org.exoplatform.task.dao.TaskHandler;
 import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.domain.Label;
@@ -48,6 +49,7 @@ import org.junit.Test;
 public class TestTaskDAO extends AbstractTest {
 
   private TaskHandler tDAO;
+  private LabelHandler lblDAO;
   private DAOHandler taskService;
   private TaskParser parser = new TaskParserImpl();
   private ParserContext context = new ParserContext(TimeZone.getDefault());
@@ -60,10 +62,15 @@ public class TestTaskDAO extends AbstractTest {
     
     taskService = (DAOHandler) container.getComponentInstanceOfType(DAOHandler.class);
     tDAO = taskService.getTaskHandler();
+    lblDAO = taskService.getLabelHandler();
   }
 
   @After
   public void tearDown() {
+    for (Task t : tDAO.findAll()) {
+      t.setStatus(null);
+    }    
+    tDAO.updateAll(tDAO.findAll());
     tDAO.deleteAll();
   }
 
@@ -138,6 +145,86 @@ public class TestTaskDAO extends AbstractTest {
     tasks = tDAO.findTaskByQuery(query);
     Assert.assertEquals(1, tasks.size());
   }
+  
+  @Test
+  public void testFindTaskByQueryAdvance() {
+    Task task = newTaskInstance("testTask", "task with label", username);
+    tDAO.create(task);
+
+    //Find by label
+    Label label = new Label("testLabel", username);
+    label.setTasks(new HashSet<Task>(Arrays.asList(task)));
+    lblDAO.create(label);
+    //
+    TaskQuery query = new TaskQuery();
+    query.setLabelIds(Arrays.asList(label.getId()));
+    List<Task> tasks = tDAO.findTaskByQuery(query);
+    Assert.assertEquals(1, tasks.size());
+    
+    //Find by tag
+    task.setTag(new HashSet<String>(Arrays.asList("testTag")));
+    tDAO.update(task);
+    //
+    query = new TaskQuery();
+    query.setTags(Arrays.asList("testTag", "non-exists-tag"));
+    tasks = tDAO.findTaskByQuery(query);
+    Assert.assertEquals(1, tasks.size());
+    
+    //Find by status
+    query = new TaskQuery();
+    query.setStatusId(null);
+    tasks = tDAO.findTaskByQuery(query);
+    Assert.assertEquals(1, tasks.size());
+    //
+    Project project = new Project();
+    project.setName("Project1");
+    project.setParticipator(new HashSet<String>(Arrays.asList("root")));
+    Status status = newStatusInstance("TO DO", 1);
+    status.setProject(project);
+    project.getStatus().add(status);
+    taskService.getProjectHandler().create(project);
+    task.setStatus(status);
+    tDAO.update(task);
+    //
+    query = new TaskQuery();
+    query.setStatusId(status.getId());
+    tasks = tDAO.findTaskByQuery(query);
+    Assert.assertEquals(1, tasks.size());
+    
+    //Find by duedate
+    Date date = new Date();
+    task.setDueDate(date);
+    tDAO.update(task);
+    //
+    query = new TaskQuery();
+    query.setDueDateFrom(date.getTime());
+    tasks = tDAO.findTaskByQuery(query);
+    Assert.assertEquals(1, tasks.size());
+
+    //Find by priority
+    task.setPriority(Priority.HIGH);
+    tDAO.update(task);
+    //
+    query = new TaskQuery();
+    query.setPriority(Priority.HIGH);
+    tasks = tDAO.findTaskByQuery(query);
+    Assert.assertEquals(1, tasks.size());
+    
+    //Find by assignee
+    query = new TaskQuery();
+    query.setAssignee(username);
+    tasks = tDAO.findTaskByQuery(query);
+    Assert.assertEquals(1, tasks.size());
+
+    //Find completed
+    task.setCompleted(true);
+    tDAO.update(task);
+    //
+    query = new TaskQuery();
+    query.setCompleted(true);
+    tasks = tDAO.findTaskByQuery(query);
+    Assert.assertEquals(1, tasks.size());    
+  }  
   
   @Test
   public void testFindTaskByMembership() {
