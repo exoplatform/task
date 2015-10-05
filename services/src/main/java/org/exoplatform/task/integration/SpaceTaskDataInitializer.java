@@ -62,7 +62,7 @@ public class SpaceTaskDataInitializer extends SpaceListenerPlugin {
 
     //
     try {
-      projectService.createDefaultStatusProjectWithAttributes(0L, space.getDisplayName(), "", managers, participators);
+      projectService.createDefaultStatusProjectWithAttributes(0L, space.getDisplayName(), "", false, managers, participators);
     } catch (ProjectNotFoundException e) {
       log.error(e);
     }

@@ -2,40 +2,45 @@
 #{param name=user/}
 #{param name=breadcumbs/}
 
-<div class="addProject uiBox" data-projectid="0">
-    <h5 class="title">
-        <div class="pull-right action-buttons dropdown">
-            <a href="#" class="actionIconSmall close-right-panel"><i class="uiIconClose uiIconLightGray"></i></a>
-        </div>
-        <div>&{label.projectOverview}</div>
-    </h5>
-    <div class="uiContentBox">
-        <form action="#" class="create-project-form" onsubmit="javascript:void(0)">
-            <div class="breadcrumbCont uiEditableInline">
-                <ul class="breadcrumb hoverStatus editableField editable"
-                    data-name="parent" data-type="ParentProject" data-value="${parent.id}">
-                    ${breadcumbs}
-                </ul>
-            </div>
-            <div class="inputName">
-                <input type="text" name="name" placeholder="&{label.untitledProject}" class="blackLarge">
-            </div>
-            <div class="row-fluid prjAuthor">
-                <div class="span3">&{label.manager}:</div>
-                <div class="span9">
-                	<a class="avatarSmall" href="<%=user.getUrl()%>"><img alt="avatar" src="<%=user.getAvatar()%>">
-                   <%=user.getDisplayName()%>
-                  </a>            
-                </div>
-            </div>
-            <div class="">
-                <textarea name="description" placeholder="&{label.description}" style="width: 100%"></textarea>
-            </div>
-            <div class="uiGroupBoundCheckBox"><label class="uiCheckbox"><input type="checkbox" title="&{message.enableCalendarIntegration}" class="checkbox"><span>&{message.enableCalendarIntegration}</span></label></div>
-            <div class="viewInCal" style="display: none">
-                <i class="uiIconPLFCalendar"></i>
-                <a data-placement="bottom" data-toggle="tooltip" href="#" data-original-title="View in Calendar">Sub Project 1</a>
-            </div>
-        </form>
-    </div>
+<div class="addProject uiPopup modal hide fade" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="popupHeader clearfix">
+  	<a href="#" title="Close Window" data-dismiss="modal" aria-hidden="true" class="uiIconClose pull-right"></a>    
+  	<span class="PopupTitle popupTitle">&{label.projectOverview}</span>
+  </div>
+  <div class="PopupContent popupContent">
+  
+	<form action="#" class="create-project-form" onsubmit="javascript:void(0)">
+       <div class="breadcrumbCont uiEditableInline">
+           <ul class="breadcrumb hoverStatus editableField editable"
+               data-name="parent" data-type="ParentProject" data-value="${parent.id}">
+               ${breadcumbs}
+           </ul>
+       </div>
+       <div class="inputName">
+           <input type="text" name="name" placeholder="&{label.untitledProject}" class="blackLarge">
+       </div>
+       <div class="row-fluid prjAuthor">
+           <div class="span3">&{label.manager}:</div>
+           <div class="span9">
+           	<a class="avatarSmall" href="<%=user.getUrl()%>"><img alt="avatar" src="<%=user.getAvatar()%>">
+              <%=user.getDisplayName()%>
+             </a>            
+           </div>
+       </div>
+       <div class="">
+           <textarea name="description" placeholder="&{label.description}" style="width: 100%"></textarea>
+       </div>
+       <div class="uiGroupBoundCheckBox">
+       <label class="uiCheckbox"><input type="checkbox" title="&{message.enableCalendarIntegration}" class="checkbox calInteg"><span>&{message.enableCalendarIntegration}</span></label></div>
+       <div class="viewInCal" style="display: none">
+           <i class="uiIconPLFCalendar"></i>
+           <a data-placement="bottom" data-toggle="tooltip" href="#" data-original-title="View in Calendar">Sub Project 1</a>
+       </div>
+	     
+		<div class="uiAction uiActionBorder">
+		  <button type="submit" class="btn btn-primary saveLabel" disabled>&{label.save}</button>
+		  <button class="btn" data-dismiss="modal" aria-hidden="true">&{popup.close}</button>
+	   </div>
+   </form>
+  </div>
 </div>

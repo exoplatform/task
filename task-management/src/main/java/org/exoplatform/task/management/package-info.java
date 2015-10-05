@@ -54,7 +54,7 @@
             depends = {"taskManagementCommon", "project-menu-js", "filter_js", "task-edit-inline"}),
     @Script(id = "label_js", value = "javascripts/label.js", depends = {"jquery-adapter", "taskManagementCommon"}),
     @Script(id = "filter_js", value = "javascripts/filter.js", depends = {"jquery-adapter", "selectize-js"}),
-    @Script(id = "project-menu-js", value = "javascripts/project-menu.js", depends = {"taskManagementCommon"}),
+    @Script(id = "project-menu-js", value = "javascripts/project-menu.js", depends = {"taskManagementCommon", "task-edit-inline"}),
     @Script(id = "taskBoardView", value = "javascripts/taskBoardView.js", depends = {"taskManagementCommon"})
 })
 @Less({

@@ -146,7 +146,7 @@ public class ProjectController {
   @Resource
   @Ajax
   @MimeType.JSON
-  public Response createProject(String space_group_id, String name, String description, Long parentId, SecurityContext securityContext) {
+  public Response createProject(String space_group_id, String name, String description, Long parentId, Boolean calInteg, SecurityContext securityContext) {
 
     String currentUser = securityContext.getRemoteUser();
     if(currentUser == null) {
@@ -157,15 +157,17 @@ public class ProjectController {
       return Response.status(412).body("Name of project is required");
     }
 
+    calInteg = calInteg == null ? false : calInteg;
+    
     try {
       Project project;
       if (space_group_id  != null) {
         List<String> memberships = UserUtils.getSpaceMemberships(space_group_id);
         Set<String> managers = new HashSet<String>(Arrays.asList(currentUser, memberships.get(0)));
         Set<String> participators = new HashSet<String>(Arrays.asList(memberships.get(1)));
-        project = projectService.createDefaultStatusProjectWithAttributes(parentId, name, description, managers, participators);
+        project = projectService.createDefaultStatusProjectWithAttributes(parentId, name, description, calInteg, managers, participators);
       } else {
-        project = projectService.createDefaultStatusProjectWithManager(name, description, parentId, currentUser); //Can throw ProjectNotFoundException        
+        project = projectService.createDefaultStatusProjectWithManager(name, description, calInteg, parentId, currentUser); //Can throw ProjectNotFoundException        
       }
       JSONObject result = new JSONObject();
       result.put("id", project.getId());//Can throw JSONException (same for all #json.put methods below)
@@ -595,22 +597,35 @@ public class ProjectController {
   @Resource
   @Ajax
   @MimeType("text/plain")
-  public Response saveProjectInfo(Long projectId, String name, String[] value) {
+  public Response saveProjectInfo(Long projectId, Long parent, String name, String description, Boolean calendarIntegrated) {
 
     if(name == null) {
       return Response.status(406).body("Field name is required");
     }
 
     try {
-
-      projectService.updateProjectInfo(projectId, name, value); //Can throw ProjectNotFoundException & NotAllowedOperationOnEntityException
+      Project project = projectService.getProjectById(projectId);
+      //Can throw ProjectNotFoundException & NotAllowedOperationOnEntityException
+      projectService.updateProjectInfo(projectId, parent, name, description, calendarIntegrated, project.getColor()); 
       return Response.ok("Update successfully");
 
     } catch (AbstractEntityException e) {
       return Response.status(e.getHttpStatusCode()).body(e.getMessage());
     }
   }
-
+  
+  @Resource
+  @Ajax
+  @MimeType("text/plain")
+  public Response changeProjectColor(Long projectId, String color) {
+    try {
+      //Can throw ProjectNotFoundException & NotAllowedOperationOnEntityException
+      projectService.updateProjectInfo(projectId, "color", new String[] {color}); 
+      return Response.ok("Update successfully");
+    } catch (AbstractEntityException e) {
+      return Response.status(e.getHttpStatusCode()).body(e.getMessage());
+    }
+  }
 
   @Resource
   @Ajax

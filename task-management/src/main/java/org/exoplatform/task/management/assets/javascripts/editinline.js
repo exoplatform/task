@@ -708,43 +708,16 @@ define('ta_edit_inline',
             editInline.initAssignment(taskId);
         };
 
-        editInline.saveProjectDetailFunction = function(params) {
-            var d = new $.Deferred;
-            var data = params;
-            data.projectId = params.pk;
-            $rightPanel.jzAjax('ProjectController.saveProjectInfo()',{
-                data: data,
-                method: 'POST',
-                traditional: true,
-                success: function(response) {
-                    d.resolve();
-                    //
-                    if (params.name == 'name') {
-                        $leftPanel
-                            .find('li.project-item a.project-name[data-id="'+ data.projectId +'"]')
-                            .html(data.value);
-                        $centerPanel.find('[data-projectid="'+data.projectId+'"] .projectName').html(data.value);
-                    } else if (params.name == 'parent') {
-                        editInline.taApp.reloadProjectTree(data.projectId);
-                    }
-                },
-                error: function(jqXHR, textStatus, errorThrown ) {
-                    d.reject('update failure: ' + jqXHR.responseText);
-                }
-            });
-            return d.promise();
-        };
-
-        editInline.initEditInlineForProject = function(projectId) {
-            var $project = $rightPanel.find('[data-projectid]');
+        editInline.initEditInlineForProject = function(projectId, $projectForm) {
+            var $project = $projectForm;
             $project.find('.editable').each(function(){
                 var $this = $(this);
                 var dataType = $this.attr('data-type');
                 var fieldName = $this.attr('data-name');
                 var editOptions = getDefaultOptionForType(dataType);
                 editOptions = $.extend({}, editOptions, {
-                    pk: projectId,
-                    url: editInline.saveProjectDetailFunction
+                    pk: projectId
+//                    url: editInline.saveProjectDetailFunction
                 });
                 if(fieldName == 'manager' || fieldName == 'participator') {
                     var findUserURL = $this.jzURL('UserController.findUser');
@@ -796,12 +769,14 @@ define('ta_edit_inline',
                     $this.parent().removeClass('inactive').addClass('active');
                 }).on('hidden', function(e, editable) {
                     $this.parent().removeClass('active').addClass('inactive');
+                }).on('save', function() {                  
+                  $this.closest('.addProject').find('.btn-primary').attr('disabled', false);
                 });
             });
             
-            $project.find('.calInteg').on('change', function() {
-              editInline.saveProjectDetailFunction({'pk': projectId, 'name': $(this).attr('name'), 'value': $(this).is(':checked')});
-            });
+//            $project.find('.calInteg').on('change', function() {
+//              editInline.saveProjectDetailFunction({'pk': projectId, 'name': $(this).attr('name'), 'value': $(this).is(':checked')});
+//            });
         };
 
         return editInline;

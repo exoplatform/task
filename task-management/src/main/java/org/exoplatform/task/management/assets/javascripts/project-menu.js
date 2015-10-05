@@ -1,4 +1,4 @@
-define('project-menu', ['SHARED/jquery'], function($) {
+define('project-menu', ['SHARED/jquery', 'ta_edit_inline', 'SHARED/task_ck_editor'], function($, editinline) {
   var pMenu = {};
   
   pMenu.init = function(taApp) {
@@ -45,7 +45,7 @@ define('project-menu', ['SHARED/jquery'], function($) {
         });
     });
     
-    $rightPanel.on('click', '.projectDetail .action-clone-project', function() {
+    $modalPlace.on('click', '.action-clone-project', function() {
       var $detail = $(this).closest('[data-projectid]');
       var pId = $detail.attr('data-projectId');
       var projectName = $detail.find('.projectName').html();
@@ -53,44 +53,142 @@ define('project-menu', ['SHARED/jquery'], function($) {
       showCloneProject(pId, projectName);
     });    
     //end clone-project
+    
+    $leftPanel.on('click', 'a.new-project', function(e) {
+      var parentId = $(e.target).closest('a').attr('data-projectId');
+      
+      $modalPlace.jzLoad('ProjectController.projectForm()', {parentId: parentId}, function() {
+        var $dialog = $modalPlace.find('.addProject');
+        $dialog.modal({'backdrop': false});
+        
+        $dialog.find('[name="name"]').on('keyup', function(e) {
+          if (e.which == 13) {
+            //don't submit form by enter keypress
+            return false;
+          } else {
+            if ($.trim($(e.target).val()) != '') {
+              $dialog.find('.btn-primary').attr('disabled', false);
+            }
+          }
+        });
+        
+        $dialog.find('.calInteg').click(function() {
+          $dialog.find('.btn-primary').attr('disabled', false);
+        });
+        
+        var $ancestors = $dialog.find('.editable');
+        $ancestors.editable({
+            mode : 'inline',
+            showbuttons: false
+        }).on('save', function() {                  
+          $dialog.find('.btn-primary').attr('disabled', false);
+        });
+        
 
-      $leftPanel.on('click', 'a.new-project', function(e) {
-          var parentId = $(e.target).closest('a').attr('data-projectId');
-          $rightPanelContent.jzLoad('ProjectController.projectForm()', {parentId: parentId}, function() {
-              taApp.showRightPanel($centerPanel, $rightPanel);
-              $rightPanel.find('[name="name"]').on('blur', function(e) {
-                  $(e.target || e.srcElement).closest('form').submit();
-              }).on('keydown', function(e) {
-                if (e.which == 13) {
-                  //submit form by enter key, remove listener for blur that submit the form second time
-                  $(this).off('blur');
-                }
-              });
-              
-              var $ancestors = $rightPanel.find('.editable');
-              $ancestors.editable({
-                  mode : 'inline',
-                  showbuttons: false
-              });
-
-              CKEDITOR.basePath = '/task-management/assets/org/exoplatform/task/management/assets/ckeditorCustom/';
-              $rightPanel.find('textarea').ckeditor({
-                  customConfig: '/task-management/assets/org/exoplatform/task/management/assets/ckeditorCustom/config.js'
-              });
-              CKEDITOR.on('instanceReady', function(e) {
-                  $rightPanel.find('.cke').removeClass('cke');
-              });
-          });
-          return true;
+        CKEDITOR.basePath = '/task-management/assets/org/exoplatform/task/management/assets/ckeditorCustom/';
+        $dialog.find('textarea').ckeditor({
+            customConfig: '/task-management/assets/org/exoplatform/task/management/assets/ckeditorCustom/config.js'
+        });
+        CKEDITOR.on('instanceReady', function(e) {
+          $dialog.find('.cke').removeClass('cke');
+        });
+        
+        CKEDITOR.instances.description.on('change', function(e) {
+          $dialog.find('.btn-primary').attr('disabled', false);
+        });
       });
+      return true;
+    });
+    
+    $modalPlace.on('submit', 'form.create-project-form', function(e) {
+      var $dialog = $modalPlace.find('.addProject');
+      var $form = $(e.target).closest('form');
+      var name = $form.find('input[name="name"]').val();
+      var description = $form.find('textarea[name="description"]').val();
+      var $breadcumbs = $dialog.find('.breadcrumb');
+      var parentId = $breadcumbs.data('value');
+      var calInteg = $dialog.find('.calInteg').is(':checked');
 
-      $leftPanel.on('click', '.delete-project', function(e) {
+      if(name == '') {
+          name = 'Untitled Project';
+      }
+
+      var createURL = $dialog.jzURL('ProjectController.createProject');        
+      $.ajax({
+          type: 'POST',
+          url: createURL,
+          data: {name: name, description: description, parentId: parentId, calInteg: calInteg},
+          success: function(data) {
+              // Reload project tree;
+              taApp.reloadProjectTree(data.id);
+          },
+          error: function() {
+              alert('error while create new project. Please try again.')
+          }
+      });
+      $dialog.modal('hide');
+      return false;
+  });
+
+    $leftPanel.on('click', '.edit-project', function(e) {
+      var projectId = $(e.target).closest('.project-item').attr('data-projectId');
+      
+      $modalPlace.jzLoad('ProjectController.projectDetail()', {id: projectId}, function () {
+        var $dialog = $modalPlace.find('.addProject');
+        $dialog.modal({'backdrop': false});
+        //
+        if($modalPlace.find('[data-projectid]').data('canedit')) {
+            editinline.initEditInlineForProject(projectId, $dialog);
+            //
+            $modalPlace.find('.calInteg').click(function() {
+              $dialog.find('.btn-primary').attr('disabled', false);
+            });
+            //
+            $modalPlace.find('.btn-primary').click(function() {
+              saveProjectDetail();
+              $dialog.modal('hide');
+            });
+        }
+      });
+    });
+    
+    var saveProjectDetail = function() {
+      var params = {};
+      params.pk = $modalPlace.find('[data-projectid]').data('projectid');
+      params.parent = $modalPlace.find('[data-name="parent"]').data('editable').value;
+      params.name = $modalPlace.find('[data-name="name"]').data('editable').value;
+      params.description = $modalPlace.find('[data-name="description"]').data('editable').value;
+      params.calendarIntegrated = $modalPlace.find('[name="calendarIntegrated"]').is(':checked');
+      
+      var d = new $.Deferred;
+      var data = params;
+      data.projectId = params.pk;
+      $rightPanel.jzAjax('ProjectController.saveProjectInfo()',{
+          data: data,
+          method: 'POST',
+          traditional: true,
+          success: function(response) {
+              d.resolve();
+              //
+              $leftPanel
+                .find('li.project-item a.project-name[data-id="'+ data.projectId +'"]').html(data.name);
+              $centerPanel.find('[data-projectid="'+data.projectId+'"] .projectName').html(data.name);
+              taApp.reloadProjectTree(data.projectId);
+          },
+          error: function(jqXHR, textStatus, errorThrown ) {
+              d.reject('update failure: ' + jqXHR.responseText);
+          }
+      });
+      return d.promise();
+  };
+
+    $leftPanel.on('click', '.delete-project', function(e) {
       var $deleteBtn = $(e.target);
       var pid = $deleteBtn.closest('.project-menu').attr('data-projectId');
       taApp.showDialog('ProjectController.openConfirmDelete()', {id : pid});
     });
     
-    $rightPanel.on('click', 'a.action-delete-project', function(e) {
+    $modalPlace.on('click', 'a.action-delete-project', function(e) {
       var $projectDetail = $(e.target).closest('[data-projectid]');
       var projectId = $projectDetail.attr('data-projectId');
       taApp.showDialog('ProjectController.openConfirmDelete()', {id : projectId});

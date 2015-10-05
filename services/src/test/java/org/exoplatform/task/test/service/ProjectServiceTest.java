@@ -131,7 +131,7 @@ public class ProjectServiceTest {
     Project defaultProject = TestUtils.getDefaultProject();
     Long projectParent = TestUtils.EXISTING_PROJECT_ID;
 
-    projectService.createDefaultStatusProjectWithManager(defaultProject.getName(), defaultProject.getDescription(), projectParent, defaultProject.getManager().iterator().next());
+    projectService.createDefaultStatusProjectWithManager(defaultProject.getName(), defaultProject.getDescription(), false, projectParent, defaultProject.getManager().iterator().next());
     verify(projectHandler, times(1)).create(projectCaptor.capture());
 
     assertEquals(defaultProject.getName(), projectCaptor.getValue().getName());
@@ -146,7 +146,7 @@ public class ProjectServiceTest {
     Project defaultProject = TestUtils.getDefaultProject();
     Long projectParent = TestUtils.EXISTING_PROJECT_ID;
 
-    projectService.createDefaultStatusProjectWithAttributes(projectParent, defaultProject.getName(), defaultProject.getDescription(), defaultProject.getManager(), defaultProject.getParticipator());
+    projectService.createDefaultStatusProjectWithAttributes(projectParent, defaultProject.getName(), defaultProject.getDescription(), false, defaultProject.getManager(), defaultProject.getParticipator());
     verify(projectHandler, times(1)).create(projectCaptor.capture());
 
     assertEquals(defaultProject.getName(), projectCaptor.getValue().getName());
@@ -171,7 +171,7 @@ public class ProjectServiceTest {
     parent.getStatus().add(new Status(1L, "testStatus"));
     when(projectHandler.find(1L)).thenReturn(parent);
     
-    projectService.createDefaultStatusProjectWithAttributes(1L, "test", null, null, null);
+    projectService.createDefaultStatusProjectWithAttributes(1L, "test", null, false, null, null);
     
     verify(projectHandler, times(1)).create(any(Project.class));
     //the new created project must inherits parent's workflow

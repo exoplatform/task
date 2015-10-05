@@ -35,7 +35,7 @@ def displayListProjectItem(project, level) {
 	        	<span class="arrowLeft" style = "top: 22px;"></span>
 	        	<ul class="uiDropdownMenu project-menu" data-projectId="${project.id}">
                     <%if (canEdit) { %>
-                        <li><a href="#"><i class="uiIconEditMini uiIconLightGray"></i>&{label.edit}</a></li>
+                        <li><a href="#" class="edit-project"><i class="uiIconEditMini uiIconLightGray"></i>&{label.edit}</a></li>
                         <li><a href="#" class="share-project"><i class="uiIconShare uiIconLightGray"></i>&{label.share}</a></li>
                         <li><a class="clone-project" data-projectId="${project.id}" href="#"><i class="uiIconCloneNode uiIconLightGray"></i>&{label.clone}</a></li>
                     <%}%>

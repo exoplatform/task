@@ -82,22 +82,23 @@ public class ProjectServiceImpl implements ProjectService {
 
   @Override
   @ExoTransactional
-  public Project createDefaultStatusProjectWithManager(String name, String description, Long parentId, String username)
+  public Project createDefaultStatusProjectWithManager(String name, String description, boolean calInteg, Long parentId, String username)
       throws ProjectNotFoundException {
 
     Set<String> managers = new HashSet<String>();
     managers.add(username);
 
-    return createDefaultStatusProjectWithAttributes(parentId, name, description, managers, Collections.<String>emptySet());
+    return createDefaultStatusProjectWithAttributes(parentId, name, description, calInteg, managers, Collections.<String>emptySet());
 
   }
 
   @Override
   @ExoTransactional
-  public Project createDefaultStatusProjectWithAttributes(Long parentId, String name, String description,
+  public Project createDefaultStatusProjectWithAttributes(Long parentId, String name, String description, boolean calInteg,
                                                           Set<String> managers, Set<String> participators)
       throws ProjectNotFoundException {
     Project project = new Project(name, description, new HashSet<Status>(), managers, participators);
+    project.setCalendarIntegrated(calInteg);
 
     if (parentId != null && parentId != 0) {
       Project parentProject = daoHandler.getProjectHandler().find(parentId);
@@ -106,7 +107,7 @@ public class ProjectServiceImpl implements ProjectService {
         //If parent, list of members/participators of parents override the list of members/participators in parameter
         project.setParticipator(new HashSet<String>(parentProject.getParticipator()));
         //If parent, list of manager of parents override the list of managers in parameter
-        project.setManager(new HashSet<String>(parentProject.getManager()));
+        project.setManager(new HashSet<String>(parentProject.getManager()));        
         
         //persist project
         project = createProject(project);
@@ -143,6 +144,33 @@ public class ProjectServiceImpl implements ProjectService {
   public Project createProject(Project project) {
     Project obj = daoHandler.getProjectHandler().create(project);
     return obj;
+  }
+    
+  @Override
+  public Project updateProjectInfo(long id,
+                                   Long parentId,
+                                   String name,
+                                   String description,
+                                   Boolean calendarIntegrated,
+                                   String color) throws ProjectNotFoundException,
+                                                 ParameterEntityException {
+    Project project = getProjectById(id);
+    Project parent = parentId != null && parentId != 0 ? getProjectById(parentId) : null;
+    
+    if(name == null || name.isEmpty()) {
+      LOG.info("Name of project must not empty");
+      throw new ParameterEntityException(id, "Project", "name", name, "must not be empty", null);
+    }
+    if (parentId != null && parentId == id) {
+      throw new ParameterEntityException(id, "Project", "parent", String.valueOf(parentId), "project can not be child of itself", null);
+    }
+    
+    project.setParent(parent);      
+    project.setName(name);
+    project.setDescription(description);
+    project.setCalendarIntegrated(calendarIntegrated);
+    project.setColor(color);
+    return daoHandler.getProjectHandler().update(project);
   }
 
   @Override

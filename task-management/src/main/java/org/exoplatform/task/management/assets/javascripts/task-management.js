@@ -333,34 +333,6 @@ $(document).ready(function() {
         });
     });
 
-    $rightPanel.on('submit', 'form.create-project-form', function(e) {
-        var $form = $(e.target).closest('form');
-        var name = $form.find('input[name="name"]').val();
-        var description = $form.find('textarea[name="description"]').val();
-        var $breadcumbs = $rightPanel.find('.breadcrumb');
-        var parentId = $breadcumbs.data('value');
-
-        if(name == '') {
-            name = 'Untitled Project';
-        }
-
-        var createURL = $rightPanel.jzURL('ProjectController.createProject');        
-        $.ajax({
-            type: 'POST',
-            url: createURL,
-            data: {name: name, description: description, parentId: parentId},
-            success: function(data) {
-                // Reload project tree;
-                taApp.reloadProjectTree(data.id);
-            },
-            error: function() {
-                alert('error while create new project. Please try again.')
-            }
-        });
-
-        return false;
-    });
-
     $leftPanel.on('click', 'a.collapseTree', function(e) {
         var $a = $(e.target).closest('a');
         var $icon = $a.find('.uiIconLightGray');
@@ -402,13 +374,15 @@ $(document).ready(function() {
       $a.closest('.leftPanel > ul').find('li.active').removeClass('active');
       $a.closest('li').addClass('active');
 
-      $rightPanelContent.jzLoad('ProjectController.projectDetail()', {id: id}, function () {
-        taApp.showRightPanel($centerPanel, $rightPanel);
-        //TODO: check can edit to init editInline
-        if($rightPanelContent.find('[data-projectid]').data('canedit')) {
-            editInline.initEditInlineForProject(id);
-        }
-      });
+      //We move project detail to popup instead of right panel: TA-254
+//      $rightPanelContent.jzLoad('ProjectController.projectDetail()', {id: id}, function () {
+//        taApp.showRightPanel($centerPanel, $rightPanel);
+//        //TODO: check can edit to init editInline
+//        if($rightPanelContent.find('[data-projectid]').data('canedit')) {
+//            editInline.initEditInlineForProject(id);
+//        }
+//      });
+      taApp.hideRightPanel($centerPanel, $rightPanel, $rightPanelContent);
     }
 
     $leftPanel.on('click', 'a.project-name', function(e) {
@@ -422,7 +396,7 @@ $(document).ready(function() {
               projectLoaded(projectId, $a);
             });
         }
-        // Show project summary at right panel
+
         if(projectId > 0 && $a.data('canedit') && (currentProject != projectId || $rightPanel.is(':hidden') || !$rightPanelContent.children().first().data('projectid'))) {
           loadProjectDetail(projectId);
         } else {
@@ -579,13 +553,12 @@ $(document).ready(function() {
         var projectId = $project.attr('data-projectId');
         var color = $a.attr('data-color');
 
-        var updateProjectURL = $a.jzURL('ProjectController.saveProjectInfo');
+        var updateProjectURL = $a.jzURL('ProjectController.changeProjectColor');
         $.ajax({
             url: updateProjectURL,
             data: {
                 projectId: projectId,
-                name: 'color',
-                value: color
+                color: color
             },
             type: 'POST',
             success: function(data) {

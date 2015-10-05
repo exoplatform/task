@@ -16,11 +16,11 @@ import org.exoplatform.task.exception.ProjectNotFoundException;
  */
 public interface ProjectService {
 
-  Project createDefaultStatusProjectWithManager(String name, String description, Long parentId, String username)
+  Project createDefaultStatusProjectWithManager(String name, String description, boolean calInteg, Long parentId, String username)
       throws ProjectNotFoundException;
 
   Project createDefaultStatusProjectWithAttributes(Long parentId, String name, String description,
-                                                   Set<String> managers, Set<String> participators)
+                                                   boolean calInteg, Set<String> managers, Set<String> participators)
       throws ProjectNotFoundException;
 
   Project createDefaultStatusProject(Project project);
@@ -28,6 +28,9 @@ public interface ProjectService {
   Project createProject(Project project);
 
   Project updateProjectInfo(long id, String param, String[] values)
+      throws ProjectNotFoundException, ParameterEntityException;
+  
+  Project updateProjectInfo(long id, Long parentId, String name, String description, Boolean calendarIntegrated, String color)
       throws ProjectNotFoundException, ParameterEntityException;
 
   void deleteProjectById(long id, boolean deleteChild) throws ProjectNotFoundException;
