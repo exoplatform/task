@@ -144,7 +144,6 @@ public class StatusServiceTest {
     assertEquals(t.getId(), taskCaptor.getValue().getId());
     assertEquals(s1, taskCaptor.getValue().getStatus());
     verify(statusHandler, times(1)).delete(statusCaptor.capture());
-    assertEquals(0, statusCaptor.getValue().getTasks().size());
   }
   
   @Test 

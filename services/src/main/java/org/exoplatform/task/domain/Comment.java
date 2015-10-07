@@ -34,7 +34,9 @@ import java.util.Date;
     @NamedQuery(name = "Comment.countCommentOfTask",
         query = "SELECT count(c) FROM Comment c WHERE c.task.id = :taskId"),
     @NamedQuery(name = "Comment.findCommentsOfTask",
-        query = "SELECT c FROM Comment c WHERE c.task.id = :taskId ORDER BY c.createdTime DESC")
+        query = "SELECT c FROM Comment c WHERE c.task.id = :taskId ORDER BY c.createdTime DESC"),
+    @NamedQuery(name = "Comment.deleteCommentOfTask",
+        query = "DELETE FROM Comment c WHERE c.task.id = :taskId")
 })
 public class Comment {
   @Id

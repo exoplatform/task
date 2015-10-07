@@ -19,6 +19,13 @@
 
 package org.exoplatform.task.domain;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -41,12 +48,6 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import org.exoplatform.commons.api.persistence.ExoEntity;
 import org.exoplatform.task.service.TaskBuilder;
@@ -93,7 +94,7 @@ public class Task {
 
   private String      description;
 
-  @Enumerated(EnumType.STRING)
+  @Enumerated(EnumType.ORDINAL)
   private Priority    priority;
 
   private String      context;
@@ -140,13 +141,13 @@ public class Task {
   @Column(name = "DUE_DATE")
   private Date        dueDate;
 
-  @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
-  private Set<Comment> comments = new HashSet<Comment>();
-  
-  @ElementCollection(fetch=FetchType.LAZY)
-  @CollectionTable(name = "TASK_LOGS",
-      joinColumns = @JoinColumn(name = "TASK_ID"))
-  private Set<TaskLog> taskLogs = new HashSet<TaskLog>();
+  //This field is only used for remove cascade
+  @OneToMany(mappedBy = "task", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
+  private List<Comment> comments = new ArrayList<Comment>();
+
+  //This field is only used for remove cascade
+  @OneToMany(mappedBy = "task", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
+  private List<TaskLog> logs = new ArrayList<TaskLog>();
   
   @ManyToMany(fetch = FetchType.LAZY, mappedBy="tasks")
   private Set<Label> labels = new HashSet<Label>();
@@ -155,6 +156,7 @@ public class Task {
   private String activityId;
 
   public Task() {
+    this.priority = Priority.NORMAL;
   }
 
   public long getId() {
@@ -308,28 +310,6 @@ public class Task {
     this.coworker = coworker;
   }
 
-  //TODO: get comments of task via TaskService
-  @Deprecated
-  public Set<Comment> getComments() {
-    return comments;
-  }
-
-  @Deprecated
-  public void setComments(Set<Comment> comments) {
-    this.comments = comments;
-  }
-
-  //TODO: get TaskLogs via TaskService
-  @Deprecated
-  public Set<TaskLog> getTaskLogs() {
-    return taskLogs;
-  }
-
-  @Deprecated
-  public void setTaskLogs(Set<TaskLog> taskLogs) {
-    this.taskLogs = taskLogs;
-  }
-
   public String getActivityId() {
     return activityId;
   }
@@ -380,7 +360,6 @@ public class Task {
     if (completed != task.completed) return false;
     if (id != task.id) return false;
     if (assignee != null ? !assignee.equals(task.assignee) : task.assignee != null) return false;
-    if (comments != null ? !comments.equals(task.comments) : task.comments != null) return false;
     if (context != null ? !context.equals(task.context) : task.context != null) return false;
     if (coworker != null ? !coworker.equals(task.coworker) : task.coworker != null) return false;
     if (createdBy != null ? !createdBy.equals(task.createdBy) : task.createdBy != null) return false;

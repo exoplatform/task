@@ -96,5 +96,13 @@ public class TestLabelDAO extends AbstractTest {
     labels = lblDAO.findLabelsByUser("demo");
     Assert.assertEquals(1, labels.size());
     Assert.assertEquals(label2.getName(), labels.get(0).getName());
+    
+    Task task = new Task();
+    task.setTitle("task1");
+    taskService.getTaskHandler().create(task);
+    label1.getTasks().add(task);
+    lblDAO.update(label1);
+    labels = lblDAO.findLabelsByTask(task.getId(), "root");
+    Assert.assertEquals(1, labels.size());
   }
 }

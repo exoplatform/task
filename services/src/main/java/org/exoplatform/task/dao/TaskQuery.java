@@ -22,14 +22,43 @@ package org.exoplatform.task.dao;
 import org.exoplatform.task.dao.condition.AggregateCondition;
 import org.exoplatform.task.dao.condition.Condition;
 import org.exoplatform.task.dao.condition.Conditions;
+import org.exoplatform.task.domain.Priority;
 import org.exoplatform.task.domain.Status;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
-import static org.exoplatform.task.dao.condition.Conditions.*;
 
-import org.exoplatform.task.domain.Priority;
+import static org.exoplatform.task.dao.condition.Conditions.TASK_ASSIGNEE;
+import static org.exoplatform.task.dao.condition.Conditions.TASK_CALENDAR_INTEGRATED;
+import static org.exoplatform.task.dao.condition.Conditions.TASK_COMPLETED;
+import static org.exoplatform.task.dao.condition.Conditions.TASK_COWORKER;
+import static org.exoplatform.task.dao.condition.Conditions.TASK_CREATOR;
+import static org.exoplatform.task.dao.condition.Conditions.TASK_DES;
+import static org.exoplatform.task.dao.condition.Conditions.TASK_DUEDATE;
+import static org.exoplatform.task.dao.condition.Conditions.TASK_END_DATE;
+import static org.exoplatform.task.dao.condition.Conditions.TASK_LABEL_ID;
+import static org.exoplatform.task.dao.condition.Conditions.TASK_LABEL_USERNAME;
+import static org.exoplatform.task.dao.condition.Conditions.TASK_MANAGER;
+import static org.exoplatform.task.dao.condition.Conditions.TASK_PARTICIPATOR;
+import static org.exoplatform.task.dao.condition.Conditions.TASK_PRIORITY;
+import static org.exoplatform.task.dao.condition.Conditions.TASK_PROJECT;
+import static org.exoplatform.task.dao.condition.Conditions.TASK_START_DATE;
+import static org.exoplatform.task.dao.condition.Conditions.TASK_STATUS;
+import static org.exoplatform.task.dao.condition.Conditions.TASK_TAG;
+import static org.exoplatform.task.dao.condition.Conditions.TASK_TITLE;
+import static org.exoplatform.task.dao.condition.Conditions.and;
+import static org.exoplatform.task.dao.condition.Conditions.eq;
+import static org.exoplatform.task.dao.condition.Conditions.gte;
+import static org.exoplatform.task.dao.condition.Conditions.in;
+import static org.exoplatform.task.dao.condition.Conditions.isEmpty;
+import static org.exoplatform.task.dao.condition.Conditions.isFalse;
+import static org.exoplatform.task.dao.condition.Conditions.isNull;
+import static org.exoplatform.task.dao.condition.Conditions.isTrue;
+import static org.exoplatform.task.dao.condition.Conditions.like;
+import static org.exoplatform.task.dao.condition.Conditions.lte;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
@@ -40,21 +69,7 @@ public class TaskQuery implements Cloneable {
 
   //TODO: how to remove these two field
   private List<Long> projectIds = null;
-  private String assignee = null;
-  private String createdBy = null;
-  private String coworker = null;
-  private String keyword = null;
-  private Boolean calendarIntegrated;
-  private Boolean completed;
-  private Date startDate;
-  private Date endDate;
-  private List<Long> labelIds;
-  private List<String> tags;
-  private Long statusId = -1L;
-  private Long dueDateFrom;
-  private Long dueDateTo;
-  private Priority priority;  
-  private List<String> memberships;  
+  private List<String> assignee = null;
   
   private List<OrderBy> orderBy = new ArrayList<OrderBy>();
 
@@ -62,7 +77,7 @@ public class TaskQuery implements Cloneable {
 
   }
 
-  TaskQuery(AggregateCondition condition, List<OrderBy> orderBies, List<Long> projectIds, String assignee) {
+  TaskQuery(AggregateCondition condition, List<OrderBy> orderBies, List<Long> projectIds, List<String> assignee) {
     this.aggCondition = condition;
     this.orderBy = orderBies;
     this.projectIds = projectIds;
@@ -119,32 +134,15 @@ public class TaskQuery implements Cloneable {
     this.add(in(TASK_PROJECT, projectIds));
   }
 
-  public String getAssignee() {
+  public List<String> getAssignee() {
     return assignee;
   }
 
-  public void setAssignee(String assignee) {
-    this.add(eq(TASK_ASSIGNEE, assignee));
-  }
-
-  public String getCreatedBy() {
-    return createdBy;
-  }
-
-  public void setCreatedBy(String createdBy) {
-    this.createdBy = createdBy;
-  }
-
-  public String getCoworker() {
-    return coworker;
-  }
-
-  public void setCoworker(String coworker) {
-    this.coworker = coworker;
-  }
-
-  public String getKeyword() {
-    return keyword;
+  public void setAssignee(List<String> assignee) {
+    if (assignee != null) {
+      this.add(in(TASK_ASSIGNEE, assignee));      
+    }
+    this.assignee = assignee;
   }
 
   public void setKeyword(String keyword) {
@@ -199,12 +197,12 @@ public class TaskQuery implements Cloneable {
   }
 
   public void setAssigneeOrMembership(String username, List<String> memberships) {
-    this.assignee = username;
+    this.assignee = Arrays.asList(username);
     this.add(Conditions.or(eq(TASK_ASSIGNEE, username), in(TASK_MANAGER, memberships), in(TASK_PARTICIPATOR, memberships)));
   }
 
   public void setAssigneeOrInProject(String username, List<Long> projectIds) {
-    this.assignee = username;
+    this.assignee = Arrays.asList(username);
     this.projectIds = projectIds;
     this.add(Conditions.or(eq(TASK_ASSIGNEE, username), in(TASK_PROJECT, projectIds)));
   }
@@ -230,63 +228,48 @@ public class TaskQuery implements Cloneable {
   }
 
   public void setIsTodoOf(String username) {
-    setAssignee(username);
+    setAssignee(Arrays.asList(username));
     //add(eq(TASK_ASSIGNEE, username));
   }
 
-  public List<Long> getLabelIds() {
-    return labelIds;
-  }
-
   public void setLabelIds(List<Long> labelIds) {
-    this.labelIds = labelIds;
+    if (labelIds != null) {
+      List<Condition> cond = new LinkedList<Condition>();
+      for (Long id : labelIds) {
+        cond.add(eq(TASK_LABEL_ID, id));
+      }
+      this.add(Conditions.and(cond.toArray(new Condition[cond.size()])));
+    }
   }
-
-  public List<String> getTags() {
-    return tags;
+  
+  public void setIsLabelOf(String username) {
+    this.add(eq(TASK_LABEL_USERNAME, username));
   }
 
   public void setTags(List<String> tags) {
-    this.tags = tags;
-  }
-
-  public Long getStatusId() {
-    return statusId;
-  }
-
-  public void setStatusId(Long statusId) {
-    this.statusId = statusId;
-  }
-
-  public Long getDueDateFrom() {
-    return dueDateFrom;
-  }
-
-  public void setDueDateFrom(Long dueDateFrom) {
-    this.dueDateFrom = dueDateFrom;
-  }
-
-  public Long getDueDateTo() {
-    return dueDateTo;
-  }
-
-  public void setDueDateTo(Long dueDateTo) {
-    this.dueDateTo = dueDateTo;
-  }
-
-  public Priority getPriority() {
-    return priority;
+    if (tags != null) {
+      List<Condition> cond = new LinkedList<Condition>();
+      for (String tag : tags) {
+        cond.add(eq(TASK_TAG, tag));
+      }
+      this.add(Conditions.and(cond.toArray(new Condition[cond.size()])));
+    }
   }
 
   public void setPriority(Priority priority) {
-    this.priority = priority;
+    this.add(eq(TASK_PRIORITY, priority));
   }
 
   public void setNullField(String nullField) {
     add(isNull(nullField));
   }
 
+  public void setEmptyField(String emptyField) {
+    add(isEmpty(emptyField));
+  }
+
   public TaskQuery clone() {
     return new TaskQuery(aggCondition.clone(), orderBy, projectIds != null ? new ArrayList<Long>(projectIds) : null, assignee);
   }
+
 }

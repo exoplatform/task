@@ -45,6 +45,7 @@ public class DAOHandlerJPAImpl extends AbstractDAOHandler implements DAOHandler 
     pHandler = new ProjectDAOImpl();
     tHandler = new TaskDAOImpl();
     cHandler = new CommentDAOImpl();
+    taskLogHandler = new TaskLogDAOImpl();
     sHandler = new StatusDAOImpl();
     uHandler = new UserSettingDAO();
     lHandler = new LabelDAOImpl();

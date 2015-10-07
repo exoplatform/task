@@ -22,6 +22,7 @@ import org.exoplatform.task.dao.DAOHandler;
 import org.exoplatform.task.dao.ProjectHandler;
 import org.exoplatform.task.dao.StatusHandler;
 import org.exoplatform.task.dao.TaskHandler;
+import org.exoplatform.task.dao.TaskLogHandler;
 import org.exoplatform.task.dao.UserSettingHandler;
 
 /**
@@ -35,6 +36,8 @@ abstract public class AbstractDAOHandler implements DAOHandler {
   protected TaskHandler tHandler;
   
   protected CommentHandler cHandler;
+
+  protected TaskLogHandler taskLogHandler;
 
   protected StatusHandler sHandler;
 
@@ -67,6 +70,10 @@ abstract public class AbstractDAOHandler implements DAOHandler {
   public LabelHandler getLabelHandler() {
     return lHandler;
   }
-  
+
+  @Override
+  public TaskLogHandler getTaskLogHandler() {
+    return taskLogHandler;
+  }
 }
 

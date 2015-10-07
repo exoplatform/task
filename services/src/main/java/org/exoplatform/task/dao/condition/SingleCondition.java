@@ -30,6 +30,7 @@ public class SingleCondition<T> extends Condition implements Cloneable {
   public static final String LTE = "lte";
   public static final String GTE = "gte";
   public static final String IS_NULL = "null";
+  public static final String IS_EMPTY = "empty";
   public static final String NOT_NULL = "not_null";
   public static final String LIKE = "like";
   public static final String IN = "in";

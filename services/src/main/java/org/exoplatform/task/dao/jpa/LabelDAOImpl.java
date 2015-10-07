@@ -33,5 +33,14 @@ public class LabelDAOImpl extends CommonJPADAO<Label, Long> implements LabelHand
     return query.getResultList();
   }
 
+  @Override
+  public List<Label> findLabelsByTask(long taskId, String username) {
+    TypedQuery<Label> query = getEntityManager().createNamedQuery("Label.findLabelByTask", Label.class);
+    query.setParameter("taskId", taskId);
+    query.setParameter("username", username);
+
+    return query.getResultList();
+  }
+
 }
 

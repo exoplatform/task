@@ -31,11 +31,6 @@ import org.exoplatform.task.exception.EntityNotFoundException;
  */
 public interface TaskHandler extends GenericDAO<Task, Long> {
 
-  //TODO: move these method to TaskLogDAO if need
-  TaskLog addTaskLog(long taskId, TaskLog taskLog) throws EntityNotFoundException;
-
-  ListAccess<TaskLog> getTaskLogs(long taskId);
-
   List<Task> findTasksByLabel(long labelId, List<Long> projectIds, String username, OrderBy orderBy);
  
   List<Task> findByUser(String user);

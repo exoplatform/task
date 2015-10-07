@@ -17,24 +17,6 @@
 package org.exoplatform.task.util;
 
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.Set;
-import java.util.TimeZone;
-import java.util.TreeMap;
-
 import org.exoplatform.calendar.model.Event;
 import org.exoplatform.calendar.service.impl.NewUserListener;
 import org.exoplatform.commons.utils.ListAccess;
@@ -60,6 +42,24 @@ import org.exoplatform.task.service.StatusService;
 import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.service.UserService;
 import org.exoplatform.web.controller.router.Router;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.Set;
+import java.util.TimeZone;
+import java.util.TreeMap;
 
 /**
  * Created by The eXo Platform SAS
@@ -349,7 +349,7 @@ public final class TaskUtil {
         String assignee = assignees.get(i);
         if (assignee == null) continue;
         q = query.clone();
-        q.setAssignee(assignee);
+        q.setAssignee(Arrays.asList(assignee));
         org.exoplatform.task.model.User user = userService.loadUser(assignee);
         key = new GroupKey(user.getDisplayName(), user, i);
         tasks = taskService.findTasks(q);
@@ -366,6 +366,31 @@ public final class TaskUtil {
         if (ListUtil.getSize(tasks) > 0) {
           maps.put(key, tasks);
         }
+      }
+    } else if (LABEL.equalsIgnoreCase(groupBy)) {
+      List<Label> labels = taskService.selectTaskField(selectFieldQuery, "labels");
+      GroupKey key;
+      ListAccess<Task> tasks;
+      TaskQuery q;
+
+      for (int i = 0; i < labels.size(); i++) {
+        Label label = labels.get(i);
+        if (label == null) continue;
+        q = query.clone();
+        q.setLabelIds(Arrays.asList(label.getId()));
+        key = new GroupKey(label.getName(), label, i);
+        tasks = taskService.findTasks(q);
+        if (ListUtil.getSize(tasks) > 0) {
+          maps.put(key, tasks);
+        }
+      }
+
+      q = query.clone();
+      q.setEmptyField("labels");
+      key = new GroupKey("No Label", null, Integer.MAX_VALUE);
+      tasks = taskService.findTasks(q);
+      if (ListUtil.getSize(tasks) > 0) {
+        maps.put(key, tasks);
       }
     }
     return maps;
@@ -591,7 +616,7 @@ public final class TaskUtil {
         case HIGH :
           event.setPriority(Event.PRIORITY_HIGH);
           break;
-        case MEDIUM:
+        case NORMAL:
           event.setPriority(Event.PRIORITY_NORMAL);
           break;
         case LOW:
@@ -665,7 +690,7 @@ public final class TaskUtil {
     return false;
   }
 
-  public static Task saveTaskField(Task task, String param, String[] values, TimeZone timezone, StatusService statusService)
+  public static Task saveTaskField(Task task, String username, String param, String[] values, TimeZone timezone, TaskService taskService, StatusService statusService)
       throws EntityNotFoundException, ParameterEntityException {
 
     if (timezone == null) {
@@ -674,14 +699,6 @@ public final class TaskUtil {
 
     //
     if ("workPlan".equalsIgnoreCase(param)) {
-      long oldStartTime = -1;
-      if (task.getStartDate() != null) {
-        oldStartTime = task.getStartDate().getTime();
-      }
-      long oldEndTime = -1;
-      if (task.getEndDate() != null) {
-        oldEndTime = task.getEndDate().getTime();
-      }
       //
       if (values == null) {
         task.setStartDate(null);
@@ -728,7 +745,7 @@ public final class TaskUtil {
       } else if("status".equalsIgnoreCase(param)) {
         //
         try {
-          Long statusId = Long.parseLong(value);
+          Long statusId = Long.parseLong(value.toUpperCase());
           Status status = statusService.getStatus(statusId);
           if(status == null) {
             LOG.info("Status does not exist with ID: " + value);
@@ -756,14 +773,11 @@ public final class TaskUtil {
         }
         task.setCoworker(coworker);
       } else if("tags".equalsIgnoreCase(param)) {
-        Set<String> old = task.getTag();
         Set<String> tags = new HashSet<String>();
         for(String t : values) {
           tags.add(t);
         }
         task.setTag(tags);
-
-        Set<String> newTags = new HashSet<String>(task.getTag());
       } else if ("priority".equalsIgnoreCase(param)) {
         Priority priority = Priority.valueOf(value);
         task.setPriority(priority);
@@ -782,6 +796,47 @@ public final class TaskUtil {
         } catch (NumberFormatException ex) {
           throw new ParameterEntityException(task.getId(), Task.class, param, value, "ProjectID must be long", ex);
         }
+      } else if("labels".equalsIgnoreCase(param)) {
+        List<Long> ids = new ArrayList<Long>(values.length);
+        for (int i = 0; i < values.length; i++) {
+          try {
+            if (values[i] == null || values[i].isEmpty()) {
+              continue;
+            }
+            ids.add(Long.parseLong(values[i]));
+          } catch (NumberFormatException ex) {
+            throw new ParameterEntityException(-1L, Label.class, param, values[i], "LabelID must be long", ex);
+          }
+        }
+        
+        taskService.updateTask(task);        
+        for (Long labelId : ids) {
+          Label label = taskService.getLabelById(labelId);
+          if (label == null) {
+            throw new EntityNotFoundException(labelId, Label.class);
+          }
+          label.getTasks().add(task);
+          try {            
+            taskService.updateLabel(label, Arrays.asList(Label.FIELDS.TASK));            
+          } catch (Exception ex) {
+            ex.printStackTrace();
+          }
+        }
+
+        List<Label> remove = new ArrayList<Label>();
+        for(Label label : taskService.findLabelsByTask(task.getId(), username)) {
+          if (label.getUsername().equals(username) && !ids.contains(label.getId())) {
+            remove.add(label);
+          }
+        }
+        for (Label l : remove) {
+          l.getTasks().remove(task);
+          try {
+            taskService.updateLabel(l, Arrays.asList(Label.FIELDS.TASK));            
+          } catch (Exception ex) {
+            ex.printStackTrace();
+          }
+        }        
       } else if ("calendarIntegrated".equalsIgnoreCase(param)) {
         task.setCalendarIntegrated(Boolean.parseBoolean(value));
       } else {
@@ -790,24 +845,7 @@ public final class TaskUtil {
       }
     }
 
-    //.
-    if ("status".equalsIgnoreCase(param) && values.length > 2) {
-      //TODO: need save order of task (update rank)
-      long[] taskIds = new long[values.length - 1];
-      int currentTaskIndex = -1;
-      for (int i = 1; i < values.length; i++) {
-        taskIds[i - 1] = Long.parseLong(values[i]);
-        if (taskIds[i - 1] == task.getId()) {
-          currentTaskIndex = i - 1;
-        }
-      }
-      if (currentTaskIndex > -1) {
-        //. Update here
-
-      }
-    }
-
-    return task;
+    return taskService.updateTask(task);
   }
 }
 

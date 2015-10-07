@@ -312,8 +312,8 @@ public class ProjectServiceTest {
     tasks2.add(TestUtils.getDefaultTask());
     tasks2.add(TestUtils.getDefaultTask());
 
-    Status status1 = new Status(3, "ToDo", 1, tasks1, project);
-    Status status2 = new Status(4, "ToDo", 2, tasks2, project);
+    Status status1 = new Status(3, "ToDo", 1, project);
+    Status status2 = new Status(4, "ToDo", 2, project);
 
     Set<Status> statuses = new HashSet<Status>();
     statuses.add(status1);
@@ -357,8 +357,8 @@ public class ProjectServiceTest {
     tasks2.add(TestUtils.getDefaultTask());
     tasks2.add(TestUtils.getDefaultTask());
 
-    Status status1 = new Status(3, "ToDo", 1, tasks1, project);
-    Status status2 = new Status(4, "On Progress", 2, tasks2, project);
+    Status status1 = new Status(3, "ToDo", 1, project);
+    Status status2 = new Status(4, "On Progress", 2, project);
 
     Set<Status> statuses = new TreeSet<Status>();
     statuses.add(status1);

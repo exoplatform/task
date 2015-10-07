@@ -50,10 +50,6 @@ public class ProjectDAOImpl extends CommonJPADAO<Project, Long> implements Proje
 
   @Override
   public Project update(Project entity) {
-    Project p = getEntityManager().find(Project.class, entity.getId());
-    //TODO: this is workaround to keep status when update project,
-    // we should remove cascade ALL on the field "status" of Project
-    entity.setStatus(p.getStatus());
     return cloneEntity(super.update(entity));
   }
 

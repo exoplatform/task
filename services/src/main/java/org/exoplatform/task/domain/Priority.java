@@ -23,5 +23,5 @@ package org.exoplatform.task.domain;
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
 public enum Priority {
-  HIGH, MEDIUM, LOW, UNDEFINED
+  NONE, LOW, NORMAL, HIGH;
 }

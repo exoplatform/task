@@ -17,23 +17,26 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.exoplatform.task.dao;
+package org.exoplatform.task.dao.jpa;
+
+import org.exoplatform.commons.utils.ListAccess;
+import org.exoplatform.task.dao.TaskLogHandler;
+import org.exoplatform.task.domain.TaskLog;
+
+import javax.persistence.TypedQuery;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
-public interface DAOHandler {
-  public ProjectHandler getProjectHandler();
+public class TaskLogDAOImpl extends CommonJPADAO<TaskLog, Long> implements TaskLogHandler {
+  @Override
+  public ListAccess<TaskLog> findTaskLogs(Long taskId) {
+    TypedQuery<TaskLog> query = getEntityManager().createNamedQuery("TaskChangeLog.findChangeLogByTaskId", TaskLog.class);
+    TypedQuery<Long> count = getEntityManager().createNamedQuery("TaskChangeLog.countChangeLogByTaskId", Long.class);
 
-  public TaskHandler getTaskHandler();
-  
-  public LabelHandler getLabelHandler();
+    query.setParameter("taskId", taskId);
+    count.setParameter("taskId", taskId);
 
-  public CommentHandler getCommentHandler();
-
-  public TaskLogHandler getTaskLogHandler();
-
-  public StatusHandler getStatusHandler();
-
-  public UserSettingHandler getUserSettingHandler();
+    return new JPAQueryListAccess<TaskLog>(TaskLog.class, count, query);
+  }
 }

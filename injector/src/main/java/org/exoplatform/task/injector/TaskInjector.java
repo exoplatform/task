@@ -24,6 +24,7 @@ import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.StatusService;
 import org.exoplatform.task.service.TaskService;
@@ -88,6 +89,7 @@ public class TaskInjector extends DataInjector {
 
   private final TaskService taskService;
   private final ProjectService projectService;
+  private final StatusService statusService;
 
   //
 
@@ -120,6 +122,7 @@ public class TaskInjector extends DataInjector {
     PortalContainer container = PortalContainer.getInstance();
     taskService = (TaskService)container.getComponentInstanceOfType(TaskService.class);
     projectService = (ProjectService)container.getComponentInstanceOfType(ProjectService.class);
+    statusService = (StatusService)container.getComponentInstanceOfType(StatusService.class);
   }
 
   private void init() {
@@ -197,32 +200,22 @@ public class TaskInjector extends DataInjector {
       for (int j = 0; j < nbProject; j++) {
         //Create project
         Project project = createProject(userName, j);
-        //Add default status to the project
+        project = projectService.createProject(project);
+
+        //Create status for project
         List<Status> statuses = createStatus(project);
-        Status randomStatus;
-        project.setStatus(new HashSet<Status>(statuses));
 
         //Loop on number of tasks per project
         for (int k = 0; k < nbTasks; k++) {
-          Task task = createTask(userName, project.getName(), k);
-          //Add a random status to task
-          randomStatus = statuses.get(random.nextInt(3));
-          task.setStatus(randomStatus);
-          randomStatus.getTasks().add(task);
+          Task task = createTask(statuses.get(random.nextInt(3)), userName, project.getName(), k, true);
         }
-        projectService.createProject(project);
-        //DAOHandler.getProjectHandler().create(project);
       }
 
       //Create Incoming Task (not attached to project) of the user
       for (int j = 0; j < nbIncomingTasks; j++) {
-        Task task = createTask(userName, "Incoming-"+userName, j);
-        task.setCompleted(false);
+        Task task = createTask(null, userName, "Incoming-"+userName, j, false);
         taskService.createTask(task);
       }
-
-      //DAOHandler.getTaskHandler().createAll(tasks);
-
     }
 
   }
@@ -250,28 +243,24 @@ public class TaskInjector extends DataInjector {
         Set<String> members = new HashSet<String>();
         members.add(member);
         project.setParticipator(members);
+
+        project = projectService.createProject(project);
+
+
         //Add default status to the project
         List<Status> statuses = createStatus(project);
-        Status randomStatus;
-        project.setStatus(new HashSet<Status>(statuses));
 
         //Loop on number of tasks per project
         for (int k = 0; k < nbTasks; k++) {
-          Task task = createTask(manager, project.getName(), k);
-          //Add a random status to task
-          randomStatus = statuses.get(random.nextInt(3));
-          task.setStatus(randomStatus);
-          randomStatus.getTasks().add(task);
+          Task task = createTask(statuses.get(random.nextInt(3)), manager, project.getName(), k, true);
         }
-        projectService.createProject(project);
-        //DAOHandler.getProjectHandler().create(project);
       }
 
     }
 
   }
 
-  private Task createTask(String username, String project, int numtask) {
+  private Task createTask(Status status, String username, String project, int numtask, boolean isRandomCompleted) {
     Task task = new Task();
     task.setTitle(taskPrefix+"-"+numtask);
     task.setDescription(randomWords(20));
@@ -285,22 +274,39 @@ public class TaskInjector extends DataInjector {
       tags.add(tag);
     }
     task.setTag(tags);
-    //Add comments to Task
+
+    //Set tasks as completed
+    if (isRandomCompleted) {
+      if (random.nextInt(100) < perCompleted) {
+        task.setCompleted(true);
+      }
+    }
+
+    //
+    if (status != null) {
+      task.setStatus(status);
+    }
+
+    //
+    task = taskService.createTask(task);
+
+    //
+    createComments(task, username, nbComments);
+
+    return task;
+  }
+
+  private Set<Comment> createComments(Task task, String username, int nbComments) {
     Set<Comment> comments = new HashSet<Comment>();
     for (int i = 0; i < nbComments; i++) {
-      Comment comment = new Comment();
-      comment.setAuthor(username);
-      comment.setComment(randomWords(20));
-      comment.setCreatedTime(new Date());
-      comment.setTask(task);
-      comments.add(comment);
+      try {
+        Comment comment = taskService.addComment(task.getId(), username, randomWords(20));
+        comments.add(comment);
+      } catch (EntityNotFoundException ex) {
+        throw new IllegalArgumentException("Task with id: " + task.getId() + " is not found in database");
+      }
     }
-    task.setComments(comments);
-    //Set tasks as completed
-    if (random.nextInt(100) < perCompleted) {
-      task.setCompleted(true);
-    }
-    return task;
+    return comments;
   }
 
   private Project createProject(String username, int numProject) {
@@ -318,11 +324,11 @@ public class TaskInjector extends DataInjector {
 
   private List<Status> createStatus(Project project) {
     List<Status> statusList = new ArrayList<Status>();
-    int rank = 1;
+    //int rank = 1;
 
     for (String name : statusName) {
-      Status status = new Status();
-      status.setName(name);
+      Status status = statusService.createStatus(project, name);
+      /*status.setName(name);
       status.setRank(rank);
 
       //Attach status to project
@@ -331,7 +337,9 @@ public class TaskInjector extends DataInjector {
 
       statusList.add(status);
 
-      rank++;
+      rank++;*/
+
+      statusList.add(status);
     }
     return statusList;
   }

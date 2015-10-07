@@ -57,57 +57,72 @@ public class TaskLoggingListener extends Listener<TaskService, Payload> {
   }
 
   private void logTaskUpdate(TaskService service, String username, Task before, Task after) throws EntityNotFoundException {
-    if (!before.getStartDate().equals(after.getStartDate()) || !before.getEndDate().equals(after.getEndDate())) {
+    if (isDiff(before.getStartDate(), after.getStartDate()) || isDiff(before.getEndDate(), after.getEndDate())) {
       service.addTaskLog(after.getId(), username, "log.edit_workplan", "");
     }
-    if (!before.getTitle().equals(after.getTitle())) {
+    if (isDiff(before.getTitle(), after.getTitle())) {
       service.addTaskLog(after.getId(), username, "log.edit_title", "");
     }
-    if (!before.getDueDate().equals(after.getDueDate())) {
+    if (isDiff(before.getDueDate(), after.getDueDate())) {
       service.addTaskLog(after.getId(), username, "log.edit_duedate", "");
 
       NotificationContext ctx = buildContext(after);
       dispatch(ctx, TaskDueDatePlugin.ID);
     }
-    if (!before.getStatus().equals(after.getStatus())) {
-      service.addTaskLog(after.getId(), username, "log.edit_status", after.getStatus().getName());
-    }
-    if (!before.getDescription().equals(after.getDescription())) {
+    if (isDiff(before.getDescription(), after.getDescription())) {
       service.addTaskLog(after.getId(), username, "log.edit_description", "");
     }
-    if (!(before.isCompleted() == after.isCompleted())) {
+    if (isDiff(before.isCompleted(), after.isCompleted())) {
       service.addTaskLog(after.getId(), username, "log.mark_done", "");
 
       NotificationContext ctx = buildContext(after);
       dispatch(ctx, TaskCompletedPlugin.ID);
     }
-    if (!before.getAssignee().equals(after.getAssignee())) {
+    if (isDiff(before.getAssignee(), after.getAssignee())) {
       service.addTaskLog(after.getId(), username, "log.assign", after.getAssignee());
 
       NotificationContext ctx = buildContext(after);
       dispatch(ctx, TaskAssignPlugin.ID);
     }
-    if (!before.getTag().equals(after.getTag())) {
+
+    if (isDiff(before.getTag(), after.getTag())) {
       Set<String> tags = after.getTag();
       tags.removeAll(before.getTag());
       service.addTaskLog(after.getId(), username, "log.add_label", StringUtils.join(tags, ","));
     }
-    if (!before.getStatus().getProject().equals(after.getStatus().getProject())) {
+
+    if (isProjectChange(before, after)) {
       service.addTaskLog(after.getId(), username, "log.edit_project", after.getStatus().getProject().getName());
+
+    } else if (isDiff(before.getStatus(), after.getStatus())) {
+      service.addTaskLog(after.getId(), username, "log.edit_status", after.getStatus().getName());
     }
-    // Coworker
-//    if (!before.getCoworker().equals(after.getCoworker())) {
-//      NotificationContext ctx = buildContext(after);
-//      
-//      Set<String> oldVal = before.getCoworker();
-//      Set<String> newVal = after.getCoworker();
-//      newVal.removeAll(oldVal);    
-//      ctx.append(NotificationUtils.COWORKER, newVal);
-//      
-//      dispatch(ctx, TaskCoworkerPlugin.ID);
-//    }
   }
 
+  private boolean isProjectChange(Task before, Task after) {
+    if (!isDiff(before.getStatus(), after.getStatus())) {
+      return false;
+
+    } else if(before.getStatus() != null) {
+      if (after.getStatus() == null) {
+        return true;
+      } else {
+        return !before.getStatus().getProject().equals(after.getStatus().getProject());
+      }
+    } else {
+      return true;
+    }
+  }
+  private boolean isDiff(Object before, Object after) {
+    if (before == after) {
+      return false;
+    }
+    if (before != null) {
+      return !before.equals(after);
+    } else {
+      return !after.equals(before);
+    }
+  }
   
   private NotificationContext buildContext(Task task) {
     //workaround to init hibernate collection

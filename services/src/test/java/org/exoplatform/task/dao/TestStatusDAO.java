@@ -57,7 +57,11 @@ public class TestStatusDAO extends AbstractTest {
     Status s2 = createStatus("s2");
     s2.setRank(1);
     Project p = createProject("p", s1, s2);
-    pDAO.create(p);
+    p = pDAO.create(p);
+    s1.setProject(p);
+    s2.setProject(p);
+    sDAO.create(s1);
+    sDAO.create(s2);
     
     Status s = sDAO.findHighestRankStatusByProject(p.getId());
     Assert.assertEquals(s2.getId(), s.getId());
@@ -67,7 +71,9 @@ public class TestStatusDAO extends AbstractTest {
   public void testFindByName() {
     Status s1 = createStatus("s1");
     Project p = createProject("p", s1);
-    pDAO.create(p);
+    p = pDAO.create(p);
+    s1.setProject(p);
+    sDAO.create(s1);
     
     Status s = sDAO.findByName(s1.getName(), p.getId());
     Assert.assertEquals(s1.getId(), s.getId());
@@ -92,18 +98,10 @@ public class TestStatusDAO extends AbstractTest {
     return project;
   }
 
-  private Status createStatus(String name, Task ...tasks) {
+  private Status createStatus(String name) {
     Status st = new Status();
     st.setName(name);
     st.setRank(1);
-    if (tasks != null) {
-      Set<Task> set = new HashSet<Task>();
-      for (Task t : tasks) {
-        t.setStatus(st);
-        set.add(t);
-      }
-      st.setTasks(set);      
-    }
     return st;
   }
 }

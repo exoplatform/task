@@ -6,7 +6,7 @@
 #{param name="filterDueDate"/}
 
 <%
-	import org.exoplatform.task.utils.TaskUtil;
+	import org.exoplatform.task.util.TaskUtil;
 	import org.exoplatform.task.domain.Priority;
 %>
 
@@ -77,12 +77,9 @@
 		  		<div class="controls">
 		  			<select name="priority">
 		  				<option value="">All</option>
-		  				<%for (def priority : Priority.values()) {
-		  					if (!priority.equals(Priority.UNDEFINED)) {
-		  				%>										  					  				
+		  				<%for (def priority : Priority.values()) {%>										  					  				
 		  				<option value="<%=priority.name()%>"><%=priority.name()%></option>
-		  				<% }
-		  				} %>
+		  				<%} %>
 		  			</select>
 		  		</div>
 		  	</div>

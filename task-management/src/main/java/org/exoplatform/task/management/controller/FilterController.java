@@ -34,6 +34,7 @@ import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.service.ProjectService;
+import org.exoplatform.task.service.StatusService;
 import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.service.UserService;
 import org.exoplatform.task.util.ProjectUtil;
@@ -62,6 +63,9 @@ public class FilterController {
   ProjectService projectService;
   
   @Inject
+  StatusService statusService;
+  
+  @Inject
   ResourceBundle bundle;
   
   @Inject
@@ -81,8 +85,8 @@ public class FilterController {
     Project project = filterStatus ? projectService.getProject(projectId) : null;
     
     List<Status> status = Collections.emptyList();
-    if (filterStatus && project != null) {
-      status = new LinkedList<Status>(project.getStatus());
+    if (filterStatus && project != null) {      
+      status = statusService.getStatuses(project.getId());
     }
     
     List<Label> labels = taskService.findLabelsByUser(username);

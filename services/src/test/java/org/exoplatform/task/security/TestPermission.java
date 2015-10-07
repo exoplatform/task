@@ -65,6 +65,7 @@ public class TestPermission extends AbstractTest {
   @After
   public void tearDown() {
     tDAO.deleteAll();
+    daoHandler.getStatusHandler().deleteAll();
     pDAO.deleteAll();
   }
 
@@ -139,12 +140,14 @@ public class TestPermission extends AbstractTest {
     project.setName("Project of user 2 manager");
     project.setManager(managers);
 
+    pDAO.create(project);
+
     //Status
     Status status = new Status();
     status.setName("TODO");
     status.setRank(1);
     status.setProject(project);
-    project.getStatus().add(status);
+    daoHandler.getStatusHandler().create(status);
 
     //Task
     Task task1 = parser.parse("Task of User 1", context);
@@ -156,11 +159,9 @@ public class TestPermission extends AbstractTest {
     task2.setCreatedBy(user1);
     task2.setAssignee(user1);
     task2.setStatus(status);
-    status.getTasks().add(task2);
 
-    //Creation
-    pDAO.create(project);
     tDAO.create(task1);
+    tDAO.create(task2);
 
     //Test
     Assert.assertEquals(2, tDAO.findByUser(user1).size());
@@ -185,12 +186,15 @@ public class TestPermission extends AbstractTest {
     project.setName("Project of user 2 manager");
     project.setManager(members);
 
+    //
+    pDAO.create(project);
+
     //Status
     Status status = new Status();
     status.setName("TODO");
     status.setRank(1);
     status.setProject(project);
-    project.getStatus().add(status);
+    daoHandler.getStatusHandler().create(status);
 
     //Task
     Task task1 = parser.parse("Task of User 1", context);
@@ -202,11 +206,9 @@ public class TestPermission extends AbstractTest {
     task2.setCreatedBy(user1);
     task2.setAssignee(user1);
     task2.setStatus(status);
-    status.getTasks().add(task2);
 
-    //Creation
-    pDAO.create(project);
     tDAO.create(task1);
+    tDAO.create(task2);
 
     //Test
     Assert.assertEquals(2, tDAO.findByUser(user1).size());

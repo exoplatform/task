@@ -27,6 +27,8 @@ public interface LabelHandler extends GenericDAO<Label, Long> {
    * @return
    */
   List<Label> findLabelsByUser(String username);
+  
+  List<Label> findLabelsByTask(long taskId, String username);
 
 }
 

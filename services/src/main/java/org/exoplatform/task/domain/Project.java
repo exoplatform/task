@@ -75,7 +75,7 @@ public class Project {
   private boolean calendarIntegrated = false;
 
   //TODO: should remove cascade ALL on this field
-  @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE, orphanRemoval = true)
   private Set<Status> status = new HashSet<Status>();
 
   @ElementCollection
@@ -98,6 +98,10 @@ public class Project {
 
   @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY, cascade=CascadeType.REMOVE)
   private List<Project> children = new LinkedList<Project>();
+
+  // This field is used for remove cascade
+  @ManyToMany(mappedBy = "hiddenProjects", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+  private Set<UserSetting> hiddenOn = new HashSet<UserSetting>();
 
   public Project() {
   }

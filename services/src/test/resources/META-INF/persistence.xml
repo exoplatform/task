@@ -11,6 +11,7 @@
     <class>org.exoplatform.task.domain.Task</class>
     <class>org.exoplatform.task.domain.Status</class>
     <class>org.exoplatform.task.domain.Comment</class>
+    <class>org.exoplatform.task.domain.TaskLog</class>
     <class>org.exoplatform.task.domain.Label</class>
 
     <properties>

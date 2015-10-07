@@ -30,12 +30,16 @@ public class Conditions {
   public static String TASK_ID = "id";
   public static String TASK_TITLE = "title";
   public static String TASK_DES = "description";
+  public static String TASK_TAG = "tag";
+  public static String TASK_PRIORITY = "priority";
   public static String TASK_ASSIGNEE = "assignee";
   public static String TASK_COWORKER = "coworker";
   public static String TASK_CREATOR = "createdBy";
   public static String TASK_STATUS = "status";
   public static String TASK_DUEDATE = "dueDate";
   public static String TASK_PROJECT = "status.project";
+  public static String TASK_LABEL_USERNAME = "labels.username";
+  public static String TASK_LABEL_ID = "labels.id";
   public static String TASK_COMPLETED = "completed";
   public static String TASK_START_DATE = "startDate";
   public static String TASK_END_DATE = "endDate";
@@ -64,6 +68,9 @@ public class Conditions {
   }
   public static <T> SingleCondition<T> isNull(String fieldName) {
     return new SingleCondition<T>(SingleCondition.IS_NULL, fieldName, null);
+  }
+  public static <T> SingleCondition<T> isEmpty(String fieldName) {
+    return new SingleCondition<T>(SingleCondition.IS_EMPTY, fieldName, null);
   }
   public static <T> SingleCondition<T> notNull(String fieldName) {
     return new SingleCondition<T>(SingleCondition.NOT_NULL, fieldName, null);

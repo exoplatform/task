@@ -120,7 +120,7 @@ public class StatusServiceImpl implements StatusService {
     int maxRank = max != null && max.getRank() != null ? max.getRank() : -1;
     
     StatusHandler handler = daoHandler.getStatusHandler();
-    Status st = new Status(name, ++maxRank, new HashSet<Task>(), project);
+    Status st = new Status(name, ++maxRank, project);
     handler.create(st);
     return st;
   }
@@ -140,6 +140,7 @@ public class StatusServiceImpl implements StatusService {
       throw new NotAllowedOperationOnEntityException(statusID, Status.class, "Delete last status");
     }
 
+    //TODO: use JPA query for batch update is better than query then loop through all tasks
     TaskQuery query = new TaskQuery();
     query.setStatus(st);
     ListAccess<Task> tasks = daoHandler.getTaskHandler().findTasks(query);

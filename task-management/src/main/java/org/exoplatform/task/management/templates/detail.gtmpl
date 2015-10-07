@@ -7,6 +7,7 @@
 	import java.util.Date;
 	import org.exoplatform.task.util.TaskUtil;
 	import org.apache.commons.lang.StringUtils;
+    import org.apache.commons.lang.ArrayUtils;
     import org.exoplatform.task.util.ResourceUtil;
 	import org.exoplatform.task.domain.Priority;
 	import org.exoplatform.task.util.DateUtil;
@@ -302,15 +303,22 @@
     </div>
      <div class="priority pull-right">
         <div class="uiEditableInline">
-            <i  class="uiIconColorPriority${task.priority != null ?  task.priority : Priority.UNDEFINED}"></i>
+            <i  class="uiIconColorPriority${task.priority != null ?  task.priority : Priority.NONE}"></i>
             <%
-                def priorities = StringUtils.join(Priority.values(), ",");
+                Priority[] ps = Priority.values();
+                String[] arrays = new String[ps.length];
+                for (int i = ps.length - 1; i >= 0; i--) {
+                    String name = ps[i].name();
+                    arrays[i] = '{"value": "'+name+'", "text": "'+bundle.getString('label.priority.' + name.toLowerCase())+'"}';
+                }
+
+                def priorities = "[" + StringUtils.join(arrays, ",") + "]";
             %>
             <span class="task-priority ${editableClasses} small"
                   data-original-title="&{tooltip.clickToEdit}" rel="tooltip"
-                  data-priority="${priorities}" data-inputclass="selectboxMini"
-               data-name="priority" data-type="select" data-emptytext="&{label.noPriority}"
-               data-value="${task.priority != null ?  task.priority : Priority.UNDEFINED}"></span>
+                  data-inputclass="selectboxMini"
+               data-name="priority" data-source='${priorities}' data-type="select" data-emptytext="&{label.noPriority}"
+               data-value="${task.priority != null ?  task.priority : Priority.NONE}"></span>
         </div>
     </div>
 

@@ -19,21 +19,13 @@
 
 package org.exoplatform.task.dao;
 
+import org.exoplatform.commons.api.persistence.GenericDAO;
+import org.exoplatform.commons.utils.ListAccess;
+import org.exoplatform.task.domain.TaskLog;
+
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
-public interface DAOHandler {
-  public ProjectHandler getProjectHandler();
-
-  public TaskHandler getTaskHandler();
-  
-  public LabelHandler getLabelHandler();
-
-  public CommentHandler getCommentHandler();
-
-  public TaskLogHandler getTaskLogHandler();
-
-  public StatusHandler getStatusHandler();
-
-  public UserSettingHandler getUserSettingHandler();
+public interface TaskLogHandler extends GenericDAO<TaskLog, Long> {
+  ListAccess<TaskLog> findTaskLogs(Long taskId);
 }

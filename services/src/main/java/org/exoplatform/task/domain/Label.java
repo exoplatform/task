@@ -45,7 +45,9 @@ import org.exoplatform.commons.api.persistence.ExoEntity;
 @Table(name = "TASK_LABELS")
 @NamedQueries({
   @NamedQuery(name = "Label.findLabelByUser",
-  query = "SELECT lbl FROM Label lbl WHERE lbl.username = :username")
+      query = "SELECT lbl FROM Label lbl WHERE lbl.username = :username"),
+  @NamedQuery(name = "Label.findLabelByTask",
+    query = "SELECT lbl FROM Label lbl INNER JOIN lbl.tasks t WHERE lbl.username = :username and t.id = :taskId")
 })
 public class Label {
   @Id

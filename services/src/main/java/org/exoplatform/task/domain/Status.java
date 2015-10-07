@@ -23,6 +23,7 @@ import org.exoplatform.commons.api.persistence.ExoEntity;
 
 import javax.persistence.*;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -67,8 +68,9 @@ public class Status implements Comparable<Status>{
 
   private Integer rank;
 
-  @OneToMany(mappedBy = "status", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-  private Set<Task> tasks = new HashSet<Task>();
+  //This field only used for cascade remove
+  @OneToMany(mappedBy = "status", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
+  private List<Task> tasks;
 
   @ManyToOne
   @JoinColumn(name = "PROJECT_ID")
@@ -82,18 +84,16 @@ public class Status implements Comparable<Status>{
     this.id = id;
     this.name = name;
   }
-  public Status(long id, String name, Integer rank, Set<Task> tasks, Project project) {
+  public Status(long id, String name, Integer rank, Project project) {
     this.id = id;
     this.name = name;
     this.rank = rank;
-    this.tasks = tasks;
     this.project = project;
   }
 
-  public Status(String name, Integer rank, Set<Task> tasks, Project project) {
+  public Status(String name, Integer rank, Project project) {
     this.name = name;
     this.rank = rank;
-    this.tasks = tasks;
     this.project = project;
   }
 
@@ -113,17 +113,6 @@ public class Status implements Comparable<Status>{
     this.name = name;
   }
 
-  //TODO: Get Tasks of status via TaskService
-  @Deprecated
-  public Set<Task> getTasks() {
-    return tasks;
-  }
-
-  @Deprecated
-  public void setTasks(Set<Task> tasks) {
-    this.tasks = tasks;
-  }
-
   public Integer getRank() {
     return rank;
   }
@@ -141,7 +130,7 @@ public class Status implements Comparable<Status>{
   }
 
   public Status clone() {
-    Status status = new Status(getId(), getName(), getRank(), null, getProject().clone(false));
+    Status status = new Status(getId(), getName(), getRank(), getProject().clone(false));
 
     return status;
   }
@@ -157,7 +146,6 @@ public class Status implements Comparable<Status>{
     if (name != null ? !name.equals(status.name) : status.name != null) return false;
     if (project != null ? !project.equals(status.project) : status.project != null) return false;
     if (rank != null ? !rank.equals(status.rank) : status.rank != null) return false;
-    if (tasks != null ? !tasks.equals(status.tasks) : status.tasks != null) return false;
 
     return true;
   }
