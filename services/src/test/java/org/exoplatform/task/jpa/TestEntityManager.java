@@ -1,4 +1,4 @@
-package org.exoplatform.task.test.jpa;
+package org.exoplatform.task.jpa;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -9,7 +9,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import org.exoplatform.task.test.AbstractTest;
+import org.exoplatform.task.AbstractTest;
 
 /**
  * @author <a href="trongtt@gmail.com">Trong Tran</a>

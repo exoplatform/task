@@ -14,16 +14,14 @@
 * You should have received a copy of the GNU Lesser General Public License
 * along with this program. If not, see http://www.gnu.org/licenses/ .
 */
-package org.exoplatform.task.test.dao;
+package org.exoplatform.task.dao;
 
 import java.util.List;
 
 import org.exoplatform.container.PortalContainer;
-import org.exoplatform.task.dao.DAOHandler;
-import org.exoplatform.task.dao.LabelHandler;
 import org.exoplatform.task.domain.Label;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.test.AbstractTest;
+import org.exoplatform.task.AbstractTest;
 
 import org.junit.After;
 import org.junit.Assert;

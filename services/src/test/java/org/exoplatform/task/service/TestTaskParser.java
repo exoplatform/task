@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.exoplatform.task.test.service;
+package org.exoplatform.task.service;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -31,8 +31,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.exoplatform.task.domain.Priority;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.service.ParserContext;
-import org.exoplatform.task.service.TaskParser;
 import org.exoplatform.task.service.impl.TaskParserImpl;
 
 /**

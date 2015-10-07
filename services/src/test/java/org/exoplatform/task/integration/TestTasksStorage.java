@@ -15,7 +15,7 @@
  * along with this program; if not, see<http://www.gnu.org/licenses/>.
  **/
   
-package org.exoplatform.task.test.integration;
+package org.exoplatform.task.integration;
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -38,7 +38,7 @@ import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.integration.calendar.TasksStorage;
 import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.TaskService;
-import org.exoplatform.task.test.AbstractTest;
+import org.exoplatform.task.AbstractTest;
 import org.exoplatform.task.util.ProjectUtil;
 
 public class TestTasksStorage extends AbstractTest {

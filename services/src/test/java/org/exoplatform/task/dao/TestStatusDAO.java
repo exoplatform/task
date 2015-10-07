@@ -14,7 +14,7 @@
 * You should have received a copy of the GNU Lesser General Public License
 * along with this program. If not, see http://www.gnu.org/licenses/ .
 */
-package org.exoplatform.task.test.dao;
+package org.exoplatform.task.dao;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -25,13 +25,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import org.exoplatform.container.PortalContainer;
-import org.exoplatform.task.dao.DAOHandler;
-import org.exoplatform.task.dao.ProjectHandler;
-import org.exoplatform.task.dao.StatusHandler;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.test.AbstractTest;
+import org.exoplatform.task.AbstractTest;
 
 public class TestStatusDAO extends AbstractTest {
 

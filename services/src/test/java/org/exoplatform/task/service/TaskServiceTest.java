@@ -14,7 +14,7 @@
 * You should have received a copy of the GNU Lesser General Public License
 * along with this program. If not, see http://www.gnu.org/licenses/ .
 */
-package org.exoplatform.task.test.service;
+package org.exoplatform.task.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -53,11 +53,9 @@ import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.exception.ParameterEntityException;
-import org.exoplatform.task.service.Payload;
-import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.service.impl.TaskLoggingListener;
 import org.exoplatform.task.service.impl.TaskServiceImpl;
-import org.exoplatform.task.test.TestUtils;
+import org.exoplatform.task.TestUtils;
 
 /**
  * Created by The eXo Platform SAS

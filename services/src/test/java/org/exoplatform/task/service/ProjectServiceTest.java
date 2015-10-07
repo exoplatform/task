@@ -14,11 +14,10 @@
 * You should have received a copy of the GNU Lesser General Public License
 * along with this program. If not, see http://www.gnu.org/licenses/ .
 */
-package org.exoplatform.task.test.service;
+package org.exoplatform.task.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
@@ -26,7 +25,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.commons.utils.ListAccessImpl;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.util.ProjectUtil;
@@ -50,11 +48,8 @@ import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.exception.ParameterEntityException;
-import org.exoplatform.task.service.ProjectService;
-import org.exoplatform.task.service.StatusService;
-import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.service.impl.ProjectServiceImpl;
-import org.exoplatform.task.test.TestUtils;
+import org.exoplatform.task.TestUtils;
 import org.mockito.stubbing.Answer;
 
 /**

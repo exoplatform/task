@@ -15,7 +15,7 @@
 * along with this program. If not, see http://www.gnu.org/licenses/ .
 */
 
-package org.exoplatform.task.test.dao;
+package org.exoplatform.task.dao;
 
 import java.util.Date;
 import java.util.List;
@@ -29,12 +29,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import org.exoplatform.container.PortalContainer;
-import org.exoplatform.task.dao.CommentHandler;
-import org.exoplatform.task.dao.DAOHandler;
-import org.exoplatform.task.dao.TaskHandler;
 import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.test.AbstractTest;
+import org.exoplatform.task.AbstractTest;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.

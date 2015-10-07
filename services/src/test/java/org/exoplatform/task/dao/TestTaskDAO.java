@@ -14,7 +14,7 @@
 * You should have received a copy of the GNU Lesser General Public License
 * along with this program. If not, see http://www.gnu.org/licenses/ .
 */
-package org.exoplatform.task.test.dao;
+package org.exoplatform.task.dao;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -24,10 +24,6 @@ import java.util.TimeZone;
 
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.container.PortalContainer;
-import org.exoplatform.task.dao.DAOHandler;
-import org.exoplatform.task.dao.LabelHandler;
-import org.exoplatform.task.dao.TaskHandler;
-import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.domain.Label;
 import org.exoplatform.task.domain.Priority;
 import org.exoplatform.task.domain.Project;
@@ -38,7 +34,7 @@ import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.service.ParserContext;
 import org.exoplatform.task.service.TaskParser;
 import org.exoplatform.task.service.impl.TaskParserImpl;
-import org.exoplatform.task.test.AbstractTest;
+import org.exoplatform.task.AbstractTest;
 import org.exoplatform.task.util.ListUtil;
 import org.junit.After;
 import org.junit.Assert;

@@ -14,7 +14,7 @@
 * You should have received a copy of the GNU Lesser General Public License
 * along with this program. If not, see http://www.gnu.org/licenses/ .
 */
-package org.exoplatform.task.test.service;
+package org.exoplatform.task.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
@@ -44,9 +44,8 @@ import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.exception.NotAllowedOperationOnEntityException;
-import org.exoplatform.task.service.StatusService;
 import org.exoplatform.task.service.impl.StatusServiceImpl;
-import org.exoplatform.task.test.TestUtils;
+import org.exoplatform.task.TestUtils;
 
 import java.util.Arrays;
 
