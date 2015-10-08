@@ -18,14 +18,14 @@
       <div class="form-horizontal">		   
 		   <div class="form-horizontal">
 		  	<div class="control-group">
-		  		<label class="control-label" for="keyword">Contains:</label>
+		  		<label class="control-label" for="keyword">Contains</label>
 		  		<div class="controls">
 				   <input type="text" id="keyword" name="keyword" value="" maxlength="100"/>
 		  		</div>
 		  	</div>
 		  	<%if (filterLabel) { %>
 		  	<div class="control-group">
-		  		<label class="control-label" for="label">Labels:</label>
+		  		<label class="control-label" for="label">Labels</label>
 		  		<div class="controls">
 		  			<input type="text" id="label" name="label" value="" maxlength="100"
 		  				data-options='${labels}'/>
@@ -33,14 +33,14 @@
 		  	</div>
 		  	<%} %>
 		  	<div class="control-group">
-		  		<label class="control-label" for="tag">Tags:</label>
+		  		<label class="control-label" for="tag">Tags</label>
 		  		<div class="controls">
 		  			<input type="text" id="tag" name="tag" value="" maxlength="100"/>
 		  		</div>
 		  	</div>
 		  	<%if (filterStatus) { %>
 		  	<div class="control-group">
-		  		<label class="control-label" for="status">Status:</label>
+		  		<label class="control-label" for="status">Status</label>
 		  		<div class="controls">
 		  			<select name="status">
 		  				<option value="">All</option>
@@ -53,7 +53,7 @@
 		  	<%}%>
 		  	<%if (filterAssignee) { %>
 		  	<div class="control-group">
-		  		<label class="control-label" for="assignee">Assignee:</label>
+		  		<label class="control-label" for="assignee">Assignee</label>
 		  		<div class="controls">
 		  			<input type="text" id="assignee" name="assignee" value="" maxlength="100"/>
 		  		</div>
@@ -61,7 +61,7 @@
 		  	<%} %>
 		  	<%if (filterDueDate) { %>
 		  	<div class="control-group">
-		  		<label class="control-label" for="due">Due:</label>
+		  		<label class="control-label" for="due">Due</label>
 		  		<div class="controls">
 		  			<select name="due">
 		  				<option value="">All</option>
@@ -73,7 +73,7 @@
 		  	</div>
 		  	<%} %>
 		  	<div class="control-group">
-		  		<label class="control-label" for="priority">Priority:</label>
+		  		<label class="control-label" for="priority">Priority</label>
 		  		<div class="controls">
 		  			<select name="priority">
 		  				<option value="">All</option>
@@ -87,9 +87,11 @@
 		  		</div>
 		  	</div>
 		  	<div class="control-group">
-		  		<label class="control-label" for="completed">Show completed:</label>
+		  		<label class="control-label" for="completed"></label>
 		  		<div class="controls">
-		  			<input type="checkbox" id="completed" name="completed"/>
+		  			<div class="checkBoxRepeat" id="IsEmailRepeatEventReminderTab">
+						<label class="uiCheckbox"><input type="checkbox" name="completed" class="checkbox" id="completed"><span>Show completed tasks.</span></label>
+					</div>
 		  		</div>
 		  	</div>
 		  </div>

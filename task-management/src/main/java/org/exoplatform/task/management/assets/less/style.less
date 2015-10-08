@@ -6,6 +6,7 @@ body {
    .editable-click, a.editable-click, a.editable-click:hover{
        border:  1px solid transparent;
     } 
+
 }
 
 input.grayLarge {
@@ -1078,4 +1079,27 @@ li[data-hiddenlabel="false"] {
 }
 .uiEditableInline .highlight {
   font-weight: bold;
+}
+
+.taskFilter{
+    .form-horizontal .control-group .control-label{
+        width: 80px;
+        text-align: left;
+    }
+    .controls{
+        margin-left: 85px;
+        input{
+            width: 100%;
+        }
+        select{
+            width: 50%;
+        }
+        .multi {
+            height: 27px;
+            width: 100%;
+            .selectize-input{
+                padding: 2px 4px;
+            }
+        }
+    }
 }
