@@ -51,8 +51,8 @@
       <table class="uiGrid table table-hover table-striped" id="UIListUsers">
         <thead>
           <tr>            
-            <th class="center">
-              <span class="uiCheckbox">
+            <th class="center" style="width:20px">
+              <span class="uiCheckbox" style="margin-left: 10px">
                 <input type="checkbox" name="selectall" class="checkbox"><span></span>
               </span>             
             </th>            
@@ -65,8 +65,8 @@
         <tbody>
         <% if (users.size() > 0) { users.each {user -> %>
             <tr>
-                <td class="center">
-                    <span class="uiCheckbox">
+                <td class="center" style="width:20px">
+                    <span class="uiCheckbox" style="margin-left: 10px">
                         <input type="checkbox" class="chkUser checkbox" name="username" value="${user.username}" data-dispayname="${user.displayName}" id="root">
                         <span></span>
                     </span>

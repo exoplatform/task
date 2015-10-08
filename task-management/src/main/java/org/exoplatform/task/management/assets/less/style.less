@@ -317,33 +317,6 @@ li[data-hiddenlabel="false"] {
         left: -18px;
         right: auto;
     }
-    .addProject {
-        .breadcrumbCont, .inputName, .prjAuthor, .prjDescription {
-            margin: 0 0 10px;  
-        }
-        .breadcrumbCont {
-            position: relative;
-            input {
-                width: 100%;
-            }
-
-        }
-        .prjAuthor { 
-            padding: 0 10px;
-            line-height: 30px; 
-            .avatarSmall {
-                font-weight: bold;
-            }
-        } 
-        
-        .inputName {
-            font-size: 18px;
-            line-height: 26px;
-        }
-        .viewInCal {
-            padding: 7px 28px;
-        }
-    }
     .addTask {
         .iconTaskName {
             margin: 5px 5px 0 0;
@@ -1081,6 +1054,43 @@ li[data-hiddenlabel="false"] {
   font-weight: bold;
 }
 
+// add new project popup
+.addProject {
+	.popupContent {
+		padding-top: 10px!important;
+	}
+	.breadcrumbCont, .inputName, .prjAuthor, .prjDescription {
+		margin: 0 0 10px;  
+	}
+
+	.breadcrumbCont {
+		position: relative;
+		input {
+			width: 100%;
+		}
+
+	}
+	.prjAuthor { 
+		padding: 0 10px;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;
+		line-height: 30px; 
+		.avatarSmall {
+			font-weight: bold;
+		}
+	} 
+
+	.inputName {
+		font-size: 18px;
+		line-height: 26px;
+	}
+	.viewInCal {
+		padding: 7px 28px;
+	}
+	.uiGroupBoundCheckBox {
+		margin: 10px 0;
+	}
+}
 .taskFilter{
     .form-horizontal .control-group .control-label{
         width: 80px;
