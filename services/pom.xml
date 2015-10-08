@@ -19,122 +19,103 @@
  02110-1301 USA, or see the FSF site: http://www.fsf.org.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.exoplatform.addons.task</groupId>
     <artifactId>task-management-parent</artifactId>
+    <groupId>org.exoplatform.addons.task</groupId>
     <version>1.0.x-SNAPSHOT</version>
   </parent>
   <artifactId>task-management-services</artifactId>
   <packaging>jar</packaging>
-
   <name>Task Management - Services</name>
-
   <!-- JPA -->
-  <dependencies>  
+  <dependencies>
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-entitymanager</artifactId>
       <version>${hibernate.version}</version>
     </dependency>
-
     <dependency>
       <groupId>javax.inject</groupId>
       <artifactId>javax.inject</artifactId>
       <scope>provided</scope>
     </dependency>
-
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
       <version>3.1.0</version>
     </dependency>
-
     <dependency>
       <groupId>org.jboss.jbossts</groupId>
       <artifactId>jbossjta</artifactId>
       <version>4.16.4.Final</version>
     </dependency>
-
     <dependency>
       <groupId>org.exoplatform.core</groupId>
       <artifactId>exo.core.component.organization.api</artifactId>
       <scope>provided</scope>
     </dependency>
-
     <dependency>
       <groupId>org.exoplatform.commons</groupId>
       <artifactId>commons-api</artifactId>
       <version>4.3.x-commons-task-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
-
     <dependency>
       <groupId>org.exoplatform.social</groupId>
       <artifactId>social-component-core</artifactId>
       <version>4.3.x-soc-task-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
-    
     <dependency>
       <groupId>org.exoplatform.social</groupId>
       <artifactId>social-component-notification</artifactId>
       <version>4.3.x-soc-task-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
-  
     <dependency>
       <groupId>org.exoplatform.calendar</groupId>
       <artifactId>calendar-service</artifactId>
       <version>4.3.x-cal-task-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
-    
     <!-- TEST -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
       <version>2.0.13-beta</version>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
       <version>1.2.145</version>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>
       <version>5.1.10</version>
     </dependency>
-
     <dependency>
       <groupId>org.hsqldb</groupId>
       <artifactId>hsqldb</artifactId>
       <version>2.3.2</version>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>org.liquibase</groupId>
       <artifactId>liquibase-core</artifactId>
       <version>3.3.2</version>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
-
   <build>
     <plugins>
       <plugin>
