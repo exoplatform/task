@@ -183,11 +183,7 @@ public class TaskDAOImpl extends GenericDAOJPAImpl<Task, Long> implements TaskHa
       } else if (query.getProjectIds().isEmpty()) {
         return Collections.emptyList();
       } else {
-        Subquery<Long> subp = q.subquery(Long.class);
-        Root<Status> p = subp.from(Status.class);
-        subp.select(p.<Long>get("id")).where(p.join("project").get("id").in(query.getProjectIds()));
-        
-        projectPred = cb.in(task.get("status").get("id")).value(subp);
+        projectPred = cb.in(task.join("status", JoinType.LEFT).get("project").get("id")).value(query.getProjectIds());
       }             
     }
 
