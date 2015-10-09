@@ -251,32 +251,6 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
   left: -18px;
   right: auto;
 }
-.rightPanel .addProject .breadcrumbCont,
-.rightPanel .addProject .inputName,
-.rightPanel .addProject .prjAuthor,
-.rightPanel .addProject .prjDescription {
-  margin: 0 0 10px;
-}
-.rightPanel .addProject .breadcrumbCont {
-  position: relative;
-}
-.rightPanel .addProject .breadcrumbCont input {
-  width: 100%;
-}
-.rightPanel .addProject .prjAuthor {
-  padding: 0 10px;
-  line-height: 30px;
-}
-.rightPanel .addProject .prjAuthor .avatarSmall {
-  font-weight: bold;
-}
-.rightPanel .addProject .inputName {
-  font-size: 18px;
-  line-height: 26px;
-}
-.rightPanel .addProject .viewInCal {
-  padding: 7px 28px;
-}
 .rightPanel .addTask .iconTaskName {
   margin: 5px 5px 0 0;
 }
@@ -866,4 +840,58 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
 }
 .uiEditableInline .highlight {
   font-weight: bold;
+}
+.addProject .popupContent {
+  padding-top: 10px!important;
+}
+.addProject .breadcrumbCont,
+.addProject .inputName,
+.addProject .prjAuthor,
+.addProject .prjDescription {
+  margin: 0 0 10px;
+}
+.addProject .breadcrumbCont {
+  position: relative;
+}
+.addProject .breadcrumbCont input {
+  width: 100%;
+}
+.addProject .prjAuthor {
+  padding: 0 10px;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  line-height: 30px;
+}
+.addProject .prjAuthor .avatarSmall {
+  font-weight: bold;
+}
+.addProject .inputName {
+  font-size: 18px;
+  line-height: 26px;
+}
+.addProject .viewInCal {
+  padding: 7px 28px;
+}
+.addProject .uiGroupBoundCheckBox {
+  margin: 10px 0;
+}
+.taskFilter .form-horizontal .control-group .control-label {
+  width: 80px;
+  text-align: left;
+}
+.taskFilter .controls {
+  margin-left: 85px;
+}
+.taskFilter .controls input {
+  width: 100%;
+}
+.taskFilter .controls select {
+  width: 50%;
+}
+.taskFilter .controls .multi {
+  height: 27px;
+  width: 100%;
+}
+.taskFilter .controls .multi .selectize-input {
+  padding: 2px 4px;
 }

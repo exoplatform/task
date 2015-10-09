@@ -42,9 +42,7 @@ def displayListProjectItem(project, level) {
 
 		            <li>
                         <a href="javascript:void(0)" class="actionHideProject">
-                            <i class="uiIconHide uiIconLightGray"></i>
-                            <span class="label-show">&{label.show}</span>
-                            <span class="label-hide">&{label.hide}</span>
+                            <i class="uiIconHide uiIconLightGray"></i><span class="label-show">&{label.show}</span><span class="label-hide">&{label.hide}</span>
                         </a>
                     </li>
 

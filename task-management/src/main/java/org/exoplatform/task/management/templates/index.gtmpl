@@ -103,15 +103,11 @@
                                         <i class="uiIconAddProject uiIconLightGray"></i>&{label.addProject}
                                     </a>
                                 </li>
-			                    <li><a href="javascript:void(0)" class="actionShowHiddenProject">
-                                    <i class="uiIconShowProject uiIconLightGray"></i>
-                                    <span class="label-showHiddenProject">
-                                        &{label.showHiddenProject}
-                                    </span>
-                                    <span class="label-hideHiddenProject">
-                                        &{label.hideHiddenProject}
-                                    </span>
-                                </a></li>
+			                    <li>
+                                    <a href="javascript:void(0)" class="actionShowHiddenProject">
+                                        <i class="uiIconShowProject uiIconLightGray"></i><span class="label-showHiddenProject">&{label.showHiddenProject}</span><span class="label-hideHiddenProject">&{label.hideHiddenProject}</span>
+                                    </a>
+                                </li>
 			                </ul>
 			            </div>
 		                <a class="project-name" data-id="0" href="#">&{label.projects}</a>
@@ -137,13 +133,7 @@
                             </li>
                             <li>
                               <a href="javascript:void(0)" class="actionShowHiddenLabel">
-                                <i class="uiIconShowLabel uiIconLightGray"></i>
-                                <span class="label-showHiddenLabel">
-                                    &{label.showHiddenLabel}
-                                </span>
-                                <span class="label-hideHiddenLabel">
-                                    &{label.hideHiddenLabel}
-                                </span>
+                                <i class="uiIconShowLabel uiIconLightGray"></i><span class="label-showHiddenLabel">&{label.showHiddenLabel}</span><span class="label-hideHiddenLabel">&{label.hideHiddenLabel}</span>
                               </a>
 	                         </li>
                           </ul>
