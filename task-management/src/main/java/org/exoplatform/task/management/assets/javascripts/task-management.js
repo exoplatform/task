@@ -339,6 +339,7 @@ $(document).ready(function() {
         var $list = $a.closest('.dropdown').find('> .list-projects, .list-labels').first();
         $list.slideToggle(300, 'linear', function() {
             $icon.toggleClass('uiIconArrowDownMini').toggleClass('uiIconArrowRightMini');
+            $a.closest('.accordion-heading').toggleClass('collapsed');
         });
     });
     $leftPanel.on('click', 'a.collapseSubProject, .collapseSubLabel', function(e){

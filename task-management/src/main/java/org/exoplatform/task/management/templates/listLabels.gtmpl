@@ -34,9 +34,7 @@ def displayListLabelItem(lbl, level) {
                   <li><a href="#" class="openEditDialog"><i class="uiIconEditMini uiIconLightGray"></i>&{label.edit}</a></li>
 		            <li>
                       <a href="javascript:void(0)" class="actionHideLabel">
-                          <i class="uiIconHide uiIconLightGray"></i>
-                          <span class="label-show">&{label.show}</span>
-                          <span class="label-hide">&{label.hide}</span>
+                          <i class="uiIconHide uiIconLightGray"></i><span class="label-show">&{label.show}</span><span class="label-hide">&{label.hide}</span>
                       </a>
                   </li>
 
