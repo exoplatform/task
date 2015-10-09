@@ -49,6 +49,7 @@ public class DAOHandlerJPAImpl extends AbstractDAOHandler implements DAOHandler 
     sHandler = new StatusDAOImpl();
     uHandler = new UserSettingDAO();
     lHandler = new LabelDAOImpl();
+    ltmHandler = new LabelTaskMappingDAOImpl();
     LOG.info("DAOHandlerJPAImpl is created");
   }
   static <E> E clone(E e) {

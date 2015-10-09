@@ -181,7 +181,7 @@ public class ProjectController extends AbstractController {
       project = projectService.createProject(project, parentId);
     } else {
       project = projectService.createProject(project);
-      statusService.createDefaultStatuses(project);
+      statusService.createInitialStatuses(project);
     }
 
     JSONObject result = new JSONObject();
@@ -614,7 +614,8 @@ public class ProjectController extends AbstractController {
   @MimeType.HTML
   public Response findProject(String keyword, Long currentProject) {
     Identity identity = ConversationState.getCurrent().getIdentity();
-    List<Project> projects = projectService.findProjects(UserUtil.getMemberships(identity), keyword, null);
+    ListAccess<Project> tmp = projectService.findProjects(UserUtil.getMemberships(identity), keyword, null);
+    List<Project> projects = Arrays.asList(ListUtil.load(tmp, 0, -1));
     projects = ProjectUtil.buildRootProjects(projects);
 
     return projectSearchResult

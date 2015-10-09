@@ -19,6 +19,7 @@ package org.exoplatform.task.service.impl;
 import org.exoplatform.task.dao.CommentHandler;
 import org.exoplatform.task.dao.LabelHandler;
 import org.exoplatform.task.dao.DAOHandler;
+import org.exoplatform.task.dao.LabelTaskMappingHandler;
 import org.exoplatform.task.dao.ProjectHandler;
 import org.exoplatform.task.dao.StatusHandler;
 import org.exoplatform.task.dao.TaskHandler;
@@ -45,6 +46,8 @@ abstract public class AbstractDAOHandler implements DAOHandler {
 
   protected LabelHandler lHandler;
   
+  protected LabelTaskMappingHandler ltmHandler;
+  
   public ProjectHandler getProjectHandler() {
     return pHandler;
   }
@@ -69,6 +72,11 @@ abstract public class AbstractDAOHandler implements DAOHandler {
   @Override
   public LabelHandler getLabelHandler() {
     return lHandler;
+  }
+  
+  @Override
+  public LabelTaskMappingHandler getLabelTaskMappingHandler() {
+    return ltmHandler;
   }
 
   @Override

@@ -20,22 +20,24 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 import java.util.TimeZone;
 
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.container.PortalContainer;
+import org.exoplatform.task.AbstractTest;
 import org.exoplatform.task.domain.Label;
+import org.exoplatform.task.domain.LabelTaskMapping;
 import org.exoplatform.task.domain.Priority;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.domain.TaskLog;
 import org.exoplatform.task.exception.EntityNotFoundException;
+import org.exoplatform.task.model.GroupKey;
 import org.exoplatform.task.service.ParserContext;
 import org.exoplatform.task.service.TaskParser;
 import org.exoplatform.task.service.impl.TaskParserImpl;
-import org.exoplatform.task.AbstractTest;
 import org.exoplatform.task.util.ListUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -71,8 +73,10 @@ public class TestTaskDAO extends AbstractTest {
       t.setStatus(null);
     }    
     tDAO.updateAll(tDAO.findAll());
+    daoHandler.getLabelTaskMappingHandler().deleteAll();
     daoHandler.getTaskLogHandler().deleteAll();
     tDAO.deleteAll();
+    labelHandler.deleteAll();
   }
 
   @Test
@@ -154,23 +158,24 @@ public class TestTaskDAO extends AbstractTest {
     tasks = tDAO.findTasks(query);
     Assert.assertEquals(1, tasks.getSize());
     Assert.assertEquals(1, ListUtil.load(tasks, 0, -1).length);
-  }
+  }  
   
   @Test
   public void testFindTaskByQueryAdvance() throws Exception {
     Task task = newTaskInstance("testTask", "task with label", username);
     tDAO.create(task);
 
-    //Find tasks with no label
     TaskQuery query = new TaskQuery();
-    query.setEmptyField("labels");
+    query.setEmptyField("lblMapping");
     ListAccess<Task> tasks = tDAO.findTasks(query);
     Assert.assertEquals(1, tasks.getSize());
-
+    
     //Find by label
-    Label label = new Label("testLabel", username);
-    label.setTasks(new HashSet<Task>(Arrays.asList(task)));
+    Label label = new Label("testLabel", username);    
     labelHandler.create(label);
+    LabelTaskMapping mapping = new LabelTaskMapping(label, task);
+    daoHandler.getLabelTaskMappingHandler().create(mapping);
+    
     //
     query = new TaskQuery();
     query.setLabelIds(Arrays.asList(label.getId()));
@@ -260,7 +265,7 @@ public class TestTaskDAO extends AbstractTest {
   }
   
   @Test
-  public void testFindTasksByLabel() {
+  public void testFindTasksByLabel() throws Exception {
     Project project = new Project();
     project.setName("Project1");
     daoHandler.getProjectHandler().create(project);
@@ -273,26 +278,38 @@ public class TestTaskDAO extends AbstractTest {
     task.setStatus(status);
     tDAO.create(task);
     Label label = new Label("label1", username);
-//    label.getTasks().add(task);
     labelHandler.create(label);
-    label.getTasks().add(task);
-    labelHandler.update(label);
+    //
+    LabelTaskMapping mapping = new LabelTaskMapping(label, task);
+    daoHandler.getLabelTaskMappingHandler().create(mapping);
 
-    List<Task> tasks = tDAO.findTasksByLabel(label.getId(), Arrays.asList(project.getId()), username, null);
-    Assert.assertEquals(1, tasks.size());
-    Assert.assertEquals(task.getId(), tasks.get(0).getId());
+    ListAccess<Task> tasks = tDAO.findTasksByLabel(label.getId(), Arrays.asList(project.getId()), username, null);
+    Assert.assertEquals(1, tasks.getSize());
+    Assert.assertEquals(task.getId(), tasks.load(0, -1)[0].getId());   
     
-    task = tasks.get(0);
-    task.setLabels(null);
-    tDAO.update(task);
-    
+    daoHandler.getLabelTaskMappingHandler().delete(mapping);
     tasks = tDAO.findTasksByLabel(label.getId(), Arrays.asList(project.getId()), username, null);
-    Assert.assertEquals(1, tasks.size());
+    Assert.assertEquals(0, tasks.getSize());
+  }
+  
+  @Test
+  public void testRemoveTaskLabel() throws Exception {
+    Task task = newTaskInstance("task1", "", username);
+    tDAO.create(task);
+    Label label = new Label("label1", username);
+    labelHandler.create(label);
+    //
+    LabelTaskMapping mapping = new LabelTaskMapping(label, task);
+    daoHandler.getLabelTaskMappingHandler().create(mapping);
     
-    label.getTasks().clear();
-    labelHandler.update(label);
-    tasks = tDAO.findTasksByLabel(label.getId(), Arrays.asList(project.getId()), username, null);
-    Assert.assertEquals(0, tasks.size());
+    ListAccess<Label> labels = labelHandler.findLabelsByTask(task.getId(), username);
+    Assert.assertEquals(1, labels.getSize());
+    //
+    endRequestLifecycle();
+    initializeContainerAndStartRequestLifecycle();
+    tDAO.delete(tDAO.find(task.getId()));
+    labels = labelHandler.findLabelsByTask(task.getId(), username);
+    Assert.assertEquals(0, labels.getSize());
   }
 
   @Test

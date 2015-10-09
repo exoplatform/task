@@ -16,19 +16,11 @@
 */
 package org.exoplatform.task.dao;
 
+import java.io.Serializable;
+
 import org.exoplatform.commons.api.persistence.GenericDAO;
-import org.exoplatform.commons.utils.ListAccess;
-import org.exoplatform.task.domain.Label;
+import org.exoplatform.task.domain.LabelTaskMapping;
 
-public interface LabelHandler extends GenericDAO<Label, Long> {
-  /**
-   * @param username
-   * @return
-   */
-  ListAccess<Label> findLabelsByUser(String username);
-  
-  ListAccess<Label> findLabelsByTask(long taskId, String username);
-
-  ListAccess<Label> findLabels(LabelQuery query);
+public interface LabelTaskMappingHandler extends GenericDAO<LabelTaskMapping, Serializable> {  
 }
 

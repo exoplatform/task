@@ -97,7 +97,7 @@ public class StatusServiceTest {
   @Test
   public void testCreateDefaultStatusesProject() {
     Project project = TestUtils.getDefaultProject();
-    statusService.createDefaultStatuses(project);
+    statusService.createInitialStatuses(project);
     //Default project contains 4 default status so create(status) must be called 4 times
     verify(statusHandler, times(4)).create(any(Status.class));
   }

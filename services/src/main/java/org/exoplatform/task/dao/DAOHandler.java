@@ -28,6 +28,8 @@ public interface DAOHandler {
   public TaskHandler getTaskHandler();
   
   public LabelHandler getLabelHandler();
+  
+  public LabelTaskMappingHandler getLabelTaskMappingHandler();
 
   public CommentHandler getCommentHandler();
 

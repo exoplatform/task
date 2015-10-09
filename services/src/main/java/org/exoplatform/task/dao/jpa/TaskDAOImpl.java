@@ -20,11 +20,8 @@ import static org.exoplatform.task.dao.condition.Conditions.TASK_COWORKER;
 import static org.exoplatform.task.dao.condition.Conditions.TASK_MANAGER;
 import static org.exoplatform.task.dao.condition.Conditions.TASK_PARTICIPATOR;
 import static org.exoplatform.task.dao.condition.Conditions.TASK_TAG;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import static org.exoplatform.task.dao.condition.Conditions.TASK_LABEL_ID;
+import static org.exoplatform.task.dao.condition.Conditions.TASK_LABEL_USERNAME;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
@@ -41,19 +38,19 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import org.exoplatform.commons.utils.ListAccess;
-import org.exoplatform.commons.utils.ListAccessImpl;
 import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.dao.TaskHandler;
 import org.exoplatform.task.dao.TaskQuery;
-import org.exoplatform.task.dao.condition.AggregateCondition;
-import org.exoplatform.task.dao.condition.Condition;
 import org.exoplatform.task.dao.condition.SingleCondition;
 import org.exoplatform.task.domain.Label;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.domain.TaskLog;
-import org.exoplatform.task.exception.EntityNotFoundException;
 
 /**
  * Created by The eXo Platform SAS
@@ -104,7 +101,7 @@ public class TaskDAOImpl extends CommonJPADAO<Task, Long> implements TaskHandler
 
   @Override
   public ListAccess<Task> findTasks(TaskQuery query) {
-    return findTasks(query.getCondition(), query.getOrderBy());
+    return findEntities(query, Task.class);
   }
 
   @Override
@@ -272,162 +269,52 @@ public class TaskDAOImpl extends CommonJPADAO<Task, Long> implements TaskHandler
   }
 
   @Override
-  public List<Task> findTasksByLabel(long labelId, List<Long> projectIds, String username, OrderBy orderBy) {
-    EntityManager em = getEntityManager();
-    CriteriaBuilder cb = em.getCriteriaBuilder();
-    CriteriaQuery<Task> query = cb.createQuery(Task.class);
-    From task = query.from(Task.class);
-    //
-    Join<Task, Label> label = task.join("labels", JoinType.INNER);
-    Predicate labelPred;
-    if (labelId > 0) {
-      labelPred = cb.equal(label.get("id"), labelId);
-    } else {
-      labelPred = cb.equal(label.get("username"), username);
+  public ListAccess<Task> findTasksByLabel(long labelId, List<Long> projectIds, String username, OrderBy orderBy) {
+    TaskQuery query = new TaskQuery();
+    if (projectIds != null) {
+      query.setProjectIds(projectIds);      
     }
-    //
-    Predicate projectPred = null;
-    if (projectIds != null && !projectIds.isEmpty()) {      
-      projectPred = cb.in(task.join("status", JoinType.LEFT).get("project").get("id")).value(projectIds);
-    }
-    query.select(task).distinct(true);
-    if (projectPred == null) {
-      query.where(labelPred);
-    } else {
-      query.where(cb.and(labelPred, projectPred));      
-    }
-
     if (orderBy != null) {
-      Order order = orderBy.isAscending() ? cb.asc(task.get(orderBy.getFieldName())) : cb.desc(task.get(orderBy.getFieldName()));
-      query.orderBy(order);
+      query.setOrderBy(Arrays.asList(orderBy));      
     }
-
-    try {
-      return em.createQuery(query).getResultList();
-    } catch (PersistenceException e) {
-      return Collections.emptyList();
+    if (labelId > 0) {
+      query.setLabelIds(Arrays.asList(labelId));
+    } else {
+      query.setIsLabelOf(username);
     }
+    return findTasks(query);
   }
 
-  private ListAccess<Task> findTasks(Condition condition, List<OrderBy> orderBies) {
-    EntityManager em = getEntityManager();
-    CriteriaBuilder cb = em.getCriteriaBuilder();
-    CriteriaQuery q = cb.createQuery();
-    q.distinct(true);
-    Root<Task> task = q.from(Task.class);
-
-    Predicate predicate = buildQuery(condition, task, cb, q);
-    if (predicate != null) {
-      q.where(predicate);
-    }
-
-    //
-    q.select(cb.count(task));
-    final TypedQuery<Long> countQuery = em.createQuery(q);
-
-    //
-    q.select(task);
-
-    if(orderBies != null && !orderBies.isEmpty()) {
-      Order[] orders = new Order[orderBies.size()];
-      for(int i = 0; i < orders.length; i++) {
-        OrderBy orderBy = orderBies.get(i);
-        Path p = task.get(orderBy.getFieldName());
-        orders[i] = orderBy.isAscending() ? cb.asc(p) : cb.desc(p);
-      }
-      q.orderBy(orders);
-    }
-
-    final TypedQuery<Task> selectQuery = em.createQuery(q);
-
-    return new JPAQueryListAccess<Task>(Task.class, countQuery, selectQuery);
-  }
-
-  private Predicate buildQuery(Condition condition, Root<Task> task, CriteriaBuilder cb, CriteriaQuery query) {
-    if (condition == null) {
-      return null;
-    }
-    if (condition instanceof SingleCondition) {
-      return buildSingleCondition((SingleCondition)condition, task, cb, query);
-    } else if (condition instanceof AggregateCondition) {
-      AggregateCondition agg = (AggregateCondition)condition;
-      String type = agg.getType();
-      List<Condition> cds = agg.getConditions();
-      Predicate[] ps = new Predicate[cds.size()];
-      for (int i = 0; i < ps.length; i++) {
-        ps[i] = buildQuery(cds.get(i), task, cb, query);
-      }
-
-      if (ps.length == 1) {
-        return ps[0];
-      }
-
-      if (AggregateCondition.AND.equals(type)) {
-        return cb.and(ps);
-      } else if (AggregateCondition.OR.equals(type)) {
-        return cb.or(ps);
-      }
-    }
-    return null;
-  }
-
-  private <T> Predicate buildSingleCondition(SingleCondition<T> condition, Root<Task> task, CriteriaBuilder cb, CriteriaQuery query) {
-    String type = condition.getType();
+  protected Path buildPath(SingleCondition condition, Root<Task> root) {
     String field = condition.getField();
-    T value = condition.getValue();
-
+    
     Join join = null;
     if (field.indexOf('.') > 0) {
       String[] arr = field.split("\\.");
       for (int i = 0; i < arr.length - 1; i++) {
         String s = arr[i];
         if (join == null) {
-          join = task.join(s, JoinType.INNER);
+          join = root.join(s, JoinType.INNER);
         } else {
           join = join.join(s, JoinType.INNER);
         }
       }
       field = arr[arr.length - 1];
-    }
-    Path path = join == null ? task.get(field) : join.get(field);
+    }    
 
+    Path path = join == null ? root.get(field) : join.get(field);
+    
     if (TASK_COWORKER.equals(field)) {
-      path = task.join(field, JoinType.LEFT);
+      path = root.join(field, JoinType.LEFT);
     } else if (TASK_MANAGER.equals(condition.getField())) {
       path = join.join("manager", JoinType.LEFT);
     } else if (TASK_PARTICIPATOR.equals(condition.getField())) {
       path = join.join("participator", JoinType.LEFT);
     } else if (TASK_TAG.equals(condition.getField())) {
-      path = task.join("tag", JoinType.INNER);
+      path = root.join("tag", JoinType.INNER);
     }
-
-    if (SingleCondition.EQ.equals(condition.getType())) {
-      return cb.equal(path, value);
-    } else if (SingleCondition.LT.equals(condition.getType())) {
-      return cb.lessThan((Path<Comparable>) path, (Comparable) value);
-    } else if (SingleCondition.GT.equals(condition.getType())) {
-      return cb.greaterThan((Path<Comparable>) path, (Comparable) value);
-    } else if (SingleCondition.LTE.equals(condition.getType())) {
-      return cb.lessThanOrEqualTo((Path<Comparable>)path, (Comparable)value);
-    } else if (SingleCondition.GTE.equals(condition.getType())) {
-      return cb.greaterThanOrEqualTo((Path<Comparable>)path, (Comparable) value);
-    } else if (SingleCondition.IS_NULL.equals(type)) {
-      return path.isNull();
-    } else if (SingleCondition.NOT_NULL.equals(type)) {
-      return path.isNotNull();
-    } else if (SingleCondition.IS_EMPTY.equals(type)) {
-        return cb.isEmpty(path);
-    } else if (SingleCondition.LIKE.equals(type)) {
-      return cb.like(path, String.valueOf(value));
-    } else if (SingleCondition.IN.equals(type)) {
-      return path.in((Collection) value);
-    } else if (SingleCondition.IS_TRUE.equals(type)) {
-      return cb.isTrue(path);
-    } else if (SingleCondition.IS_FALSE.equals(type)) {
-      return cb.isFalse(path);
-    }
-
-    throw new RuntimeException("Condition type " + type + " is not supported");
+    
+    return path;
   }
 
   private static final ListAccess<Task> EMPTY = new ListAccess<Task>() {

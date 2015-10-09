@@ -16,13 +16,11 @@
 */
 package org.exoplatform.task.service.impl;
 
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import java.util.Date;
+import java.util.List;
 
 import org.exoplatform.commons.api.persistence.ExoTransactional;
 import org.exoplatform.commons.utils.ListAccess;
@@ -34,11 +32,12 @@ import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Label;
+import org.exoplatform.task.domain.LabelTaskMapping;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.domain.TaskLog;
 import org.exoplatform.task.exception.EntityNotFoundException;
-import org.exoplatform.task.service.Payload;
+import org.exoplatform.task.service.TaskPayload;
 import org.exoplatform.task.service.TaskService;
 
 /**
@@ -67,7 +66,7 @@ public class TaskServiceImpl implements TaskService {
   public Task createTask(Task task) {
     Task result = daoHandler.getTaskHandler().create(task);
     //
-    Payload event = new Payload(null, result);
+    TaskPayload event = new TaskPayload(null, result);
     try {
       listenerService.broadcast(TASK_CREATION, this, event);
     } catch (Exception e) {
@@ -86,7 +85,7 @@ public class TaskServiceImpl implements TaskService {
 
     Task oldTask = daoHandler.getTaskHandler().find(task.getId());
     Task newTask = daoHandler.getTaskHandler().update(task);
-    Payload event = new Payload(oldTask, newTask);
+    TaskPayload event = new TaskPayload(oldTask, newTask);
     try {
       listenerService.broadcast(TASK_UPDATE, this, event);
     } catch (Exception e) {
@@ -192,9 +191,25 @@ public class TaskServiceImpl implements TaskService {
   }
 
   @Override
-  public List<Task> findTasksByLabel(long labelId, List<Long> projectIds, String username, OrderBy orderBy) throws EntityNotFoundException {
+  public void addTaskToLabel(Long taskId, Long labelId) throws EntityNotFoundException {
+    LabelTaskMapping mapping = new LabelTaskMapping();
+    mapping.setLabel(getLabel(labelId));
+    mapping.setTask(getTask(taskId));
+    daoHandler.getLabelTaskMappingHandler().create(mapping);
+  }
+  
+  @Override
+  public void removeTaskFromLabel(Long taskId, Long labelId) throws EntityNotFoundException {
+    LabelTaskMapping mapping = new LabelTaskMapping();
+    mapping.setLabel(getLabel(labelId));
+    mapping.setTask(getTask(taskId));
+    daoHandler.getLabelTaskMappingHandler().delete(mapping);
+  }
+
+  @Override
+  public ListAccess<Task> findTasksByLabel(long labelId, List<Long> projectIds, String username, OrderBy orderBy) throws EntityNotFoundException {
     if (labelId > 0) {
-      Label label = getLabelById(labelId);
+      Label label = getLabel(labelId);
       if (label == null) {
         throw new EntityNotFoundException(labelId, Label.class);
       }
@@ -203,17 +218,17 @@ public class TaskServiceImpl implements TaskService {
   }
 
   @Override
-  public List<Label> findLabelsByUser(String username) {
+  public ListAccess<Label> findLabelsByUser(String username) {
     return daoHandler.getLabelHandler().findLabelsByUser(username);
   }
 
   @Override
-  public List<Label> findLabelsByTask(long taskId, String username) throws EntityNotFoundException {
+  public ListAccess<Label> findLabelsByTask(long taskId, String username) throws EntityNotFoundException {
     return daoHandler.getLabelHandler().findLabelsByTask(taskId, username);
   }
 
   @Override
-  public Label getLabelById(long labelId) {
+  public Label getLabel(long labelId) {
     return daoHandler.getLabelHandler().find(labelId);
   }
 
@@ -224,7 +239,7 @@ public class TaskServiceImpl implements TaskService {
 
   @Override
   public Label updateLabel(Label label, List<Label.FIELDS> fields) throws EntityNotFoundException {
-    Label lb = getLabelById(label.getId());
+    Label lb = getLabel(label.getId());
     if (lb == null) {
       throw new EntityNotFoundException(label.getId(), Label.class);
     }
@@ -241,9 +256,6 @@ public class TaskServiceImpl implements TaskService {
       case PARENT:      
         lb.setParent(label.getParent());
         break;
-      case TASK:
-        lb.setTasks(label.getTasks());
-        break;
       case HIDDEN:
         lb.setHidden(label.isHidden());
       }
@@ -252,8 +264,8 @@ public class TaskServiceImpl implements TaskService {
   }
 
   @Override
-  public void removeLabel(long labelId) {    
-    daoHandler.getLabelHandler().delete(getLabelById(labelId));
+  public void removeLabel(long labelId) {
+    daoHandler.getLabelHandler().delete(getLabel(labelId));
   }
 
   public Task findTaskByActivityId(String id) {

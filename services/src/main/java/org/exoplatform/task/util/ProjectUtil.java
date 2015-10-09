@@ -81,8 +81,14 @@ public final class ProjectUtil {
       memberships.addAll(UserUtil.getSpaceMemberships(space_group_id));
     }
 
-    List<Project> projects = projectService.findProjects(memberships, null, null);
-    return ProjectUtil.buildRootProjects(projects);
+    ListAccess<Project> projects = projectService.findProjects(memberships, null, null);
+    List<Project> tmp = new LinkedList<Project>();
+    try {
+      tmp = Arrays.asList(projects.load(0, -1));
+    } catch (Exception ex) {
+      LOG.error("Can't load project list", ex);
+    }
+    return ProjectUtil.buildRootProjects(tmp);
 
     //return projectService.getProjectTreeByMembership(memberships);
   }
@@ -142,7 +148,13 @@ public final class ProjectUtil {
     List<Project> projects = new LinkedList<Project>();
     for (Project p : projectTree) {
       projects.add(p);
-      List<Project> children = projectService.getSubProjects(p.getId());
+      ListAccess<Project> tmp = projectService.getSubProjects(p.getId());
+      List<Project> children = new LinkedList<Project>();
+      try {
+        children = Arrays.asList(tmp.load(0, -1));
+      } catch (Exception ex) {
+        LOG.error("Can't load project list", ex);
+      }
       if (children != null && !children.isEmpty()) {
         projects.addAll(flattenTree(children, projectService));
       }

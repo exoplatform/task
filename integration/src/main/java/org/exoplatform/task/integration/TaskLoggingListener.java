@@ -30,21 +30,22 @@ import org.exoplatform.task.integration.notification.NotificationUtils;
 import org.exoplatform.task.integration.notification.TaskAssignPlugin;
 import org.exoplatform.task.integration.notification.TaskCompletedPlugin;
 import org.exoplatform.task.integration.notification.TaskDueDatePlugin;
-import org.exoplatform.task.service.Payload;
+import org.exoplatform.task.service.TaskPayload;
 import org.exoplatform.task.service.TaskService;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
  * TODO: please reconsider where should this class stay? I move it to integration module because it depends on these class
  */
-public class TaskLoggingListener extends Listener<TaskService, Payload> {
+public class TaskLoggingListener extends Listener<TaskService, TaskPayload> {
 
   @Override
-  public void onEvent(Event<TaskService, Payload> event) throws Exception {
+  public void onEvent(Event<TaskService, TaskPayload> event) throws Exception {
     TaskService service = event.getSource();
     String username = ConversationState.getCurrent().getIdentity().getUserId();
-    Payload data = event.getData();
+    TaskPayload data = event.getData();
 
     Object oldTask = data.before();
     Object newTask = data.after();
@@ -88,8 +89,13 @@ public class TaskLoggingListener extends Listener<TaskService, Payload> {
     }
 
     if (isDiff(before.getTag(), after.getTag())) {
-      Set<String> tags = after.getTag();
-      tags.removeAll(before.getTag());
+      Set<String> tags = new HashSet<String>();
+      if (after.getTag() != null) {
+        tags.addAll(after.getTag());
+      }
+      if (before.getTag() != null && !before.getTag().isEmpty()) {
+        tags.removeAll(before.getTag());
+      }
       service.addTaskLog(after.getId(), username, "log.add_label", StringUtils.join(tags, ","));
     }
 

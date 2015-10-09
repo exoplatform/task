@@ -17,13 +17,22 @@
   
 package org.exoplatform.task.integration;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+
 import org.exoplatform.commons.api.search.SearchServiceConnector;
 import org.exoplatform.commons.api.search.data.SearchContext;
 import org.exoplatform.commons.api.search.data.SearchResult;
+import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.portal.mop.SiteKey;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.task.dao.OrderBy;
@@ -41,6 +50,8 @@ import java.util.List;
 
 public class ProjectSearchConnector extends SearchServiceConnector {
 
+  private static final Log LOG = ExoLogger.getLogger(ProjectSearchConnector.class);
+  
   private ProjectService projectService;  
   
   private WebAppController controller;
@@ -63,13 +74,19 @@ public class ProjectSearchConnector extends SearchServiceConnector {
     if(query == null || query.trim().isEmpty()) {
       return result;
     }
-    
-    query = StringUtil.FUZZY.matcher(query.trim()).replaceAll("");
-    
-    Identity currentUser = ConversationState.getCurrent().getIdentity(); 
-    //List<Project> projects = projectService.findProjectByKeyWord(currentUser, query, buildOrderBy(sort, order));
-    List<Project> projects = projectService.findProjects(UserUtil.getMemberships(currentUser), query, buildOrderBy(sort, order));
 
+    query = StringUtil.FUZZY.matcher(query.trim()).replaceAll("");
+
+    Identity currentUser = ConversationState.getCurrent().getIdentity();
+    //List<Project> projects = projectService.findProjectByKeyWord(currentUser, query, buildOrderBy(sort, order));
+    ListAccess<Project> tmp = projectService.findProjects(UserUtil.getMemberships(currentUser), query, buildOrderBy(sort, order));
+    List<Project> projects = new LinkedList<Project>();
+    try {
+      projects = Arrays.asList(tmp.load(0, -1));
+    } catch (Exception ex) {
+      LOG.error("Can't load project list", ex);
+    }
+    
     for (Project p : projects) {
       result.add(buildResult(p));
     }

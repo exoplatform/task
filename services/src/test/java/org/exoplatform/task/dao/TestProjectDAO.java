@@ -25,7 +25,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
+import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.AbstractTest;
@@ -74,7 +74,7 @@ public class TestProjectDAO extends AbstractTest {
   }
 
   @Test
-  public void testFindSubProject() {
+  public void testFindSubProject() throws Exception {
     Project parent = new Project("Parent project", null, null, null, null);
     pDAO.create(parent);
 
@@ -82,22 +82,22 @@ public class TestProjectDAO extends AbstractTest {
     child.setParent(parent);
     pDAO.create(child);
 
-    List<Project> projects = pDAO.findSubProjects(parent);
-    Assert.assertEquals(1, projects.size());
+    ListAccess<Project> projects = pDAO.findSubProjects(parent);
+    Assert.assertEquals(1, projects.getSize());
 
     projects = pDAO.findSubProjects(null);
-    Assert.assertTrue(projects.size() >= 1);
+    Assert.assertTrue(projects.getSize() >= 1);
   }
   
   @Test
-  public void testFindProjectByKeyword() {
+  public void testFindProjectByKeyword() throws Exception {
     Set<String> manager = new HashSet<String>();
     manager.add("root");
     Project parent = new Project("Parent project", null, null, manager, null);
     pDAO.create(parent);
 
-    List<Project> projects = pDAO.findAllByMembershipsAndKeyword(Arrays.asList("root"), "parenT ProJecT", null);
-    Assert.assertEquals(1, projects.size());
+    ListAccess<Project> projects = pDAO.findAllByMembershipsAndKeyword(Arrays.asList("root"), "parenT ProJecT", null);
+    Assert.assertEquals(1, projects.getSize());
   }
 }
 

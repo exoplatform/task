@@ -22,6 +22,7 @@ package org.exoplatform.task.domain;
 import org.exoplatform.commons.api.persistence.ExoEntity;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -70,7 +71,7 @@ public class Status implements Comparable<Status>{
 
   //This field only used for cascade remove
   @OneToMany(mappedBy = "status", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
-  private List<Task> tasks;
+  private List<Task> tasks = new ArrayList<Task>();
 
   @ManyToOne
   @JoinColumn(name = "PROJECT_ID")

@@ -22,8 +22,6 @@ import org.exoplatform.commons.api.persistence.GenericDAO;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.domain.TaskLog;
-import org.exoplatform.task.exception.EntityNotFoundException;
 
 /**
  * @author <a href="trongtt@exoplatform.com">Trong Tran</a>
@@ -31,7 +29,7 @@ import org.exoplatform.task.exception.EntityNotFoundException;
  */
 public interface TaskHandler extends GenericDAO<Task, Long> {
 
-  List<Task> findTasksByLabel(long labelId, List<Long> projectIds, String username, OrderBy orderBy);
+  ListAccess<Task> findTasksByLabel(long labelId, List<Long> projectIds, String username, OrderBy orderBy);
  
   List<Task> findByUser(String user);
 

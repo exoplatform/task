@@ -1,13 +1,12 @@
 package org.exoplatform.task.service;
 
 import java.util.List;
-import java.util.Set;
 
+import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.task.dao.OrderBy;
+import org.exoplatform.task.dao.ProjectQuery;
 import org.exoplatform.task.domain.Project;
-import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.exception.EntityNotFoundException;
-import org.exoplatform.task.exception.ParameterEntityException;
 
 /**
  * Created by TClement on 6/3/15.
@@ -41,13 +40,48 @@ public interface ProjectService {
    */
   Project createProject(Project project, long parentId) throws EntityNotFoundException;
 
+  /**
+   * Update the project.
+   *
+   * It should throws EntityNotFoundException if the project has been removed OR not existed from database.
+   * 
+   * @param project
+   * @return
+   */
   Project updateProject(Project project);
 
+  /**
+   * Remove the project with given <code>projectId</code>,
+   * and also its descendants if <code>deleteChild</code> is true.
+   *
+   * @param projectId
+   * @param deleteChild
+   * @throws EntityNotFoundException
+   */
   void removeProject(long projectId, boolean deleteChild) throws EntityNotFoundException;
 
+  /**
+   * Clone a project with given <code>projectId</code>. If <code>cloneTask</code> is true,
+   * it will also clone all non-completed tasks from the project.
+   *
+   * @param projectId The id of a project which it copies from.
+   * @param cloneTask If false, it will clone only project metadata.
+   *        Otherwise, it also clones all non-completed tasks from the project.
+   *
+   * @return The cloned project.
+   * @throws EntityNotFoundException
+   */
   Project cloneProject(long projectId, boolean cloneTask) throws EntityNotFoundException;
 
-  List<Project> getSubProjects(long parentId);
+  /**
+   * Return a list of children of a parent project with given <code>parentId</code>.
+   *
+   * @param parentId
+   * @return
+   */
+  ListAccess<Project> getSubProjects(long parentId);
 
-  List<Project> findProjects(List<String> memberships, String keyword, OrderBy order);
+  ListAccess<Project> findProjects(ProjectQuery query);
+
+  ListAccess<Project> findProjects(List<String> memberships, String keyword, OrderBy order);
 }

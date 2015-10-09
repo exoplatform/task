@@ -19,13 +19,13 @@
 
 package org.exoplatform.task.management.controller;
 
+import javax.inject.Inject;
+
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
-
-import javax.inject.Inject;
 
 import juzu.Action;
 import juzu.Path;
@@ -54,6 +54,7 @@ import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.TaskParser;
 import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.service.UserService;
+import org.exoplatform.task.util.ListUtil;
 import org.exoplatform.task.util.ProjectUtil;
 import org.exoplatform.task.util.TaskUtil;
 
@@ -188,7 +189,8 @@ public class TaskManagement {
     Map<String, String> defOrders = TaskUtil.getDefOrders(bundle);
     Map<String, String> defGroupBys = TaskUtil.getDefGroupBys(currProject, bundle);
     
-    List<Label> labels = TaskUtil.buildRootLabels(taskService.findLabelsByUser(username));
+    ListAccess<Label> tmp = taskService.findLabelsByUser(username);
+    List<Label> labels = TaskUtil.buildRootLabels(Arrays.asList(ListUtil.load(tmp, 0, -1)));
     
     return index.with()
         .currentProjectId(currProject)

@@ -19,14 +19,36 @@ package org.exoplatform.task.service;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
+import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.commons.utils.ListAccessImpl;
+import org.exoplatform.task.TestUtils;
+import org.exoplatform.task.dao.ProjectHandler;
+import org.exoplatform.task.dao.StatusHandler;
+import org.exoplatform.task.dao.TaskHandler;
+import org.exoplatform.task.dao.TaskQuery;
+import org.exoplatform.task.dao.jpa.DAOHandlerJPAImpl;
+import org.exoplatform.task.domain.Project;
+import org.exoplatform.task.domain.Status;
+import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.exception.EntityNotFoundException;
+import org.exoplatform.task.exception.ParameterEntityException;
+import org.exoplatform.task.service.impl.ProjectServiceImpl;
 import org.exoplatform.task.util.ProjectUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -39,17 +61,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.exoplatform.task.dao.ProjectHandler;
-import org.exoplatform.task.dao.StatusHandler;
-import org.exoplatform.task.dao.TaskHandler;
-import org.exoplatform.task.dao.TaskQuery;
-import org.exoplatform.task.dao.jpa.DAOHandlerJPAImpl;
-import org.exoplatform.task.domain.Project;
-import org.exoplatform.task.domain.Status;
-import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.exception.ParameterEntityException;
-import org.exoplatform.task.service.impl.ProjectServiceImpl;
-import org.exoplatform.task.TestUtils;
 import org.mockito.stubbing.Answer;
 
 /**
@@ -265,12 +276,21 @@ public class ProjectServiceTest {
     Project projectParent = TestUtils.getDefaultProject();
     projectParent.setId(3L);
 
-    Project projectChild = TestUtils.getDefaultProject();
+    final Project projectChild = TestUtils.getDefaultProject();
     projectChild.setId(4L);
     projectChild.setParent(projectParent);
 
-    List<Project> projectChilds = new ArrayList<Project>();
-    projectChilds.add(projectChild);
+    ListAccess<Project> projectChilds = new ListAccess<Project>() {
+      @Override
+      public int getSize() throws Exception {
+        return 1;
+      }
+
+      @Override
+      public Project[] load(int arg0, int arg1) throws Exception, IllegalArgumentException {
+        return new Project[] {projectChild};
+      }
+    }; 
 
     when(projectHandler.find(3L)).thenReturn(projectParent);
     when(projectHandler.findSubProjects(projectParent)).thenReturn(projectChilds);

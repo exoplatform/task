@@ -86,7 +86,7 @@ public class TaskServiceTest {
   @Captor
   ArgumentCaptor<Comment> commentCaptor;
   //@Captor
-  //ArgumentCaptor<Event<TaskService, Payload>> eventCaptor;
+  //ArgumentCaptor<Event<TaskService, TaskPayload>> eventCaptor;
 
   //@Mock TaskLoggingListener listener;
 
@@ -129,7 +129,7 @@ public class TaskServiceTest {
     taskService.createTask(TestUtils.getDefaultTask());
     //verify(listener, times(1)).onEvent(eventCaptor.capture());
 
-    //Event<TaskService, Payload> event = eventCaptor.getValue();
+    //Event<TaskService, TaskPayload> event = eventCaptor.getValue();
     //assertEquals(TestUtils.getDefaultTask().getTitle(), event.getData().after().getTitle());
   }
 

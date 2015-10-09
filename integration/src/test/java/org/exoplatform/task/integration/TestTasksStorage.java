@@ -22,9 +22,15 @@ import static org.mockito.Matchers.anyList;
 import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.when;
 
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
 import org.exoplatform.calendar.model.Calendar;
 import org.exoplatform.calendar.model.query.CalendarQuery;
 import org.exoplatform.calendar.storage.CalendarDAO;
+import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.services.security.MembershipEntry;
 import org.exoplatform.task.dao.OrderBy;
@@ -40,12 +46,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
 
 public class TestTasksStorage {
 
@@ -114,8 +114,30 @@ public class TestTasksStorage {
     query.setIdentity(identity);
 
     when(projectService.findProjects(anyList(), isNull(String.class), isNull(OrderBy.class)))
-            .thenReturn(Arrays.asList(p1, p2))
-            .thenReturn(Arrays.asList(p1, p2, p3));
+            .thenReturn(new ListAccess<Project>() {
+              
+              @Override
+              public Project[] load(int arg0, int arg1) throws Exception, IllegalArgumentException {
+                return new Project[] {p1, p2};
+              }
+              
+              @Override
+              public int getSize() throws Exception {
+                return 2;
+              }
+            })
+            .thenReturn(new ListAccess<Project>() {
+
+              @Override
+              public int getSize() throws Exception {
+                return 3;
+              }
+
+              @Override
+              public Project[] load(int arg0, int arg1) throws Exception, IllegalArgumentException {
+                return new Project[] {p1, p2, p3};
+              }
+            });
     
     List<Calendar> cals = calDAO.findCalendars(query);
     Assert.assertEquals(3, cals.size());

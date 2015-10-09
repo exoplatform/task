@@ -1,6 +1,7 @@
 <%
     import java.util.List;
     import java.util.ArrayList;
+    import java.util.Arrays;
     import java.util.Collections;
     import java.util.TimeZone;
     import java.util.Calendar;
@@ -110,8 +111,9 @@
                         <div class="column-item column-title taskName">${task.title}</div>
                         <div class="column-item column-time">
                             <span class="text-time inline-block-show">${task.dueDate != null ? task.dueDate : "&nbsp;"}</span>
-                            <%
-                                def taskLabels = taskService.findLabelsByTask(task.id, currentUser);
+                            <%                            
+                                def tmp = taskService.findLabelsByTask(task.id, currentUser);
+                            	  def taskLabels = Arrays.asList(ListUtil.load(tmp, 0, -1));
                             %>
                             <%if(taskLabels != null && taskLabels.size() > 0) {%>
                                 <span class="inline-block-hide labels">

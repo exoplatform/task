@@ -63,23 +63,17 @@ import static org.exoplatform.task.dao.condition.Conditions.lte;
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
-public class TaskQuery implements Cloneable {
-
-  private AggregateCondition aggCondition = null;
-
+public class TaskQuery extends Query implements Cloneable {
   //TODO: how to remove these two field
   private List<Long> projectIds = null;
   private List<String> assignee = null;
   
-  private List<OrderBy> orderBy = new ArrayList<OrderBy>();
-
   public TaskQuery() {
 
   }
 
   TaskQuery(AggregateCondition condition, List<OrderBy> orderBies, List<Long> projectIds, List<String> assignee) {
-    this.aggCondition = condition;
-    this.orderBy = orderBies;
+    super(condition, orderBies);
     this.projectIds = projectIds;
     this.assignee = assignee;
   }
@@ -100,21 +94,6 @@ public class TaskQuery implements Cloneable {
   public TaskQuery add(TaskQuery taskQuery) {
     this.add(taskQuery.getCondition());
     return this;
-  }
-
-  TaskQuery add(Condition condition) {
-    if (condition == null) return this;
-
-    if (aggCondition == null) {
-      aggCondition = and(condition);
-    } else {
-      aggCondition.add(condition);
-    }
-    return this;
-  }
-
-  public Condition getCondition() {
-    return this.aggCondition;
   }
 
   public void setTitle(String title) {
@@ -140,7 +119,7 @@ public class TaskQuery implements Cloneable {
 
   public void setAssignee(List<String> assignee) {
     if (assignee != null) {
-      this.add(in(TASK_ASSIGNEE, assignee));      
+      this.add(in(TASK_ASSIGNEE, assignee));
     }
     this.assignee = assignee;
   }
@@ -159,15 +138,7 @@ public class TaskQuery implements Cloneable {
     }
     add(Conditions.or(conditions.toArray(new Condition[conditions.size()])));
   }
-
-  public List<OrderBy> getOrderBy() {
-    return orderBy;
-  }
-
-  public void setOrderBy(List<OrderBy> orderBy) {
-    this.orderBy = orderBy;
-  }
-
+  
   public void setCompleted(Boolean completed) {
     if (completed) {
       add(isTrue(TASK_COMPLETED));
@@ -269,7 +240,8 @@ public class TaskQuery implements Cloneable {
   }
 
   public TaskQuery clone() {
-    return new TaskQuery(aggCondition != null ? aggCondition.clone() : null, orderBy, projectIds != null ? new ArrayList<Long>(projectIds) : null, assignee);
+    Condition condition = getCondition();
+    return new TaskQuery(condition != null ? (AggregateCondition)condition.clone() : null, getOrderBy(), projectIds != null ? new ArrayList<Long>(projectIds) : null, assignee);
   }
 
 }

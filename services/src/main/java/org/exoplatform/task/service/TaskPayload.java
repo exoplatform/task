@@ -23,12 +23,12 @@ import org.exoplatform.task.domain.Task;
  * @author <a href="trongtt@gmail.com">Trong Tran</a>
  * @version $Revision$
  */
-public class Payload {
+public class TaskPayload {
 
   private Task before;
   private Task after;
 
-  public Payload(Task before, Task after) {
+  public TaskPayload(Task before, Task after) {
     this.before = before;
     this.after = after;
   }

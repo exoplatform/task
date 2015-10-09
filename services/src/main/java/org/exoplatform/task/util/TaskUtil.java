@@ -17,6 +17,24 @@
 package org.exoplatform.task.util;
 
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.Set;
+import java.util.TimeZone;
+import java.util.TreeMap;
+
 import org.exoplatform.calendar.model.Event;
 import org.exoplatform.calendar.service.impl.NewUserListener;
 import org.exoplatform.commons.utils.ListAccess;
@@ -42,24 +60,6 @@ import org.exoplatform.task.service.StatusService;
 import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.service.UserService;
 import org.exoplatform.web.controller.router.Router;
-
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.Set;
-import java.util.TimeZone;
-import java.util.TreeMap;
 
 /**
  * Created by The eXo Platform SAS
@@ -167,15 +167,15 @@ public final class TaskUtil {
     }
     taskModel.setBreadcumbs(breadcumbs);
 
-    List<Label> labels = taskService.findLabelsByTask(id, username);
+    ListAccess<Label> labels = taskService.findLabelsByTask(id, username);
     if (labels != null) {
-      taskModel.setLabels(labels);
+      taskModel.setLabels(Arrays.asList(ListUtil.load(labels, 0, -1)));
     }
 
     return taskModel;
   }
 
-  public static Map<GroupKey, List<Task>> groupTasks(List<Task> tasks, String groupBy, String username, TimeZone userTimezone, ResourceBundle bundle, TaskService taskService) {
+  public static Map<GroupKey, List<Task>> groupTasks(List<Task> tasks, String groupBy, String username, TimeZone userTimezone, ResourceBundle bundle, TaskService taskService) throws EntityNotFoundException {
     Map<GroupKey, List<Task>> maps = new TreeMap<GroupKey, List<Task>>();
     for(Task task : tasks) {
       for (GroupKey key : getGroupName(task, groupBy, username, userTimezone, bundle, taskService)) {
@@ -368,15 +368,14 @@ public final class TaskUtil {
         }
       }
     } else if (LABEL.equalsIgnoreCase(groupBy)) {
-      List<Label> labels = taskService.selectTaskField(selectFieldQuery, "labels");
+      List<Label> labels = taskService.selectTaskField(selectFieldQuery, "lblMapping.label");
       GroupKey key;
       ListAccess<Task> tasks;
-      TaskQuery q;
 
       for (int i = 0; i < labels.size(); i++) {
         Label label = labels.get(i);
         if (label == null) continue;
-        q = query.clone();
+        TaskQuery q = query.clone();
         q.setLabelIds(Arrays.asList(label.getId()));
         key = new GroupKey(label.getName(), label, i);
         tasks = taskService.findTasks(q);
@@ -385,8 +384,8 @@ public final class TaskUtil {
         }
       }
 
-      q = query.clone();
-      q.setEmptyField("labels");
+      TaskQuery q = query.clone();
+      q.setEmptyField("lblMapping");
       key = new GroupKey("No Label", null, Integer.MAX_VALUE);
       tasks = taskService.findTasks(q);
       if (ListUtil.getSize(tasks) > 0) {
@@ -534,7 +533,7 @@ public final class TaskUtil {
     return result;
   }
 
-  private static GroupKey[] getGroupName(Task task, String groupBy, String username, TimeZone userTimezone, ResourceBundle bundle, TaskService taskService) {
+  private static GroupKey[] getGroupName(Task task, String groupBy, String username, TimeZone userTimezone, ResourceBundle bundle, TaskService taskService) throws EntityNotFoundException {
     if("project".equalsIgnoreCase(groupBy)) {
       Status s = task.getStatus();
       if(s == null) {
@@ -574,12 +573,8 @@ public final class TaskUtil {
       return new GroupKey[] {new GroupKey(DateUtil.getDueDateLabel(calendar, bundle), dueDate, calendar != null ? 0 : 1)};
     } else if (TaskUtil.LABEL.equalsIgnoreCase(groupBy)) {
       //TODO:
-      List<Label> labels;
-      try {
-        labels = taskService.findLabelsByTask(task.getId(), username);
-      } catch (EntityNotFoundException ex) {
-        labels = new ArrayList<Label>();
-      }
+      ListAccess<Label> tmp = taskService.findLabelsByTask(task.getId(), username);
+      List<Label> labels = Arrays.asList(ListUtil.load(tmp, 0, -1));
       if (labels.isEmpty()) {
         return new GroupKey[] {new GroupKey("No label", null, Integer.MAX_VALUE)};
       } else {
@@ -808,35 +803,23 @@ public final class TaskUtil {
             throw new ParameterEntityException(-1L, Label.class, param, values[i], "LabelID must be long", ex);
           }
         }
-        
-        taskService.updateTask(task);        
-        for (Long labelId : ids) {
-          Label label = taskService.getLabelById(labelId);
-          if (label == null) {
-            throw new EntityNotFoundException(labelId, Label.class);
-          }
-          label.getTasks().add(task);
-          try {            
-            taskService.updateLabel(label, Arrays.asList(Label.FIELDS.TASK));            
-          } catch (Exception ex) {
-            ex.printStackTrace();
-          }
-        }
 
-        List<Label> remove = new ArrayList<Label>();
-        for(Label label : taskService.findLabelsByTask(task.getId(), username)) {
-          if (label.getUsername().equals(username) && !ids.contains(label.getId())) {
-            remove.add(label);
+        Set<Long> persisted = new HashSet<Long>();
+        ListAccess<Label> tmp = taskService.findLabelsByTask(task.getId(), username);
+        List<Label> labels = Arrays.asList(ListUtil.load(tmp, 0, -1));
+        for(Label label : labels) {
+          if (!ids.contains(label.getId())) {
+            taskService.removeTaskFromLabel(task.getId(), label.getId());
+          } else {
+            persisted.add(label.getId());
           }
         }
-        for (Label l : remove) {
-          l.getTasks().remove(task);
-          try {
-            taskService.updateLabel(l, Arrays.asList(Label.FIELDS.TASK));            
-          } catch (Exception ex) {
-            ex.printStackTrace();
+        
+        for (Long labelId : ids) {
+          if (!persisted.contains(labelId)) {
+            taskService.addTaskToLabel(task.getId(), labelId);            
           }
-        }        
+        }
       } else if ("calendarIntegrated".equalsIgnoreCase(param)) {
         task.setCalendarIntegrated(Boolean.parseBoolean(value));
       } else {

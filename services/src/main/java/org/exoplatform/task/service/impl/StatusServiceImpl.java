@@ -77,7 +77,7 @@ public class StatusServiceImpl implements StatusService {
   }
 
   @Override
-  public void createDefaultStatuses(Project proj) {
+  public void createInitialStatuses(Project proj) {
     for (String s : getDefaultStatus()) {
       createStatus(proj, s);
     }

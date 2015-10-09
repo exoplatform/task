@@ -38,15 +38,21 @@ public class Conditions {
   public static String TASK_STATUS = "status";
   public static String TASK_DUEDATE = "dueDate";
   public static String TASK_PROJECT = "status.project";
-  public static String TASK_LABEL_USERNAME = "labels.username";
-  public static String TASK_LABEL_ID = "labels.id";
+  public static String TASK_LABEL_USERNAME = "lblMapping.label.username";
+  public static String TASK_LABEL_ID = "lblMapping.label.id";
   public static String TASK_COMPLETED = "completed";
   public static String TASK_START_DATE = "startDate";
   public static String TASK_END_DATE = "endDate";
   public static String TASK_CALENDAR_INTEGRATED = "calendarIntegrated";
-
   public static String TASK_MANAGER = "status.project.manager";
   public static String TASK_PARTICIPATOR = "status.project.participator";
+
+  public static final String MANAGER = "manager";
+  public static final String PARTICIPATOR = "participator";
+  public static final String NAME = "name";
+  public static final String PARENT = "parent";
+  public static final String USERNAME = "username";  
+  public static final String LABEL_TASK_ID = "lblMapping.task.id";
 
   public static <T> SingleCondition<T> eq(String fieldName, T value) {
     return new SingleCondition<T>(SingleCondition.EQ, fieldName, value);

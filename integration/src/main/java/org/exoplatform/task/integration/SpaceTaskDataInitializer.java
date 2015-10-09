@@ -61,7 +61,7 @@ public class SpaceTaskDataInitializer extends SpaceListenerPlugin {
 
     Project project = ProjectUtil.newProjectInstance(space.getDisplayName(), "", managers, participators);
     projectService.createProject(project);
-    statusServ.createDefaultStatuses(project);
+    statusServ.createInitialStatuses(project);
   }
 
   @Override

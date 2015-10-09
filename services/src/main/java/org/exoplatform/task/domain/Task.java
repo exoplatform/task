@@ -38,12 +38,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.PreRemove;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -74,11 +72,7 @@ import org.exoplatform.task.service.TaskBuilder;
     @NamedQuery(name = "Task.findTaskByProject",
         query = "SELECT t FROM Task t WHERE t.status.project.id = :projectId"),
     @NamedQuery(name = "Task.findTaskByActivityId",
-        query = "SELECT t FROM Task t WHERE t.activityId = :activityId"),
-    @NamedQuery(name = "Task.findTasksHasLabel",
-            query = "SELECT t FROM Task t INNER JOIN t.labels lbl WHERE lbl.username = :username"),
-    @NamedQuery(name = "Task.findTasksByLabel",
-    query = "SELECT t FROM Task t INNER JOIN t.labels lbl WHERE lbl.id = :labelId")
+        query = "SELECT t FROM Task t WHERE t.activityId = :activityId")
 })
 public class Task {
 
@@ -148,9 +142,9 @@ public class Task {
   //This field is only used for remove cascade
   @OneToMany(mappedBy = "task", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
   private List<TaskLog> logs = new ArrayList<TaskLog>();
-  
-  @ManyToMany(fetch = FetchType.LAZY, mappedBy="tasks")
-  private Set<Label> labels = new HashSet<Label>();
+
+  @OneToMany(mappedBy = "task", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
+  private Set<LabelTaskMapping> lblMapping = new HashSet<LabelTaskMapping>();
 
   @Column(name = "ACTIVITY_ID")
   private String activityId;
@@ -256,14 +250,6 @@ public class Task {
 
   public String getCreatedBy() {
     return createdBy;
-  }
-
-  public Set<Label> getLabels() {
-    return labels;
-  }
-
-  public void setLabels(Set<Label> labels) {
-    this.labels = labels;
   }
 
   public void setCreatedBy(String createdBy) {
@@ -374,16 +360,5 @@ public class Task {
     if (title != null ? !title.equals(task.title) : task.title != null) return false;
 
     return true;
-  }
-
-  @PreRemove
-  private void removeLabel() {
-    if (getLabels() != null) {
-      for (Label lbl : getLabels()) {
-        if (lbl.getTasks() != null) {
-          lbl.getTasks().remove(this);
-        }
-      }      
-    }
   }
 }

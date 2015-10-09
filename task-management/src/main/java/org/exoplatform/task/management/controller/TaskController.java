@@ -19,6 +19,8 @@
 
 package org.exoplatform.task.management.controller;
 
+import javax.inject.Inject;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -27,15 +29,11 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.Set;
 import java.util.TimeZone;
-
-import javax.inject.Inject;
 
 import juzu.HttpMethod;
 import juzu.MimeType;
@@ -72,14 +70,12 @@ import org.exoplatform.task.service.StatusService;
 import org.exoplatform.task.service.TaskParser;
 import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.service.UserService;
-
 import org.exoplatform.task.util.CommentUtil;
 import org.exoplatform.task.util.DateUtil;
+import org.exoplatform.task.util.ListUtil;
 import org.exoplatform.task.util.ProjectUtil;
 import org.exoplatform.task.util.TaskUtil;
 import org.exoplatform.task.util.TaskUtil.DUE;
-import org.exoplatform.task.util.ListUtil;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -624,7 +620,7 @@ public class TaskController extends AbstractController {
 
     String currentLabelName = "";
     if (labelId != null && labelId > 0) {
-      Label label = taskService.getLabelById(labelId);
+      Label label = taskService.getLabel(labelId);
       if (label != null) {
         currentLabelName = label.getName();
       }
@@ -720,15 +716,7 @@ public class TaskController extends AbstractController {
       task.setStatus(status);
       //taskService.createTask(task);
       //projectService.createTaskToProjectId(projectId, task);
-    } else if (labelId != null && labelId > 0){
-      Label label = taskService.getLabelById(labelId);
-      Set<Label> labels = new HashSet<Label>();
-      labels.add(label);
-      task.setLabels(labels);
-      label.getTasks().add(task);
-      taskService.createTask(task);
-    }
-    else {
+    } else if (labelId == null) {
       task.setAssignee(currentUser);
       
       TimeZone userTimezone = userService.getUserTimezone(currentUser);
@@ -748,6 +736,9 @@ public class TaskController extends AbstractController {
     }
 
     taskService.createTask(task);
+    if (labelId != null && labelId > 0) {
+      taskService.addTaskToLabel(task.getId(), labelId);
+    }
 
     long taskNum = -1;
     if (projectId == -1) {

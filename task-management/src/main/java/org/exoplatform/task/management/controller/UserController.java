@@ -19,6 +19,7 @@
 
 package org.exoplatform.task.management.controller;
 
+import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -32,7 +33,6 @@ import juzu.request.SecurityContext;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import org.exoplatform.commons.juzu.ajax.Ajax;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.organization.OrganizationService;
@@ -46,6 +46,7 @@ import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.exception.NotAllowedOperationOnEntityException;
 import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.service.UserService;
+import org.exoplatform.task.util.ListUtil;
 import org.exoplatform.task.util.UserUtil;
 
 /**
@@ -145,8 +146,9 @@ public class UserController extends AbstractController {
     @Ajax
     @MimeType.JSON
     public Response findLabel(SecurityContext securityContext) throws JSONException {
-      String username = securityContext.getRemoteUser();
-      List<Label> labels = taskService.findLabelsByUser(username);
+      String username = securityContext.getRemoteUser();      
+      ListAccess<Label> tmp = taskService.findLabelsByUser(username);
+      List<Label> labels = Arrays.asList(ListUtil.load(tmp, 0, -1));
 
       //TODO: this block code is mock data
       if (labels == null || labels.isEmpty()) {
@@ -175,7 +177,7 @@ public class UserController extends AbstractController {
         taskService.createLabel(label3);
         taskService.createLabel(label4);
 
-        labels = taskService.findLabelsByUser(username);
+        labels = Arrays.asList(ListUtil.load(taskService.findLabelsByUser(username), 0, -1));
       }
 
       JSONArray array = new JSONArray();

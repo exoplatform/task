@@ -29,6 +29,7 @@ import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.task.dao.DAOHandler;
 import org.exoplatform.task.dao.OrderBy;
+import org.exoplatform.task.dao.ProjectQuery;
 import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
@@ -165,17 +166,32 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   @Override
-  public List<Project> getSubProjects(long parentId) {
+  public ListAccess<Project> getSubProjects(long parentId) {
     try {
       Project parent = getProject(parentId);
       return daoHandler.getProjectHandler().findSubProjects(parent);
     } catch (EntityNotFoundException ex) {
-      return Collections.emptyList();
+      return new ListAccess<Project>() {
+        @Override
+        public int getSize() throws Exception {
+          return 0;
+        }
+
+        @Override
+        public Project[] load(int arg0, int arg1) throws Exception, IllegalArgumentException {
+          return new Project[0];
+        }
+      };
     }
   }
 
   @Override
-  public List<Project> findProjects(List<String> memberships, String keyword, OrderBy order) {
+  public ListAccess<Project> findProjects(ProjectQuery query) {
+    return daoHandler.getProjectHandler().findProjects(query);
+  }
+
+  @Override
+  public ListAccess<Project> findProjects(List<String> memberships, String keyword, OrderBy order) {
     return daoHandler.getProjectHandler().findAllByMembershipsAndKeyword(memberships, keyword, order);
   }
 }

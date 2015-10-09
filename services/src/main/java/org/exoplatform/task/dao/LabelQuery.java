@@ -17,18 +17,23 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.exoplatform.task.dao.condition;
+package org.exoplatform.task.dao;
 
-/**
- * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
- */
-public class Condition implements Cloneable {
+import org.exoplatform.task.dao.condition.Conditions;
 
-  public Condition clone() {
-    try {
-      return (Condition)super.clone();
-    } catch (CloneNotSupportedException e) {
-      return null;
+public class LabelQuery extends Query {
+  public LabelQuery setUserName(String username) {
+    if (username != null) {
+      this.add(Conditions.eq(Conditions.USERNAME, username));
     }
+    return this;
   }
+  
+  public LabelQuery setTaskId(Long taskId) {
+    if (taskId != null) {
+      this.add(Conditions.eq(Conditions.LABEL_TASK_ID, taskId));
+    }
+    return this;
+  }
+
 }

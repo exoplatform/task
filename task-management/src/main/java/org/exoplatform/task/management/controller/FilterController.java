@@ -21,12 +21,20 @@ package org.exoplatform.task.management.controller;
 
 import javax.inject.Inject;
 
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import juzu.MimeType;
+import juzu.Path;
+import juzu.Resource;
+import juzu.Response;
+import juzu.impl.common.Tools;
+import juzu.request.SecurityContext;
+
 import org.exoplatform.commons.juzu.ajax.Ajax;
+import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.task.domain.Label;
@@ -37,17 +45,11 @@ import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.StatusService;
 import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.service.UserService;
+import org.exoplatform.task.util.ListUtil;
 import org.exoplatform.task.util.ProjectUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import juzu.MimeType;
-import juzu.Path;
-import juzu.Resource;
-import juzu.Response;
-import juzu.impl.common.Tools;
-import juzu.request.SecurityContext;
 
 public class FilterController {
 
@@ -89,7 +91,8 @@ public class FilterController {
       status = statusService.getStatuses(project.getId());
     }
     
-    List<Label> labels = taskService.findLabelsByUser(username);
+    ListAccess<Label> tmp = taskService.findLabelsByUser(username);
+    List<Label> labels = Arrays.asList(ListUtil.load(tmp, 0, -1));
     JSONArray lblArr = buildJSON(labels);
 
     boolean filterAssignee = projectId == null || projectId != ProjectUtil.INCOMING_PROJECT_ID;

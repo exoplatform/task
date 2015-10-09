@@ -29,6 +29,7 @@ import org.junit.Test;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.task.dao.DAOHandler;
 import org.exoplatform.task.dao.ProjectHandler;
+import org.exoplatform.task.dao.ProjectQuery;
 import org.exoplatform.task.dao.TaskHandler;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
@@ -127,7 +128,7 @@ public class TestPermission extends AbstractTest {
   }
 
   @Test
-  public void testProjectManagerPermission() {
+  public void testProjectManagerPermission() throws Exception {
 
     //User
     String user1 = "user1";
@@ -168,12 +169,12 @@ public class TestPermission extends AbstractTest {
     Assert.assertEquals(1, tDAO.findByUser(user2).size());
     Assert.assertEquals(0, tDAO.findByUser("John Doe").size());
     //Only user2 is manager of a project
-    Assert.assertEquals(0, pDAO.findAllByMemberships(getMembershipsUser(user1)).size());
-    Assert.assertEquals(1, pDAO.findAllByMemberships(getMembershipsUser(user2)).size());
+    Assert.assertEquals(0, pDAO.findAllByMembershipsAndKeyword(getMembershipsUser(user1), null, null).getSize());
+    Assert.assertEquals(1, pDAO.findAllByMembershipsAndKeyword(getMembershipsUser(user2), null, null).getSize());
   }
 
   @Test
-  public void testProjectMemberPermission() {
+  public void testProjectMemberPermission() throws Exception {
 
     //User
     String user1 = "user1";
@@ -215,8 +216,8 @@ public class TestPermission extends AbstractTest {
     Assert.assertEquals(1, tDAO.findByUser(user2).size());
     Assert.assertEquals(0, tDAO.findByUser("John Doe").size());
     //Only user2 is member of a project
-    Assert.assertEquals(0, pDAO.findAllByMemberships(getMembershipsUser(user1)).size());
-    Assert.assertEquals(1, pDAO.findAllByMemberships(getMembershipsUser(user2)).size());
+    Assert.assertEquals(0, pDAO.findAllByMembershipsAndKeyword(getMembershipsUser(user1), null, null).getSize());
+    Assert.assertEquals(1, pDAO.findAllByMembershipsAndKeyword(getMembershipsUser(user2), null, null).getSize());
   }
 
   private List<String> getMembershipsUser(String user) {

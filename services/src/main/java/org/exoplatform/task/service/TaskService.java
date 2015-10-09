@@ -21,16 +21,44 @@ public interface TaskService {
 
   String TASK_UPDATE = "exo.task.taskUpdate";
 
+  /**
+   * Create a new task.
+   *
+   * @param task
+   * @return the created task.
+   */
   Task createTask(Task task);
 
+  /**
+   * Update the task.
+   *
+   * @param task
+   * @return the updated task.
+   */
   Task updateTask(Task task);
 
   void updateTaskOrder(long currentTaskId, Status newStatus, long[] orders);
 
+  /**
+   * Remove the task with given <code>taskId</code>
+   *
+   * @param taskId
+   * @throws EntityNotFoundException
+   */
   void removeTask(long taskId) throws EntityNotFoundException;
 
+  /**
+   * Clone the task from a task with given <code>taskId</code>.
+   */
   Task cloneTask(long taskId) throws EntityNotFoundException;
 
+  /**
+   * Return the task with given <code>taskId</code>.
+   *
+   * @param taskId
+   * @return
+   * @throws EntityNotFoundException
+   */
   Task getTask(long taskId) throws EntityNotFoundException;
 
   ListAccess<Comment> getComments(long taskId);
@@ -43,7 +71,7 @@ public interface TaskService {
 
   public <T> List<T> selectTaskField(TaskQuery query, String fieldName);
 
-  List<Task> findTasksByLabel(long labelId, List<Long> projectIds, String username, OrderBy orderBy) throws EntityNotFoundException;  
+  ListAccess<Task> findTasksByLabel(long labelId, List<Long> projectIds, String username, OrderBy orderBy) throws EntityNotFoundException;  
 
   /**
    * Create a log associated with a task with given <code>taskId</code>.
@@ -57,11 +85,15 @@ public interface TaskService {
    */
   TaskLog addTaskLog(long taskId, String username, String msg, String target) throws EntityNotFoundException;
   
-  List<Label> findLabelsByUser(String username);
+  void addTaskToLabel(Long taskId, Long labelId) throws EntityNotFoundException;
   
-  List<Label> findLabelsByTask(long taskId, String username) throws EntityNotFoundException;
+  void removeTaskFromLabel(Long taskId, Long labelId) throws EntityNotFoundException;
   
-  Label getLabelById(long labelId);
+  ListAccess<Label> findLabelsByUser(String username);
+  
+  ListAccess<Label> findLabelsByTask(long taskId, String username) throws EntityNotFoundException;
+  
+  Label getLabel(long labelId);
   
   Label createLabel(Label label);
   
@@ -73,4 +105,5 @@ public interface TaskService {
 
   //TODO: should use via #findTasks(TaskQuery)?
   Task findTaskByActivityId(String activityId);
+
 }
