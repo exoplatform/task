@@ -19,11 +19,6 @@
 
 package org.exoplatform.task.integration.calendar;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-
 import org.exoplatform.calendar.model.Event;
 import org.exoplatform.calendar.model.query.EventQuery;
 import org.exoplatform.calendar.service.Utils;
@@ -39,6 +34,10 @@ import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.util.ListUtil;
 import org.exoplatform.task.util.ProjectUtil;
 import org.exoplatform.task.util.TaskUtil;
+
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 public class TasksEventDAOImpl implements EventDAO {
   

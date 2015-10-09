@@ -17,11 +17,6 @@
   
 package org.exoplatform.task.integration;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.social.core.space.SpaceListenerPlugin;
@@ -32,6 +27,11 @@ import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.StatusService;
 import org.exoplatform.task.util.ProjectUtil;
 import org.exoplatform.task.util.UserUtil;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class SpaceTaskDataInitializer extends SpaceListenerPlugin {
   

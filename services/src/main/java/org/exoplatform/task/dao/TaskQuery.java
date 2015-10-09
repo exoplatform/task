@@ -269,7 +269,7 @@ public class TaskQuery implements Cloneable {
   }
 
   public TaskQuery clone() {
-    return new TaskQuery(aggCondition.clone(), orderBy, projectIds != null ? new ArrayList<Long>(projectIds) : null, assignee);
+    return new TaskQuery(aggCondition != null ? aggCondition.clone() : null, orderBy, projectIds != null ? new ArrayList<Long>(projectIds) : null, assignee);
   }
 
 }

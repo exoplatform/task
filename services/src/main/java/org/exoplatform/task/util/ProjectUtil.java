@@ -67,40 +67,8 @@ public final class ProjectUtil {
   public static final String NAME = "name";
 
   public static final String DUE_DATE = "dueDate";
-  
-  private static final String NAME_SUFFIX = " Tasks";
 
   private ProjectUtil() {
-  }
-  
-  public static Calendar buildCalendar(Calendar calendar, Project project) {
-    if (project == null || calendar == null) {
-      return null;
-    }
-    if (project.getColor() != null) {
-      calendar.setCalendarColor(project.getColor());      
-    }
-    calendar.setDescription(project.getDescription());
-    calendar.setEditPermission(null);
-    //ProjectService service = ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(ProjectService.class);
-    TaskService taskService = ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(TaskService.class);
-    TaskQuery taskQuery = new TaskQuery();
-    taskQuery.setProjectIds(Arrays.asList(project.getId()));
-    //List<Task> tasks = service.getTasksByProjectId(Arrays.asList(project.getId()), null);
-    ListAccess<Task> listTask = taskService.findTasks(taskQuery);
-    calendar.setHasChildren(ListUtil.getSize(listTask) > 0);
-    calendar.setId(String.valueOf(project.getId()));
-    calendar.setName(project.getName() + NAME_SUFFIX);
-    Set<String> permissions = new HashSet<String>();
-    if (project.getManager() != null) {
-      permissions.addAll(project.getManager());      
-    }
-    if (project.getParticipator() != null) {
-      permissions.addAll(project.getParticipator());      
-    }
-    calendar.setViewPermission(permissions.toArray(new String[permissions.size()]));    
-
-    return calendar;
   }
   
   public static List<Project> getProjectTree(String space_group_id, ProjectService projectService) {

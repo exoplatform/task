@@ -17,10 +17,6 @@
   
 package org.exoplatform.task.integration;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import org.exoplatform.commons.api.search.SearchServiceConnector;
 import org.exoplatform.commons.api.search.data.SearchContext;
 import org.exoplatform.commons.api.search.data.SearchResult;
@@ -38,6 +34,10 @@ import org.exoplatform.task.util.ResourceUtil;
 import org.exoplatform.task.util.StringUtil;
 import org.exoplatform.task.util.UserUtil;
 import org.exoplatform.web.WebAppController;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class ProjectSearchConnector extends SearchServiceConnector {
 

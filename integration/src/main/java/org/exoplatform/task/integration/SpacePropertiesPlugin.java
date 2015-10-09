@@ -18,10 +18,6 @@
  */
 package org.exoplatform.task.integration;
 
-import java.util.Map;
-
-import javax.xml.namespace.QName;
-
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.portal.application.PortalRequestContext;
@@ -32,6 +28,9 @@ import org.exoplatform.portal.webui.util.Util;
 import org.exoplatform.social.common.router.ExoRouter;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
+
+import javax.xml.namespace.QName;
+import java.util.Map;
 
 public class SpacePropertiesPlugin extends AbstractContextualPropertyProviderPlugin {
 

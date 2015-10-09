@@ -17,8 +17,6 @@
   
 package org.exoplatform.task.integration;
 
-import java.util.List;
-
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.container.xml.ValueParam;
@@ -28,6 +26,8 @@ import org.exoplatform.social.core.space.SpaceApplicationConfigPlugin;
 import org.exoplatform.social.core.space.SpaceApplicationConfigPlugin.SpaceApplication;
 import org.exoplatform.social.core.space.spi.SpaceService;
 import org.picocontainer.Startable;
+
+import java.util.List;
 
 public class SpaceTaskAppInstaller implements Startable {
 

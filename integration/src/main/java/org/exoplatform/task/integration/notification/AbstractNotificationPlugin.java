@@ -16,10 +16,6 @@
  */
 package org.exoplatform.task.integration.notification;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Set;
-
 import org.exoplatform.commons.api.notification.NotificationContext;
 import org.exoplatform.commons.api.notification.model.NotificationInfo;
 import org.exoplatform.commons.api.notification.plugin.BaseNotificationPlugin;
@@ -35,6 +31,10 @@ import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.util.ProjectUtil;
 import org.exoplatform.task.util.TaskUtil;
 import org.exoplatform.web.WebAppController;
+
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Set;
 
 public abstract class AbstractNotificationPlugin extends BaseNotificationPlugin {
   

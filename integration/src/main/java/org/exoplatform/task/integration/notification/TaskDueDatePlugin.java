@@ -16,13 +16,13 @@
  */
 package org.exoplatform.task.integration.notification;
 
-import java.util.Calendar;
-import java.util.TimeZone;
-
 import org.exoplatform.commons.api.notification.NotificationContext;
 import org.exoplatform.commons.api.notification.model.NotificationInfo;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.task.domain.Task;
+
+import java.util.Calendar;
+import java.util.TimeZone;
 
 public class TaskDueDatePlugin extends AbstractNotificationPlugin {
   

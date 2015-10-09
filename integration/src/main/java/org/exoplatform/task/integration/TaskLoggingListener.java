@@ -15,12 +15,9 @@
  * along with this program; if not, see<http://www.gnu.org/licenses/>.
  **/
   
-package org.exoplatform.task.service.impl;
-
-import java.util.Set;
+package org.exoplatform.task.integration;
 
 import org.apache.commons.lang.StringUtils;
-
 import org.exoplatform.commons.api.notification.NotificationContext;
 import org.exoplatform.commons.api.notification.model.PluginKey;
 import org.exoplatform.commons.notification.impl.NotificationContextImpl;
@@ -36,6 +33,11 @@ import org.exoplatform.task.integration.notification.TaskDueDatePlugin;
 import org.exoplatform.task.service.Payload;
 import org.exoplatform.task.service.TaskService;
 
+import java.util.Set;
+
+/**
+ * TODO: please reconsider where should this class stay? I move it to integration module because it depends on these class
+ */
 public class TaskLoggingListener extends Listener<TaskService, Payload> {
 
   @Override

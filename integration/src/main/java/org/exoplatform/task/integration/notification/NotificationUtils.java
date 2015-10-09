@@ -17,10 +17,10 @@
   
 package org.exoplatform.task.integration.notification;
 
-import java.util.Set;
-
 import org.exoplatform.commons.api.notification.model.ArgumentLiteral;
 import org.exoplatform.task.domain.Task;
+
+import java.util.Set;
 
 public class NotificationUtils {
   public final static ArgumentLiteral<Task> TASK = new ArgumentLiteral<Task>(Task.class, "task");

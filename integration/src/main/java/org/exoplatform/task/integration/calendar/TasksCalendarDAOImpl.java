@@ -17,25 +17,35 @@
 
 package org.exoplatform.task.integration.calendar;
 
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
 import org.exoplatform.calendar.model.Calendar;
 import org.exoplatform.calendar.model.query.CalendarQuery;
 import org.exoplatform.calendar.storage.CalendarDAO;
+import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.security.Identity;
+import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.domain.Project;
+import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.service.ProjectService;
+import org.exoplatform.task.service.TaskService;
+import org.exoplatform.task.util.ListUtil;
 import org.exoplatform.task.util.ProjectUtil;
 import org.exoplatform.task.util.UserUtil;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
 public class TasksCalendarDAOImpl implements CalendarDAO {
+
+  private static final String NAME_SUFFIX = " Tasks";
   
   private ProjectService projectService;
+  private TaskService taskService;
 
   private static final Log          LOG   = ExoLogger.getExoLogger(TasksCalendarDAOImpl.class);
   
@@ -47,8 +57,9 @@ public class TasksCalendarDAOImpl implements CalendarDAO {
     DF_CALENDAR.setName("Tasks");
   }
 
-  public TasksCalendarDAOImpl(ProjectService projectService) {
+  public TasksCalendarDAOImpl(ProjectService projectService, TaskService taskService) {
     this.projectService = projectService;
+    this.taskService = taskService;
   }
 
   @Override
@@ -60,7 +71,7 @@ public class TasksCalendarDAOImpl implements CalendarDAO {
       } else {
         Project project = projectService.getProject(Long.valueOf(id));
         if (project.isCalendarIntegrated()) {
-          return ProjectUtil.buildCalendar(cal, project);          
+          return buildCalendar(cal, project);
         }
       }
     } catch (Exception ex) {
@@ -90,7 +101,7 @@ public class TasksCalendarDAOImpl implements CalendarDAO {
     for (Project p : projects) {
       if (p.isCalendarIntegrated()) {
         Calendar cal = newInstance();
-        calendars.add(ProjectUtil.buildCalendar(cal, p));        
+        calendars.add(buildCalendar(cal, p));
       }
     }    
     
@@ -130,5 +141,35 @@ public class TasksCalendarDAOImpl implements CalendarDAO {
     Calendar c = new Calendar("");
     c.setDS(TasksStorage.TASKS_STORAGE);
     return c;
+  }
+
+  private Calendar buildCalendar(Calendar calendar, Project project) {
+    if (project == null || calendar == null) {
+      return null;
+    }
+    if (project.getColor() != null) {
+      calendar.setCalendarColor(project.getColor());
+    }
+    calendar.setDescription(project.getDescription());
+    calendar.setEditPermission(null);
+    //ProjectService service = ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(ProjectService.class);
+    //TaskService taskService = ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(TaskService.class);
+    TaskQuery taskQuery = new TaskQuery();
+    taskQuery.setProjectIds(Arrays.asList(project.getId()));
+    //List<Task> tasks = service.getTasksByProjectId(Arrays.asList(project.getId()), null);
+    ListAccess<Task> listTask = taskService.findTasks(taskQuery);
+    calendar.setHasChildren(ListUtil.getSize(listTask) > 0);
+    calendar.setId(String.valueOf(project.getId()));
+    calendar.setName(project.getName() + NAME_SUFFIX);
+    Set<String> permissions = new HashSet<String>();
+    if (project.getManager() != null) {
+      permissions.addAll(project.getManager());
+    }
+    if (project.getParticipator() != null) {
+      permissions.addAll(project.getParticipator());
+    }
+    calendar.setViewPermission(permissions.toArray(new String[permissions.size()]));
+
+    return calendar;
   }
 }

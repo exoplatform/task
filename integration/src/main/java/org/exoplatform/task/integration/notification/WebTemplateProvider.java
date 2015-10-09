@@ -16,13 +16,6 @@
  */
 package org.exoplatform.task.integration.notification;
 
-import java.io.Writer;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
-
 import org.exoplatform.commons.api.notification.NotificationContext;
 import org.exoplatform.commons.api.notification.NotificationMessageUtils;
 import org.exoplatform.commons.api.notification.annotation.TemplateConfig;
@@ -45,6 +38,11 @@ import org.exoplatform.social.core.service.LinkProvider;
 import org.exoplatform.social.notification.LinkProviderUtils;
 import org.exoplatform.task.service.UserService;
 import org.exoplatform.webui.utils.TimeConvertUtils;
+
+import java.io.Writer;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 @TemplateConfigs (
    templates = {

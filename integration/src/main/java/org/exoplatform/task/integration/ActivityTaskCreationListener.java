@@ -26,8 +26,8 @@ import org.exoplatform.social.core.service.LinkProvider;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.service.ParserContext;
 import org.exoplatform.task.service.TaskParser;
-import org.exoplatform.task.service.UserService;
 import org.exoplatform.task.service.TaskService;
+import org.exoplatform.task.service.UserService;
 
 public class ActivityTaskCreationListener extends ActivityListenerPlugin {
 

@@ -17,12 +17,6 @@
   
 package org.exoplatform.task.integration;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
 import org.exoplatform.commons.api.search.SearchServiceConnector;
 import org.exoplatform.commons.api.search.data.SearchContext;
 import org.exoplatform.commons.api.search.data.SearchResult;
@@ -43,6 +37,12 @@ import org.exoplatform.task.util.StringUtil;
 import org.exoplatform.task.util.TaskUtil;
 import org.exoplatform.task.util.UserUtil;
 import org.exoplatform.web.WebAppController;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 public class TaskSearchConnector extends SearchServiceConnector {
 

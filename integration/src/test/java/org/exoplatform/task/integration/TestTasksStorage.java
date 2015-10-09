@@ -17,31 +17,37 @@
   
 package org.exoplatform.task.integration;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.anyList;
+import static org.mockito.Matchers.isNull;
+import static org.mockito.Mockito.when;
 
 import org.exoplatform.calendar.model.Calendar;
 import org.exoplatform.calendar.model.query.CalendarQuery;
 import org.exoplatform.calendar.storage.CalendarDAO;
-import org.exoplatform.container.PortalContainer;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.services.security.MembershipEntry;
+import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.integration.calendar.TasksStorage;
 import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.TaskService;
-import org.exoplatform.task.AbstractTest;
 import org.exoplatform.task.util.ProjectUtil;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
-public class TestTasksStorage extends AbstractTest {
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
+public class TestTasksStorage {
 
   private TasksStorage storage;
   private CalendarDAO calDAO;
@@ -49,43 +55,51 @@ public class TestTasksStorage extends AbstractTest {
   private Project p1;
   private Project p2;
   private Project p3;
+
+  @Mock
+  private ProjectService projectService;
+
+  @Mock
+  private TaskService taskService;
   
   @Before
   public void setup() {
-    PortalContainer container = PortalContainer.getInstance();
-    
-    ProjectService projectService = container.getComponentInstanceOfType(ProjectService.class);
-    TaskService taskService = container.getComponentInstanceOfType(TaskService.class);
-    storage = new TasksStorage(projectService, taskService);
-    calDAO = storage.getCalendarDAO();
-    
+    MockitoAnnotations.initMocks(this);
+
     Set<String> users = new HashSet<String>();
     users.add("root");
     p1 = new Project("Test project 1", null, null, users, null);
+    p1.setId(1);
     p1.setCalendarIntegrated(true);
-    projectService.createProject(p1);
+
     p2 = new Project("Test project 2", null, null, null, users);
-    p2.setCalendarIntegrated(true);    
-    projectService.createProject(p2);
+    p2.setId(2);
+    p2.setCalendarIntegrated(true);
     Set<String> memberships = new HashSet<String>();
     memberships.add("*:/platform/administrators");
+
     p3 = new Project("Test project 3", null, null, memberships, null);
+    p3.setId(3);
     p3.setCalendarIntegrated(true);
-    projectService.createProject(p3);
+
+    storage = new TasksStorage(projectService, taskService);
+    calDAO = storage.getCalendarDAO();
   }
 
   @After
   public void tearDown() throws EntityNotFoundException {
-    PortalContainer container = PortalContainer.getInstance();
 
-    ProjectService projectService = container.getComponentInstanceOfType(ProjectService.class);
-    projectService.removeProject(p1.getId(), true);
-    projectService.removeProject(p2.getId(), true);
-    projectService.removeProject(p3.getId(), true);
   }
   
   @Test
-  public void testGetCalendarById() {    
+  public void testGetCalendarById() {
+    try {
+      when(projectService.getProject(p1.getId())).thenReturn(p1);
+    } catch (EntityNotFoundException ex) {
+      ex.printStackTrace();
+      fail(ex.getMessage());
+    }
+
     Calendar cal = calDAO.getById(String.valueOf(p1.getId()));
     Assert.assertNotNull(cal);
     Assert.assertNull(calDAO.getById("-1"));
@@ -98,6 +112,10 @@ public class TestTasksStorage extends AbstractTest {
     query.setDS(TasksStorage.TASKS_STORAGE);
     Identity identity = new Identity("root");
     query.setIdentity(identity);
+
+    when(projectService.findProjects(anyList(), isNull(String.class), isNull(OrderBy.class)))
+            .thenReturn(Arrays.asList(p1, p2))
+            .thenReturn(Arrays.asList(p1, p2, p3));
     
     List<Calendar> cals = calDAO.findCalendars(query);
     Assert.assertEquals(3, cals.size());
@@ -109,6 +127,9 @@ public class TestTasksStorage extends AbstractTest {
     memberships.add(new MembershipEntry("/platform/administrators", "*"));
     identity = new Identity("root", memberships);
     query.setIdentity(identity);
+
+    //when(projectService.findProjects(any(List.class), null, null)).thenReturn(Arrays.asList(p1, p2, p3));
+
     cals = calDAO.findCalendars(query);
     Assert.assertEquals(4, cals.size());
     Assert.assertEquals(String.valueOf(p3.getId()), cals.get(3).getId());

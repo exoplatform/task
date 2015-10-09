@@ -37,7 +37,7 @@ public class TasksStorage extends BaseComponentPlugin implements Storage {
   }
 
   public TasksStorage(ProjectService projectService, TaskService taskService) {
-    calendarDAO = new TasksCalendarDAOImpl(projectService);
+    calendarDAO = new TasksCalendarDAOImpl(projectService, taskService);
     eventDAO = new TasksEventDAOImpl(taskService);
   }
 

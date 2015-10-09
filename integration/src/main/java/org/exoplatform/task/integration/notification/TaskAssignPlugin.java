@@ -16,19 +16,20 @@
  */
 package org.exoplatform.task.integration.notification;
 
-import java.util.Set;
-
 import org.exoplatform.commons.api.notification.NotificationContext;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.task.domain.Task;
 
-public class TaskCoworkerPlugin extends AbstractNotificationPlugin {
+import java.util.HashSet;
+import java.util.Set;
+
+public class TaskAssignPlugin extends AbstractNotificationPlugin {
   
-  public TaskCoworkerPlugin(InitParams initParams) {
+  public TaskAssignPlugin(InitParams initParams) {
     super(initParams);
   }
 
-  public static final String ID = "TaskCoworkerPlugin";
+  public static final String ID = "TaskAssignPlugin";
   
   @Override
   public String getId() {
@@ -37,13 +38,17 @@ public class TaskCoworkerPlugin extends AbstractNotificationPlugin {
 
   @Override
   public boolean isValid(NotificationContext ctx) {
-    Set<String> coworkers = getReceiver(null, ctx);
-    return coworkers != null && coworkers.size() > 0;
+    Task task = ctx.value(NotificationUtils.TASK);
+    return task.getAssignee() != null && !task.getAssignee().isEmpty();
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   protected Set<String> getReceiver(Task task, NotificationContext ctx) {
-    return (Set<String>)ctx.value(NotificationUtils.COWORKER);
+    Set<String> receivers = new HashSet<String>();
+    if (task.getAssignee() != null) {
+      receivers.add(task.getAssignee());
+    }
+    return receivers;
   }
+  
 }
