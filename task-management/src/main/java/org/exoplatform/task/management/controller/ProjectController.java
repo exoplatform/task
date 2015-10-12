@@ -54,15 +54,17 @@ import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.UserSetting;
-import org.exoplatform.task.exception.AbstractEntityException;
-import org.exoplatform.task.exception.ProjectNotFoundException;
+import org.exoplatform.task.exception.EntityNotFoundException;
+import org.exoplatform.task.exception.ParameterEntityException;
 import org.exoplatform.task.model.Permission;
 import org.exoplatform.task.model.User;
 import org.exoplatform.task.model.UserGroup;
 import org.exoplatform.task.service.ProjectService;
+import org.exoplatform.task.service.StatusService;
 import org.exoplatform.task.service.UserService;
-import org.exoplatform.task.utils.ProjectUtil;
-import org.exoplatform.task.utils.UserUtils;
+import org.exoplatform.task.util.ListUtil;
+import org.exoplatform.task.util.ProjectUtil;
+import org.exoplatform.task.util.UserUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -70,13 +72,16 @@ import org.json.JSONObject;
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
-public class ProjectController {
+public class ProjectController extends AbstractController {
 
   @Inject
   ResourceBundle bundle;
   
   @Inject
   ProjectService projectService;
+
+  @Inject
+  StatusService statusService;
 
   @Inject
   UserService userService;
@@ -128,8 +133,8 @@ public class ProjectController {
   public Response projectForm(Long parentId, SecurityContext securityContext) {    
     Project parent;
     try {
-      parent = projectService.getProjectById(parentId);
-    } catch (ProjectNotFoundException e) {
+      parent = projectService.getProject(parentId);
+    } catch (EntityNotFoundException e) {
       parent = new Project();
     }
     
@@ -146,7 +151,7 @@ public class ProjectController {
   @Resource
   @Ajax
   @MimeType.JSON
-  public Response createProject(String space_group_id, String name, String description, Long parentId, Boolean calInteg, SecurityContext securityContext) {
+  public Response createProject(String space_group_id, String name, String description, Long parentId, Boolean calInteg, SecurityContext securityContext) throws EntityNotFoundException, JSONException {
 
     String currentUser = securityContext.getRemoteUser();
     if(currentUser == null) {
@@ -157,90 +162,76 @@ public class ProjectController {
       return Response.status(412).body("Name of project is required");
     }
 
-    calInteg = calInteg == null ? false : calInteg;
-    
-    try {
-      Project project;
-      if (space_group_id  != null) {
-        List<String> memberships = UserUtils.getSpaceMemberships(space_group_id);
-        Set<String> managers = new HashSet<String>(Arrays.asList(currentUser, memberships.get(0)));
-        Set<String> participators = new HashSet<String>(Arrays.asList(memberships.get(1)));
-        project = projectService.createDefaultStatusProjectWithAttributes(parentId, name, description, calInteg, managers, participators);
-      } else {
-        project = projectService.createDefaultStatusProjectWithManager(name, description, calInteg, parentId, currentUser); //Can throw ProjectNotFoundException        
-      }
-      JSONObject result = new JSONObject();
-      result.put("id", project.getId());//Can throw JSONException (same for all #json.put methods below)
-      result.put("name", project.getName());
-      result.put("color", "transparent");
-
-      return Response.ok(result.toString()).withCharset(Tools.UTF_8);
-
-    } catch (AbstractEntityException e) {
-      return Response.status(e.getHttpStatusCode()).body(e.getMessage());
-    } catch (JSONException ex) {
-      return Response.status(500).body(ex.getMessage());
+    Project project;
+    if (space_group_id  != null) {
+      List<String> memberships = UserUtil.getSpaceMemberships(space_group_id);
+      Set<String> managers = new HashSet<String>(Arrays.asList(currentUser, memberships.get(0)));
+      Set<String> participators = new HashSet<String>(Arrays.asList(memberships.get(1)));
+      //project = projectService.createDefaultStatusProjectWithAttributes(parentId, name, description, managers, participators);
+      project = ProjectUtil.newProjectInstance(name, description, managers, participators);
+    } else {
+      project = ProjectUtil.newProjectInstance(name, description, currentUser);
+      //project = projectService.createDefaultStatusProjectWithManager(name, description, parentId, currentUser); //Can throw ProjectNotFoundException
     }
+    
+    calInteg = calInteg == null ? false : calInteg;
+    project.setCalendarIntegrated(calInteg);
+
+    if (parentId != null && parentId > 0) {
+      project = projectService.createProject(project, parentId);
+    } else {
+      project = projectService.createProject(project);
+      statusService.createInitialStatuses(project);
+    }
+
+    JSONObject result = new JSONObject();
+    result.put("id", project.getId());//Can throw JSONException (same for all #json.put methods below)
+    result.put("name", project.getName());
+    result.put("color", "transparent");
+
+    return Response.ok(result.toString()).withCharset(Tools.UTF_8);
   }
 
   @Resource
   @Ajax
   @MimeType.JSON
-  public Response cloneProject(Long id, String cloneTask, SecurityContext securityContext) {
+  public Response cloneProject(Long id, String cloneTask, SecurityContext securityContext) throws EntityNotFoundException, JSONException {
 
-    try {
+    Project project = projectService.cloneProject(id, Boolean.parseBoolean(cloneTask)); //Can throw ProjectNotFoundException
 
-      Project project = projectService.cloneProjectById(id, Boolean.parseBoolean(cloneTask)); //Can throw ProjectNotFoundException
+    JSONObject result = new JSONObject();
+    result.put("id", project.getId());
+    result.put("name", project.getName());
+    result.put("color", project.getColor());
 
-      JSONObject result = new JSONObject();
-      result.put("id", project.getId());
-      result.put("name", project.getName());
-      result.put("color", project.getColor());
-
-      return Response.ok(result.toString()).withCharset(Tools.UTF_8);
-
-    } catch (AbstractEntityException e) {
-      return Response.status(e.getHttpStatusCode()).body(e.getMessage());
-    } catch (JSONException ex) {
-      return Response.status(500).body(ex.getMessage());
-    }
+    return Response.ok(result.toString()).withCharset(Tools.UTF_8);
   }
 
   @Resource
   @Ajax
   @MimeType.HTML
-  public Response openConfirmDelete(Long id) {
-    try {
-      Project project = projectService.getProjectById(id); //Can throw ProjectNotFoundException
-      if (project != null) {
-        String msg = bundle.getString("popup.msg.deleteProject");
-        msg = msg.replace("{}", project.getName());
+  public Response openConfirmDelete(Long id) throws EntityNotFoundException {
+    Project project = projectService.getProject(id); //Can throw ProjectNotFoundException
+    if (project != null) {
+      String msg = bundle.getString("popup.msg.deleteProject");
+      msg = msg.replace("{}", project.getName());
 
-        return confirmDeleteProject.with().pid(project.getId()).msg(msg)
-            .ok().withCharset(Tools.UTF_8);        
-      } else {
-        return Response.status(404);
-      }
-    } catch (AbstractEntityException e) {
-      return Response.status(e.getHttpStatusCode()).body(e.getMessage());
+      return confirmDeleteProject.with().pid(project.getId()).msg(msg)
+          .ok().withCharset(Tools.UTF_8);
+    } else {
+      return Response.status(404);
     }
   }
   
   @Resource
   @Ajax
   @MimeType.HTML
-  public Response openShareDialog(Long id) {
-
-    try {
-      Project project = projectService.getProjectById(id); //Can throw ProjectNotFoundException
-      return renderShareDialog(project, "");
-
-    } catch (AbstractEntityException e) {
-      return Response.status(e.getHttpStatusCode()).body(e.getMessage());
-    }
+  public Response openShareDialog(Long id) throws EntityNotFoundException {
+    Project project = projectService.getProject(id); //Can throw ProjectNotFoundException
+    return renderShareDialog(project, "");
   }
 
-  @Resource
+  /*@Resource
   @Ajax
   @MimeType.HTML
   public Response removePermission(Long id, String permission, String type) {
@@ -253,55 +244,75 @@ public class ProjectController {
     } catch (AbstractEntityException e) {
       return Response.status(e.getHttpStatusCode()).body(e.getMessage());
     }
-  }
+  }*/
 
   @Resource
   @Ajax
   @MimeType.HTML
-  public Response openUserSelector(Long id, String type, Integer page, String groupId, String keyword, String filter) {
+  public Response openUserSelector(Long id, String type, Integer page, String groupId, String keyword, String filter) throws EntityNotFoundException, Exception {
+    int pageSize = 10;
+    int total = 0;
+    if (page == null) {
+      page = 0;
+    }
+    boolean hasNext = true;
+    Project project = projectService.getProject(id); //Can throw ProjectNotFoundException
 
-    try {
-      int pageSize = 10;
-      int total = 0;
-      if (page == null) {
-        page = 0;
+    UserHandler uHandler = orgService.getUserHandler();
+    List<org.exoplatform.services.organization.User> tmp = null;
+    if (keyword != null && !keyword.isEmpty()) {
+      String searchKeyword = keyword;
+      if (searchKeyword.indexOf("*") < 0) {
+        if (searchKeyword.charAt(0) != '*')
+          searchKeyword = "*" + searchKeyword;
+        if (searchKeyword.charAt(searchKeyword.length() - 1) != '*')
+          searchKeyword += "*";
       }
-      boolean hasNext = true;
-      Project project = projectService.getProjectById(id); //Can throw ProjectNotFoundException
+      searchKeyword = searchKeyword.replace('?', '_');
+      Query q = new Query();
+      if ("userName".equals(filter)) {
+        q.setUserName(searchKeyword);
+      }
+      if ("lastName".equals(filter)) {
+        q.setLastName(searchKeyword);
+      }
+      if ("firstName".equals(filter)) {
+        q.setFirstName(searchKeyword);
+      }
+      if ("email".equals(filter)) {
+        q.setEmail(searchKeyword);
+      }
+      ListAccess<org.exoplatform.services.organization.User> users = uHandler.findUsersByQuery(q);
+      total = ListUtil.getSize(users);
+      if (pageSize > total) {
+        pageSize = total;
+      }
+      tmp = new ArrayList<org.exoplatform.services.organization.User>();
+      org.exoplatform.services.organization.User[] uArr = new org.exoplatform.services.organization.User[0];
+      try {
+        uArr = users.load(page * pageSize, pageSize);
+      } catch (IllegalArgumentException ex) {
+        //workaround because uHandler doesn't support search using keyword and group in one query
+        page = page - 1;
+        uArr = users.load(page * pageSize, pageSize);
+        hasNext = false;
+      }
+      for (org.exoplatform.services.organization.User u : uArr) {
+        tmp.add(u);
+      }
+    }
 
-      UserHandler uHandler = orgService.getUserHandler();
-      List<org.exoplatform.services.organization.User> tmp = null;
-      if (keyword != null && !keyword.isEmpty()) {
-        String searchKeyword = keyword;
-        if (searchKeyword.indexOf("*") < 0) {
-          if (searchKeyword.charAt(0) != '*')
-            searchKeyword = "*" + searchKeyword;
-          if (searchKeyword.charAt(searchKeyword.length() - 1) != '*')
-            searchKeyword += "*";
-        }
-        searchKeyword = searchKeyword.replace('?', '_');
-        Query q = new Query();
-        if ("userName".equals(filter)) {
-          q.setUserName(searchKeyword);
-        }
-        if ("lastName".equals(filter)) {
-          q.setLastName(searchKeyword);
-        }
-        if ("firstName".equals(filter)) {
-          q.setFirstName(searchKeyword);
-        }
-        if ("email".equals(filter)) {
-          q.setEmail(searchKeyword);
-        }
-        ListAccess<org.exoplatform.services.organization.User> users = uHandler.findUsersByQuery(q);
+    if (groupId != null && !groupId.isEmpty()) {
+      if (tmp == null) {
+        ListAccess<org.exoplatform.services.organization.User> users = uHandler.findUsersByGroupId(groupId);
         total = users.getSize();
         if (pageSize > total) {
           pageSize = total;
         }
         tmp = new ArrayList<org.exoplatform.services.organization.User>();
         org.exoplatform.services.organization.User[] uArr = new org.exoplatform.services.organization.User[0];
-        try {          
-          uArr = users.load(page * pageSize, pageSize);          
+        try {
+          uArr = users.load(page * pageSize, pageSize);
         } catch (IllegalArgumentException ex) {
           //workaround because uHandler doesn't support search using keyword and group in one query
           page = page - 1;
@@ -311,89 +322,58 @@ public class ProjectController {
         for (org.exoplatform.services.organization.User u : uArr) {
           tmp.add(u);
         }
-      }
-
-      if (groupId != null && !groupId.isEmpty()) {
-        if (tmp == null) {
-          ListAccess<org.exoplatform.services.organization.User> users = uHandler.findUsersByGroupId(groupId);
-          total = users.getSize();
-          if (pageSize > total) {
-            pageSize = total;
-          }
-          tmp = new ArrayList<org.exoplatform.services.organization.User>();
-          org.exoplatform.services.organization.User[] uArr = new org.exoplatform.services.organization.User[0];
-          try {
-            uArr = users.load(page * pageSize, pageSize); 
-          } catch (IllegalArgumentException ex) {
-            //workaround because uHandler doesn't support search using keyword and group in one query
-            page = page - 1;
-            uArr = users.load(page * pageSize, pageSize);
-            hasNext = false;            
-          }
-          for (org.exoplatform.services.organization.User u : uArr) {
-            tmp.add(u);
-          }
-        } else {
-          MembershipHandler memberShipHandler = orgService.getMembershipHandler();
-          List<org.exoplatform.services.organization.User> results = new CopyOnWriteArrayList();
-          results.addAll(tmp);
-          for (org.exoplatform.services.organization.User u : tmp) {
-            if (memberShipHandler.findMembershipsByUserAndGroup(u.getUserName(), groupId).size() == 0) {
-              results.remove(u);
-            }
-          }
-          tmp = results;
-          total = tmp.size() == 0 ? 0 : -1;
-        }
-      }
-      if (tmp == null) {
-        ListAccess<org.exoplatform.services.organization.User> users = uHandler.findAllUsers();
-        total = users.getSize();
-        if (pageSize > total) {
-          pageSize = total;
-        }
-        tmp = new ArrayList<org.exoplatform.services.organization.User>();
-        for (org.exoplatform.services.organization.User u : users.load(page * pageSize, pageSize)) {
-          tmp.add(u);
-        }
-      }
-
-      Set<User> allUsers = new HashSet<User>();
-      if (tmp != null) {
-        for (org.exoplatform.services.organization.User u : tmp) {
-          User user = userService.loadUser(u.getUserName());
-          allUsers.add(user);
-        }
-      }
-      if ("manager".equals(type)) {
-        allUsers.removeAll(project.getManager());
-        total -= project.getManager().size();
       } else {
-        allUsers.removeAll(project.getParticipator());
-        total -= project.getParticipator().size();
+        MembershipHandler memberShipHandler = orgService.getMembershipHandler();
+        List<org.exoplatform.services.organization.User> results = new CopyOnWriteArrayList();
+        results.addAll(tmp);
+        for (org.exoplatform.services.organization.User u : tmp) {
+          if (memberShipHandler.findMembershipsByUserAndGroup(u.getUserName(), groupId).size() == 0) {
+            results.remove(u);
+          }
+        }
+        tmp = results;
+        total = tmp.size() == 0 ? 0 : -1;
       }
-
-      int totalPage = 0;
-      if (pageSize > 0) {
-        totalPage = total >= 0 ? (int)Math.ceil(total / pageSize) : -1;
-      }      
-      
-      return userSelectorDialog.with()
-          .type(type)
-          .users(allUsers)
-          .groupId(groupId == null ? "" : groupId)
-          .keyword(keyword == null ? "" : keyword)
-          .filter(filter == null ? "" : filter)
-          .currentPage(page)
-          .totalPage(totalPage)
-          .hasNext(hasNext)
-          .ok();
-
-    } catch (AbstractEntityException e) {
-      return Response.status(e.getHttpStatusCode()).body(e.getMessage());
-    } catch (Exception ex) {// NOSONAR
-      return Response.status(500).body(ex.getMessage());
     }
+    if (tmp == null) {
+      ListAccess<org.exoplatform.services.organization.User> users = uHandler.findAllUsers();
+      total = users.getSize();
+      if (pageSize > total) {
+        pageSize = total;
+      }
+      tmp = new ArrayList<org.exoplatform.services.organization.User>();
+      for (org.exoplatform.services.organization.User u : users.load(page * pageSize, pageSize)) {
+        tmp.add(u);
+      }
+    }
+
+    Set<User> allUsers = new HashSet<User>();
+    if (tmp != null) {
+      for (org.exoplatform.services.organization.User u : tmp) {
+        User user = userService.loadUser(u.getUserName());
+        allUsers.add(user);
+      }
+    }
+    if ("manager".equals(type)) {
+      allUsers.removeAll(project.getManager());
+      total -= project.getManager().size();
+    } else {
+      allUsers.removeAll(project.getParticipator());
+      total -= project.getParticipator().size();
+    }
+
+    int totalPage = total >= 0 ? (int)Math.ceil(total / pageSize) : -1;
+
+    return userSelectorDialog.with()
+            .type(type)
+            .users(allUsers)
+            .groupId(groupId == null ? "" : groupId)
+            .keyword(keyword == null ? "" : keyword)
+            .filter(filter == null ? "" : filter)
+            .currentPage(page)
+            .totalPage(totalPage)
+            .hasNext(hasNext)
+            .ok();
 
   }
 
@@ -412,7 +392,7 @@ public class ProjectController {
 
     List<UserGroup> allGroups = new ArrayList<UserGroup>();
     if (groups != null) {
-      allGroups = UserUtils.buildGroupTree(groups);
+      allGroups = UserUtil.buildGroupTree(groups);
     }
 
     List<String> allMSTypes = new ArrayList<String>();
@@ -475,17 +455,15 @@ public class ProjectController {
   @Resource
   @Ajax
   @MimeType.HTML
-  public Response savePermission(Long id, String[] permissions, String type) {
-    try {
+  public Response savePermission(Long id, String[] permissions, String type) throws EntityNotFoundException, ParameterEntityException {
+    String name = "manager".equals(type) ? type : "participator";
+    Map<String, String[]> fields = new HashMap<String, String[]>();
+    fields.put(name, permissions);
+    //
+    Project project = ProjectUtil.saveProjectField(projectService, id, fields);    
+    projectService.updateProject(project);
 
-      String name = "manager".equals(type) ? type : "participator";
-      Project project = projectService.updateProjectInfo(id, name, permissions); //Can throw ProjectNotFoundException & NotAllowedOperationOnEntityException
-      return renderShareDialog(project, "");
-
-    } catch (AbstractEntityException e) {
-      return Response.status(e.getHttpStatusCode()).body(e.getMessage());
-    }
-
+    return renderShareDialog(project, "");
   }
 
   @Resource
@@ -524,12 +502,12 @@ public class ProjectController {
       breadcrumbs = ProjectUtil.buildBreadcumbs(id, projectService, bundle);
     } else {
       try {
-        Project p = projectService.getProjectById(id);
+        Project p = projectService.getProject(id);
         breadcrumbs = new StringBuilder("<li class=\"active\"><a class=\"project-name\" href=\"javascript:void(0)\">")
                           .append(p.getName())
                           .append("</a></li>")
                           .toString();
-      } catch (ProjectNotFoundException ex) {
+      } catch (EntityNotFoundException ex) {
         breadcrumbs = new StringBuilder("<li class=\"muted\">")
                 .append(bundle.getString("label.noProject"))
                 .append("</li>")
@@ -556,87 +534,79 @@ public class ProjectController {
   @Resource
   @Ajax
   @MimeType.HTML
-  public Response projectDetail(Long id) {
-    try {
-      Project project = projectService.getProjectById(id); //Can throw ProjectNotFoundException
+  public Response projectDetail(Long id) throws EntityNotFoundException {
+    Project project = projectService.getProject(id); //Can throw ProjectNotFoundException
 
-      List<String> groups = new LinkedList<String>();
-      Map<String, User> users = new HashMap<String, User>();
-      if(project.getManager() != null && !project.getManager().isEmpty()) {
-        for(String man : project.getManager()) {
-          Permission per = Permission.parse(man, orgService);
-          if (per.getType() == Permission.USER) {
-            User user = userService.loadUser(man);
-            users.put(man, user);            
-          } else {
-            groups.add(per.getDisplayName());
-          }
+    List<String> groups = new LinkedList<String>();
+    Map<String, User> users = new HashMap<String, User>();
+    if(project.getManager() != null && !project.getManager().isEmpty()) {
+      for(String man : project.getManager()) {
+        Permission per = Permission.parse(man, orgService);
+        if (per.getType() == Permission.USER) {
+          User user = userService.loadUser(man);
+          users.put(man, user);
+        } else {
+          groups.add(per.getDisplayName());
         }
       }
-
-      Project parent = project.getParent();
-      if (parent == null) {
-        parent = new Project();
-      }
-
-      return detail
-          .with()
-          .breadcumbs(ProjectUtil.buildBreadcumbs(parent.getId(), projectService, bundle))
-          .parent(parent)
-          .project(project)
-          .userMap(users)
-          .groups(groups)
-          .ok()
-          .withCharset(Tools.UTF_8);
-
-    } catch (AbstractEntityException e) {
-      return Response.status(e.getHttpStatusCode()).body(e.getMessage());
     }
+
+    Project parent = project.getParent();
+    if (parent == null) {
+      parent = new Project();
+    }
+
+    return detail
+        .with()
+        .breadcumbs(ProjectUtil.buildBreadcumbs(parent.getId(), projectService, bundle))
+        .parent(parent)
+        .project(project)
+        .userMap(users)
+        .groups(groups)
+        .ok()
+        .withCharset(Tools.UTF_8);
   }
 
   @Resource
   @Ajax
   @MimeType("text/plain")
-  public Response saveProjectInfo(Long projectId, Long parent, String name, String description, Boolean calendarIntegrated) {
-
+  public Response saveProjectInfo(Long projectId, String parent, String name, String description, String calendarIntegrated) 
+        throws EntityNotFoundException, ParameterEntityException {
     if(name == null) {
       return Response.status(406).body("Field name is required");
     }
 
-    try {
-      Project project = projectService.getProjectById(projectId);
-      //Can throw ProjectNotFoundException & NotAllowedOperationOnEntityException
-      projectService.updateProjectInfo(projectId, parent, name, description, calendarIntegrated, project.getColor()); 
-      return Response.ok("Update successfully");
-
-    } catch (AbstractEntityException e) {
-      return Response.status(e.getHttpStatusCode()).body(e.getMessage());
-    }
+    Map<String, String[]> fields = new HashMap<String, String[]>();
+    fields.put("name", new String[] {name});
+    fields.put("description", new String[] {description});
+    fields.put("parent", new String[] {parent});
+    fields.put("calendarIntegrated", new String[] {calendarIntegrated});
+    Project project = ProjectUtil.saveProjectField(projectService, projectId, fields);
+    //Can throw ProjectNotFoundException & NotAllowedOperationOnEntityException
+    projectService.updateProject(project); 
+    return Response.ok("Update successfully");
   }
   
   @Resource
   @Ajax
   @MimeType("text/plain")
-  public Response changeProjectColor(Long projectId, String color) {
-    try {
-      //Can throw ProjectNotFoundException & NotAllowedOperationOnEntityException
-      projectService.updateProjectInfo(projectId, "color", new String[] {color}); 
-      return Response.ok("Update successfully");
-    } catch (AbstractEntityException e) {
-      return Response.status(e.getHttpStatusCode()).body(e.getMessage());
-    }
+  public Response changeProjectColor(Long projectId, String color) 
+      throws EntityNotFoundException, ParameterEntityException {
+    Map<String, String[]> fields = new HashMap<String, String[]>();
+    fields.put("color", new String[] {color});
+    //
+    Project project = ProjectUtil.saveProjectField(projectService, projectId, fields);      
+    //Can throw ProjectNotFoundException & NotAllowedOperationOnEntityException
+    projectService.updateProject(project); 
+    return Response.ok("Update successfully");
   }
 
   @Resource
   @Ajax
   @MimeType("text/plain")
-  public Response deleteProject(Long projectId, Boolean deleteChild) {
-    try {
-      projectService.deleteProjectById(projectId, deleteChild); //Can throw ProjectNotFoundException
-      return Response.ok("Delete project successfully");
-    } catch (AbstractEntityException e) {
-      return Response.status(e.getHttpStatusCode()).body(e.getMessage());
-    }
+  public Response deleteProject(Long projectId, Boolean deleteChild) throws EntityNotFoundException {
+    projectService.removeProject(projectId, deleteChild); //Can throw ProjectNotFoundException
+    return Response.ok("Delete project successfully");
   }
 
   @Resource
@@ -644,7 +614,8 @@ public class ProjectController {
   @MimeType.HTML
   public Response findProject(String keyword, Long currentProject) {
     Identity identity = ConversationState.getCurrent().getIdentity();
-    List<Project> projects = projectService.findProjectByKeyWord(identity, keyword, null);
+    ListAccess<Project> tmp = projectService.findProjects(UserUtil.getMemberships(identity), keyword, null);
+    List<Project> projects = Arrays.asList(ListUtil.load(tmp, 0, -1));
     projects = ProjectUtil.buildRootProjects(projects);
 
     return projectSearchResult

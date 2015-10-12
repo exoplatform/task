@@ -34,7 +34,7 @@ public class TaskBuilder {
   private String title;
   private String description;
 
-  private Priority priority = Priority.UNDEFINED;
+  private Priority priority = Priority.NORMAL;
   private String context;
   private String assignee;
   private Set<String> coworker;

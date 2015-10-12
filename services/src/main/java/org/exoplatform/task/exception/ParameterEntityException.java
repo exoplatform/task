@@ -24,16 +24,14 @@ package org.exoplatform.task.exception;
  */
 public class ParameterEntityException extends AbstractEntityException {
 
-  private static final Integer HTTP_STATUS_CODE_ERROR = 406;
-
   private String param;
   private String value;
   private String exception;
   private Throwable cause;
 
-  public ParameterEntityException(Long entityId, String entityType, String param, String value, String exception,
+  public ParameterEntityException(Long entityId, Class<?> entityType, String param, String value, String exception,
                                   Throwable cause) {
-    super(entityId, entityType, HTTP_STATUS_CODE_ERROR);
+    super(entityId, entityType);
     this.param = param;
     this.value = value;
     this.exception = exception;
@@ -42,7 +40,7 @@ public class ParameterEntityException extends AbstractEntityException {
 
   @Override
   public String getMessage() {
-    StringBuffer message = new StringBuffer("Parameter "+param+" with value =  on "+getEntityType()+
+    StringBuffer message = new StringBuffer("Parameter "+param+" with value = " + value + " on "+getEntityType()+
         " with ID: "+getEntityId()+" "+exception);
     if (cause != null) message.append(" Original cause is: "+cause);
     return message.toString();

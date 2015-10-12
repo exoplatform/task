@@ -86,6 +86,7 @@ public class UserSetting {
     this.hiddenProjects = hiddenProjects;
   }
 
+  //TODO: This method does not work any more, re-implement it in ProjectService
   public boolean isHiddenProject(Project project) {
     if (project == null) return false;
 
@@ -95,5 +96,21 @@ public class UserSetting {
       }
     }
     return false;
+  }
+
+  @Override
+  public UserSetting clone() {
+    UserSetting setting = new UserSetting(getUsername());
+    setting.setShowHiddenProject(isShowHiddenProject());
+
+    //TODO: clone hiddenProjects here is not good for performance
+    Set<Project> hiddenProjects = new HashSet<Project>();
+    if (getHiddenProjects() != null) {
+      for (Project p : getHiddenProjects()) {
+        hiddenProjects.add(p.clone(false));
+      }
+    }
+    setting.setHiddenProjects(hiddenProjects);
+    return setting;
   }
 }

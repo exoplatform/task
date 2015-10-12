@@ -16,39 +16,29 @@
 */
 package org.exoplatform.task.service.impl;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.exoplatform.commons.api.persistence.ExoTransactional;
+import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
-import org.exoplatform.services.security.Identity;
-import org.exoplatform.services.security.MembershipEntry;
+import org.exoplatform.task.dao.DAOHandler;
 import org.exoplatform.task.dao.OrderBy;
+import org.exoplatform.task.dao.ProjectQuery;
 import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.exception.NotAllowedOperationOnEntityException;
-import org.exoplatform.task.exception.ParameterEntityException;
-import org.exoplatform.task.exception.ProjectNotFoundException;
-import org.exoplatform.task.service.DAOHandler;
+import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.StatusService;
 import org.exoplatform.task.service.TaskService;
-import org.exoplatform.task.utils.ProjectUtil;
-import org.exoplatform.task.utils.UserUtils;
+import org.exoplatform.task.util.ListUtil;
 
 /**
  * Created by The eXo Platform SAS
@@ -82,310 +72,126 @@ public class ProjectServiceImpl implements ProjectService {
 
   @Override
   @ExoTransactional
-  public Project createDefaultStatusProjectWithManager(String name, String description, boolean calInteg, Long parentId, String username)
-      throws ProjectNotFoundException {
-
-    Set<String> managers = new HashSet<String>();
-    managers.add(username);
-
-    return createDefaultStatusProjectWithAttributes(parentId, name, description, calInteg, managers, Collections.<String>emptySet());
-
-  }
-
-  @Override
-  @ExoTransactional
-  public Project createDefaultStatusProjectWithAttributes(Long parentId, String name, String description, boolean calInteg,
-                                                          Set<String> managers, Set<String> participators)
-      throws ProjectNotFoundException {
-    Project project = new Project(name, description, new HashSet<Status>(), managers, participators);
-    project.setCalendarIntegrated(calInteg);
-
-    if (parentId != null && parentId != 0) {
-      Project parentProject = daoHandler.getProjectHandler().find(parentId);
-      if (parentProject != null) {
-        project.setParent(parentProject);
-        //If parent, list of members/participators of parents override the list of members/participators in parameter
-        project.setParticipator(new HashSet<String>(parentProject.getParticipator()));
-        //If parent, list of manager of parents override the list of managers in parameter
-        project.setManager(new HashSet<String>(parentProject.getManager()));        
-        
-        //persist project
-        project = createProject(project);
-        
-        //inherit status from parent
-        List<Status> prSt = new LinkedList<Status>(parentProject.getStatus());
-        Collections.sort(prSt);
-        for (Status st : prSt) {
-          statusService.createStatus(project, st.getName());
-        }
-        return project;
-      } else {
-        LOG.info("Can not find project for parent with ID: " + parentId);
-        throw new ProjectNotFoundException(parentId);
-      }
-    } else {
-      return createDefaultStatusProject(project);      
-    }
-  }
-
-  @Override
-  @ExoTransactional
-  public Project createDefaultStatusProject(Project project) {
-    Project newProject = daoHandler.getProjectHandler().create(project);
-    
-    for (String s : statusService.getDefaultStatus()) {
-      statusService.createStatus(newProject, s);
-    }    
-    return newProject;
-  }
-
-  @Override
-  @ExoTransactional
   public Project createProject(Project project) {
-    Project obj = daoHandler.getProjectHandler().create(project);
-    return obj;
-  }
-    
-  @Override
-  public Project updateProjectInfo(long id,
-                                   Long parentId,
-                                   String name,
-                                   String description,
-                                   Boolean calendarIntegrated,
-                                   String color) throws ProjectNotFoundException,
-                                                 ParameterEntityException {
-    Project project = getProjectById(id);
-    Project parent = parentId != null && parentId != 0 ? getProjectById(parentId) : null;
-    
-    if(name == null || name.isEmpty()) {
-      LOG.info("Name of project must not empty");
-      throw new ParameterEntityException(id, "Project", "name", name, "must not be empty", null);
-    }
-    if (parentId != null && parentId == id) {
-      throw new ParameterEntityException(id, "Project", "parent", String.valueOf(parentId), "project can not be child of itself", null);
-    }
-    
-    project.setParent(parent);      
-    project.setName(name);
-    project.setDescription(description);
-    project.setCalendarIntegrated(calendarIntegrated);
-    project.setColor(color);
-    return daoHandler.getProjectHandler().update(project);
+    Project proj = daoHandler.getProjectHandler().create(project);
+    return proj;
   }
 
   @Override
-  @ExoTransactional
-  public Project updateProjectInfo(long id, String param, String[] values)
-      throws ProjectNotFoundException, ParameterEntityException {
+  public Project createProject(Project project, long parentId) throws EntityNotFoundException {
+    Project parentProject = daoHandler.getProjectHandler().find(parentId);
+    if (parentProject != null) {
+      project.setParent(parentProject);
+      //If parent, list of members/participators of parents override the list of members/participators in parameter
+      project.setParticipator(new HashSet<String>(parentProject.getParticipator()));
+      //If parent, list of manager of parents override the list of managers in parameter
+      project.setManager(new HashSet<String>(parentProject.getManager()));
 
-    String val = values != null && values.length > 0 ? values[0] : null;
+      //persist project
+      project = createProject(project);
 
-    Project project = getProjectById(id); //Can throw ProjectNotFoundException
-
-    if("name".equalsIgnoreCase(param)) {
-      if(val == null || val.isEmpty()) {
-        LOG.info("Name of project must not empty");
-        throw new ParameterEntityException(id, "Project", param, val, "must not be empty", null);
+      //inherit status from parent
+      List<Status> prSt = statusService.getStatuses(parentProject.getId());
+      Collections.sort(prSt);
+      for (Status st : prSt) {
+        statusService.createStatus(project, st.getName());
       }
-      project.setName(val);
-    } else if("manager".equalsIgnoreCase(param)) {
-      Set<String> manager = new HashSet<String>();
-      if(values != null) {
-        for (String v : values) {
-          manager.add(v);
-        }
-      }
-      project.setManager(manager);
-    } else if("participator".equalsIgnoreCase(param)) {
-      Set<String> participator = new HashSet<String>();
-      if(values != null || true) {
-        for (String v : values) {
-          participator.add(v);
-        }
-      }
-      project.setParticipator(participator);
-    } else if("dueDate".equalsIgnoreCase(param)) {
-      if(val == null || val.isEmpty()) {
-        project.setDueDate(null);
-      } else {
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-        try {
-          Date date = df.parse(val);
-          project.setDueDate(date);
-        } catch (ParseException e) {
-          LOG.info("can not parse date string: " + val);
-          throw new ParameterEntityException(id, "Project", param, val, "cannot be parse to date", e);
-        }
-      }
-    } else if("description".equalsIgnoreCase(param)) {
-      project.setDescription(val);
-    } else if ("color".equalsIgnoreCase(param)) {
-      project.setColor(val);
-    } else if ("calendarIntegrated".equalsIgnoreCase(param)) {
-      project.setCalendarIntegrated(Boolean.parseBoolean(val));
-    } else if ("parent".equalsIgnoreCase(param)) {
-      try {
-        long projectId = Long.parseLong(val);
-        if (projectId == 0) {
-          project.setParent(null);
-        } else if (projectId == project.getId()) {
-          throw new ParameterEntityException(id, "Project", param, val, "project can not be child of itself", null);
-        } else {
-          Project parent = this.getProjectById(projectId);
-          project.setParent(parent);
-        }
-      } catch (NumberFormatException ex) {
-        LOG.info("can not parse date string: " + val);
-        throw new ParameterEntityException(id, "Project", param, val, "cannot be parse to Long", ex);
-      }
+      return project;
     } else {
-      LOG.info("Field name: " + param + " is not supported for entity Project");
-      throw new ParameterEntityException(id, "Project", param, val, "is not supported for the entity Project", null);
+      LOG.info("Can not find project for parent with ID: " + parentId);
+      throw new EntityNotFoundException(parentId, Project.class);
     }
+  }
 
-    Project obj = daoHandler.getProjectHandler().update(project);
+  public Project updateProject(Project proj) {
+    Project obj = daoHandler.getProjectHandler().update(proj);
     return obj;
   }
 
   @Override
   @ExoTransactional
-  public void deleteProjectById(long id, boolean deleteChild) throws ProjectNotFoundException {
-    Project project = getProjectById(id); //Can throw ProjectNotFoundException
-
-    deleteProject(project, deleteChild);
+  public void removeProject(long id, boolean deleteChild) throws EntityNotFoundException {
+    Project project = getProject(id);
+    if (project == null) throw new EntityNotFoundException(id, Project.class);
+    daoHandler.getProjectHandler().removeProject(id, deleteChild);
   }
 
   @Override
   @ExoTransactional
-  public void deleteProject(Project project, boolean deleteChild) {    
-    if (!deleteChild && project.getChildren() != null) {
-      Project parent = project.getParent();
-      for (Project child : project.getChildren()) {
-        child.setParent(parent);
-      }
-      project.getChildren().clear();
-    }
-    daoHandler.getProjectHandler().delete(project);
-  }
+  public Project cloneProject(long id, boolean cloneTask) throws EntityNotFoundException {
 
-  @Override
-  @ExoTransactional
-  public Project cloneProjectById(long id, boolean cloneTask) throws ProjectNotFoundException {
-
-    Project project = getProjectById(id); //Can throw ProjectNotFoundException
+    Project project = getProject(id); //Can throw ProjectNotFoundException
 
     Project newProject = project.clone(cloneTask);
-    createProject(newProject);
+    newProject.setId(0);
+    newProject.setName(Project.PREFIX_CLONE + newProject.getName());
+    newProject = createProject(newProject);
+
+    //. Get all Status of project
+    List<Status> statuses = statusService.getStatuses(id);
+    ListAccess<Task> tasks;
+    TaskQuery taskQuery;
+    if (statuses != null) {
+      for(Status st : statuses) {
+        Status s = statusService.createStatus(newProject, st.getName());
+        if (cloneTask) {
+          taskQuery = new TaskQuery();
+          taskQuery.setStatus(st);
+          tasks = taskService.findTasks(taskQuery);
+          if (tasks != null) {
+            for (Task t : ListUtil.load(tasks, 0, -1)) {
+              Task newTask = t.clone();
+              newTask.setId(0);
+              newTask.setStatus(s);
+              newTask.setTitle(Task.PREFIX_CLONE + newTask.getTitle());
+              taskService.createTask(newTask);
+            }
+          }
+        }
+      }
+    }
 
     return newProject;
 
   }
 
   @Override
-  public Project getProjectById(Long id) throws ProjectNotFoundException {
+  public Project getProject(Long id) throws EntityNotFoundException {
 
     Project project = daoHandler.getProjectHandler().find(id);
-    if (project == null) throw new ProjectNotFoundException(id);
+    if (project == null) throw new EntityNotFoundException(id, Project.class);
 
     return project;
 
   }
 
   @Override
-  @ExoTransactional
-  public Task createTaskToProjectId(long id, Task task) throws ProjectNotFoundException {
-    Status status = daoHandler.getStatusHandler().findLowestRankStatusByProject(id);
-    task.setStatus(status);
-    
-    return taskService.createTask(task);
-  }
-
-  @Override
-  public List<Task> getTasksByProjectId(List<Long> ids, OrderBy orderBy) {
-    return getTasksWithKeywordByProjectId(ids, orderBy, null);
-  }
-
-  @Override
-  public List<Task> getTasksWithKeywordByProjectId(List<Long> ids, OrderBy orderBy, String keyword) {
-    TaskQuery taskQuery = new TaskQuery();
-    taskQuery.setProjectIds(ids);
-    taskQuery.setKeyword(keyword);
-    taskQuery.setOrderBy(orderBy == null ? null : Arrays.asList(orderBy));
-    taskQuery.setCompleted(false);
-
-    return daoHandler.getTaskHandler().findTaskByQuery(taskQuery);
-  }
-
-  @Override
-  @ExoTransactional
-  public Project removePermissionFromProjectId(Long id, String permission, String type)
-      throws ProjectNotFoundException, NotAllowedOperationOnEntityException {
-
-    Project project = daoHandler.getProjectHandler().find(id);
-
-    if (project != null) {
-      if ("manager".equals(type)) {
-        if (project.getManager().size() > 1) {
-          project.getManager().remove(permission);
-        } else {
-          LOG.info("Not allow to remove last manager for project with ID: " + id);
-          throw new NotAllowedOperationOnEntityException(id, "Project", "Remove last manager");
+  public ListAccess<Project> getSubProjects(long parentId) {
+    try {
+      Project parent = getProject(parentId);
+      return daoHandler.getProjectHandler().findSubProjects(parent);
+    } catch (EntityNotFoundException ex) {
+      return new ListAccess<Project>() {
+        @Override
+        public int getSize() throws Exception {
+          return 0;
         }
-      } else {
-        project.getParticipator().remove(permission);
-      }
-      Project obj = daoHandler.getProjectHandler().update(project);
-      return obj;
-    } else {
-      LOG.info("Can not find project with ID: " + id);
-      throw new ProjectNotFoundException(id);
+
+        @Override
+        public Project[] load(int arg0, int arg1) throws Exception, IllegalArgumentException {
+          return new Project[0];
+        }
+      };
     }
   }
 
   @Override
-  @ExoTransactional
-  public Project addPermissionsFromProjectId(Long id, String permissions, String type)
-      throws ProjectNotFoundException, NotAllowedOperationOnEntityException {
-
-    Project project = getProjectById(id);
-
-    if (permissions != null) {
-      Set<String> per = new HashSet<String>();
-      MembershipEntry entry = MembershipEntry.parse(permissions);
-      if (entry != null) {
-        per.add(entry.toString());
-      } else {
-        String[] users = permissions.split(",");
-        for (int i = 0; i < users.length; i++) {
-          per.add(users[i]);
-        }
-      }
-
-      if ("manager".equals(type)) {
-        project.getManager().addAll(per);
-      } else {
-        project.getParticipator().addAll(per);
-      }
-      Project obj = daoHandler.getProjectHandler().update(project);
-      return obj;
-
-    } else {
-      LOG.info("Add permissions equal to null (not allow) to Project with ID: "+id);
-      throw new NotAllowedOperationOnEntityException(id, "Project", "Add permission equal to null");
-    }
-
-  }
-  
-  @Override
-  public List<Project> getProjectTreeByMembership(List<String> memberships) {
-    List<Project> projects = daoHandler.getProjectHandler().findAllByMemberships(memberships);
-
-    return ProjectUtil.buildRootProjects(projects);
+  public ListAccess<Project> findProjects(ProjectQuery query) {
+    return daoHandler.getProjectHandler().findProjects(query);
   }
 
   @Override
-  public List<Project> findProjectByKeyWord(Identity identity, String keyword, OrderBy order) {
-    List<String> memberships = UserUtils.getMemberships(identity);
+  public ListAccess<Project> findProjects(List<String> memberships, String keyword, OrderBy order) {
     return daoHandler.getProjectHandler().findAllByMembershipsAndKeyword(memberships, keyword, order);
   }
 }

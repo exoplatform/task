@@ -18,11 +18,6 @@
  */
 package org.exoplatform.task.domain;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -30,23 +25,20 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 import org.exoplatform.commons.api.persistence.ExoEntity;
 
 @Entity
 @ExoEntity
 @Table(name = "TASK_LABELS")
-@NamedQueries({
-  @NamedQuery(name = "Label.findLabelByUser",
-  query = "SELECT lbl FROM Label lbl WHERE lbl.username = :username")
-})
 public class Label {
   @Id
   @GeneratedValue
@@ -63,22 +55,18 @@ public class Label {
   private boolean hidden;
   
   public static enum FIELDS {
-    NAME, COLOR, PARENT, TASK, HIDDEN
+    NAME, COLOR, PARENT, HIDDEN
   }
 
   @ManyToOne(optional = true, fetch = FetchType.LAZY)
   @JoinColumn(name = "PARENT_LABEL_ID", nullable = true)
   private Label parent;
 
-  @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY, cascade=CascadeType.REMOVE)
+  @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY, cascade=CascadeType.REMOVE, orphanRemoval=true)
   private List<Label> children = new LinkedList<Label>();
   
-  @ManyToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
-  @JoinTable(name = "TASK_LABEL_TASK", joinColumns = {
-      @JoinColumn(name = "LABEL_ID", nullable = false, updatable = false) },
-      inverseJoinColumns = { @JoinColumn(name = "TASK_ID",
-          nullable = false, updatable = false) })
-  private Set<Task> tasks = new HashSet<Task>();
+  @OneToMany(mappedBy = "label", fetch=FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval=true)
+  private Set<LabelTaskMapping> lblMapping = new HashSet<LabelTaskMapping>();
 
   public Label() {
   }
@@ -134,14 +122,6 @@ public class Label {
 
   public void setUsername(String username) {
     this.username = username;
-  }
-
-  public Set<Task> getTasks() {
-    return tasks;
-  }
-
-  public void setTasks(Set<Task> tasks) {
-    this.tasks = tasks;
   }
 
   public boolean isHidden() {

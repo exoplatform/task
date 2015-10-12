@@ -24,12 +24,10 @@ package org.exoplatform.task.exception;
  */
 public class NotAllowedOperationOnEntityException extends AbstractEntityException {
 
-  private static final Integer HTTP_STATUS_CODE_ERROR = 406;
-
   private String operation;
 
-  public NotAllowedOperationOnEntityException(long id, String entityType, String operation) {
-    super(id, entityType, HTTP_STATUS_CODE_ERROR);
+  public NotAllowedOperationOnEntityException(long id, Class<?> entityType, String operation) {
+    super(id, entityType);
     this.operation = operation;
   }
 

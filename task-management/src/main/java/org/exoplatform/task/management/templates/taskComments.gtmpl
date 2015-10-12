@@ -2,8 +2,8 @@
 #{param name=bundle/}
 
 <%
-    import org.exoplatform.task.utils.TaskUtil;
-    import org.exoplatform.task.utils.ResourceUtil;
+    import org.exoplatform.task.util.TaskUtil;
+    import org.exoplatform.task.util.ResourceUtil;
 
     def commentCount = taskModel.getCommentCount();
     def comments = taskModel.getComments();

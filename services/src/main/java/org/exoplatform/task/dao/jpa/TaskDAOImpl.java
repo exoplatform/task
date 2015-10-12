@@ -16,18 +16,18 @@
 */
 package org.exoplatform.task.dao.jpa;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import static org.exoplatform.task.dao.condition.Conditions.TASK_COWORKER;
+import static org.exoplatform.task.dao.condition.Conditions.TASK_MANAGER;
+import static org.exoplatform.task.dao.condition.Conditions.TASK_PARTICIPATOR;
+import static org.exoplatform.task.dao.condition.Conditions.TASK_TAG;
+import static org.exoplatform.task.dao.condition.Conditions.TASK_LABEL_ID;
+import static org.exoplatform.task.dao.condition.Conditions.TASK_LABEL_USERNAME;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
@@ -37,18 +37,20 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 
-import groovy.time.BaseDuration;
-import org.exoplatform.commons.persistence.impl.EntityManagerService;
-import org.exoplatform.commons.persistence.impl.GenericDAOJPAImpl;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.dao.TaskHandler;
 import org.exoplatform.task.dao.TaskQuery;
+import org.exoplatform.task.dao.condition.SingleCondition;
 import org.exoplatform.task.domain.Label;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.utils.TaskUtil;
 
 /**
  * Created by The eXo Platform SAS
@@ -56,26 +58,28 @@ import org.exoplatform.task.utils.TaskUtil;
  * tclement@exoplatform.com
  * 4/8/15
  */
-public class TaskDAOImpl extends GenericDAOJPAImpl<Task, Long> implements TaskHandler {
+public class TaskDAOImpl extends CommonJPADAO<Task, Long> implements TaskHandler {
 
-  private EntityManagerService entityService;
-
-  public TaskDAOImpl(EntityManagerService entityService) {
-    this.entityService = entityService;
+  public TaskDAOImpl() {
   }
 
-  @Override
-  public EntityManager getEntityManager() {
-    return entityService.getEntityManager();
-  }
-
-  @Override
-  public List<Task> findByProject(Long projectId) {
+  /*@Override
+  public void delete(Task entity) {
     EntityManager em = getEntityManager();
-    Query query = em.createNamedQuery("Task.findTaskByProject", Task.class);
-    query.setParameter("projectId", projectId);
-    return query.getResultList();
-  }
+    Task task = em.find(Task.class, entity.getId());
+
+    // Delete all task log relate to this task
+    Query query = em.createNamedQuery("TaskChangeLog.removeChangeLogByTaskId");
+    query.setParameter("taskId", entity.getId());
+    query.executeUpdate();
+
+    // Delete all comments of task
+    query = em.createNamedQuery("Comment.deleteCommentOfTask");
+    query.setParameter("taskId", entity.getId());
+    query.executeUpdate();
+
+    em.remove(task);
+  }*/
 
   @Override
   public List<Task> findByUser(String user) {
@@ -86,277 +90,71 @@ public class TaskDAOImpl extends GenericDAOJPAImpl<Task, Long> implements TaskHa
     return  findAllByMembership(user, memberships);
   }
 
-  @Override
   public List<Task> findAllByMembership(String user, List<String> memberships) {
 
     Query query = getEntityManager().createNamedQuery("Task.findByMemberships", Task.class);
     query.setParameter("userName", user);
     query.setParameter("memberships", memberships);
 
-    return query.getResultList();
+    return cloneEntities(query.getResultList());
   }
 
   @Override
-  public List<Task> findByTag(String tag) {
-    return null;
+  public ListAccess<Task> findTasks(TaskQuery query) {
+    return findEntities(query, Task.class);
   }
 
   @Override
-  public List<Task> findByTags(List<String> tags) {
-    return null;
-  }
-
-  @Override
-  public List<Task> findTaskByQuery(TaskQuery query) {
+  public <T> List<T> selectTaskField(TaskQuery query, String fieldName) {
     EntityManager em = getEntityManager();
     CriteriaBuilder cb = em.getCriteriaBuilder();
-    CriteriaQuery<Task> q = cb.createQuery(Task.class);
-    q.distinct(true);
-    
+    CriteriaQuery q = cb.createQuery();
+
     Root<Task> task = q.from(Task.class);
-    q.select(task);
 
-    List<Predicate> predicates = new ArrayList<Predicate>();
+    //List<Predicate> predicates = this.buildPredicate(query, task, cb);
+    Predicate predicate = this.buildQuery(query.getCondition(), task, cb, q);
 
-    if(query.getTaskId() > 0) {
-      predicates.add(cb.equal(task.get("id"), query.getTaskId()));
-    }
-
-    if (query.getTitle() != null && !query.getTitle().isEmpty()) {
-      predicates.add(cb.like(task.<String>get("title"), "%" + query.getTitle() + "%"));
+    if(predicate != null) {
+      q.where(predicate);
     }
 
-    if (query.getDescription() != null && !query.getDescription().isEmpty()) {
-      predicates.add(cb.like(task.<String>get("description"), '%' + query.getDescription() + '%'));
-    }
-
-    if (query.getLabelIds() != null && !query.getLabelIds().isEmpty()) {
-      predicates.add(task.join("labels").get("id").in(query.getLabelIds()));
-    }
-
-    if (query.getTags() != null && !query.getTags().isEmpty()) {
-      predicates.add(task.join("tag").in(query.getTags()));
-    }
-
-    if (query.getStatusId() == null) {
-      predicates.add(cb.isNull(task.get("status")));
-    } else if (query.getStatusId() != -1) {      
-      predicates.add(cb.equal(task.get("status").get("id"), query.getStatusId()));
-    }
-    
-    if (query.getPriority() != null) {
-      predicates.add(cb.equal(task.get("priority"), query.getPriority()));
-    }
-
-    Predicate assignPred = null;
-    if (query.getAssignee() != null && !query.getAssignee().isEmpty()) {
-      assignPred = cb.like(task.<String>get("assignee"), '%' + query.getAssignee() + '%');
-    }
-    
-    Predicate createdByPred = null;
-    if (query.getCreatedBy() != null && !query.getCreatedBy().isEmpty()) {
-      createdByPred = cb.equal(task.<String>get("createdBy"), query.getCreatedBy());
-    }
-    
-    Predicate coworkerPred = null;
-    if (query.getCoworker() != null && !query.getCoworker().isEmpty()) {
-      coworkerPred = cb.equal(task.join("coworker", JoinType.LEFT), query.getCoworker());
-    }
-    
-    Predicate msPred = null;
-    if (query.getMemberships() != null) {
-      Subquery<Long> subm = q.subquery(Long.class);
-      Root<Status> m = subm.from(Status.class);
-      subm.select(m.<Long>get("id")).where(m.join("project").join("manager").in(query.getMemberships()));
-
-      Subquery<Long> subp = q.subquery(Long.class);
-      Root<Status> p = subp.from(Status.class);
-      subp.select(p.<Long>get("id")).where(p.join("project").join("participator").in(query.getMemberships()));      
-      
-      msPred = cb.or(cb.in(task.get("status").get("id")).value(subm), cb.in(task.get("status").get("id")).value(subp));
-    }
-
-    Predicate projectPred = null;
-    if (query.getProjectIds() != null) {
-      if (query.getProjectIds().size() == 1 && query.getProjectIds().get(0) == 0) {
-        projectPred = cb.isNotNull(task.get("status"));
-      } else if (query.getProjectIds().isEmpty()) {
-        return Collections.emptyList();
-      } else {
-        projectPred = cb.in(task.join("status", JoinType.LEFT).get("project").get("id")).value(query.getProjectIds());
-      }             
-    }
-
-    List<Predicate> tmp = new LinkedList<Predicate>();
-    for (String or : query.getOrFields()) {
-      if (or.equals(TaskUtil.ASSIGNEE)) {
-        tmp.add(assignPred);
-      } 
-      if (or.equals(TaskUtil.MEMBERSHIP)) {
-        tmp.add(msPred);
-      }
-      if (or.equals(TaskUtil.PROJECT)) {
-        tmp.add(projectPred);
-      }
-      if (or.equals(TaskUtil.CREATED_BY)) {
-        tmp.add(createdByPred);
-      }
-      if (or.equals(TaskUtil.COWORKER)) {
-        tmp.add(coworkerPred);
-      }
-    }
-
-    if (!tmp.isEmpty()) {
-      predicates.add(cb.or(tmp.toArray(new Predicate[tmp.size()])));
-    }
-    
-    if (!query.getOrFields().contains(TaskUtil.ASSIGNEE) && assignPred != null) {
-      predicates.add(assignPred);
-    }
-    if (!query.getOrFields().contains(TaskUtil.MEMBERSHIP) && msPred != null) {
-      predicates.add(msPred);      
-    }
-    if (!query.getOrFields().contains(TaskUtil.PROJECT) && projectPred != null) {
-      predicates.add(projectPred);      
-    }
-    if (!query.getOrFields().contains(TaskUtil.CREATED_BY) && createdByPred != null) {
-      predicates.add(createdByPred);      
-    }
-    if (!query.getOrFields().contains(TaskUtil.COWORKER) && coworkerPred != null) {
-      predicates.add(coworkerPred);      
-    }
-
-    if(query.getKeyword() != null && !query.getKeyword().isEmpty()) {      
-      List<Predicate> keyConditions = new LinkedList<Predicate>();
-      Join<Task, String> tagJoin = task.<Task, String>join("tag", JoinType.LEFT);
-      
-      for (String k : query.getKeyword().split(" ")) {
-        if (!(k = k.trim()).isEmpty()) {
-          k = "%" + k.toLowerCase() + "%";
-          keyConditions.add(cb.or(
-                                  cb.like(cb.lower(task.<String>get("title")), k),
-                                  cb.like(cb.lower(task.<String>get("description")), k),
-                                  cb.like(cb.lower(task.<String>get("assignee")), k),
-                                  cb.like(cb.lower(tagJoin), k)
-                              ));
+    //
+    Path path = null;
+    if (fieldName.indexOf('.') != -1) {
+      String[] strs = fieldName.split("\\.");
+      Join join = null;
+      for (int i = 0; i < strs.length - 1; i++) {
+        String s = strs[i];
+        if (join == null) {
+          join = task.join(s);
+        } else {
+          join = join.join(s);
         }
       }
-      predicates.add(cb.or(keyConditions.toArray(new Predicate[keyConditions.size()])));
+      path = join.get(strs[strs.length - 1]);
+    } else {
+      path = task.get(fieldName);
     }
-
-    if (query.getCompleted() != null) {
-      predicates.add(cb.equal(task.get("completed"), query.getCompleted()));
-    }
-    
-    if (query.getCalendarIntegrated() != null) {
-      predicates.add(cb.equal(task.get("calendarIntegrated"), query.getCalendarIntegrated()));
-    }
-    
-    if (query.getDueDateFrom() != null) {
-      predicates.add(cb.greaterThanOrEqualTo(task.<Date>get("dueDate"), new Date(query.getDueDateFrom())));
-    }
-    if (query.getDueDateTo() != null) {
-      predicates.add(cb.lessThanOrEqualTo(task.<Date>get("dueDate"), new Date(query.getDueDateTo())));
-    }    
-    
-    if (query.getStartDate() != null) {
-      predicates.add(cb.greaterThanOrEqualTo(task.<Date>get("endDate"), query.getStartDate()));
-    }
-    if (query.getEndDate() != null) {
-      predicates.add(cb.lessThanOrEqualTo(task.<Date>get("startDate"), query.getEndDate()));
-    }
-
-    if(predicates.size() > 0) {
-      Iterator<Predicate> it = predicates.iterator();
-      Predicate p = it.next();
-      while(it.hasNext()) {
-        p = cb.and(p, it.next());
-      }      
-      q.where(p);
-    }
+    q.select(path).distinct(true);
 
     if(query.getOrderBy() != null && !query.getOrderBy().isEmpty()) {
       List<OrderBy> orderBies = query.getOrderBy();
-      Order[] orders = new Order[orderBies.size()];
-      for(int i = 0; i < orders.length; i++) {
-        OrderBy orderBy = orderBies.get(i);
+      List<Order> orders = new ArrayList<Order>();
+      for(OrderBy orderBy : orderBies) {
+        if (!orderBy.getFieldName().equals(fieldName)) {
+          continue;
+        }
         Path p = task.get(orderBy.getFieldName());
-        orders[i] = orderBy.isAscending() ? cb.asc(p) : cb.desc(p);
+        orders.add(orderBy.isAscending() ? cb.asc(p) : cb.desc(p));
       }
-      q.orderBy(orders);
-    }
-
-    return em.createQuery(q).getResultList();
-  }
-
-  @Override
-  public List<Task> getIncomingTask(String username, OrderBy orderBy) {
-    StringBuilder jql = new StringBuilder();
-    jql.append("SELECT ta FROM Task ta LEFT JOIN ta.coworker cowoker ")
-        .append("WHERE ta.status.id is null ")
-        .append("AND (ta.assignee = :userName OR ta.createdBy = :userName OR cowoker = :userName)")
-        .append(" AND ta.completed = FALSE");
-
-    if(orderBy != null && !orderBy.getFieldName().isEmpty()) {
-      jql.append(" ORDER BY ta.").append(orderBy.getFieldName()).append(" ").append(orderBy.isAscending() ?
-          "ASC"
-          : " DESC");
-    }
-
-    return getEntityManager().createQuery(jql.toString(), Task.class)
-                             .setParameter("userName", username)
-                             .getResultList();
-  }
-
-  @Override
-  public List<Task> getToDoTask(String username, List<Long> projectIds, OrderBy orderBy, Date fromDueDate, Date toDueDate) {
-    StringBuilder jql = new StringBuilder();
-    jql.append("SELECT ta FROM Task ta LEFT JOIN ta.status st ")
-        .append("WHERE ta.assignee = :userName ")
-        .append("AND ta.completed = FALSE ");
-
-    if (fromDueDate != null || toDueDate != null) {
-      jql.append("AND ta.dueDate IS NOT NULL ");
-    }
-
-    if (projectIds != null && !projectIds.isEmpty()) {
-      jql.append("AND ta.status.project.id IN (:projectIds) ");
-    }
-    
-    if (fromDueDate != null) {
-      jql.append("AND ta.dueDate >= :fromDueDate ");
-    }
-    if (toDueDate != null) {
-      jql.append("AND ta.dueDate <= :toDueDate ");
-    }
-
-    if(orderBy != null && !orderBy.getFieldName().isEmpty()) {
-      String fieldName = orderBy.getFieldName();
-      if (fieldName.startsWith("status.")) {
-        fieldName = fieldName.replace("status.", "st.");
-      } else {
-        fieldName = "ta." + fieldName;
+      if (!orders.isEmpty()) {
+        q.orderBy(orders);
       }
-      jql.append(" ORDER BY ").append(fieldName).append(" ").append(orderBy.isAscending() ?
-          "ASC"
-          : " DESC");
     }
 
-    Query query = getEntityManager()
-        .createQuery(jql.toString(), Task.class);
-
-    query.setParameter("userName", username);
-    if (projectIds != null && !projectIds.isEmpty()) {
-      query.setParameter("projectIds", projectIds);
-    }
-    if (fromDueDate != null) {
-      query.setParameter("fromDueDate", fromDueDate);
-    }
-    if (toDueDate != null) {
-      query.setParameter("toDueDate", toDueDate);
-    }
-
-    return query.getResultList();
+    final TypedQuery<T> selectQuery = em.createQuery(q);
+    return cloneEntities(selectQuery.getResultList());
   }
 
   @Override
@@ -368,54 +166,10 @@ public class TaskDAOImpl extends GenericDAOJPAImpl<Task, Long> implements TaskHa
     Query query = em.createNamedQuery("Task.findTaskByActivityId", Task.class);
     query.setParameter("activityId", activityId);
     try {
-      return (Task) query.getSingleResult();
+      return cloneEntity((Task) query.getSingleResult());
     } catch (PersistenceException e) {
       return null;
     }
-  }
-  
-  @Override
-  public long getTaskNum(String userName, List<Long> projectIds) {
-    if (userName == null && (projectIds == null || projectIds.isEmpty())) {
-      return 0L;
-    }
-    
-    StringBuilder jql = new StringBuilder();
-    jql.append("SELECT count(*) FROM Task ta");
-    if (userName != null) {
-      jql.append(" LEFT JOIN ta.coworker cowoker ");      
-    }
-    jql.append(" WHERE ");
-    if (userName != null) {
-      jql.append("(ta.assignee = :userName OR ta.createdBy = :userName OR cowoker = :userName)");
-      if (projectIds != null && !projectIds.isEmpty() && projectIds.get(0) != -2) {
-        jql.append(" AND");
-      }
-    }
-    boolean needParam = false;
-    if (projectIds != null && !projectIds.isEmpty()) {
-      if (projectIds.size() == 1 && projectIds.get(0) <= 0) {
-        if (projectIds.get(0) == 0) {
-          jql.append(" NOT ta.status is null");          
-        } else if (projectIds.get(0) == -1) {
-          jql.append(" ta.status is null");
-        }
-      } else {
-        needParam = true;
-        jql.append(" ta.status.project.id IN (:projectIds)");
-      }
-    }    
-
-    Query query = getEntityManager()
-        .createQuery(jql.toString());
-    
-    if (userName != null) {
-      query.setParameter("userName", userName);
-    }
-    if (needParam) {
-      query.setParameter("projectIds", projectIds);    
-    }
-    return (Long)query.getSingleResult();    
   }
 
   @Override
@@ -515,42 +269,64 @@ public class TaskDAOImpl extends GenericDAOJPAImpl<Task, Long> implements TaskHa
   }
 
   @Override
-  public List<Task> findTasksByLabel(long labelId, List<Long> projectIds, String username, OrderBy orderBy) {
-    EntityManager em = getEntityManager();
-    CriteriaBuilder cb = em.getCriteriaBuilder();
-    CriteriaQuery<Task> query = cb.createQuery(Task.class);
-    From task = query.from(Task.class);
-    //
-    Join<Task, Label> label = task.join("labels", JoinType.INNER);
-    Predicate labelPred;
-    if (labelId > 0) {
-      labelPred = cb.equal(label.get("id"), labelId);
-    } else {
-      labelPred = cb.equal(label.get("username"), username);
+  public ListAccess<Task> findTasksByLabel(long labelId, List<Long> projectIds, String username, OrderBy orderBy) {
+    TaskQuery query = new TaskQuery();
+    if (projectIds != null) {
+      query.setProjectIds(projectIds);      
     }
-    //
-    Predicate projectPred = null;
-    if (projectIds != null && !projectIds.isEmpty()) {      
-      projectPred = cb.in(task.join("status", JoinType.LEFT).get("project").get("id")).value(projectIds);
-    }
-    query.select(task).distinct(true);
-    if (projectPred == null) {
-      query.where(labelPred);
-    } else {
-      query.where(cb.and(labelPred, projectPred));      
-    }
-
     if (orderBy != null) {
-      Order order = orderBy.isAscending() ? cb.asc(task.get(orderBy.getFieldName())) : cb.desc(task.get(orderBy.getFieldName()));
-      query.orderBy(order);
+      query.setOrderBy(Arrays.asList(orderBy));      
+    }
+    if (labelId > 0) {
+      query.setLabelIds(Arrays.asList(labelId));
+    } else {
+      query.setIsLabelOf(username);
+    }
+    return findTasks(query);
+  }
+
+  protected Path buildPath(SingleCondition condition, Root<Task> root) {
+    String field = condition.getField();
+    
+    Join join = null;
+    if (field.indexOf('.') > 0) {
+      String[] arr = field.split("\\.");
+      for (int i = 0; i < arr.length - 1; i++) {
+        String s = arr[i];
+        if (join == null) {
+          join = root.join(s, JoinType.INNER);
+        } else {
+          join = join.join(s, JoinType.INNER);
+        }
+      }
+      field = arr[arr.length - 1];
+    }    
+
+    Path path = join == null ? root.get(field) : join.get(field);
+    
+    if (TASK_COWORKER.equals(field)) {
+      path = root.join(field, JoinType.LEFT);
+    } else if (TASK_MANAGER.equals(condition.getField())) {
+      path = join.join("manager", JoinType.LEFT);
+    } else if (TASK_PARTICIPATOR.equals(condition.getField())) {
+      path = join.join("participator", JoinType.LEFT);
+    } else if (TASK_TAG.equals(condition.getField())) {
+      path = root.join("tag", JoinType.INNER);
+    }
+    
+    return path;
+  }
+
+  private static final ListAccess<Task> EMPTY = new ListAccess<Task>() {
+    @Override
+    public Task[] load(int index, int length) throws Exception, IllegalArgumentException {
+      return new Task[0];
     }
 
-    try {
-      return em.createQuery(query).getResultList();
-    } catch (PersistenceException e) {
-      return Collections.emptyList();
+    @Override
+    public int getSize() throws Exception {
+      return 0;
     }
-  }  
-   
+  };
 }
 

@@ -25,24 +25,26 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import org.exoplatform.commons.juzu.ajax.Ajax;
-import org.exoplatform.services.log.ExoLogger;
-import org.exoplatform.services.log.Log;
-import org.exoplatform.task.domain.Label;
-import org.exoplatform.task.domain.UserSetting;
-import org.exoplatform.task.exception.LabelNotFoundException;
-import org.exoplatform.task.service.TaskService;
-import org.exoplatform.task.service.UserService;
-import org.exoplatform.task.utils.TaskUtil;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import juzu.MimeType;
 import juzu.Path;
 import juzu.Resource;
 import juzu.Response;
 import juzu.impl.common.Tools;
 import juzu.request.SecurityContext;
+
+import org.exoplatform.commons.juzu.ajax.Ajax;
+import org.exoplatform.commons.utils.ListAccess;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
+import org.exoplatform.task.domain.Label;
+import org.exoplatform.task.domain.UserSetting;
+import org.exoplatform.task.exception.EntityNotFoundException;
+import org.exoplatform.task.service.TaskService;
+import org.exoplatform.task.service.UserService;
+import org.exoplatform.task.util.ListUtil;
+import org.exoplatform.task.util.TaskUtil;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class LabelController {
 
@@ -74,7 +76,9 @@ public class LabelController {
   @MimeType.HTML
   public Response getAllLabels(SecurityContext securityContext) throws JSONException {
     String username = securityContext.getRemoteUser();
-    List<Label> labels = TaskUtil.buildRootLabels(taskService.findLabelsByUser(username));
+    ListAccess<Label> tmp = taskService.findLabelsByUser(username);
+    List<Label> roots = Arrays.asList(ListUtil.load(tmp, 0, -1));
+    List<Label> labels = TaskUtil.buildRootLabels(roots);
 
     return listLabels
         .with()
@@ -90,7 +94,7 @@ public class LabelController {
     if (name != null && !(name = name.trim()).isEmpty()) {
       Label label = new Label(name, username);    
       if (parentId != null) {
-        label.setParent(taskService.getLabelById(parentId));
+        label.setParent(taskService.getLabel(parentId));
       }
       taskService.createLabel(label);
 
@@ -109,7 +113,7 @@ public class LabelController {
   @Ajax
   @MimeType.HTML
   public Response openConfirmDeleteLabelDialog(Long labelId, SecurityContext context) {
-    Label label = taskService.getLabelById(labelId);
+    Label label = taskService.getLabel(labelId);
     if (label != null) {
       String username = label.getUsername();
       if (username.equals(context.getRemoteUser())) {
@@ -123,9 +127,9 @@ public class LabelController {
   @Ajax
   public Response deleteLabel(Long labelId, SecurityContext securityContext) {
     String username = securityContext.getRemoteUser();
-    Label label = taskService.getLabelById(labelId);
+    Label label = taskService.getLabel(labelId);
     if (label != null && label.getUsername().equals(username)) {
-      taskService.deleteLabel(labelId);
+      taskService.removeLabel(labelId);
       return Response.ok();
     } else {
       return Response.status(401);
@@ -136,11 +140,12 @@ public class LabelController {
   @Ajax
   @MimeType.HTML
   public Response openEditLabelDialog(Long labelId, SecurityContext context) {
-    Label label = taskService.getLabelById(labelId);
+    Label label = taskService.getLabel(labelId);
     if (label != null) {
       String username = label.getUsername();
       if (username.equals(context.getRemoteUser())) {
-        List<Label> allLabels = taskService.findLabelsByUser(username);
+        ListAccess<Label> tmp = taskService.findLabelsByUser(username);
+        List<Label> allLabels = Arrays.asList(ListUtil.load(tmp, 0, -1));
         allLabels = TaskUtil.filterLabelTree(allLabels, label);
         return editLabelDialog.with().lblTree(TaskUtil.buildRootLabels(allLabels)).lbl(label).ok().withCharset(Tools.UTF_8);
       }
@@ -150,9 +155,9 @@ public class LabelController {
   
   @Resource
   @Ajax
-  public Response changeColor(Long labelId, String color, SecurityContext securityContext) throws LabelNotFoundException {
+  public Response changeColor(Long labelId, String color, SecurityContext securityContext) throws EntityNotFoundException {
     String username = securityContext.getRemoteUser();
-    Label label = taskService.getLabelById(labelId);
+    Label label = taskService.getLabel(labelId);
     if (label != null && label.getUsername().equals(username)) {
       label.setColor(color);
       taskService.updateLabel(label, Arrays.asList(Label.FIELDS.COLOR));
@@ -164,9 +169,9 @@ public class LabelController {
   
   @Resource
   @Ajax
-  public Response toggleHidden(Long labelId, SecurityContext securityContext) throws LabelNotFoundException {
+  public Response toggleHidden(Long labelId, SecurityContext securityContext) throws EntityNotFoundException {
     String username = securityContext.getRemoteUser();
-    Label label = taskService.getLabelById(labelId);
+    Label label = taskService.getLabel(labelId);
     if (label != null && label.getUsername().equals(username)) {
       label.setHidden(!label.isHidden());
       taskService.updateLabel(label, Arrays.asList(Label.FIELDS.HIDDEN));
@@ -178,7 +183,7 @@ public class LabelController {
   
   @Resource
   @Ajax
-  public Response toggleShowHiddenLabel(SecurityContext securityContext) throws LabelNotFoundException {
+  public Response toggleShowHiddenLabel(SecurityContext securityContext) throws EntityNotFoundException {
     String username = securityContext.getRemoteUser();
     UserSetting userSetting = userService.getUserSetting(username);
     userService.showHiddenLabel(username, !userSetting.isShowHiddenLabel());
@@ -187,12 +192,12 @@ public class LabelController {
   
   @Resource
   @Ajax
-  public Response updateLabel(Long labelId, String lblName, Long parentId, SecurityContext securityContext) throws LabelNotFoundException {
+  public Response updateLabel(Long labelId, String lblName, Long parentId, SecurityContext securityContext) throws EntityNotFoundException {
     String username = securityContext.getRemoteUser();
-    Label label = taskService.getLabelById(labelId);
+    Label label = taskService.getLabel(labelId);
     if (label != null && label.getUsername().equals(username)) {
       if (lblName != null && !(lblName = lblName.trim()).isEmpty()) {
-        label.setParent(taskService.getLabelById(parentId));
+        label.setParent(taskService.getLabel(parentId));
         label.setName(lblName);
         taskService.updateLabel(label, Arrays.asList(Label.FIELDS.NAME, Label.FIELDS.PARENT));
         return Response.ok();

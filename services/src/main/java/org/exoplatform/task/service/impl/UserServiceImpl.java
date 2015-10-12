@@ -32,12 +32,12 @@ import org.exoplatform.social.core.identity.model.Profile;
 import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
 import org.exoplatform.social.core.manager.IdentityManager;
 import org.exoplatform.social.core.service.LinkProvider;
+import org.exoplatform.task.dao.DAOHandler;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.UserSetting;
+import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.exception.NotAllowedOperationOnEntityException;
-import org.exoplatform.task.exception.ProjectNotFoundException;
 import org.exoplatform.task.model.User;
-import org.exoplatform.task.service.DAOHandler;
 import org.exoplatform.task.service.UserService;
 
 import java.util.TimeZone;
@@ -101,14 +101,14 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public void hideProject(Identity identity, Long projectId, boolean hide) throws ProjectNotFoundException, NotAllowedOperationOnEntityException {
+  public void hideProject(Identity identity, Long projectId, boolean hide) throws EntityNotFoundException, NotAllowedOperationOnEntityException {
     Project project = daoHandler.getProjectHandler().find(projectId);
     if (project == null) {
-      throw new ProjectNotFoundException(projectId);
+      throw new EntityNotFoundException(projectId, Project.class);
     }
 
     if (!project.canView(identity)) {
-      throw new NotAllowedOperationOnEntityException(projectId, "Project", "hide");
+      throw new NotAllowedOperationOnEntityException(projectId, Project.class, "hide");
     }
 
     UserSetting setting = daoHandler.getUserSettingHandler().getOrCreate(identity.getUserId());

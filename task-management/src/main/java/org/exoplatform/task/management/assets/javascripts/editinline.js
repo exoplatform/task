@@ -569,12 +569,12 @@ define('ta_edit_inline',
                     editOptions.value = currentStatus;
                 }
                 if (fieldName == 'priority') {
-                    var priority = [];
+                    /*var priority = [];
                     $.each($this.data('priority').split(','), function (idx, elem) {
                         priority.push({'text': elem, 'value': elem});
                     });
                     //
-                    editOptions.source = priority;
+                    editOptions.source = priority;*/
                     editOptions.success = function (response, newValue) {
                         $this.parent().find('i').attr('class', 'uiIconColorPriority' + newValue);
                     }

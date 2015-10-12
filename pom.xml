@@ -37,6 +37,7 @@
     <module>task-management</module>
     <module>packaging</module>
     <module>injector</module>
+    <module>integration</module>
   </modules>
   <scm>
     <connection>scm:git:git://github.com/exo-addons/task.git</connection>
@@ -75,6 +76,11 @@
       <dependency>
         <groupId>org.exoplatform.addons.task</groupId>
         <artifactId>task-management-services</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.exoplatform.addons.task</groupId>
+        <artifactId>task-management-integration</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

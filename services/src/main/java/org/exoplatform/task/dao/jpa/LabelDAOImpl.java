@@ -16,36 +16,32 @@
 */
 package org.exoplatform.task.dao.jpa;
 
-import java.util.List;
-
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-
-import org.exoplatform.commons.persistence.impl.EntityManagerService;
-import org.exoplatform.commons.persistence.impl.GenericDAOJPAImpl;
+import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.task.dao.LabelHandler;
+import org.exoplatform.task.dao.LabelQuery;
 import org.exoplatform.task.domain.Label;
 
-public class LabelDAOImpl extends GenericDAOJPAImpl<Label, Long> implements LabelHandler {
+public class LabelDAOImpl extends CommonJPADAO<Label, Long> implements LabelHandler {
 
-  private EntityManagerService entityService;
-
-  public LabelDAOImpl(EntityManagerService entityService) {
-    this.entityService = entityService;
+  @Override
+  public ListAccess<Label> findLabelsByUser(String username) {
+    LabelQuery query = new LabelQuery();
+    query.setUserName(username);
+    return findLabels(query);
   }
 
   @Override
-  public EntityManager getEntityManager() {
-    return entityService.getEntityManager();
+  public ListAccess<Label> findLabelsByTask(long taskId, String username) {
+    LabelQuery query = new LabelQuery();
+    query.setTaskId(taskId);
+    query.setUserName(username);
+    return findLabels(query);
   }
 
   @Override
-  public List<Label> findLabelsByUser(String username) {
-    TypedQuery<Label> query = getEntityManager().createNamedQuery("Label.findLabelByUser", Label.class);
-    query.setParameter("username", username);
-
-    return query.getResultList();
+  public ListAccess<Label> findLabels(LabelQuery query) {
+    return findEntities(query, Label.class);
   }
-
+  
 }
 

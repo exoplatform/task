@@ -19,31 +19,13 @@
 
 package org.exoplatform.task.dao;
 
-import java.util.List;
-
 import org.exoplatform.commons.api.persistence.GenericDAO;
+import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.task.domain.Comment;
-import org.exoplatform.task.domain.Task;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
 public interface CommentHandler extends GenericDAO<Comment, Long> {
-  /**
-   * Count number comments of Task
-   * @param task
-   * @return
-   */
-  long count(Task task);
-
-  /**
-   * Load list comments of a task. The List comments will be sorted by createdTime.
-   * (Last comment will be at last)
-   * @param task - Task object
-   * @param start - The first row to select.
-   * @param limit - The limit row to select. If limit <= 0, the start param will be ignore and all comment will be
-   *              loaded.
-   * @return list of comments
-   */
-  List<Comment> findCommentsOfTask(Task task, int start, int limit);
+  ListAccess<Comment> findComments(long taskId);
 }

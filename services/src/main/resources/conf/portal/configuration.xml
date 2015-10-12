@@ -8,8 +8,8 @@
   </component>
 
   <component>
-    <key>org.exoplatform.task.service.DAOHandler</key>
-    <type>org.exoplatform.task.service.jpa.DAOHandlerJPAImpl</type>
+    <key>org.exoplatform.task.dao.DAOHandler</key>
+    <type>org.exoplatform.task.dao.jpa.DAOHandlerJPAImpl</type>
   </component>
 
   <component>
@@ -57,80 +57,4 @@
       </init-params>
     </component-plugin>
   </external-component-plugins>
-
-  <external-component-plugins>
-    <target-component>org.exoplatform.social.core.manager.ActivityManager</target-component>
-    <component-plugin>
-      <name>ActivityTaskCreationListener</name>
-      <set-method>addActivityEventListener</set-method>
-      <type>org.exoplatform.task.integration.ActivityTaskCreationListener</type>
-    </component-plugin>
-    <component-plugin>
-      <name>TaskProcessor</name>
-      <set-method>addProcessorPlugin</set-method>
-      <type>org.exoplatform.task.integration.ActivityTaskProcessor</type>
-      <init-params>
-        <value-param>
-          <name>priority</name>
-          <description>priority of this processor (lower are executed first)</description>
-          <value>4</value>
-        </value-param>
-      </init-params>
-    </component-plugin>
-  </external-component-plugins>
-  
-  <external-component-plugins>
-    <target-component>org.exoplatform.portal.application.state.ContextualPropertyManager</target-component>
-    <component-plugin>
-      <name>SpacePropertiesPlugin</name>
-      <set-method>addPlugin</set-method>
-      <type>org.exoplatform.task.integration.SpacePropertiesPlugin</type>
-      <init-params>
-        <value-param>
-          <name>namespaceURI</name>
-          <description>Namespace URI</description>
-          <value>http://www.exoplatform.org/xml/ns/prp_1_0</value>
-        </value-param>
-      </init-params>
-    </component-plugin>
-  </external-component-plugins>
-  
-  <external-component-plugins>
-    <target-component>org.exoplatform.social.core.space.spi.SpaceService</target-component>
-    <component-plugin>
-      <name>SpaceTaskDataInitializer</name>
-      <set-method>registerSpaceListenerPlugin</set-method>
-      <type>org.exoplatform.task.integration.SpaceTaskDataInitializer</type>
-    </component-plugin>
-  </external-component-plugins>
-  
-  <external-component-plugins>
-    <target-component>org.exoplatform.calendar.service.ExtendedCalendarService</target-component>
-    <component-plugin>
-      <name>addTasksStorage</name>
-      <set-method>addDataStore</set-method>
-      <type>org.exoplatform.task.integration.calendar.TasksStorage</type>
-    </component-plugin>
-  </external-component-plugins>
-  
-  <external-component-plugins>
-    <target-component>org.exoplatform.commons.api.search.SearchService</target-component>
-    <!-- Task -->
-    <component-plugin profiles="all">
-      <name>TaskInTasksSearchConnector</name>
-      <set-method>addConnector</set-method>
-      <type>org.exoplatform.task.integration.TaskSearchConnector</type>
-      <description>eXo Tasks tasks</description>
-      <init-params>
-        <properties-param>
-           <name>constructor.params</name>
-           <property name="searchType" value="tasksInTasks"/>
-           <property name="displayName" value="Tasks"/>
-           <property name="enable" value="${exo.unified-search.connector.tasksInTasks.enable:true}"/>
-        </properties-param>
-      </init-params>      
-    </component-plugin>
-  </external-component-plugins>
-
-  <import>jar:/conf/portal/task-notification-plugin.xml</import>
 </configuration>

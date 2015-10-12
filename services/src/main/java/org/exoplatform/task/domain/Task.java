@@ -19,6 +19,13 @@
 
 package org.exoplatform.task.domain;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -31,22 +38,14 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.PreRemove;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import org.exoplatform.commons.api.persistence.ExoEntity;
 import org.exoplatform.task.service.TaskBuilder;
@@ -73,15 +72,11 @@ import org.exoplatform.task.service.TaskBuilder;
     @NamedQuery(name = "Task.findTaskByProject",
         query = "SELECT t FROM Task t WHERE t.status.project.id = :projectId"),
     @NamedQuery(name = "Task.findTaskByActivityId",
-        query = "SELECT t FROM Task t WHERE t.activityId = :activityId"),
-    @NamedQuery(name = "Task.findTasksHasLabel",
-            query = "SELECT t FROM Task t INNER JOIN t.labels lbl WHERE lbl.username = :username"),
-    @NamedQuery(name = "Task.findTasksByLabel",
-    query = "SELECT t FROM Task t INNER JOIN t.labels lbl WHERE lbl.id = :labelId")
+        query = "SELECT t FROM Task t WHERE t.activityId = :activityId")
 })
 public class Task {
 
-  private static final String PREFIX_CLONE = "Copy of ";
+  public static final String PREFIX_CLONE = "Copy of ";
 
   @Id
   @SequenceGenerator(name="SEQ_TASK_TASKS_TASK_ID", sequenceName="SEQ_TASK_TASKS_TASK_ID")
@@ -93,7 +88,7 @@ public class Task {
 
   private String      description;
 
-  @Enumerated(EnumType.STRING)
+  @Enumerated(EnumType.ORDINAL)
   private Priority    priority;
 
   private String      context;
@@ -140,21 +135,22 @@ public class Task {
   @Column(name = "DUE_DATE")
   private Date        dueDate;
 
-  @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
-  private Set<Comment> comments = new HashSet<Comment>();
-  
-  @ElementCollection(fetch=FetchType.LAZY)
-  @CollectionTable(name = "TASK_LOGS",
-      joinColumns = @JoinColumn(name = "TASK_ID"))
-  private Set<TaskLog> taskLogs = new HashSet<TaskLog>();
-  
-  @ManyToMany(fetch = FetchType.LAZY, mappedBy="tasks")
-  private Set<Label> labels = new HashSet<Label>();
+  //This field is only used for remove cascade
+  @OneToMany(mappedBy = "task", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
+  private List<Comment> comments = new ArrayList<Comment>();
+
+  //This field is only used for remove cascade
+  @OneToMany(mappedBy = "task", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
+  private List<TaskLog> logs = new ArrayList<TaskLog>();
+
+  @OneToMany(mappedBy = "task", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
+  private Set<LabelTaskMapping> lblMapping = new HashSet<LabelTaskMapping>();
 
   @Column(name = "ACTIVITY_ID")
   private String activityId;
 
   public Task() {
+    this.priority = Priority.NORMAL;
   }
 
   public long getId() {
@@ -256,14 +252,6 @@ public class Task {
     return createdBy;
   }
 
-  public Set<Label> getLabels() {
-    return labels;
-  }
-
-  public void setLabels(Set<Label> labels) {
-    this.labels = labels;
-  }
-
   public void setCreatedBy(String createdBy) {
     this.createdBy = createdBy;
   }
@@ -308,22 +296,6 @@ public class Task {
     this.coworker = coworker;
   }
 
-  public Set<Comment> getComments() {
-    return comments;
-  }
-
-  public void setComments(Set<Comment> comments) {
-    this.comments = comments;
-  }
-
-  public Set<TaskLog> getTaskLogs() {
-    return taskLogs;
-  }
-
-  public void setTaskLogs(Set<TaskLog> taskLogs) {
-    this.taskLogs = taskLogs;
-  }
-
   public String getActivityId() {
     return activityId;
   }
@@ -333,7 +305,7 @@ public class Task {
   }
 
   public Task clone() {
-    Task newTask = new TaskBuilder().withTitle(PREFIX_CLONE+this.getTitle())
+    Task newTask = new TaskBuilder().withTitle(this.getTitle())
         .withAssignee(this.getAssignee())
         .withContext(this.getContext())
         .withCreatedBy(this.getCreatedBy())
@@ -342,10 +314,25 @@ public class Task {
         .withPriority(this.getPriority())
         .withStartDate(this.getStartDate())
         .withEndDate(this.getEndDate())
-        .withStatus(this.status)
+        .withStatus(this.getStatus() != null ? this.getStatus().clone() : null)
         .build();
-    newTask.setCoworker(new HashSet<String>(this.getCoworker()));
-    newTask.setTag(new HashSet<String>(this.getTag()));
+
+    //
+    Set<String> coworker = new HashSet<String>();
+    if (this.getCoworker() != null) {
+      coworker.addAll(getCoworker());
+    }
+    newTask.setCoworker(coworker);
+
+    //
+    Set<String> tags = new HashSet<String>();
+    if (getTag() != null) {
+      tags.addAll(getTag());
+    }
+    newTask.setTag(tags);
+
+    newTask.setId(getId());
+
     return newTask;
   }
 
@@ -359,7 +346,6 @@ public class Task {
     if (completed != task.completed) return false;
     if (id != task.id) return false;
     if (assignee != null ? !assignee.equals(task.assignee) : task.assignee != null) return false;
-    if (comments != null ? !comments.equals(task.comments) : task.comments != null) return false;
     if (context != null ? !context.equals(task.context) : task.context != null) return false;
     if (coworker != null ? !coworker.equals(task.coworker) : task.coworker != null) return false;
     if (createdBy != null ? !createdBy.equals(task.createdBy) : task.createdBy != null) return false;
@@ -374,16 +360,5 @@ public class Task {
     if (title != null ? !title.equals(task.title) : task.title != null) return false;
 
     return true;
-  }
-
-  @PreRemove
-  private void removeLabel() {
-    if (getLabels() != null) {
-      for (Label lbl : getLabels()) {
-        if (lbl.getTasks() != null) {
-          lbl.getTasks().remove(this);
-        }
-      }      
-    }
   }
 }

@@ -3,7 +3,7 @@
 #{param name=bundle/}
 
 <%
-import org.exoplatform.task.utils.TaskUtil;
+import org.exoplatform.task.util.TaskUtil;
 %>
 <ul class="list-changes">
 <%for (def log : taskLogs) {%>

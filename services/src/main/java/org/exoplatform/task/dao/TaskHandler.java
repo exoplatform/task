@@ -16,10 +16,10 @@
 */
 package org.exoplatform.task.dao;
 
-import java.util.Date;
 import java.util.List;
 
 import org.exoplatform.commons.api.persistence.GenericDAO;
+import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
 
@@ -29,27 +29,15 @@ import org.exoplatform.task.domain.Task;
  */
 public interface TaskHandler extends GenericDAO<Task, Long> {
 
-  List<Task> findByProject(Long projectId);
-
+  ListAccess<Task> findTasksByLabel(long labelId, List<Long> projectIds, String username, OrderBy orderBy);
+ 
   List<Task> findByUser(String user);
 
-  List<Task> findAllByMembership(String user, List<String> memberships);
+  ListAccess<Task> findTasks(TaskQuery query);
 
-  List<Task> findByTag(String tag);
-
-  List<Task> findByTags(List<String> tags);
-
-  List<Task> findTasksByLabel(long labelId, List<Long> projectIds, String username, OrderBy orderBy);
- 
-  List<Task> findTaskByQuery(TaskQuery query);
-
-  List<Task> getIncomingTask(String username, OrderBy orderBy);
-
-  List<Task> getToDoTask(String username, List<Long> projectIds, OrderBy orderBy, Date fromDueDate, Date toDueDate);
+  public <T> List<T> selectTaskField(TaskQuery query, String fieldName);
 
   Task findTaskByActivityId(String activityId);
-
-  long getTaskNum(String username, List<Long> projectIds);
 
   void updateTaskOrder(long currentTaskId, Status newStatus, long[] orders);
   

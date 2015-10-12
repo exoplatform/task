@@ -21,8 +21,8 @@ package org.exoplatform.task.service;
 
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.task.domain.UserSetting;
+import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.exception.NotAllowedOperationOnEntityException;
-import org.exoplatform.task.exception.ProjectNotFoundException;
 import org.exoplatform.task.model.User;
 
 import java.util.TimeZone;
@@ -40,7 +40,7 @@ public interface UserService {
   
   void showHiddenLabel(String username, boolean show);
 
-  void hideProject(Identity identity, Long projectId, boolean hide) throws ProjectNotFoundException, NotAllowedOperationOnEntityException;
+  void hideProject(Identity identity, Long projectId, boolean hide) throws EntityNotFoundException, NotAllowedOperationOnEntityException;
 
   TimeZone getUserTimezone(String username);
 }

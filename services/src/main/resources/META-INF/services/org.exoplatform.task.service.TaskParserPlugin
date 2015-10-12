@@ -1,4 +1,1 @@
-org.exoplatform.task.service.impl.TaskPriorityParserPlugin
-org.exoplatform.task.service.impl.TaskAssigneeParserPlugin
-org.exoplatform.task.service.impl.TaskDueDateParserPlugin
-org.exoplatform.task.service.impl.TaskTagParserPlugin
+org.exoplatform.task.service.impl.DefaultParserPlugin

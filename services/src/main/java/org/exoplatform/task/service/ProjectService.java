@@ -1,60 +1,87 @@
 package org.exoplatform.task.service;
 
 import java.util.List;
-import java.util.Set;
 
-import org.exoplatform.services.security.Identity;
+import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.task.dao.OrderBy;
+import org.exoplatform.task.dao.ProjectQuery;
 import org.exoplatform.task.domain.Project;
-import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.exception.NotAllowedOperationOnEntityException;
-import org.exoplatform.task.exception.ParameterEntityException;
-import org.exoplatform.task.exception.ProjectNotFoundException;
+import org.exoplatform.task.exception.EntityNotFoundException;
 
 /**
  * Created by TClement on 6/3/15.
  */
 public interface ProjectService {
 
-  Project createDefaultStatusProjectWithManager(String name, String description, boolean calInteg, Long parentId, String username)
-      throws ProjectNotFoundException;
+  /**
+   * Return the project with given <code>projectId</code>.
+   *
+   * @param projectId
+   * @return
+   * @throws EntityNotFoundException
+   */
+  Project getProject(Long projectId) throws EntityNotFoundException;
 
-  Project createDefaultStatusProjectWithAttributes(Long parentId, String name, String description,
-                                                   boolean calInteg, Set<String> managers, Set<String> participators)
-      throws ProjectNotFoundException;
-
-  Project createDefaultStatusProject(Project project);
-
+  /**
+   * Create a project with given <code>project</code> model object.
+   *
+   * @param project
+   * @return
+   */
   Project createProject(Project project);
 
-  Project updateProjectInfo(long id, String param, String[] values)
-      throws ProjectNotFoundException, ParameterEntityException;
-  
-  Project updateProjectInfo(long id, Long parentId, String name, String description, Boolean calendarIntegrated, String color)
-      throws ProjectNotFoundException, ParameterEntityException;
+  /**
+   * Create a sub-project with given <code>project</code> model object and parent project ID.
+   *
+   * @param project the project metadata to create.
+   * @param parentId parent project ID
+   * @return
+   * @throws EntityNotFoundException the project associated with <code>parentId</code> doesn't exist.
+   */
+  Project createProject(Project project, long parentId) throws EntityNotFoundException;
 
-  void deleteProjectById(long id, boolean deleteChild) throws ProjectNotFoundException;
+  /**
+   * Update the project.
+   *
+   * It should throws EntityNotFoundException if the project has been removed OR not existed from database.
+   * 
+   * @param project
+   * @return
+   */
+  Project updateProject(Project project);
 
-  void deleteProject(Project project, boolean deleteChild);
+  /**
+   * Remove the project with given <code>projectId</code>,
+   * and also its descendants if <code>deleteChild</code> is true.
+   *
+   * @param projectId
+   * @param deleteChild
+   * @throws EntityNotFoundException
+   */
+  void removeProject(long projectId, boolean deleteChild) throws EntityNotFoundException;
 
-  Project cloneProjectById(long id, boolean cloneTask) throws ProjectNotFoundException;
+  /**
+   * Clone a project with given <code>projectId</code>. If <code>cloneTask</code> is true,
+   * it will also clone all non-completed tasks from the project.
+   *
+   * @param projectId The id of a project which it copies from.
+   * @param cloneTask If false, it will clone only project metadata.
+   *        Otherwise, it also clones all non-completed tasks from the project.
+   *
+   * @return The cloned project.
+   * @throws EntityNotFoundException
+   */
+  Project cloneProject(long projectId, boolean cloneTask) throws EntityNotFoundException;
 
-  Project getProjectById(Long id) throws ProjectNotFoundException;
+  /**
+   * Return a list of children of a parent project with given <code>parentId</code>.
+   *
+   * @param parentId
+   * @return
+   */
+  ListAccess<Project> getSubProjects(long parentId);
 
-  Task createTaskToProjectId(long id, Task task) throws ProjectNotFoundException;
+  ListAccess<Project> findProjects(ProjectQuery query);
 
-  List<Task> getTasksByProjectId(List<Long> ids, OrderBy orderBy);
-
-  List<Task> getTasksWithKeywordByProjectId(List<Long> ids, OrderBy orderBy, String keyword);
-
-  Project removePermissionFromProjectId(Long id, String permission, String type)
-      throws ProjectNotFoundException, NotAllowedOperationOnEntityException;
-
-  Project addPermissionsFromProjectId(Long id, String permissions, String type)
-      throws ProjectNotFoundException, NotAllowedOperationOnEntityException;
-  
-  List<Project> getProjectTreeByMembership(List<String> memberships);
- 
-  List<Project> findProjectByKeyWord(Identity identity, String keyword, OrderBy order);
-
+  ListAccess<Project> findProjects(List<String> memberships, String keyword, OrderBy order);
 }

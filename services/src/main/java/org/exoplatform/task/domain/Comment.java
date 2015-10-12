@@ -34,7 +34,9 @@ import java.util.Date;
     @NamedQuery(name = "Comment.countCommentOfTask",
         query = "SELECT count(c) FROM Comment c WHERE c.task.id = :taskId"),
     @NamedQuery(name = "Comment.findCommentsOfTask",
-        query = "SELECT c FROM Comment c WHERE c.task.id = :taskId ORDER BY c.createdTime DESC")
+        query = "SELECT c FROM Comment c WHERE c.task.id = :taskId ORDER BY c.createdTime DESC"),
+    @NamedQuery(name = "Comment.deleteCommentOfTask",
+        query = "DELETE FROM Comment c WHERE c.task.id = :taskId")
 })
 public class Comment {
   @Id
@@ -96,5 +98,16 @@ public class Comment {
 
   public void setTask(Task task) {
     this.task = task;
+  }
+
+  @Override
+  public Comment clone() {
+    Comment c = new Comment();
+    c.setId(getId());
+    c.setAuthor(getAuthor());
+    c.setComment(getComment());
+    c.setCreatedTime(getCreatedTime());
+    c.setTask(getTask().clone());
+    return c;
   }
 }

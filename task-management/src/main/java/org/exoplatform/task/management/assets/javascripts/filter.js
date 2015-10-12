@@ -22,7 +22,7 @@ define('taFilter', ['jquery', 'selectize'], function($) {
               taFilter.initSearchForm();
             });
           } else {
-            taApp.hideRightPanel(ui.$centerPanel, ui.$rightPanel, ui.$rightPanelContent);
+            taFilter.removeFilter();            
           }
         });
       },
@@ -80,15 +80,22 @@ define('taFilter', ['jquery', 'selectize'], function($) {
         //assignee
         initAssignee($filter, defOpts);
       },
+      
+      removeFilter: function() {
+        var ui = taApp.getUI();
+        taFilter.submitFilter(true);
+        taApp.hideRightPanel(ui.$centerPanel, ui.$rightPanel, ui.$rightPanelContent);
+      },
 
-      submitFilter: function() {
+      submitFilter: function(reset) {
         var $content = taApp.getUI().$centerPanelContent;
-        var data = taFilter.getFilterData();
+        var data = taFilter.getFilterData(reset);
         $content.data('filterData', data);
         $content.jzLoad('TaskController.listTasks()', data);
       },
       
-      getFilterData: function() {
+      //reset = true --> not submit filter data from right panel 
+      getFilterData: function(reset) {
         var ui = taApp.getUI();
         var $content = ui.$centerPanelContent; 
         var $view = $content.find('.projectListView, .taskBoardView');
@@ -116,62 +123,63 @@ define('taFilter', ['jquery', 'selectize'], function($) {
         var data = {
           'projectId': projectId,
           'labelId': labelId,
-          'keyword': keyword,
-          'advanceSearch': true,
+          'advanceSearch': !reset,
           'groupBy': groupBy,
           'orderBy': orderBy,
           'filter': filter,
           'viewType': viewType
         };
          
-        var $rightPanelContent = ui.$rightPanelContent;
-        if ($content.find('.uiIconFilter').hasClass('uiIconBlue')) {
-          var keyword = $.trim($rightPanelContent.find('[name="keyword"]').val());
-          data.keyword = keyword;
-          
-          var labelIds = $rightPanelContent.find('[name="label"]').data('selectize');
-          if (labelIds) {
-            var val = labelIds.getValue();
-            if (val) {
-              data.filterLabelIds = val;              
+        if (!reset) {
+          var $rightPanelContent = ui.$rightPanelContent;
+          if ($content.find('.uiIconFilter').hasClass('uiIconBlue')) {
+            var keyword = $.trim($rightPanelContent.find('[name="keyword"]').val());
+            data.keyword = keyword;
+            
+            var labelIds = $rightPanelContent.find('[name="label"]').data('selectize');
+            if (labelIds) {
+              var val = labelIds.getValue();
+              if (val) {
+                data.filterLabelIds = val;              
+              }
             }
-          }
-          
-          var tags = $rightPanelContent.find('[name="tag"]').data('selectize');
-          if (tags) {
-            var val = tags.getValue();
-            if (val) {
-              data.tags = val;              
+            
+            var tags = $rightPanelContent.find('[name="tag"]').data('selectize');
+            if (tags) {
+              var val = tags.getValue();
+              if (val) {
+                data.tags = val;              
+              }
             }
-          }
-          
-          var status = $.trim($rightPanelContent.find('[name="status"]').val());
-          if (status) {
-            data.statusId = status;
-          }
-          
-          var assignee = $rightPanelContent.find('[name="assignee"]').data('selectize');
-          if (assignee) {
-            var val = assignee.getValue();
-            if (val) {
-              data.assignee = val;              
+            
+            var status = $.trim($rightPanelContent.find('[name="status"]').val());
+            if (status) {
+              data.statusId = status;
             }
-          }
-          
-          var due = $rightPanelContent.find('[name="due"]').val();
-          if (due) {
-            data.dueDate = due;
-          }
-          
-          var priority = $.trim($rightPanelContent.find('[name="priority"]').val());
-          if (priority) {
-            data.priority = priority;
-          }
-          
-          var completed = $rightPanelContent.find('[name="completed"]').is(':checked');
-          if (!completed) {
-            data.completed = completed;
-          }
+            
+            var assignee = $rightPanelContent.find('[name="assignee"]').data('selectize');
+            if (assignee) {
+              var val = assignee.getValue();
+              if (val) {
+                data.assignee = val;              
+              }
+            }
+            
+            var due = $rightPanelContent.find('[name="due"]').val();
+            if (due) {
+              data.dueDate = due;
+            }
+            
+            var priority = $.trim($rightPanelContent.find('[name="priority"]').val());
+            if (priority) {
+              data.priority = priority;
+            }
+            
+            var completed = $rightPanelContent.find('[name="completed"]').is(':checked');
+            if (!completed) {
+              data.completed = completed;
+            }
+          }          
         }
         return data;
       }

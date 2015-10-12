@@ -29,6 +29,8 @@ import org.exoplatform.services.log.Log;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.exception.AbstractEntityException;
+import org.exoplatform.task.exception.EntityNotFoundException;
+import org.exoplatform.task.exception.NotAllowedOperationOnEntityException;
 import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.StatusService;
 import org.json.JSONArray;
@@ -38,14 +40,13 @@ import org.json.JSONObject;
 import javax.inject.Inject;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
-public class StatusController {
+public class StatusController extends AbstractController {
 
   private static final Log LOG = ExoLogger.getExoLogger(StatusController.class);
 
@@ -58,48 +59,29 @@ public class StatusController {
   @Resource
   @Ajax
   @MimeType.JSON
-  public Response getAllStatus(Long projectId) {
-
-    try {
-
-      Project project = projectService.getProjectById(projectId); //Can throw ProjectNotFoundException
-
-      JSONArray array = new JSONArray();
-      List<Status> statuses = new LinkedList<Status>(project.getStatus());
-      Collections.sort(statuses);
-      for (Status status : statuses) {
-        JSONObject json = new JSONObject();
-        json.put("value", status.getId());
-        json.put("text", status.getName());
-        array.put(json);
-      }
-
-      return Response.ok(array.toString());
-
-    } catch (AbstractEntityException e) {
-      LOG.warn("Impossible to retrieve status for Project "+projectId, e);
-      return Response.status(e.getHttpStatusCode()).body(e.getMessage());
-    } catch (JSONException ex) {
-      LOG.warn("JSONException while create reporting", ex);
-      return Response.status(500).body("JSONException while create reporting");
+  public Response getAllStatus(Long projectId) throws EntityNotFoundException, JSONException {
+    JSONArray array = new JSONArray();
+    List<Status> statuses = new LinkedList<Status>(statusService.getStatuses(projectId));
+    Collections.sort(statuses);
+    for (Status status : statuses) {
+      JSONObject json = new JSONObject();
+      json.put("value", status.getId());
+      json.put("text", status.getName());
+      array.put(json);
     }
+
+    return Response.ok(array.toString());
   }
 
   @Resource
   @Ajax
   @MimeType.JSON
-  public Response updateStatus(Long id, String name) {
-    try {
-      Status status = statusService.updateStatus(id, name);
-      JSONObject json = new JSONObject();
-      json.put("id", status.getId());
-      json.put("name", status.getName());
-      json.put("rank", status.getRank());
-      return Response.ok(json.toString());
-    } catch (AbstractEntityException e) {
-      return Response.status(e.getHttpStatusCode()).body(e.getMessage());
-    } catch (JSONException e) {
-      return Response.status(500).body(e.getMessage());
-    }
+  public Response updateStatus(Long id, String name) throws EntityNotFoundException, NotAllowedOperationOnEntityException, JSONException {
+    Status status = statusService.updateStatus(id, name);
+    JSONObject json = new JSONObject();
+    json.put("id", status.getId());
+    json.put("name", status.getName());
+    json.put("rank", status.getRank());
+    return Response.ok(json.toString());
   }
 }

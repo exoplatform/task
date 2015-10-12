@@ -21,26 +21,10 @@ package org.exoplatform.task.management.controller;
 
 import javax.inject.Inject;
 
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
-
-import org.exoplatform.commons.juzu.ajax.Ajax;
-import org.exoplatform.services.log.ExoLogger;
-import org.exoplatform.services.log.Log;
-import org.exoplatform.task.domain.Label;
-import org.exoplatform.task.domain.Project;
-import org.exoplatform.task.domain.Status;
-import org.exoplatform.task.exception.ProjectNotFoundException;
-import org.exoplatform.task.service.ProjectService;
-import org.exoplatform.task.service.StatusService;
-import org.exoplatform.task.service.TaskService;
-import org.exoplatform.task.service.UserService;
-import org.exoplatform.task.utils.ProjectUtil;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import juzu.MimeType;
 import juzu.Path;
@@ -48,6 +32,24 @@ import juzu.Resource;
 import juzu.Response;
 import juzu.impl.common.Tools;
 import juzu.request.SecurityContext;
+
+import org.exoplatform.commons.juzu.ajax.Ajax;
+import org.exoplatform.commons.utils.ListAccess;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
+import org.exoplatform.task.domain.Label;
+import org.exoplatform.task.domain.Project;
+import org.exoplatform.task.domain.Status;
+import org.exoplatform.task.exception.EntityNotFoundException;
+import org.exoplatform.task.service.ProjectService;
+import org.exoplatform.task.service.StatusService;
+import org.exoplatform.task.service.TaskService;
+import org.exoplatform.task.service.UserService;
+import org.exoplatform.task.util.ListUtil;
+import org.exoplatform.task.util.ProjectUtil;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class FilterController {
 
@@ -63,6 +65,9 @@ public class FilterController {
   ProjectService projectService;
   
   @Inject
+  StatusService statusService;
+  
+  @Inject
   ResourceBundle bundle;
   
   @Inject
@@ -72,21 +77,22 @@ public class FilterController {
   @Resource
   @Ajax
   @MimeType.HTML
-  public Response showFilter(Long projectId, Long labelId, String filter, SecurityContext securityContext) throws JSONException, ProjectNotFoundException {
+  public Response showFilter(Long projectId, Long labelId, String filter, SecurityContext securityContext) throws JSONException, EntityNotFoundException {
     String username = securityContext.getRemoteUser();
     //don't allow to filter label when user already select specific label
     boolean filterLabel = labelId == null || labelId <= 0;
 
     //only allow to filter status with concrete project 
     boolean filterStatus = projectId != null && projectId > 0;
-    Project project = filterStatus ? projectService.getProjectById(projectId) : null;
+    Project project = filterStatus ? projectService.getProject(projectId) : null;
     
     List<Status> status = Collections.emptyList();
-    if (filterStatus && project != null) {
-      status = new LinkedList<Status>(project.getStatus());
+    if (filterStatus && project != null) {      
+      status = statusService.getStatuses(project.getId());
     }
     
-    List<Label> labels = taskService.findLabelsByUser(username);
+    ListAccess<Label> tmp = taskService.findLabelsByUser(username);
+    List<Label> labels = Arrays.asList(ListUtil.load(tmp, 0, -1));
     JSONArray lblArr = buildJSON(labels);
 
     boolean filterAssignee = projectId == null || projectId != ProjectUtil.INCOMING_PROJECT_ID;

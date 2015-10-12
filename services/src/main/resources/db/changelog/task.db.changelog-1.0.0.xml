@@ -108,7 +108,7 @@
       <column name="DESCRIPTION" type="NVARCHAR(2000)">
         <constraints nullable="true"/>
       </column>
-      <column name="PRIORITY" type="NVARCHAR(10)">
+      <column name="PRIORITY" type="INTEGER" defaultValue="0">
         <constraints nullable="true"/>
       </column>
       <column name="CONTEXT" type="NVARCHAR(255)">
@@ -239,6 +239,9 @@
   <!-- Definition of TASK_LOGS table -->
   <changeSet author="task" id="1.0.0-14">
     <createTable tableName="TASK_LOGS">
+      <column name="CHANGE_LOG_ID" type="BIGINT" autoIncrement="${autoIncrement}" startWith="1">
+        <constraints primaryKey="true" primaryKeyName="PK_TASK_CHANGE_LOG" nullable="false"/>
+      </column>
       <column name="TASK_ID" type="BIGINT">
         <constraints nullable="false" foreignKeyName="FK_LOG_TASK" references="TASK_TASKS(TASK_ID)"/>
       </column>
@@ -368,8 +371,13 @@
   </changeSet>
 
   <!-- Definition of sequence for TASK_COMMENTS -->
-  <changeSet author="task" id="1.0.0-19" dbms="oracle,postgresql">
+  <changeSet author="task" id="1.0.0-21" dbms="oracle,postgresql">
     <createSequence sequenceName="SEQ_TASK_COMMENTS_COMMENT_ID" startValue="1"/>
+  </changeSet>
+
+  <!-- Definition of sequence for TASK_CHANGE_LOG -->
+  <changeSet author="task" id="1.0.0-22" dbms="oracle,postgresql">
+    <createSequence sequenceName="SEQ_TASK_CHANGE_LOG_ID" startValue="1"/>
   </changeSet>
 
 </databaseChangeLog>
