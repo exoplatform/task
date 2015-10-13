@@ -1,30 +1,30 @@
 TITLE,DESCRIPTION,PRIORITY,CONTEXT,ASSIGNEE,STATUS_ID,CREATED_BY,CREATED_TIME,END_DATE,START_DATE,DUE_DATE,COMPLETED
-"Brainstorming for good idea","Involve all marketing Team + VPs to brainstorm about launch campaign",HIGH,NULL,root,1,root,"2015-05-15 00:00:00",NULL,NULL,NULL,1
-"Test Marketing message","Test marketing message + new ideas on customer panel",MEDIUM,NULL,root,1,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
-"Prepare Social campaign","Gather feedback from marketing message to prepare the social campaign",MEDIUM,NULL,root,15,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
-"Presentation video","Create a video to present the product",HIGH,NULL,root,2,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
-"Facebook page","Create a new facebook page to promote our product",LOW,NULL,root,14,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
-"Press Release","Prepare the press release conference",HIGH,NULL,root,13,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
-"Twitter campaign","Run a day to day Twitter campaign to promote new feature",MEDIUM,NULL,root,13,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
-"Follow Social Media","Listen to threats, Facebook, Forum",HIGH,NULL,root,13,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
-"Measure Sale impact","Evaluate the campaign on our sales",LOW,NULL,root,3,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
-"Customer stories","Organises conference with user of our new product to pormote it during event",MEDIUM,NULL,root,3,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
-"Define attention","Organize meeting to define what is the exact goal of the video",HIGH,NULL,root,7,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
-"Define Style","We need to define a new brand style for our product in this video",MEDIUM,NULL,root,6,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
-"Scripting And Storyboarding","Plan and prepare the script / actors",MEDIUM,NULL,root,5,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
-"Record the film","Let's record this video !",MEDIUM,NULL,root,4,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
-"Post production","Edit the film",MEDIUM,NULL,root,4,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
-"Responsive Design","eXo home page + menu must be responsive",HIGH,NULL,root,9,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
-"Task Management","The top next feature of eXo Platform",HIGH,NULL,root,10,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
-"Share activity","Possibility to share activity from the activity stream",MEDIUM,NULL,root,9,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
-"WCM Template Pack","Add wonderful template to eXo to create nice page",LOW,NULL,root,9,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
-"Social network Authentication","Possibility to connect to eXo with other social account (FB, Twitter, Linkedin) using OAuth",MEDIUM,NULL,root,10,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
-"Flat Design","Implement a new Flat design",LOW,NULL,root,8,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
-"Buy new Squash Racquet","Go to cocothlon buy the last Bouboulat TX53 racquet (same as the pro rodal djokuray !!!)",MEDIUM,NULL,root,18,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
-"Book court","Book Squash court to play with Bipbip next week",HIGH,NULL,root,18,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
-"Birthday Party","Send invitation to friend of Marine for its birthday party",LOW,NULL,root,17,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
-Vacation,"Organize vacation to Vietnam for this summer",LOW,NULL,root,17,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
-"Call plumber","Seems to have a leak in the kitchen",LOW,NULL,root,19,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
-"Thank eXo","Send email to eXo developers to say ""I love you eXo""",HIGH,NULL,root,16,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
-"Create Project Alpha","Create the top secret Alpha project",HIGH,NULL,root,NULL,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
-"Just created task","I just created this task, it's why it is in INCOMING section. Now I need to add it in a project",MEDIUM,NULL,root,NULL,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
+"Brainstorming for good idea","Involve all marketing Team + VPs to brainstorm about launch campaign",3,NULL,root,1,root,"2015-05-15 00:00:00",NULL,NULL,NULL,1
+"Test Marketing message","Test marketing message + new ideas on customer panel",2,NULL,root,1,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
+"Prepare Social campaign","Gather feedback from marketing message to prepare the social campaign",2,NULL,root,15,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
+"Presentation video","Create a video to present the product",3,NULL,root,2,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
+"Facebook page","Create a new facebook page to promote our product",1,NULL,root,14,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
+"Press Release","Prepare the press release conference",3,NULL,root,13,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
+"Twitter campaign","Run a day to day Twitter campaign to promote new feature",2,NULL,root,13,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
+"Follow Social Media","Listen to threats, Facebook, Forum",3,NULL,root,13,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
+"Measure Sale impact","Evaluate the campaign on our sales",1,NULL,root,3,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
+"Customer stories","Organises conference with user of our new product to pormote it during event",2,NULL,root,3,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
+"Define attention","Organize meeting to define what is the exact goal of the video",3,NULL,root,7,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
+"Define Style","We need to define a new brand style for our product in this video",2,NULL,root,6,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
+"Scripting And Storyboarding","Plan and prepare the script / actors",2,NULL,root,5,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
+"Record the film","Let's record this video !",2,NULL,root,4,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
+"Post production","Edit the film",2,NULL,root,4,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
+"Responsive Design","eXo home page + menu must be responsive",3,NULL,root,9,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
+"Task Management","The top next feature of eXo Platform",3,NULL,root,10,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
+"Share activity","Possibility to share activity from the activity stream",2,NULL,root,9,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
+"WCM Template Pack","Add wonderful template to eXo to create nice page",1,NULL,root,9,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
+"Social network Authentication","Possibility to connect to eXo with other social account (FB, Twitter, Linkedin) using OAuth",2,NULL,root,10,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
+"Flat Design","Implement a new Flat design",1,NULL,root,8,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
+"Buy new Squash Racquet","Go to cocothlon buy the last Bouboulat TX53 racquet (same as the pro rodal djokuray !!!)",2,NULL,root,18,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
+"Book court","Book Squash court to play with Bipbip next week",3,NULL,root,18,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
+"Birthday Party","Send invitation to friend of Marine for its birthday party",1,NULL,root,17,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
+Vacation,"Organize vacation to Vietnam for this summer",1,NULL,root,17,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
+"Call plumber","Seems to have a leak in the kitchen",1,NULL,root,19,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
+"Thank eXo","Send email to eXo developers to say ""I love you eXo""",3,NULL,root,16,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
+"Create Project Alpha","Create the top secret Alpha project",3,NULL,root,NULL,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
+"Just created task","I just created this task, it's why it is in INCOMING section. Now I need to add it in a project",2,NULL,root,NULL,root,"2015-05-15 00:00:00",NULL,NULL,NULL,0
