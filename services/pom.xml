@@ -65,28 +65,6 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.exoplatform.social</groupId>
-      <artifactId>social-component-core</artifactId>
-      <version>4.3.x-soc-task-SNAPSHOT</version>
-      <scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>org.chromattic</groupId>
-          <artifactId>chromattic.apt</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.chromattic</groupId>
-          <artifactId>chromattic.core</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.exoplatform.social</groupId>
-      <artifactId>social-component-notification</artifactId>
-      <version>4.3.x-soc-task-SNAPSHOT</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>org.exoplatform.calendar</groupId>
       <artifactId>calendar-service</artifactId>
       <version>4.3.x-cal-task-SNAPSHOT</version>
