@@ -21,22 +21,22 @@ package org.exoplatform.task.dao.jpa;
 
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.task.dao.TaskLogHandler;
-import org.exoplatform.task.domain.TaskLog;
+import org.exoplatform.task.domain.ChangeLog;
 
 import javax.persistence.TypedQuery;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
-public class TaskLogDAOImpl extends CommonJPADAO<TaskLog, Long> implements TaskLogHandler {
+public class TaskLogDAOImpl extends CommonJPADAO<ChangeLog, Long> implements TaskLogHandler {
   @Override
-  public ListAccess<TaskLog> findTaskLogs(Long taskId) {
-    TypedQuery<TaskLog> query = getEntityManager().createNamedQuery("TaskChangeLog.findChangeLogByTaskId", TaskLog.class);
+  public ListAccess<ChangeLog> findTaskLogs(Long taskId) {
+    TypedQuery<ChangeLog> query = getEntityManager().createNamedQuery("TaskChangeLog.findChangeLogByTaskId", ChangeLog.class);
     TypedQuery<Long> count = getEntityManager().createNamedQuery("TaskChangeLog.countChangeLogByTaskId", Long.class);
 
     query.setParameter("taskId", taskId);
     count.setParameter("taskId", taskId);
 
-    return new JPAQueryListAccess<TaskLog>(TaskLog.class, count, query);
+    return new JPAQueryListAccess<ChangeLog>(ChangeLog.class, count, query);
   }
 }

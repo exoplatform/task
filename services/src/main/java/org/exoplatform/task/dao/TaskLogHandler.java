@@ -21,11 +21,11 @@ package org.exoplatform.task.dao;
 
 import org.exoplatform.commons.api.persistence.GenericDAO;
 import org.exoplatform.commons.utils.ListAccess;
-import org.exoplatform.task.domain.TaskLog;
+import org.exoplatform.task.domain.ChangeLog;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
-public interface TaskLogHandler extends GenericDAO<TaskLog, Long> {
-  ListAccess<TaskLog> findTaskLogs(Long taskId);
+public interface TaskLogHandler extends GenericDAO<ChangeLog, Long> {
+  ListAccess<ChangeLog> findTaskLogs(Long taskId);
 }

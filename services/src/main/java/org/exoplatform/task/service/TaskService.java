@@ -9,7 +9,7 @@ import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Label;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.domain.TaskLog;
+import org.exoplatform.task.domain.ChangeLog;
 import org.exoplatform.task.exception.EntityNotFoundException;
 
 /**
@@ -78,12 +78,12 @@ public interface TaskService {
    * 
    * @param taskId
    * @param username
-   * @param msg
+   * @param actionName
    * @param target
    * @return
    * @throws EntityNotFoundException
    */
-  TaskLog addTaskLog(long taskId, String username, String msg, String target) throws EntityNotFoundException;
+  ChangeLog addTaskLog(long taskId, String username, String actionName, String target) throws EntityNotFoundException;
   
   void addTaskToLabel(Long taskId, Long labelId) throws EntityNotFoundException;
   
@@ -101,7 +101,7 @@ public interface TaskService {
 
   void removeLabel(long labelId);
 
-  ListAccess<TaskLog> getTaskLogs(long taskId);
+  ListAccess<ChangeLog> getTaskLogs(long taskId);
 
   //TODO: should use via #findTasks(TaskQuery)?
   Task findTaskByActivityId(String activityId);

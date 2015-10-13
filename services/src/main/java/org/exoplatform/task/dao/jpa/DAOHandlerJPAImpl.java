@@ -25,7 +25,7 @@ import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.domain.TaskLog;
+import org.exoplatform.task.domain.ChangeLog;
 import org.exoplatform.task.domain.UserSetting;
 import org.exoplatform.task.service.impl.AbstractDAOHandler;
 
@@ -62,8 +62,8 @@ public class DAOHandlerJPAImpl extends AbstractDAOHandler implements DAOHandler 
       return (E)((Project)e).clone(false);
     } else if (e instanceof Comment) {
       return (E)((Comment)e).clone();
-    } else if (e instanceof TaskLog) {
-      return (E)((TaskLog)e).clone();
+    } else if (e instanceof ChangeLog) {
+      return (E)((ChangeLog)e).clone();
     } else if (e instanceof UserSetting) {
       return (E)((UserSetting)e).clone();
     }

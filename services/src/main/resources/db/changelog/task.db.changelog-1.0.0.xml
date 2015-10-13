@@ -238,7 +238,7 @@
   
   <!-- Definition of TASK_LOGS table -->
   <changeSet author="task" id="1.0.0-14">
-    <createTable tableName="TASK_LOGS">
+    <createTable tableName="TASK_CHANGE_LOGS">
       <column name="CHANGE_LOG_ID" type="BIGINT" autoIncrement="${autoIncrement}" startWith="1">
         <constraints primaryKey="true" primaryKeyName="PK_TASK_CHANGE_LOG" nullable="false"/>
       </column>
@@ -248,7 +248,7 @@
       <column name="AUTHOR" type="NVARCHAR(100)">
         <constraints nullable="false"/>
       </column>
-      <column name="MSG" type="NVARCHAR(2000)">
+      <column name="ACTION_NAME" type="NVARCHAR(2000)">
         <constraints nullable="false"/>
       </column>
       <column name="TARGET" type="NVARCHAR(100)">

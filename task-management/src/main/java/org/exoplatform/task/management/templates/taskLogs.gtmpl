@@ -13,7 +13,7 @@ import org.exoplatform.task.util.TaskUtil;
                 def user = userMap[log.author];
             %>
             <a href="${user.url}">  ${user.displayName} </a>
-            <span><%=bundle.getString(log.getMsg()) %>
+            <span><%=bundle.getString("log." + log.getActionName())%>
             ${log.target != null ? log.target : ""}</span>
         </div>        
         <span class="date pull-right">

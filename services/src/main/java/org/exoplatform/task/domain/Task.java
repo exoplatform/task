@@ -141,7 +141,7 @@ public class Task {
 
   //This field is only used for remove cascade
   @OneToMany(mappedBy = "task", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
-  private List<TaskLog> logs = new ArrayList<TaskLog>();
+  private List<ChangeLog> logs = new ArrayList<ChangeLog>();
 
   @OneToMany(mappedBy = "task", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
   private Set<LabelTaskMapping> lblMapping = new HashSet<LabelTaskMapping>();

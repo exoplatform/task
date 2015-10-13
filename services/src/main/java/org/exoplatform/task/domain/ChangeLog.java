@@ -33,17 +33,16 @@ import javax.persistence.Table;
 
 @Entity
 @ExoEntity
-@Table(name = "TASK_LOGS")
+@Table(name = "TASK_CHANGE_LOGS")
 @NamedQueries({
         @NamedQuery(name = "TaskChangeLog.findChangeLogByTaskId",
-                    query = "SELECT log FROM TaskLog log WHERE log.task.id = :taskId ORDER BY log.createdTime DESC"),
+                    query = "SELECT log FROM ChangeLog log WHERE log.task.id = :taskId ORDER BY log.createdTime DESC"),
         @NamedQuery(name = "TaskChangeLog.countChangeLogByTaskId",
-                query = "SELECT count(log) FROM TaskLog log WHERE log.task.id = :taskId"),
+                query = "SELECT count(log) FROM ChangeLog log WHERE log.task.id = :taskId"),
         @NamedQuery(name = "TaskChangeLog.removeChangeLogByTaskId",
-                query = "DELETE FROM TaskLog log WHERE log.task.id = :taskId")
+                query = "DELETE FROM ChangeLog log WHERE log.task.id = :taskId")
 })
-//TODO Should be renamed to ChangeLog which is more meaning
-public class TaskLog implements Comparable<TaskLog> {
+public class ChangeLog implements Comparable<ChangeLog> {
 
   @Id
   @SequenceGenerator(name="SEQ_TASK_CHANGE_LOG_ID", sequenceName="SEQ_TASK_CHANGE_LOG_ID")
@@ -57,8 +56,8 @@ public class TaskLog implements Comparable<TaskLog> {
   
   private String author;
 
-  //TODO It could be a kind of LogType with the integer datatype
-  private String msg;
+  @Column(name="ACTION_NAME")
+  private String actionName;
 
   private String target;
 
@@ -89,12 +88,12 @@ public class TaskLog implements Comparable<TaskLog> {
     this.author = author;
   }
 
-  public String getMsg() {
-    return msg;
+  public String getActionName() {
+    return actionName;
   }
 
-  public void setMsg(String msg) {
-    this.msg = msg;
+  public void setActionName(String change) {
+    this.actionName = change;
   }
 
   public String getTarget() {
@@ -114,16 +113,16 @@ public class TaskLog implements Comparable<TaskLog> {
   }
 
   @Override
-  public int compareTo(TaskLog o) {
+  public int compareTo(ChangeLog o) {
     return (int)(getCreatedTime() - o.getCreatedTime());
   }
 
   @Override
-  public TaskLog clone() {
-    TaskLog log = new TaskLog();
+  public ChangeLog clone() {
+    ChangeLog log = new ChangeLog();
     log.setTask(getTask().clone());
     log.setAuthor(getAuthor());
-    log.setMsg(getMsg());
+    log.setActionName(getActionName());
     log.setCreatedTime(getCreatedTime());
 
     return log;

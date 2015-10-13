@@ -32,7 +32,7 @@ import org.exoplatform.task.domain.Priority;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.domain.TaskLog;
+import org.exoplatform.task.domain.ChangeLog;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.model.GroupKey;
 import org.exoplatform.task.service.ParserContext;
@@ -394,14 +394,14 @@ public class TestTaskDAO extends AbstractTest {
 
     TaskLogHandler logHandler = daoHandler.getTaskLogHandler();
 
-    ListAccess<TaskLog> logs = logHandler.findTaskLogs(task.getId());
+    ListAccess<ChangeLog> logs = logHandler.findTaskLogs(task.getId());
 
     Assert.assertEquals(0, ListUtil.getSize(logs));
     
-    TaskLog log = new TaskLog();
+    ChangeLog log = new ChangeLog();
     log.setTask(task);
     log.setAuthor("root");
-    log.setMsg("has created task");
+    log.setActionName("has created task");
 
     logHandler.create(log);
     

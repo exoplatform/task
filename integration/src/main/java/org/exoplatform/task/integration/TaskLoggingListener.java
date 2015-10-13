@@ -51,7 +51,7 @@ public class TaskLoggingListener extends Listener<TaskService, TaskPayload> {
     Object newTask = data.after();
 
     if (oldTask == null && newTask != null) {
-      service.addTaskLog(((Task)newTask).getId(), username, "log.created", "");
+      service.addTaskLog(((Task)newTask).getId(), username, "created", "");
     }
 
     if (oldTask != null && newTask != null) {
@@ -61,28 +61,28 @@ public class TaskLoggingListener extends Listener<TaskService, TaskPayload> {
 
   private void logTaskUpdate(TaskService service, String username, Task before, Task after) throws EntityNotFoundException {
     if (isDiff(before.getStartDate(), after.getStartDate()) || isDiff(before.getEndDate(), after.getEndDate())) {
-      service.addTaskLog(after.getId(), username, "log.edit_workplan", "");
+      service.addTaskLog(after.getId(), username, "edit_workplan", "");
     }
     if (isDiff(before.getTitle(), after.getTitle())) {
-      service.addTaskLog(after.getId(), username, "log.edit_title", "");
+      service.addTaskLog(after.getId(), username, "edit_title", "");
     }
     if (isDiff(before.getDueDate(), after.getDueDate())) {
-      service.addTaskLog(after.getId(), username, "log.edit_duedate", "");
+      service.addTaskLog(after.getId(), username, "edit_duedate", "");
 
       NotificationContext ctx = buildContext(after);
       dispatch(ctx, TaskDueDatePlugin.ID);
     }
     if (isDiff(before.getDescription(), after.getDescription())) {
-      service.addTaskLog(after.getId(), username, "log.edit_description", "");
+      service.addTaskLog(after.getId(), username, "edit_description", "");
     }
     if (isDiff(before.isCompleted(), after.isCompleted())) {
-      service.addTaskLog(after.getId(), username, "log.mark_done", "");
+      service.addTaskLog(after.getId(), username, "mark_done", "");
 
       NotificationContext ctx = buildContext(after);
       dispatch(ctx, TaskCompletedPlugin.ID);
     }
     if (isDiff(before.getAssignee(), after.getAssignee())) {
-      service.addTaskLog(after.getId(), username, "log.assign", after.getAssignee());
+      service.addTaskLog(after.getId(), username, "assign", after.getAssignee());
 
       NotificationContext ctx = buildContext(after);
       dispatch(ctx, TaskAssignPlugin.ID);
@@ -96,14 +96,14 @@ public class TaskLoggingListener extends Listener<TaskService, TaskPayload> {
       if (before.getTag() != null && !before.getTag().isEmpty()) {
         tags.removeAll(before.getTag());
       }
-      service.addTaskLog(after.getId(), username, "log.add_label", StringUtils.join(tags, ","));
+      service.addTaskLog(after.getId(), username, "add_label", StringUtils.join(tags, ","));
     }
 
     if (isProjectChange(before, after)) {
-      service.addTaskLog(after.getId(), username, "log.edit_project", after.getStatus().getProject().getName());
+      service.addTaskLog(after.getId(), username, "edit_project", after.getStatus().getProject().getName());
 
     } else if (isDiff(before.getStatus(), after.getStatus())) {
-      service.addTaskLog(after.getId(), username, "log.edit_status", after.getStatus().getName());
+      service.addTaskLog(after.getId(), username, "edit_status", after.getStatus().getName());
     }
   }
 

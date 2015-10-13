@@ -56,7 +56,7 @@ import org.exoplatform.task.domain.Priority;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.domain.TaskLog;
+import org.exoplatform.task.domain.ChangeLog;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.exception.NotAllowedOperationOnEntityException;
 import org.exoplatform.task.exception.ParameterEntityException;
@@ -147,13 +147,13 @@ public class TaskController extends AbstractController {
   @Ajax
   @MimeType.HTML
   public Response renderTaskLogs(Long taskId, SecurityContext securityContext) throws EntityNotFoundException {
-    TaskLog[] arr = ListUtil.load(taskService.getTaskLogs(taskId), 0, -1);
+    ChangeLog[] arr = ListUtil.load(taskService.getTaskLogs(taskId), 0, -1);
 
-    List<TaskLog> logs = new LinkedList<TaskLog>(Arrays.asList(arr));
+    List<ChangeLog> logs = new LinkedList<ChangeLog>(Arrays.asList(arr));
     Collections.sort(logs);
     Map<String, User> userMap = new HashMap<String, User>();
     if (logs.size() > 0) {
-      for (TaskLog log : logs) {
+      for (ChangeLog log : logs) {
         String author = log.getAuthor();
         if (!userMap.containsKey(author)) {
           User user = userService.loadUser(log.getAuthor());

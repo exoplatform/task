@@ -35,7 +35,7 @@ import org.exoplatform.task.domain.Label;
 import org.exoplatform.task.domain.LabelTaskMapping;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.domain.TaskLog;
+import org.exoplatform.task.domain.ChangeLog;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.service.TaskPayload;
 import org.exoplatform.task.service.TaskService;
@@ -152,17 +152,17 @@ public class TaskServiceImpl implements TaskService {
   }
   
   @Override
-  public TaskLog addTaskLog(long id, String username, String msg, String target) throws EntityNotFoundException {
-    TaskLog log = new TaskLog();
+  public ChangeLog addTaskLog(long id, String username, String actionName, String target) throws EntityNotFoundException {
+    ChangeLog log = new ChangeLog();
     log.setTask(getTask(id));
     log.setAuthor(username);
-    log.setMsg(msg);
+    log.setActionName(actionName);
     log.setTarget(target);
     return daoHandler.getTaskLogHandler().create(log);
   }
 
   @Override
-  public ListAccess<TaskLog> getTaskLogs(long taskId) {
+  public ListAccess<ChangeLog> getTaskLogs(long taskId) {
     return daoHandler.getTaskLogHandler().findTaskLogs(taskId);
   }
 
