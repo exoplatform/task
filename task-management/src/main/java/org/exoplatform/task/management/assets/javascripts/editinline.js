@@ -174,6 +174,11 @@ define('ta_edit_inline',
                 return;
             }
             var d = new $.Deferred;
+            //if left empty, task title will be set to Untitled Task
+            if (params.name == 'title' && !params.value) {
+            	var $title = $rightPanel.find('[data-name="title"]');
+            	params.value = $title.data('emptytext');
+            }
             var data = params;
             params.pk = currentTaskId;
             data.taskId = currentTaskId;
@@ -592,6 +597,9 @@ define('ta_edit_inline',
                           $('.rightPanelContent ').trigger('saveLabel');
                         }
                     }
+                }
+                if (fieldName == 'title') {
+                	editOptions.emptyclass = '';
                 }
                 if (fieldName == 'tags') {
                     editOptions.emptytext = 'Tags';

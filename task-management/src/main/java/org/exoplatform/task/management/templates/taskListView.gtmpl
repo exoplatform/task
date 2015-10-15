@@ -54,7 +54,7 @@
         <% if (currentLabelId != 0 && currentProjectId != 0 && filter != 'overdue') {%>
             <div class="input-field">
                 <form action="#" method="GET" class="form-create-task">
-                    <input type="text" name="taskTitle" placeholder="Untitled Task"
+                    <input type="text" name="taskTitle" placeholder="&{label.untitledTask}"
                             <%if (taskNum == 0) { %>
                            data-content="&{label.welcome.firstTask}"
                            data-placement="bottom"

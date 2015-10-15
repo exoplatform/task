@@ -94,7 +94,7 @@
       <a href="javascript:void(0);" data-taskcompleted="${task.completed}" class="pull-left validate-action" data-placement="top" rel="tooltip" data-original-title="&{message.markAsCompleted}"><i class="uiIconValidate uiIconLightGray"></i></a>
       <span class="projectName ${editableClasses} small "
              data-original-title="&{tooltip.clickToEdit}" rel="tooltip" data-placement="bottom"
-        data-name="title" data-type="text">
+        data-name="title" data-type="text" data-emptytext="&{label.untitledTask}">
           ${task.title}
       </span>
     </div>
