@@ -716,7 +716,7 @@ public class TaskController extends AbstractController {
       task.setStatus(status);
       //taskService.createTask(task);
       //projectService.createTaskToProjectId(projectId, task);
-    } else if (labelId == null) {
+    } else if (labelId == null || labelId < 0) {
       task.setAssignee(currentUser);
       
       TimeZone userTimezone = userService.getUserTimezone(currentUser);
