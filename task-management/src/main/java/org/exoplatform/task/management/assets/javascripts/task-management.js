@@ -418,12 +418,21 @@ $(document).ready(function() {
         $centerPanel.find('.input-field input').focus();
         return false;
     });
+    
+    $centerPanel.on('blur', '.input-field input', function(e) {
+    	if ($(e.target).val()) {
+    		$centerPanel.find('.form-create-task').submit();    		
+    	}
+    });
 
     $centerPanel.on('submit', 'form.form-create-task', function(e) {
         var $form = $(e.target).closest('form');
         var projectId = $form.closest('.projectListView').attr('data-projectId');
         var labelId = $form.closest('[data-labelid]').data('labelid');
-        var taskInput = $form.find('input[name="taskTitle"]').val();
+        var $input = $form.find('input[name="taskTitle"]');
+        var taskInput = $input.val();
+        if (!taskInput) return false;
+        $input.val('');
         var filter = $leftPanel.find('.active .project-name[data-id="' + projectId + '"]').data('filter');
         if (filter == undefined) {
             filter = '';
