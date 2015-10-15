@@ -289,7 +289,7 @@ public final class ProjectUtil {
         project.setManager(manager);
       } else if("participator".equalsIgnoreCase(fieldName)) {
         Set<String> participator = new HashSet<String>();
-        if(values != null || true) {
+        if(values != null) {
           for (String v : values) {
             participator.add(v);
           }
