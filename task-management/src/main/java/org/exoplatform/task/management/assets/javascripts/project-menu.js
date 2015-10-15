@@ -103,14 +103,15 @@ define('project-menu', ['SHARED/jquery', 'ta_edit_inline', 'SHARED/task_ck_edito
     $modalPlace.on('submit', 'form.create-project-form', function(e) {
       var $dialog = $modalPlace.find('.addProject');
       var $form = $(e.target).closest('form');
-      var name = $form.find('input[name="name"]').val();
+      var $title = $form.find('input[name="name"]');
+      var name = $title.val();
       var description = $form.find('textarea[name="description"]').val();
       var $breadcumbs = $dialog.find('.breadcrumb');
       var parentId = $breadcumbs.data('value');
       var calInteg = $dialog.find('.calInteg').is(':checked');
 
       if(name == '') {
-          name = 'Untitled Project';
+          name = $title.attr('placeholder');
       }
 
       var createURL = $dialog.jzURL('ProjectController.createProject');        
@@ -156,7 +157,12 @@ define('project-menu', ['SHARED/jquery', 'ta_edit_inline', 'SHARED/task_ck_edito
       var params = {};
       params.pk = $modalPlace.find('[data-projectid]').data('projectid');
       params.parent = $modalPlace.find('[data-name="parent"]').data('editable').value;
-      params.name = $modalPlace.find('[data-name="name"]').data('editable').value;
+      var $title = $modalPlace.find('[data-name="name"]').data('editable');      
+      params.name = $title.value;
+      if (!params.name) {
+    	  params.name = $modalPlace.find('[data-name="name"]').text();
+      }
+      
       params.description = $modalPlace.find('[data-name="description"]').data('editable').value;
       params.calendarIntegrated = $modalPlace.find('[name="calendarIntegrated"]').is(':checked');
       

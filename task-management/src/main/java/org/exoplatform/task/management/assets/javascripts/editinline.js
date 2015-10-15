@@ -727,6 +727,9 @@ define('ta_edit_inline',
                     pk: projectId
 //                    url: editInline.saveProjectDetailFunction
                 });
+                if (fieldName == 'name') {
+                	editOptions.emptyclass = '';
+                }
                 if(fieldName == 'manager' || fieldName == 'participator') {
                     var findUserURL = $this.jzURL('UserController.findUser');
                     var getDisplayNameURL = $this.jzURL('UserController.getDisplayNameOfUser');

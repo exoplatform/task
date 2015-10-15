@@ -36,7 +36,7 @@
      <div class="inputName uiEditableInline inactive"
           data-original-title="Click to edit" data-toggle="tooltip" rel="tooltip" data-placement="bottom">
          <div class="hoverStatusBlock projectName ${editableClasses}"
-               data-name="name" data-type="text">
+               data-name="name" data-type="text" data-emptytext="&{label.untitledProject}">
              ${project.name}
          </div>
      </div>
