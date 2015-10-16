@@ -68,12 +68,17 @@ define('x_editable_select3', ['SHARED/jquery', 'SHARED/edit_inline_js'], functio
                     }
                 };
                 this.$input.find('[name="search"]').focus(handler).keyup(handler);
-                this.$input.on('click', '[data-projectid]', function(e) {
+                this.$input.on('click', '[data-projectid]', function(e) {                  
                     var $a = $(e.target || e.srcElement).closest('[data-projectid]');
-                    var projectId = $a.data('projectid');
-                    _this.$input.find('[name="parent_project_id"]').val(projectId);
-                    _this.$input.find('.uiDropdownMenu').hide();
-                    _this.$input.closest('form').submit();
+                    if ($a.data('canview')) {
+                      var projectId = $a.data('projectid');
+                      _this.$input.find('[name="parent_project_id"]').val(projectId);
+                      _this.$input.find('.uiDropdownMenu').hide();
+                      _this.$input.closest('form').submit();                      
+                    } else {
+                      $a.blur();
+                      return false;
+                    }
                 });
             },
 
@@ -160,12 +165,16 @@ define('x_editable_select3', ['SHARED/jquery', 'SHARED/edit_inline_js'], functio
                         var $this = $(this);
                         var projectId = $this.find('.active[data-matched="true"]').first().data('projectid');
                         if (projectId == undefined) {
-                            var projectId = $this.find('[data-matched="true"]').first().data('projectid');
+                            projectId = $this.find('[data-matched="true"]').first().data('projectid');
                         }
                         if (projectId != undefined) {
                             $this.find('[name="parent_project_id"]').val(projectId);
                         }
-                        $this.closest('form').submit();
+                        if ($this.find('[data-projectid="' + projectId + '"]').data('canview')) {
+                          $this.closest('form').submit();                          
+                        } else {
+                          return false;
+                        }
                     }
                 });
             }

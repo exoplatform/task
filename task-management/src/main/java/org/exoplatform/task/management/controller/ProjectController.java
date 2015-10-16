@@ -622,6 +622,7 @@ public class ProjectController extends AbstractController {
             .with()
             .keyword(keyword)
             .projects(projects)
+            .identity(identity)
             .currentProjectId(currentProject)
             .ok();
   }

@@ -1,6 +1,7 @@
 #{param name=keyword/}
 #{param name=projects/}
 #{param name=currentProjectId/}
+#{param name=identity/}
 
 <%
 import org.exoplatform.task.util.StringUtil;
@@ -22,9 +23,11 @@ def displayProject(project, level) {%>
             name = StringUtil.highlight(name, keyword, "<strong>", "</strong>");
         }
         def padding = level * 20 + 20;
+        
+        def canView = project.canView(identity);
     %>
     <li>
-        <a class="" style="padding-left: ${padding}px" href="javascript:void(0)" data-matched="${isMatched}" data-projectid="${project.id}">${name}</a>
+        <a class="" style="padding-left: ${padding}px" href="javascript:void(0)" data-canview="${canView}" data-matched="${isMatched}" data-projectid="${project.id}">${name}</a>
         <% if (project.children != null && project.children.size() > 0) {%>
             <ul>
                 <%project.children.each {p -> displayProject(p, level + 1)}%>
@@ -36,7 +39,7 @@ def displayProject(project, level) {%>
 <% if (projects.size() > 0) { %>
     <ul>
         <li>
-            <a href="javascript:void(0)" data-matched="${keyword == "" ? "true" : "false"}" data-projectid="0">&{label.projects}</a>
+            <a href="javascript:void(0)" data-canview="true" data-matched="${keyword == "" ? "true" : "false"}" data-projectid="0">&{label.projects}</a>
             <ul>
                 <%projects.each{p -> displayProject(p, 1)}%>
             </ul>
