@@ -426,29 +426,11 @@ public class TaskController extends AbstractController {
       taskQuery.setIsTodoOf(currentUser);
 
       //TODO: process fiter here
-      Date fromDueDate = null;
-      Date toDueDate = null;
-
-      Calendar today = DateUtil.newCalendarInstance(userTimezone);
-      today.set(Calendar.HOUR_OF_DAY, 0);
-      today.set(Calendar.MINUTE, 0);
-      today.set(Calendar.SECOND, 0);
-      today.set(Calendar.MILLISECOND, 0);
-      
-      
       if ("overDue".equalsIgnoreCase(filter)) {
-        fromDueDate = null;
-        today.roll(Calendar.DATE, -1);
-        toDueDate = today.getTime();
-        
         defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT, TaskUtil.LABEL), bundle);
         defOrders = TaskUtil.resolve(Arrays.asList(TaskUtil.TITLE, TaskUtil.PRIORITY, TaskUtil.DUEDATE), bundle);
         groupBy = groupBy == null || !defGroupBys.containsKey(groupBy) ? TaskUtil.PROJECT : groupBy;
       } else if ("today".equalsIgnoreCase(filter)) {
-        fromDueDate = today.getTime();
-        today.add(Calendar.HOUR, 24);
-        toDueDate = today.getTime();
-        
         defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT, TaskUtil.LABEL), bundle);
         defOrders = TaskUtil.resolve(Arrays.asList(TaskUtil.TITLE, TaskUtil.PRIORITY, TaskUtil.RANK), bundle);
         if (orderBy == null) {
@@ -457,11 +439,6 @@ public class TaskController extends AbstractController {
         }
         groupBy = groupBy == null || !defGroupBys.containsKey(groupBy) ? TaskUtil.NONE : groupBy;
       } else if ("tomorrow".equalsIgnoreCase(filter)) {        
-        today.add(Calendar.HOUR, 24);
-        fromDueDate = today.getTime();
-        today.add(Calendar.HOUR, 24);
-        toDueDate = today.getTime();
-        
         defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT, TaskUtil.LABEL), bundle);
         defOrders = TaskUtil.resolve(Arrays.asList(TaskUtil.TITLE, TaskUtil.PRIORITY, TaskUtil.RANK), bundle);
         if (orderBy == null || !defOrders.containsKey(orderBy)) {
@@ -469,11 +446,7 @@ public class TaskController extends AbstractController {
           orderBy = TaskUtil.PRIORITY;
         }
         groupBy = groupBy == null || !defGroupBys.containsKey(groupBy) ? TaskUtil.NONE : groupBy;
-      } else if ("upcoming".equalsIgnoreCase(filter)) {
-        today.add(Calendar.DATE, 2);
-        fromDueDate = today.getTime();
-        toDueDate = null;
-
+      } else if ("upcoming".equalsIgnoreCase(filter)) {        
         defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT, TaskUtil.LABEL), bundle);
         defOrders = TaskUtil.resolve(Arrays.asList(TaskUtil.TITLE, TaskUtil.PRIORITY, TaskUtil.DUEDATE, TaskUtil.RANK), bundle);
         groupBy = groupBy == null || !defGroupBys.containsKey(groupBy) ? TaskUtil.NONE : groupBy;
@@ -487,8 +460,9 @@ public class TaskController extends AbstractController {
         groupBy = TaskUtil.DUEDATE;
       }
       
-      taskQuery.setDueDateFrom(fromDueDate);
-      taskQuery.setDueDateTo(toDueDate);
+      Date[] filterDate = convertDueDate(filter, userTimezone);
+      taskQuery.setDueDateFrom(filterDate[0]);
+      taskQuery.setDueDateTo(filterDate[1]);
       taskQuery.setOrderBy(Arrays.asList(order));
 
       //ListAccess<Task> listTasks = taskService.getTodoTasks(currentUser, spaceProjectIds, order, fromDueDate, toDueDate);
@@ -658,14 +632,14 @@ public class TaskController extends AbstractController {
   private Date[] convertDueDate(String dueDate, TimeZone timezone) {
     Date[] due = new Date[] {null, null};
     
-    if (dueDate != null) {
+    if (dueDate != null && !dueDate.isEmpty()) {
       Calendar today = Calendar.getInstance(timezone);
       today.set(Calendar.HOUR_OF_DAY, 0);
       today.set(Calendar.MINUTE, 0);
       today.set(Calendar.SECOND, 0);
       today.set(Calendar.MILLISECOND, 0);
 
-      switch (DUE.valueOf(dueDate)) {
+      switch (DUE.valueOf(dueDate.toUpperCase())) {
       case OVERDUE:
         today.roll(Calendar.DATE, -1);
         due[1] = today.getTime();
