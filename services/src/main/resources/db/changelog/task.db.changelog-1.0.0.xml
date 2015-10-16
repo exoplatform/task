@@ -380,4 +380,12 @@
     <createSequence sequenceName="SEQ_TASK_CHANGE_LOG_ID" startValue="1"/>
   </changeSet>
 
+  <!-- Add index for performance -->
+  <changeSet author="task" id="1.0.0-23">
+    <createIndex indexName="IDX_TASK_LABELS_01"
+                 tableName="TASK_LABELS">
+      <column name="USERNAME" type="NVARCHAR(50)"/>
+    </createIndex>
+  </changeSet>
+
 </databaseChangeLog>
