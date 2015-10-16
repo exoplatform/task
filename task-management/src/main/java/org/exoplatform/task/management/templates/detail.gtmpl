@@ -120,11 +120,11 @@
             </span>
             <span class = "assigned ${!hasAssignee ? "hidden" : ""}">
                 <a class="avatarMini" href="#"><img alt="avatar" src="${hasAssignee ? assignee.avatar : ""}"></a>
-                <a title="Click to edit" data-toggle="tooltip" data-placement="bottom" class="hoverStatus small editableField editAssignee">
+                <a title="Click to edit" data-toggle="tooltip" data-placement="bottom" class="hoverStatus small editableField editAssignee" style="text-transform: lowercase;">
                     <% if (countCoWorker == 0) {%>
                         ${hasAssignee ? assignee.displayName : ""}
                     <%} else {%>
-                        +${countCoWorker} &{label.coworkers}
+                        +${countCoWorker} <% if(countCoWorker > 1) {%> &{label.coworkers} <%} else {%> &{label.coworker} <%}%>
                     <%}%>
                 </a>
             </span>
