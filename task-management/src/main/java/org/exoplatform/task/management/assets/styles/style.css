@@ -230,26 +230,21 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
 .advancedSearch-action {
   display: none;
 }
-.leftPanel,
+.centerPanel,
 .rightPanel {
   position: relative;
 }
-.leftPanel .resizeButton,
+.centerPanel .resizeButton,
 .rightPanel .resizeButton {
   cursor: pointer;
   height: 16px;
-  right: -18px;
-  margin-top: -8px;
+  left: -18px;
   position: absolute;
-  top: 50%;
+  top: 230px;
 }
 /* To Override z-idex tooltip */
 .breadcrumbCont .dropdown-menu {
   z-index: 1050!important;
-}
-.rightPanel .resizeButton {
-  left: -18px;
-  right: auto;
 }
 .rightPanel .addTask .iconTaskName {
   margin: 5px 5px 0 0;

@@ -53,20 +53,63 @@ define('taskManagementApp', ['jquery', 'SHARED/juzu-ajax'],
                 });
             }
         }
+        
+        var centerPanelWidth = function(expand) {
+        	var ui = taApp.getUI();
+        	var $center = ui.$centerPanel;
+        	$center.removeClass('span5 span9 span8 span12');
+        	if (expand) {
+        		if (!ui.$leftPanel.is(':visible') && !ui.$rightPanel.is(':visible')) {
+        			$center.addClass('span12');
+        		} else if (!ui.$leftPanel.is(':visible')) {
+        			$center.addClass('span8');
+        		} else if (!ui.$rightPanel.is(':visible')) {
+        			$center.addClass('span9');
+        		}
+        	} else {
+        		if (ui.$leftPanel.is(':visible') && ui.$rightPanel.is(':visible')) {
+        			$center.addClass('span5');
+        		} else if (ui.$leftPanel.is(':visible')) {
+        			$center.addClass('span9');
+        		} else if (ui.$rightPanel.is(':visible')) {
+        			$center.addClass('span8');
+        		}
+        	}
+        }
+        
+        taApp.showLeftPanel = function() {
+        	var ui = this.getUI();
+        	var $center = ui.$centerPanel;
+        	ui.$leftPanel.show();
+        	$center.find('.show-hide-left .uiIconMiniArrowRight')
+        		.toggleClass('uiIconMiniArrowLeft uiIconMiniArrowRight');
+        	$center.css('margin-left', $center.data('margin-left'));
+        	centerPanelWidth();
+        }
+        
+        taApp.hideLeftPanel = function() {
+        	var ui = this.getUI();
+        	var $center = ui.$centerPanel;
+        	ui.$leftPanel.hide();
+        	$center.find('.show-hide-left .uiIconMiniArrowLeft').toggleClass('uiIconMiniArrowLeft uiIconMiniArrowRight');
+        	$center.data('margin-left', $center[0].style.marginLeft);
+        	$center.css('margin-left', '0px');
+        	centerPanelWidth(true);
+        };
 
         taApp.showRightPanel = function($centerPanel, $rightPanel) {
-            $centerPanel.removeClass('span9').addClass('span5');
             $rightPanel.show();
             $rightPanel.find('[data-toggle="tooltip"]').tooltip();
             $rightPanel.find('*[rel="tooltip"]').tooltip({
                 placement: 'top'
             });
+            centerPanelWidth();
         };
 
         taApp.hideRightPanel = function($centerPanel, $rightPanel, $rightPanelContent) {
             $rightPanelContent.html('');
             $rightPanel.hide();
-            $centerPanel.removeClass('span5').addClass('span9');
+            centerPanelWidth(true);
         };
 
         taApp.reloadTaskList = function(projectId, labelId, filter, callback) {

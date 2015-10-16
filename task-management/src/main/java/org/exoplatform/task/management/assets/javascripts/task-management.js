@@ -141,6 +141,15 @@ $(document).ready(function() {
     taApp.showOneTimePopover($inputTask);
     $inputTask.focus();
 
+    $centerPanel.on('click', '.show-hide-left', function(e) {
+    	var $icon = $(e.target);
+    	if ($icon.hasClass('uiIconMiniArrowLeft')) {
+    	  taApp.hideLeftPanel();    		
+    	} else {
+    	  taApp.showLeftPanel();
+    	}
+    });
+    
     $rightPanel.on('click', '.close-right-panel', function(e) {
         taApp.hideRightPanel($centerPanel, $rightPanel, $rightPanelContent);
         return false;

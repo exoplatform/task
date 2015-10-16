@@ -145,12 +145,12 @@
                    	#{include path=listLabels.gtmpl /}
                    </div>
 	            </li>
-	        </ul>
-	        <div class="resizeButton " id="ShowHideLeft">
-			  <i  class="uiIconMiniArrowLeft"></i>
-			</div>
+	        </ul>	   
 	    </div>
 	    <div class="centerPanel uiBox <%=taskId == -1 ? "span9" : "span5" %>">
+	         <div class="resizeButton show-hide-left" id="ShowHideLeft">
+				  <i  class="uiIconMiniArrowLeft"></i>
+				</div>
             <div class="centerPanelContent ">            	
                 #{include path=projectTaskListView.gtmpl /}
             </div>
