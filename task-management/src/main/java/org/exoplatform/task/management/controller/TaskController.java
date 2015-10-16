@@ -321,8 +321,14 @@ public class TaskController extends AbstractController {
   @Ajax
   @MimeType("text/plain")
   public Response deleteComment(Long commentId) throws EntityNotFoundException {
-    taskService.removeComment(commentId); //Can throw CommentNotFoundException
-    return Response.ok("Delete comment successfully!");
+    Comment comment = taskService.getComment(commentId);
+    Identity currIdentity = ConversationState.getCurrent().getIdentity();
+    if (TaskUtil.canDeleteComment(currIdentity, comment)) {
+      taskService.removeComment(commentId);
+      return Response.ok("Delete comment successfully!");
+    } else {
+      return Response.status(403).body("Only owner or project manager can delete the comment");
+    }
   }
 
   @Resource

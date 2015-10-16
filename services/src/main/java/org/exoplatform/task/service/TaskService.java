@@ -61,6 +61,8 @@ public interface TaskService {
    */
   Task getTask(long taskId) throws EntityNotFoundException;
 
+  Comment getComment(long commentId);
+
   ListAccess<Comment> getComments(long taskId);
 
   Comment addComment(long taskId, String username, String commentText) throws EntityNotFoundException;

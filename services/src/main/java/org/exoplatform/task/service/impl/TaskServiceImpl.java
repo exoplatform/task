@@ -132,6 +132,11 @@ public class TaskServiceImpl implements TaskService {
   }
 
   @Override
+  public Comment getComment(long commentId) {
+    return daoHandler.getCommentHandler().find(commentId);
+  }
+
+  @Override
   public ListAccess<Comment> getComments(long taskId) {
     return daoHandler.getCommentHandler().findComments(taskId);
   }

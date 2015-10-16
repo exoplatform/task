@@ -317,8 +317,8 @@ $(document).ready(function() {
                     initCommentEditor();
                 });
             },
-            error: function() {
-                alert('Error while delete comment, please try again.');
+            error: function(jqXHR, textStatus, errorThrown) {
+                alert(jqXHR.responseText);
             }
         });
     });

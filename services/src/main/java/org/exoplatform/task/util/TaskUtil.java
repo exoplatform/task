@@ -43,6 +43,7 @@ import org.exoplatform.portal.mop.SiteKey;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
+import org.exoplatform.services.security.Identity;
 import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Label;
@@ -672,6 +673,26 @@ public final class TaskUtil {
       }
     }
     return tmp;
+  }
+
+  public static boolean canDeleteComment(Identity identity, Comment comment) {
+    if (comment == null || identity == null) {
+      return false;
+    }
+
+    // Owner can delete his comment
+    if (identity.getUserId().equals(comment.getAuthor())) {
+      return true;
+    }
+
+    // Project manager can delete comment
+    Task task = comment.getTask();
+    if (task.getStatus() != null) {
+      Project pj = task.getStatus().getProject();
+      return pj.canEdit(identity);
+    }
+
+    return false;
   }
   
   private static boolean isLabelIn(Label child, Label parent) {
