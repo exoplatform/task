@@ -474,7 +474,7 @@ public class TaskController extends AbstractController {
         taskQuery.setKeyword(keyword);        
       }
       if (projectId == 0) {
-        defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.ASSIGNEE, TaskUtil.PROJECT, TaskUtil.LABEL, TaskUtil.STATUS), bundle);
+        defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.ASSIGNEE, TaskUtil.PROJECT, TaskUtil.LABEL, TaskUtil.DUEDATE, TaskUtil.STATUS), bundle);
 
         //. Default order by CreatedDate
         if (orderBy == null || orderBy.isEmpty()) {

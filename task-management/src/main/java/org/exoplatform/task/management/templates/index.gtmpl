@@ -138,7 +138,7 @@
 	                         </li>
                           </ul>
                       </div>
-                      <a class="label-name" data-labelid="0" href="#">&{label.label}</a>
+                      <a class="label-name" data-labelid="0" href="#">&{label.labels}</a>
                    </div>
                    
                    <div class="lblContainer">
