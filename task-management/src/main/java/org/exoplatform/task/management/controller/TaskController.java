@@ -771,15 +771,15 @@ public class TaskController extends AbstractController {
   @Ajax
   @MimeType.HTML
   public Response removeStatus(String space_group_id, Long statusId, SecurityContext securityContext) throws EntityNotFoundException, NotAllowedOperationOnEntityException {
+    // Load status to get projectId
     Status status = statusService.getStatus(statusId);
     Project project = status.getProject();
-    if (project.getStatus().size() > 1) {
-      statusService.removeStatus(statusId);
-      //spaceGrpId, projectId, currentLabelId, labelIds, tags, statusId, dueDate, priority, assignee, completed, keyword, advanceSearch, groupby, orderBy, filter, viewType, securityContext
-      return listTasks(space_group_id, project.getId(), null, null, null, null, null, null, null, null, null, null, null, null, null, "board", securityContext);
-    } else {
-      return Response.error("Can't delete last status");
-    }
+
+    //
+    statusService.removeStatus(statusId);
+
+    //spaceGrpId, projectId, currentLabelId, labelIds, tags, statusId, dueDate, priority, assignee, completed, keyword, advanceSearch, groupby, orderBy, filter, viewType, securityContext
+    return listTasks(space_group_id, project.getId(), null, null, null, null, null, null, null, null, null, null, null, null, null, "board", securityContext);
   }
 
   @Resource(method = HttpMethod.POST)

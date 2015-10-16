@@ -309,7 +309,7 @@
                 String[] arrays = new String[ps.length];
                 for (int i = ps.length - 1; i >= 0; i--) {
                     String name = ps[i].name();
-                    arrays[i] = '{"value": "'+name+'", "text": "'+bundle.getString('label.priority.' + name.toLowerCase())+'"}';
+                    arrays[ps.length - 1 - i] = '{"value": "'+name+'", "text": "'+bundle.getString('label.priority.' + name.toLowerCase())+'"}';
                 }
 
                 def priorities = "[" + StringUtils.join(arrays, ",") + "]";
