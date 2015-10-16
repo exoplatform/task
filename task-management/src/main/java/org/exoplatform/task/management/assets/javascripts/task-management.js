@@ -326,9 +326,10 @@ $(document).ready(function() {
     $rightPanel.on('click', 'a.load-all-comments', function(e) {
         e.preventDefault();
         var $a = $(e.target).closest('a');
+        var loadAll = $a.data('loadall');
         var $comment = $a.closest('#tab-comments');
         var taskId = $comment.closest('[data-taskid]').data('taskid');
-        $comment.jzLoad('TaskController.renderTaskComments()', {id: taskId, loadAllComment: "true"}, function() {
+        $comment.jzLoad('TaskController.renderTaskComments()', {id: taskId, loadAllComment: loadAll}, function() {
             initCommentEditor();
         });
     });

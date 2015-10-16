@@ -11,9 +11,9 @@
     def allCommentsLoaded = commentCount == comments.size();
 %>
 <div class="commentBox" data-allcomment="${allCommentsLoaded}">
-    <% if (!allCommentsLoaded && commentCount > 2) {%>
+    <% if (commentCount > 2) {%>
     <div class="commentListInfo ">
-        <a href="javascript:void(0);" class="load-all-comments"><%= ResourceUtil.resolveMessage(bundle, "comment.message.showAll", commentCount);%></a>
+        <a href="javascript:void(0);" class="load-all-comments" data-loadall="${!allCommentsLoaded}"><%= ResourceUtil.resolveMessage(bundle, !allCommentsLoaded ? "comment.message.showAll" : "comment.message.hideAll", commentCount);%></a>
     </div>
     <%}%>
     <% if (commentCount == 0) {%>
