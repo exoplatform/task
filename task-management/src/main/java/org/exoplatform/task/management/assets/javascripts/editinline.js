@@ -323,6 +323,13 @@ define('ta_edit_inline',
                             updatePopoverPossition();
                             saveWorkPlan([fromDate + " " + fromTime, toDate + " " + toTime]);
                             var $rangeCalendar = $fieldWorkPlan.find('.rangeCalendar');
+                            if (isAllDay) {
+                                $rangeCalendar.find('.choose-time').addClass('all-day');
+                                $rangeCalendar.find('[name="allday"]').attr('checked', true);
+                            } else {
+                                $rangeCalendar.find('.choose-time').removeClass('all-day');
+                                $rangeCalendar.find('[name="allday"]').attr('checked', false);
+                            }
                             $rangeCalendar.find('[name="fromDate"]').val(fromDate);
                             $rangeCalendar.find('[name="toDate"]').val(toDate);
                             $rangeCalendar.find('[name="fromTime"]').val(fromTime).attr('value', fromTime);

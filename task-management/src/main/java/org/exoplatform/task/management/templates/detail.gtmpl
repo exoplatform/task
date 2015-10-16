@@ -196,18 +196,18 @@
     <div class="pull-left">
         <%
             def startDate = task.getStartDate();
-        		def endDate = task.getEndDate();
+            def endDate = task.getEndDate();
 
-        		def workplan = bundle.getString("label.noWorkPlan");
+            def workplan = bundle.getString("label.noWorkPlan");
             def duration = 0;
-        		if (startDate != null) {
-	            def start = DateUtil.newCalendarInstance(userTimezone);
-	            start.setTime(task.getStartDate());
-	            def end = DateUtil.newCalendarInstance(userTimezone);
-	            end.setTime(task.getEndDate());
-					workplan = TaskUtil.getWorkPlan(start, end, bundle);
-            	duration = endDate.getTime() - startDate.getTime();              
-        		}
+            if (startDate != null) {
+                def start = DateUtil.newCalendarInstance(userTimezone);
+                start.setTime(task.getStartDate());
+                def end = DateUtil.newCalendarInstance(userTimezone);
+                end.setTime(task.getEndDate());
+                    workplan = TaskUtil.getWorkPlan(start, end, bundle);
+                duration = endDate.getTime() - startDate.getTime();
+            }
 
             def hasPlan = true;
             if(startDate == null) {
@@ -250,8 +250,8 @@
             <div class = "rangeCalendar" style = "display: none">
                 <div class="rangeCalendar-container">
                     <div class="row-fluid">
-                        <div class="span6"><strong>From</strong></div>
-                        <div class="span6"><strong>To</strong></div>
+                        <div class="span6"><strong style="text-transform: capitalize;">&{label.from}</strong></div>
+                        <div class="span6"><strong style="text-transform: capitalize;">&{label.to}</strong></div>
                     </div>
                     <div class="clearfix">
                         <div class="uiCalendarComponent pull-left" id="BlockCalendar1">
@@ -262,7 +262,7 @@
                         </div>
                     </div>
                     <!-- /.clearfix -->
-                    <div class="row-fluid choose-time ${isAllday} ${isAllday ? "all-day" : ""}">
+                    <div class="row-fluid choose-time ${isAllday} ${isAllday || !hasPlan ? "all-day" : ""}">
                         <div class="span5 center timeSelector">
                             <div class="form-dropdown">
                                 <input data-toggle="dropdown" class="input-size-mini" type="text" name="fromTime" maxlength="5" value="${isAllday ? "00:00" : timeFormat.format(startDate)}">
@@ -278,8 +278,8 @@
                         </div>
                         <div class="span2 center">
                             <label class="uiCheckbox">
-                                <input type="checkbox" name="allday" class="checkbox" ${isAllday ? 'checked="true"' : ''}>
-                                <span>All day</span>
+                                <input type="checkbox" name="allday" class="checkbox" ${isAllday || !hasPlan ? 'checked="true"' : ''}>
+                                <span>&{label.allday}</span>
                             </label>
                         </div>
                         <div class="span5 center timeSelector">

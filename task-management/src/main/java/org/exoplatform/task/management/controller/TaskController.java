@@ -215,11 +215,15 @@ public class TaskController extends AbstractController {
     task = TaskUtil.saveTaskField(task, context.getRemoteUser(), name, value, timezone, taskService, statusService);
 
     String response = "Update successfully";
-    if ("workPlan".equalsIgnoreCase(name)) {        
-      Calendar start = DateUtil.newCalendarInstance(timezone);
-      start.setTime(task.getStartDate());
-      Calendar end = DateUtil.newCalendarInstance(timezone);
-      end.setTime(task.getEndDate());
+    if ("workPlan".equalsIgnoreCase(name)) {
+      Calendar start = null;
+      Calendar end = null;
+      if (task.getStartDate() != null && task.getEndDate() != null) {
+        start = DateUtil.newCalendarInstance(timezone);
+        start.setTime(task.getStartDate());
+        end = DateUtil.newCalendarInstance(timezone);
+        end.setTime(task.getEndDate());
+      }
       
       response = TaskUtil.getWorkPlan(start, end, bundle);
       if (response == null) {

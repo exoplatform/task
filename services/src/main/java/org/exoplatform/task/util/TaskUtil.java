@@ -443,7 +443,7 @@ public final class TaskUtil {
  }
 
   public static String getWorkPlan(Calendar start, Calendar end, ResourceBundle bundle) {
-    if (start == null || start == null) {
+    if (start == null || end == null) {
       return null;
     }    
     
