@@ -174,7 +174,7 @@
         %>
 	        <div class="empty-box no-project ">
 	            <div class="empty-content">
-	                <img class="image" src="/task-management/assets/org/exoplatform/task/management/assets/images/img-folder.png" alt="no-project" />
+	                <img class="image" src="/task-management/assets/org/exoplatform/task/management/assets/images/img-task.png" alt="no-project" />
 	                <div class="text-notify muted">&{label.welcome}</div>
 	            </div>
 	        </div>
