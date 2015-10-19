@@ -37,4 +37,53 @@
       </init-params>
     </component-plugin>
   </external-component-plugins>
+  <external-component-plugins>
+    <target-component>org.exoplatform.application.registry.ApplicationRegistryService</target-component>
+    <component-plugin>
+      <name>tasks.portlets.registry</name>
+      <set-method>initListener</set-method>
+      <type>org.exoplatform.application.registry.ApplicationCategoriesPlugins</type>
+      <description>Add TaskManagementPortlet to Collaboration category</description>
+      <init-params>
+        <object-param>
+          <name>Collaboration</name>
+          <description>Collaboration</description>
+          <object type="org.exoplatform.application.registry.ApplicationCategory">
+            <field name="name">
+              <string>Collaboration</string>
+            </field>
+            <field name="displayName">
+              <string>Collaboration</string>
+            </field>
+            <field name="accessPermissions">
+              <collection type="java.util.ArrayList" item-type="java.lang.String">
+                <value>
+                  <string>*:/platform/users</string>
+                </value>
+              </collection>
+            </field>
+            <field name="applications">
+              <collection type="java.util.ArrayList">
+                <value>
+                  <object type="org.exoplatform.application.registry.Application">
+                    <field name="applicationName"><string>Tasks</string></field>
+                    <field name="categoryName"><string>Collaboration</string></field>
+                    <field name="displayName"><string>Tasks</string></field>
+                    <field name="description"><string>Task management application</string></field>
+                    <field name="type"><string>portlet</string></field>
+                    <field name="contentId"><string>task-management/TaskManagementApplication</string></field>
+                    <field name="accessPermissions">
+                      <collection type="java.util.ArrayList" item-type="java.lang.String">
+                        <value><string>*:/platform/users</string></value>
+                      </collection>
+                    </field>
+                  </object>
+                </value>
+              </collection>
+            </field>
+          </object>
+        </object-param>
+      </init-params>
+    </component-plugin>
+  </external-component-plugins>
 </configuration>
