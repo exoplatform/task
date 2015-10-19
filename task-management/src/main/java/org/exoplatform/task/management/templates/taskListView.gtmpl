@@ -10,6 +10,7 @@
     import org.exoplatform.task.util.DateUtil;
     import org.exoplatform.task.util.ListUtil;
     import org.exoplatform.task.management.controller.TaskController;
+    import org.exoplatform.task.util.ProjectUtil;
 %>
 <div class="taskList">
     <div class="header ">
@@ -175,7 +176,13 @@
 	        <div class="empty-box no-project ">
 	            <div class="empty-content">
 	                <img class="image" src="/task-management/assets/org/exoplatform/task/management/assets/images/img-task.png" alt="no-project" />
-	                <div class="text-notify muted">&{label.welcome}</div>
+	                <div class="text-notify muted">
+                        <%if (currentProjectId == ProjectUtil.INCOMING_PROJECT_ID) {%>
+                            &{label.welcome}
+                        <%} else {%>
+                            &{label.noTask}
+                        <%}%>
+                    </div>
 	            </div>
 	        </div>
         <%	  } %>
