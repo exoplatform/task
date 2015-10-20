@@ -37,7 +37,7 @@
                         <a class="project-name" href="javascript:void(0)">&{label.tasks}</a>
                     </div>
                     <ul class="list-projects">
-                        <li class="dropdown project-item active">
+                        <li class="dropdown project-item ${currentProjectId == -1 ? "active" : ""}">
                             <div class="sub-item">
                                 <a class="project-name" data-id="-1" href="@{TaskManagement.index()}">&{label.incoming}&nbsp;<span class="badgeDefault badgePrimary mini top">${taskNum}</span></a>
                             </div>
