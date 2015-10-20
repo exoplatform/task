@@ -77,6 +77,7 @@ public class ActivityTaskCreationListener extends ActivityListenerPlugin {
       int idx = comment.indexOf(PREFIX);
       //
       if (idx >=0 && idx + 2 < comment.length() - 1) {
+        comment = ActivityTaskProcessor.decode(comment);
         String text = comment.substring(idx + 2);
         text = text.replaceFirst("<br(\\s*\\/?)>", "\n");
 
@@ -88,7 +89,7 @@ public class ActivityTaskCreationListener extends ActivityListenerPlugin {
         } else {
           title = text.trim();
           description = "";
-        }        
+        }
         Task task = parser.parse(title, context);
         task.setDescription(description);
         task.setContext(LinkProvider.getSingleActivityUrl(activity.getId()));
@@ -102,10 +103,11 @@ public class ActivityTaskCreationListener extends ActivityListenerPlugin {
         //Now, it's impossible to find project of space, be cause space (group) can have many project
         // which project will contains this task?
         //String spaceGroup = getSpaceGroup(activity);
-
+        
         taskService.createTask(task);
 
         //TODO: This is workaround: update to rebuild cache of this activity
+        activity.setTitle(comment);
         activityManager.updateActivity(activity);
       }
     }

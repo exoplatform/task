@@ -61,10 +61,27 @@ public class ActivityTaskProcessor extends BaseActivityProcessorPlugin {
         Task task = taskService.findTaskByActivityId(activity.getId());
         if (task != null) {
           return substituteTask(task, message, webAppController.getRouter());
+        } else {
+          //encode to disable MentionsProcessor
+          return encode(message);
         }
       } finally {
         RequestLifeCycle.end();
       }
+    }
+    return message;
+  }
+
+  public static String encode(String message) {
+    if (message != null && !message.isEmpty()) {
+      message = message.replaceAll("@", "{@}");
+    }
+    return message;
+  }
+  
+  public static String decode(String message) {
+    if (message != null && !message.isEmpty()) {
+      message = message.replaceAll("\\{@\\}", "@");
     }
     return message;
   }
