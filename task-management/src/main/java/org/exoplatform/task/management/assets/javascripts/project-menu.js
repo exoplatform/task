@@ -39,8 +39,9 @@ define('project-menu', ['SHARED/jquery', 'ta_edit_inline', 'SHARED/task_ck_edito
             success: function(data) {
                 window.location.reload();
             },
-            error: function() {
-                alert('error while clone project. Please try again.')
+            error: function(xhr) {
+              $cloneProject.modal('hide');
+              taApp.showWarningDialog(xhr.responseText);
             }
         });
     });
@@ -57,45 +58,49 @@ define('project-menu', ['SHARED/jquery', 'ta_edit_inline', 'SHARED/task_ck_edito
     $leftPanel.on('click', 'a.new-project', function(e) {
       var parentId = $(e.target).closest('a').attr('data-projectId');
       
-      $modalPlace.jzLoad('ProjectController.projectForm()', {parentId: parentId}, function() {
+      $modalPlace.jzLoad('ProjectController.projectForm()', {parentId: parentId}, function(text, status, xhr) {
         var $dialog = $modalPlace.find('.addProject');
-        $dialog.modal({'backdrop': false});
-        
-        $dialog.find('[name="name"]').on('keyup', function(e) {
-          if (e.which == 13) {
-            //don't submit form by enter keypress
-            return false;
-          } else {
-            if ($.trim($(e.target).val()) != '') {
-              $dialog.find('.btn-primary').attr('disabled', false);
+        if (xhr.status >= 400) {
+          taApp.showWarningDialog(xhr.responseText);
+        } else {
+          $dialog.modal({'backdrop': false});
+          
+          $dialog.find('[name="name"]').on('keyup', function(e) {
+            if (e.which == 13) {
+              //don't submit form by enter keypress
+              return false;
+            } else {
+              if ($.trim($(e.target).val()) != '') {
+                $dialog.find('.btn-primary').attr('disabled', false);
+              }
             }
-          }
-        });
-        
-        $dialog.find('.calInteg').click(function() {
-          $dialog.find('.btn-primary').attr('disabled', false);
-        });
-        
-        var $ancestors = $dialog.find('.editable');
-        $ancestors.editable({
+          });
+          
+          $dialog.find('.calInteg').click(function() {
+            $dialog.find('.btn-primary').attr('disabled', false);
+          });
+          
+          var $ancestors = $dialog.find('.editable');
+          $ancestors.editable({
             mode : 'inline',
             showbuttons: false
-        }).on('save', function() {                  
-          $dialog.find('.btn-primary').attr('disabled', false);
-        });
-        
-
-        CKEDITOR.basePath = '/task-management/assets/org/exoplatform/task/management/assets/ckeditorCustom/';
-        $dialog.find('textarea').ckeditor({
+          }).on('save', function() {                  
+            $dialog.find('.btn-primary').attr('disabled', false);
+          });
+          
+          
+          CKEDITOR.basePath = '/task-management/assets/org/exoplatform/task/management/assets/ckeditorCustom/';
+          $dialog.find('textarea').ckeditor({
             customConfig: '/task-management/assets/org/exoplatform/task/management/assets/ckeditorCustom/config.js'
-        });
-        CKEDITOR.on('instanceReady', function(e) {
-          $dialog.find('.cke').removeClass('cke');
-        });
-        
-        CKEDITOR.instances.description.on('change', function(e) {
-          $dialog.find('.btn-primary').attr('disabled', false);
-        });
+          });
+          CKEDITOR.on('instanceReady', function(e) {
+            $dialog.find('.cke').removeClass('cke');
+          });
+          
+          CKEDITOR.instances.description.on('change', function(e) {
+            $dialog.find('.btn-primary').attr('disabled', false);
+          });          
+        }
       });
       return true;
     });
@@ -123,8 +128,12 @@ define('project-menu', ['SHARED/jquery', 'ta_edit_inline', 'SHARED/task_ck_edito
               // Reload project tree;
               taApp.reloadProjectTree(data.id);
           },
-          error: function() {
-              alert('error while create new project. Please try again.')
+          error: function(xhr) {
+            if (xhr.status >= 400) {
+              taApp.showWarningDialog(xhr.responseText);
+            } else {
+              alert('error while create new project. Please try again.');              
+            }
           }
       });
       $dialog.modal('hide');
@@ -134,11 +143,14 @@ define('project-menu', ['SHARED/jquery', 'ta_edit_inline', 'SHARED/task_ck_edito
     $leftPanel.on('click', '.edit-project', function(e) {
       var projectId = $(e.target).closest('.project-item').attr('data-projectId');
       
-      $modalPlace.jzLoad('ProjectController.projectDetail()', {id: projectId}, function () {
+      $modalPlace.jzLoad('ProjectController.projectDetail()', {id: projectId}, function (html, status, xhr) {
         var $dialog = $modalPlace.find('.addProject');
-        $dialog.modal({'backdrop': false});
-        //
-        if($modalPlace.find('[data-projectid]').data('canedit')) {
+        if (xhr.status >= 400) {
+          taApp.showWarningDialog(xhr.responseText);
+        } else {
+          $dialog.modal({'backdrop': false});
+          //
+          if($modalPlace.find('[data-projectid]').data('canedit')) {
             editinline.initEditInlineForProject(projectId, $dialog);
             //
             $modalPlace.find('.calInteg').click(function() {
@@ -149,6 +161,7 @@ define('project-menu', ['SHARED/jquery', 'ta_edit_inline', 'SHARED/task_ck_edito
               saveProjectDetail();
               $dialog.modal('hide');
             });
+          }          
         }
       });
     });
@@ -181,8 +194,9 @@ define('project-menu', ['SHARED/jquery', 'ta_edit_inline', 'SHARED/task_ck_edito
               $centerPanel.find('[data-projectid="'+data.projectId+'"] .projectName').html(data.name);
               taApp.reloadProjectTree(data.projectId);
           },
-          error: function(jqXHR, textStatus, errorThrown ) {
-              d.reject('update failure: ' + jqXHR.responseText);
+          error: function(xhr, textStatus, errorThrown ) {
+            taApp.showWarningDialog(xhr.responseText);
+            d.reject('update failure: ' + xhr.responseText);
           }
       });
       return d.promise();
@@ -202,9 +216,13 @@ define('project-menu', ['SHARED/jquery', 'ta_edit_inline', 'SHARED/task_ck_edito
     
     //begin share-project            
     function openShareDialog(pid) {
-      $modalPlace.jzLoad('ProjectController.openShareDialog()', {'id': pid}, function() {
+      $modalPlace.jzLoad('ProjectController.openShareDialog()', {'id': pid}, function(html, status, xhr) {
         var $dialog = $('.sharePrjDialog');
-        $dialog.modal({'backdrop': false});
+        if (xhr.status >= 400) {
+          taApp.showWarningDialog(xhr.responseText);
+        } else {
+          $dialog.modal({'backdrop': false});          
+        }
       });
     }
     
@@ -548,10 +566,12 @@ define('project-menu', ['SHARED/jquery', 'ta_edit_inline', 'SHARED/task_ck_edito
                 success: function(response) {
                     $modalPlace.html(response);
                     var $dialog = $('.sharePrjDialog');
-                    $dialog.modal({'backdrop': false});
+                    if ($dialog.length) {
+                      $dialog.modal({'backdrop': false});                      
+                    }
                 },
-                error: function(jqXHR, textStatus, errorThrown ) {
-                    alert('save permission failure: ' + jqXHR.responseText);
+                error: function(xhr, textStatus, errorThrown ) {
+                  taApp.showWarningDialog(xhr.responseText);
                 }
         });
     });
@@ -601,8 +621,8 @@ define('project-menu', ['SHARED/jquery', 'ta_edit_inline', 'SHARED/task_ck_edito
         success: function () {
           pMenu.taApp.reloadProjectTree();
         },
-        error: function () {
-          alert('Delete project failure, please try again.');
+        error: function (xhr) {
+          taApp.showWarningDialog(xhr.responseText);
         }
       });
     });

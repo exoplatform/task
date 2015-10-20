@@ -192,8 +192,10 @@ define('ta_edit_inline',
                         $centerPanel.find('[data-taskid="'+data.taskId+'"] .taskName').text(params.value);
                     }
                 },
-                error: function(jqXHR, textStatus, errorThrown ) {
-                    d.reject('update failure: ' + jqXHR.responseText);
+                error: function(xhr, textStatus, errorThrown ) {   
+                  $('[data-name="' + params.name + '"]').editable('toggle');
+                  editInline.taApp.showWarningDialog(xhr.responseText);
+                  d.reject('update failure: ' + xhr.responseText);
                 }
             });
             return d.promise();
@@ -232,7 +234,7 @@ define('ta_edit_inline',
                         $removeWorkPlan.removeClass("hidden");
                     }
                 }).fail(function() {
-                    alert('fail to update');
+//                    alert('fail to update');
                 });
             };
 
@@ -457,7 +459,8 @@ define('ta_edit_inline',
                     }
                 },
                 error: function(response) {
-                    alert('can not save co-workers');
+                  $('[data-name="' + name + '"]').editable('toggle');
+                  editInline.taApp.showWarningDialog(response.responseText);
                 }
             });
         }
@@ -549,8 +552,12 @@ define('ta_edit_inline',
 
                 var $tab = $(this);
                 if ($tab.attr('href') == '.taskLogs') {
-                    $tab.closest('.task-detail').find('.taskLogs').jzLoad('TaskController.renderTaskLogs()', {taskId: taskId}, function() {
-                        $tab.tab('show');
+                    $tab.closest('.task-detail').find('.taskLogs').jzLoad('TaskController.renderTaskLogs()', {taskId: taskId}, function(html, status, xhr) {
+                      if (xhr.status >= 400) {
+                        editInline.taApp.showWarningDialog(xhr.responseText);
+                      } else {
+                        $tab.tab('show');                        
+                      }
                     });
                 } else {
                     $tab.tab('show');
@@ -559,7 +566,11 @@ define('ta_edit_inline',
 
             $rightPanel.on('show.bs.tab', '[href="#tab-changes"]', function(e) {
                 var taskId = $(e.target).closest('[data-taskid]').data('taskid');
-                $rightPanel.find('#tab-changes').jzLoad('TaskController.renderTaskLogs()', {taskId: taskId});
+                $rightPanel.find('#tab-changes').jzLoad('TaskController.renderTaskLogs()', {taskId: taskId}, function(html, status, xhr) {
+                  if (xhr.status >= 400) {
+                    editInline.taApp.showWarningDialog(xhr.responseText);
+                  }
+                });
             });
 
             var $taskDetailContainer = $('#taskDetailContainer, [data-taskid]');
@@ -698,6 +709,9 @@ define('ta_edit_inline',
                                     $editable.find('li').html('No Project').removeClass('active').addClass('muted');
                                     $editable.editable('setValue', 0);
                                     enableEditProject($editable);
+                                }, 
+                                error: function(xhr) {
+                                  editInline.taApp.showWarningDialog(xhr.responseText);
                                 }
                             });
                         });

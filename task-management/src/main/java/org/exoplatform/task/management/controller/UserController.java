@@ -19,10 +19,10 @@
 
 package org.exoplatform.task.management.controller;
 
+import javax.inject.Inject;
+
 import java.util.Arrays;
 import java.util.List;
-
-import javax.inject.Inject;
 
 import juzu.MimeType;
 import juzu.Resource;
@@ -30,9 +30,6 @@ import juzu.Response;
 import juzu.impl.common.Tools;
 import juzu.request.SecurityContext;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.exoplatform.commons.juzu.ajax.Ajax;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.organization.OrganizationService;
@@ -42,12 +39,17 @@ import org.exoplatform.services.organization.UserHandler;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.task.domain.Label;
+import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.exception.NotAllowedOperationOnEntityException;
+import org.exoplatform.task.exception.UnAuthorizedOperationException;
 import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.service.UserService;
 import org.exoplatform.task.util.ListUtil;
 import org.exoplatform.task.util.UserUtil;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
@@ -136,9 +138,13 @@ public class UserController extends AbstractController {
     @Resource
     @Ajax
     @MimeType("text/plain")
-    public Response hideProject(Long projectId, Boolean hide) throws EntityNotFoundException, NotAllowedOperationOnEntityException {
+    public Response hideProject(Long projectId, Boolean hide) throws EntityNotFoundException, NotAllowedOperationOnEntityException, UnAuthorizedOperationException {
       Identity identity = ConversationState.getCurrent().getIdentity();
-      userService.hideProject(identity, projectId, hide);
+      try {
+        userService.hideProject(identity, projectId, hide);
+      } catch (NotAllowedOperationOnEntityException ex) {
+        throw new UnAuthorizedOperationException(projectId, Project.class, getNoPermissionMsg());
+      }
       return Response.ok("Hide project successfully");
     }
 

@@ -50,16 +50,17 @@ import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.dao.TaskQuery;
+import org.exoplatform.task.domain.ChangeLog;
 import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Label;
 import org.exoplatform.task.domain.Priority;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.domain.ChangeLog;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.exception.NotAllowedOperationOnEntityException;
 import org.exoplatform.task.exception.ParameterEntityException;
+import org.exoplatform.task.exception.UnAuthorizedOperationException;
 import org.exoplatform.task.model.CommentModel;
 import org.exoplatform.task.model.GroupKey;
 import org.exoplatform.task.model.TaskModel;
@@ -132,7 +133,11 @@ public class TaskController extends AbstractController {
   @Resource
   @Ajax
   @MimeType.HTML
-  public Response detail(Long id, SecurityContext securityContext) throws EntityNotFoundException {
+  public Response detail(Long id, SecurityContext securityContext) throws EntityNotFoundException, UnAuthorizedOperationException {
+    Task task = taskService.getTask(id);
+    if (!TaskUtil.hasPermission(task)) {
+      throw new UnAuthorizedOperationException(id, Task.class, getNoPermissionMsg());
+    }
     TaskModel model = TaskUtil.getTaskModel(id, false, bundle, securityContext.getRemoteUser(), taskService, orgService, userService, projectService);
     TimeZone userTimezone = userService.getUserTimezone(securityContext.getRemoteUser());
   
@@ -142,11 +147,15 @@ public class TaskController extends AbstractController {
       .bundle(bundle)
       .ok().withCharset(Tools.UTF_8);
   }
-  
+
   @Resource
   @Ajax
   @MimeType.HTML
-  public Response renderTaskLogs(Long taskId, SecurityContext securityContext) throws EntityNotFoundException {
+  public Response renderTaskLogs(Long taskId, SecurityContext securityContext) throws EntityNotFoundException, UnAuthorizedOperationException {
+    Task task = taskService.getTask(taskId);
+    if (!TaskUtil.hasPermission(task)) {
+      throw new UnAuthorizedOperationException(taskId, Task.class, getNoPermissionMsg());
+    }
     ChangeLog[] arr = ListUtil.load(taskService.getTaskLogs(taskId), 0, -1);
 
     List<ChangeLog> logs = new LinkedList<ChangeLog>(Arrays.asList(arr));
@@ -171,7 +180,11 @@ public class TaskController extends AbstractController {
   @Resource
   @Ajax
   @MimeType.HTML
-  public Response renderTaskComments(Long id, Boolean loadAllComment, SecurityContext securityContext) throws EntityNotFoundException {
+  public Response renderTaskComments(Long id, Boolean loadAllComment, SecurityContext securityContext) throws EntityNotFoundException, UnAuthorizedOperationException {
+      Task task = taskService.getTask(id);
+      if (!TaskUtil.hasPermission(task)) {
+        throw new UnAuthorizedOperationException(id, Task.class, getNoPermissionMsg());
+      }
       if (loadAllComment == null) {
         loadAllComment = Boolean.FALSE;
       }
@@ -186,7 +199,11 @@ public class TaskController extends AbstractController {
   @Resource
   @Ajax
   @MimeType.JSON
-  public Response clone(Long id) throws EntityNotFoundException, JSONException {
+  public Response clone(Long id) throws EntityNotFoundException, JSONException, UnAuthorizedOperationException {
+      Task task = taskService.getTask(id);
+      if (!TaskUtil.hasPermission(task)) {
+        throw new UnAuthorizedOperationException(id, Task.class, getNoPermissionMsg());
+      }
       Task newTask = taskService.cloneTask(id); //Can throw TaskNotFoundException
 
       JSONObject json = new JSONObject();
@@ -197,7 +214,11 @@ public class TaskController extends AbstractController {
   @Resource
   @Ajax
   @MimeType.JSON
-  public Response delete(Long id) throws EntityNotFoundException, JSONException {
+  public Response delete(Long id) throws EntityNotFoundException, JSONException, UnAuthorizedOperationException {
+    Task task = taskService.getTask(id);
+    if (!TaskUtil.hasPermission(task)) {
+      throw new UnAuthorizedOperationException(id, Task.class, getNoPermissionMsg());
+    }
     taskService.removeTask(id);//Can throw TaskNotFoundException
 
     JSONObject json = new JSONObject();
@@ -208,10 +229,13 @@ public class TaskController extends AbstractController {
   @Resource
   @Ajax
   @MimeType("text/plain")
-  public Response saveTaskInfo(Long taskId, String name, String[] value, SecurityContext context) throws EntityNotFoundException, ParameterEntityException {
-
+  public Response saveTaskInfo(Long taskId, String name, String[] value, SecurityContext context) throws EntityNotFoundException, ParameterEntityException, UnAuthorizedOperationException {
     TimeZone timezone = userService.getUserTimezone(context.getRemoteUser());
     Task task = taskService.getTask(taskId);
+    if (!TaskUtil.hasPermission(task) || 
+        !TaskUtil.hasPermissionOnField(task, name, value, statusService, taskService, projectService)) {
+      throw new UnAuthorizedOperationException(taskId, Task.class, getNoPermissionMsg());
+    }
     task = TaskUtil.saveTaskField(task, context.getRemoteUser(), name, value, timezone, taskService, statusService);
 
     String response = "Update successfully";
@@ -237,13 +261,20 @@ public class TaskController extends AbstractController {
   @Resource
   @Ajax
   @MimeType("text/plain")
-  public Response saveTaskOrder(Long taskId, Long newStatusId, Long[] orders) {
+  public Response saveTaskOrder(Long taskId, Long newStatusId, Long[] orders) throws EntityNotFoundException, UnAuthorizedOperationException {
     if (taskId == null || taskId == 0) {
       return Response.status(404).body("Task not found");
+    }
+    Task task = taskService.getTask(taskId);
+    if (!TaskUtil.hasPermission(task)) {
+      throw new UnAuthorizedOperationException(taskId, Task.class, getNoPermissionMsg());
     }
     Status newStatus = null;
     if (newStatusId != null && newStatusId > 0) {
       newStatus = statusService.getStatus(newStatusId);
+      if (!newStatus.getProject().canView(ConversationState.getCurrent().getIdentity())) {
+        throw new UnAuthorizedOperationException(taskId, Task.class, getNoPermissionMsg());
+      }
     }
     long[] ids = new long[orders.length];
     for (int i = 0; i < ids.length; i++) {
@@ -256,8 +287,11 @@ public class TaskController extends AbstractController {
   @Resource
   @Ajax
   @MimeType("text/plain")
-  public Response updateCompleted(Long taskId, Boolean completed, SecurityContext securityContext) throws EntityNotFoundException, ParameterEntityException {
+  public Response updateCompleted(Long taskId, Boolean completed, SecurityContext securityContext) throws EntityNotFoundException, ParameterEntityException, UnAuthorizedOperationException {
     Task task = taskService.getTask(taskId);
+    if (!TaskUtil.hasPermission(task)) {
+      throw new UnAuthorizedOperationException(taskId, Task.class, getNoPermissionMsg());
+    }
     task.setCompleted(completed);
     taskService.updateTask(task);
     return Response.ok("Update successfully");
@@ -266,13 +300,12 @@ public class TaskController extends AbstractController {
   @Resource
   @Ajax
   @MimeType.JSON
-  public Response comment(Long taskId, String comment, SecurityContext securityContext) throws EntityNotFoundException, JSONException {
-
+  public Response comment(Long taskId, String comment, SecurityContext securityContext) throws EntityNotFoundException, JSONException, UnAuthorizedOperationException {
+    Task task = taskService.getTask(taskId);
     String currentUser = securityContext.getRemoteUser();
-    if (currentUser == null || currentUser.isEmpty()) {
-      return Response.status(401);
+    if (!TaskUtil.hasPermission(task)) {
+      throw new UnAuthorizedOperationException(taskId, Task.class, getNoPermissionMsg());
     }
-
     Comment cmt = taskService.addComment(taskId, currentUser, comment); //Can throw TaskNotFoundException
 
     //TODO:
@@ -298,9 +331,12 @@ public class TaskController extends AbstractController {
   @Resource
   @Ajax
   @MimeType.HTML
-  public Response loadAllComments(Long taskId, SecurityContext securityContext) throws EntityNotFoundException {
+  public Response loadAllComments(Long taskId, SecurityContext securityContext) throws EntityNotFoundException, UnAuthorizedOperationException {
       // Verify task exists
       Task task = taskService.getTask(taskId);
+      if (!TaskUtil.hasPermission(task)) {
+        throw new UnAuthorizedOperationException(taskId, Task.class, getNoPermissionMsg());
+      }
 
       ListAccess<Comment> cmtAccessList = taskService.getComments(task.getId());
       Comment[] cmts = ListUtil.load(cmtAccessList, 0, -1); //Can throw TaskNotFoundException
@@ -331,7 +367,7 @@ public class TaskController extends AbstractController {
       taskService.removeComment(commentId);
       return Response.ok("Delete comment successfully!");
     } else {
-      return Response.status(403).body("Only owner or project manager can delete the comment");
+      return Response.status(401).body("Only owner or project manager can delete the comment");
     }
   }
 
@@ -339,9 +375,34 @@ public class TaskController extends AbstractController {
   @Ajax
   @MimeType.HTML
   public Response listTasks(String space_group_id, Long projectId, Long labelId, String filterLabelIds, String tags, Long statusId, String dueDate, String priority,  
-                            String assignee, Boolean completed, String keyword, Boolean advanceSearch, String groupBy, String orderBy, String filter, String viewType, SecurityContext securityContext) {
+                            String assignee, Boolean completed, String keyword, Boolean advanceSearch, String groupBy, String orderBy, String filter, String viewType, SecurityContext securityContext) throws EntityNotFoundException, UnAuthorizedOperationException {
+    Identity currIdentity = ConversationState.getCurrent().getIdentity();
+    advanceSearch = advanceSearch == null ? false : advanceSearch;
     Project project = null;
     List<Status> projectStatuses = null;
+    if (projectId != null && projectId > 0) {
+      project = projectService.getProject(projectId);
+      if (!project.canView(currIdentity)) {
+        if (advanceSearch) {
+          projectId = Long.MAX_VALUE;         
+          projectStatuses = Collections.emptyList();
+        } else {
+          throw new UnAuthorizedOperationException(projectId, Project.class, getNoPermissionMsg());
+        }
+      }
+    }
+    String currentLabelName = "";
+    if (labelId != null && labelId > 0) {
+      Label label = taskService.getLabel(labelId);
+      currentLabelName = label.getName();
+      if (!label.getUsername().equals(currIdentity.getUserId())) {
+        if (advanceSearch) {
+          labelId = Long.MAX_VALUE;
+        } else {
+          throw new UnAuthorizedOperationException(labelId, Label.class, getNoPermissionMsg());          
+        }
+      }
+    }
 
     if (projectId <= 0 || viewType == null || !VIEW_TYPES.contains(viewType)) {
       viewType = VIEW_TYPES.get(0);
@@ -370,8 +431,7 @@ public class TaskController extends AbstractController {
     if (currentUser == null || currentUser.isEmpty()) {
       return Response.status(401);
     }
-
-    Identity currIdentity = ConversationState.getCurrent().getIdentity();
+    
     List<Long> spaceProjectIds = null;    
     if (space_group_id != null) {
       spaceProjectIds = new LinkedList<Long>();
@@ -397,12 +457,11 @@ public class TaskController extends AbstractController {
     if(orderBy != null && !orderBy.trim().isEmpty()) {
       order = TaskUtil.TITLE.equals(orderBy) || TaskUtil.DUEDATE.equals(orderBy) ? new OrderBy.ASC(orderBy) : new OrderBy.DESC(orderBy);
     }
-    
-    advanceSearch = advanceSearch == null ? false : advanceSearch;
+        
     TaskQuery taskQuery;
     if (advanceSearch) {
       Status status = statusId != null ? statusService.getStatus(statusId) : null;
-      taskQuery = buildTaskQuery(keyword, filterLabelIds, tags, status, dueDate, priority, assignee, completed, userTimezone);
+      taskQuery = buildTaskQuery(keyword, filterLabelIds, tags, status, dueDate, priority, assignee, completed, userTimezone);      
     } else {
       taskQuery = new TaskQuery();
     }
@@ -512,14 +571,9 @@ public class TaskController extends AbstractController {
       //tasks = Arrays.asList(ListUtil.load(taskService.findTasks(taskQuery), 0, -1)); //taskService.findTaskByQuery(taskQuery);
 
       if (projectId > 0) {
-        try {
-          project = projectService.getProject(projectId);
-          if (isBoardView) {
-            projectStatuses = statusService.getStatuses(projectId);
-          }
-        } catch (EntityNotFoundException e) {
-          return Response.notFound("not found project " + projectId);
-        }          
+        if (isBoardView && projectStatuses == null) {
+          projectStatuses = statusService.getStatuses(projectId);
+        }
       }
     } else if (labelId != null && labelId >= 0) {
       defOrders = TaskUtil.resolve(Arrays.asList(TaskUtil.TITLE, TaskUtil.CREATED_TIME, TaskUtil.DUEDATE, TaskUtil.PRIORITY), bundle);
@@ -602,14 +656,6 @@ public class TaskController extends AbstractController {
     }
     */
 
-    String currentLabelName = "";
-    if (labelId != null && labelId > 0) {
-      Label label = taskService.getLabel(labelId);
-      if (label != null) {
-        currentLabelName = label.getName();
-      }
-    }      
-
     return taskListView
         .with()
         .orders(defOrders)
@@ -676,7 +722,7 @@ public class TaskController extends AbstractController {
   @Resource(method = HttpMethod.POST)
   @Ajax
   @MimeType.JSON
-  public Response createTask(Long projectId, Long labelId, String taskInput, String filter, SecurityContext securityContext) throws EntityNotFoundException, JSONException {
+  public Response createTask(Long projectId, Long labelId, String taskInput, String filter, SecurityContext securityContext) throws EntityNotFoundException, JSONException, UnAuthorizedOperationException {
 
     if(taskInput == null || taskInput.isEmpty()) {
       return Response.content(406, "Task input must not be null or empty");
@@ -691,8 +737,13 @@ public class TaskController extends AbstractController {
     Task task = taskParser.parse(taskInput, context);
     task.setCreatedBy(currentUser);
 
+    Identity identity = ConversationState.getCurrent().getIdentity();
     //Project task
     if(projectId > 0) {
+      Project project = projectService.getProject(projectId);
+      if (!project.canView(identity)) {
+        throw new UnAuthorizedOperationException(projectId, Project.class, getNoPermissionMsg());
+      }
       Status status = statusService.getDefaultStatus(projectId);
       if (status == null) {
         throw new EntityNotFoundException(projectId, Project.class);
@@ -718,9 +769,17 @@ public class TaskController extends AbstractController {
       
       //taskService.createTask(task);
     }
+    
+    Label label = null;
+    if (labelId != null && labelId > 0) {
+      label = taskService.getLabel(labelId);
+      if (!label.getUsername().equals(currentUser)) {
+        throw new UnAuthorizedOperationException(labelId, Label.class, getNoPermissionMsg());
+      }
+    }
 
     taskService.createTask(task);
-    if (labelId != null && labelId > 0) {
+    if (label != null) {
       taskService.addTaskToLabel(task.getId(), labelId);
     }
 
@@ -744,7 +803,7 @@ public class TaskController extends AbstractController {
   @Ajax
   @MimeType.HTML
   public Response createTaskInListView(String space_group_id, String taskTitle, Long projectId, Long statusId, String assignee,
-                                       String viewType, String groupBy, String orderBy, SecurityContext securityContext) {
+                                       String viewType, String groupBy, String orderBy, SecurityContext securityContext) throws EntityNotFoundException, UnAuthorizedOperationException {
     if (taskTitle == null || taskTitle.isEmpty()) {
       return Response.status(406).body("Task title is required");
     }
@@ -753,12 +812,20 @@ public class TaskController extends AbstractController {
     if (assignee != null && !assignee.isEmpty()) {
       task.setAssignee(assignee);
     }
+    Identity identity = ConversationState.getCurrent().getIdentity();
     if (statusId != null) {
       Status status = statusService.getStatus(statusId);
+      if (!status.getProject().canView(identity)) {
+        throw new UnAuthorizedOperationException(statusId, Status.class, getNoPermissionMsg());
+      }
       if (status != null) {
         task.setStatus(status);
       }
     } else if (projectId != null) {
+      Project project = projectService.getProject(projectId);
+      if (!project.canView(identity)) {
+        throw new UnAuthorizedOperationException(projectId, Project.class, getNoPermissionMsg());
+      }
       Status status = statusService.getDefaultStatus(projectId);
       if (status != null) {
         task.setStatus(status);
@@ -774,10 +841,14 @@ public class TaskController extends AbstractController {
   @Resource(method = HttpMethod.POST)
   @Ajax
   @MimeType.HTML
-  public Response removeStatus(String space_group_id, Long statusId, SecurityContext securityContext) throws EntityNotFoundException, NotAllowedOperationOnEntityException {
+  public Response removeStatus(String space_group_id, Long statusId, SecurityContext securityContext) throws EntityNotFoundException, NotAllowedOperationOnEntityException, UnAuthorizedOperationException {
     // Load status to get projectId
     Status status = statusService.getStatus(statusId);
+    Identity identity = ConversationState.getCurrent().getIdentity();
     Project project = status.getProject();
+    if (!project.canEdit(identity)) {
+      throw new UnAuthorizedOperationException(statusId, Status.class, getNoPermissionMsg());
+    }
 
     //
     statusService.removeStatus(statusId);
@@ -789,8 +860,11 @@ public class TaskController extends AbstractController {
   @Resource(method = HttpMethod.POST)
   @Ajax
   @MimeType.HTML
-  public Response createStatus(String space_group_id, String name, Long projectId, SecurityContext securityContext) throws EntityNotFoundException {
+  public Response createStatus(String space_group_id, String name, Long projectId, SecurityContext securityContext) throws EntityNotFoundException, UnAuthorizedOperationException {
     Project project = projectService.getProject(projectId);
+    if (!project.canEdit(ConversationState.getCurrent().getIdentity())) {
+      throw new UnAuthorizedOperationException(projectId, Task.class, getNoPermissionMsg());
+    }
     statusService.createStatus(project, name);
     //spaceGrpId, projectId, currentLabelId, labelIds, tags, statusId, dueDate, priority, assignee, completed, keyword, advanceSearch, groupby, orderBy, filter, viewType, securityContext
     return listTasks(space_group_id, projectId, null, null, null, null, null, null, null, null, null, null, null, null, null, "board", securityContext);
@@ -852,4 +926,5 @@ public class TaskController extends AbstractController {
     
     return query;
   }
+  
 }

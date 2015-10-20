@@ -27,6 +27,9 @@ define('taskBoardView', ['jquery', 'taskManagementApp', 'SHARED/edit_inline_js',
                         method: 'POST',
                         success: function(response) {
                             $centerPanelContent.html(response);
+                        },
+                        error: function(xhr) {
+                          taApp.showWarningDialog(xhr.responseText);
                         }
                     });
                 } else {
@@ -58,6 +61,9 @@ define('taskBoardView', ['jquery', 'taskManagementApp', 'SHARED/edit_inline_js',
                         method: 'POST',
                         success: function(response) {
                             $centerPanelContent.html(response);
+                        }, 
+                        error: function(xhr) {
+                          taApp.showWarningDialog(xhr.responseText);
                         }
                     });
                 }
@@ -106,8 +112,8 @@ define('taskBoardView', ['jquery', 'taskManagementApp', 'SHARED/edit_inline_js',
                         success: function(response) {
                             $centerPanelContent.html(response);
                         },
-                        error: function() {
-                            alert('error while create new task');
+                        error: function(xhr) {
+                          taApp.showWarningDialog(xhr.responseText);
                         }
                     });
                 }
@@ -131,8 +137,9 @@ define('taskBoardView', ['jquery', 'taskManagementApp', 'SHARED/edit_inline_js',
                     success: function(response) {
                         d.resolve();
                     },
-                    error: function(jqXHR, textStatus, errorThrown ) {
-                        d.reject('update failure: ' + jqXHR.responseText);
+                    error: function(xhr, textStatus, errorThrown ) {
+                      taApp.showWarningDialog(xhr.responseText);
+                      d.reject('update failure: ' + xhr.responseText);
                     }
                 });
                 return d.promise();
@@ -213,10 +220,10 @@ define('taskBoardView', ['jquery', 'taskManagementApp', 'SHARED/edit_inline_js',
                                 success: function(response) {
 
                                 },
-                                error: function(jqXHR, textStatus, errorThrown ) {
-                                    alert('can not update task status and order');
-                                    $status.sortable('cancel');
-                                    $(ui.sender).sortable('cancel');
+                                error: function(xhr, textStatus, errorThrown ) {
+                                  taApp.showWarningDialog(xhr.responseText);
+                                  $status.sortable('cancel');
+                                  $(ui.sender).sortable('cancel');
                                 }
                             });
                         } else {
@@ -231,10 +238,10 @@ define('taskBoardView', ['jquery', 'taskManagementApp', 'SHARED/edit_inline_js',
                                 success: function(response) {
 
                                 },
-                                error: function(jqXHR, textStatus, errorThrown ) {
-                                    alert('can not update task status');
-                                    $status.sortable('cancel');
-                                    $(ui.sender).sortable('cancel');
+                                error: function(xhr, textStatus, errorThrown ) {
+                                  taApp.showWarningDialog(xhr.responseText);
+                                  $status.sortable('cancel');
+                                  $(ui.sender).sortable('cancel');
                                 }
                             });
                         }

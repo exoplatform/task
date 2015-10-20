@@ -37,6 +37,7 @@ import org.exoplatform.commons.juzu.ajax.Ajax;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.task.domain.Label;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
@@ -85,6 +86,9 @@ public class FilterController {
     //only allow to filter status with concrete project 
     boolean filterStatus = projectId != null && projectId > 0;
     Project project = filterStatus ? projectService.getProject(projectId) : null;
+    if (!project.canView(ConversationState.getCurrent().getIdentity())) {
+      project = null;
+    }
     
     List<Status> status = Collections.emptyList();
     if (filterStatus && project != null) {      

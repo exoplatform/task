@@ -19,25 +19,61 @@
 
 package org.exoplatform.task.management.controller;
 
+import javax.inject.Inject;
+
+import java.util.ResourceBundle;
+
+import juzu.Path;
 import juzu.Response;
+import juzu.impl.common.Tools;
 import juzu.request.Phase;
 import juzu.request.RequestContext;
 import juzu.request.RequestLifeCycle;
+
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.exception.NotAllowedOperationOnEntityException;
 import org.exoplatform.task.exception.ParameterEntityException;
+import org.exoplatform.task.exception.UnAuthorizedOperationException;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
 public class AbstractController implements RequestLifeCycle {
   protected final Log LOG = ExoLogger.getExoLogger(getClass());
+  
+  public static enum MSG_TYPE {
+    INFO, WARNING, ERROR
+  }
+
+  @Inject
+  ResourceBundle bundle;
+  
+  @Inject
+  @Path("messageDialog.gtmpl")
+  org.exoplatform.task.management.templates.messageDialog messageDialog;
+  
+  private String noPermissionMsg;
+
+  public Response buildMSGDialog(String message, MSG_TYPE msgType) {
+    return messageDialog
+        .with()
+        .msg(message)
+        .type(msgType)
+        .ok().withCharset(Tools.UTF_8);
+  }
+
+  protected String getNoPermissionMsg() {
+    if (noPermissionMsg == null) {
+      noPermissionMsg = bundle.getString("popup.msg.noPermission");
+    }
+    return noPermissionMsg;
+  }
 
   @Override
   public void beginRequest(RequestContext context) {
-
+    
   }
 
   @Override
@@ -48,7 +84,9 @@ public class AbstractController implements RequestLifeCycle {
       Throwable ex = error.getCause();
       if (ex != null) {
         //
-        LOG.error("Exception while process request", ex);
+        if (!(ex instanceof UnAuthorizedOperationException)) {
+          LOG.error("Exception while process request", ex);   
+        }
 
         //TODO: we only overwrite response for resource method now
         if (context.getPhase() == Phase.RESOURCE) {
@@ -58,6 +96,8 @@ public class AbstractController implements RequestLifeCycle {
             response = Response.status(404).body(ex.getMessage());
           } else if (ex instanceof NotAllowedOperationOnEntityException) {
             response = Response.status(403).body(ex.getMessage());
+          } else if (ex instanceof UnAuthorizedOperationException) {
+            response = Response.status(401).body(ex.getMessage());
           } else if (ex instanceof ParameterEntityException) {
             response = Response.status(406).body(ex.getMessage());
           }

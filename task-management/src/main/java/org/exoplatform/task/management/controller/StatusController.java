@@ -23,14 +23,17 @@ import juzu.MimeType;
 import juzu.Resource;
 import juzu.Response;
 
+import org.exoplatform.common.http.HTTPStatus;
 import org.exoplatform.commons.juzu.ajax.Ajax;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.exception.AbstractEntityException;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.exception.NotAllowedOperationOnEntityException;
+import org.exoplatform.task.exception.UnAuthorizedOperationException;
 import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.StatusService;
 import org.json.JSONArray;
@@ -61,7 +64,11 @@ public class StatusController extends AbstractController {
   @MimeType.JSON
   public Response getAllStatus(Long projectId) throws EntityNotFoundException, JSONException {
     JSONArray array = new JSONArray();
-    List<Status> statuses = new LinkedList<Status>(statusService.getStatuses(projectId));
+    Project project = projectService.getProject(projectId);
+    List<Status> statuses = Collections.emptyList();
+    if (project.canView(ConversationState.getCurrent().getIdentity())) {
+      statuses = new LinkedList<Status>(statusService.getStatuses(projectId));
+    }
     Collections.sort(statuses);
     for (Status status : statuses) {
       JSONObject json = new JSONObject();
@@ -76,8 +83,12 @@ public class StatusController extends AbstractController {
   @Resource
   @Ajax
   @MimeType.JSON
-  public Response updateStatus(Long id, String name) throws EntityNotFoundException, NotAllowedOperationOnEntityException, JSONException {
-    Status status = statusService.updateStatus(id, name);
+  public Response updateStatus(Long id, String name) throws EntityNotFoundException, NotAllowedOperationOnEntityException, JSONException, UnAuthorizedOperationException {
+    Status status = statusService.getStatus(id);
+    if (!status.getProject().canEdit(ConversationState.getCurrent().getIdentity())) {
+      throw new UnAuthorizedOperationException(id, Status.class, getNoPermissionMsg());
+    }
+    status = statusService.updateStatus(id, name);
     JSONObject json = new JSONObject();
     json.put("id", status.getId());
     json.put("name", status.getName());

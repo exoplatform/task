@@ -41,6 +41,8 @@ import org.exoplatform.portal.webui.util.Util;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
+import org.exoplatform.services.security.ConversationState;
+import org.exoplatform.services.security.Identity;
 import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.domain.Label;
 import org.exoplatform.task.domain.Project;
@@ -110,7 +112,7 @@ public class TaskManagement {
       long id = ProjectUtil.getProjectIdFromURI(requestPath);
       if (id > 0 && prc.getControllerContext().getRequest().getQueryString() == null) {
         currProject = id;
-        project = projectService.getProject(currProject);
+        project = projectService.getProject(currProject);        
       } else {
         currProject = -1;
       }
@@ -127,8 +129,13 @@ public class TaskManagement {
       }
     }
 
+    Identity identity = ConversationState.getCurrent().getIdentity();
     TaskQuery taskQuery = new TaskQuery();
 
+    if (project != null && !project.canView(identity)) {
+      currProject = space_group_id == null ? -1 : -2;
+    }
+    
     //
     if (taskId != -1) {
       try {
@@ -136,11 +143,14 @@ public class TaskManagement {
                                                     orgService, userService, projectService);
         if (taskModel.getTask().getStatus() != null) {
           project = taskModel.getTask().getStatus().getProject();
-          currProject = project.getId();
-          //TaskQuery taskQuery = new TaskQuery();
-          taskQuery.setProjectIds(Arrays.asList(currProject));
-          //ListAccess<Task> listTasks = taskService.findTasks(taskQuery);
-          //tasks = Arrays.asList(ListUtil.load(listTasks, 0, -1)); //taskService.findTaskByQuery(taskQuery);
+          if (project.canView(identity)) {
+            currProject = project.getId();
+            //TaskQuery taskQuery = new TaskQuery();
+            taskQuery.setProjectIds(Arrays.asList(currProject));
+            //ListAccess<Task> listTasks = taskService.findTasks(taskQuery);
+            //tasks = Arrays.asList(ListUtil.load(listTasks, 0, -1)); //taskService.findTaskByQuery(taskQuery);     
+            taskId = -1;
+          }
         }
       } catch (EntityNotFoundException e) {
         taskId = -1;

@@ -206,10 +206,14 @@ $(document).ready(function() {
         var $li = $(e.target || e.srcElement).closest('[data-taskid]');
         var taskId = $li.data('taskid');
         var currentTask = $rightPanelContent.find('.task-detail').attr('task-id');
-        $rightPanelContent.jzLoad('TaskController.detail()', {id: taskId}, function(html) {
-          taApp.showRightPanel($centerPanel, $rightPanel);
-          taskLoadedCallback(taskId, true);
-          return false;
+        $rightPanelContent.jzLoad('TaskController.detail()', {id: taskId}, function(html, status, xhr) {
+          if (xhr.status >= 400) {
+            taApp.showWarningDialog(xhr.responseText);
+          } else {
+            taApp.showRightPanel($centerPanel, $rightPanel);
+            taskLoadedCallback(taskId, true);
+            return false;            
+          }
         });
     });
     if ($rightPanel.is(':visible') && $rightPanel.find('[data-taskid]')) {
@@ -233,6 +237,11 @@ $(document).ready(function() {
               taApp.reloadTaskList(projectId, -1, function() {
                 $centerPanel.find('.taskItem[data-taskid="' + id + '"]').click();
               });
+            },
+            error: function(xhr) {
+              if (xhr.status >= 400) {
+                taApp.showWarningDialog(xhr.responseText);
+              }
             }
         });
     });
@@ -243,6 +252,11 @@ $(document).ready(function() {
             data: {id: taskId},
             success: function(response) {
                 window.location.reload();
+            },
+            error: function(xhr) {
+              if (xhr.status >= 400) {
+                taApp.showWarningDialog(xhr.responseText);
+              }
             }
         });
     });
@@ -297,11 +311,16 @@ $(document).ready(function() {
             return false;
         }
         var postCommentURL = $form.jzURL('TaskController.comment');
-        $.post(postCommentURL, { taskId: taskId, comment: comment}, function(data) {
+        var xhr = $.post(postCommentURL, { taskId: taskId, comment: comment}, function(data) {
             $commentContainer.jzLoad('TaskController.renderTaskComments()', {id: taskId, loadAllComment: loadAllComment}, function() {
                 initCommentEditor();
             });
         },'json');
+        xhr.fail(function() {
+          if (xhr.status == 400) {
+            taApp.showWarningDialog(xhr.responseText);
+          }
+        });
 
         return false;
     });
@@ -323,11 +342,11 @@ $(document).ready(function() {
             type: 'POST',
             success: function(data) {
                 $commentContainer.jzLoad('TaskController.renderTaskComments()', {id: taskId, loadAllComment: loadAllComment}, function() {
-                    initCommentEditor();
+                  initCommentEditor();
                 });
             },
-            error: function(jqXHR, textStatus, errorThrown) {
-                alert(jqXHR.responseText);
+            error: function(xhr, textStatus, errorThrown) {
+                alert(xhr.responseText);
             }
         });
     });
@@ -338,8 +357,12 @@ $(document).ready(function() {
         var loadAll = $a.data('loadall');
         var $comment = $a.closest('#tab-comments');
         var taskId = $comment.closest('[data-taskid]').data('taskid');
-        $comment.jzLoad('TaskController.renderTaskComments()', {id: taskId, loadAllComment: loadAll}, function() {
-            initCommentEditor();
+        $comment.jzLoad('TaskController.renderTaskComments()', {id: taskId, loadAllComment: loadAll}, function(html, status, xhr) {
+          if (xhr.status >= 400) {
+            taApp.showWarningDialog(xhr.responseText);
+          } else {
+            initCommentEditor();            
+          }
         });
     });
 
@@ -460,6 +483,9 @@ $(document).ready(function() {
                 if (task.taskNum != -1) {
                   $('.project-name[data-id="-1"] .badgeDefault').text(task.taskNum);
                 }
+            }, 
+            error: function(xhr) {
+              taApp.showWarningDialog(xhr.responseText);
             }
         });
         return false;
@@ -496,8 +522,12 @@ $(document).ready(function() {
                 filter: filter,
                 viewType: viewType
             },
-            function() {
-                taApp.hideRightPanel($centerPanel, $rightPanel, $rightPanelContent);
+            function(html, status, xhr) {
+              if (xhr.status >= 400) {
+                taApp.showWarningDialog(xhr.responseText);
+              } else {
+                taApp.hideRightPanel($centerPanel, $rightPanel, $rightPanelContent);                
+              }
             }
         );
     };
@@ -586,8 +616,8 @@ $(document).ready(function() {
                 $project.find('a > i.iconCheckBox').removeClass('iconCheckBox');
                 $a.find('i').addClass('iconCheckBox');
             },
-            error: function() {
-                alert('Error while update color of project, please try again.');
+            error: function(xhr) {
+              taApp.showWarningDialog(xhr.responseText);
             }
         });
 
@@ -662,8 +692,8 @@ $(document).ready(function() {
                         .addClass('not-all-project-hidden');
                 }
             },
-            error : function(jqXHR, textStatus, errorThrown) {
-                console.error && console.error('update failure: ' + jqXHR.responseText);
+            error : function(xhr, textStatus, errorThrown) {
+              taApp.showWarningDialog(xhr.responseText);
             }
         });
 

@@ -266,8 +266,8 @@ require(['jquery', 'taskManagementApp'], function($, taApp) {
                   success.call(this, data);
                 }
             },
-            error: function() {
-                alert('error requesting label controller. Please try again.');
+            error: function(xhr) {
+              taApp.showWarningDialog(xhr.responseText);
             }
         });
       }

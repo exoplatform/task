@@ -19,6 +19,8 @@
 
 package org.exoplatform.task.management.controller;
 
+import javax.inject.Inject;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -31,8 +33,6 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import javax.inject.Inject;
-
 import juzu.MimeType;
 import juzu.Path;
 import juzu.Resource;
@@ -40,6 +40,7 @@ import juzu.Response;
 import juzu.impl.common.Tools;
 import juzu.request.SecurityContext;
 
+import org.exoplatform.common.http.HTTPStatus;
 import org.exoplatform.commons.juzu.ajax.Ajax;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.log.ExoLogger;
@@ -56,6 +57,7 @@ import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.UserSetting;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.exception.ParameterEntityException;
+import org.exoplatform.task.exception.UnAuthorizedOperationException;
 import org.exoplatform.task.model.Permission;
 import org.exoplatform.task.model.User;
 import org.exoplatform.task.model.UserGroup;
@@ -130,10 +132,14 @@ public class ProjectController extends AbstractController {
   @Resource
   @Ajax
   @MimeType.HTML
-  public Response projectForm(Long parentId, SecurityContext securityContext) {    
+  public Response projectForm(Long parentId, SecurityContext securityContext) throws UnAuthorizedOperationException {    
     Project parent;
     try {
       parent = projectService.getProject(parentId);
+      Identity identity = ConversationState.getCurrent().getIdentity();
+      if (!parent.canEdit(identity)) {
+        throw new UnAuthorizedOperationException(parentId, Project.class, getNoPermissionMsg());
+      }
     } catch (EntityNotFoundException e) {
       parent = new Project();
     }
@@ -151,7 +157,7 @@ public class ProjectController extends AbstractController {
   @Resource
   @Ajax
   @MimeType.JSON
-  public Response createProject(String space_group_id, String name, String description, Long parentId, Boolean calInteg, SecurityContext securityContext) throws EntityNotFoundException, JSONException {
+  public Response createProject(String space_group_id, String name, String description, Long parentId, Boolean calInteg, SecurityContext securityContext) throws EntityNotFoundException, JSONException, UnAuthorizedOperationException {
 
     String currentUser = securityContext.getRemoteUser();
     if(currentUser == null) {
@@ -178,6 +184,10 @@ public class ProjectController extends AbstractController {
     project.setCalendarIntegrated(calInteg);
 
     if (parentId != null && parentId > 0) {
+      Project parent = projectService.getProject(parentId);
+      if (!parent.canEdit(ConversationState.getCurrent().getIdentity())) {
+        throw new UnAuthorizedOperationException(parentId, Project.class, getNoPermissionMsg());
+      }
       project = projectService.createProject(project, parentId);
     } else {
       project = projectService.createProject(project);
@@ -195,8 +205,12 @@ public class ProjectController extends AbstractController {
   @Resource
   @Ajax
   @MimeType.JSON
-  public Response cloneProject(Long id, String cloneTask, SecurityContext securityContext) throws EntityNotFoundException, JSONException {
+  public Response cloneProject(Long id, String cloneTask, SecurityContext securityContext) throws EntityNotFoundException, JSONException, UnAuthorizedOperationException {
 
+    Project currentProject = projectService.getProject(id);
+    if (!currentProject.canEdit(ConversationState.getCurrent().getIdentity())) {
+      throw new UnAuthorizedOperationException(id, Project.class, getNoPermissionMsg());
+    }
     Project project = projectService.cloneProject(id, Boolean.parseBoolean(cloneTask)); //Can throw ProjectNotFoundException
 
     JSONObject result = new JSONObject();
@@ -210,9 +224,12 @@ public class ProjectController extends AbstractController {
   @Resource
   @Ajax
   @MimeType.HTML
-  public Response openConfirmDelete(Long id) throws EntityNotFoundException {
+  public Response openConfirmDelete(Long id) throws EntityNotFoundException, UnAuthorizedOperationException {
     Project project = projectService.getProject(id); //Can throw ProjectNotFoundException
     if (project != null) {
+      if (!project.canEdit(ConversationState.getCurrent().getIdentity())) {
+        throw new UnAuthorizedOperationException(id, Project.class, getNoPermissionMsg());
+      }
       String msg = bundle.getString("popup.msg.deleteProject");
       msg = msg.replace("{}", project.getName());
 
@@ -226,8 +243,11 @@ public class ProjectController extends AbstractController {
   @Resource
   @Ajax
   @MimeType.HTML
-  public Response openShareDialog(Long id) throws EntityNotFoundException {
+  public Response openShareDialog(Long id) throws EntityNotFoundException, UnAuthorizedOperationException {
     Project project = projectService.getProject(id); //Can throw ProjectNotFoundException
+    if (!project.canEdit(ConversationState.getCurrent().getIdentity())) {
+      throw new UnAuthorizedOperationException(id, Project.class, getNoPermissionMsg());
+    }
     return renderShareDialog(project, "");
   }
 
@@ -455,12 +475,16 @@ public class ProjectController extends AbstractController {
   @Resource
   @Ajax
   @MimeType.HTML
-  public Response savePermission(Long id, String[] permissions, String type) throws EntityNotFoundException, ParameterEntityException {
+  public Response savePermission(Long id, String[] permissions, String type) throws EntityNotFoundException, ParameterEntityException, UnAuthorizedOperationException {
     String name = "manager".equals(type) ? type : "participator";
     Map<String, String[]> fields = new HashMap<String, String[]>();
     fields.put(name, permissions);
     //
-    Project project = ProjectUtil.saveProjectField(projectService, id, fields);    
+    Project project = projectService.getProject(id);
+    if (!project.canEdit(ConversationState.getCurrent().getIdentity())) {
+      throw new UnAuthorizedOperationException(id, Project.class, getNoPermissionMsg());
+    }
+    project = ProjectUtil.saveProjectField(projectService, id, fields);    
     projectService.updateProject(project);
 
     return renderShareDialog(project, "");
@@ -496,22 +520,31 @@ public class ProjectController extends AbstractController {
   @Resource
   @Ajax
   @MimeType.HTML
-  public Response getBreadCumbs(Long id, Boolean isBreadcrumb) {
+  public Response getBreadCumbs(Long id, Boolean isBreadcrumb) throws UnAuthorizedOperationException {
     String breadcrumbs = "";
+    Project p = null;
+    try {      
+      p = projectService.getProject(id);
+      if (!p.canEdit(ConversationState.getCurrent().getIdentity())) {
+        throw new UnAuthorizedOperationException(id, Project.class, getNoPermissionMsg());
+      }
+    } catch (EntityNotFoundException e) {
+    }
+    
+    
     if (isBreadcrumb == null || isBreadcrumb) {
       breadcrumbs = ProjectUtil.buildBreadcumbs(id, projectService, bundle);
     } else {
-      try {
-        Project p = projectService.getProject(id);
+      if (p != null) {
         breadcrumbs = new StringBuilder("<li class=\"active\"><a class=\"project-name\" href=\"javascript:void(0)\">")
-                          .append(p.getName())
-                          .append("</a></li>")
-                          .toString();
-      } catch (EntityNotFoundException ex) {
+        .append(p.getName())
+        .append("</a></li>")
+        .toString();
+      } else {
         breadcrumbs = new StringBuilder("<li class=\"muted\">")
-                .append(bundle.getString("label.noProject"))
-                .append("</li>")
-                .toString();
+        .append(bundle.getString("label.noProject"))
+        .append("</li>")
+        .toString();
       }
     }
     return Response.ok(breadcrumbs.toString()).withCharset(Tools.UTF_8);
@@ -534,9 +567,12 @@ public class ProjectController extends AbstractController {
   @Resource
   @Ajax
   @MimeType.HTML
-  public Response projectDetail(Long id) throws EntityNotFoundException {
+  public Response projectDetail(Long id) throws EntityNotFoundException, UnAuthorizedOperationException {
     Project project = projectService.getProject(id); //Can throw ProjectNotFoundException
-
+    if (!project.canEdit(ConversationState.getCurrent().getIdentity())) {
+      throw new UnAuthorizedOperationException(id, Project.class, getNoPermissionMsg());
+    }
+    
     List<String> groups = new LinkedList<String>();
     Map<String, User> users = new HashMap<String, User>();
     if(project.getManager() != null && !project.getManager().isEmpty()) {
@@ -571,9 +607,22 @@ public class ProjectController extends AbstractController {
   @Ajax
   @MimeType("text/plain")
   public Response saveProjectInfo(Long projectId, String parent, String name, String description, String calendarIntegrated) 
-        throws EntityNotFoundException, ParameterEntityException {
+        throws EntityNotFoundException, ParameterEntityException, UnAuthorizedOperationException {
     if(name == null) {
       return Response.status(406).body("Field name is required");
+    }
+    Identity identity = ConversationState.getCurrent().getIdentity();
+    if (parent != null && !parent.isEmpty()) {
+      Long parentId = Long.parseLong(parent);
+      try {
+        if (!projectService.getProject(parentId).canEdit(identity)) {
+          throw new UnAuthorizedOperationException(parentId, Project.class, getNoPermissionMsg());
+        }
+      } catch (EntityNotFoundException ex) {        
+      }
+    }
+    if (!projectService.getProject(projectId).canEdit(identity)) {
+      throw new UnAuthorizedOperationException(projectId, Project.class, getNoPermissionMsg());
     }
 
     Map<String, String[]> fields = new HashMap<String, String[]>();
@@ -591,11 +640,15 @@ public class ProjectController extends AbstractController {
   @Ajax
   @MimeType("text/plain")
   public Response changeProjectColor(Long projectId, String color) 
-      throws EntityNotFoundException, ParameterEntityException {
+      throws EntityNotFoundException, ParameterEntityException, UnAuthorizedOperationException {
     Map<String, String[]> fields = new HashMap<String, String[]>();
     fields.put("color", new String[] {color});
     //
-    Project project = ProjectUtil.saveProjectField(projectService, projectId, fields);      
+    Project project = projectService.getProject(projectId);
+    if (!project.canEdit(ConversationState.getCurrent().getIdentity())) {
+      throw new UnAuthorizedOperationException(projectId, Project.class, getNoPermissionMsg());
+    }
+    project = ProjectUtil.saveProjectField(projectService, projectId, fields);      
     //Can throw ProjectNotFoundException & NotAllowedOperationOnEntityException
     projectService.updateProject(project); 
     return Response.ok("Update successfully");
@@ -604,8 +657,21 @@ public class ProjectController extends AbstractController {
   @Resource
   @Ajax
   @MimeType("text/plain")
-  public Response deleteProject(Long projectId, Boolean deleteChild) throws EntityNotFoundException {
-    projectService.removeProject(projectId, deleteChild); //Can throw ProjectNotFoundException
+  public Response deleteProject(Long projectId, Boolean deleteChild) throws EntityNotFoundException, UnAuthorizedOperationException {
+    Identity identity = ConversationState.getCurrent().getIdentity();
+    Project project = projectService.getProject(projectId); //Can throw ProjectNotFoundException
+    if (!project.canEdit(identity)) {
+      throw new UnAuthorizedOperationException(projectId, Project.class, getNoPermissionMsg());
+    } else if (deleteChild) {
+      ListAccess<Project> childs = projectService.getSubProjects(projectId);
+      for (Project child : ListUtil.load(childs, 0, -1)) {
+        if (!child.canEdit(identity)) {
+          throw new UnAuthorizedOperationException(child.getId(), Project.class, getNoPermissionMsg());
+        }
+      }
+    }
+    
+    projectService.removeProject(projectId, deleteChild);
     return Response.ok("Delete project successfully");
   }
 
@@ -665,5 +731,12 @@ public class ProjectController extends AbstractController {
         .msTypes(msTypes)
         .editingField(editingField == null ? "" : editingField)
         .ok().withCharset(Tools.UTF_8);
+  }
+  
+  @Resource
+  @Ajax
+  @MimeType.HTML
+  public Response openWarningDialog(String msg) {
+    return buildMSGDialog(msg, MSG_TYPE.WARNING);
   }
 }

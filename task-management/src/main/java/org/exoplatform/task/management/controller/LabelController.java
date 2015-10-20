@@ -39,6 +39,7 @@ import org.exoplatform.services.log.Log;
 import org.exoplatform.task.domain.Label;
 import org.exoplatform.task.domain.UserSetting;
 import org.exoplatform.task.exception.EntityNotFoundException;
+import org.exoplatform.task.exception.UnAuthorizedOperationException;
 import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.service.UserService;
 import org.exoplatform.task.util.ListUtil;
@@ -46,7 +47,7 @@ import org.exoplatform.task.util.TaskUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class LabelController {
+public class LabelController extends AbstractController {
 
   private static final Log LOG = ExoLogger.getExoLogger(LabelController.class);
 
@@ -89,12 +90,16 @@ public class LabelController {
   @Resource
   @Ajax
   @MimeType.JSON
-  public Response createLabel(String name, Long parentId, SecurityContext securityContext) {
+  public Response createLabel(String name, Long parentId, SecurityContext securityContext) throws UnAuthorizedOperationException {
     String username = securityContext.getRemoteUser();
     if (name != null && !(name = name.trim()).isEmpty()) {
-      Label label = new Label(name, username);    
-      if (parentId != null) {
-        label.setParent(taskService.getLabel(parentId));
+      Label label = new Label(name, username);
+      if (parentId != null && parentId > 0) {
+        Label parent = taskService.getLabel(parentId);
+        if (!parent.getUsername().equals(username)) {
+          throw new UnAuthorizedOperationException(parentId, Label.class, getNoPermissionMsg());
+        }
+        label.setParent(parent);
       }
       taskService.createLabel(label);
 
@@ -112,12 +117,14 @@ public class LabelController {
   @Resource
   @Ajax
   @MimeType.HTML
-  public Response openConfirmDeleteLabelDialog(Long labelId, SecurityContext context) {
+  public Response openConfirmDeleteLabelDialog(Long labelId, SecurityContext context) throws UnAuthorizedOperationException {
     Label label = taskService.getLabel(labelId);
     if (label != null) {
       String username = label.getUsername();
       if (username.equals(context.getRemoteUser())) {
         return confirmDeleteLabel.with().label(label).bundle(bundle).ok().withCharset(Tools.UTF_8);
+      } else {
+        throw new UnAuthorizedOperationException(labelId, Label.class, getNoPermissionMsg());
       }
     }
     return Response.status(404);
@@ -125,21 +132,25 @@ public class LabelController {
 
   @Resource
   @Ajax
-  public Response deleteLabel(Long labelId, SecurityContext securityContext) {
+  public Response deleteLabel(Long labelId, SecurityContext securityContext) throws UnAuthorizedOperationException {
     String username = securityContext.getRemoteUser();
     Label label = taskService.getLabel(labelId);
-    if (label != null && label.getUsername().equals(username)) {
-      taskService.removeLabel(labelId);
-      return Response.ok();
-    } else {
-      return Response.status(401);
+    if (label != null) {
+      if (label.getUsername().equals(username)) {
+        taskService.removeLabel(labelId);
+        return Response.ok();        
+      } else {
+        throw new UnAuthorizedOperationException(labelId, Label.class, getNoPermissionMsg());
+      }
     }
+    
+    return Response.status(404);
   }
 
   @Resource
   @Ajax
   @MimeType.HTML
-  public Response openEditLabelDialog(Long labelId, SecurityContext context) {
+  public Response openEditLabelDialog(Long labelId, SecurityContext context) throws UnAuthorizedOperationException {
     Label label = taskService.getLabel(labelId);
     if (label != null) {
       String username = label.getUsername();
@@ -148,6 +159,8 @@ public class LabelController {
         List<Label> allLabels = Arrays.asList(ListUtil.load(tmp, 0, -1));
         allLabels = TaskUtil.filterLabelTree(allLabels, label);
         return editLabelDialog.with().lblTree(TaskUtil.buildRootLabels(allLabels)).lbl(label).ok().withCharset(Tools.UTF_8);
+      } else {
+        throw new UnAuthorizedOperationException(labelId, Label.class, getNoPermissionMsg());
       }
     }
     return Response.status(404);
@@ -155,29 +168,37 @@ public class LabelController {
   
   @Resource
   @Ajax
-  public Response changeColor(Long labelId, String color, SecurityContext securityContext) throws EntityNotFoundException {
+  public Response changeColor(Long labelId, String color, SecurityContext securityContext) throws EntityNotFoundException, UnAuthorizedOperationException {
     String username = securityContext.getRemoteUser();
     Label label = taskService.getLabel(labelId);
-    if (label != null && label.getUsername().equals(username)) {
-      label.setColor(color);
-      taskService.updateLabel(label, Arrays.asList(Label.FIELDS.COLOR));
-      return Response.ok();
+    if (label != null) {
+      if (label.getUsername().equals(username)) {
+        label.setColor(color);
+        taskService.updateLabel(label, Arrays.asList(Label.FIELDS.COLOR));
+        return Response.ok();        
+      } else {
+        throw new UnAuthorizedOperationException(labelId, Label.class, getNoPermissionMsg());
+      }
     } else {
-      return Response.status(401);
+      return Response.status(404);
     }
   }
   
   @Resource
   @Ajax
-  public Response toggleHidden(Long labelId, SecurityContext securityContext) throws EntityNotFoundException {
+  public Response toggleHidden(Long labelId, SecurityContext securityContext) throws EntityNotFoundException, UnAuthorizedOperationException {
     String username = securityContext.getRemoteUser();
     Label label = taskService.getLabel(labelId);
-    if (label != null && label.getUsername().equals(username)) {
-      label.setHidden(!label.isHidden());
-      taskService.updateLabel(label, Arrays.asList(Label.FIELDS.HIDDEN));
-      return Response.ok();
+    if (label != null) {
+      if (label.getUsername().equals(username)) {
+        label.setHidden(!label.isHidden());
+        taskService.updateLabel(label, Arrays.asList(Label.FIELDS.HIDDEN));
+        return Response.ok();        
+      } else {
+        throw new UnAuthorizedOperationException(labelId, Label.class, getNoPermissionMsg());
+      }
     } else {
-      return Response.status(401);
+      return Response.status(404);
     }
   }
   
@@ -192,20 +213,24 @@ public class LabelController {
   
   @Resource
   @Ajax
-  public Response updateLabel(Long labelId, String lblName, Long parentId, SecurityContext securityContext) throws EntityNotFoundException {
+  public Response updateLabel(Long labelId, String lblName, Long parentId, SecurityContext securityContext) throws EntityNotFoundException, UnAuthorizedOperationException {
     String username = securityContext.getRemoteUser();
     Label label = taskService.getLabel(labelId);
-    if (label != null && label.getUsername().equals(username)) {
-      if (lblName != null && !(lblName = lblName.trim()).isEmpty()) {
-        label.setParent(taskService.getLabel(parentId));
-        label.setName(lblName);
-        taskService.updateLabel(label, Arrays.asList(Label.FIELDS.NAME, Label.FIELDS.PARENT));
-        return Response.ok();
+    if (label != null) {
+      if (label.getUsername().equals(username)) {
+        if (lblName != null && !(lblName = lblName.trim()).isEmpty()) {
+          label.setParent(taskService.getLabel(parentId));
+          label.setName(lblName);
+          taskService.updateLabel(label, Arrays.asList(Label.FIELDS.NAME, Label.FIELDS.PARENT));
+          return Response.ok();
+        } else {
+          return Response.status(503);
+        }        
       } else {
-        return Response.status(503);
+        throw new UnAuthorizedOperationException(labelId, Label.class, getNoPermissionMsg());
       }
     } else {
-      return Response.status(401);
+      return Response.status(404);
     }
   }
 }

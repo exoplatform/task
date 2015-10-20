@@ -43,6 +43,7 @@ import org.exoplatform.portal.mop.SiteKey;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
+import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.domain.Comment;
@@ -93,8 +94,6 @@ public final class TaskUtil {
   
   private TaskUtil() {
   }
-  
-  
 
   public static Map<String, String> getDefOrders(ResourceBundle bundle) {
     return resolve(Arrays.asList(TITLE, PRIORITY, DUEDATE, CREATED_TIME), bundle);
@@ -123,7 +122,7 @@ public final class TaskUtil {
                                        TaskService taskService, OrganizationService orgService, UserService userService, ProjectService projectService) throws EntityNotFoundException {
     TaskModel taskModel = new TaskModel();
     
-    Task task = taskService.getTask(id); //Can throw TaskNotFoundException
+    Task task = taskService.getTask(id); //Can throw TaskNotFoundException    
     taskModel.setTask(task);
 
     org.exoplatform.task.model.User assignee = null;
@@ -850,6 +849,52 @@ public final class TaskUtil {
     }
 
     return taskService.updateTask(task);
+  }
+  
+  public static boolean hasPermission(Task task) {
+    Identity identity = ConversationState.getCurrent().getIdentity();
+    if (task.getStatus() != null) {
+      Project project = task.getStatus().getProject();
+      return project.canView(identity);
+    } else {
+      String userId = identity.getUserId();
+      return (task.getAssignee() != null && task.getAssignee().equals(identity.getUserId())) ||
+          task.getCoworker().contains(userId) || (task.getCreatedBy() != null && task.getCreatedBy().equals(userId));
+    }
+  }
+
+  public static boolean hasPermissionOnField(Task task, String name, String[] values, StatusService statusService, 
+                                             TaskService taskService, ProjectService projectService) {
+    String value = values != null && values.length > 0 ? values[0] : null;
+    Identity identity = ConversationState.getCurrent().getIdentity();
+    
+    try {
+      if("status".equalsIgnoreCase(name)) {
+        Long statusId = Long.parseLong(value);
+        Status status = statusService.getStatus(statusId);
+        return status.getProject().canView(identity);
+      } else if ("project".equalsIgnoreCase(name)) {
+        Long projectId = Long.parseLong(value);
+        if (projectId > 0) {
+          Project project = projectService.getProject(projectId);
+          return project.canView(identity);
+        }
+      } else if("labels".equalsIgnoreCase(name)) {
+        for (int i = 0; i < values.length; i++) {
+          if (values[i] == null || values[i].isEmpty()) {
+            continue;
+          }
+          Long labelId = Long.parseLong(values[i]);
+          if (labelId > 0) {
+            Label label = taskService.getLabel(labelId);
+            return label.getUsername().equals(identity.getUserId());
+          }
+        }
+      }
+    } catch (Exception ex) {
+      LOG.error("Can check permission on task field", ex);
+    }
+    return true;
   }
 }
 

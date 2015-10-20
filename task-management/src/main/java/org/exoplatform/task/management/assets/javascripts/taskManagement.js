@@ -43,6 +43,17 @@ define('taskManagementApp', ['jquery', 'SHARED/juzu-ajax'],
                 $dialog.modal({'backdrop': false});
             });
         }
+                
+        taApp.showWarningDialog = function(msg) {
+          var $modalPlace = $('.modalPlace');
+          if (msg) {
+            $modalPlace.jzLoad('ProjectController.openWarningDialog()', {'msg': msg}, function() {
+              taApp.showWarningDialog();
+            });
+          } else {
+            $modalPlace.find('.uiPopup').modal({'backdrop': false});
+          }
+        }
 
         taApp.showOneTimePopover = function($popover) {
             if ($popover.data('content')) {
@@ -122,10 +133,14 @@ define('taskManagementApp', ['jquery', 'SHARED/juzu-ajax'],
                 filter = '';
             }
             var data = {projectId: projectId, labelId: labelId, filter: filter};
-            $centerPanelContent.jzLoad('TaskController.listTasks()', data, function() {
+            $centerPanelContent.jzLoad('TaskController.listTasks()', data, function(html, status, xhr) {
+              if (xhr.status >= 400) {
+                taApp.showWarningDialog(xhr.responseText);
+              } else {
                 if (callback) {
-                    callback();
-                }
+                  callback();
+                }                
+              }
             });
         }
 
@@ -169,8 +184,8 @@ define('taskManagementApp', ['jquery', 'SHARED/juzu-ajax'],
                         }
                     }
                 },
-                error : function(jqXHR, textStatus, errorThrown) {
-                    console.error && console.error('update failure: ' + jqXHR.responseText);
+                error : function(xhr, textStatus, errorThrown) {
+                  taApp.showWarningDialog(xhr.responseText);
                 }
             });
         }
