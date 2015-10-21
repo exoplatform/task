@@ -187,6 +187,31 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
   margin-top: 1px;
   float: left;
 }
+@media (min-width: 1500px) {
+  #taskManagement .accordion-heading .item .dropdown-menu {
+    left: 88.5%!important;
+  }
+}
+@media (min-width: 1600px) {
+  #taskManagement .accordion-heading .item .dropdown-menu {
+    left: 90%!important;
+  }
+}
+@media (min-width: 1700px) {
+  #taskManagement .accordion-heading .item .dropdown-menu {
+    left: 90.5%!important;
+  }
+}
+@media (min-width: 1800px) {
+  #taskManagement .accordion-heading .item .dropdown-menu {
+    left: 91%!important;
+  }
+}
+@media (min-width: 1900px) {
+  #taskManagement .accordion-heading .item .dropdown-menu {
+    left: 91.5%!important;
+  }
+}
 .leftPanel .accordion-heading .popover {
   left: auto;
   right: -112px;
