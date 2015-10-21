@@ -118,8 +118,8 @@
                 <i class="uiIconUser"></i>
                 <a data-original-title="&{tooltip.clickToEdit}" rel="tooltip" data-placement="bottom" class="hoverStatus muted small editableField editAssignee">&{label.unassigned}</a>
             </span>
-            <span class = "assigned ${!hasAssignee ? "hidden" : ""}">
-                <a class="avatarMini" href="#"><img alt="avatar" src="${hasAssignee ? assignee.avatar : ""}"></a>
+            <span class = "assigned clearfix ${!hasAssignee ? "hidden" : ""}">
+                <a class="avatarMini pull-left" href="#"><img alt="avatar" src="${hasAssignee ? assignee.avatar : ""}"></a>
                 <a title="Click to edit" data-toggle="tooltip" data-placement="bottom" class="hoverStatus small editableField editAssignee" style="text-transform: lowercase;">
                     <% if (countCoWorker == 0) {%>
                         ${hasAssignee ? assignee.displayName : ""}
@@ -301,7 +301,7 @@
             </div>
         </div>
     </div>
-     <div class="priority pull-right">
+     <div class="priority pull-left">
         <div class="uiEditableInline">
             <i  class="uiIconColorPriority${task.priority != null ?  task.priority : Priority.NONE}"></i>
             <%

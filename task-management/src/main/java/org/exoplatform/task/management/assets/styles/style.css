@@ -354,6 +354,13 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
 .rightPanel .addTask .inforBar1 > div:last-child {
   margin-right: 0;
 }
+.rightPanel .addTask .inforBar1 .uiEditableInline .assigned .avatarMini img {
+  margin-top: 7px;
+}
+.rightPanel .addTask .inforBar1 .uiEditableInline .assigned .editAssignee {
+  display: block;
+  margin-left: 24px;
+}
 .rightPanel .addTask .inforBar1 .uiEditableInline .popover {
   min-width: 252px;
 }
