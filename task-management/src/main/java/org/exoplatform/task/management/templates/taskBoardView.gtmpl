@@ -86,12 +86,12 @@
                 <div class="row-item  has-border taskItem">
                     <%status.eachWithIndex {st, index -> %>
                         <div class="col col${index} hover-action-reveal uiEditableInline" data-statusid="${st.id}">
-                            <strong class="${editableClasses}" data-pk="${st.id}" data-type="text" data-name="name">${st.name} </strong><span class="number-tasks">${numberTasksByStatus[st.id] == null ? "" : "(" + numberTasksByStatus[st.id] + ")"}</span>
+                            <strong class="${editableClasses}" data-pk="${st.id}" data-type="text" data-name="name">${st.name} </strong><span class="number-tasks">${numberTasksByStatus[st.id] == null ? "" : numberTasksByStatus[st.id]}</span>
                             <% if (index == numberStatus - 1 && canEdit) {%>
-                                <a href="#" rel="tooltip"  data-original-title="Add a Status" data-placement="left" class=" inline-block-hide pull-right mgL5 actionAddStatus"><i class="uiIcon uiIconPlus "></i></a>
+                                <a href="#" rel="tooltip"  data-original-title="Add a Status" data-placement="left" class=" inline-block-hide pull-right mgL5 actionAddStatus"><i class="uiIcon uiIconPlus uiIconWhite"></i></a>
                             <%}%>
                             <% if (canEdit && numberStatus > 1) {%>
-                                <a href="#" class=" inline-block-hide pull-right actionRemoveStatus"><i class="uiIcon uiIconDelete "></i></a>
+                                <a href="#" class=" inline-block-hide pull-right actionRemoveStatus"><i class="uiIcon uiIconDelete uiIconWhite"></i></a>
                             <%}%>
                         </div>
                     <%}%>
@@ -108,9 +108,15 @@
                 <%
                     def groupKey = group.key.toString();
                     groupKey = groupKey.replaceAll(' ', '-');
+                    def groupColorClass = '';
+                    if (groupBy == 'label' && group.key.value != null) {
+                        groupColorClass = group.key.value.color;
+                    } else{
+                        groupColorClass = 'no-label';
+                    }
                 %>
                 <% if (groupBy != null && !groupBy.isEmpty() && !"none".equals(groupBy)) { %>
-                    <div class="heading primaryBackground">
+                    <div class="heading primaryBackground ">
                         <% if (groupBy == 'assignee') {%>
                         <a class="toggle-collapse-group" href="#"><i class="uiIcon uiIconArrowDown"></i></a>
                         <%
@@ -119,9 +125,9 @@
                         <% if (user == null || user.username != 'guest') {%>
                         <img width="20px" height="20px" src="${user.avatar}" alt="${user.displayName}">
                         <%}%>
-                        <a href="javascript:void(0)"><span class="group-name">${user == null || user.username == "guest" ? "UnAssigned" : user.displayName}</span> <span class="amount-item">(${ListUtil.getSize(group.value)})</span></a>
+                        <a href="javascript:void(0)"><span class="user-name-task">${user == null || user.username == "guest" ? "UnAssigned" : user.displayName}</span> <span class="amount-item">(${ListUtil.getSize(group.value)})</span></a>
                         <% } else { %>
-                        <div class="heading-title"><span class="group-name">${group.key}</span> <span class="amount-item">(${ListUtil.getSize(group.value)})</span></div>
+                        <div class="heading-title"><span class="group-name ${groupColorClass}">${group.key}</span> </div>
                         <% } %>
                     </div>
                 <%}%>
@@ -135,11 +141,12 @@
                                 %>
                                 <div class="col col${index + 1} taskBoardContainer taskContainer${groupKey} taskContainer${groupKey}${st.id}" data-connected=".taskContainer${groupKey}" data-statusid="${st.id}">
                                     <% subGroups[key].each {task -> %>
-                                        <div class="box-small has-background hover-action-reveal taskItem" data-taskid="${task.id}">
-                                            <span class="project-color ${task.status.project.color} ">&nbsp;</span>
+                                        <!-- user name  task-done for check task.completed -->
+                                        <div class="box-small has-background hover-action-reveal ${task.completed ? "task-completed": ""} taskItem" data-taskid="${task.id}">
+                                            <span class="project-color priority-${task.priority.name().toLowerCase()}">&nbsp;</span>
                                             <div class="box-small-inner  ">
                                                 <span class="inline-block-hide dragable">&nbsp;</span>
-                                                <div class="media">
+                                                <div class="media clearfix">
                                                     <%
                                                         def colorClass = '';
                                                         if (task.dueDate != null) {
@@ -152,8 +159,16 @@
                                                             }
                                                         }
                                                     %>
+                                                    <i class="uiIconValidate uiIconBlue pull-right"></i>
                                                     <i class="${colorClass} pull-left"></i>
                                                     <div class="media-body taskName"> ${task.title}</div>
+                                                </div>
+                                                <div class="text-right date-task">
+                                                <%if (task.dueDate != null) {
+                                                    def calendar = DateUtil.newCalendarInstance(userTimezone);
+                                                    calendar.setTime(task.dueDate);%>
+                                                    <%=DateUtil.getDueDateLabel(calendar, bundle)%>
+                                                <%}%>
                                                 </div>
                                             </div>
                                         </div>

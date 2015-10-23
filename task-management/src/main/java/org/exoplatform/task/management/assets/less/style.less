@@ -456,7 +456,7 @@ li[data-hiddenlabel="false"] {
                     }
                     .editAssignee{
                         display: block;
-                        margin-left: 24px; 
+                        margin-left: 25px; 
                     }
                 }
             }
@@ -1027,27 +1027,158 @@ li[data-hiddenlabel="false"] {
            vertical-align: 1px;
         }
     }
+    .table-project-collapse{
+        .caption-heading{
+            margin-bottom: 10px;
+            .hover-action-reveal{
+                background: #545454;
+                padding: 10px 18px;
+                border-radius:3px 5px 5px 3px;
+                outline: 1px solid white;
+                position: relative;
+                color: white;
+                text-align: center;
+                .editable{
+                    font-size: 14px;
+                }
+                .uiIconDelete{
+                    position: absolute;
+                    right: 10px;
+                    top: 13px;
+                    &:hover{
+                        background-position: -21px -1px;
+                    }
+                }
+                .number-tasks{
+                    background: #4f72ac;
+                    border-radius: 3px;
+                    padding: 1px 6px;
+                    font-size: 11px;
+                    vertical-align: top;
+                    margin-left: 3px;
+                }
+
+            }
+            .hover-action-reveal:nth-last-child(2){
+                .uiIconDelete{
+                    position: absolute;
+                    right: 30px;
+                }
+                .uiIconPlus{
+                    position: absolute;
+                    right: 10px;
+                    top: 13px;
+                    &:hover{
+                        background-position: -101px -61px;
+                    }
+                }
+            }
+        }
+        .col-new {
+            .formCreateNewStatus {
+                width: 78%;
+            }
+            .actionRemoveStatus {
+                display: block;
+                margin-top: 3px;
+            }
+        }
+        .taskItem{
+            .col + .col{
+                border-left: 1px dashed #cfcfcf;
+            }
+            .createTaskInListView{
+                input[type="text"]{
+                    border-radius: 0;
+                }
+            }
+            .box-small {
+                background: #f6f6f6; 
+                .priority-high{
+                    background: #f09c93;
+                }
+                .priority-normal{
+                    background: #fadd96;
+                }
+                .priority-low{
+                    background: #c2ecbf;
+                }
+                .priority-none{
+                    background: #dedede;
+                }
+                .box-small-inner{
+                    border: 1px solid transparent;
+                    &:hover{
+                        border: 1px solid #dedede;
+                        background: #f6f6f6; 
+                    }
+                    .uiIconValidate{
+                        display: none;
+                    }
+                }   
+            }
+            .box-small.selected{
+                .box-small-inner{
+                    .uiIconValidate{
+                        display: block;
+                    }
+                    &:hover{
+                        background: #d8e9f2; 
+                    }
+                }   
+            }
+            .box-small.task-done{
+                .box-small-inner{
+                    .uiIconBlue{
+                        display: block;
+                    }
+                    .taskName{
+                        text-decoration: line-through;
+                    }
+                }
+            }
+            .date-task{
+                color: #999;
+                margin-top: 4px;
+            }
+        }
+        .user-name-task{
+            font-weight: bold;
+        }
+        .group-name{
+            border-radius: 4px;   
+            font-size: 11px;
+            padding: 4px 6px;
+            color: white;
+        }
+        .no-label{
+            background: #999;
+        }
+        
+    }
+    .uiEditableInline.active  {
+        .number-tasks,.actionRemoveStatus,.actionAddStatus {display: none!important;}
+    }
 }
 
 .taskBoardContainer {
-  position: relative;
+    position: relative;
+    .draggableHighlight {
+      height: 1.5em;
+      line-height: 1.2em;
+       background: url("/eXoSkin/skin/images/themes/default/Container/DragAndDropPreview4x4.gif") repeat  0 0;
+    }
+    .draggableFullContainer {
+      position: absolute;
+      height: auto;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 10;
+      background: url("/eXoSkin/skin/images/themes/default/Container/DragAndDropPreview4x4.gif") repeat  0 0;
+    }
 }
-.taskBoardContainer .draggableHighlight {
-  height: 1.5em;
-  line-height: 1.2em;
-   background: url("/eXoSkin/skin/images/themes/default/Container/DragAndDropPreview4x4.gif") repeat  0 0;
-}
-.taskBoardContainer .draggableFullContainer {
-  position: absolute;
-  height: auto;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 10;
-  background: url("/eXoSkin/skin/images/themes/default/Container/DragAndDropPreview4x4.gif") repeat  0 0;
-}
-
 
 .collapseSubProject, .collapseSubLabel {
     left: 10px;
@@ -1057,29 +1188,15 @@ li[data-hiddenlabel="false"] {
 .uiAccordion.leftPanel .accordion-heading .sub-item .project-name,
 .uiAccordion.leftPanel .accordion-heading .sub-item .label-name {
     padding-left: 30px;
+    .badgeDefault.mini{
+        margin-top: 5px;
+    }
 }
 .project-item.active > .sub-item .collapseSubProject .uiIconLightGray,
 .label-item.active > .sub-item .collapseSubLabel .uiIconLightGray  {
      background-image: url("/eXoSkin/skin/images/themes/default/Icons/uiIconsSecondary.png");
 }
 
-.taskBoardView .uiEditableInline.active  {
-    .number-tasks,.actionRemoveStatus,.actionAddStatus {display: none!important;}
-}
-.taskBoardView .table-project-collapse .caption-heading .col {
-    padding: 10px 18px;
-}
-.taskBoardView {
-    .table-project-collapse  .col-new {
-        .formCreateNewStatus {
-            width: 78%;
-        }
-         .actionRemoveStatus {
-            display: block;
-            margin-top: 3px;
-         }
-    }
-}
 .table-project .column-checkbox .status-task.block-hide {
     margin-left: 8px;
 }
