@@ -20,6 +20,7 @@ import static org.exoplatform.task.dao.condition.Conditions.TASK_COWORKER;
 import static org.exoplatform.task.dao.condition.Conditions.TASK_MANAGER;
 import static org.exoplatform.task.dao.condition.Conditions.TASK_PARTICIPATOR;
 import static org.exoplatform.task.dao.condition.Conditions.TASK_TAG;
+import static org.exoplatform.task.dao.condition.Conditions.TASK_PROJECT;
 import static org.exoplatform.task.dao.condition.Conditions.TASK_LABEL_ID;
 import static org.exoplatform.task.dao.condition.Conditions.TASK_LABEL_USERNAME;
 
@@ -289,20 +290,25 @@ public class TaskDAOImpl extends CommonJPADAO<Task, Long> implements TaskHandler
     String field = condition.getField();
     
     Join join = null;
-    if (field.indexOf('.') > 0) {
-      String[] arr = field.split("\\.");
-      for (int i = 0; i < arr.length - 1; i++) {
-        String s = arr[i];
-        if (join == null) {
-          join = root.join(s, JoinType.INNER);
-        } else {
-          join = join.join(s, JoinType.INNER);
+    Path path = null;
+    if (TASK_PROJECT.equals(condition.getField())) {
+      path = root.join("status", JoinType.LEFT).get("project");
+    } else {
+      if (field.indexOf('.') > 0) {
+        String[] arr = field.split("\\.");
+        for (int i = 0; i < arr.length - 1; i++) {
+          String s = arr[i];
+          if (join == null) {
+            join = root.join(s, JoinType.INNER);
+          } else {
+            join = join.join(s, JoinType.INNER);
+          }
         }
-      }
-      field = arr[arr.length - 1];
-    }    
-
-    Path path = join == null ? root.get(field) : join.get(field);
+        field = arr[arr.length - 1];
+      }    
+      
+      path = join == null ? root.get(field) : join.get(field);      
+    }
     
     if (TASK_COWORKER.equals(field)) {
       path = root.join(field, JoinType.LEFT);

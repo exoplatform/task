@@ -207,6 +207,17 @@ public class TestTaskDAO extends AbstractTest {
     tasks = tDAO.findTasks(query);
     Assert.assertEquals(1, tasks.getSize());
     
+    //Find by assigneeOrProjectId
+    query = new TaskQuery();
+    query.setAssigneeOrInProject(username, Arrays.asList(-100L));
+    tasks = tDAO.findTasks(query);
+    Assert.assertEquals(1, tasks.getSize());
+    //
+    query = new TaskQuery();
+    query.setAssigneeOrInProject("test", Arrays.asList(project.getId()));
+    tasks = tDAO.findTasks(query);
+    Assert.assertEquals(1, tasks.getSize());
+    
     //Find by duedate
     Date date = new Date();
     task.setDueDate(date);
