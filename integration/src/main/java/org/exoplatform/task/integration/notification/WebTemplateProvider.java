@@ -121,7 +121,9 @@ public class WebTemplateProvider extends TemplateProvider {
       templateContext.put("COUNT", notification.getValueOwnerParameter(NotificationUtils.COUNT));
       templateContext.put("READ", Boolean.valueOf(notification.getValueOwnerParameter(NotificationMessageUtils.READ_PORPERTY.getKey())) ? "read" : "unread");
       templateContext.put("NOTIFICATION_ID", notification.getId());      
-      templateContext.put("LAST_UPDATED_TIME", TimeConvertUtils.convertXTimeAgoByTimeServer(notification.getDateCreated().getTime(), 
+      Calendar lastModified = Calendar.getInstance();
+      lastModified.setTimeInMillis(notification.getLastModifiedDate());
+      templateContext.put("LAST_UPDATED_TIME", TimeConvertUtils.convertXTimeAgoByTimeServer(lastModified.getTime(), 
                                                                                             "EE, dd yyyy", new Locale(language), TimeConvertUtils.YEAR));
 
       //
