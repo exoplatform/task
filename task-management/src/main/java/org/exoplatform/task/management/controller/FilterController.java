@@ -86,7 +86,7 @@ public class FilterController {
     //only allow to filter status with concrete project 
     boolean filterStatus = projectId != null && projectId > 0;
     Project project = filterStatus ? projectService.getProject(projectId) : null;
-    if (!project.canView(ConversationState.getCurrent().getIdentity())) {
+    if (project != null && !project.canView(ConversationState.getCurrent().getIdentity())) {
       project = null;
     }
     

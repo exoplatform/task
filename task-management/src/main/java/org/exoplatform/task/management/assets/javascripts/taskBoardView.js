@@ -138,8 +138,9 @@ define('taskBoardView', ['jquery', 'taskManagementApp', 'SHARED/edit_inline_js',
                         d.resolve();
                     },
                     error: function(xhr, textStatus, errorThrown ) {
-                      taApp.showWarningDialog(xhr.responseText);
+                      $('[data-pk="' + params.pk + '"]').first().editable('toggle');
                       d.reject('update failure: ' + xhr.responseText);
+                      taApp.showWarningDialog(xhr.responseText);
                     }
                 });
                 return d.promise();

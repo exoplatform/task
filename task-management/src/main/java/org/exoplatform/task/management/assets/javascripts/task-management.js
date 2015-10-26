@@ -239,9 +239,7 @@ $(document).ready(function() {
               });
             },
             error: function(xhr) {
-              if (xhr.status >= 400) {
-                taApp.showWarningDialog(xhr.responseText);
-              }
+              taApp.showWarningDialog(xhr.responseText);
             }
         });
     });
@@ -317,9 +315,7 @@ $(document).ready(function() {
             });
         },'json');
         xhr.fail(function() {
-          if (xhr.status == 400) {
-            taApp.showWarningDialog(xhr.responseText);
-          }
+          taApp.showWarningDialog(xhr.responseText);
         });
 
         return false;

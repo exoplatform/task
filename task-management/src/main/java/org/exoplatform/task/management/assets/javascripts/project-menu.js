@@ -195,8 +195,8 @@ define('project-menu', ['SHARED/jquery', 'ta_edit_inline', 'SHARED/task_ck_edito
               taApp.reloadProjectTree(data.projectId);
           },
           error: function(xhr, textStatus, errorThrown ) {
-            taApp.showWarningDialog(xhr.responseText);
             d.reject('update failure: ' + xhr.responseText);
+            taApp.showWarningDialog(xhr.responseText);
           }
       });
       return d.promise();

@@ -378,37 +378,41 @@ public class TaskController extends AbstractController {
                             String assignee, Boolean completed, String keyword, Boolean advanceSearch, String groupBy, String orderBy, String filter, String viewType, SecurityContext securityContext) throws EntityNotFoundException, UnAuthorizedOperationException {
     Identity currIdentity = ConversationState.getCurrent().getIdentity();
     advanceSearch = advanceSearch == null ? false : advanceSearch;
-    Project project = null;
-    List<Status> projectStatuses = null;
-    if (projectId != null && projectId > 0) {
-      project = projectService.getProject(projectId);
-      if (!project.canView(currIdentity)) {
-        if (advanceSearch) {
-          projectId = Long.MAX_VALUE;         
-          projectStatuses = Collections.emptyList();
-        } else {
-          throw new UnAuthorizedOperationException(projectId, Project.class, getNoPermissionMsg());
-        }
-      }
-    }
-    String currentLabelName = "";
-    if (labelId != null && labelId > 0) {
-      Label label = taskService.getLabel(labelId);
-      currentLabelName = label.getName();
-      if (!label.getUsername().equals(currIdentity.getUserId())) {
-        if (advanceSearch) {
-          labelId = Long.MAX_VALUE;
-        } else {
-          throw new UnAuthorizedOperationException(labelId, Label.class, getNoPermissionMsg());          
-        }
-      }
-    }
-
     if (projectId <= 0 || viewType == null || !VIEW_TYPES.contains(viewType)) {
       viewType = VIEW_TYPES.get(0);
     }
     boolean isBoardView = viewType.equals(VIEW_TYPES.get(1));
     
+    Project project = null;
+    boolean noProjPermission = false;
+    List<Status> projectStatuses = Collections.emptyList();
+    if (projectId != null && projectId > 0) {
+      project = projectService.getProject(projectId);
+      if (!project.canView(currIdentity)) {
+        if (advanceSearch) {
+          noProjPermission = true;
+        } else {
+          throw new UnAuthorizedOperationException(projectId, Project.class, getNoPermissionMsg());
+        }
+      } else if (isBoardView) {
+        projectStatuses = statusService.getStatuses(projectId);
+      }
+    }
+    String currentLabelName = "";
+    boolean noLblPermission = false;
+    if (labelId != null && labelId > 0) {
+      Label label = taskService.getLabel(labelId);      
+      if (!label.getUsername().equals(currIdentity.getUserId())) {
+        if (advanceSearch) {
+          noLblPermission = true;
+        } else {
+          throw new UnAuthorizedOperationException(labelId, Label.class, getNoPermissionMsg());          
+        }
+      } else {
+        currentLabelName = label.getName();
+      }
+    }
+
     Map<String, String> defOrders;
     Map<String, String> defGroupBys;
     if (isBoardView) {
@@ -564,17 +568,16 @@ public class TaskController extends AbstractController {
           orderBy = TaskUtil.DUEDATE;
           order = new OrderBy.ASC(orderBy);
         }
-        taskQuery.setProjectIds(Arrays.asList(projectId));
+        if (!noProjPermission) {
+          taskQuery.setProjectIds(Arrays.asList(projectId));          
+        } else {
+          //make sure query return empty result
+          taskQuery.setProjectIds(Arrays.asList(-100L));
+        }
         //tasks = projectService.getTasksWithKeywordByProjectId(Arrays.asList(projectId), order, keyword);
       }
       taskQuery.setOrderBy(Arrays.asList(order));
       //tasks = Arrays.asList(ListUtil.load(taskService.findTasks(taskQuery), 0, -1)); //taskService.findTaskByQuery(taskQuery);
-
-      if (projectId > 0) {
-        if (isBoardView && projectStatuses == null) {
-          projectStatuses = statusService.getStatuses(projectId);
-        }
-      }
     } else if (labelId != null && labelId >= 0) {
       defOrders = TaskUtil.resolve(Arrays.asList(TaskUtil.TITLE, TaskUtil.CREATED_TIME, TaskUtil.DUEDATE, TaskUtil.PRIORITY), bundle);
       if (orderBy == null || orderBy.isEmpty() || !defOrders.containsKey(orderBy)) {
@@ -587,7 +590,12 @@ public class TaskController extends AbstractController {
         if (groupBy == null || groupBy.isEmpty() || !defGroupBys.containsKey(groupBy)) {
           groupBy = TaskUtil.NONE;
         }
-        taskQuery.setLabelIds(Arrays.asList(labelId));
+        if (!noLblPermission) {
+          taskQuery.setLabelIds(Arrays.asList(labelId));          
+        } else {
+          //make sure query return empty results
+          taskQuery.setLabelIds(Arrays.asList(-100L));
+        }
       } else {
         defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT, TaskUtil.LABEL, TaskUtil.DUEDATE, TaskUtil.STATUS), bundle);
         if (groupBy == null || groupBy.isEmpty() || !defGroupBys.containsKey(groupBy)) {

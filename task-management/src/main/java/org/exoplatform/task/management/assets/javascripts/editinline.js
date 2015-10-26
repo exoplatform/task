@@ -192,10 +192,10 @@ define('ta_edit_inline',
                         $centerPanel.find('[data-taskid="'+data.taskId+'"] .taskName').text(params.value);
                     }
                 },
-                error: function(xhr, textStatus, errorThrown ) {   
-                  $('[data-name="' + params.name + '"]').editable('toggle');
-                  editInline.taApp.showWarningDialog(xhr.responseText);
+                error: function(xhr, textStatus, errorThrown ) {
+                  $('[data-name="' + params.name + '"]').first().editable('toggle');
                   d.reject('update failure: ' + xhr.responseText);
+                  editInline.taApp.showWarningDialog(xhr.responseText);
                 }
             });
             return d.promise();
