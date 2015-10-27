@@ -86,7 +86,6 @@ public abstract class AbstractNotificationPlugin extends BaseNotificationPlugin 
   }
 
   private String buildProjectUrl(Project project, ExoContainer container, WebAppController controller) {
-    if (project == null) return "#";    
     return CommonsUtils.getCurrentDomain() + ProjectUtil.buildProjectURL(project, SiteKey.portal("intranet"), container, controller.getRouter());
   }
 

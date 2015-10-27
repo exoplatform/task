@@ -110,9 +110,11 @@ public class TaskManagement {
     if (space_group_id == null) {
       //. Load project ID from URL
       long id = ProjectUtil.getProjectIdFromURI(requestPath);
-      if (id > 0 && prc.getControllerContext().getRequest().getQueryString() == null) {
+      if (id > -100 && prc.getControllerContext().getRequest().getQueryString() == null) {
         currProject = id;
-        project = projectService.getProject(currProject);        
+        if (id > 0) {
+          project = projectService.getProject(currProject);          
+        }
       } else {
         currProject = -1;
       }

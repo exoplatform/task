@@ -80,7 +80,7 @@ public class MailTemplateProvider extends TemplateProvider {
       Profile profile = author.getProfile();
       //creator
       templateContext.put("USER", profile.getFullName());
-      templateContext.put("AVATAR", profile.getAvatarUrl() != null ? profile.getAvatarUrl() : LinkProvider.PROFILE_DEFAULT_AVATAR_URL);
+      templateContext.put("AVATAR", LinkProviderUtils.getUserAvatarUrl(profile));
       templateContext.put("PROFILE_URL", LinkProviderUtils.getRedirectUrl("user", author.getRemoteId()));
       //receiver
       Identity receiver = CommonsUtils.getService(IdentityManager.class).getOrCreateIdentity(OrganizationIdentityProvider.NAME, notification.getTo(), true);
@@ -104,7 +104,7 @@ public class MailTemplateProvider extends TemplateProvider {
     }
 
     @Override
-    protected boolean makeDigest(NotificationContext ctx, Writer writer) {
+    protected boolean makeDigest(NotificationContext ctx, Writer writer) {      
       List<NotificationInfo> notifications = ctx.getNotificationInfos();
       NotificationInfo first = notifications.get(0);
 
@@ -140,14 +140,16 @@ public class MailTemplateProvider extends TemplateProvider {
       for (String activityID : map.keySet()) {
         List<NotificationInfo> notifs = map.get(activityID);
         NotificationInfo first = notifs.get(0);
+        String taskUrl = first.getValueOwnerParameter(NotificationUtils.TASK_URL);
+        String projectUrl = first.getValueOwnerParameter(NotificationUtils.PROJECT_URL);
         
         String projectName = first.getValueOwnerParameter(NotificationUtils.PROJECT_NAME);
-        if (projectName != null) {
+        if (projectName != null && !projectName.isEmpty()) {
           PluginConfig config = CommonsUtils.getService(PluginSettingService.class).getPluginConfig(templateContext.getPluginId());
           String resourcePath = config.getBundlePath();
           Locale locale = org.exoplatform.commons.notification.NotificationUtils.getLocale(templateContext.getLanguage());
           String inProject = TemplateUtils.getResourceBundle("Notification.message.inProject", locale, resourcePath);
-          templateContext.put("PROJECT_NAME", inProject.replace("{0}", "<a href=\"#\" style=\"text-decoration: none; color: #2f5e92; font-family: 'HelveticaNeue Bold', Helvetica, Arial, sans-serif\"><strong>" + 
+          templateContext.put("PROJECT_NAME", inProject.replace("{0}", "<a href=\"" + projectUrl + "\" style=\"text-decoration: none; color: #2f5e92; font-family: 'HelveticaNeue Bold', Helvetica, Arial, sans-serif\"><strong>" + 
               projectName + "</strong></a>"));
         } else {
           templateContext.put("PROJECT_NAME", "");
@@ -160,11 +162,11 @@ public class MailTemplateProvider extends TemplateProvider {
         } else {
           templateContext.digestType(ElementType.DIGEST_MORE.getValue());
         }
-        templateContext.put("TASK_TITLE", "<a href=\"#\" style=\"text-decoration: none; color: #2f5e92; font-family: 'HelveticaNeue Bold', Helvetica, Arial, sans-serif\">" + getExcerpt(taskTitle, 30) + "</a>");
-        templateContext.put("COUNT", "<a href=\"#\" style=\"text-decoration: none; color: #2f5e92; font-family: 'HelveticaNeue Bold', Helvetica, Arial, sans-serif\">" + String.valueOf(notifs.size()) + "</a>");
+        templateContext.put("TASK_TITLE", "<a href=\"" + taskUrl + "\" style=\"text-decoration: none; color: #2f5e92; font-family: 'HelveticaNeue Bold', Helvetica, Arial, sans-serif\">" + getExcerpt(taskTitle, 30) + "</a>");
+        templateContext.put("COUNT", "<a href=\"" + projectUrl + "\" style=\"text-decoration: none; color: #2f5e92; font-family: 'HelveticaNeue Bold', Helvetica, Arial, sans-serif\">" + String.valueOf(notifs.size()) + "</a>");
         templateContext.put("DUE_DATE", getDueDate(first));
         
-        sb.append("<li style=\"color: #2f5e92; margin: 0 0 10px\"><div style=\"color: #333;\">");
+        sb.append("<li style=\"margin:0 0 13px 14px;font-size:13px;line-height:18px;font-family:HelveticaNeue,Helvetica,Arial,sans-serif\"><div style=\"color: #333;\">");
         String digester = TemplateUtils.processDigest(templateContext);
         sb.append(digester);
         sb.append("</div></li>");

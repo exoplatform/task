@@ -42,7 +42,7 @@
                                 <a class="project-name" data-id="-1" href="@{TaskManagement.index()}">&{label.incoming}&nbsp;<span class="badgeDefault badgePrimary mini top">${taskNum}</span></a>
                             </div>
                         </li>
-                        <li class="dropdown project-item">
+                        <li class="dropdown project-item ${currentProjectId == -2 ? "active" : ""}"">
                             <div class="sub-item">
                                 <a href="javascript:void(0)" class="project-name" data-id="-2" data-filter="">
                                     &{label.allTasks}

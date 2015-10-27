@@ -216,8 +216,9 @@ public final class ProjectUtil {
   }
 
   public static String buildProjectURL(Project project, SiteKey siteKey, ExoContainer container, Router router) {
-    if (project == null) {
-      return "#";
+    long projectId = ProjectUtil.TODO_PROJECT_ID;
+    if (project != null) {
+      projectId = project.getId();
     }
 
     StringBuilder urlBuilder = new StringBuilder(ResourceUtil.buildBaseURL(siteKey, container, router));
@@ -225,13 +226,13 @@ public final class ProjectUtil {
       return urlBuilder.toString();
     } else {
       return urlBuilder.append(URL_PROJECT_DETAIL)
-          .append(project.getId())
+          .append(projectId)
           .toString();
     }
   }
 
   public static long getProjectIdFromURI(String requestPath) {
-    long taskId = -1;
+    long projectId = -1;
     int index = requestPath.indexOf(URL_PROJECT_DETAIL);
     if (index >= 0) {
       index = index + URL_PROJECT_DETAIL.length();
@@ -243,12 +244,12 @@ public final class ProjectUtil {
         id = requestPath.substring(index);
       }
       try {
-        taskId = Long.parseLong(id);
+        projectId = Long.parseLong(id);
       } catch (NumberFormatException ex) {
-        taskId = -1;
+        projectId = -100;
       }
     }
-    return taskId;
+    return projectId;
   }
 
   public static Project newProjectInstance(String name, String description, String username) {
