@@ -500,6 +500,7 @@ public class ProjectController extends AbstractController {
         .with()
         .userSetting(setting)
         .projects(projects)
+        .currentProjectId(-100)
         .ok().withCharset(Tools.UTF_8);
   }
   

@@ -20,6 +20,7 @@
 #{param name=viewType/}
 #{param name=currentLabelId/}
 #{param name=advanceSearch/}
+#{param name=paging/}
 
 <!-- Consider this -->
 #{param name=taskService/}

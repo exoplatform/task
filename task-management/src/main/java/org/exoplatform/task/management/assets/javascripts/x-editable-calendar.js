@@ -6,6 +6,12 @@ define('x_editable_calendar', ['jquery', 'SHARED/edit_inline_js', 'task_ui_calen
             //. Use Dateparser and formatter of bootstrap-datepicker
             var DPG = $.fn.datepicker.DPGlobal;
 
+            // This is workaround because the name 'datepicker' is used in both bootstrap-datepicker and jquery-ui.
+            // I clone $.fn.datepicker.DPGlobal to other property (in gatein-resource.xml) to use here
+            if (DPG == undefined) {
+                DPG = $.fn.task_datepicker.DPGlobal;
+            }
+
             var Calendar = function (options) {
                 this.options = options;
                 this.init('calendar', options, Calendar.defaults);

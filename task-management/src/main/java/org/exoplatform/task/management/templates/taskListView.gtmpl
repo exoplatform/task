@@ -65,10 +65,14 @@
             </div>
         <%}%>
     </div>
+    #{include path=paging.gtmpl/}
     <div class="body relative">
         <!-- The default list -->
         <% if (taskNum > 0) { %>
         <div class="table-project-collapse">
+            <div class="collapse-content newTaskContainer">
+                <ul class="table-project"></ul>
+            </div>
             <% groupTasks.each {group -> %>
             <% if (groupBy != null && !groupBy.isEmpty() && !"none".equals(groupBy)) { %>
             <div class="heading primaryBackground">
@@ -80,20 +84,22 @@
                 <% if (user != null && user.username != 'guest') {%>
                 <img width="20px" height="20px" src="${user.avatar}" alt="${user.displayName}">
                 <%}%>
-                <a href="javascript:void(0)"><span class="group-name">${user == null || user.username == "guest" ? "UnAssigned" : user.displayName}</span> <span class="amount-item">(${ListUtil.getSize(group.value)})</span></a>
+                <a href="javascript:void(0)"><span class="group-name">${user == null || user.username == "guest" ? "UnAssigned" : user.displayName}</span> <span class="amount-item">(${group.value.size()})</span></a>
                 <% } else { %>
-                <div class="heading-title"><span class="group-name">${group.key}</span> <span class="amount-item">(${ListUtil.getSize(group.value)})</span></div>
+                <div class="heading-title"><span class="group-name">${group.key}</span> <span class="amount-item">(${group.value.size()})</span></div>
                 <% } %>
             </div>
             <%}%>
             <div class="collapse-content">
                 <ul class="table-project">
-                    <%ListUtil.load(group.value, 0, -1).eachWithIndex { task, index -> %>
+                    <%group.value.eachWithIndex { task, index -> %>
                     <%
                         def colorClass = '';
+                        def dueDateCalendar = null;
                         if (task.dueDate != null) {
                             def calendar = DateUtil.newCalendarInstance(userTimezone);
                             calendar.setTime(task.dueDate);
+                            dueDateCalendar = calendar;
                             if (DateUtil.isOverdue(calendar)) {
                                 colorClass = 'uiIconColorWarningInRed';
                             } else if (DateUtil.isToday(calendar)) {
@@ -111,7 +117,7 @@
                         </div>
                         <div class="column-item column-title taskName">${task.title}</div>
                         <div class="column-item column-time">
-                            <span class="text-time inline-block-show">${task.dueDate != null ? task.dueDate : "&nbsp;"}</span>
+                            <span class="text-time inline-block-show">${DateUtil.formatDueDate(dueDateCalendar, bundle)}&nbsp;</span>
                             <%                            
                                 def tmp = taskService.findLabelsByTask(task.id, currentUser);
                             	  def taskLabels = Arrays.asList(ListUtil.load(tmp, 0, -1));
@@ -123,10 +129,6 @@
                                     <%}%>
                                 </span>
                             <%}%>
-                            <!--<span class="inline-block-hide labels">
-                                <a href="#" class="navy_blue label">Next</a>
-                                <a href="#" class="orange label">Writing</a>
-                             </span>-->
                             <span class="dropdown-group">
                                 <a class="actionIcon inline-block-hide" data-toggle="dropdown" data-placement="bottom" data-original-title="Snooze due date" rel="tooltip" href="javascript:void(0)">
                                     <i class="uiIcon uiIconClock"></i>
@@ -223,27 +225,36 @@
                 }
             } %>
     </div>
+    #{include path=paging.gtmpl/}
     <div data-template="list-task-item" style="display: none">
         <li class="row-item row-odd hover-action-reveal has-border has-background taskItem" data-taskid="{{taskid}}">
             <div class="column-item column-checkbox">
-                <span class="project-color null">&nbsp;</span>
+                <span class="project-color {{projectColor}}">&nbsp;</span>
                 <span class="inline-block-hide dragable">&nbsp;</span>
-                          <span class="uiCheckbox inline-block-hide">
-                              <input type="checkbox" class="checkbox">
-                              <span></span>
-                          </span>
-                          <span class="status-task inline-block-show">
-                              <i class="">&nbsp;</i>
-                          </span>
+                <span class="status-task block-hide">
+                    <i class="{{dueDateColorClass}}">&nbsp;</i>
+                </span>
             </div>
-            <div class="column-item column-title">{{title}}</div>
+            <div class="column-item column-title taskName">{{title}}</div>
             <div class="column-item column-time">
-                <span class="text-time inline-block-show">&nbsp;</span>
-                            <span class="inline-block-hide labels" style="display: none">
-                              <a href="#" class="navy_blue label">Next</a>
-                              <a href="#" class="orange label">Writing</a>
-                            </span>
-                <a class="actionIcon inline-block-hide" href="#"><i class="uiIcon uiIconClock"></i></a>
+                <span class="text-time inline-block-show">{{taskDueDate}}</span>
+                <span class="inline-block-hide labels">
+                </span>
+                <span class="dropdown-group">
+                    <a class="actionIcon inline-block-hide" data-toggle="dropdown" data-placement="bottom" data-original-title="Snooze due date" rel="tooltip" href="javascript:void(0)">
+                        <i class="uiIcon uiIconClock"></i>
+                    </a>
+                    <!--<a class="actionIcon inline-block" href="javascript:void(0)"><i class="uiIconColorPriority{{taskPriority}}"></i></a>-->
+                    <ul class="dropdown-menu pull-right">
+                        <li><a href="#">Later Today (+5 hours)</a></li>
+                        <li><a href="#">Tomorrow Morning (9am the next day)</a></li>
+                        <li><a href="#">Tomorrow Afternoon (1pm the next day)</a></li>
+                        <li><a href="#">Next Week (next monday 9am)</a></li>
+                    </ul>
+                </span>
+                <a class="actionIcon inline-block-hide" data-placement="left" data-original-title="Mark as completed" rel="tooltip" data-taskcompleted="{{taskCompleted}}" href="javascript:void(0)">
+                    <i class="uiIconValidate uiIconLightGray"></i>
+                </a>
             </div>
         </li>
     </div>

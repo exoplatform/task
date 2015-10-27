@@ -1,7 +1,7 @@
 // TODO: Move juzu-ajax, mentionsPlugin module into task management project if need
-require(['taskManagementApp', 'project-menu', 'taFilter', 'ta_edit_inline', 'SHARED/jquery',
+require(['taskManagementApp', 'project-menu', 'taFilter', 'taskListView', 'ta_edit_inline', 'SHARED/jquery',
         'SHARED/juzu-ajax', 'SHARED/mentionsPlugin', 'SHARED/bts_modal', 'SHARED/bts_tab', 'SHARED/task_ck_editor'
-        ], function(taApp, pMenu, taFilter, editInline, $) {
+        ], function(taApp, pMenu, taFilter, taskListView, editInline, $) {
   /*var taApp = {};
 
   taApp.getUI = function() {
@@ -202,19 +202,25 @@ $(document).ready(function() {
 
         return false;
     };
-    $centerPanel.on('click', '[data-taskid]', function(e) {
+    var loadTaskDetail = function(taskId) {
+        var currentTask = $rightPanelContent.find('[data-taskid]').data('taskid');
+        if ($rightPanel.is(':visible') && currentTask == taskId) {
+            return;
+        }
+        $rightPanelContent.jzLoad('TaskController.detail()', {id: taskId}, function(html, status, xhr) {
+            if (xhr.status >= 400) {
+                taApp.showWarningDialog(xhr.responseText);
+            } else {
+                taApp.showRightPanel($centerPanel, $rightPanel);
+                taskLoadedCallback(taskId, true);
+                return false;
+            }
+        });
+    };
+    $centerPanel.off('click', '[data-taskid]').on('click', '[data-taskid]', function(e) {
         var $li = $(e.target || e.srcElement).closest('[data-taskid]');
         var taskId = $li.data('taskid');
-        var currentTask = $rightPanelContent.find('.task-detail').attr('task-id');
-        $rightPanelContent.jzLoad('TaskController.detail()', {id: taskId}, function(html, status, xhr) {
-          if (xhr.status >= 400) {
-            taApp.showWarningDialog(xhr.responseText);
-          } else {
-            taApp.showRightPanel($centerPanel, $rightPanel);
-            taskLoadedCallback(taskId, true);
-            return false;            
-          }
-        });
+        loadTaskDetail(taskId);
     });
     if ($rightPanel.is(':visible') && $rightPanel.find('[data-taskid]')) {
         var taskId = $rightPanel.find('[data-taskid]').data('taskid');
@@ -466,16 +472,25 @@ $(document).ready(function() {
         if (filter == undefined) {
             filter = '';
         }
-        //TODO: How to create task in label view
+
         $form.jzAjax('TaskController.createTask()', {
             method: 'POST',
             data: {projectId: projectId, labelId: labelId, taskInput: taskInput, filter: filter},
             success: function(task) {
-                var id = task.id;
-                taApp.reloadTaskList(projectId, labelId, filter, function() {
-                    $centerPanel.find('.taskItem[data-taskid="' + id + '"]').click();
-                    $centerPanel.find('input[name="taskTitle"]').focus();                    
-                });                
+                var $taskContainer = $centerPanelContent.find('.newTaskContainer ul');
+                if ($taskContainer.length == 0) {
+                    var id = task.id;
+                    taApp.reloadTaskList(projectId, labelId, filter, function() {
+                        $centerPanel.find('.taskItem[data-taskid="' + id + '"]').click();
+                        $centerPanel.find('input[name="taskTitle"]').focus();
+                    });
+                } else {
+                    var taskDetail = task.detail;
+                    var html = taskListView.renderTask(taskDetail);
+                    $taskContainer.prepend(html);
+                    loadTaskDetail(task.id);
+                }
+
                 if (task.taskNum != -1) {
                   $('.project-name[data-id="-1"] .badgeDefault').text(task.taskNum);
                 }
@@ -507,6 +522,11 @@ $(document).ready(function() {
         if (viewType == undefined) {
             viewType = 'list';
         }
+        var page = $projectListView.find('[name="page"]').val();
+        if (page == undefined) {
+            page = 1;
+        }
+
         var keyword = $projectListView.closest('.projectListView').find('input[name="keyword"]').val();
         $centerPanelContent.jzLoad('TaskController.listTasks()',
             {
@@ -516,7 +536,8 @@ $(document).ready(function() {
                 groupBy: groupBy,
                 orderBy: orderBy,
                 filter: filter,
-                viewType: viewType
+                viewType: viewType,
+                page: page
             },
             function(html, status, xhr) {
               if (xhr.status >= 400) {
@@ -571,6 +592,12 @@ $(document).ready(function() {
         }
         var viewType = $a.data('viewtype');
         $('[name="viewType"]').val(viewType);
+        submitFilter(e);
+    });
+    $centerPanel.on('click', 'a[data-viewpage]', function(e) {
+        var $a = $(e.target).closest('[data-viewpage]');
+        var page = $a.data('viewpage');
+        $('[name="page"]').val(page);
         submitFilter(e);
     });
 

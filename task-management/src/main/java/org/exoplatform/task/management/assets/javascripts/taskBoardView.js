@@ -10,6 +10,26 @@ define('taskBoardView', ['jquery', 'taskManagementApp', 'SHARED/edit_inline_js',
             });
         };
 
+        boardView.renderTask = function(task) {
+            var template = $('[data-template-name="board-view-task-item"]').html();
+            var result = template;
+
+            result = result.replace('{{taskid}}', task.id);
+            result = result.replace('{{title}}', task.title);
+
+            var completedClass = '';
+            if (task.completed) {
+                completedClass = 'task-completed';
+            }
+            result = result.replace('{{completedClass}}', completedClass);
+
+            result = result.replace('{{priority}}', task.priority.toLowerCase());
+            result = result.replace('{{dueDateColorClass}}', task.dueDateCssClass);
+            result = result.replace('{{taskDueDate}}', task.dueDateString);
+
+            return result;
+        }
+
         boardView.initDomEventListener = function() {
             var ui = taApp.getUI();
             var $centerPanelContent = ui.$centerPanelContent;
@@ -109,8 +129,34 @@ define('taskBoardView', ['jquery', 'taskManagementApp', 'SHARED/edit_inline_js',
                     $centerPanel.jzAjax('TaskController.createTaskInListView()', {
                         method: 'POST',
                         data: data,
-                        success: function(response) {
-                            $centerPanelContent.html(response);
+                        success: function(task) {
+                            var html = boardView.renderTask(task);
+                            $form.before(html);
+
+                            // Update task number in status column
+                            var statusId = $form.closest('[data-statusid]').data('statusid');
+                            var $count = $('[data-statusid="'+statusId+'"] > [data-taskcount-status]');
+                            var count = $count.data('taskcount-status');
+                            count++;
+                            $count.html(count);
+                            if (!$count.hasClass('number-tasks')) {
+                                $count.addClass('number-tasks');
+                            }
+                            $count.data('taskcount-status', count);
+                            $count.attr('data-taskcount-status', count);
+
+                            // Update task number in assignee group
+                            if (data['groupBy'] == 'assignee') {
+                                var $ac = $('.amount-item.user-'+data['assignee']+'[data-taskcount-assignee]');
+                                if ($ac.length > 0) {
+                                    var c = $ac.data('taskcount-assignee');
+                                    c++;
+                                    $ac.html(c);
+                                    $ac.data('taskcount-assignee', c);
+                                    $ac.attr('data-taskcount-assignee', c);
+                                }
+                            }
+
                         },
                         error: function(xhr) {
                           taApp.showWarningDialog(xhr.responseText);

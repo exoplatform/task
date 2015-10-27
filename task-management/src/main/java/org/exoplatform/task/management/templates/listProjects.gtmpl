@@ -1,5 +1,6 @@
 #{param name=projects/}
 #{param name=userSetting/}
+#{param name=currentProjectId /}
 
 <%
 import org.exoplatform.services.security.ConversationState;

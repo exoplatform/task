@@ -22,6 +22,7 @@ package org.exoplatform.task.management.controller;
 import javax.inject.Inject;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +50,7 @@ import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.domain.UserSetting;
 import org.exoplatform.task.exception.EntityNotFoundException;
+import org.exoplatform.task.management.model.Paging;
 import org.exoplatform.task.model.GroupKey;
 import org.exoplatform.task.model.TaskModel;
 import org.exoplatform.task.service.ParserContext;
@@ -171,32 +173,33 @@ public class TaskManagement {
     //if (tasks == null) {
     if (taskId <= 0) {
       if (space_group_id != null) {
-        //taskQuery.setIsTodo(Boolean.TRUE);
-        //taskQuery.setUsername(username);
+
         taskQuery.setIsTodoOf(username);
         taskQuery.setProjectIds(spaceProjectIds);
-        //ListAccess<Task> listTasks = taskService.getTodoTasks(username, spaceProjectIds, null, null, null);
-        //tasks = Arrays.asList(ListUtil.load(listTasks, 0, -1)); //taskService.getToDoTasksByUser(username, spaceProjectIds, null, null, null);
+
       } else if (currProject > 0) {
-        //TaskQuery taskQuery = new TaskQuery();
         taskQuery.setProjectIds(Arrays.asList(currProject));
-        //ListAccess<Task> listTasks = taskService.findTasks(taskQuery);
-        //tasks = Arrays.asList(ListUtil.load(listTasks, 0, -1)); //taskService.findTaskByQuery(taskQuery);
+
       } else {
-        //taskQuery.setIsIncoming(Boolean.TRUE);
-        //taskQuery.setUsername(username);
         taskQuery.setIsIncomingOf(username);
-        //ListAccess<Task> listTasks = taskService.getIncomingTasks(username, new OrderBy.DESC("createdTime"));
-        //tasks = Arrays.asList(ListUtil.load(listTasks, 0, -1)); //taskService.getIncomingTasksByUser(username, new OrderBy.DESC("createdTime"));
       }
     }
 
-    Map<GroupKey, ListAccess<Task>> groupTasks = TaskUtil.findTasks(taskService, taskQuery, "", null, userService);
+    Paging paging = new Paging(1);
+    ListAccess<Task> listTasks = taskService.findTasks(taskQuery);
+    paging.setTotal(ListUtil.getSize(listTasks));
+
+    Map<GroupKey, List<Task>> groupTasks = new HashMap<GroupKey, List<Task>>();
+    groupTasks.put(new GroupKey("", null, 0), Arrays.asList(ListUtil.load(listTasks, paging.getStart(), paging.getNumberItemPerPage())));
+
+    //Map<GroupKey, List<Task>> groupTasks = TaskUtil.groupTasks(Arrays.asList(ListUtil.load(listTasks, paging.getStart(), paging.getNumberItemPerPage())), "", username, userService.getUserTimezone(username), bundle, taskService);
+
+    //Map<GroupKey, ListAccess<Task>> groupTasks = TaskUtil.findTasks(taskService, taskQuery, "", null, userService);
 
     UserSetting setting = userService.getUserSetting(username);
 
-    //long taskNum = TaskUtil.getTaskNum(username, spaceProjectIds, currProject, taskService);
-    long taskNum = TaskUtil.countTasks(taskService, taskQuery);
+    //
+    long taskNum = paging.getTotal();
 
     Map<String, String> defOrders = TaskUtil.getDefOrders(bundle);
     Map<String, String> defGroupBys = TaskUtil.getDefGroupBys(currProject, bundle);
@@ -229,6 +232,7 @@ public class TaskManagement {
         .currentLabelId(-1)
         .taskService(taskService)
         .currentUser(username)
+        .paging(paging)
         .ok().withCharset(Tools.UTF_8);
   }
   

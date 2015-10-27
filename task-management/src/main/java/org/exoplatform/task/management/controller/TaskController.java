@@ -61,6 +61,8 @@ import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.exception.NotAllowedOperationOnEntityException;
 import org.exoplatform.task.exception.ParameterEntityException;
 import org.exoplatform.task.exception.UnAuthorizedOperationException;
+import org.exoplatform.task.management.model.Paging;
+import org.exoplatform.task.management.util.JsonUtil;
 import org.exoplatform.task.model.CommentModel;
 import org.exoplatform.task.model.GroupKey;
 import org.exoplatform.task.model.TaskModel;
@@ -375,7 +377,7 @@ public class TaskController extends AbstractController {
   @Ajax
   @MimeType.HTML
   public Response listTasks(String space_group_id, Long projectId, Long labelId, String filterLabelIds, String tags, Long statusId, String dueDate, String priority,  
-                            String assignee, Boolean completed, String keyword, Boolean advanceSearch, String groupBy, String orderBy, String filter, String viewType, SecurityContext securityContext) throws EntityNotFoundException, UnAuthorizedOperationException {
+                            String assignee, Boolean completed, String keyword, Boolean advanceSearch, String groupBy, String orderBy, String filter, String viewType, Integer page, SecurityContext securityContext) throws EntityNotFoundException, UnAuthorizedOperationException {
     Identity currIdentity = ConversationState.getCurrent().getIdentity();
     advanceSearch = advanceSearch == null ? false : advanceSearch;
     if (projectId <= 0 || viewType == null || !VIEW_TYPES.contains(viewType)) {
@@ -482,20 +484,13 @@ public class TaskController extends AbstractController {
         order = new OrderBy.DESC(orderBy);
       }
 
-      //taskQuery.setIsIncoming(Boolean.TRUE);
-      //taskQuery.setUsername(currentUser);
       taskQuery.setIsIncomingOf(currentUser);
       taskQuery.setOrderBy(Arrays.asList(order));
-
-      //ListAccess<Task> listTasks = taskService.getIncomingTasks(currentUser, order);
-      //tasks = Arrays.asList(ListUtil.load(listTasks, 0, -1)); //taskService.getIncomingTasksByUser(currentUser, order);
     }
     else if (projectId == ProjectUtil.TODO_PROJECT_ID) {
       defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT, TaskUtil.LABEL, TaskUtil.DUEDATE), bundle);
       defOrders = TaskUtil.resolve(Arrays.asList(TaskUtil.TITLE, TaskUtil.STATUS, TaskUtil.DUEDATE, TaskUtil.PRIORITY, TaskUtil.RANK), bundle);
 
-      //taskQuery.setIsTodo(Boolean.TRUE);
-      //taskQuery.setUsername(currentUser);
       taskQuery.setIsTodoOf(currentUser);
 
       //TODO: process fiter here
@@ -538,18 +533,14 @@ public class TaskController extends AbstractController {
       taskQuery.setDueDateTo(filterDate[1]);
       taskQuery.setOrderBy(Arrays.asList(order));
 
-      //ListAccess<Task> listTasks = taskService.getTodoTasks(currentUser, spaceProjectIds, order, fromDueDate, toDueDate);
-      //tasks = Arrays.asList(ListUtil.load(listTasks, 0, -1)); //taskService.getToDoTasksByUser(currentUser, spaceProjectIds, order, fromDueDate, toDueDate);
     }
     else if (projectId >= 0) {
-      //TaskQuery taskQuery = new TaskQuery();      
       if (!advanceSearch) {
         taskQuery.setKeyword(keyword);        
       }
       if (projectId == 0) {
         defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.ASSIGNEE, TaskUtil.PROJECT, TaskUtil.LABEL, TaskUtil.DUEDATE, TaskUtil.STATUS), bundle);
 
-        //. Default order by CreatedDate
         if (orderBy == null || orderBy.isEmpty()) {
           orderBy = TaskUtil.DUEDATE;
           order = new OrderBy.ASC(orderBy);
@@ -557,10 +548,8 @@ public class TaskController extends AbstractController {
     
         if (spaceProjectIds != null) {
           taskQuery.setProjectIds(spaceProjectIds);
-          //tasks = projectService.getTasksWithKeywordByProjectId(spaceProjectIds, order, keyword);
         } else {
           taskQuery.setProjectIds(allProjectIds);
-          //tasks = projectService.getTasksWithKeywordByProjectId(allProjectIds, order, keyword);
         }
       } else {
         //. Default order by CreatedDate
@@ -577,7 +566,7 @@ public class TaskController extends AbstractController {
         //tasks = projectService.getTasksWithKeywordByProjectId(Arrays.asList(projectId), order, keyword);
       }
       taskQuery.setOrderBy(Arrays.asList(order));
-      //tasks = Arrays.asList(ListUtil.load(taskService.findTasks(taskQuery), 0, -1)); //taskService.findTaskByQuery(taskQuery);
+
     } else if (labelId != null && labelId >= 0) {
       defOrders = TaskUtil.resolve(Arrays.asList(TaskUtil.TITLE, TaskUtil.CREATED_TIME, TaskUtil.DUEDATE, TaskUtil.PRIORITY), bundle);
       if (orderBy == null || orderBy.isEmpty() || !defOrders.containsKey(orderBy)) {
@@ -607,23 +596,44 @@ public class TaskController extends AbstractController {
       taskQuery.setOrderBy(Arrays.asList(order));
     }
 
-    int countTasks = TaskUtil.countTasks(taskService, taskQuery);
-    //ListAccess<Task> listTask = taskService.findTasks(taskQuery);
-    //tasks = Arrays.asList(ListUtil.load(listTask, 0, -1));
+
+    page = page == null ? 1 : page;
+    if (page <= 0) {
+      page = 1;
+    }
+    Paging paging = new Paging(page);
+
+    ListAccess<Task> listTasks = taskService.findTasks(taskQuery);
+    paging.setTotal(ListUtil.getSize(listTasks));
+
+    //
+    if (paging.getStart() >= paging.getTotal()) {
+      paging = new Paging(1);
+      paging.setTotal(ListUtil.getSize(listTasks));
+    }
+
+    long countTasks = paging.getTotal();
 
     if (countTasks < MIN_NUMBER_TASK_GROUPABLE) {
       //. We do not have enough tasks for grouping, so, set groupBy to empty
       groupBy = "";
     }
 
-    Map<GroupKey, ListAccess<Task>> groupTasks = TaskUtil.findTasks(taskService, taskQuery, groupBy, userTimezone, userService);
+    //Map<GroupKey, ListAccess<Task>> groupTasks = TaskUtil.findTasks(taskService, taskQuery, groupBy, userTimezone, userService);
+    Map<GroupKey, List<Task>> groupTasks = new HashMap<GroupKey, List<Task>>();
+    if (groupBy != null && !groupBy.isEmpty() && !TaskUtil.NONE.equalsIgnoreCase(groupBy)) {
+      groupTasks = TaskUtil.groupTasks(Arrays.asList(ListUtil.load(listTasks, paging.getStart(), paging.getNumberItemPerPage())), groupBy, currentUser, userTimezone, bundle, taskService, userService);
+    }
+    if (groupTasks.isEmpty()) {
+      groupTasks.put(new GroupKey("", null, 0), Arrays.asList(ListUtil.load(listTasks, paging.getStart(), paging.getNumberItemPerPage())));
+    }
 
     //TODO: this block code is not good
     // Count task by status
     Map<Long, Integer> numberTasks = new HashMap<Long, Integer>();
     if (isBoardView) {
-      for(ListAccess<Task> list : groupTasks.values()) {
-        for (Task task : ListUtil.load(list, 0, -1)) {
+      for(List<Task> list : groupTasks.values()) {
+        for (Task task : list) {
           Status st = task.getStatus();
           int num = 0;
           if (numberTasks.containsKey(st.getId())) {
@@ -634,35 +644,8 @@ public class TaskController extends AbstractController {
         }
       }
     }
-
-    //Group Tasks
-    /*Map<String, org.exoplatform.task.model.User> userMap = null;
-    Map<GroupKey, List<Task>> groupTasks = new HashMap<GroupKey, List<Task>>();
-    if(groupBy != null && !groupBy.isEmpty()) {
-      TimeZone tz = userService.getUserTimezone(currentUser);
-      groupTasks = TaskUtil.groupTasks(tasks, groupBy, currentUser, tz, bundle, taskService);
-      if("assignee".equalsIgnoreCase(groupBy)) {
-        userMap = new HashMap<String, org.exoplatform.task.model.User>();
-        for(GroupKey key : groupTasks.keySet()) {
-          String asn = (String)key.getValue();
-          org.exoplatform.task.model.User user = userService.loadUser(asn);
-          userMap.put(asn, user);
-        }
-      }
-    }
-    if(groupTasks.isEmpty()) {
-      groupTasks.put(new GroupKey("", null, 0), tasks);
-    }*/
     
     long taskNum = countTasks;
-    /*if (allProjectIds != null) {
-      taskNum = TaskUtil.getTaskNum(currentUser, allProjectIds, projectId, taskService);
-    } else if (labelId != null && labelId >= 0) {
-      taskNum = tasks.size();
-    } else {
-      taskNum = TaskUtil.getTaskNum(currentUser, spaceProjectIds, projectId, taskService);
-    }
-    */
 
     return taskListView
         .with()
@@ -686,6 +669,7 @@ public class TaskController extends AbstractController {
         .currentUser(currentUser)
         .currentLabelId(labelId == null ? -1 : labelId)
         .currentLabelName(currentLabelName)
+        .paging(paging)
         .set("userMap", new HashMap<String, User>())
         .set("numberTasksByStatus", numberTasks)
         .ok()
@@ -800,16 +784,20 @@ public class TaskController extends AbstractController {
       taskNum = ListUtil.getSize(taskListAccess);
     }
 
+    JSONObject detail = JsonUtil.buildTaskJSon(task, bundle);
+
     JSONObject json = new JSONObject();
     json.put("id", task.getId());
     json.put("taskNum", taskNum);
+
+    json.put("detail", detail);
 
     return Response.ok(json.toString());
   }
 
   @Resource
   @Ajax
-  @MimeType.HTML
+  @MimeType.JSON
   public Response createTaskInListView(String space_group_id, String taskTitle, Long projectId, Long statusId, String assignee,
                                        String viewType, String groupBy, String orderBy, SecurityContext securityContext) throws EntityNotFoundException, UnAuthorizedOperationException {
     if (taskTitle == null || taskTitle.isEmpty()) {
@@ -842,8 +830,11 @@ public class TaskController extends AbstractController {
 
     taskService.createTask(task);
 
+    JSONObject json = JsonUtil.buildTaskJSon(task, bundle);
+    return Response.ok(json.toString()).withCharset(Tools.UTF_8);
+
     //spaceGrpId, projectId, currentLabelId, labelIds, tags, statusId, dueDate, priority, assignee, completed, keyword, advanceSearch, groupby, orderBy, filter, viewType, securityContext
-    return listTasks(space_group_id, projectId, null, null, null, null, null, null, null, null, null, null, groupBy, orderBy, null, viewType, securityContext);
+    //return listTasks(space_group_id, projectId, null, null, null, null, null, null, null, null, null, null, groupBy, orderBy, null, viewType, 1, securityContext);
   }
 
   @Resource(method = HttpMethod.POST)
@@ -862,7 +853,7 @@ public class TaskController extends AbstractController {
     statusService.removeStatus(statusId);
 
     //spaceGrpId, projectId, currentLabelId, labelIds, tags, statusId, dueDate, priority, assignee, completed, keyword, advanceSearch, groupby, orderBy, filter, viewType, securityContext
-    return listTasks(space_group_id, project.getId(), null, null, null, null, null, null, null, null, null, null, null, null, null, "board", securityContext);
+    return listTasks(space_group_id, project.getId(), null, null, null, null, null, null, null, null, null, null, null, null, null, "board", 0, securityContext);
   }
 
   @Resource(method = HttpMethod.POST)
@@ -875,7 +866,7 @@ public class TaskController extends AbstractController {
     }
     statusService.createStatus(project, name);
     //spaceGrpId, projectId, currentLabelId, labelIds, tags, statusId, dueDate, priority, assignee, completed, keyword, advanceSearch, groupby, orderBy, filter, viewType, securityContext
-    return listTasks(space_group_id, projectId, null, null, null, null, null, null, null, null, null, null, null, null, null, "board", securityContext);
+    return listTasks(space_group_id, projectId, null, null, null, null, null, null, null, null, null, null, null, null, null, "board", 0, securityContext);
   }
   
   private TaskQuery buildTaskQuery(String keyword,

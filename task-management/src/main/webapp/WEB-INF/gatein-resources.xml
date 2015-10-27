@@ -65,6 +65,13 @@
         window.jQuery = $;
         <include>/WEB-INF/classes/org/exoplatform/task/management/assets/bootstrap-datepicker/1.4.0/js/bootstrap-datepicker.js</include>
         window.jQuery = oldJQuery;
+
+        <!--
+        This is workaround because the name 'datepicker' is used in both bootstrap-datepicker and jquery-ui.
+        I clone $.fn.datepicker.DPGlobal to other property to used in 'x-editable-calendar' module
+        -->
+        $.fn.task_datepicker = $.fn.datepicker;
+
         return $;
         })();
       </adapter>

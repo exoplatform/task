@@ -80,13 +80,14 @@
         </div>-->
     </div>
     <%} %>
+    #{include path=paging.gtmpl/}
     <div class="body relative">
         <div class="table-project-collapse">
             <div class="caption-heading table-project">
                 <div class="row-item  has-border taskItem">
                     <%status.eachWithIndex {st, index -> %>
                         <div class="col col${index} hover-action-reveal uiEditableInline" data-statusid="${st.id}">
-                            <strong class="${editableClasses}" data-pk="${st.id}" data-type="text" data-name="name">${st.name} </strong><span class="number-tasks">${numberTasksByStatus[st.id] == null ? "" : numberTasksByStatus[st.id]}</span>
+                            <strong class="${editableClasses}" data-pk="${st.id}" data-type="text" data-name="name">${st.name} </strong><span class="${numberTasksByStatus[st.id] != null ? 'number-tasks' : ''}" data-taskcount-status="${numberTasksByStatus[st.id] != null ? numberTasksByStatus[st.id] : ''}">${numberTasksByStatus[st.id] != null ? numberTasksByStatus[st.id] : ''}</span>
                             <% if (index == numberStatus - 1 && canEdit) {%>
                                 <a href="#" rel="tooltip"  data-original-title="Add a Status" data-placement="left" class=" inline-block-hide pull-right mgL5 actionAddStatus"><i class="uiIcon uiIconPlus uiIconWhite"></i></a>
                             <%}%>
@@ -122,10 +123,13 @@
                         <%
                             def user = group.key.value;
                         %>
-                        <% if (user == null || user.username != 'guest') {%>
+                        <% if (user != null && user.username != 'guest') {%>
                         <img width="20px" height="20px" src="${user.avatar}" alt="${user.displayName}">
                         <%}%>
-                        <a href="javascript:void(0)"><span class="user-name-task">${user == null || user.username == "guest" ? "UnAssigned" : user.displayName}</span> <span class="amount-item">(${ListUtil.getSize(group.value)})</span></a>
+                        <a href="javascript:void(0)">
+                            <span class="user-name-task">${user == null || user.username == "guest" ? "UnAssigned" : user.displayName}</span>
+                            <span class="amount-item user-${group.key.value == null ? "" : group.key.value.username}" data-taskcount-assignee="${group.value.size()}">(${group.value.size()})</span>
+                        </a>
                         <% } else { %>
                         <div class="heading-title"><span class="group-name ${groupColorClass}">${group.key}</span> </div>
                         <% } %>
@@ -134,7 +138,7 @@
                 <div class="collapse-content">
                     <ul class="table-project">
                         <li  class="row-item has-border taskItem">
-                            <% def subGroups = TaskUtil.groupTasks(Arrays.asList(ListUtil.load(group.value, 0, -1)), "status", currentUser, TimeZone.getDefault(), bundle, taskService);%>
+                            <% def subGroups = TaskUtil.groupTasks(group.value, "status", currentUser, TimeZone.getDefault(), bundle, taskService, null);%>
                             <%status.eachWithIndex {st, index -> %>
                                 <%
                                     def key = new GroupKey(st.name, st, st.getRank());
@@ -167,7 +171,7 @@
                                                 <%if (task.dueDate != null) {
                                                     def calendar = DateUtil.newCalendarInstance(userTimezone);
                                                     calendar.setTime(task.dueDate);%>
-                                                    <%=DateUtil.getDueDateLabel(calendar, bundle)%>
+                                                    <%=DateUtil.formatDueDate(calendar, bundle)%>
                                                 <%}%>
                                                 </div>
                                             </div>
@@ -181,7 +185,7 @@
                                         <input type="hidden" name="orderBy" value="${orderBy}"/>
                                         <input type="hidden" name="viewType" value="board"/>
                                         <% if (groupBy != null && groupBy != 'none' && groupBy != '') {%>
-                                            <input type="hidden" name="${groupBy}" value="${group.key.value}"/>
+                                            <input type="hidden" name="${groupBy}" value="${group.key.value == null ? "" : group.key.value.username}"/>
                                         <%}%>
                                     </form>
                                 </div>
@@ -193,6 +197,23 @@
                     </ul>
                 </div>
             <%}%>
+
+            <div data-template-name="board-view-task-item" style="display:none;">
+                <div class="box-small has-background hover-action-reveal {{completedClass}} taskItem" data-taskid="{{taskid}}">
+                    <span class="project-color priority-{{priority}}">&nbsp;</span>
+                    <div class="box-small-inner">
+                        <span class="inline-block-hide dragable">&nbsp;</span>
+                        <div class="media clearfix">
+                            <i class="uiIconValidate uiIconBlue pull-right"></i>
+                            <i class="{{dueDateColorClass}} pull-left"></i>
+                            <div class="media-body taskName">{{title}}</div>
+                        </div>
+                        <div class="text-right date-task">
+                            {{taskDueDate}}
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <div class="heading primaryBackground" style="display:none">
                 <a href="#" class="toggle-collapse-group"><i class="uiIcon uiIconArrowDown"></i></a>
@@ -344,6 +365,7 @@
 
         </div>
     </div>
+    #{include path=paging.gtmpl/}
 </div>
 <script type="text/javascript">
     require(['taskBoardView'], function(boardView) {

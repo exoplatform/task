@@ -57,10 +57,12 @@ import org.exoplatform.task.exception.ParameterEntityException;
 import org.exoplatform.task.model.CommentModel;
 import org.exoplatform.task.model.GroupKey;
 import org.exoplatform.task.model.TaskModel;
+import org.exoplatform.task.model.User;
 import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.StatusService;
 import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.service.UserService;
+import org.exoplatform.task.service.impl.UserServiceImpl;
 import org.exoplatform.web.controller.router.Router;
 
 /**
@@ -175,10 +177,10 @@ public final class TaskUtil {
     return taskModel;
   }
 
-  public static Map<GroupKey, List<Task>> groupTasks(List<Task> tasks, String groupBy, String username, TimeZone userTimezone, ResourceBundle bundle, TaskService taskService) throws EntityNotFoundException {
+  public static Map<GroupKey, List<Task>> groupTasks(List<Task> tasks, String groupBy, String username, TimeZone userTimezone, ResourceBundle bundle, TaskService taskService, UserService userService) throws EntityNotFoundException {
     Map<GroupKey, List<Task>> maps = new TreeMap<GroupKey, List<Task>>();
     for(Task task : tasks) {
-      for (GroupKey key : getGroupName(task, groupBy, username, userTimezone, bundle, taskService)) {
+      for (GroupKey key : getGroupName(task, groupBy, username, userTimezone, bundle, taskService, userService)) {
         List<Task> list = maps.get(key);
         if(list == null) {
           list = new LinkedList<Task>();
@@ -190,11 +192,15 @@ public final class TaskUtil {
     return maps;
   }
 
+  //TODO: Remove this method
+  @Deprecated
   public static int countTasks(TaskService taskService, TaskQuery taskQuery) {
     ListAccess<Task> list = taskService.findTasks(taskQuery);
     return ListUtil.getSize(list);
   }
 
+  //TODO: this method is not used by paging
+  @Deprecated
   public static Map<GroupKey, ListAccess<Task>> findTasks(TaskService taskService, TaskQuery query, String groupBy,
                                                           TimeZone userTimezone, UserService userService) {
     Map<GroupKey, ListAccess<Task>> maps = new TreeMap<GroupKey, ListAccess<Task>>();
@@ -533,7 +539,7 @@ public final class TaskUtil {
     return result;
   }
 
-  private static GroupKey[] getGroupName(Task task, String groupBy, String username, TimeZone userTimezone, ResourceBundle bundle, TaskService taskService) throws EntityNotFoundException {
+  private static GroupKey[] getGroupName(Task task, String groupBy, String username, TimeZone userTimezone, ResourceBundle bundle, TaskService taskService, UserService userService) throws EntityNotFoundException {
     if("project".equalsIgnoreCase(groupBy)) {
       Status s = task.getStatus();
       if(s == null) {
@@ -562,7 +568,9 @@ public final class TaskUtil {
       return keys;
     } else if ("assignee".equalsIgnoreCase(groupBy)) {
       String assignee = task.getAssignee();
-      return assignee != null ? new GroupKey[]{new GroupKey(assignee, assignee, assignee.hashCode())} : new GroupKey[]{new GroupKey("Unassigned", "", Integer.MAX_VALUE)};
+      User user = userService.loadUser(assignee);
+      return (assignee != null && user.getUsername() != "guest" && user.getUsername() != null) ? new GroupKey[]{new GroupKey(assignee, user, assignee.hashCode())} : new GroupKey[]{new GroupKey("Unassigned", null, Integer.MAX_VALUE)};
+
     } else if ("dueDate".equalsIgnoreCase(groupBy)) {
       Date dueDate = task.getDueDate();
       Calendar calendar = null;
@@ -570,9 +578,9 @@ public final class TaskUtil {
         calendar = Calendar.getInstance(userTimezone);
         calendar.setTime(dueDate);
       }
-      return new GroupKey[] {new GroupKey(DateUtil.getDueDateLabel(calendar, bundle), dueDate, calendar != null ? 0 : 1)};
+      return new GroupKey[] {new GroupKey(DateUtil.getDueDateLabel(calendar, bundle), dueDate, calendar == null ? Integer.MAX_VALUE : (int)calendar.getTimeInMillis())};
+
     } else if (TaskUtil.LABEL.equalsIgnoreCase(groupBy)) {
-      //TODO:
       ListAccess<Label> tmp = taskService.findLabelsByTask(task.getId(), username);
       List<Label> labels = Arrays.asList(ListUtil.load(tmp, 0, -1));
       if (labels.isEmpty()) {
@@ -585,7 +593,6 @@ public final class TaskUtil {
         }
         return keys;
       }
-
     }
     return new GroupKey[0];
   }

@@ -16,6 +16,7 @@
 #{param name=currentLabelId/}
 #{param name=currentLabelName/}
 #{param name=advanceSearch/}
+#{param name=paging/}
 
 <!-- Consider this -->
 #{param name=taskService/}
@@ -57,6 +58,7 @@
                          <input type="hidden" name="orderBy" value="${orderBy}"/>
                          <input type="hidden" name="filter" value="${filter}"/>
                          <input type="hidden" name="viewType" value="${viewType}"/>
+                         <input type="hidden" name="page" value="${paging.currentPage}"/>
                      </div>
                 </form>
             </div>
