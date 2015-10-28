@@ -54,9 +54,11 @@
     @Script(id = "project-menu-js", value = "javascripts/project-menu.js", depends = {"taskManagementCommon", "task-edit-inline"}),
     @Script(id = "taskBoardView", value = "javascripts/taskBoardView.js", depends = {"taskManagementCommon"}),
     @Script(id = "taskListView", value = "javascripts/taskListView.js", depends = {"taskManagementCommon"}),
+    @Script(id = "taskCenterView", value = "javascripts/taskCenterView.js", depends = {"taskManagementCommon"}),
+    @Script(id = "taskDetailView", value = "javascripts/taskDetailView.js", depends = {"taskManagementCommon", "taskCenterView"}),
 
     @Script(id = "task-management-js", value = "javascripts/task-management.js",
-            depends = {"taskManagementCommon", "project-menu-js", "filter_js", "task-edit-inline", "taskListView"}),
+            depends = {"taskManagementCommon", "project-menu-js", "filter_js", "task-edit-inline", "taskListView", "taskCenterView"})
 })
 @Less({
     @Stylesheet(id = "style-less", value = "less/style.less")

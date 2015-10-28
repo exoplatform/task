@@ -1,122 +1,7 @@
 // TODO: Move juzu-ajax, mentionsPlugin module into task management project if need
-require(['taskManagementApp', 'project-menu', 'taFilter', 'taskListView', 'ta_edit_inline', 'SHARED/jquery',
+require(['taskManagementApp', 'project-menu', 'taFilter', 'taskCenterView', 'taskListView', 'ta_edit_inline', 'SHARED/jquery',
         'SHARED/juzu-ajax', 'SHARED/mentionsPlugin', 'SHARED/bts_modal', 'SHARED/bts_tab', 'SHARED/task_ck_editor'
-        ], function(taApp, pMenu, taFilter, taskListView, editInline, $) {
-  /*var taApp = {};
-
-  taApp.getUI = function() {
-    var $taskManagement = $('#taskManagement');
-    var $leftPanel = $('#taskManagement > .leftPanel');
-    var $centerPanel = $('#taskManagement > .centerPanel');
-    var $rightPanel = $('#taskManagement > .rightPanel');
-    var $rightPanelContent = $rightPanel.find('.rightPanelContent');
-    var $centerPanelContent = $centerPanel.find('.centerPanelContent');
-    
-    return {
-      '$taskManagement' : $taskManagement,
-      '$leftPanel' : $leftPanel,
-      '$centerPanel' : $centerPanel,
-      '$rightPanel' : $rightPanel,
-      '$rightPanelContent' : $rightPanelContent,
-      '$centerPanelContent' : $centerPanelContent
-    };
-  }
-  
-  taApp.showDialog = function(controllerURL, data) {
-    var $modalPlace = $('.modalPlace');
-    $modalPlace.jzLoad(controllerURL, data, function() {
-      var $dialog = $modalPlace.children().first();
-      $dialog.modal({'backdrop': false});
-    });
-  }
-  
-  taApp.showOneTimePopover = function($popover) {
-    if ($popover.data('content')) { 
-      $popover.popover('show');
-      $(document).one('click', function() {
-        $popover.popover('hide'); 
-        $popover.popover('destroy');
-      });
-    }
-  }
-
-  taApp.showRightPanel = function($centerPanel, $rightPanel) {
-    $centerPanel.removeClass('span9').addClass('span5');
-    $rightPanel.show();
-    $rightPanel.find('[data-toggle="tooltip"]').tooltip();
-    $rightPanel.find('*[rel="tooltip"]').tooltip({
-        placement: 'top'
-    });
-  };
-  
-  taApp.hideRightPanel = function($centerPanel, $rightPanel, $rightPanelContent) {
-    $rightPanelContent.html('');
-    $rightPanel.hide();
-    $centerPanel.removeClass('span5').addClass('span9');
-  };
-  
-  taApp.reloadTaskList = function(projectId, filter, callback) {
-    var $centerPanelContent = taApp.getUI().$centerPanelContent;
-    if ($.isFunction(filter)) {
-        filter = '';
-        callback = filter;
-    }
-    if (typeof filter !== 'string') {
-        filter = '';
-    }
-    var data = {projectId: projectId, filter: filter};
-    $centerPanelContent.jzLoad('TaskController.listTasks()', data, function() {
-      if (callback) {
-        callback();
-      }
-    });
-  }
-    
-  taApp.reloadProjectTree = function(id) {
-    var $leftPanel = taApp.getUI().$leftPanel;
-    var $listProject = $leftPanel.find('ul.list-projects.projectTree');
-    $listProject.jzLoad('ProjectController.projectTree()', function() {
-        if (id) {
-          $listProject.find('a.project-name[data-id="' + id+ '"]').click();          
-        } else {
-          if ($listProject.find('a.project-name').length > 0) {
-            $listProject.find('.project-name').first().click();
-          } else {
-            $leftPanel.find('.project-name[data-id="0"]').first().click();
-          }
-        }
-    });    
-  }
-  
-  taApp.setTaskComplete = function(taskId, isCompleted) {
-    var ui = taApp.getUI();
-    var $taskItem = ui.$centerPanel.find('.taskItem[data-taskid="' + taskId + '"]');    
-    var $next = $taskItem.next('.taskItem').first();
-    if ($next.length == 0) {
-      $next.prev('.taskItem').first();
-    }
-
-    var data = {taskId: taskId, completed: isCompleted};    
-    //
-    $taskItem.jzAjax('TaskController.updateCompleted()', {
-      data: data,
-      success: function(message) {
-        if (isCompleted) {
-          $taskItem.fadeOut(500, function() {
-            $taskItem.remove();
-          });
-          if ($next.length == 0) {
-            ui.$leftPanel.find('.active .project-name').click();
-          } else {
-            $next.click();            
-          }
-        }
-      },
-      error : function(jqXHR, textStatus, errorThrown) {
-        console.error && console.error('update failure: ' + jqXHR.responseText);
-      }
-    });
-  }*/
+        ], function(taApp, pMenu, taFilter, taskCenterView, taskListView, editInline, $) {
   
 $(document).ready(function() {
     var ui = taApp.getUI();
@@ -247,21 +132,6 @@ $(document).ready(function() {
             },
             error: function(xhr) {
               taApp.showWarningDialog(xhr.responseText);
-            }
-        });
-    });
-    $rightPanel.on('click', 'a.action-delete-task', function(e){
-        var $a = $(e.target).closest('a');
-        var taskId = $a.closest('[data-taskid]').data('taskid');
-        $a.jzAjax('TaskController.delete()', {
-            data: {id: taskId},
-            success: function(response) {
-                window.location.reload();
-            },
-            error: function(xhr) {
-              if (xhr.status >= 400) {
-                taApp.showWarningDialog(xhr.responseText);
-              }
             }
         });
     });
@@ -502,52 +372,7 @@ $(document).ready(function() {
         return false;
     });
 
-    var submitFilter = function(e) {
-        var $projectListView =  $(e.target).closest('.projectListView');
-        var projectId = $projectListView.attr('data-projectid');
-        var labelId = $projectListView.attr('data-labelid');
-        var groupBy = $projectListView.find('[name="groupBy"]').val();
-        if(groupBy == undefined) {
-            groupBy = '';
-        }
-        var orderBy = $projectListView.find('[name="orderBy"]').val();
-        if(orderBy == undefined) {
-            orderBy = '';
-        }
-        var filter = $projectListView.find('[name="filter"]').val();
-        if (filter == undefined) {
-            filter = '';
-        }
-        var viewType = $projectListView.find('[name="viewType"]').val();
-        if (viewType == undefined) {
-            viewType = 'list';
-        }
-        var page = $projectListView.find('[name="page"]').val();
-        if (page == undefined) {
-            page = 1;
-        }
-
-        var keyword = $projectListView.closest('.projectListView').find('input[name="keyword"]').val();
-        $centerPanelContent.jzLoad('TaskController.listTasks()',
-            {
-                projectId: projectId,
-                labelId : labelId,
-                keyword: keyword,
-                groupBy: groupBy,
-                orderBy: orderBy,
-                filter: filter,
-                viewType: viewType,
-                page: page
-            },
-            function(html, status, xhr) {
-              if (xhr.status >= 400) {
-                taApp.showWarningDialog(xhr.responseText);
-              } else {
-                taApp.hideRightPanel($centerPanel, $rightPanel, $rightPanelContent);                
-              }
-            }
-        );
-    };
+    var submitFilter = taskCenterView.submitFilter;
 
     $centerPanel.on('submit', '.projectListView form.taskSearchForm', function(e) {
         submitFilter(e);

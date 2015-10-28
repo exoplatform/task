@@ -1,4 +1,4 @@
-define('taskListView', ['jquery', 'taskManagementApp', 'SHARED/edit_inline_js'], function($, taApp, editinline) {
+define('taskListView', ['jquery', 'taskManagementApp'], function($, taApp) {
     var listView = {};
     listView.init = function() {
         taApp.onReady(function($) {

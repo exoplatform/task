@@ -132,6 +132,10 @@ public class TaskController extends AbstractController {
   @Path("projectTaskListView.gtmpl")
   org.exoplatform.task.management.templates.projectTaskListView taskListView;
 
+  @Inject
+  @Path("confirmDeleteTask.gtmpl")
+  org.exoplatform.task.management.templates.confirmDeleteTask confirmDeleteTask;
+
   @Resource
   @Ajax
   @MimeType.HTML
@@ -211,6 +215,25 @@ public class TaskController extends AbstractController {
       JSONObject json = new JSONObject();
       json.put("id", newTask.getId()); //Can throw JSONException
       return Response.ok(json.toString());
+  }
+
+  @Resource
+  @Ajax
+  @MimeType.HTML
+  public Response openConfirmDeleteTask(Long id) throws EntityNotFoundException, UnAuthorizedOperationException {
+    Task task = taskService.getTask(id);
+    if (!TaskUtil.hasPermission(task)) {
+      throw new UnAuthorizedOperationException(id, Task.class, getNoPermissionMsg());
+    }
+
+    String msg = bundle.getString("popup.msg.deleteTask");
+    msg = msg.replace("{}", task.getTitle());
+
+    return confirmDeleteTask
+            .with()
+            .taskId(task.getId())
+            .msg(msg)
+            .ok().withCharset(Tools.UTF_8);
   }
 
   @Resource
