@@ -139,7 +139,6 @@ $(document).ready(function() {
     //welcome    
     var $inputTask = $centerPanelContent.find('input[name="taskTitle"]');
     taApp.showOneTimePopover($inputTask);
-    $inputTask.focus();
 
     $centerPanel.on('click', '.show-hide-left', function(e) {
     	var $icon = $(e.target);
@@ -404,7 +403,6 @@ $(document).ready(function() {
       
       var $inputTask = $centerPanelContent.find('input[name="taskTitle"]');
       taApp.showOneTimePopover($inputTask);
-      $inputTask.focus();
     }
     
     var loadProjectDetail = function(id) {
