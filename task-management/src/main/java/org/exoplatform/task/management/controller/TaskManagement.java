@@ -185,9 +185,31 @@ public class TaskManagement {
       }
     }
 
-    Paging paging = new Paging(1);
     ListAccess<Task> listTasks = taskService.findTasks(taskQuery);
+
+    int page = 1;
+    Paging paging = new Paging(page);
     paging.setTotal(ListUtil.getSize(listTasks));
+
+    // Find the page contains current task
+    if (taskModel != null) {
+      page = 0;
+      boolean containTask = false;
+      Task[] arr = new Task[0];
+      do {
+        page++;
+        paging = new Paging(page);
+        paging.setTotal(ListUtil.getSize(listTasks));
+
+        arr = ListUtil.load(listTasks, paging.getStart(), paging.getNumberItemPerPage());
+        for (Task t : arr) {
+          if (t.getId() == taskId) {
+            containTask = true;
+            break;
+          }
+        }
+      } while (!containTask && arr.length > 0);
+    }
 
     Map<GroupKey, List<Task>> groupTasks = new HashMap<GroupKey, List<Task>>();
     groupTasks.put(new GroupKey("", null, 0), Arrays.asList(ListUtil.load(listTasks, paging.getStart(), paging.getNumberItemPerPage())));
