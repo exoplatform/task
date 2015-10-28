@@ -3,6 +3,9 @@
 
 <%
   import org.exoplatform.task.util.StringUtil;
+  import org.exoplatform.commons.utils.HTMLEntityEncoder;
+	
+  def encoder = HTMLEntityEncoder.getInstance();
 %>
 
 <% if (permissions.size() == 0) {%>
@@ -18,7 +21,7 @@
         %>
         <li class="data ${index == 0 ? 'active' : ''}"
             data-suggest-permission="${perm.id}"
-            data-suggest-displayname="${perm.displayName}"
+            data-suggest-displayname="${encoder.encode(perm.displayName)}"
             data-suggest-type="${perm.type}"
             data-suggest-mstype="${perm.membershipType}"
             data-suggest-groupid="${perm.groupId}"

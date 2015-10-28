@@ -34,6 +34,7 @@ import juzu.impl.common.Tools;
 import juzu.request.SecurityContext;
 
 import org.exoplatform.commons.juzu.ajax.Ajax;
+import org.exoplatform.commons.utils.HTMLEntityEncoder;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -48,6 +49,7 @@ import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.service.UserService;
 import org.exoplatform.task.util.ListUtil;
 import org.exoplatform.task.util.ProjectUtil;
+import org.gatein.common.text.EntityEncoder;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -108,11 +110,12 @@ public class FilterController {
   }
 
   private JSONArray buildJSON(List<Label> labels) throws JSONException {
+    EntityEncoder encoder = HTMLEntityEncoder.getInstance();
     JSONArray jsons = new JSONArray();
     for (Label lbl : labels) {
       JSONObject obj = new JSONObject();
       obj.put("id", lbl.getId());
-      obj.put("name", lbl.getName());
+      obj.put("name", encoder.encode(lbl.getName()));
       obj.put("color", lbl.getColor());
       jsons.put(obj);
     }

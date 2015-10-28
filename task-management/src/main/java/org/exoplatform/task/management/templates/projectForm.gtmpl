@@ -2,6 +2,12 @@
 #{param name=user/}
 #{param name=breadcumbs/}
 
+<%
+	import org.exoplatform.commons.utils.HTMLEntityEncoder;
+
+	def encoder = HTMLEntityEncoder.getInstance();
+%>
+
 <div class="addProject uiPopup modal hide fade" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="popupHeader clearfix">
   	<a href="#" title="Close Window" data-dismiss="modal" aria-hidden="true" class="uiIconClose pull-right"></a>    
@@ -23,7 +29,7 @@
            <div class="span3">&{label.manager}:</div>
            <div class="span9">
            	<a class="avatarSmall" href="<%=user.getUrl()%>"><img alt="avatar" src="<%=user.getAvatar()%>">
-              <%=user.getDisplayName()%>
+              <%=encoder.encode(user.getDisplayName())%>
              </a>            
            </div>
        </div>

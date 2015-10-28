@@ -12,6 +12,10 @@
     import org.exoplatform.task.util.ListUtil;
     import org.exoplatform.services.security.ConversationState;
     import org.exoplatform.task.management.controller.TaskController;
+  	 import org.exoplatform.commons.utils.HTMLEntityEncoder;
+
+  	 def encoder = HTMLEntityEncoder.getInstance();
+  	
     List<Status> status = projectStatuses;
     Collections.sort(status);
     def numberStatus = status.size();
@@ -87,7 +91,7 @@
                 <div class="row-item  has-border taskItem">
                     <%status.eachWithIndex {st, index -> %>
                         <div class="col col${index} hover-action-reveal uiEditableInline" data-statusid="${st.id}">
-                            <strong class="${editableClasses}" data-pk="${st.id}" data-type="text" data-name="name">${st.name} </strong><span class="${numberTasksByStatus[st.id] != null ? 'number-tasks' : ''}" data-taskcount-status="${numberTasksByStatus[st.id] != null ? numberTasksByStatus[st.id] : ''}">${numberTasksByStatus[st.id] != null ? numberTasksByStatus[st.id] : ''}</span>
+                            <strong class="${editableClasses}" data-pk="${st.id}" data-type="text" data-name="name">${encoder.encode(st.name)} </strong><span class="${numberTasksByStatus[st.id] != null ? 'number-tasks' : ''}" data-taskcount-status="${numberTasksByStatus[st.id] != null ? numberTasksByStatus[st.id] : ''}">${numberTasksByStatus[st.id] != null ? numberTasksByStatus[st.id] : ''}</span>
                             <% if (index == numberStatus - 1 && canEdit) {%>
                                 <a href="#" rel="tooltip"  data-original-title="Add a Status" data-placement="left" class=" inline-block-hide pull-right mgL5 actionAddStatus"><i class="uiIcon uiIconPlus uiIconWhite"></i></a>
                             <%}%>
@@ -128,11 +132,11 @@
                         <img width="20px" height="20px" src="${user.avatar}" alt="${user.displayName}">
                         <%}%>
                         <a href="${isGuest ? "javascript:void(0)" : user.url}">
-                            <span class="user-name-task">${isGuest ? "Unassigned" : user.displayName}</span>
+                            <span class="user-name-task">${isGuest ? "Unassigned" : encoder.encode(user.displayName)}</span>
                             <span class="amount-item user-${group.key.value == null ? "" : group.key.value.username}" data-taskcount-assignee="${group.value.size()}">(${group.value.size()})</span>
                         </a>
                         <% } else { %>
-                        <div class="heading-title"><span class="group-name ${groupColorClass}">${group.key}</span> </div>
+                        <div class="heading-title"><span class="group-name ${groupColorClass}">${encoder.encode(group.key.name)}</span> </div>
                         <% } %>
                     </div>
                 <%}%>
@@ -166,7 +170,7 @@
                                                     %>
                                                     <i class="uiIconValidate uiIconBlue pull-right"></i>
                                                     <i class="${colorClass} pull-left"></i>
-                                                    <div class="media-body taskName"> ${task.title}</div>
+                                                    <div class="media-body taskName"> ${encoder.encode(task.title)}</div>
                                                 </div>
                                                 <div class="text-right date-task">
                                                 <%if (task.dueDate != null) {

@@ -4,6 +4,9 @@
 
 <%
 import org.exoplatform.task.util.TaskUtil;
+import org.exoplatform.commons.utils.HTMLEntityEncoder;
+
+def encoder = HTMLEntityEncoder.getInstance();
 %>
 <ul class="list-changes">
 <%for (def log : taskLogs) {%>
@@ -12,7 +15,7 @@ import org.exoplatform.task.util.TaskUtil;
             <%
                 def user = userMap[log.author];
             %>
-            <a href="${user.url}">  ${user.displayName} </a>
+            <a href="${user.url}">  ${encoder.encode(user.displayName)} </a>
             <span><%=bundle.getString("log." + log.getActionName())%>
             <%
                 def target = log.target;
@@ -25,7 +28,7 @@ import org.exoplatform.task.util.TaskUtil;
                     target = "";
                 }
             %>
-            ${target}</span>
+            ${encoder.encode(target)}</span>
         </div>        
         <span class="date pull-right">
             <%= TaskUtil.getPeriod(log.getCreatedTime(), bundle)%>

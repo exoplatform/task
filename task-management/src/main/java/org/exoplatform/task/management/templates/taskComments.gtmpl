@@ -5,6 +5,9 @@
     import org.exoplatform.task.util.TaskUtil;
     import org.exoplatform.task.util.ResourceUtil;
     import org.exoplatform.services.security.ConversationState;
+  	 import org.exoplatform.commons.utils.HTMLEntityEncoder;
+
+  	 def encoder = HTMLEntityEncoder.getInstance();
 
     def commentCount = taskModel.getCommentCount();
     def comments = taskModel.getComments();
@@ -27,18 +30,18 @@
         <div class="commentItem" data-commentid="${comment.id}">
             <div class="commmentLeft pull-left">
                 <a class="avatarXSmall" href="${comment.author.url}">
-                    <img src="${comment.author.avatar}" alt="${comment.author.displayName}">
+                    <img src="${comment.author.avatar}" alt="${encoder.encode(comment.author.displayName)}">
                 </a>
             </div><!--end commentLeft-->
             <div class="commentRight">
                 <div class="author">
-                    <a href="${comment.author.url}">${comment.author.displayName}</a>
+                    <a href="${comment.author.url}">${encoder.encode(comment.author.displayName)}</a>
                                     <span class="date">
                                         <%= TaskUtil.getPeriod(comment.getCreatedTime().getTime(), bundle)%>
                                      </span>
                 </div>
                 <p class="contentComment">
-                    ${comment.formattedComment}
+                    ${encoder.encode(comment.formattedComment)}
                 </p>
             </div><!--end commentRight-->
 
@@ -57,7 +60,7 @@
                 <div class="clearfix">
                     <div class="commmentLeft pull-left">
                         <a class="avatarXSmall" href="${currentUser.url}">
-                            <img src="${currentUser.avatar}" alt="${currentUser.displayName}">
+                            <img src="${currentUser.avatar}" alt="${encoder.encode(currentUser.displayName)}">
                         </a>
                     </div><!--end commentLeft-->
                     <div class="commentRight">

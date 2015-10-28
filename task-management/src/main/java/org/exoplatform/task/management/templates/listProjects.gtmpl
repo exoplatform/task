@@ -4,8 +4,10 @@
 
 <%
 import org.exoplatform.services.security.ConversationState;
+import org.exoplatform.commons.utils.HTMLEntityEncoder;
 
 def displayListProjectItem(project, level) {
+  	 def encoder = HTMLEntityEncoder.getInstance();
     def identity = ConversationState.getCurrent().getIdentity();
     def hasChild = (project.children != null && project.children.size() > 0);
     def hasChildClass = hasChild  ? 'has-child' : '';
@@ -24,7 +26,7 @@ def displayListProjectItem(project, level) {
         isAllChildHidden = false;
     }
 %>
-    <li class="dropdown project-item ${currentProjectId == project.id ? "active" : ""} ${project.color == '' ? 'no-color' : ''} ${isAllChildHidden ? "all-children-hided" : ""}" data-projectId="${project.id}" data-hiddenproject="${isHidden}">
+    <li class="dropdown project-item ${project.color == '' ? 'no-color' : ''} ${isAllChildHidden ? "all-children-hided" : ""}" data-projectId="${project.id}" data-hiddenproject="${isHidden}">
         <div class="sub-item" style="padding-left: <%=indent%>px">
             <% if (canView) {%>
                 <a class="dropdown-toggle pull-right"
@@ -82,7 +84,7 @@ def displayListProjectItem(project, level) {
                 </a>
                 <a href="javascript:void(0);" class="project-name" data-id="${project.id}" data-canEdit="<%=project.canEdit(identity)%>" data-canView="<%=project.canView(identity)%>"
                         style="vertical-align: middle;display:inline-block;">
-                    ${project.name}
+                    ${encoder.encode(project.name)}
                 </a>
             </span>
 		</div>

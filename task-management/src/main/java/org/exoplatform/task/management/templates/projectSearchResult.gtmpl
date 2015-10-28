@@ -4,12 +4,11 @@
 #{param name=identity/}
 
 <%
-import org.exoplatform.task.util.StringUtil;
-%>
+	import org.exoplatform.task.util.StringUtil;
+	import org.exoplatform.commons.utils.HTMLEntityEncoder;	
 
-<%
-def displayProject(project, level) {%>
-    <%
+def displayProject(project, level) {
+  		  def encoder = HTMLEntityEncoder.getInstance();
         //. If current project is match, we do not shot its tree
         if (currentProjectId == project.getId()) {
             return;
@@ -17,6 +16,7 @@ def displayProject(project, level) {%>
         String name = project.getName();
         boolean isMatched = false;
         if (keyword == "") {
+            name = encoder.encode(name);
             isMatched = true;
         } else if (name.toLowerCase().contains(keyword.toLowerCase())) {
             isMatched = true;
@@ -27,7 +27,9 @@ def displayProject(project, level) {%>
         def canView = project.canView(identity);
     %>
     <li>
-        <a class="" style="padding-left: ${padding}px" href="javascript:void(0)" data-canview="${canView}" data-matched="${isMatched}" data-projectid="${project.id}">${name}</a>
+        <a class="" style="padding-left: ${padding}px" href="javascript:void(0)" data-canview="${canView}" data-matched="${isMatched}" data-projectid="${project.id}">
+        ${name}
+        </a>
         <% if (project.children != null && project.children.size() > 0) {%>
             <ul>
                 <%project.children.each {p -> displayProject(p, level + 1)}%>

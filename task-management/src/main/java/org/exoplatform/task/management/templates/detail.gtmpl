@@ -11,16 +11,19 @@
     import org.exoplatform.task.util.ResourceUtil;
 	import org.exoplatform.task.domain.Priority;
 	import org.exoplatform.task.util.DateUtil;
+	import org.exoplatform.commons.utils.HTMLEntityEncoder;
+
+	def encoder = HTMLEntityEncoder.getInstance();
 
 	def task = taskModel.getTask();
 	def breadcumbs = taskModel.getBreadcumbs();
 	def assignee = taskModel.getAssignee();
-    def hasAssignee = (assignee != null);
+   def hasAssignee = (assignee != null);
 	def countCoWorker = taskModel.getNumberCoworkers();
 	def commentCount = taskModel.getCommentCount();
 	def comments = taskModel.getComments();
 	def currentUser = taskModel.getCurrentUser();
-    def labels = taskModel.getLabels();
+   def labels = taskModel.getLabels();
    def editableClasses = "hoverStatus editableField editable";
 %>
 <div class="addTask uiBox" data-taskid="${task.id}">
@@ -71,7 +74,8 @@
         if (labels != null && !labels.isEmpty()) {
             labelHtml = "";
             labels.each{label ->
-                labelHtml += '<span class="'+label.color+' label">' + label.name +'</span>';
+            	 def labelName = encoder.encode(label.name);
+                labelHtml += '<span class="'+ label.color+' label">' + labelName +'</span>';
                 if (labelIds.length() > 0) {
                     labelIds += ',';
                 }
@@ -79,7 +83,7 @@
                 if (labelOptions.length() > 0) {
                     labelOptions += ',';
                 }
-                labelOptions += '{"id": "'+label.id+'", "text":"' + label.name + '","color":"' + label.color + '"}';
+                labelOptions += '{"id": "'+label.id+'", "text":"' + labelName + '","color":"' + label.color + '"}';
             };
         }
 
@@ -95,7 +99,7 @@
       <span class="projectName ${editableClasses} small "
              data-original-title="&{tooltip.clickToEdit}" rel="tooltip" data-placement="bottom"
         data-name="title" data-type="text" data-emptytext="&{label.untitledTask}">
-          ${task.title}
+          ${encoder.encode(task.title)}
       </span>
     </div>
 </div>
@@ -122,7 +126,7 @@
                 <a class="avatarMini pull-left" href="#"><img alt="avatar" src="${hasAssignee ? assignee.avatar : ""}"></a>
                 <a title="Click to edit" data-toggle="tooltip" data-placement="bottom" class="hoverStatus small editableField editAssignee" style="text-transform: lowercase;">
                     <% if (countCoWorker == 0) {%>
-                        ${hasAssignee ? assignee.displayName : ""}
+                        ${hasAssignee ? encoder.encode(assignee.displayName) : ""}
                     <%} else {%>
                         +${countCoWorker} <% if(countCoWorker > 1) {%> &{label.coworkers} <%} else {%> &{label.coworker} <%}%>
                     <%}%>
@@ -133,7 +137,7 @@
                     <div class="contBlock">
                         <div class="mgB10 mgT5">&{label.assignTo}:</div>
                         <div class="inputUser">
-                            <input type = "text" name="assignee" value="${task.assignee != null ? task.assignee : ""}"/>
+                            <input type = "text" name="assignee" value="${task.assignee != null ? encoder.encode(task.assignee) : ""}"/>
                         </div>
                     </div>
                     <div class="contBlock tags">
@@ -144,7 +148,7 @@
                             }
                         %>
                         <div class="mgB10 mgT5">&{label.coworkers}:</div>
-                        <input type="text" name="coworker" value="${coWorkers}"/>
+                        <input type="text" name="coworker" value="${encoder.encode(coWorkers)}"/>
                     </div>
                 </div>
             </div>
@@ -178,7 +182,7 @@
         if (task.tag != null && task.tag.size() > 0) {
             task.tag.each {tag ->
                 if (!tag.isEmpty())
-                    tags += '<div class="label primary">'+ tag +'</div>';
+                    tags += '<div class="label primary">'+ encoder.encode(tag) +'</div>';
             };
         }
         tags = tags.trim();
@@ -188,7 +192,7 @@
        data-original-title="&{tooltip.clickToEdit}" rel="tooltip"
        data-name="tags" data-type="selectize"
        data-inputclass="input-large"
-       data-value="${task.tag != null && task.tag.size() > 0 ? task.tag.join(',') : ''}">
+       data-value="${task.tag != null && task.tag.size() > 0 ? encoder.encode(task.tag.join(',')) : ''}">
         ${tags}
     </div>
 </div>
@@ -347,7 +351,7 @@
 <div id="taskDetailContainer" class="task-detail" task-id="${task.id}" style="display:none">
     <div class="row-fluid task-info-row">
         <a href="#" class="icon task-completed-field status-icon ${task.completed ? "icon-completed" : ""}">&nbsp;</a>
-        <a class="editable" href="#" data-name="title" data-type="text">${task.title}</a>
+        <a class="editable" href="#" data-name="title" data-type="text">${encoder.encode(task.title)}</a>
 
         <div class="btn-group task-action-buttons">
             <button class="btn dropdown-toggle" data-toggle="dropdown"><i class="uiIconMiniArrowDown uiIconLightGray"></i></button>
@@ -384,11 +388,15 @@
         </div>
     </div>
     <div class="row-fluid task-info-row task-description">
-        <a class="editable" href="#" data-name="description" data-type="textarea">${task.description != null ? task.description : ''}</a>
+        <a class="editable" href="#" data-name="description" data-type="textarea">
+        ${task.description != null ? task.description : ''}
+        </a>
     </div>
     <div class="row-fluid task-info-row">
         <i class="uiIconTagMini"></i>
-        <a class="editable" href="#" data-name="tags" data-type="select2" data-inputclass="input-large" data-value="${task.tag != null && task.tag.size() > 0 ? task.tag.join(',') : ''}">${task.tag != null && task.tag.size() > 0 ? task.tag.join(', ') : ''}</a>
+        <a class="editable" href="#" data-name="tags" data-type="select2" data-inputclass="input-large" data-value="${task.tag != null && task.tag.size() > 0 ? encoder.encode(task.tag.join(',')) : ''}">
+        ${task.tag != null && task.tag.size() > 0 ? encoder.encode(task.tag.join(', ')) : ''}
+        </a>
     </div>
     <ul class="nav nav-tabs taskTabs" role="tablist">
     	<li role="presentation" class="active">
@@ -416,7 +424,7 @@
 	                <%} else { comments.each {comment -> %>
 	                    <li class="comment media">
 	                        <a class="pull-left avatarXSmall" href="#">
-	                            <img class="media-object" src="${comment.author.avatar}" alt="${comment.author.displayName}">
+	                            <img class="media-object" src="${comment.author.avatar}" alt="${encoder.encode(comment.author.displayName)}">
 	                        </a>
 	                        <div class="media-body">
 	                            <div class="pull-right">
@@ -427,9 +435,9 @@
 	                                    <%}%>
 	                                </span>
 	                            </div>
-	                            <h6 class="media-heading"><a href="#">${comment.author.displayName}</a></h6>
+	                            <h6 class="media-heading"><a href="#">${encoder.encode(comment.author.displayName)}</a></h6>
 	                            <div>
-	                                ${comment.formattedComment}
+	                                ${encoder.encode(comment.formattedComment)}
 	                            </div>
 	                        </div>
 	                    </li>
@@ -440,7 +448,7 @@
 	                <form action="#" method="POST">
 	                    <div class="media" style="overflow: visible">
 	                        <a class="pull-left avatarXSmall" href="#">
-	                            <img class="media-object" src="${currentUser.avatar}" alt="${currentUser.displayName}">
+	                            <img class="media-object" src="${currentUser.avatar}" alt="${encoder.encode(currentUser.displayName)}">
 	                        </a>
 	                        <div class="media-body" style="overflow: visible; margin-left: 48px;">
 	                            <textarea name="comment"></textarea>

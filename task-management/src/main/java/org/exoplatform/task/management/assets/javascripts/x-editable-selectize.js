@@ -39,7 +39,8 @@ define('x_editable_selectize', ['jquery', 'SHARED/edit_inline_js', 'selectize'],
                     if (_this.options.value2html) {
                         span = _this.options.value2html(val);
                     } else {
-                        span = '<div  class="label primary">'+ val +'</div>';
+                        var encoder = $('<div></div>');
+                        span = '<div  class="label primary">'+ encoder.text(val).html() +'</div>';
                     }
                     html.push(span);
                 });

@@ -37,6 +37,7 @@ import java.util.TreeMap;
 
 import org.exoplatform.calendar.model.Event;
 import org.exoplatform.calendar.service.impl.NewUserListener;
+import org.exoplatform.commons.utils.HTMLEntityEncoder;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.portal.mop.SiteKey;
@@ -64,6 +65,7 @@ import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.service.UserService;
 import org.exoplatform.task.service.impl.UserServiceImpl;
 import org.exoplatform.web.controller.router.Router;
+import org.gatein.common.text.EntityEncoder;
 
 /**
  * Created by The eXo Platform SAS
@@ -161,11 +163,12 @@ public final class TaskUtil {
     org.exoplatform.task.model.User currentUser = userService.loadUser(username);
     taskModel.setCurrentUser(currentUser);
     
+    EntityEncoder encoder = HTMLEntityEncoder.getInstance();
     String breadcumbs = "<li class=\"muted\" >" + bundle.getString("label.noProject") + "</li>";
     if (task.getStatus() != null) {
       Project p = task.getStatus().getProject();
       //breadcumbs = ProjectUtil.buildBreadcumbs(p.getId(), projectService, bundle);
-      breadcumbs = "<li><a class=\"project-name\" href=\"javascript:void(0)\">" + p.getName() + "</a></li>";
+      breadcumbs = "<li><a class=\"project-name\" href=\"javascript:void(0)\">" + encoder.encode(p.getName()) + "</a></li>";
     }
     taskModel.setBreadcumbs(breadcumbs);
 

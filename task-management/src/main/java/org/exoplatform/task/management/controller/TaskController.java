@@ -44,6 +44,7 @@ import juzu.impl.common.Tools;
 import juzu.request.SecurityContext;
 
 import org.exoplatform.commons.juzu.ajax.Ajax;
+import org.exoplatform.commons.utils.HTMLEntityEncoder;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.security.ConversationState;
@@ -79,6 +80,7 @@ import org.exoplatform.task.util.ListUtil;
 import org.exoplatform.task.util.ProjectUtil;
 import org.exoplatform.task.util.TaskUtil;
 import org.exoplatform.task.util.TaskUtil.DUE;
+import org.gatein.common.text.EntityEncoder;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -346,15 +348,16 @@ public class TaskController extends AbstractController {
     DateFormat df = new SimpleDateFormat("MMM dd, yyyy HH:mm");
     df.setTimeZone(userService.getUserTimezone(currentUser));
 
+    EntityEncoder encoder = HTMLEntityEncoder.getInstance();
     JSONObject json = new JSONObject();
     json.put("id", model.getId()); //Can throw JSONException (same for all #json.put methods below)
     JSONObject user = new JSONObject();
-    user.put("username", model.getAuthor().getUsername());
-    user.put("displayName", model.getAuthor().getDisplayName());
+    user.put("username", encoder.encode(model.getAuthor().getUsername()));
+    user.put("displayName", encoder.encode(model.getAuthor().getDisplayName()));
     user.put("avatar", model.getAuthor().getAvatar());
     json.put("author", user);
-    json.put("comment", model.getComment());
-    json.put("formattedComment", model.getFormattedComment());
+    json.put("comment", encoder.encode(model.getComment()));
+    json.put("formattedComment", encoder.encode(model.getFormattedComment()));
     json.put("createdTime", model.getCreatedTime().getTime());
     json.put("createdTimeString", df.format(model.getCreatedTime()));
     return Response.ok(json.toString()).withCharset(Tools.UTF_8);

@@ -4,6 +4,12 @@
 #{param name=editingField/}
 #{param name=msTypes/}
 
+<%
+	import org.exoplatform.commons.utils.HTMLEntityEncoder;
+
+	def encoder = HTMLEntityEncoder.getInstance();
+%>
+
 <!-- share-project -->
 <div class="sharePrjDialog modal hide fade in uiPopup" data-projectid="${pid}" tabindex="-1" role="dialog" aria-labelledby="shareProjectLabel" aria-hidden="true">
   <div class="popupHeader clearfix">
@@ -41,7 +47,7 @@
                             <div class="muted no-assisement">&{label.noAssignment}</div>
                         <%} else {%>
                             <% managers.each {permission ->%>
-                                <p class="item"><strong>${permission.displayName}</strong> (${permission.id})</p>
+                                <p class="item"><strong>${encoder.encode(permission.displayName)}</strong> (${permission.id})</p>
                             <%}%>
                         <%}%>
                     </div>
@@ -66,7 +72,7 @@
                                                 <span >${permission.groupName} <a href="javascript:void(0)" class="removePermission"><i class="uiIconClose uiIconLightGray"></i></a></span>
                                             </div>
                                         <%} else {%>
-                                            <span data-permission="${permission.id}">${permission.displayName}<a href="javascript:void(0)" class="removePermission"><i  class="uiIconClose uiIconLightGray"></i></a></span>
+                                            <span data-permission="${permission.id}">${encoder.encode(permission.displayName)}<a href="javascript:void(0)" class="removePermission"><i  class="uiIconClose uiIconLightGray"></i></a></span>
                                         <%}
                                     }%>
                                 <%}%>

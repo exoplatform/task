@@ -1,6 +1,12 @@
 #{param name=lblTree /}
 #{param name=lbl /}
 
+<%
+	import org.exoplatform.commons.utils.HTMLEntityEncoder;
+
+	def encoder = HTMLEntityEncoder.getInstance();
+%>
+
 <!-- edit-label-dialog -->
 <div class="edit-label-dialog uiPopup modal hide fade" data-id="${lbl.id}" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="popupHeader clearfix">
@@ -12,7 +18,7 @@
 	   <%
 	   	def printOption(l, level) {
 	   %>
-	   	<option value="${l.id}" style="padding-left: <%=level*10%>px;" <%= lbl.parent != null && l.id == lbl.parent.id ? "selected" : "" %>>${l.name}</option>	   	
+	   	<option value="${l.id}" style="padding-left: <%=level*10%>px;" <%= lbl.parent != null && l.id == lbl.parent.id ? "selected" : "" %>>${HTMLEntityEncoder.getInstance().encode(l.name)}</option>	   	
 	   <%	
 	   	  if (l.getChildren() != null && l.getChildren().size() > 0) {
 	   	    printTree(l.getChildren(), level + 1);
@@ -40,7 +46,7 @@
 	  	<div class="control-group">
 	  		<label class="control-label" for="lblName:">Label Name:</label>
 	  		<div class="controls">
-	  			<input type="text" id="lblName" class="lblName" value="<%=lbl.getName()%>" maxlength="100"/>
+	  			<input type="text" id="lblName" class="lblName" value="<%=encoder.encode(lbl.getName())%>" maxlength="100"/>
 	  		</div>
 	  	</div>
 	  </div>

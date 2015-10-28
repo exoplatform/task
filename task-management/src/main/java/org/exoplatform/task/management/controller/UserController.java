@@ -31,6 +31,7 @@ import juzu.impl.common.Tools;
 import juzu.request.SecurityContext;
 
 import org.exoplatform.commons.juzu.ajax.Ajax;
+import org.exoplatform.commons.utils.HTMLEntityEncoder;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.Query;
@@ -47,6 +48,7 @@ import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.service.UserService;
 import org.exoplatform.task.util.ListUtil;
 import org.exoplatform.task.util.UserUtil;
+import org.gatein.common.text.EntityEncoder;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -93,12 +95,13 @@ public class UserController extends AbstractController {
       Query uQuery = new Query();
       uQuery.setUserName("*" + query + "*");
       ListAccess<User> users = uHandler.findUsersByQuery(uQuery);
+      EntityEncoder encoder = HTMLEntityEncoder.getInstance();
       JSONArray array = new JSONArray();
       for(User u : users.load(0, users.getSize())) {
         JSONObject json = new JSONObject();
         org.exoplatform.task.model.User user = userService.loadUser(u.getUserName());
         json.put("id", "@" + u.getUserName());
-        json.put("name", user.getDisplayName());
+        json.put("name", encoder.encode(user.getDisplayName()));
         json.put("avatar", user.getAvatar());
         json.put("type", "contact");
         array.put(json);

@@ -375,12 +375,12 @@ define('ta_edit_inline',
                         '<div class="avatarSmall">' +
                         '   <img src="'+item.avatar+'">' +
                         '</div>' +
-                        '<span class="text">' + escape(item.text) + ' (' + item.id +')' + '</span>' +
+                        '<span class="text">' + editInline.taApp.escape(item.text) + ' (' + item.id +')' + '</span>' +
                         '<span class="user-status"><i class="uiIconColorCircleGray"></i></span>' +
                         '</li>';
                 },
                 item: function(item, escape) {
-                    return '<span class="" href="#">' + escape(item.text) +'</span>';
+                    return '<span class="" href="#">' + editInline.taApp.escape(item.text) +'</span>';
                 }
             },
             onInitialize: function() {
@@ -455,7 +455,7 @@ define('ta_edit_inline',
                     var assg = options[assignee];
                     if (assg) {
                         $editable.find('.assigned img').attr('src', assg.avatar);
-                        $editable.find('.assigned .editAssignee').html(numberCoWorker == 0 ? assg.text : '+' + numberCoWorker + ' Coworkers');
+                        $editable.find('.assigned .editAssignee').html(numberCoWorker == 0 ? editInline.taApp.escape(assg.text) : '+' + numberCoWorker + ' Coworkers');
                     }
                 },
                 error: function(response) {
@@ -646,7 +646,7 @@ define('ta_edit_inline',
                         },
                         load: function(query, callback) {
                             if (isLoaded) {
-                                return callback();
+                                callback(allLabels);
                             }
                             //. Load all label of user
                             $.ajax({
@@ -680,7 +680,8 @@ define('ta_edit_inline',
                     };
                     editOptions.value2html = function(val) {
                         var label = allLabels[val];
-                        return '<span class="'+label.color+' label">'+label.text+'</span>';
+                        var encoder = $('<div></div>');
+                        return '<span class="'+label.color+' label">'+ encoder.text(label.text).html()+'</span>';
                     }
                 }
 

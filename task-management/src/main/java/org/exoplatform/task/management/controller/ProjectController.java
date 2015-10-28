@@ -42,6 +42,7 @@ import juzu.request.SecurityContext;
 
 import org.exoplatform.common.http.HTTPStatus;
 import org.exoplatform.commons.juzu.ajax.Ajax;
+import org.exoplatform.commons.utils.HTMLEntityEncoder;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -67,6 +68,7 @@ import org.exoplatform.task.service.UserService;
 import org.exoplatform.task.util.ListUtil;
 import org.exoplatform.task.util.ProjectUtil;
 import org.exoplatform.task.util.UserUtil;
+import org.gatein.common.text.EntityEncoder;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -194,9 +196,10 @@ public class ProjectController extends AbstractController {
       statusService.createInitialStatuses(project);
     }
 
+    EntityEncoder encoder = HTMLEntityEncoder.getInstance();
     JSONObject result = new JSONObject();
     result.put("id", project.getId());//Can throw JSONException (same for all #json.put methods below)
-    result.put("name", project.getName());
+    result.put("name", encoder.encode(project.getName()));
     result.put("color", "transparent");
 
     return Response.ok(result.toString()).withCharset(Tools.UTF_8);
@@ -213,9 +216,10 @@ public class ProjectController extends AbstractController {
     }
     Project project = projectService.cloneProject(id, Boolean.parseBoolean(cloneTask)); //Can throw ProjectNotFoundException
 
+    EntityEncoder encoder = HTMLEntityEncoder.getInstance();
     JSONObject result = new JSONObject();
     result.put("id", project.getId());
-    result.put("name", project.getName());
+    result.put("name", encoder.encode(project.getName()));
     result.put("color", project.getColor());
 
     return Response.ok(result.toString()).withCharset(Tools.UTF_8);
@@ -230,8 +234,9 @@ public class ProjectController extends AbstractController {
       if (!project.canEdit(ConversationState.getCurrent().getIdentity())) {
         throw new UnAuthorizedOperationException(id, Project.class, getNoPermissionMsg());
       }
+      EntityEncoder encoder = HTMLEntityEncoder.getInstance();
       String msg = bundle.getString("popup.msg.deleteProject");
-      msg = msg.replace("{}", project.getName());
+      msg = msg.replace("{}", encoder.encode(project.getName()));
 
       return confirmDeleteProject.with().pid(project.getId()).msg(msg)
           .ok().withCharset(Tools.UTF_8);
@@ -533,12 +538,13 @@ public class ProjectController extends AbstractController {
     }
     
     
+    EntityEncoder encoder = HTMLEntityEncoder.getInstance();
     if (isBreadcrumb == null || isBreadcrumb) {
       breadcrumbs = ProjectUtil.buildBreadcumbs(id, projectService, bundle);
     } else {
       if (p != null) {
         breadcrumbs = new StringBuilder("<li class=\"active\"><a class=\"project-name\" href=\"javascript:void(0)\">")
-        .append(p.getName())
+        .append(encoder.encode(p.getName()))
         .append("</a></li>")
         .toString();
       } else {

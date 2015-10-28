@@ -11,6 +11,9 @@
     import org.exoplatform.task.util.ListUtil;
     import org.exoplatform.task.management.controller.TaskController;
     import org.exoplatform.task.util.ProjectUtil;
+    import org.exoplatform.commons.utils.HTMLEntityEncoder;
+    
+    def encoder = HTMLEntityEncoder.getInstance();
 %>
 <div class="taskList">
     <div class="header ">
@@ -85,9 +88,9 @@
                 <% if (!isGuest) {%>
                 <img width="20px" height="20px" src="${user.avatar}" alt="${user.displayName}">
                 <%}%>
-                <a href="${isGuest ? "javascript:void(0)" : user.url}"><span class="group-name">${isGuest ? "Unassigned" : user.displayName}</span> <span class="amount-item">(${group.value.size()})</span></a>
+                <a href="${isGuest ? "javascript:void(0)" : user.url}"><span class="group-name">${isGuest ? "Unassigned" : encoder.encode(user.displayName)}</span> <span class="amount-item">(${group.value.size()})</span></a>
                 <% } else { %>
-                <div class="heading-title"><span class="group-name">${group.key}</span> <span class="amount-item">(${group.value.size()})</span></div>
+                <div class="heading-title"><span class="group-name">${encoder.encode(group.key.name)}</span> <span class="amount-item">(${group.value.size()})</span></div>
                 <% } %>
             </div>
             <%}%>
@@ -116,7 +119,7 @@
                                 <i class="${colorClass}">&nbsp;</i>
                             </span>
                         </div>
-                        <div class="column-item column-title taskName">${task.title}</div>
+                        <div class="column-item column-title taskName">${encoder.encode(task.title)}</div>
                         <div class="column-item column-time">
                             <span class="text-time inline-block-show">${DateUtil.formatDueDate(dueDateCalendar, bundle)}&nbsp;</span>
                             <%                            
@@ -126,7 +129,7 @@
                             <%if(taskLabels != null && taskLabels.size() > 0) {%>
                                 <span class="inline-block-hide labels">
                                     <%taskLabels.each {label ->%>
-                                        <a href="#" class="${label.color} label">${label.name}</a>
+                                        <a href="#" class="${label.color} label">${encoder.encode(label.name)}</a>
                                     <%}%>
                                 </span>
                             <%}%>
@@ -216,7 +219,7 @@
             <div class="empty-content">
                 <img class="image" src="/task-management/assets/org/exoplatform/task/management/assets/images/img-folder.png" alt="no-project" />
                 <div class="text-notify muted">
-                        <%=des1.replace("{}", project.getManager().iterator().next()) %></br>
+                        <%=des1.replace("{}", encoder.encode(project.getManager().iterator().next())) %></br>
                     &{label.welcome.share.description2}
                 </div>
             </div>

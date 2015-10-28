@@ -8,6 +8,9 @@
 <%
 	import org.exoplatform.task.util.TaskUtil;
 	import org.exoplatform.task.domain.Priority;
+	import org.exoplatform.commons.utils.HTMLEntityEncoder;
+
+	def encoder = HTMLEntityEncoder.getInstance();
 %>
 
 <div class="taskFilter uiBox" data-projectid="0" data-canedit="0">
@@ -45,7 +48,7 @@
 		  			<select name="status">
 		  				<option value="">All</option>
 		  				<%for (def st : status) { %>
-		  				<option value="${st.id}">${st.name}</option>
+		  				<option value="${st.id}">${encoder.encode(st.name)}</option>
 		  				<%} %>			
 		  			</select>
 		  		</div>

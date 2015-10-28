@@ -22,6 +22,12 @@
 #{param name=taskService/}
 #{param name=currentUser/}
 
+<%
+	import org.exoplatform.commons.utils.HTMLEntityEncoder;
+
+	def encoder = HTMLEntityEncoder.getInstance();
+%>
+
 <div class="projectListView" data-projectid="${currentProjectId}" data-labelid="${currentLabelId}">
     <div class="title">
         <div class="uiHeaderBar clearfix">
@@ -80,7 +86,7 @@
                 name = currentLabelName;
               }
             %>
-            <div class="label-title pull-left projectName">${name}</div>
+            <div class="label-title pull-left projectName">${encoder.encode(name)}</div>
             <div class="alignBtnGroup center">
                     <%if (currentProjectId > 0) { %>
                 <ul class="btn-group normal-group">

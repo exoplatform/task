@@ -3,6 +3,10 @@
 
 <%
 	import org.exoplatform.task.util.ResourceUtil;
+	import org.exoplatform.commons.utils.HTMLEntityEncoder;
+
+	def encoder = HTMLEntityEncoder.getInstance();
+	def name = encoder.encode(label.getName());
 %>
 
 <!-- confirm-delete-label -->
@@ -17,7 +21,7 @@
 	  		<i class="uiIconColorQuestion"></i>
 	  	</div>
 	  	<div class="media-body">
-	  		<p class="msg"><%= ResourceUtil.resolveMessage(bundle, "popup.msg.deleteLabel", label.getName())%></p>	
+	  		<p class="msg"><%= ResourceUtil.resolveMessage(bundle, "popup.msg.deleteLabel", name)%></p>	
 	  	</div>
 	  </div>
 	  <div class="uiAction uiActionBorder">

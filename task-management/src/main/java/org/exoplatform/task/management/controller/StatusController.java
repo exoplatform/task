@@ -25,6 +25,7 @@ import juzu.Response;
 
 import org.exoplatform.common.http.HTTPStatus;
 import org.exoplatform.commons.juzu.ajax.Ajax;
+import org.exoplatform.commons.utils.HTMLEntityEncoder;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.security.ConversationState;
@@ -36,6 +37,7 @@ import org.exoplatform.task.exception.NotAllowedOperationOnEntityException;
 import org.exoplatform.task.exception.UnAuthorizedOperationException;
 import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.StatusService;
+import org.gatein.common.text.EntityEncoder;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -69,6 +71,7 @@ public class StatusController extends AbstractController {
     if (project.canView(ConversationState.getCurrent().getIdentity())) {
       statuses = new LinkedList<Status>(statusService.getStatuses(projectId));
     }
+
     Collections.sort(statuses);
     for (Status status : statuses) {
       JSONObject json = new JSONObject();
@@ -88,10 +91,11 @@ public class StatusController extends AbstractController {
     if (!status.getProject().canEdit(ConversationState.getCurrent().getIdentity())) {
       throw new UnAuthorizedOperationException(id, Status.class, getNoPermissionMsg());
     }
+    EntityEncoder encoder = HTMLEntityEncoder.getInstance();
     status = statusService.updateStatus(id, name);
     JSONObject json = new JSONObject();
     json.put("id", status.getId());
-    json.put("name", status.getName());
+    json.put("name", encoder.encode(status.getName()));
     json.put("rank", status.getRank());
     return Response.ok(json.toString());
   }

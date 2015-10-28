@@ -2,8 +2,10 @@
 
 <%
 import org.exoplatform.services.security.ConversationState;
+import org.exoplatform.commons.utils.HTMLEntityEncoder;
 
 def displayListLabelItem(lbl, level) {
+  	 def encoder = HTMLEntityEncoder.getInstance();
     def identity = ConversationState.getCurrent().getIdentity();
     def hasChild = (lbl.children != null && lbl.children.size() > 0);
     def hasChildClass = hasChild  ? 'has-child' : '';
@@ -73,7 +75,7 @@ def displayListLabelItem(lbl, level) {
                 </a>
                 <a href="javascript:void(0);" class="label-name" data-labelid="${lbl.id}"
                         style="vertical-align: middle;display:inline-block;">
-                    ${lbl.name}
+                    ${encoder.encode(lbl.name)}
                 </a>
             </span>
 		</div>

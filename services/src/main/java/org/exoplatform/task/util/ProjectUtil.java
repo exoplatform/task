@@ -32,6 +32,7 @@ import java.util.ResourceBundle;
 import java.util.Set;
 
 import org.exoplatform.calendar.model.Calendar;
+import org.exoplatform.commons.utils.HTMLEntityEncoder;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
@@ -49,6 +50,7 @@ import org.exoplatform.task.exception.ParameterEntityException;
 import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.TaskService;
 import org.exoplatform.web.controller.router.Router;
+import org.gatein.common.text.EntityEncoder;
 
 /**
  * Created by The eXo Platform SAS
@@ -174,19 +176,20 @@ public final class ProjectUtil {
       }
     }
 
+    EntityEncoder encoder = HTMLEntityEncoder.getInstance();
     StringBuilder builder = new StringBuilder();
     if (project != null) {
       Project tmp = project;
       while (tmp != null) {
         StringBuilder el = new StringBuilder();
         if (builder.length() == 0) {
-          el.append("<li class=\"active\">").append(tmp.getName()).append("</li>");
+          el.append("<li class=\"active\">").append(encoder.encode(tmp.getName())).append("</li>");
         } else {
           el.append("<li>")
                   .append("<a class=\"Selected\" title=\"\" data-placement=\"bottom\" rel=\"tooltip\" href=\"#\" data-original-title=\"")
-                  .append(tmp.getName())
+                  .append(encoder.encode(tmp.getName()))
                   .append("\">")
-                  .append(tmp.getName())
+                  .append(encoder.encode(tmp.getName()))
                   .append("</a>")
                   .append("<span class=\"uiIconMiniArrowRight\"></span>")
                   .append("</li>");

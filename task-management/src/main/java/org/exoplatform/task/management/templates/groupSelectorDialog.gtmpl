@@ -2,9 +2,11 @@
 #{param name=membershipTypes /}
 #{param name=type /}
 #{param name=groupOnly/}
-
 <%
+	import org.exoplatform.commons.utils.HTMLEntityEncoder;
+
     def renderGroup(userGroup, explained) {
+        def encoder = HTMLEntityEncoder.getInstance();
         def hasChildren = (userGroup.children.size() > 0);
         def linkClasses = '';
         if (hasChildren) {
@@ -16,7 +18,7 @@
         }
 %>
         <li class="node ${explained ? "explained" : "collapsed"}">
-            <a href="javascript:void(0);" data-groupid="${userGroup.id}" data-displayname="${userGroup.displayName}" class="${linkClasses}"><i class="uiIconGroup uiIconLightGray"></i>&nbsp;${userGroup.displayName}</a>
+            <a href="javascript:void(0);" data-groupid="${userGroup.id}" data-displayname="${encoder.encode(userGroup.displayName)}" class="${linkClasses}"><i class="uiIconGroup uiIconLightGray"></i>&nbsp;${encoder.encode(userGroup.displayName)}</a>
             <% if (hasChildren) {%>
             <ul class="childrenContainer nodeGroup">
                 <%userGroup.children.each {g -> renderGroup(g, false)}%>

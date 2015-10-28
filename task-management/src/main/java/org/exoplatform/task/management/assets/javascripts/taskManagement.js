@@ -43,6 +43,11 @@ define('taskManagementApp', ['jquery', 'SHARED/juzu-ajax'],
                 $dialog.modal({'backdrop': false});
             });
         }
+        
+        taApp.escape = function(text) {
+          var encoder = $('<div></div>');
+          return encoder.text(text).html();
+        }
                 
         taApp.showWarningDialog = function(msg) {
           var $modalPlace = $('.modalPlace');

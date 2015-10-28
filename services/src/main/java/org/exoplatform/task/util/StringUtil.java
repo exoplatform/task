@@ -22,6 +22,9 @@ package org.exoplatform.task.util;
 import java.text.SimpleDateFormat;
 import java.util.regex.Pattern;
 
+import org.exoplatform.commons.utils.HTMLEntityEncoder;
+import org.gatein.common.text.EntityEncoder;
+
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
@@ -42,18 +45,19 @@ public class StringUtil {
     String lowerKeyword = keyword.toLowerCase();
     StringBuilder result = new StringBuilder();
 
+    EntityEncoder encoder = HTMLEntityEncoder.getInstance();
     int length = keyword.length();
     int fromIndex = 0;
     int index = lowerText.indexOf(lowerKeyword, fromIndex);
     while(index != -1) {
-      result.append(text.substring(fromIndex, index));
+      result.append(encoder.encode(text.substring(fromIndex, index)));
       result.append(before);
-      result.append(text.substring(index, index + length));
+      result.append(encoder.encode(text.substring(index, index + length)));
       result.append(after);
       fromIndex = index + length;
       index = lowerText.indexOf(lowerKeyword, fromIndex);
     }
-    result.append(text.substring(fromIndex));
+    result.append(encoder.encode(text.substring(fromIndex)));
     return result.toString();
   }
 }
