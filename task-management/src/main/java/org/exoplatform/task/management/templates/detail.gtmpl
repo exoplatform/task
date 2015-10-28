@@ -227,8 +227,8 @@
             def dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             dateFormat.setTimeZone(userTimezone);
 
-            def timeFormat = new SimpleDateFormat("hh:mm");
-        		timeFormat.setTimeZone(userTimezone);
+            def timeFormat = new SimpleDateFormat("HH:mm");
+        	timeFormat.setTimeZone(userTimezone);
             
             int halfHour = 30 * 60 * 1000;
             def isAllday = false;
