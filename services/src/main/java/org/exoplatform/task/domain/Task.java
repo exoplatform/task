@@ -317,6 +317,12 @@ public class Task {
         .withStatus(this.getStatus() != null ? this.getStatus().clone() : null)
         .build();
 
+    newTask.setCalendarIntegrated(isCalendarIntegrated());
+    newTask.setCreatedTime(getCreatedTime());
+    newTask.setActivityId(getActivityId());
+    newTask.setCompleted(isCompleted());
+    newTask.setRank(getRank());
+    
     //
     Set<String> coworker = new HashSet<String>();
     if (this.getCoworker() != null) {
