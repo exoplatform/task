@@ -122,12 +122,13 @@
                         <a class="toggle-collapse-group" href="#"><i class="uiIcon uiIconArrowDown"></i></a>
                         <%
                             def user = group.key.value;
+                            def isGuest = (user == null || user.username == 'guest' || user.username == null);
                         %>
-                        <% if (user != null && user.username != 'guest') {%>
+                        <% if (!isGuest) {%>
                         <img width="20px" height="20px" src="${user.avatar}" alt="${user.displayName}">
                         <%}%>
-                        <a href="javascript:void(0)">
-                            <span class="user-name-task">${user == null || user.username == "guest" ? "UnAssigned" : user.displayName}</span>
+                        <a href="${isGuest ? "javascript:void(0)" : user.url}">
+                            <span class="user-name-task">${isGuest ? "Unassigned" : user.displayName}</span>
                             <span class="amount-item user-${group.key.value == null ? "" : group.key.value.username}" data-taskcount-assignee="${group.value.size()}">(${group.value.size()})</span>
                         </a>
                         <% } else { %>
