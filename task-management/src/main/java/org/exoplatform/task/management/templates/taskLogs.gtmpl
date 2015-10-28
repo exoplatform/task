@@ -14,7 +14,18 @@ import org.exoplatform.task.util.TaskUtil;
             %>
             <a href="${user.url}">  ${user.displayName} </a>
             <span><%=bundle.getString("log." + log.getActionName())%>
-            ${log.target != null ? log.target : ""}</span>
+            <%
+                def target = log.target;
+                if (log.getActionName() == 'assign' || log.getActionName() == 'unassign') {
+                    if (userMap[target] != null) {
+                        target = userMap[target].displayName;
+                    }
+                }
+                if (target == null) {
+                    target = "";
+                }
+            %>
+            ${target}</span>
         </div>        
         <span class="date pull-right">
             <%= TaskUtil.getPeriod(log.getCreatedTime(), bundle)%>

@@ -82,7 +82,11 @@ public class TaskLoggingListener extends Listener<TaskService, TaskPayload> {
       dispatch(ctx, TaskCompletedPlugin.ID);
     }
     if (isDiff(before.getAssignee(), after.getAssignee())) {
-      service.addTaskLog(after.getId(), username, "assign", after.getAssignee());
+      if (after.getAssignee() != null && !after.getAssignee().trim().isEmpty()) {
+        service.addTaskLog(after.getId(), username, "assign", after.getAssignee());
+      } else {
+        service.addTaskLog(after.getId(), username, "unassign", before.getAssignee());
+      }
 
       NotificationContext ctx = buildContext(after);
       dispatch(ctx, TaskAssignPlugin.ID);
@@ -100,7 +104,11 @@ public class TaskLoggingListener extends Listener<TaskService, TaskPayload> {
     }
 
     if (isProjectChange(before, after)) {
-      service.addTaskLog(after.getId(), username, "edit_project", after.getStatus().getProject().getName());
+      if (after.getStatus() != null) {
+        service.addTaskLog(after.getId(), username, "edit_project", after.getStatus().getProject().getName());
+      } else {
+        service.addTaskLog(after.getId(), username, "remove_project", "");
+      }
 
     } else if (isDiff(before.getStatus(), after.getStatus())) {
       service.addTaskLog(after.getId(), username, "edit_status", after.getStatus().getName());

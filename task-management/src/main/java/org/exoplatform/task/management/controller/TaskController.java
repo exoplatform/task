@@ -174,6 +174,13 @@ public class TaskController extends AbstractController {
           User user = userService.loadUser(log.getAuthor());
           userMap.put(author, user);
         }
+        if ("assign".equals(log.getActionName()) || "unassign".equals(log.getActionName())) {
+          String target = log.getTarget();
+          if (target != null && !userMap.containsKey(target)) {
+            User user = userService.loadUser(target);
+            userMap.put(target, user);
+          }
+        }
       }
     }
     return taskLogs.with()

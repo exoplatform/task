@@ -120,10 +120,12 @@ public class ChangeLog implements Comparable<ChangeLog> {
   @Override
   public ChangeLog clone() {
     ChangeLog log = new ChangeLog();
+    log.setId(getId());
     log.setTask(getTask().clone());
     log.setAuthor(getAuthor());
     log.setActionName(getActionName());
     log.setCreatedTime(getCreatedTime());
+    log.setTarget(getTarget());
 
     return log;
   }
