@@ -166,6 +166,8 @@ $(document).ready(function() {
         $permalink.popover({
             html: true,
             content: $rightPanelContent.find('.taskPermalinkPopoverContent').html()
+        }).on('shown', function(e) {
+            $(e.target).closest('.taskPermalinkContainer').find('.popover-content input').select();
         });
         $(document).on('click', function(e) {
             if ($(e.target).closest('.taskPermalinkContainer').length > 0) {
