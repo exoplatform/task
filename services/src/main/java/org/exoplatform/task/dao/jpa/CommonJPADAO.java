@@ -92,7 +92,7 @@ public class CommonJPADAO<E, K extends Serializable> extends GenericDAOJPAImpl<E
     final TypedQuery<Long> countQuery = em.createQuery(q);
 
     //
-    q.select(root);
+    q.select(root).distinct(true);
 
     List<OrderBy> orderby = query.getOrderBy();
     if(orderby != null && !orderby.isEmpty()) {
