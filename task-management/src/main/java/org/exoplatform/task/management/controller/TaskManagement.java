@@ -99,29 +99,34 @@ public class TaskManagement {
 
   @View
   public Response.Content index(String space_group_id, SecurityContext securityContext) throws EntityNotFoundException {
-    //TODO: should check if username is null?
     String username = securityContext.getRemoteUser();
     PortalRequestContext prc = Util.getPortalRequestContext();
     String requestPath = prc.getControllerContext().getParameter(RequestNavigationData.REQUEST_PATH);
 
+    String errorMessage = "";
+
     TaskModel taskModel = null;
     List<Task> tasks = null;
     Project project = null;
-    
-    long currProject = space_group_id == null ? -1 : -2;
+
+    long currProject;
     if (space_group_id == null) {
       //. Load project ID from URL
       long id = ProjectUtil.getProjectIdFromURI(requestPath);
       if (id > -100 && prc.getControllerContext().getRequest().getQueryString() == null) {
         currProject = id;
         if (id > 0) {
-          project = projectService.getProject(currProject);          
+          try {
+            project = projectService.getProject(currProject);
+          } catch (EntityNotFoundException ex) {
+            errorMessage = bundle.getString("popup.msg.projectNotExist");
+          }
         }
       } else {
-        currProject = -1;
+        currProject = ProjectUtil.INCOMING_PROJECT_ID;
       }
     } else {
-      currProject = -2;
+      currProject = ProjectUtil.TODO_PROJECT_ID;
     }        
 
     long taskId = navState.getTaskId();
@@ -137,7 +142,8 @@ public class TaskManagement {
     TaskQuery taskQuery = new TaskQuery();
 
     if (project != null && !project.canView(identity)) {
-      currProject = space_group_id == null ? -1 : -2;
+      currProject = space_group_id == null ? ProjectUtil.INCOMING_PROJECT_ID : ProjectUtil.TODO_PROJECT_ID;
+      errorMessage = bundle.getString("popup.msg.noPermissionToViewProject");
     }
     
     //
@@ -149,15 +155,22 @@ public class TaskManagement {
           project = taskModel.getTask().getStatus().getProject();
           if (project.canView(identity)) {
             currProject = project.getId();
-            //TaskQuery taskQuery = new TaskQuery();
             taskQuery.setProjectIds(Arrays.asList(currProject));
-            //ListAccess<Task> listTasks = taskService.findTasks(taskQuery);
-            //tasks = Arrays.asList(ListUtil.load(listTasks, 0, -1)); //taskService.findTaskByQuery(taskQuery);     
             taskId = -1;
+          }
+        }
+        if (currProject <= 0) {
+          if (username.equals(taskModel.getAssignee().getUsername())) {
+            currProject = ProjectUtil.TODO_PROJECT_ID;
+            taskQuery.setIsTodoOf(username);
+          } else {
+            currProject = ProjectUtil.INCOMING_PROJECT_ID;
+            taskQuery.setIsIncomingOf(username);
           }
         }
       } catch (EntityNotFoundException e) {
         taskId = -1;
+        errorMessage = bundle.getString("popup.msg.taskNotExist");
       }
     }
 
@@ -180,6 +193,8 @@ public class TaskManagement {
       } else if (currProject > 0) {
         taskQuery.setProjectIds(Arrays.asList(currProject));
 
+      } else if (currProject == ProjectUtil.TODO_PROJECT_ID) {
+        taskQuery.setIsTodoOf(username);
       } else {
         taskQuery.setIsIncomingOf(username);
       }
@@ -189,7 +204,6 @@ public class TaskManagement {
 
     int page = 1;
     Paging paging = new Paging(page);
-    paging.setTotal(ListUtil.getSize(listTasks));
 
     // Find the page contains current task
     if (taskModel != null) {
@@ -199,8 +213,6 @@ public class TaskManagement {
       do {
         page++;
         paging = new Paging(page);
-        paging.setTotal(ListUtil.getSize(listTasks));
-
         arr = ListUtil.load(listTasks, paging.getStart(), paging.getNumberItemPerPage());
         for (Task t : arr) {
           if (t.getId() == taskId) {
@@ -209,19 +221,31 @@ public class TaskManagement {
           }
         }
       } while (!containTask && arr.length > 0);
+
+      if (!containTask) {
+        paging = new Paging(1);
+        taskModel = null;
+        taskId = -1;
+        errorMessage = bundle.getString("popup.msg.noPermissionToViewTask");
+      }
     }
+    paging.setTotal(ListUtil.getSize(listTasks));
+
 
     Map<GroupKey, List<Task>> groupTasks = new HashMap<GroupKey, List<Task>>();
     groupTasks.put(new GroupKey("", null, 0), Arrays.asList(ListUtil.load(listTasks, paging.getStart(), paging.getNumberItemPerPage())));
 
-    //Map<GroupKey, List<Task>> groupTasks = TaskUtil.groupTasks(Arrays.asList(ListUtil.load(listTasks, paging.getStart(), paging.getNumberItemPerPage())), "", username, userService.getUserTimezone(username), bundle, taskService);
-
-    //Map<GroupKey, ListAccess<Task>> groupTasks = TaskUtil.findTasks(taskService, taskQuery, "", null, userService);
-
     UserSetting setting = userService.getUserSetting(username);
 
-    //
-    long taskNum = paging.getTotal();
+    // Count all incoming task
+    long taskNum;
+    if (currProject == ProjectUtil.INCOMING_PROJECT_ID) {
+      taskNum = paging.getTotal();
+    } else {
+      TaskQuery q = new TaskQuery();
+      q.setIsIncomingOf(username);
+      taskNum = ListUtil.getSize(taskService.findTasks(q));
+    }
 
     Map<String, String> defOrders = TaskUtil.getDefOrders(bundle);
     Map<String, String> defGroupBys = TaskUtil.getDefGroupBys(currProject, bundle);
@@ -255,6 +279,7 @@ public class TaskManagement {
         .taskService(taskService)
         .currentUser(username)
         .paging(paging)
+        .errorMessage(errorMessage)
         .ok().withCharset(Tools.UTF_8);
   }
   

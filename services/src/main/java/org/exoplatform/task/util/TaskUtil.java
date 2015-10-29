@@ -860,14 +860,19 @@ public final class TaskUtil {
   
   public static boolean hasPermission(Task task) {
     Identity identity = ConversationState.getCurrent().getIdentity();
+    String userId = identity.getUserId();
+
+    if ((task.getAssignee() != null && task.getAssignee().equals(identity.getUserId())) ||
+            task.getCoworker().contains(userId) || (task.getCreatedBy() != null && task.getCreatedBy().equals(userId))) {
+      return true;
+    }
+
     if (task.getStatus() != null) {
       Project project = task.getStatus().getProject();
       return project.canView(identity);
-    } else {
-      String userId = identity.getUserId();
-      return (task.getAssignee() != null && task.getAssignee().equals(identity.getUserId())) ||
-          task.getCoworker().contains(userId) || (task.getCreatedBy() != null && task.getCreatedBy().equals(userId));
     }
+
+    return false;
   }
 
   public static boolean hasPermissionOnField(Task task, String name, String[] values, StatusService statusService, 

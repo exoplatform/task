@@ -21,6 +21,7 @@
 #{param name=currentLabelId/}
 #{param name=advanceSearch/}
 #{param name=paging/}
+#{param name=errorMessage/}
 
 <!-- Consider this -->
 #{param name=taskService/}
@@ -40,7 +41,7 @@
                     <ul class="list-projects">
                         <li class="dropdown project-item ${currentProjectId == -1 ? "active" : ""}">
                             <div class="sub-item">
-                                <a class="project-name" data-id="-1" href="@{TaskManagement.index()}">&{label.incoming}&nbsp;<span class="badgeDefault badgePrimary mini top">${taskNum}</span></a>
+                                <a class="project-name" data-id="-1" href="javascript:void(0);">&{label.incoming}&nbsp;<span class="badgeDefault badgePrimary mini top">${taskNum}</span></a>
                             </div>
                         </li>
                         <li class="dropdown project-item ${currentProjectId == -2 ? "active" : ""}"">
@@ -526,3 +527,10 @@
 		</div>
 	</div>
 </div>
+<script type="text/javascript">
+<%if (errorMessage != null && !errorMessage.isEmpty()) {%>
+    require(['taskManagementApp'], function(taApp) {
+        taApp.showWarningDialog("${errorMessage}");
+    });
+<%}%>
+</script>
