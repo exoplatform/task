@@ -156,7 +156,6 @@ public class TaskManagement {
           if (project.canView(identity)) {
             currProject = project.getId();
             taskQuery.setProjectIds(Arrays.asList(currProject));
-            taskId = -1;
           }
         }
         if (currProject <= 0) {
