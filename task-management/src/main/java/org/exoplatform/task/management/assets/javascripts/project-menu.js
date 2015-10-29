@@ -234,8 +234,8 @@ define('project-menu', ['SHARED/jquery', 'ta_edit_inline', 'SHARED/task_ck_edito
     $modalPlace.on('click', '.actionEditPermission, .actionCloseEditPermission', function(e) {
         var $a = $(e.target || e.srcElement).closest('a');
         var $td = $a.closest('td');
-        $td.find('.permission-display').toggleClass('hidden');
-        $td.find('.action-mentions').toggleClass('hidden');
+        $td.find('.permission-display').toggleClass('hide');
+        $td.find('.action-mentions').toggleClass('hide');
     });
 
     $modalPlace.on('click', '.replaceTextArea', function(e) {

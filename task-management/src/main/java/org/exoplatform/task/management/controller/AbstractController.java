@@ -73,7 +73,7 @@ public class AbstractController implements RequestLifeCycle {
 
   @Override
   public void beginRequest(RequestContext context) {
-    
+
   }
 
   @Override

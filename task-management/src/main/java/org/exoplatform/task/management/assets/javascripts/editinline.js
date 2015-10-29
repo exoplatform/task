@@ -229,9 +229,9 @@ define('ta_edit_inline',
                 callback.done(function(response) {
                     $popover.html(response);
                     if (plan == null) {
-                        $removeWorkPlan.addClass("hidden");
+                        $removeWorkPlan.addClass("hide");
                     } else {
-                        $removeWorkPlan.removeClass("hidden");
+                        $removeWorkPlan.removeClass("hide");
                     }
                 }).fail(function() {
 //                    alert('fail to update');
@@ -434,11 +434,11 @@ define('ta_edit_inline',
                     var assignee = $assignee.val();
                     var coworkders = $rightPanel.find('input[name="coworker"]').val();
                     if (assignee == '' && coworkders == '') {
-                        $editable.find('.unassigned').removeClass('hidden');
-                        $editable.find('.assigned').addClass('hidden');
+                        $editable.find('.unassigned').removeClass('hide');
+                        $editable.find('.assigned').addClass('hide');
                     } else {
-                        $editable.find('.unassigned').addClass('hidden');
-                        $editable.find('.assigned').removeClass('hidden');
+                        $editable.find('.unassigned').addClass('hide');
+                        $editable.find('.assigned').removeClass('hide');
                     }
                     if (coworkders == '') {
                         coworkders = [];
@@ -607,9 +607,9 @@ define('ta_edit_inline',
                         var isEmpty = newValue.length == 0 || newValue[0] == '';
                         var $i = $this.parent().find('.icon-hash');
                         if (isEmpty) {
-                            $i.removeClass('hidden');
+                            $i.removeClass('hide');
                         } else {
-                            $i.addClass('hidden');
+                            $i.addClass('hide');
                         }
                         if (fieldName == 'labels') {
                           $('.rightPanelContent ').trigger('saveLabel');

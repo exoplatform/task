@@ -30,7 +30,7 @@
             </td>
             <td class="manager" data-type="manager">
                 <!-- this is result after choice permision-->
-                <div class="permission-display ${editingField == "manager" ? "hidden" : ""}">
+                <div class="permission-display ${editingField == "manager" ? "hide" : ""}">
                     <div class="pull-right edit-action">
                         <a href="javascript:void(0)" class="actionIcon action-edit-user actionEditPermission" data-original-title="edit" data-toggle="tooltip" rel="tooltip" data-placement="bottom">
                             <i class="uiIconEdit uiIconLightGray"></i>
@@ -47,7 +47,7 @@
                     </div>
                 </div>
                 <!-- this is mention action-->
-                <div class="action-mentions ${editingField == "manager" ? "" : "hidden"}">
+                <div class="action-mentions ${editingField == "manager" ? "" : "hide"}">
                     <div class="exo-mentions" >
                         <div class="permission-owner clearfix">
                             <!-- display mention-->
@@ -128,7 +128,7 @@
             </td>
             <td class="manager" data-type="participant">
                 <!-- this is result after choice permision-->
-                <div class="permission-display ${editingField == "participant" ? "hidden" : ""}">
+                <div class="permission-display ${editingField == "participant" ? "hide" : ""}">
                     <div class="pull-right edit-action">
                         <a href="javascript:void(0)" class="actionIcon action-edit-user actionEditPermission" data-original-title="edit" data-toggle="tooltip" rel="tooltip" data-placement="bottom">
                             <i class="uiIconEdit uiIconLightGray"></i>
@@ -145,7 +145,7 @@
                     </div>
                 </div>
                 <!-- this is mention action-->
-                <div class="action-mentions ${editingField == "participant" ? "" : "hidden"}">
+                <div class="action-mentions ${editingField == "participant" ? "" : "hide"}">
                     <div class="exo-mentions" >
                         <div class="permission-owner clearfix">
                             <!-- display mention-->
