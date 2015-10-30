@@ -190,8 +190,8 @@ define('project-menu', ['SHARED/jquery', 'ta_edit_inline', 'SHARED/task_ck_edito
               d.resolve();
               //
               $leftPanel
-                .find('li.project-item a.project-name[data-id="'+ data.projectId +'"]').html(data.name);
-              $centerPanel.find('[data-projectid="'+data.projectId+'"] .projectName').html(data.name);
+                .find('li.project-item a.project-name[data-id="'+ data.projectId +'"]').text(data.name);
+              $centerPanel.find('[data-projectid="'+data.projectId+'"] .projectName').text(data.name);
               taApp.reloadProjectTree(data.projectId);
           },
           error: function(xhr, textStatus, errorThrown ) {
