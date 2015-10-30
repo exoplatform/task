@@ -159,7 +159,7 @@ public class TaskManagement {
           }
         }
         if (currProject <= 0) {
-          if (username.equals(taskModel.getAssignee().getUsername())) {
+          if (taskModel.getAssignee() != null && username.equals(taskModel.getAssignee().getUsername())) {
             currProject = ProjectUtil.TODO_PROJECT_ID;
             taskQuery.setIsTodoOf(username);
           } else {
