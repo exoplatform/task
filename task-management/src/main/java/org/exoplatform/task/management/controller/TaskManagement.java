@@ -237,13 +237,12 @@ public class TaskManagement {
     UserSetting setting = userService.getUserSetting(username);
 
     // Count all incoming task
-    long taskNum;
-    if (currProject == ProjectUtil.INCOMING_PROJECT_ID) {
-      taskNum = paging.getTotal();
-    } else {
+    long taskNum = paging.getTotal();
+    long incomNum = taskNum;
+    if (currProject != ProjectUtil.INCOMING_PROJECT_ID) {
       TaskQuery q = new TaskQuery();
       q.setIsIncomingOf(username);
-      taskNum = ListUtil.getSize(taskService.findTasks(q));
+      incomNum = ListUtil.getSize(taskService.findTasks(q));
     }
 
     Map<String, String> defOrders = TaskUtil.getDefOrders(bundle);
@@ -261,6 +260,7 @@ public class TaskManagement {
         .project(project)
         .tasks(tasks)
         .taskNum(taskNum)
+        .incomNum(incomNum)
         .groupTasks(groupTasks)
         .keyword("")
         .advanceSearch(false)

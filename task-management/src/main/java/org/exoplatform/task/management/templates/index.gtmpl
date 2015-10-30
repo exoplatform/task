@@ -2,6 +2,7 @@
 #{param name=project /}
 #{param name=tasks /}
 #{param name=taskNum/}
+#{param name=incomNum/}
 #{param name=groupTasks /}
 #{param name=keyword /}
 #{param name=groupBy /}
@@ -41,7 +42,7 @@
                     <ul class="list-projects">
                         <li class="dropdown project-item ${currentProjectId == -1 ? "active" : ""}">
                             <div class="sub-item">
-                                <a class="project-name" data-id="-1" href="javascript:void(0);">&{label.incoming}&nbsp;<span class="badgeDefault badgePrimary mini top">${taskNum}</span></a>
+                                <a class="project-name" data-id="-1" href="javascript:void(0);">&{label.incoming}&nbsp;<span class="badgeDefault badgePrimary mini top">${incomNum}</span></a>
                             </div>
                         </li>
                         <li class="dropdown project-item ${currentProjectId == -2 ? "active" : ""}"">

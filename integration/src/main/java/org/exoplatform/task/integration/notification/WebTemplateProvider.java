@@ -29,6 +29,7 @@ import org.exoplatform.commons.api.notification.service.storage.WebNotificationS
 import org.exoplatform.commons.api.notification.service.template.TemplateContext;
 import org.exoplatform.commons.notification.template.TemplateUtils;
 import org.exoplatform.commons.utils.CommonsUtils;
+import org.exoplatform.commons.utils.HTMLEntityEncoder;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.social.core.identity.model.Identity;
 import org.exoplatform.social.core.identity.model.Profile;
@@ -38,6 +39,7 @@ import org.exoplatform.social.core.service.LinkProvider;
 import org.exoplatform.social.notification.LinkProviderUtils;
 import org.exoplatform.task.service.UserService;
 import org.exoplatform.webui.utils.TimeConvertUtils;
+import org.gatein.common.text.EntityEncoder;
 
 import java.io.Writer;
 import java.util.Calendar;
@@ -105,16 +107,17 @@ public class WebTemplateProvider extends TemplateProvider {
         dueDate = new Date(Long.parseLong(tmpD));
       }
       
+      EntityEncoder encoder = HTMLEntityEncoder.getInstance();
       Identity identity = CommonsUtils.getService(IdentityManager.class).getOrCreateIdentity(OrganizationIdentityProvider.NAME, creator, true);
       Profile profile = identity.getProfile();
-      templateContext.put("USER", profile.getFullName());
+      templateContext.put("USER", encoder.encode(profile.getFullName().toString()));
       templateContext.put("AVATAR", profile.getAvatarUrl() != null ? profile.getAvatarUrl() : LinkProvider.PROFILE_DEFAULT_AVATAR_URL);
       templateContext.put("PROFILE_URL", LinkProviderUtils.getRedirectUrl("user", identity.getRemoteId()));
       //
-      templateContext.put("PROJECT_NAME", projectName);
+      templateContext.put("PROJECT_NAME", encoder.encode(projectName));
       templateContext.put("TASK_URL", taskUrl);
       templateContext.put("PROJECT_URL", projectUrl);
-      templateContext.put("TASK_TITLE", taskTitle);
+      templateContext.put("TASK_TITLE", encoder.encode(taskTitle));
       UserService userService = CommonsUtils.getService(UserService.class);
       templateContext.put("DUE_DATE", org.exoplatform.task.integration.notification.TemplateUtils.format(dueDate, userService.getUserTimezone(notification.getTo())));        
       //
