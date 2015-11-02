@@ -16,6 +16,7 @@
 */
 package org.exoplatform.task.injector;
 
+import org.exoplatform.commons.api.persistence.ExoTransactional;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.services.bench.DataInjector;
 import org.exoplatform.services.log.ExoLogger;
@@ -158,7 +159,7 @@ public class TaskInjector extends DataInjector {
     init();
     //Create personal tasks
     if (USER_TASK_TYPE.equals(taskType)) {
-      addPersonnalTasks();
+      addPersonalTasks();
     }
     //Create space tasks
     else {
@@ -182,42 +183,46 @@ public class TaskInjector extends DataInjector {
     return null;
   }
 
-  private void addPersonnalTasks() {
+  private void addPersonalTasks() {
 
     LOG.info("Adding " + nbProject + " personal projects with " + nbTasks + " tasks for "+(userTo-userFrom)
         +" user(s)" );
 
     for (int i = userFrom; i < userTo; i++) {
+      addPersonalTasksByUser(i);
+    }
 
-      //Get username
-      String userName = getUsername(i);
+  }
 
-      LOG.info("Add personnal tasks to user: "+userName);
+  @ExoTransactional
+  private void addPersonalTasksByUser(int userNb) {
 
-      //Create tasks
-      //Create tasks associated to personal project of the user
-      //Loop on number of projects
-      for (int j = 0; j < nbProject; j++) {
-        //Create project
-        Project project = createProject(userName, j);
-        project = projectService.createProject(project);
+    //Get username
+    String userName = getUsername(userNb);
 
-        //Create status for project
-        List<Status> statuses = createStatus(project);
+    LOG.info("Add personnal tasks to user: "+userName);
 
-        //Loop on number of tasks per project
-        for (int k = 0; k < nbTasks; k++) {
-          Task task = createTask(statuses.get(random.nextInt(3)), userName, project.getName(), k, true);
-        }
-      }
+    //Create tasks
+    //Create tasks associated to personal project of the user
+    //Loop on number of projects
+    for (int j = 0; j < nbProject; j++) {
+      //Create project
+      Project project = createProject(userName, j);
+      project = projectService.createProject(project);
 
-      //Create Incoming Task (not attached to project) of the user
-      for (int j = 0; j < nbIncomingTasks; j++) {
-        Task task = createTask(null, userName, "Incoming-"+userName, j, false);
-        taskService.createTask(task);
+      //Create status for project
+      List<Status> statuses = createStatus(project);
+
+      //Loop on number of tasks per project
+      for (int k = 0; k < nbTasks; k++) {
+        createTask(statuses.get(random.nextInt(3)), userName, project.getName(), k, true);
       }
     }
 
+    //Create Incoming Task (not attached to project) of the user
+    for (int j = 0; j < nbIncomingTasks; j++) {
+      createTask(null, userName, "Incoming-"+userName, j, false);
+    }
   }
 
   private void addSpaceTasks() {
@@ -225,37 +230,42 @@ public class TaskInjector extends DataInjector {
     LOG.info("Adding " + nbProject + " space projects with " + nbTasks + " tasks for "+(userTo-userFrom)+" space(s)" );
 
     for (int i = userFrom; i < userTo; i++) {
+      addSpaceTasksByUser(i);
+    }
 
-      //Get space name
-      String spaceName = getSpaceName(i);
-      String manager = "manager:/spaces/" + spaceName;
-      String member = "member:/spaces/" + spaceName;
+  }
 
-      LOG.info("Add tasks to space: " + spaceName);
+  @ExoTransactional
+  private void addSpaceTasksByUser(int userNb) {
 
-      //Create tasks
-      //Create tasks associated to personal project of the user
-      //Loop on number of projects
-      for (int j = 0; j < nbProject; j++) {
-        //Create project
-        Project project = createProject(manager, j);
-        //Add space member, member of the project
-        Set<String> members = new HashSet<String>();
-        members.add(member);
-        project.setParticipator(members);
+    //Get space name
+    String spaceName = getSpaceName(userNb);
+    String manager = "manager:/spaces/" + spaceName;
+    String member = "member:/spaces/" + spaceName;
 
-        project = projectService.createProject(project);
+    LOG.info("Add tasks to space: " + spaceName);
+
+    //Create tasks
+    //Create tasks associated to personal project of the user
+    //Loop on number of projects
+    for (int j = 0; j < nbProject; j++) {
+      //Create project
+      Project project = createProject(manager, j);
+      //Add space member, member of the project
+      Set<String> members = new HashSet<String>();
+      members.add(member);
+      project.setParticipator(members);
+
+      project = projectService.createProject(project);
 
 
-        //Add default status to the project
-        List<Status> statuses = createStatus(project);
+      //Add default status to the project
+      List<Status> statuses = createStatus(project);
 
-        //Loop on number of tasks per project
-        for (int k = 0; k < nbTasks; k++) {
-          Task task = createTask(statuses.get(random.nextInt(3)), manager, project.getName(), k, true);
-        }
+      //Loop on number of tasks per project
+      for (int k = 0; k < nbTasks; k++) {
+        createTask(statuses.get(random.nextInt(3)), manager, project.getName(), k, true);
       }
-
     }
 
   }
