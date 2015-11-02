@@ -318,7 +318,7 @@ define('ta_edit_inline',
                         var tDate = new Date(toDates[0], toDates[1] - 1, toDates[2], toTimes[0], toTimes[1], 0).getTime();
 
                         if (fDate >= tDate) {
-                            $pop.find('.errorMessage').html('To time can not be lesser than from time');
+                            $pop.find('.errorMessage').html('The End date time must be after the Start date time');
                             updatePopoverPossition();
                         } else {
                             $pop.find('.errorMessage').html('');
