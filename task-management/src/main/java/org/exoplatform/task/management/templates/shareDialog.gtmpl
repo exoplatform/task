@@ -14,7 +14,7 @@
 <div class="sharePrjDialog modal hide fade in uiPopup" data-projectid="${pid}" tabindex="-1" role="dialog" aria-labelledby="shareProjectLabel" aria-hidden="true">
   <div class="popupHeader clearfix">
         <a onclick="" title="Close Window" data-dismiss="modal" aria-hidden="true" class="uiIconClose pull-right"></a>
-        <h3 id="shareProjectLabel" class="PopupTitle popupTitle">&{popup.shareProject}</h3>
+        <div id="shareProjectLabel" class="PopupTitle popupTitle">&{popup.shareProject}</div>
    </div>
    <div class="PopupContent popupContent">
     <div class="hidden listMembershipType">

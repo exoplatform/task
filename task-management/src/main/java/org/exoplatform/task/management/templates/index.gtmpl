@@ -501,7 +501,7 @@
 	    <div class="confirmCloneProject uiPopup modal hide fade" tabindex="-1" role="dialog" aria-labelledby="cloneProjectLabel" aria-hidden="true">
 		  <div class="popupHeader clearfix">
 		  	<a onclick="" title="Close Window" data-dismiss="modal" aria-hidden="true" class="uiIconClose pull-right"></a>
-		    <h3 id="cloneProjectLabel" class="PopupTitle popupTitle">&{popup.confirm}</h3>
+		    <div id="cloneProjectLabel" class="PopupTitle popupTitle">&{popup.confirm}</div>
 		  </div>
 		  <div class="PopupContent popupContent">
 			  <div class="media">

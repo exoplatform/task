@@ -47,13 +47,13 @@
                 </form>
             </div>
         </div>
-        <a data-toggle="dropdown" class="dropdown-toggle actionIconSmall" href="#"><i class="uiIconArrowDown"></i></a>
+        <a data-toggle="dropdown" class="dropdown-toggle actionIcon" href="#"><i class="uiIconArrowDown"></i></a>
         <ul class="dropdown-menu">
             <li><a class="action-clone-task" href="#"><i class="uiIconCloneNode"></i> &{label.clone}</a></li>
             <li><a class="action-watch-task" href="#"><i class="uiIconWatch"></i> &{label.watch}</a></li>
             <li><a class="action-delete-task" href="#"><i class="uiIconDelete"></i> &{label.delete}</a></li>
         </ul>
-        <a class="actionIconSmall close-right-panel" href="#"><i class="uiIconClose"></i></a>
+        <a class="actionIcon close-right-panel" href="#"><i class="uiIconClose"></i></a>
     </div>
 
     <div class="uiEditableInline clearfix ">

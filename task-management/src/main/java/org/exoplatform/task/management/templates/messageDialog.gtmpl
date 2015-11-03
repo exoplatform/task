@@ -11,11 +11,11 @@
 <div class="uiPopup modal hide fade" tabindex="-1" role="dialog" aria-hidden="true">
 	<div class="popupHeader clearfix">
   	 <a onclick="" title="Close Window" data-dismiss="modal" aria-hidden="true" class="uiIconClose pull-right"></a>
-    <h3 id="confirmLabel" class="PopupTitle popupTitle">
+    <div id="confirmLabel" class="PopupTitle popupTitle">
       <%if (AbstractController.MSG_TYPE.WARNING.equals(type)) { %>
     	&{popup.warning}
     	<%} %>
-    </h3>
+    </div>
    </div>
 	
 	<div class="PopupContent popupContent">	

@@ -193,6 +193,29 @@ li[data-hiddenlabel="false"] {
             margin: 20px 15px;
         }
     }
+    .taskBoardView{
+        .hover-action-reveal{
+            .inline-block-hide:hover{
+                .uiIcon{
+                    color: white;
+                }
+            }
+        }
+    }
+    .modalPlace{
+        .popupTitle{
+            .dropdown{
+                .uiIconArrowDown{
+                    margin: 0;
+                }
+            }
+        }
+        .popupHeader{
+            .uiIconClose{
+                color: #626262;
+            }
+        }
+    }
 }
 
 /* Projects Area */
@@ -541,6 +564,9 @@ li[data-hiddenlabel="false"] {
         .settingActionButtons {
              .advancedSearch-action  {
                 display: inline-block;
+                .action-close{
+                    margin: 5px 6px 0 0;
+                }
             }
         }
         .uiSearchInput   {
@@ -991,6 +1017,7 @@ li[data-hiddenlabel="false"] {
   }
 }
 .exo-mentions .replaceTextArea {
+    padding: 0 5px;
   .groupMembership {
     display: inline-block;
     position: relative;
@@ -1010,7 +1037,8 @@ li[data-hiddenlabel="false"] {
     outline: none;
     box-shadow: none;
     margin-bottom: 0px;
-    padding: 0;
+    margin: 2px 0 0;
+    height: 26px;
   }
 }
 .header-right .action-bar + .action-bar {
@@ -1042,12 +1070,13 @@ li[data-hiddenlabel="false"] {
             margin-bottom: 10px;
             .hover-action-reveal{
                 background: #545454;
-                padding: 10px 18px;
+                padding: 10px 24px;
                 border-radius:3px 5px 5px 3px;
                 outline: 1px solid white;
                 position: relative;
                 color: white;
                 text-align: center;
+                word-wrap: break-word;
                 .editable{
                     font-size: 14px;
                 }
@@ -1070,6 +1099,8 @@ li[data-hiddenlabel="false"] {
 
             }
             .hover-action-reveal:nth-last-child(2){
+                padding: 10px 32px 10px 18px;
+                border-radius:3px;
                 .uiIconDelete{
                     position: absolute;
                     right: 30px;
@@ -1202,10 +1233,6 @@ li[data-hiddenlabel="false"] {
         margin-top: 5px;
     }
 }
-.project-item.active > .sub-item .collapseSubProject .uiIconLightGray,
-.label-item.active > .sub-item .collapseSubLabel .uiIconLightGray  {
-    color: white;
-}
 
 .table-project .column-checkbox .status-task.block-hide {
     margin-left: 8px;
@@ -1290,6 +1317,21 @@ li[data-hiddenlabel="false"] {
             .selectize-input{
                 padding: 2px 4px;
             }
+        }
+    }
+}
+// Reset some component for Task
+#taskManagement {
+    .uiAccordion.leftPanel .accordion-heading .item {
+        border-bottom: none;
+    }
+    .uiAccordion.leftPanel .accordion-heading .item + .list-projects {
+        border-top: 1px solid #ccc;
+    }
+    .uiAccordion.leftPanel .accordion-heading .sub-item {
+        border-bottom: none;
+        + .sub-menu {
+            border-top: 1px solid white;
         }
     }
 }

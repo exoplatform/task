@@ -152,6 +152,18 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
 .taskMngCont {
   margin: 20px;
 }
+.taskMngCont .taskList .pagination {
+  margin: 20px 15px;
+}
+.taskMngCont .taskBoardView .hover-action-reveal .inline-block-hide:hover .uiIcon {
+  color: white;
+}
+.taskMngCont .modalPlace .popupTitle .dropdown .uiIconArrowDown {
+  margin: 0;
+}
+.taskMngCont .modalPlace .popupHeader .uiIconClose {
+  color: #626262;
+}
 /* Projects Area */
 #taskManagement .tooltip {
   white-space: nowrap;
@@ -178,7 +190,7 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
 }
 #taskManagement .centerPanel.uiBox .projectListView .title .uiSearchInput .advancedSearch,
 #taskManagement .centerPanel.uiBox .projectListView .title .uiSearchInput .AdvancedSearch {
-  top: 1px;
+  top: 5px;
 }
 #taskManagement .centerPanel.uiBox .projectListView .title .settingActionButtons {
   margin-left: 5px;
@@ -283,8 +295,13 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
 .rightPanel .addTask .breadcrumbCont li {
   font-weight: bold;
 }
+.rightPanel .addTask .breadcrumbCont li .project-name {
+  color: #333;
+}
 .rightPanel .addTask .breadcrumbCont li i {
   font-weight: normal;
+  margin-left: 4px;
+  top: -1px;
 }
 .rightPanel .addTask .breadcrumbCont .breadcrumb {
   display: block;
@@ -415,6 +432,9 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
 }
 .centerPanel.span5 .settingActionButtons .advancedSearch-action {
   display: inline-block;
+}
+.centerPanel.span5 .settingActionButtons .advancedSearch-action .action-close {
+  margin: 5px 6px 0 0;
 }
 .centerPanel.span5 .uiSearchInput {
   display: none;
@@ -765,6 +785,9 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
 .nodeGroup li.node.collapsed > .childrenContainer {
   display: none;
 }
+.exo-mentions .replaceTextArea {
+  padding: 0 5px;
+}
 .exo-mentions .replaceTextArea .groupMembership {
   display: inline-block;
   position: relative;
@@ -784,7 +807,8 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
   outline: none;
   box-shadow: none;
   margin-bottom: 0px;
-  padding: 0;
+  margin: 2px 0 0;
+  height: 26px;
 }
 .header-right .action-bar + .action-bar {
   margin-right: 2px;
@@ -806,12 +830,13 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
 }
 .taskBoardView .table-project-collapse .caption-heading .hover-action-reveal {
   background: #545454;
-  padding: 10px 18px;
+  padding: 10px 24px;
   border-radius: 3px 5px 5px 3px;
   outline: 1px solid white;
   position: relative;
   color: white;
   text-align: center;
+  word-wrap: break-word;
 }
 .taskBoardView .table-project-collapse .caption-heading .hover-action-reveal .editable {
   font-size: 14px;
@@ -831,6 +856,10 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
   font-size: 11px;
   vertical-align: top;
   margin-left: 3px;
+}
+.taskBoardView .table-project-collapse .caption-heading .hover-action-reveal:nth-last-child(2) {
+  padding: 10px 32px 10px 18px;
+  border-radius: 3px;
 }
 .taskBoardView .table-project-collapse .caption-heading .hover-action-reveal:nth-last-child(2) .uiIconDelete {
   position: absolute;
@@ -947,10 +976,6 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
 .uiAccordion.leftPanel .accordion-heading .sub-item .label-name .badgeDefault.mini {
   margin-top: 5px;
 }
-.project-item.active > .sub-item .collapseSubProject .uiIconLightGray,
-.label-item.active > .sub-item .collapseSubLabel .uiIconLightGray {
-  background-image: url("/eXoSkin/skin/images/themes/default/Icons/uiIconsSecondary.png");
-}
 .table-project .column-checkbox .status-task.block-hide {
   margin-left: 8px;
 }
@@ -1024,4 +1049,16 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
 }
 .taskFilter .controls .multi .selectize-input {
   padding: 2px 4px;
+}
+#taskManagement .uiAccordion.leftPanel .accordion-heading .item {
+  border-bottom: none;
+}
+#taskManagement .uiAccordion.leftPanel .accordion-heading .item + .list-projects {
+  border-top: 1px solid #ccc;
+}
+#taskManagement .uiAccordion.leftPanel .accordion-heading .sub-item {
+  border-bottom: none;
+}
+#taskManagement .uiAccordion.leftPanel .accordion-heading .sub-item + .sub-menu {
+  border-top: 1px solid white;
 }
