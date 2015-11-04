@@ -24,6 +24,7 @@ import org.exoplatform.services.security.Identity;
 import org.exoplatform.services.security.MembershipEntry;
 
 import javax.persistence.*;
+
 import java.util.*;
 
 /**
@@ -185,18 +186,19 @@ public class Project {
   }
 
   public Project clone(boolean cloneTask) {
-    Set<String> manager = new HashSet<String>();
-    Set<String> participator = new HashSet<String>();
-
-    if (getManager() != null) {
-      manager.addAll(getManager());
-    }
-    if (getParticipator() != null) {
-      participator.addAll(getParticipator());
-    }
-
     Project project = new Project(this.getName(), this.getDescription(), new HashSet<Status>(),
-        manager, participator);
+        null, null) {
+
+          @Override
+          public Set<String> getParticipator() {
+            return Project.this.getParticipator();
+          }
+
+          @Override
+          public Set<String> getManager() {
+            return Project.this.getManager();
+          }      
+    };
 
     project.setId(getId());
     project.setColor(this.getColor());

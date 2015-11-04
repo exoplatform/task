@@ -387,5 +387,14 @@
       <column name="USERNAME" type="NVARCHAR(50)"/>
     </createIndex>
   </changeSet>
-
+  <changeSet author="task" id="1.0.0-24">
+    <createIndex indexName="IDX_TASK_TASKS_02"
+                 tableName="TASK_TASKS">
+      <column name="ASSIGNEE" type="NVARCHAR(50)"/>
+    </createIndex>
+    <createIndex indexName="IDX_TASK_TASKS_03"
+                 tableName="TASK_TASKS">
+      <column name="CREATED_BY" type="NVARCHAR(50)"/>
+    </createIndex>
+  </changeSet>
 </databaseChangeLog>

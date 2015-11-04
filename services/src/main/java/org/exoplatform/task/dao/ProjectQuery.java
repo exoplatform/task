@@ -33,6 +33,20 @@ public class ProjectQuery extends Query {
     }
     return this;
   }
+  
+  public ProjectQuery setManager(List<String> managers) {
+    if (managers != null) {
+      this.add(Conditions.in(Conditions.MANAGER, managers));
+    }
+    return this;
+  }
+  
+  public ProjectQuery setParticipator(List<String> participators) {
+    if (participators != null) {
+      this.add(Conditions.in(Conditions.PARTICIPATOR, participators));
+    }
+    return this;
+  }
 
   public ProjectQuery setKeyword(String keyword) {
     if (keyword != null && !keyword.trim().isEmpty()) {

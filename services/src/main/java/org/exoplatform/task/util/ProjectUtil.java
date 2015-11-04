@@ -20,6 +20,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -31,24 +32,20 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 
-import org.exoplatform.calendar.model.Calendar;
 import org.exoplatform.commons.utils.HTMLEntityEncoder;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.container.ExoContainer;
-import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.portal.mop.SiteKey;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
-import org.exoplatform.task.dao.TaskQuery;
+import org.exoplatform.task.dao.ProjectQuery;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
-import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.exception.ParameterEntityException;
 import org.exoplatform.task.service.ProjectService;
-import org.exoplatform.task.service.TaskService;
 import org.exoplatform.web.controller.router.Router;
 import org.gatein.common.text.EntityEncoder;
 
@@ -75,24 +72,39 @@ public final class ProjectUtil {
   
   public static List<Project> getProjectTree(String space_group_id, ProjectService projectService) {
     List<String> memberships = new LinkedList<String>();
+    ConversationState state = ConversationState.getCurrent();
+    Identity identity = state.getIdentity();
     if (space_group_id == null) {
-      ConversationState state = ConversationState.getCurrent();
-      Identity identity = state.getIdentity();
       memberships.addAll(UserUtil.getMemberships(identity));      
     } else {
       memberships.addAll(UserUtil.getSpaceMemberships(space_group_id));
     }
 
-    ListAccess<Project> projects = projectService.findProjects(memberships, null, null);
-    List<Project> tmp = new LinkedList<Project>();
+//    ListAccess<Project> projects = projectService.findProjects(memberships, null, null);
+    ProjectQuery manQ = new ProjectQuery();
+    manQ.setManager(memberships);
+    ListAccess<Project> editPrj = projectService.findProjects(manQ);
+    //
+    ProjectQuery parQ = new ProjectQuery();
+    parQ.setParticipator(memberships);
+    ListAccess<Project> viewPrj = projectService.findProjects(parQ);
+    //
+    Set<Project> tmp = new HashSet<Project>();
     try {
-      tmp = Arrays.asList(projects.load(0, -1));
+      tmp.addAll(buildProxy(Arrays.asList(editPrj.load(0, -1)), identity, true));
+      tmp.addAll(buildProxy(Arrays.asList(viewPrj.load(0, -1)), identity, false));
     } catch (Exception ex) {
       LOG.error("Can't load project list", ex);
     }
-    return ProjectUtil.buildRootProjects(tmp);
+    return ProjectUtil.buildRootProjects(new LinkedList<Project>(tmp));
+  }
 
-    //return projectService.getProjectTreeByMembership(memberships);
+  private static Collection<? extends Project> buildProxy(List<Project> projects, Identity user, boolean editable) {
+    List<Project> tmp = new LinkedList<Project>();
+    for (Project p : projects) {
+      tmp.add(new ProjectProxy(p, user, editable));
+    }
+    return tmp;
   }
 
   public static List<Project> buildRootProjects(List<Project> projects) {
@@ -341,5 +353,136 @@ public final class ProjectUtil {
 
     return project;
   }
-}
+  
+  private static class ProjectProxy extends Project {
+    private Project project;
+    private boolean editable;
+    private Identity identity;
 
+    public ProjectProxy(Project project, Identity identity, boolean editable) {
+      this.project = project;
+      this.editable = editable;
+      this.identity = identity;
+    }
+
+    public long getId() {
+      return project.getId();
+    }
+
+    public void setId(long id) {
+      project.setId(id);
+    }
+
+    public String getName() {
+      return project.getName();
+    }
+
+    public void setName(String name) {
+      project.setName(name);
+    }
+
+    public Set<Status> getStatus() {
+      return project.getStatus();
+    }
+
+    public void setStatus(Set<Status> status) {
+      project.setStatus(status);
+    }
+
+    public Set<String> getParticipator() {
+      return project.getParticipator();
+    }
+
+    public void setParticipator(Set<String> participator) {
+      project.setParticipator(participator);
+    }
+
+    public Set<String> getManager() {
+      return project.getManager();
+    }
+
+    public void setManager(Set<String> manager) {
+      project.setManager(manager);
+    }
+
+    public String getDescription() {
+      return project.getDescription();
+    }
+
+    public void setDescription(String description) {
+      project.setDescription(description);
+    }
+
+    public Date getDueDate() {
+      return project.getDueDate();
+    }
+
+    public void setDueDate(Date dueDate) {
+      project.setDueDate(dueDate);
+    }
+
+    public String getColor() {
+      return project.getColor();
+    }
+
+    public void setColor(String color) {
+      project.setColor(color);
+    }
+
+    public boolean isCalendarIntegrated() {
+      return project.isCalendarIntegrated();
+    }
+
+    public void setCalendarIntegrated(boolean calendarIntegrated) {
+      project.setCalendarIntegrated(calendarIntegrated);
+    }
+
+    public Project getParent() {
+      return project.getParent();
+    }
+
+    public void setParent(Project parent) {
+      project.setParent(parent);
+    }
+
+    public List<Project> getChildren() {
+      return project.getChildren();
+    }
+
+    public void setChildren(List<Project> children) {
+      project.setChildren(children);
+    }
+
+    public Project clone(boolean cloneTask) {
+      return project.clone(cloneTask);
+    }
+
+    public boolean canView(Identity user) {
+      if (user != null && user.getUserId().equals(identity.getUserId())) {
+        return true;
+      } else {
+        return project.canView(user);
+      }
+    }
+
+    public boolean canEdit(Identity user) {
+      if (user != null && user.getUserId().equals(identity.getUserId())) {
+        return editable;
+      } else {
+        return project.canEdit(user);
+      }
+    }
+
+    public int hashCode() {
+      return project.hashCode();
+    }
+
+    public boolean equals(Object obj) {
+      return project.equals(obj);
+    }
+
+    public String toString() {
+      return project.toString();
+    }    
+  }
+}

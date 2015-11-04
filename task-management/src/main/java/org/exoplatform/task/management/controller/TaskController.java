@@ -503,6 +503,7 @@ public class TaskController extends AbstractController {
       taskQuery = buildTaskQuery(keyword, filterLabelIds, tags, status, dueDate, priority, assignee, completed, userTimezone);      
     } else {
       taskQuery = new TaskQuery();
+      taskQuery.setCompleted(false);
     }
 
     if (spaceProjectIds != null && !spaceProjectIds.isEmpty()) {
