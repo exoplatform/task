@@ -40,6 +40,7 @@ import org.exoplatform.calendar.service.impl.NewUserListener;
 import org.exoplatform.commons.utils.HTMLEntityEncoder;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.container.ExoContainer;
+import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.portal.mop.SiteKey;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -63,7 +64,6 @@ import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.StatusService;
 import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.service.UserService;
-import org.exoplatform.task.service.impl.UserServiceImpl;
 import org.exoplatform.web.controller.router.Router;
 import org.gatein.common.text.EntityEncoder;
 
@@ -910,6 +910,20 @@ public final class TaskUtil {
       LOG.error("Can check permission on task field", ex);
     }
     return true;
+  }
+
+  public static Set<String> getTag(long taskId) {
+    TaskService service = getTaskService();
+    return service.getTag(taskId);
+  }
+
+  private static TaskService getTaskService() {
+    ExoContainer container = ExoContainerContext.getCurrentContainer();
+    return container.getComponentInstanceOfType(TaskService.class);
+  }
+
+  public static Set<String> getCoworker(long taskId) {
+    return getTaskService().getCoworker(taskId);
   }
 }
 

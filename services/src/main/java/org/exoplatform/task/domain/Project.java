@@ -22,6 +22,7 @@ package org.exoplatform.task.domain;
 import org.exoplatform.commons.api.persistence.ExoEntity;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.services.security.MembershipEntry;
+import org.exoplatform.task.util.ProjectUtil;
 
 import javax.persistence.*;
 
@@ -119,7 +120,11 @@ public class Project {
     this.status = status;
   }
 
+  @Deprecated
   public Set<String> getParticipator() {
+    if (participator == null) {
+      participator = ProjectUtil.getParticipator(getId());
+    }
     return participator;
   }
 
@@ -127,7 +132,11 @@ public class Project {
     this.participator = participator;
   }
 
+  @Deprecated
   public Set<String> getManager() {
+    if (manager == null) {
+      manager = ProjectUtil.getManager(getId());
+    }
     return manager;
   }
 
@@ -186,19 +195,19 @@ public class Project {
   }
 
   public Project clone(boolean cloneTask) {
+//    Set<String> manager = new HashSet<String>();
+//    Set<String> participator = new HashSet<String>();
+
+    //This create performance issue, we need this to be loaded lazily
+//    if (getManager() != null) {
+//      manager.addAll(getManager());
+//    }
+//    if (getParticipator() != null) {
+//      participator.addAll(getParticipator());
+//    }
+
     Project project = new Project(this.getName(), this.getDescription(), new HashSet<Status>(),
-        null, null) {
-
-          @Override
-          public Set<String> getParticipator() {
-            return Project.this.getParticipator();
-          }
-
-          @Override
-          public Set<String> getManager() {
-            return Project.this.getManager();
-          }      
-    };
+        null, null);
 
     project.setId(getId());
     project.setColor(this.getColor());

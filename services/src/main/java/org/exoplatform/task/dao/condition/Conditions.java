@@ -27,7 +27,7 @@ import java.util.List;
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
 public class Conditions {
-  public static String TASK_ID = "id";
+  public static String ID = "id";
   public static String TASK_TITLE = "title";
   public static String TASK_DES = "description";
   public static String TASK_TAG = "tag";

@@ -19,6 +19,7 @@ package org.exoplatform.task.service.impl;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -194,5 +195,22 @@ public class ProjectServiceImpl implements ProjectService {
   public ListAccess<Project> findProjects(List<String> memberships, String keyword, OrderBy order) {
     return daoHandler.getProjectHandler().findAllByMembershipsAndKeyword(memberships, keyword, order);
   }
+
+  @Override
+  public Set<String> getManager(long projectId) {
+    ProjectQuery query = new ProjectQuery();
+    query.setId(projectId);
+    List<String> manager = daoHandler.getProjectHandler().selectProjectField(query, "manager"); 
+    return new HashSet<String>(manager);
+  }
+
+  @Override
+  public Set<String> getParticipator(long projectId) {
+    ProjectQuery query = new ProjectQuery();
+    query.setId(projectId);
+    List<String> manager = daoHandler.getProjectHandler().selectProjectField(query, "participator"); 
+    return new HashSet<String>(manager);
+  }
+  
 }
 

@@ -22,6 +22,7 @@ import static org.mockito.Matchers.anyList;
 import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.when;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -68,17 +69,17 @@ public class TestTasksStorage {
 
     Set<String> users = new HashSet<String>();
     users.add("root");
-    p1 = new Project("Test project 1", null, null, users, null);
+    p1 = new Project("Test project 1", null, null, users, Collections.<String>emptySet());
     p1.setId(1);
     p1.setCalendarIntegrated(true);
 
-    p2 = new Project("Test project 2", null, null, null, users);
+    p2 = new Project("Test project 2", null, null, Collections.<String>emptySet(), users);
     p2.setId(2);
     p2.setCalendarIntegrated(true);
     Set<String> memberships = new HashSet<String>();
     memberships.add("*:/platform/administrators");
 
-    p3 = new Project("Test project 3", null, null, memberships, null);
+    p3 = new Project("Test project 3", null, null, memberships, Collections.<String>emptySet());
     p3.setId(3);
     p3.setCalendarIntegrated(true);
 

@@ -137,6 +137,9 @@ public class TaskDAOImpl extends CommonJPADAO<Task, Long> implements TaskHandler
     } else {
       path = task.get(fieldName);
     }
+    if ("tag".equals(fieldName) || "coworker".equals(fieldName)) {
+      path = task.join(fieldName);
+    }
     q.select(path).distinct(true);
 
     if(query.getOrderBy() != null && !query.getOrderBy().isEmpty()) {

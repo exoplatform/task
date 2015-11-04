@@ -16,10 +16,17 @@
 */
 package org.exoplatform.task.dao.jpa;
 
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
@@ -31,6 +38,7 @@ import org.exoplatform.task.dao.ProjectQuery;
 import org.exoplatform.task.dao.condition.Conditions;
 import org.exoplatform.task.dao.condition.SingleCondition;
 import org.exoplatform.task.domain.Project;
+import org.exoplatform.task.domain.Task;
 
 /**
  * Created by The eXo Platform SAS
@@ -111,5 +119,21 @@ public class ProjectDAOImpl extends CommonJPADAO<Project, Long> implements Proje
     }
     return super.buildPath(condition, root);
   }
-}
+  
+  public <T> List<T> selectProjectField(ProjectQuery query, String fieldName) {
+    EntityManager em = getEntityManager();
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+    CriteriaQuery q = cb.createQuery();
 
+    Root<Project> project = q.from(Project.class);
+    Predicate predicate = this.buildQuery(query.getCondition(), project, cb, q);
+
+    if(predicate != null) {
+      q.where(predicate);
+    }
+    q.select(project.join(fieldName)).distinct(true);    
+
+    final TypedQuery<T> selectQuery = em.createQuery(q);
+    return cloneEntities(selectQuery.getResultList());
+  }
+}

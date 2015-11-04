@@ -12,6 +12,8 @@ import org.exoplatform.task.domain.Project;
  */
 public interface ProjectHandler extends GenericDAO<Project, Long> {
 
+  public <T> List<T> selectProjectField(ProjectQuery query, String fieldName);
+  
   Project removeProject(long projectId, boolean deleteChild);
 
   ListAccess<Project> findSubProjects(Project project);

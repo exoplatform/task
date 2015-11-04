@@ -1,6 +1,7 @@
 package org.exoplatform.task.service;
 
 import java.util.List;
+import java.util.Set;
 
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.task.dao.OrderBy;
@@ -107,5 +108,9 @@ public interface TaskService {
 
   //TODO: should use via #findTasks(TaskQuery)?
   Task findTaskByActivityId(String activityId);
+
+  Set<String> getTag(long taskId);
+
+  Set<String> getCoworker(long taskId);
 
 }

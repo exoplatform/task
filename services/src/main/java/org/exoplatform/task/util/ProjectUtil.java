@@ -35,6 +35,7 @@ import java.util.Set;
 import org.exoplatform.commons.utils.HTMLEntityEncoder;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.container.ExoContainer;
+import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.portal.mop.SiteKey;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -354,6 +355,21 @@ public final class ProjectUtil {
     return project;
   }
   
+  public static Set<String> getParticipator(long projectId) {
+    ProjectService service = getProjectService();
+    return service.getParticipator(projectId);
+  }
+
+  public static Set<String> getManager(long projectId) {
+    ProjectService service = getProjectService();
+    return service.getManager(projectId);
+  }
+
+  private static ProjectService getProjectService() {
+    ExoContainer container = ExoContainerContext.getCurrentContainer();
+    return container.getComponentInstanceOfType(ProjectService.class);
+  }
+
   private static class ProjectProxy extends Project {
     private Project project;
     private boolean editable;
@@ -485,4 +501,6 @@ public final class ProjectUtil {
       return project.toString();
     }    
   }
+
+  
 }

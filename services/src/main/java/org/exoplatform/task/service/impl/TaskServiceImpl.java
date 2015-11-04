@@ -20,7 +20,9 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.exoplatform.commons.api.persistence.ExoTransactional;
 import org.exoplatform.commons.utils.ListAccess;
@@ -276,4 +278,21 @@ public class TaskServiceImpl implements TaskService {
   public Task findTaskByActivityId(String id) {
     return daoHandler.getTaskHandler().findTaskByActivityId(id);
   }
+
+  @Override
+  public Set<String> getTag(long taskId) {
+    TaskQuery query = new TaskQuery();
+    query.setId(taskId);
+    List<String> tags = daoHandler.getTaskHandler().<String>selectTaskField(query, "tag");
+    return new HashSet<String>(tags);
+  }
+
+  @Override
+  public Set<String> getCoworker(long taskId) {
+    TaskQuery query = new TaskQuery();
+    query.setId(taskId);
+    List<String> coworker = daoHandler.getTaskHandler().<String>selectTaskField(query, "coworker");
+    return new HashSet<String>(coworker);
+  }
+  
 }

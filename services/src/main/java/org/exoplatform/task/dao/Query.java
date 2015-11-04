@@ -20,12 +20,14 @@
 package org.exoplatform.task.dao;
 
 import static org.exoplatform.task.dao.condition.Conditions.and;
+import static org.exoplatform.task.dao.condition.Conditions.eq;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.exoplatform.task.dao.condition.AggregateCondition;
 import org.exoplatform.task.dao.condition.Condition;
+import org.exoplatform.task.dao.condition.Conditions;
 
 public abstract class Query implements Cloneable {
 
@@ -38,6 +40,10 @@ public abstract class Query implements Cloneable {
     super();
     this.aggCondition = aggCondition;
     this.orderBy = orderBy;
+  }
+  
+  public void setId(long taskId) {
+    this.add(eq(Conditions.ID, taskId));
   }
 
   public Query add(Query query) {

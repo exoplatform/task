@@ -49,6 +49,7 @@ import javax.persistence.TemporalType;
 
 import org.exoplatform.commons.api.persistence.ExoEntity;
 import org.exoplatform.task.service.TaskBuilder;
+import org.exoplatform.task.util.TaskUtil;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>
@@ -233,8 +234,12 @@ public class Task {
     this.calendarIntegrated = calendarIntegrated;
   }
 
+  @Deprecated
   public Set<String> getTag() {
-    return tag != null ? Collections.unmodifiableSet(tag) : Collections.<String> emptySet();
+    if (tag == null) {
+      tag = TaskUtil.getTag(getId());
+    }
+    return Collections.unmodifiableSet(tag);
   }
 
   public void setTag(Set<String> tag) {
@@ -288,7 +293,11 @@ public class Task {
     this.dueDate = dueDate;
   }
 
+  @Deprecated
   public Set<String> getCoworker() {
+    if (coworker == null) {
+      coworker = TaskUtil.getCoworker(getId());
+    }
     return coworker;
   }
 
@@ -323,19 +332,21 @@ public class Task {
     newTask.setCompleted(isCompleted());
     newTask.setRank(getRank());
     
-    //
-    Set<String> coworker = new HashSet<String>();
-    if (this.getCoworker() != null) {
-      coworker.addAll(getCoworker());
-    }
-    newTask.setCoworker(coworker);
+    //performance issue, need lazy load
+//    Set<String> coworker = new HashSet<String>();
+//    if (this.getCoworker() != null) {
+//      coworker.addAll(getCoworker());
+//    }
+//    newTask.setCoworker(coworker);
 
-    //
-    Set<String> tags = new HashSet<String>();
-    if (getTag() != null) {
-      tags.addAll(getTag());
-    }
-    newTask.setTag(tags);
+    //performance issue, need lazy load
+//    Set<String> tags = new HashSet<String>();
+//    if (getTag() != null) {
+//      tags.addAll(getTag());
+//    }
+//    newTask.setTag(tags);
+    newTask.setCoworker(null);
+    newTask.setTag(null);
 
     newTask.setId(getId());
 
