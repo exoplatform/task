@@ -81,6 +81,7 @@ import org.exoplatform.task.util.ProjectUtil;
 import org.exoplatform.task.util.TaskUtil;
 import org.exoplatform.task.util.TaskUtil.DUE;
 import org.gatein.common.text.EntityEncoder;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -154,6 +155,29 @@ public class TaskController extends AbstractController {
       .userTimezone(userTimezone)
       .bundle(bundle)
       .ok().withCharset(Tools.UTF_8);
+  }
+  
+  @Resource
+  @Ajax
+  @MimeType.JSON
+  public Response findLabelByTask(Long taskId, SecurityContext securityContext) throws JSONException {
+    String userId = securityContext.getRemoteUser();
+    ListAccess<Label> labels = null;
+    try {
+      labels = taskService.findLabelsByTask(taskId, userId);
+    } catch (EntityNotFoundException e) {
+      LOG.error(e);
+    }
+    JSONArray arr = new JSONArray();
+    if (labels != null) {
+      for (Label lbl : ListUtil.load(labels, 0, -1)) {
+        JSONObject json = new JSONObject();
+        json.put("name", lbl.getName());
+        json.put("color", lbl.getColor());
+        arr.put(json);
+      }      
+    }
+    return Response.ok(arr.toString()).withCharset(Tools.UTF_8);
   }
 
   @Resource

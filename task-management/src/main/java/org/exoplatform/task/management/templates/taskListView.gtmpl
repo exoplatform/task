@@ -123,8 +123,9 @@
                         <div class="column-item column-time">
                             <span class="text-time inline-block-show">${DateUtil.formatDueDate(dueDateCalendar, bundle)}&nbsp;</span>
                             <%                            
-                                def tmp = taskService.findLabelsByTask(task.id, currentUser);
-                            	  def taskLabels = Arrays.asList(ListUtil.load(tmp, 0, -1));
+                                //def tmp = taskService.findLabelsByTask(task.id, currentUser);
+                            	  //def taskLabels = Arrays.asList(ListUtil.load(tmp, 0, -1));
+                            	  def taskLabels = null;
                             %>
                             <%if(taskLabels != null && taskLabels.size() > 0) {%>
                                 <span class="inline-block-hide labels">
@@ -262,4 +263,9 @@
             </div>
         </li>
     </div>
+<script type="text/javascript">
+	window.require(['taskCenterView'], function(centerView) {
+	  centerView.initTaskLabel();
+	});
+</script>
 </div>

@@ -40,11 +40,13 @@
                         <a class="project-name" href="javascript:void(0)">&{label.tasks}</a>
                     </div>
                     <ul class="list-projects">
+                    <%if (!isInSpace) { %>
                         <li class="dropdown project-item ${currentProjectId == -1 ? "active" : ""}">
                             <div class="sub-item">
                                 <a class="project-name" data-id="-1" href="javascript:void(0);">&{label.incoming}&nbsp;<span class="badgeDefault badgePrimary mini top">${incomNum}</span></a>
                             </div>
                         </li>
+                     <%} %>
                         <li class="dropdown project-item ${currentProjectId == -2 ? "active" : ""}"">
                             <div class="sub-item">
                                 <a href="javascript:void(0)" class="project-name" data-id="-2" data-filter="">

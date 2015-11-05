@@ -5,6 +5,28 @@ define('taskCenterView', ['jquery', 'taskManagementApp'], function($, taApp) {
             //
         });
     };
+    
+    centerView.initTaskLabel = function() {
+      var ui = taApp.getUI();
+      var $centerPanel = ui.$centerPanel;
+      var taskLabelUrl = $centerPanel.jzURL('TaskController.findLabelByTask');
+      $centerPanel.find('.taskItem').each(function(idx, elem) {
+        var $taskItem = $(elem);
+        var taskId = $taskItem.data('taskid');
+        //
+        var labels = '';
+        $.get(taskLabelUrl, { taskId: taskId}, function(data) {
+          $.each(data, function(i, lbl) {
+            labels += '<span class="inline-block-hide labels">';
+            labels += '<a href="#" class="' + lbl.color + ' label">' + taApp.escape(lbl.name) + '</a>';
+            labels += '</span>';
+          });
+
+          $(labels).insertAfter($taskItem.find('.text-time'));
+        },'json');
+      });
+      
+    };
 
     centerView.submitFilter = function(e) {
         var ui = taApp.getUI();

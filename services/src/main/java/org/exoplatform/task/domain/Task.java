@@ -96,7 +96,7 @@ public class Task {
 
   private String      assignee;
 
-  @ManyToOne
+  @ManyToOne(fetch=FetchType.LAZY)
   @JoinColumn(name = "STATUS_ID")
   private Status      status;
 

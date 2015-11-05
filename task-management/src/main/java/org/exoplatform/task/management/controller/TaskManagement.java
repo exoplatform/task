@@ -239,7 +239,7 @@ public class TaskManagement {
     // Count all incoming task
     long taskNum = paging.getTotal();
     long incomNum = taskNum;
-    if (currProject != ProjectUtil.INCOMING_PROJECT_ID) {
+    if (currProject != ProjectUtil.INCOMING_PROJECT_ID  && space_group_id == null) {
       TaskQuery q = new TaskQuery();
       q.setIsIncomingOf(username);
       incomNum = ListUtil.getSize(taskService.findTasks(q));
