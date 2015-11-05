@@ -79,6 +79,7 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   @Override
+  @ExoTransactional
   public Project createProject(Project project, long parentId) throws EntityNotFoundException {
     Project parentProject = daoHandler.getProjectHandler().find(parentId);
     if (parentProject != null) {
@@ -104,6 +105,8 @@ public class ProjectServiceImpl implements ProjectService {
     }
   }
 
+  @Override
+  @ExoTransactional
   public Project updateProject(Project proj) {
     Project obj = daoHandler.getProjectHandler().update(proj);
     return obj;

@@ -77,6 +77,7 @@ public class StatusServiceImpl implements StatusService {
   }
 
   @Override
+  @ExoTransactional
   public void createInitialStatuses(Project proj) {
     for (String s : getDefaultStatus()) {
       createStatus(proj, s);

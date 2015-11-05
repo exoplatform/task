@@ -24,6 +24,7 @@ import javax.inject.Singleton;
 
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarSetting;
+import org.exoplatform.commons.api.persistence.ExoTransactional;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
@@ -96,11 +97,13 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  @ExoTransactional
   public UserSetting getUserSetting(String username) {
     return daoHandler.getUserSettingHandler().getOrCreate(username);
   }
 
   @Override
+  @ExoTransactional
   public void hideProject(Identity identity, Long projectId, boolean hide) throws EntityNotFoundException, NotAllowedOperationOnEntityException {
     Project project = daoHandler.getProjectHandler().find(projectId);
     if (project == null) {
@@ -122,6 +125,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  @ExoTransactional
   public void showHiddenProject(String username, boolean show) {
     UserSetting setting = daoHandler.getUserSettingHandler().getOrCreate(username);
     setting.setShowHiddenProject(show);
@@ -129,6 +133,7 @@ public class UserServiceImpl implements UserService {
   }
   
   @Override
+  @ExoTransactional
   public void showHiddenLabel(String username, boolean show) {
     UserSetting setting = daoHandler.getUserSettingHandler().getOrCreate(username);
     setting.setShowHiddenLabel(show);

@@ -159,6 +159,7 @@ public class TaskServiceImpl implements TaskService {
   }
   
   @Override
+  @ExoTransactional
   public ChangeLog addTaskLog(long id, String username, String actionName, String target) throws EntityNotFoundException {
     ChangeLog log = new ChangeLog();
     log.setTask(getTask(id));
@@ -198,6 +199,7 @@ public class TaskServiceImpl implements TaskService {
   }
 
   @Override
+  @ExoTransactional
   public void addTaskToLabel(Long taskId, Long labelId) throws EntityNotFoundException {
     LabelTaskMapping mapping = new LabelTaskMapping();
     mapping.setLabel(getLabel(labelId));
@@ -206,6 +208,7 @@ public class TaskServiceImpl implements TaskService {
   }
   
   @Override
+  @ExoTransactional
   public void removeTaskFromLabel(Long taskId, Long labelId) throws EntityNotFoundException {
     LabelTaskMapping mapping = new LabelTaskMapping();
     mapping.setLabel(getLabel(labelId));
@@ -240,11 +243,13 @@ public class TaskServiceImpl implements TaskService {
   }
 
   @Override
+  @ExoTransactional
   public Label createLabel(Label label) {
     return daoHandler.getLabelHandler().create(label);
   }
 
   @Override
+  @ExoTransactional
   public Label updateLabel(Label label, List<Label.FIELDS> fields) throws EntityNotFoundException {
     Label lb = getLabel(label.getId());
     if (lb == null) {
@@ -271,6 +276,7 @@ public class TaskServiceImpl implements TaskService {
   }
 
   @Override
+  @ExoTransactional
   public void removeLabel(long labelId) {
     daoHandler.getLabelHandler().delete(getLabel(labelId));
   }
