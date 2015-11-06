@@ -33,7 +33,7 @@ def displayListLabelItem(lbl, level) {
                 <div class="dropdown-menu uiDropdownWithIcon" style="left: 100%;top: -10px;">
 	        	<span class="arrowLeft" style = "top: 22px;"></span>
 	        	<ul class="uiDropdownMenu label-menu" data-labelId="${lbl.id}">
-                  <li><a href="#" class="openEditDialog"><i class="uiIconEditMini uiIconLightGray"></i>&{label.edit}</a></li>
+                  <li><a href="#" class="openEditDialog"><i class="uiIconEdit uiIconLightGray"></i>&{label.edit}</a></li>
 		            <li>
                       <a href="javascript:void(0)" class="actionHideLabel">
                           <i class="uiIconHide uiIconLightGray"></i><span class="label-show">&{label.show}</span><span class="label-hide">&{label.hide}</span>
