@@ -4,16 +4,14 @@
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.commons.utils.HTMLEntityEncoder;
 
-def displayListLabelItem(lbl, level) {
-  	 def encoder = HTMLEntityEncoder.getInstance();
-    def identity = ConversationState.getCurrent().getIdentity();
+def displayListLabelItem(lbl, level, encoder, identity, colors) {  	 
     def hasChild = (lbl.children != null && lbl.children.size() > 0);
     def hasChildClass = hasChild  ? 'has-child' : '';
 	 def indent = (level - 1) * 20;
     def isHidden = lbl.isHidden();
     def isAllChildHidden = true;
     if (hasChild) {
-      lbl.children.each {l ->
+      for (def l in lbl.children) {
             if (!l.isHidden()) {
                 isAllChildHidden = false;
             }
@@ -45,17 +43,9 @@ def displayListLabelItem(lbl, level) {
                   <li class="noColor changeLabelColor" data-color="">No Color</li>
                   <li class="calendarTableColor">
                       <%
-                          def colors = [
-                              ['asparagus', 'munsell_blue', 'navy_blue', 'purple', 'red', 'brown'],
-                              ['laurel_green', 'sky_blue', 'blue_gray', 'light_purple', 'hot_pink', 'light_brown'],
-                              ['moss_green', 'powder_blue', 'light_blue', 'pink', 'Orange', 'gray'],
-                              ['green', 'baby_blue', 'light_gray', 'beige', 'yellow', 'plum']
-                          ];
-                      %>
-                      <%
-                          colors.each {c -> %>
+                          for (def c in colors) { %>
                               <div>
-                                  <%c.each {color ->%>
+                                  <%for (def color in c) {%>
                                   <a class="${color} colorCell changeLabelColor" data-color="${color}" href="#" style="display: block;">
                                   	<%
                                   		def check = lbl.getColor().equals(color) ? "iconCheckBox" : ""; 
@@ -80,12 +70,13 @@ def displayListLabelItem(lbl, level) {
             </span>
 		</div>
         <% if (lbl.children != null && lbl.children.size() > 0) {
-            displayListLabels(lbl.children, lbl.getId(), level);
+            displayListLabels(lbl.children, lbl.getId(), level, encoder, identity, colors);
         }%>
     </li>
 <% }
 
-def displayListLabels(labels, parentId, level) { %>
+def displayListLabels(labels, parentId, level, encoder, identity, colors) {  
+%>
     <ul class="list-labels" data-parentId="${parentId}">
         <%
             def allLabelAreHidden = true;
@@ -98,9 +89,9 @@ def displayListLabels(labels, parentId, level) { %>
         </li>
         <%} else {
         	level++;
-        	labels.each { label ->
+        	for (def label in labels) {
                 if (!label.isHidden()) allLabelAreHidden = false;
-            	displayListLabelItem(label, level)
+            	displayListLabelItem(label, level, encoder, identity, colors);
         	}
         	level--;
         }
@@ -114,5 +105,13 @@ def displayListLabels(labels, parentId, level) { %>
 <%}%>
 
 <%
-    displayListLabels(labels, 0, 0);
+	def encoder = HTMLEntityEncoder.getInstance();
+	def identity = ConversationState.getCurrent().getIdentity();
+	def colors = [
+	              ['asparagus', 'munsell_blue', 'navy_blue', 'purple', 'red', 'brown'],
+	              ['laurel_green', 'sky_blue', 'blue_gray', 'light_purple', 'hot_pink', 'light_brown'],
+	              ['moss_green', 'powder_blue', 'light_blue', 'pink', 'Orange', 'gray'],
+	              ['green', 'baby_blue', 'light_gray', 'beige', 'yellow', 'plum']
+	          ];
+    displayListLabels(labels, 0, 0, encoder, identity, colors);
 %>

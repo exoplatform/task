@@ -6,9 +6,7 @@
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.commons.utils.HTMLEntityEncoder;
 
-def displayListProjectItem(project, level) {
-  	 def encoder = HTMLEntityEncoder.getInstance();
-    def identity = ConversationState.getCurrent().getIdentity();
+def displayListProjectItem(project, level, encoder, identity, colors) {  	 
     def hasChild = (project.children != null && project.children.size() > 0);
     def hasChildClass = hasChild  ? 'has-child' : '';
 	def indent = (level - 1) * 20;
@@ -17,7 +15,7 @@ def displayListProjectItem(project, level) {
     def canView = project.canView(identity);
     def isAllChildHidden = true;
     if (hasChild) {
-        project.children.each {p ->
+        for (p in project.children) {
             if (!userSetting.isHiddenProject(p)) {
                 isAllChildHidden = false;
             }
@@ -56,17 +54,9 @@ def displayListProjectItem(project, level) {
                         <li class="noColor changeProjectColor" data-color="">No Color</li>
                         <li class="calendarTableColor">
                             <%
-                                def colors = [
-                                    ['asparagus', 'munsell_blue', 'navy_blue', 'purple', 'red', 'brown'],
-                                    ['laurel_green', 'sky_blue', 'blue_gray', 'light_purple', 'hot_pink', 'light_brown'],
-                                    ['moss_green', 'powder_blue', 'light_blue', 'pink', 'Orange', 'gray'],
-                                    ['green', 'baby_blue', 'light_gray', 'beige', 'yellow', 'plum']
-                                ];
-                            %>
-                            <%
-                                colors.each {c -> %>
+                                for (def c in colors) { %>
                                     <div>
-                                        <%c.each {color ->%>
+                                        <%for (def color in c) {%>
                                         <a class="${color} colorCell changeProjectColor" data-color="${color}" href="#" style="display: block;"><i class="${project.color == color ? "iconCheckBox" : ""}"></i></a>
                                         <%}%>
                                     </div>
@@ -89,13 +79,13 @@ def displayListProjectItem(project, level) {
             </span>
 		</div>
         <% if (project.children != null && project.children.size() > 0) {
-            displayListProjects(project.children, project.getId(), level);
+            displayListProjects(project.children, project.getId(), level, encoder, identity, colors);
         }%>
     </li>
 <% }
 
 
-def displayListProjects(projects, parentId, level) { %>
+def displayListProjects(projects, parentId, level, encoder, identity, colors) { %>
     <ul class="list-projects projectTree" parentId="${parentId}">
         <%
             def allProjectAreHidden = true;
@@ -108,9 +98,9 @@ def displayListProjects(projects, parentId, level) { %>
         </li>
         <%} else {
         	level++;
-        	projects.each { project ->
+        	for (def project in projects) {
                 if (!userSetting.isHiddenProject(project)) allProjectAreHidden = false;
-            	displayListProjectItem(project, level)
+            	displayListProjectItem(project, level, encoder, identity, colors);
         	}
         	level--;
         }
@@ -124,5 +114,13 @@ def displayListProjects(projects, parentId, level) { %>
 <%}%>
 
 <%
-    displayListProjects(projects, 0, 0)
+	 def encoder = HTMLEntityEncoder.getInstance();
+	 def identity = ConversationState.getCurrent().getIdentity();
+	 def colors = [
+                 ['asparagus', 'munsell_blue', 'navy_blue', 'purple', 'red', 'brown'],
+                 ['laurel_green', 'sky_blue', 'blue_gray', 'light_purple', 'hot_pink', 'light_brown'],
+                 ['moss_green', 'powder_blue', 'light_blue', 'pink', 'Orange', 'gray'],
+                 ['green', 'baby_blue', 'light_gray', 'beige', 'yellow', 'plum']
+             ];
+    displayListProjects(projects, 0, 0, encoder, identity, colors);
 %>

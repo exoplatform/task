@@ -32,7 +32,8 @@
                                     <span>${orderBy != null && orderBy != "" ? orders[orderBy] : orders["dueDate"]}</span>
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <%orders.each{k,v ->
+                                    <%for (def k in orders.keySet()) {
+                                        def v = orders.get(k);
                                         if (k != orderBy) {%>
                                             <li><a href="javascript:void(0)" data-orderby="${k}">${v}</a></li>
                                       <%}
@@ -45,8 +46,9 @@
                                     <span>${groups[groupBy]}</span>
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <%groups.each{k,v -> %>
-                                    <% if (k != groupBy) {%>
+                                    <%for (def k in groups.keySet()) {
+                                    	def v = groups.get(k);
+                                       if (k != groupBy) {%>
                                     <li><a href="javascript:void(0)" data-groupby="${k}">${v}</a></li>
                                     <%}%>
                                     <%}%>
@@ -76,7 +78,7 @@
             <div class="collapse-content newTaskContainer">
                 <ul class="table-project"></ul>
             </div>
-            <% groupTasks.each {group -> %>
+            <% for (def group in groupTasks) { %>
             <% if (groupBy != null && !groupBy.isEmpty() && !"none".equals(groupBy)) { %>
             <div class="heading primaryBackground">
                 <% if (groupBy == 'assignee') {%>
@@ -96,8 +98,8 @@
             <%}%>
             <div class="collapse-content">
                 <ul class="table-project">
-                    <%group.value.eachWithIndex { task, index -> %>
-                    <%
+                    <%for (def task in group.value) { %>
+                    <%                    		
                         def colorClass = '';
                         def dueDateCalendar = null;
                         if (task.dueDate != null) {
@@ -129,7 +131,7 @@
                             %>
                             <%if(taskLabels != null && taskLabels.size() > 0) {%>
                                 <span class="inline-block-hide labels">
-                                    <%taskLabels.each {label ->%>
+                                    <%for (def label in taskLabels) {%>
                                         <a href="#" class="${label.color} label">${encoder.encode(label.name)}</a>
                                     <%}%>
                                 </span>
