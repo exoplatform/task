@@ -553,13 +553,13 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
 }
 .commentList .commentItem {
   position: relative;
-  margin: 10px 0 15px 0;
+  margin: 10px 0 0;
 }
-.commentList .commentFormBox {
-  margin-bottom: 0;
-}
-.commentList .commentFormBox .exo-mentions {
+.commentList .commentItem .exo-mentions {
   margin-bottom: 15px;
+}
+.commentList .commentItem .exo-mentions .replaceTextArea {
+  padding: 5px 10px;
 }
 .commentList .contentComment {
   word-wrap: break-word;
@@ -1049,7 +1049,8 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
 #taskManagement .uiAccordion.leftPanel .accordion-heading .item {
   border-bottom: none;
 }
-#taskManagement .uiAccordion.leftPanel .accordion-heading .item + .list-projects {
+#taskManagement .uiAccordion.leftPanel .accordion-heading .item + .list-projects,
+#taskManagement .uiAccordion.leftPanel .accordion-heading .list-labels {
   border-top: 1px solid #ccc;
 }
 #taskManagement .uiAccordion.leftPanel .accordion-heading .sub-item {

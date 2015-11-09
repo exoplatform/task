@@ -734,13 +734,14 @@ li[data-hiddenlabel="false"] {
     }
     .commentItem {
         position: relative;
-        margin: 10px 0 15px 0;
-    }
-    .commentFormBox {
-        margin-bottom: 0;
+        margin: 10px 0 0;
         .exo-mentions {
             margin-bottom: 15px;
+            .replaceTextArea{
+                padding: 5px 10px;
+            }
         }
+
     }
     .contentComment {        
         word-wrap: break-word;
@@ -1321,7 +1322,7 @@ li[data-hiddenlabel="false"] {
     .uiAccordion.leftPanel .accordion-heading .item {
         border-bottom: none;
     }
-    .uiAccordion.leftPanel .accordion-heading .item + .list-projects {
+    .uiAccordion.leftPanel .accordion-heading .item + .list-projects, .uiAccordion.leftPanel .accordion-heading .list-labels {
         border-top: 1px solid #ccc;
     }
     .uiAccordion.leftPanel .accordion-heading .sub-item {
