@@ -283,6 +283,11 @@ public final class ProjectUtil {
       throws EntityNotFoundException, ParameterEntityException {
 
     Project project = projService.getProject(projectId);
+
+    // Load 'manager' and 'participator'
+    project.setManager(projService.getManager(projectId));
+    project.setParticipator(projService.getParticipator(projectId));
+
     //
     for (Map.Entry<String, String[]> field : fields.entrySet()) {
       String fieldName = field.getKey();
