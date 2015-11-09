@@ -16,19 +16,25 @@ def encoder = HTMLEntityEncoder.getInstance();
                 def user = userMap[log.author];
             %>
             <a href="${user.url}">  ${encoder.encode(user.displayName)} </a>
-            <span><%=bundle.getString("log." + log.getActionName())%>
+            <span><%=bundle.getString("log." + log.getActionName())%></span>
             <%
                 def target = log.target;
-                if (log.getActionName() == 'assign' || log.getActionName() == 'unassign') {
-                    if (userMap[target] != null) {
-                        target = userMap[target].displayName;
-                    }
-                }
-                if (target == null) {
-                    target = "";
-                }
             %>
-            ${encoder.encode(target)}</span>
+            <% if (log.getActionName() == 'assign' || log.getActionName() == 'unassign') { %>
+                <%
+                    def href = '#';
+                    if (target != null && userMap[target] != null) {
+                        def u = userMap[target];
+                        target = u.displayName;
+                        href = u.url;
+                    }
+                %>
+                <a href="${href}">${encoder.encode(target)}</a>
+            <% } else {%>
+                <span>
+                    ${encoder.encode(target)}
+                </span>
+            <% }%>
         </div>        
         <span class="date pull-right">
             <%= TaskUtil.getPeriod(log.getCreatedTime(), bundle)%>
