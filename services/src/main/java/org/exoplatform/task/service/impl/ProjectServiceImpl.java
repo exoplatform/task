@@ -127,6 +127,14 @@ public class ProjectServiceImpl implements ProjectService {
     Project project = getProject(id); //Can throw ProjectNotFoundException
 
     Project newProject = project.clone(cloneTask);
+    Set<String> managers = getManager(id);
+    if (managers != null && !managers.isEmpty()) {
+      newProject.setManager(managers);
+    }
+    Set<String> participators = getParticipator(id);
+    if (participators != null && !participators.isEmpty()) {
+      newProject.setParticipator(participators);
+    }
     newProject.setId(0);
     newProject.setName(Project.PREFIX_CLONE + newProject.getName());
     newProject = createProject(newProject);
