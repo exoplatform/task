@@ -1,4 +1,4 @@
-define('taskManagementApp', ['jquery', 'SHARED/juzu-ajax'],
+define('taskManagementApp', ['SHARED/jquery', 'SHARED/juzu-ajax'],
     function($) {
 
         var taApp = {};

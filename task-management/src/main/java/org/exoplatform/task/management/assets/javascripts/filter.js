@@ -1,4 +1,4 @@
-define('taFilter', ['jquery', 'selectize'], function($) {
+define('taFilter', ['SHARED/jquery', 'SHARED/selectize'], function($) {
   var taApp = null;
 
   var taFilter = {

@@ -1,4 +1,4 @@
-define('x_editable_calendar', ['jquery', 'SHARED/edit_inline_js', 'task_ui_calendar', 'SHARED/bootstrap_datepicker'],
+define('x_editable_calendar', ['SHARED/jquery', 'SHARED/edit_inline_js', 'task_ui_calendar', 'SHARED/bootstrap_datepicker'],
     function(jquery, editinline, uiCalendar) {
         (function ($) {
             "use strict";

@@ -1,5 +1,5 @@
 define('ta_edit_inline',
-    ['jquery', 'task_ui_calendar', 'SHARED/edit_inline_js', 'selectize',
+    ['SHARED/jquery', 'task_ui_calendar', 'SHARED/edit_inline_js', 'SHARED/selectize',
         'x_editable_select3', 'x_editable_selectize', 'x_editable_calendar', 'x_editable_ckeditor'],
     function($, uiCalendar, editinline, selectize) {
 

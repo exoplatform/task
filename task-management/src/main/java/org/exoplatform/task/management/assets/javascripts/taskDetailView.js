@@ -1,4 +1,4 @@
-define('taskDetailView', ['jquery', 'taskManagementApp', 'taskCenterView'], function($, taApp, taskCenterView) {
+define('taskDetailView', ['SHARED/jquery', 'taskManagementApp', 'taskCenterView'], function($, taApp, taskCenterView) {
     var detailView = {};
     detailView.init = function() {
         taApp.onReady(function($) {

@@ -1,4 +1,4 @@
-define('task_ui_calendar', ['jquery', 'SHARED/uiCalendar', 'SHARED/bootstrap_datepicker'],
+define('task_ui_calendar', ['SHARED/jquery', 'SHARED/uiCalendar', 'SHARED/bootstrap_datepicker'],
     function($, uiCalendar) {
         var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
         var UITaskCalendar = $.extend({}, uiCalendar, {

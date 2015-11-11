@@ -1,4 +1,4 @@
-define('x_editable_selectize', ['jquery', 'SHARED/edit_inline_js', 'selectize'], function(jquery, editinline, selectize) {
+define('x_editable_selectize', ['SHARED/jquery', 'SHARED/edit_inline_js', 'SHARED/selectize'], function(jquery, editinline, selectize) {
     (function ($) {
         "use strict";
 

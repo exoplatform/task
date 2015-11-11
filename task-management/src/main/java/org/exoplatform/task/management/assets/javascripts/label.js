@@ -1,4 +1,4 @@
-require(['jquery', 'taskManagementApp'], function($, taApp) {
+require(['SHARED/jquery', 'taskManagementApp'], function($, taApp) {
   $(function() {
       var ui = taApp.getUI();
       var $leftPanel = ui.$leftPanel;

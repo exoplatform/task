@@ -1,4 +1,4 @@
-define('taskListView', ['jquery', 'taskManagementApp'], function($, taApp) {
+define('taskListView', ['SHARED/jquery', 'taskManagementApp'], function($, taApp) {
     var listView = {};
     listView.init = function() {
         taApp.onReady(function($) {

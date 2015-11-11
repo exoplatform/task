@@ -1,4 +1,4 @@
-define('taskBoardView', ['jquery', 'taskManagementApp', 'SHARED/edit_inline_js', 'SHARED/task_jquery_ui'],
+define('taskBoardView', ['SHARED/jquery', 'taskManagementApp', 'SHARED/edit_inline_js', 'SHARED/task_jquery_ui'],
     function($, taApp, editinline) {
 
         var boardView = {};
