@@ -30,26 +30,28 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.exoplatform.commons.persistence.impl.GenericDAOJPAImpl;
-import org.exoplatform.commons.utils.ListAccess;
-import org.exoplatform.task.dao.OrderBy;
-import org.exoplatform.task.dao.ProjectQuery;
-import org.exoplatform.task.dao.Query;
-import org.exoplatform.task.dao.condition.AggregateCondition;
-import org.exoplatform.task.dao.condition.Condition;
-import org.exoplatform.task.dao.condition.Conditions;
-import org.exoplatform.task.dao.condition.SingleCondition;
-import org.exoplatform.task.domain.Project;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.exoplatform.commons.persistence.impl.GenericDAOJPAImpl;
+import org.exoplatform.commons.utils.ListAccess;
+import org.exoplatform.task.dao.OrderBy;
+import org.exoplatform.task.dao.Query;
+import org.exoplatform.task.dao.condition.AggregateCondition;
+import org.exoplatform.task.dao.condition.Condition;
+import org.exoplatform.task.dao.condition.SingleCondition;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
-public class CommonJPADAO<E, K extends Serializable> extends GenericDAOJPAImpl<E, K> {
+public abstract class CommonJPADAO<E, K extends Serializable> extends GenericDAOJPAImpl<E, K> {  
+  
+  public Map<String, Class> clz = new ConcurrentHashMap<String, Class>();
+  
   protected <E> List<E> cloneEntities(List<E> list) {
     if (list == null || list.isEmpty()) return list;
 
@@ -76,37 +78,61 @@ public class CommonJPADAO<E, K extends Serializable> extends GenericDAOJPAImpl<E
   }
 
   protected ListAccess<E> findEntities(Query query, Class<E> clazz) {
-    EntityManager em = getEntityManager();
-    CriteriaBuilder cb = em.getCriteriaBuilder();
-    CriteriaQuery q = cb.createQuery();
-    q.distinct(true);
-    Root<E> root = q.from(clazz);
-
-    Predicate predicate = buildQuery(query.getCondition(), root, cb, q);
-    if (predicate != null) {
-      q.where(predicate);
-    }
-
-    //
-    q.select(cb.count(root));
-    final TypedQuery<Long> countQuery = em.createQuery(q);
-
-    //
-    q.select(root).distinct(true);
-
-    List<OrderBy> orderby = query.getOrderBy();
-    if(orderby != null && !orderby.isEmpty()) {
-      Order[] orders = new Order[orderby.size()];
-      for(int i = 0; i < orders.length; i++) {
-        OrderBy orderBy = orderby.get(i);
-        Path p = root.get(orderBy.getFieldName());
-        orders[i] = orderBy.isAscending() ? cb.asc(p) : cb.desc(p);
+    final ClassLoader cl = Thread.currentThread().getContextClassLoader();
+    try {
+      Thread.currentThread().setContextClassLoader(new ClassLoader(cl) {
+        @SuppressWarnings("rawtypes")
+        @Override
+        public Class<?> loadClass(String name) throws ClassNotFoundException {
+          Class c = getCache().get(name);
+          if (c == null) {
+            try {
+              c = cl.loadClass(name);
+              getCache().put(name, c);
+            } catch (Exception e) {
+              getCache().put(name, CommentDAOImpl.class);
+            }
+          }
+          if (c.getName().equals(CommentDAOImpl.class.getName())) {
+            return null;
+          }
+          return c;
+        }
+      });
+      EntityManager em = getEntityManager();
+      CriteriaBuilder cb = em.getCriteriaBuilder();
+      CriteriaQuery q = cb.createQuery();
+      q.distinct(true);
+      Root<E> root = q.from(clazz);
+      
+      Predicate predicate = buildQuery(query.getCondition(), root, cb, q);
+      if (predicate != null) {
+        q.where(predicate);
       }
-      q.orderBy(orders);
+      
+      //
+      q.select(cb.count(root));
+      final TypedQuery<Long> countQuery = em.createQuery(q);
+      
+      //
+      q.select(root).distinct(true);
+      
+      List<OrderBy> orderby = query.getOrderBy();
+      if(orderby != null && !orderby.isEmpty()) {
+        Order[] orders = new Order[orderby.size()];
+        for(int i = 0; i < orders.length; i++) {
+          OrderBy orderBy = orderby.get(i);
+          Path p = root.get(orderBy.getFieldName());
+          orders[i] = orderBy.isAscending() ? cb.asc(p) : cb.desc(p);
+        }
+        q.orderBy(orders);
+      }
+      
+      TypedQuery<E> selectQuery = em.createQuery(q);      
+      return new JPAQueryListAccess<E>(clazz, countQuery, selectQuery);
+    } finally {
+      Thread.currentThread().setContextClassLoader(cl);
     }
-
-    TypedQuery<E> selectQuery = em.createQuery(q);
-    return new JPAQueryListAccess<E>(clazz, countQuery, selectQuery);
   }
   
   protected Predicate buildQuery(Condition condition, Root<E> root, CriteriaBuilder cb, CriteriaQuery query) {
@@ -191,4 +217,8 @@ public class CommonJPADAO<E, K extends Serializable> extends GenericDAOJPAImpl<E
     
     return join == null ? root.get(field) : join.get(field);
   }
+  
+  public Map<String, Class> getCache() {
+    return clz;
+  }     
 }
