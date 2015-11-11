@@ -155,6 +155,8 @@ public class ProjectServiceImpl implements ProjectService {
               Task newTask = t.clone();
               newTask.setId(0);
               newTask.setStatus(s);
+              newTask.setCoworker(taskService.getCoworker(t.getId()));
+              newTask.setTag(taskService.getTag(t.getId()));
               newTask.setTitle(Task.PREFIX_CLONE + newTask.getTitle());
               taskService.createTask(newTask);
             }

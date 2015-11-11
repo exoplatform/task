@@ -118,6 +118,8 @@ public class TaskServiceImpl implements TaskService {
     Task task = getTask(id);// Can throw TaskNotFoundException
 
     Task newTask = task.clone();
+    newTask.setCoworker(getCoworker(id));
+    newTask.setTag(getTag(id));
     newTask.setTitle(Task.PREFIX_CLONE + newTask.getTitle());
 
     return createTask(newTask);
