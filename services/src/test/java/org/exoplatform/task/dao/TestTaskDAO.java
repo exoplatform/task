@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 
 import org.exoplatform.commons.utils.ListAccess;
@@ -419,6 +420,23 @@ public class TestTaskDAO extends AbstractTest {
     //
     logs = logHandler.findTaskLogs(task.getId());
     Assert.assertEquals(1,  ListUtil.getSize(logs));
+  }
+  
+  @Test
+  public void testTaskField() throws Exception {
+    Task task = newTaskInstance("Task 1", "", null);
+    //
+    Set<String> tags = new HashSet<String>();
+    tags.add("tag1");
+    task.setTag(tags);
+    Set<String> coworkers = new HashSet<String>();
+    coworkers.add("worker1");
+    task.setCoworker(coworkers);
+    //
+    tDAO.create(task);
+    
+    Assert.assertEquals(1, tDAO.getTag(task.getId()).size());
+    Assert.assertEquals(1, tDAO.getCoworker(task.getId()).size());    
   }
 
   @Test

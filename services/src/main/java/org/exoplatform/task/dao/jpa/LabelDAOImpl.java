@@ -16,6 +16,8 @@
 */
 package org.exoplatform.task.dao.jpa;
 
+import javax.persistence.TypedQuery;
+
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.task.dao.LabelHandler;
 import org.exoplatform.task.dao.LabelQuery;
@@ -32,10 +34,14 @@ public class LabelDAOImpl extends CommonJPADAO<Label, Long> implements LabelHand
 
   @Override
   public ListAccess<Label> findLabelsByTask(long taskId, String username) {
-    LabelQuery query = new LabelQuery();
-    query.setTaskId(taskId);
-    query.setUserName(username);
-    return findLabels(query);
+    TypedQuery<Label> query = getEntityManager().createNamedQuery("Label.findLabelsByTask", Label.class);
+    query.setParameter("username", username);
+    query.setParameter("taskid", taskId);
+    
+    TypedQuery<Long> count = getEntityManager().createNamedQuery("Label.findLabelsByTaskCount", Long.class);
+    count.setParameter("username", username);
+    count.setParameter("taskid", taskId);
+    return new JPAQueryListAccess<Label>(Label.class, count, query);
   }
 
   @Override

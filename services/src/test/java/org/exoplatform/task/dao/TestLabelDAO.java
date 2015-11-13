@@ -115,6 +115,24 @@ public class TestLabelDAO extends AbstractTest {
   }
   
   @Test
+  public void testFindLabelByTask() throws Exception {
+    Task task = new Task();
+    task.setTitle("task1");
+    taskService.getTaskHandler().create(task);
+    //
+    Label label1 = new Label("test label1", "root");
+    lblDAO.create(label1);    
+    //
+    LabelTaskMapping mapping = new LabelTaskMapping();
+    mapping.setLabel(label1);
+    mapping.setTask(task);
+    //
+    taskService.getLabelTaskMappingHandler().create(mapping);
+    
+    Assert.assertEquals(1, lblDAO.findLabelsByTask(task.getId(), "root").getSize());
+  }
+  
+  @Test
   public void testQuery() throws Exception {
     Label label1 = new Label("test label1", "root");
     Label label2 = new Label("test label2", "demo");

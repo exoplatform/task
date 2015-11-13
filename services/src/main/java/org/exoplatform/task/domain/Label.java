@@ -26,6 +26,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -39,6 +41,12 @@ import org.exoplatform.commons.api.persistence.ExoEntity;
 @Entity
 @ExoEntity
 @Table(name = "TASK_LABELS")
+@NamedQueries({  
+  @NamedQuery(name = "Label.findLabelsByTask",
+      query = "SELECT lbl FROM Label lbl inner join lbl.lblMapping m WHERE lbl.username = :username AND m.task.id = :taskid"),
+      @NamedQuery(name = "Label.findLabelsByTaskCount",
+      query = "SELECT count(*) FROM Label lbl inner join lbl.lblMapping m WHERE lbl.username = :username AND m.task.id = :taskid")
+})
 public class Label {
   @Id
   @GeneratedValue

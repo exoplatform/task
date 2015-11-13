@@ -127,18 +127,18 @@ public final class TaskUtil {
     TaskModel taskModel = new TaskModel();
     
     Task task = taskService.getTask(id); //Can throw TaskNotFoundException    
+    Set<String> coworker = getCoworker(id);
     taskModel.setTask(task);
 
     org.exoplatform.task.model.User assignee = null;
     int numberCoworkers = 0;
     if(task.getAssignee() != null && !task.getAssignee().isEmpty()) {
       assignee = userService.loadUser(task.getAssignee());
-      numberCoworkers = task.getCoworker() != null ? task.getCoworker().size() : 0;
-    } else if (task.getCoworker() != null && task.getCoworker().size() > 0) {
-      Set<String> coworkers = task.getCoworker();
-      for (String u : coworkers) {
+      numberCoworkers = coworker != null ? coworker.size() : 0;
+    } else if (coworker != null && coworker.size() > 0) {
+      for (String u : coworker) {
         if (assignee == null && u != null && !u.isEmpty()) {
-          assignee = userService.loadUser(coworkers.iterator().next());
+          assignee = userService.loadUser(coworker.iterator().next());
         } else {
           numberCoworkers++;
         }
@@ -558,7 +558,7 @@ public final class TaskUtil {
         return new GroupKey[] {new GroupKey(s.getName(), s, s.getRank())};
       }
     } else if("tag".equalsIgnoreCase(groupBy)) {
-      Set<String> tags = task.getTag();
+      Set<String> tags = getTag(task.getId());
       GroupKey[] keys = new GroupKey[tags != null && tags.size() > 0 ? tags.size() : 1];
       if (tags == null || tags.size() == 0) {
         keys[0] = new GroupKey("Un tagged", null, Integer.MAX_VALUE);

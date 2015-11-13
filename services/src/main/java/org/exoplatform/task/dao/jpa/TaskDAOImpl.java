@@ -19,10 +19,8 @@ package org.exoplatform.task.dao.jpa;
 import static org.exoplatform.task.dao.condition.Conditions.TASK_COWORKER;
 import static org.exoplatform.task.dao.condition.Conditions.TASK_MANAGER;
 import static org.exoplatform.task.dao.condition.Conditions.TASK_PARTICIPATOR;
-import static org.exoplatform.task.dao.condition.Conditions.TASK_TAG;
 import static org.exoplatform.task.dao.condition.Conditions.TASK_PROJECT;
-import static org.exoplatform.task.dao.condition.Conditions.TASK_LABEL_ID;
-import static org.exoplatform.task.dao.condition.Conditions.TASK_LABEL_USERNAME;
+import static org.exoplatform.task.dao.condition.Conditions.TASK_TAG;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
@@ -31,7 +29,6 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
@@ -41,15 +38,15 @@ import javax.persistence.criteria.Root;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.dao.TaskHandler;
 import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.dao.condition.SingleCondition;
-import org.exoplatform.task.domain.Label;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
 
@@ -287,6 +284,22 @@ public class TaskDAOImpl extends CommonJPADAO<Task, Long> implements TaskHandler
       query.setIsLabelOf(username);
     }
     return findTasks(query);
+  }
+
+  @Override
+  public Set<String> getTag(long taskid) {
+    TypedQuery<String> query = getEntityManager().createNamedQuery("Task.getTag", String.class);
+    query.setParameter("taskid", taskid);
+    List<String> tags = query.getResultList();
+    return new HashSet<String>(tags);
+  }
+
+  @Override
+  public Set<String> getCoworker(long taskid) {
+    TypedQuery<String> query = getEntityManager().createNamedQuery("Task.getCoworker", String.class);
+    query.setParameter("taskid", taskid);
+    List<String> tags = query.getResultList();
+    return new HashSet<String>(tags);
   }
 
   protected Path buildPath(SingleCondition condition, Root<Task> root) {

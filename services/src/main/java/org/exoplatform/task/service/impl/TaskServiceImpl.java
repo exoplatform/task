@@ -18,6 +18,7 @@ package org.exoplatform.task.service.impl;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.persistence.TypedQuery;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -289,18 +290,12 @@ public class TaskServiceImpl implements TaskService {
 
   @Override
   public Set<String> getTag(long taskId) {
-    TaskQuery query = new TaskQuery();
-    query.setId(taskId);
-    List<String> tags = daoHandler.getTaskHandler().<String>selectTaskField(query, "tag");
-    return new HashSet<String>(tags);
+    return daoHandler.getTaskHandler().getTag(taskId);
   }
 
   @Override
-  public Set<String> getCoworker(long taskId) {
-    TaskQuery query = new TaskQuery();
-    query.setId(taskId);
-    List<String> coworker = daoHandler.getTaskHandler().<String>selectTaskField(query, "coworker");
-    return new HashSet<String>(coworker);
+  public Set<String> getCoworker(long taskId) { 
+    return daoHandler.getTaskHandler().getCoworker(taskId);
   }
   
 }

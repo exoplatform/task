@@ -73,7 +73,11 @@ import org.exoplatform.task.util.TaskUtil;
     @NamedQuery(name = "Task.findTaskByProject",
         query = "SELECT t FROM Task t WHERE t.status.project.id = :projectId"),
     @NamedQuery(name = "Task.findTaskByActivityId",
-        query = "SELECT t FROM Task t WHERE t.activityId = :activityId")
+        query = "SELECT t FROM Task t WHERE t.activityId = :activityId"),
+    @NamedQuery(name = "Task.getCoworker",
+        query = "SELECT c FROM Task t inner join t.coworker c WHERE t.id = :taskid"),
+    @NamedQuery(name = "Task.getTag",
+        query = "SELECT tg FROM Task t inner join t.tag tg WHERE t.id = :taskid"),
 })
 public class Task {
 
