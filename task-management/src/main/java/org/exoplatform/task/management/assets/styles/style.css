@@ -472,6 +472,9 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
 .table-project .column-item .actionIcon .uiIconClock {
   background-position: -160px -80px;
 }
+.table-project .column-checkbox .status-task {
+  display: inline-block;
+}
 .rightPanel .title .actionIconSmall {
   line-height: 10px;
 }
