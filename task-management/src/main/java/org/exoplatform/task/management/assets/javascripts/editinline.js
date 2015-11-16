@@ -141,6 +141,8 @@ define('ta_edit_inline',
             } else if (type == 'calendar') {
                 options.mode = 'popup';
                 options.emptytext = ' Due date';
+            } else if (type == 'select') {
+                options.sourceCache = false;
             }
 
             return options;
