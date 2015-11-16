@@ -580,6 +580,21 @@ public final class TaskUtil {
       if (dueDate != null) {
         calendar = Calendar.getInstance(userTimezone);
         calendar.setTime(dueDate);
+        if (DateUtil.isOverdue(calendar)) {
+          calendar.setTimeInMillis(System.currentTimeMillis());
+          calendar.add(Calendar.DATE, -1);
+        } else if (!DateUtil.isToday(calendar) && !DateUtil.isTomorrow(calendar)) {
+          //. is upcoming task
+          calendar.setTimeInMillis(System.currentTimeMillis());
+          calendar.add(Calendar.DATE, 7);
+        }
+        calendar.set(Calendar.HOUR, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        //
+        dueDate = calendar.getTime();
       }
       return new GroupKey[] {new GroupKey(DateUtil.getDueDateLabel(calendar, bundle), dueDate, calendar == null ? Integer.MAX_VALUE : (int)calendar.getTimeInMillis())};
 
