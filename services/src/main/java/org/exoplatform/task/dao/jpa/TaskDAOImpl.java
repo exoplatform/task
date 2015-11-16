@@ -322,6 +322,10 @@ public class TaskDAOImpl extends CommonJPADAO<Task, Long> implements TaskHandler
     Path path = null;
     if (TASK_PROJECT.equals(condition.getField())) {
       path = root.join("status", JoinType.LEFT).get("project");
+    } else if (TASK_MANAGER.equals(condition.getField())) {
+        path = root.join("status", JoinType.LEFT).join("project", JoinType.LEFT).join("manager", JoinType.LEFT);
+    } else if (TASK_PARTICIPATOR.equals(condition.getField())) {
+        path = root.join("status", JoinType.LEFT).join("project", JoinType.LEFT).join("participator", JoinType.LEFT);
     } else {
       if (field.indexOf('.') > 0) {
         String[] arr = field.split("\\.");
@@ -341,10 +345,6 @@ public class TaskDAOImpl extends CommonJPADAO<Task, Long> implements TaskHandler
     
     if (TASK_COWORKER.equals(field)) {
       path = root.join(field, JoinType.LEFT);
-    } else if (TASK_MANAGER.equals(condition.getField())) {
-      path = join.join("manager", JoinType.LEFT);
-    } else if (TASK_PARTICIPATOR.equals(condition.getField())) {
-      path = join.join("participator", JoinType.LEFT);
     } else if (TASK_TAG.equals(condition.getField())) {
       path = root.join("tag", JoinType.INNER);
     }

@@ -252,7 +252,7 @@ public class TestTaskDAO extends AbstractTest {
     query.setCompleted(true);
     tasks = tDAO.findTasks(query);
     Assert.assertEquals(1, tasks.getSize());    
-  }  
+  }
   
   @Test
   public void testFindTaskByMembership() {
@@ -273,6 +273,12 @@ public class TestTaskDAO extends AbstractTest {
     query.setMemberships(Arrays.asList("root"));
     ListAccess<Task> listTasks = tDAO.findTasks(query);
     //List<Task> tasks = tDAO.findTaskByQuery(query);
+    Assert.assertEquals(1, ListUtil.getSize(listTasks));
+    
+    //
+    query.setAssigneeOrMembership("root", Arrays.asList("root"));
+    query.setKeyword("Task");
+    listTasks = tDAO.findTasks(query);
     Assert.assertEquals(1, ListUtil.getSize(listTasks));
   }
   
