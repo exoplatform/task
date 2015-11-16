@@ -654,7 +654,7 @@ define('ta_edit_inline',
 
                     editOptions.emptyText = 'Labels';
                     editOptions.selectize = {
-                        create: false,
+                        create: true,
                         options: opts,
                         valueField: 'id',
                         labelField: 'text',
@@ -702,9 +702,16 @@ define('ta_edit_inline',
                         }
                     };
                     editOptions.value2html = function(val) {
+                        var text = val, color = '';
+
                         var label = allLabels[val];
+                        if (label != undefined) {
+                            text = label.text;
+                            color = label.color;
+                        }
+
                         var encoder = $('<div></div>');
-                        return '<span class="'+label.color+' label">'+ encoder.text(label.text).html()+'</span>';
+                        return '<span class="'+color+' label">'+ encoder.text(text).html()+'</span>';
                     }
                 }
 

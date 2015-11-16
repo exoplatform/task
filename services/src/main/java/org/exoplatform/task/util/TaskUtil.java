@@ -823,14 +823,22 @@ public final class TaskUtil {
         }
       } else if("labels".equalsIgnoreCase(param)) {
         List<Long> ids = new ArrayList<Long>(values.length);
+        List<String> labelsToCreate = new ArrayList<String>();
         for (int i = 0; i < values.length; i++) {
           try {
             if (values[i] == null || values[i].isEmpty()) {
               continue;
             }
-            ids.add(Long.parseLong(values[i]));
+            Long id = Long.parseLong(values[i]);
+            Label label = taskService.getLabel(id);
+            if (label != null) {
+              ids.add(Long.parseLong(values[i]));
+            } else {
+              labelsToCreate.add(values[i]);
+            }
           } catch (NumberFormatException ex) {
-            throw new ParameterEntityException(-1L, Label.class, param, values[i], "LabelID must be long", ex);
+            //throw new ParameterEntityException(-1L, Label.class, param, values[i], "LabelID must be long", ex);
+            labelsToCreate.add(values[i]);
           }
         }
 
@@ -843,6 +851,15 @@ public final class TaskUtil {
           } else {
             persisted.add(label.getId());
           }
+        }
+
+        //
+        for (String label : labelsToCreate) {
+          Label l = new Label();
+          l.setName(label);
+          l.setUsername(username);
+          l = taskService.createLabel(l);
+          ids.add(l.getId());
         }
         
         for (Long labelId : ids) {
@@ -895,19 +912,28 @@ public final class TaskUtil {
           return project.canView(identity);
         }
       } else if("labels".equalsIgnoreCase(name)) {
+        boolean valid = true;
         for (int i = 0; i < values.length; i++) {
           if (values[i] == null || values[i].isEmpty()) {
             continue;
           }
-          Long labelId = Long.parseLong(values[i]);
-          if (labelId > 0) {
-            Label label = taskService.getLabel(labelId);
-            return label.getUsername().equals(identity.getUserId());
+          long labelId = 0;
+          try {
+            labelId = Long.parseLong(values[i]);
+            if (labelId > 0) {
+              Label label = taskService.getLabel(labelId);
+              if (label != null) {
+                valid = valid && label.getUsername().equals(identity.getUserId());
+              }
+            }
+          } catch (NumberFormatException ex) {
+            // Ignore, the label will be created later
           }
         }
+        return valid;
       }
     } catch (Exception ex) {
-      LOG.error("Can check permission on task field", ex);
+      LOG.error("Can not check permission on task field", ex);
     }
     return true;
   }
