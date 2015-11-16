@@ -110,9 +110,9 @@
             <span class="${editableClasses} small dueDateField"
                   data-original-title="&{tooltip.clickToEdit}" rel="tooltip" data-placement="top"
                   data-type="calendar" data-name="duedate"
-                  data-value="${task.dueDate != null ? task.dueDate.format('yyyy-MM-dd') : ''}"
+                  data-value="${task.dueDate != null ? task.dueDate.format('yyyy-MM-dd', userTimezone) : ''}"
                   data-format="yyyy-MM-dd" data-viewformat="dd M yyyy">
-                ${task.dueDate != null ? task.dueDate.format('dd MMM yyyy') : ''}
+                ${task.dueDate != null ? task.dueDate.format('dd MMM yyyy', userTimezone) : ''}
             </span>
         </div>
     </div>
