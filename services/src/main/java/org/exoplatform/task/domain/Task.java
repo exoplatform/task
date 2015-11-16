@@ -78,6 +78,10 @@ import org.exoplatform.task.util.TaskUtil;
         query = "SELECT c FROM Task t inner join t.coworker c WHERE t.id = :taskid"),
     @NamedQuery(name = "Task.getTag",
         query = "SELECT tg FROM Task t inner join t.tag tg WHERE t.id = :taskid"),
+    @NamedQuery(name = "Task.findTagsByKeyword",
+        query = "SELECT DISTINCT tg FROM Task t inner join t.tag tg WHERE tg LIKE :keyword ORDER BY tg ASC"),
+    @NamedQuery(name = "Task.findTagsByKeyword.count",
+        query = "SELECT count(DISTINCT tg) FROM Task t inner join t.tag tg WHERE tg LIKE :keyword")
 })
 public class Task {
 

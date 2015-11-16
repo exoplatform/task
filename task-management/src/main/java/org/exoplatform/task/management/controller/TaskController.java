@@ -914,6 +914,30 @@ public class TaskController extends AbstractController {
     return listTasks(space_group_id, project.getId(), null, null, null, null, null, null, null, null, null, null, null, null, null, "board", 0, securityContext);
   }
 
+
+  @Resource
+  @Ajax
+  @MimeType.JSON
+  public Response findTags(String keyword) throws JSONException {
+    JSONArray array = new JSONArray();
+
+    if (keyword != null && !keyword.trim().isEmpty()) {
+      ListAccess<String> list = taskService.findTags(keyword);
+      String[] tags = ListUtil.load(list, 0, 20);
+      JSONObject json;
+      for (String tag : tags) {
+        json = new JSONObject();
+        json.put("id", tag);
+        json.put("text", tag);
+
+        array.put(json);
+      }
+    }
+
+    return Response.ok(array.toString())
+            .withCharset(Tools.UTF_8);
+  }
+
   @Resource(method = HttpMethod.POST)
   @Ajax
   @MimeType.HTML

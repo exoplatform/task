@@ -113,4 +113,5 @@ public interface TaskService {
 
   Set<String> getCoworker(long taskId);
 
+  ListAccess<String> findTags(String keyword);
 }

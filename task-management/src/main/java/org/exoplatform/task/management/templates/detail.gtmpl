@@ -348,6 +348,7 @@
 </div>
 </div>
 
+<!-- TODO: remove this block, it's old template for task detail? -->
 <div id="taskDetailContainer" class="task-detail" task-id="${task.id}" style="display:none">
     <div class="row-fluid task-info-row">
         <a href="#" class="icon task-completed-field status-icon ${task.completed ? "icon-completed" : ""}">&nbsp;</a>

@@ -159,36 +159,6 @@ public class UserController extends AbstractController {
       ListAccess<Label> tmp = taskService.findLabelsByUser(username);
       List<Label> labels = Arrays.asList(ListUtil.load(tmp, 0, -1));
 
-      //TODO: this block code is mock data
-      if (labels == null || labels.isEmpty()) {
-        Label label1 = new Label();
-        label1.setUsername(username);
-        label1.setName("Next");
-        label1.setColor("sky_blue");
-
-        Label label2 = new Label();
-        label2.setUsername(username);
-        label2.setName("Writing");
-        label2.setColor("purple");
-
-        Label label3 = new Label();
-        label3.setUsername(username);
-        label3.setName("Develop");
-        label3.setColor("yellow");
-
-        Label label4 = new Label();
-        label4.setUsername(username);
-        label4.setName("Next week");
-        label4.setColor("yellow");
-
-        taskService.createLabel(label1);
-        taskService.createLabel(label2);
-        taskService.createLabel(label3);
-        taskService.createLabel(label4);
-
-        labels = Arrays.asList(ListUtil.load(taskService.findLabelsByUser(username), 0, -1));
-      }
-
       JSONArray array = new JSONArray();
       if (labels != null) {
         for (Label label : labels) {

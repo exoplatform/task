@@ -298,5 +298,9 @@ public class TaskServiceImpl implements TaskService {
   public Set<String> getCoworker(long taskId) { 
     return daoHandler.getTaskHandler().getCoworker(taskId);
   }
-  
+
+  @Override
+  public ListAccess<String> findTags(String keyword) {
+    return daoHandler.getTaskHandler().findTags(keyword);
+  }
 }

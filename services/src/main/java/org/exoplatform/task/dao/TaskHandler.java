@@ -45,5 +45,7 @@ public interface TaskHandler extends GenericDAO<Task, Long> {
   Set<String> getTag(long taskid);
   
   Set<String> getCoworker(long taskid);
+
+  ListAccess<String> findTags(String keyword);
 }
 

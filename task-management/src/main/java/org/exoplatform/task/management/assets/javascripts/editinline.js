@@ -623,6 +623,27 @@ define('ta_edit_inline',
                 }
                 if (fieldName == 'tags') {
                     editOptions.emptytext = 'Tags';
+                    editOptions.selectize = {
+                        create: true,
+                        valueField: 'id',
+                        labelField: 'text',
+                        searchField: 'text',
+                        options: [],
+                        load: function(query, callback) {
+                            $.ajax({
+                                url: $rightPanel.jzURL('TaskController.findTags'),
+                                data: {keyword: query},
+                                type: 'GET',
+                                error: function() {
+                                    callback();
+                                },
+                                success: function(res) {
+                                    callback(res);
+                                }
+                            });
+                        }
+                    };
+
                 } else if (fieldName == 'labels') {
                     var isLoaded = false;
                     var allLabels = {};

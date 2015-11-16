@@ -295,6 +295,19 @@ public class TaskDAOImpl extends CommonJPADAO<Task, Long> implements TaskHandler
   }
 
   @Override
+  public ListAccess<String> findTags(String keyword) {
+    String key = "%" + keyword + "%";
+    EntityManager em = getEntityManager();
+    TypedQuery<String> query = em.createNamedQuery("Task.findTagsByKeyword", String.class);
+    query.setParameter("keyword", key);
+
+    TypedQuery<Long> count = em.createNamedQuery("Task.findTagsByKeyword.count", Long.class);
+    count.setParameter("keyword", key);
+
+    return new JPAQueryListAccess<String>(String.class, count, query);
+  }
+
+  @Override
   public Set<String> getCoworker(long taskid) {
     TypedQuery<String> query = getEntityManager().createNamedQuery("Task.getCoworker", String.class);
     query.setParameter("taskid", taskid);
