@@ -81,7 +81,9 @@ import org.exoplatform.task.util.TaskUtil;
     @NamedQuery(name = "Task.findTagsByKeyword",
         query = "SELECT DISTINCT tg FROM Task t inner join t.tag tg WHERE tg LIKE :keyword ORDER BY tg ASC"),
     @NamedQuery(name = "Task.findTagsByKeyword.count",
-        query = "SELECT count(DISTINCT tg) FROM Task t inner join t.tag tg WHERE tg LIKE :keyword")
+        query = "SELECT count(DISTINCT tg) FROM Task t inner join t.tag tg WHERE tg LIKE :keyword"),
+    @NamedQuery(name = "Task.updateStatus",
+    query = "UPDATE Task t SET t.status = :status_new WHERE t.status = :status_old")
 })
 public class Task {
 

@@ -135,14 +135,10 @@ public class StatusServiceTest {
     
     when(statusHandler.find(s2.getId())).thenReturn(s2);
     when(statusHandler.getStatuses(project.getId())).thenReturn(Arrays.asList(s1, s2)).thenReturn(Arrays.asList(s1));
-    when(taskHandler.findTasks(any(TaskQuery.class))).thenReturn(new ListAccessImpl<Task>(Task.class, Arrays.asList(t)));
 
     statusService.removeStatus(s2.getId());
 
-    verify(taskHandler, times(1)).update(taskCaptor.capture());
-
-    assertEquals(t.getId(), taskCaptor.getValue().getId());
-    assertEquals(s1, taskCaptor.getValue().getStatus());
+    verify(taskHandler, times(1)).updateStatus(s2, s1);
     verify(statusHandler, times(1)).delete(statusCaptor.capture());
   }
   

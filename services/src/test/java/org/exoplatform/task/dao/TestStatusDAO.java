@@ -19,21 +19,21 @@ package org.exoplatform.task.dao;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.exoplatform.container.PortalContainer;
+import org.exoplatform.task.AbstractTest;
+import org.exoplatform.task.domain.Project;
+import org.exoplatform.task.domain.Status;
+import org.exoplatform.task.domain.Task;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import org.exoplatform.container.PortalContainer;
-import org.exoplatform.task.domain.Project;
-import org.exoplatform.task.domain.Status;
-import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.AbstractTest;
-
 public class TestStatusDAO extends AbstractTest {
 
   private StatusHandler sDAO;
   private ProjectHandler pDAO;
+  private TaskHandler tDAO;
   private DAOHandler daoHandler;
 
   @Before
@@ -43,6 +43,7 @@ public class TestStatusDAO extends AbstractTest {
     daoHandler = (DAOHandler) container.getComponentInstanceOfType(DAOHandler.class);
     sDAO = daoHandler.getStatusHandler();
     pDAO = daoHandler.getProjectHandler();
+    tDAO = daoHandler.getTaskHandler();
   }
 
   @After
@@ -77,6 +78,42 @@ public class TestStatusDAO extends AbstractTest {
     
     Status s = sDAO.findByName(s1.getName(), p.getId());
     Assert.assertEquals(s1.getId(), s.getId());
+  }
+  
+  //We need this test for TA-343
+  @Test
+  public void testRemoveStatus() {
+      Status s1 = createStatus("s1");
+      Status s2 = createStatus("s2");
+      Project p = createProject("p", s1, s2);
+      p = pDAO.create(p);
+      s1.setProject(p);
+      s2.setProject(p);
+      sDAO.create(s1);
+      sDAO.create(s2);
+      
+      Task t = new Task();
+      t.setTitle("testTitle");
+      t.setStatus(s2);
+      tDAO.create(t);
+      
+      endRequestLifecycle();
+      initializeContainerAndStartRequestLifecycle();    
+      
+      StatusHandler handler = daoHandler.getStatusHandler();
+      Status st = handler.find(s2.getId());      
+      //
+      daoHandler.getTaskHandler().updateStatus(st, s1);
+      
+      st.setProject(null);
+      handler.delete(st);
+      
+      endRequestLifecycle();
+      initializeContainerAndStartRequestLifecycle();
+      
+      t = tDAO.find(t.getId());
+      Assert.assertNotNull(t);
+      Assert.assertEquals(s1.getName(), t.getStatus().getName());
   }
   
   private Project createProject(String name, Status ...status) {

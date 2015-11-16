@@ -80,6 +80,14 @@ public class TaskDAOImpl extends CommonJPADAO<Task, Long> implements TaskHandler
   }*/
 
   @Override
+  public void updateStatus(Status stOld, Status stNew) {
+    Query query = getEntityManager().createNamedQuery("Task.updateStatus");
+    query.setParameter("status_old", stOld);
+    query.setParameter("status_new", stNew);
+    query.executeUpdate();
+  }
+
+  @Override
   public List<Task> findByUser(String user) {
 
     List<String> memberships = new ArrayList<String>();

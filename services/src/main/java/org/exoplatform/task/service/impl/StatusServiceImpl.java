@@ -19,30 +19,25 @@
 
 package org.exoplatform.task.service.impl;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+
 import org.exoplatform.commons.api.persistence.ExoTransactional;
-import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.commons.utils.PropertyManager;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.task.dao.DAOHandler;
 import org.exoplatform.task.dao.StatusHandler;
-import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
-import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.exception.NotAllowedOperationOnEntityException;
 import org.exoplatform.task.service.StatusService;
-import org.exoplatform.task.util.ListUtil;
 
 @Singleton
 public class StatusServiceImpl implements StatusService {
@@ -140,19 +135,11 @@ public class StatusServiceImpl implements StatusService {
     if (altStatus == null) {
       throw new NotAllowedOperationOnEntityException(statusID, Status.class, "Delete last status");
     }
-
-    //TODO: use JPA query for batch update is better than query then loop through all tasks
-    TaskQuery query = new TaskQuery();
-    query.setStatus(st);
-    ListAccess<Task> tasks = daoHandler.getTaskHandler().findTasks(query);
-    for (Task t : ListUtil.load(tasks, 0, -1)) {
-      t.setStatus(altStatus);
-      daoHandler.getTaskHandler().update(t);
-    }
+    //
+    daoHandler.getTaskHandler().updateStatus(st, altStatus);
 
     //
     st.setProject(null);
-
     handler.delete(st);
     return st;
   }

@@ -39,6 +39,8 @@ public interface TaskHandler extends GenericDAO<Task, Long> {
   public <T> List<T> selectTaskField(TaskQuery query, String fieldName);
 
   Task findTaskByActivityId(String activityId);
+  
+  void updateStatus(Status stOld, Status stNew);
 
   void updateTaskOrder(long currentTaskId, Status newStatus, long[] orders);
   
