@@ -33,19 +33,22 @@ require(['SHARED/jquery', 'taskManagementApp'], function($, taApp) {
       });
 
       //submit to create label
-      $leftPanel.on('blur keypress', '.addLabelInput', function(e) {
+      $leftPanel.on('blur keyup', '.addLabelInput', function(e) {
         var $input = $(e.target);
+
+        if (e.keyCode == 27) {
+          $input.val('');
+          $input.closest('li').remove();
+          return;
+        }
 
         //create label if press enter or loss focus
         if (!$input.is(':focus') || e.keyCode == 13) {
           var label = $input.val().trim();
+          $input.val('');
           if (label) {
             var parentId = $input.closest('.list-labels').data('parentid');
             createLabel(label, parentId, reloadLabel);
-          }
-
-          //close input
-          if ((e.keyCode == 13 && label) || e.keyCode == 27 || !$input.is(':focus')) {
             $input.closest('li').remove();
           }
         }
