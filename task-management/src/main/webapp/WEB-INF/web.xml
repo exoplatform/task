@@ -9,7 +9,7 @@
   <!-- Run mode: prod, dev or live -->
   <context-param>
     <param-name>juzu.run_mode</param-name>
-    <param-value>${juzu.run_mode:live}</param-value>
+    <param-value>${juzu.run_mode:dev}</param-value>
   </context-param>
 
   <!-- Injection container to use: guice, spring, cdi or weld -->
