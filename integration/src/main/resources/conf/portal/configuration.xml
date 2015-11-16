@@ -74,7 +74,7 @@
         <properties-param>
            <name>constructor.params</name>
            <property name="searchType" value="tasksInTasks"/>
-           <property name="displayName" value="Tasks"/>
+           <property name="displayName" value="TasksAddon"/>
            <property name="enable" value="${exo.unified-search.connector.tasksInTasks.enable:true}"/>
         </properties-param>
       </init-params>      
