@@ -10,7 +10,7 @@ define('taskListView', ['SHARED/jquery', 'taskManagementApp'], function($, taApp
         var template = $('[data-template="list-task-item"]').html();
         var result = template;
         result = result.replace('{{taskid}}', task.id);
-        result = result.replace('{{title}}', task.title);
+        result = result.replace('{{title}}', taApp.escape(task.title));
 
         var color = '';
         if (task.status) {

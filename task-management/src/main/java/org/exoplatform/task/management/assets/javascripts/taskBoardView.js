@@ -15,7 +15,7 @@ define('taskBoardView', ['SHARED/jquery', 'taskManagementApp', 'SHARED/edit_inli
             var result = template;
 
             result = result.replace('{{taskid}}', task.id);
-            result = result.replace('{{title}}', task.title);
+            result = result.replace('{{title}}', taApp.escape(task.title));
 
             var completedClass = '';
             if (task.completed) {
