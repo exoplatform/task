@@ -354,9 +354,7 @@ public class Task {
 //    if (getTag() != null) {
 //      tags.addAll(getTag());
 //    }
-//    newTask.setTag(tags);
-    newTask.setCoworker(null);
-    newTask.setTag(null);
+//    newTask.setTag(tags);    
 
     newTask.setId(getId());
 
