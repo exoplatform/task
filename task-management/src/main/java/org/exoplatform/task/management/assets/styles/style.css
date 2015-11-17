@@ -224,6 +224,28 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
     left: 91.5%!important;
   }
 }
+#taskManagement .uiAccordion.leftPanel .accordion-heading .item {
+  border-bottom: none;
+}
+#taskManagement .uiAccordion.leftPanel .accordion-heading .item + .list-projects,
+#taskManagement .uiAccordion.leftPanel .accordion-heading .list-labels {
+  border-top: 1px solid #ccc;
+}
+#taskManagement .uiAccordion.leftPanel .accordion-heading .sub-item {
+  border-bottom: none;
+}
+#taskManagement .uiAccordion.leftPanel .accordion-heading .sub-item + .sub-menu {
+  border-top: 1px solid white;
+}
+#taskManagement .uiAccordion.leftPanel .accordion-heading .sub-item + .list-labels {
+  border-top: none;
+}
+#taskManagement .centerPanel.span5 .title .label-title {
+  max-width: 130px;
+}
+#taskManagement .centerPanel.span9 .uiHeaderBar.toggle .label-title {
+  display: block;
+}
 .leftPanel .accordion-heading .popover {
   left: auto;
   right: -112px;
@@ -448,12 +470,6 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
 .centerPanel.span5 .all-task-action {
   display: inline-block;
   margin-top: 2px;
-}
-#taskManagement .centerPanel.span5 .title .label-title {
-  max-width: 130px;
-}
-#taskManagement .centerPanel.span9 .uiHeaderBar.toggle .label-title {
-  display: block;
 }
 .uiHeaderBar.toggle .label-title,
 .uiHeaderBar.toggle .action-search {
@@ -1048,17 +1064,4 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
 }
 .taskFilter .controls .multi .selectize-input {
   padding: 2px 4px;
-}
-#taskManagement .uiAccordion.leftPanel .accordion-heading .item {
-  border-bottom: none;
-}
-#taskManagement .uiAccordion.leftPanel .accordion-heading .item + .list-projects,
-#taskManagement .uiAccordion.leftPanel .accordion-heading .list-labels {
-  border-top: 1px solid #ccc;
-}
-#taskManagement .uiAccordion.leftPanel .accordion-heading .sub-item {
-  border-bottom: none;
-}
-#taskManagement .uiAccordion.leftPanel .accordion-heading .sub-item + .sub-menu {
-  border-top: 1px solid white;
 }

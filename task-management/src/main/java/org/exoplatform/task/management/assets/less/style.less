@@ -299,6 +299,34 @@ li[data-hiddenlabel="false"] {
             }
         }
     }
+    .uiAccordion.leftPanel .accordion-heading {
+        .item {
+            border-bottom: none;
+        }
+        .item + .list-projects, .list-labels {
+            border-top: 1px solid #ccc;
+        }
+        .sub-item {
+            border-bottom: none;
+            + .sub-menu {
+                border-top: 1px solid white;
+            }
+        }
+        .sub-item + .list-labels{
+            border-top: none;
+        }
+    }
+    .centerPanel.span5 .title .label-title {
+        max-width: 130px;
+    }
+
+    .centerPanel.span9 {
+        .uiHeaderBar.toggle {
+            .label-title  {
+                display: block;
+            }
+        }
+    }
 }
 
 
@@ -583,19 +611,6 @@ li[data-hiddenlabel="false"] {
         .all-task-action {
             display: inline-block;
             margin-top: 2px;
-        }
-    }
-}
-
-#taskManagement .centerPanel.span5 .title .label-title {
-    max-width: 130px;
-
-}
-
-#taskManagement .centerPanel.span9 {
-    .uiHeaderBar.toggle {
-        .label-title  {
-            display: block;
         }
     }
 }
@@ -1319,21 +1334,6 @@ li[data-hiddenlabel="false"] {
             .selectize-input{
                 padding: 2px 4px;
             }
-        }
-    }
-}
-// Reset some component for Task
-#taskManagement {
-    .uiAccordion.leftPanel .accordion-heading .item {
-        border-bottom: none;
-    }
-    .uiAccordion.leftPanel .accordion-heading .item + .list-projects, .uiAccordion.leftPanel .accordion-heading .list-labels {
-        border-top: 1px solid #ccc;
-    }
-    .uiAccordion.leftPanel .accordion-heading .sub-item {
-        border-bottom: none;
-        + .sub-menu {
-            border-top: 1px solid white;
         }
     }
 }
