@@ -394,7 +394,7 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
   margin-right: 0;
 }
 .rightPanel .addTask .inforBar1 .uiEditableInline .assigned .avatarMini img {
-  margin-top: 7px;
+  margin-top: 6px;
 }
 .rightPanel .addTask .inforBar1 .uiEditableInline .popover {
   min-width: 252px;
@@ -615,8 +615,12 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
 .tags {
   margin: 5px 0;
 }
-.tags .label {
-  margin: 1px 1px 1px ;
+.tags .label,
+.taskFilter .label {
+  margin: 1px ;
+}
+.taskItem .column-item .labels .label {
+  margin: 1px ;
 }
 .tags .hoverStatus > .label {
   float: left;
@@ -1049,19 +1053,19 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
   width: 80px;
   text-align: left;
 }
-.taskFilter .controls {
+.taskFilter .form-horizontal .control-group .controls {
   margin-left: 85px;
+  line-height: 10px;
 }
-.taskFilter .controls input {
+.taskFilter .form-horizontal .control-group .controls input {
   width: 100%;
 }
-.taskFilter .controls select {
+.taskFilter .form-horizontal .control-group .controls select {
   width: 50%;
 }
-.taskFilter .controls .multi {
-  height: 27px;
+.taskFilter .form-horizontal .control-group .controls .multi {
   width: 100%;
 }
-.taskFilter .controls .multi .selectize-input {
+.taskFilter .form-horizontal .control-group .controls .multi .selectize-input {
   padding: 2px 4px;
 }

@@ -512,7 +512,7 @@ li[data-hiddenlabel="false"] {
                 .assigned{
                     .avatarMini{
                         img{
-                            margin-top: 7px;
+                            margin-top: 6px;
                         }
                     }
                 }
@@ -806,8 +806,17 @@ li[data-hiddenlabel="false"] {
    
 }
 
-.tags .label   {
-    margin:1px 1px 1px ;
+.tags, .taskFilter {
+    .label   {
+        margin:1px ;
+    }
+}
+.taskItem {
+    .column-item .labels{
+        .label   {
+            margin:1px ;
+        }
+    }
 }
 .tags {
     .hoverStatus {
@@ -1316,23 +1325,25 @@ li[data-hiddenlabel="false"] {
 	}
 }
 .taskFilter{
-    .form-horizontal .control-group .control-label{
-        width: 80px;
-        text-align: left;
-    }
-    .controls{
-        margin-left: 85px;
-        input{
-            width: 100%;
+    .form-horizontal .control-group {
+        .control-label{
+            width: 80px;
+            text-align: left;
         }
-        select{
-            width: 50%;
-        }
-        .multi {
-            height: 27px;
-            width: 100%;
-            .selectize-input{
-                padding: 2px 4px;
+        .controls{
+            margin-left: 85px;
+            line-height: 10px;
+            input{
+                width: 100%;
+            }
+            select{
+                width: 50%;
+            }
+            .multi {
+                width: 100%;
+                .selectize-input{
+                    padding: 2px 4px;
+                }
             }
         }
     }

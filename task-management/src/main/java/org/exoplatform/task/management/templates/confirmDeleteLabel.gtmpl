@@ -29,5 +29,4 @@
 	    <button class="btn" data-dismiss="modal" aria-hidden="true">&{popup.cancel}</button>
 	  </div>
   </div>
-  <span class="uiIconResize pull-right uiIconLightGray"></span>
 </div>

@@ -43,9 +43,9 @@
              ${encoder.encode(project.name)}
          </div>
      </div>
-     <div class="row-fluid prjAuthor">
-         <div class="span3">&{label.manager}:</div>
-         <div class="span9">
+     <div class="media prjAuthor">
+         <div class="pull-left">&{label.manager}:</div>
+         <div class="media-body">
          <%userMap.each { username, u ->%>
              <a class="avatarSmall" href="<%=u.getUrl()%>"><img alt="avatar" src="<%=u.getAvatar()%>">
              <%=encoder.encode(u.getDisplayName())%>

@@ -569,7 +569,6 @@
       <button class="btn" data-dismiss="modal" aria-hidden="true">&{popup.close}</button>
     </div>	    
   </div>
-   <span class="uiIconResize pull-right uiIconLightGray"></span>
   <div class="selectorDialog"></div>
 
   <!-- This is for select group in search user -->
