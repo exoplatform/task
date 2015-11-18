@@ -159,7 +159,7 @@ public class TaskManagement {
           }
         }
         if (currProject <= 0) {
-          if (taskModel.getAssignee() != null && username.equals(taskModel.getAssignee().getUsername())) {
+          if (isAssignedTo(taskModel, username)) {
             currProject = ProjectUtil.TODO_PROJECT_ID;
             taskQuery.setIsTodoOf(username);
           } else {
@@ -281,7 +281,7 @@ public class TaskManagement {
         .errorMessage(errorMessage)
         .ok().withCharset(Tools.UTF_8);
   }
-  
+
   @Action
   public Response permalink(String space_group_id, Long taskId) {
     navState.setTaskId(taskId);
@@ -304,5 +304,19 @@ public class TaskManagement {
 
     }
     return TaskManagement_.index(space_group_id);
+  }
+
+  private boolean isAssignedTo(TaskModel taskModel, String username) {
+    if (username == null || username.isEmpty()) {
+      return false;
+    }
+    if (taskModel.getAssignee() != null && username.equals(taskModel.getAssignee().getUsername())) {
+      return true;
+    }
+    if (taskModel.getTask().getCoworker() != null) {
+      return taskModel.getTask().getCoworker().contains(username);
+    }
+
+    return false;
   }
 }

@@ -29,10 +29,12 @@ import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.integration.notification.NotificationUtils;
 import org.exoplatform.task.integration.notification.TaskAssignPlugin;
 import org.exoplatform.task.integration.notification.TaskCompletedPlugin;
+import org.exoplatform.task.integration.notification.TaskCoworkerPlugin;
 import org.exoplatform.task.integration.notification.TaskDueDatePlugin;
 import org.exoplatform.task.service.TaskPayload;
 import org.exoplatform.task.service.TaskService;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -92,6 +94,25 @@ public class TaskLoggingListener extends Listener<TaskService, TaskPayload> {
       dispatch(ctx, TaskAssignPlugin.ID);
     }
 
+    if (after.getCoworker() != null && !after.getCoworker().isEmpty()) {
+      Set<String> receiver = new HashSet<String>();
+      Set<String> coworkers = before.getCoworker();
+      if (coworkers == null) {
+        coworkers = Collections.emptySet();
+      }
+      for (String user : after.getCoworker()) {
+        if (!coworkers.contains(user)) {
+          receiver.add(user);
+        }
+      }
+
+      if (!receiver.isEmpty()) {
+        NotificationContext ctx = buildContext(after);
+        ctx.append(NotificationUtils.COWORKER, receiver);
+        dispatch(ctx, TaskCoworkerPlugin.ID);
+      }
+    }
+
     if (isDiff(before.getTag(), after.getTag())) {
       Set<String> tags = new HashSet<String>();
       if (after.getTag() != null) {
@@ -141,8 +162,6 @@ public class TaskLoggingListener extends Listener<TaskService, TaskPayload> {
   }
   
   private NotificationContext buildContext(Task task) {
-    //workaround to init hibernate collection
-    task.getCoworker().size();
     NotificationContext ctx = NotificationContextImpl.cloneInstance().append(NotificationUtils.TASK, task);
     
     String creator = ConversationState.getCurrent().getIdentity().getUserId();    

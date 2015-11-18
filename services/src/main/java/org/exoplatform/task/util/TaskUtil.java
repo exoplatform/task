@@ -548,7 +548,7 @@ public final class TaskUtil {
       if(s == null) {
         return new GroupKey[] {new GroupKey("No Project", null, Integer.MAX_VALUE)};
       } else {
-        return new GroupKey[] {new GroupKey(s.getProject().getName(), s.getProject(), s.hashCode())};
+        return new GroupKey[] {new GroupKey(s.getProject().getName(), s.getProject(), (int)s.getProject().getId())};
       }
     } else if("status".equalsIgnoreCase(groupBy)) {
       Status s = task.getStatus();

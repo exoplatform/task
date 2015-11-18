@@ -199,8 +199,10 @@ public class TaskQuery extends Query implements Cloneable {
   }
 
   public void setIsTodoOf(String username) {
-    setAssignee(Arrays.asList(username));
+    //setAssignee(Arrays.asList(username));
     //add(eq(TASK_ASSIGNEE, username));
+    this.add(Conditions.or(eq(TASK_ASSIGNEE, username), eq(TASK_COWORKER, username)));
+    this.assignee = Arrays.asList(username);
   }
 
   public void setLabelIds(List<Long> labelIds) {
