@@ -57,7 +57,7 @@ def displayListProjectItem(project, level, encoder, identity, colors) {
                                 for (def c in colors) { %>
                                     <div>
                                         <%for (def color in c) {%>
-                                        <a class="${color} colorCell changeProjectColor" data-color="${color}" href="#" style="display: block;"><i class="${project.color == color ? "iconCheckBox" : ""}"></i></a>
+                                        <a class="${color} colorCell changeProjectColor" data-color="${color}" href="#" style="display: block;"><i class="${project.color == color ? "uiIconTick" : ""}"></i></a>
                                         <%}%>
                                     </div>
                                 <%}

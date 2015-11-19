@@ -48,7 +48,7 @@ def displayListLabelItem(lbl, level, encoder, identity, colors) {
                                   <%for (def color in c) {%>
                                   <a class="${color} colorCell changeLabelColor" data-color="${color}" href="#" style="display: block;">
                                   	<%
-                                  		def check = lbl.getColor().equals(color) ? "iconCheckBox" : ""; 
+                                  		def check = lbl.getColor().equals(color) ? "uiIconTick" : ""; 
                                   	%>
                                   	<i class="${check}"></i></a>
                                   <%}%>

@@ -164,6 +164,10 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
 .taskMngCont .modalPlace .popupHeader .uiIconClose {
   color: #626262;
 }
+.taskMngCont .accordion-heading .dropdown .calendarTableColor .colorCell .uiIconTick {
+  top: -1px;
+  color: white;
+}
 /* Projects Area */
 #taskManagement .tooltip {
   white-space: nowrap;

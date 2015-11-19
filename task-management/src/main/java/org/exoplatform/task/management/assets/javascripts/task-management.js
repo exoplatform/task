@@ -461,8 +461,8 @@ $(document).ready(function() {
             type: 'POST',
             success: function(data) {
                 $project.find('a.colorPie').attr('class', color + ' colorPie');
-                $project.find('a > i.iconCheckBox').removeClass('iconCheckBox');
-                $a.find('i').addClass('iconCheckBox');
+                $project.find('a > i.uiIconTick').removeClass('uiIconTick');
+                $a.find('i').addClass('uiIconTick');
             },
             error: function(xhr) {
               taApp.showWarningDialog(xhr.responseText);
