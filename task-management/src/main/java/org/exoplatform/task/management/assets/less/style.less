@@ -227,7 +227,29 @@ li[data-hiddenlabel="false"] {
                 }
             }
         }
+        .dropdownIcon{
+            .uiIconArrowDownMini, .uiIconArrowRightMini{
+                font-size: 9px;
+            }
+        }
     }
+    .addTask{
+        .assignmentPopup{
+            .dropdown-menu{
+                .text{
+                    margin: 0 0 0 6px;
+                    display: inline-block;
+                    vertical-align: middle;
+                }
+            }
+        }
+    }
+    .resizeButton{
+        .uiIconMiniArrowLeft, .uiIconMiniArrowRight{
+            font-size: 10px;
+        }
+    }
+
 }
 
 /* Projects Area */
@@ -1105,7 +1127,6 @@ li[data-hiddenlabel="false"] {
     }
     .table-project-collapse{
         .caption-heading{
-            margin-bottom: 10px;
             .hover-action-reveal{
                 background: #545454;
                 padding: 10px 24px;
@@ -1152,6 +1173,9 @@ li[data-hiddenlabel="false"] {
                     }
                 }
             }
+            + .heading{
+                margin-top: 10px;
+            }
         }
         .col-new {
             .formCreateNewStatus {
@@ -1173,6 +1197,8 @@ li[data-hiddenlabel="false"] {
             }
             .box-small {
                 background: #f6f6f6; 
+                color: #333333;
+                margin-top: 10px;
                 .priority-high{
                     background: #f09c93;
                 }

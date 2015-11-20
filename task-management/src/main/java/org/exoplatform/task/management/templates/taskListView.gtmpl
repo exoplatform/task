@@ -82,7 +82,7 @@
             <% if (groupBy != null && !groupBy.isEmpty() && !"none".equals(groupBy)) { %>
             <div class="heading primaryBackground">
                 <% if (groupBy == 'assignee') {%>
-                <a class="toggle-collapse-group" href="#"><i class="uiIcon uiIconArrowDown"></i></a>
+                <a class="toggle-collapse-group" href="#"><i class="uiIcon uiIconMiniArrowDown"></i></a>
                 <%
                     def user = group.key.value;
                     def isGuest = (user == null || user.username == 'guest' || user.username == null);

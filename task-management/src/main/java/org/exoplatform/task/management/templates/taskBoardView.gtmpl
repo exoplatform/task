@@ -123,7 +123,7 @@
                 <% if (groupBy != null && !groupBy.isEmpty() && !"none".equals(groupBy)) { %>
                     <div class="heading primaryBackground ">
                         <% if (groupBy == 'assignee') {%>
-                        <a class="toggle-collapse-group" href="#"><i class="uiIcon uiIconArrowDown"></i></a>
+                        <a class="toggle-collapse-group" href="#"><i class="uiIcon uiIconMiniArrowDown"></i></a>
                         <%
                             def user = group.key.value;
                             def isGuest = (user == null || user.username == 'guest' || user.username == null);
@@ -221,7 +221,7 @@
             </div>
 
             <div class="heading primaryBackground" style="display:none">
-                <a href="#" class="toggle-collapse-group"><i class="uiIcon uiIconArrowDown"></i></a>
+                <a href="#" class="toggle-collapse-group"><i class="uiIcon uiIconMiniArrowDown"></i></a>
                 <img width="20px" height="20px" alt="Root Root" src="/eXoSkin/skin/images/system/UserAvtDefault.png">
                 <a href="javascript:void(0)"><span class="group-name">Root Root</span> <span class="amount-item">(6)</span></a>
             </div>
@@ -240,7 +240,7 @@
                 </ul>
             </div>
             <div class="heading primaryBackground" style="display:none">
-                <a href="#" class="toggle-collapse-group"><i class="uiIcon uiIconArrowDown"></i></a>
+                <a href="#" class="toggle-collapse-group"><i class="uiIcon uiIconMiniArrowDown"></i></a>
                 <img width="20px" height="20px" alt="Root Root" src="/eXoSkin/skin/images/system/UserAvtDefault.png">
                 <a href="javascript:void(0)"><span class="group-name">Root Root</span> <span class="amount-item">(6)</span></a>
             </div>
@@ -296,7 +296,7 @@
 
 
             <div class="heading primaryBackground" style="display:none">
-                <a href="#" class="toggle-collapse-group"><i class="uiIcon uiIconArrowDown"></i></a>
+                <a href="#" class="toggle-collapse-group"><i class="uiIcon uiIconMiniArrowDown"></i></a>
                 <img width="20px" height="20px" alt="Root Root" src="/eXoSkin/skin/images/system/UserAvtDefault.png">
                 <a href="javascript:void(0)"><span class="group-name">Root Root</span> <span class="amount-item">(6)</span></a>
             </div>
@@ -330,7 +330,7 @@
 
 
             <div class="heading primaryBackground" style="display:none">
-                <a href="#" class="toggle-collapse-group"><i class="uiIcon uiIconArrowDown"></i></a>
+                <a href="#" class="toggle-collapse-group"><i class="uiIcon uiIconMiniArrowDown"></i></a>
                 <span class="label red">Next</span>
                 <span class="label moss_green">Writing</span>
                 <span class="label">No Label</span>
@@ -417,7 +417,7 @@
 
 
             <div class="heading primaryBackground">
-                <a href="#" class="toggle-collapse-group"><i class="uiIcon uiIconArrowDown"></i></a>
+                <a href="#" class="toggle-collapse-group"><i class="uiIcon uiIconMiniArrowDown"></i></a>
                 <span class="label red">Next</span>
                 <span class="label moss_green">Writing</span>
                 <span class="label">No Label</span>

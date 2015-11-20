@@ -374,9 +374,9 @@ define('ta_edit_inline',
             render: {
                 option: function(item, escape) {
                     return '<li class="data">' +
-                        '<div class="avatarSmall">' +
+                        '<span class="avatarMini">' +
                         '   <img src="'+item.avatar+'">' +
-                        '</div>' +
+                        '</span>' +
                         '<span class="text">' + editInline.taApp.escape(item.text) + ' (' + item.id +')' + '</span>' +
                         '<span class="user-status"><i class="uiIconColorCircleGray"></i></span>' +
                         '</li>';

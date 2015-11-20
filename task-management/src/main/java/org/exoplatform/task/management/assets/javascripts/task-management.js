@@ -487,11 +487,11 @@ $(document).ready(function() {
      $centerPanel.on('click', '.table-project-collapse .toggle-collapse-group' ,function() {
         if($(this).parents('.heading').next('.collapse-content').is(':visible')) {
             $(this).parents('.heading').next('.collapse-content').slideUp(200);
-            $(this).find('.uiIcon').attr('class','uiIcon uiIconArrowRight');
+            $(this).find('.uiIcon').attr('class','uiIcon uiIconMiniArrowRight');
         }
         else {
             $(this).parents('.heading').next('.collapse-content').slideDown(500);
-            $(this).find('.uiIcon').attr('class','uiIcon uiIconArrowDown');
+            $(this).find('.uiIcon').attr('class','uiIcon uiIconMiniArrowDown');
         }
     });
 

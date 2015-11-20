@@ -168,6 +168,19 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
   top: -1px;
   color: white;
 }
+.taskMngCont .accordion-heading .dropdownIcon .uiIconArrowDownMini,
+.taskMngCont .accordion-heading .dropdownIcon .uiIconArrowRightMini {
+  font-size: 9px;
+}
+.taskMngCont .addTask .assignmentPopup .dropdown-menu .text {
+  margin: 0 0 0 6px;
+  display: inline-block;
+  vertical-align: middle;
+}
+.taskMngCont .resizeButton .uiIconMiniArrowLeft,
+.taskMngCont .resizeButton .uiIconMiniArrowRight {
+  font-size: 10px;
+}
 /* Projects Area */
 #taskManagement .tooltip {
   white-space: nowrap;
@@ -848,9 +861,6 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
 .taskBoardView .heading .label {
   vertical-align: 1px;
 }
-.taskBoardView .table-project-collapse .caption-heading {
-  margin-bottom: 10px;
-}
 .taskBoardView .table-project-collapse .caption-heading .hover-action-reveal {
   background: #545454;
   padding: 10px 24px;
@@ -896,6 +906,9 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
 .taskBoardView .table-project-collapse .caption-heading .hover-action-reveal:nth-last-child(2) .uiIconPlus:hover {
   background-position: -101px -61px;
 }
+.taskBoardView .table-project-collapse .caption-heading + .heading {
+  margin-top: 10px;
+}
 .taskBoardView .table-project-collapse .col-new .formCreateNewStatus {
   width: 78%;
 }
@@ -911,6 +924,8 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
 }
 .taskBoardView .table-project-collapse .taskItem .box-small {
   background: #f6f6f6;
+  color: #333333;
+  margin-top: 10px;
 }
 .taskBoardView .table-project-collapse .taskItem .box-small .priority-high {
   background: #f09c93;
