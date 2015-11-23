@@ -57,6 +57,9 @@ li[data-showhiddenproject="true"] {
   .label-showHiddenProject {
     display: none;
   }
+  .uiIconShowProject:before {
+    content: "\e792";
+  }
   .all-project-hidden {
     display: none;
   }
@@ -100,6 +103,9 @@ li[data-showhiddenlabel="false"] {
 li[data-showhiddenlabel="true"] {
   .label-showHiddenLabel {
     display: none;
+  }
+  .uiIconShowLabel:before{
+    content: "\e792";
   }
   .all-label-hidden {
     display: none;
@@ -284,6 +290,15 @@ li[data-hiddenlabel="false"] {
                 .actionIcon {
                     margin-top: 1px;
                     float: left;
+                }
+                .Selected{
+                    background-color: #f9f9f9;
+                    background-image: linear-gradient(to bottom, #ffffff, #f0f0f0);
+                    background-repeat: repeat-x;
+                    border: 1px solid #cccccc;
+                    border-radius: 3px;
+                    box-shadow: 0 1px 2px 0 rgba(255, 255, 255, 0);
+                    color: #333333;
                 }
             }
         }

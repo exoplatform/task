@@ -11,7 +11,7 @@ define('taFilter', ['SHARED/jquery', 'SHARED/selectize'], function($) {
           var $icon = $(e.target);
           
           if (ui.$rightPanelContent.find('.taskFilter').length || !$icon.hasClass('uiIconBlue')) {
-            $icon.toggleClass('uiIconBlue');
+            $icon.toggleClass('uiIconBlue').parent().toggleClass('Selected');
           }
 
           //

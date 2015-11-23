@@ -31,7 +31,7 @@
 															<tr>
 																<td align="left" valign="top" bgcolor="#ffffff" style="vertical-align: top; background-color: #ffffff; padding: 0 15px 0 0;">
 																	<a href="#" style="margin: 4px 0 0; padding: 0; display: block;">
-																		<img height="76" width="76" src="$AVATAR" alt="$USER" />
+																		<img style="border-radius: 4px;" height="76" width="76" src="$AVATAR" alt="$USER" />
 																	</a>
 																</td>
 																<td align="left" bgcolor="#ffffff" width="90%" align="top" style="width: 90%; background-color: #ffffff; padding: 0 0; vertical-align: top;">

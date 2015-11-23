@@ -49,6 +49,9 @@ li[data-showhiddenproject="false"] li.all-children-hided a.collapseSubProject {
 li[data-showhiddenproject="true"] .label-showHiddenProject {
   display: none;
 }
+li[data-showhiddenproject="true"] .uiIconShowProject:before {
+  content: "\e792";
+}
 li[data-showhiddenproject="true"] .all-project-hidden {
   display: none;
 }
@@ -77,6 +80,9 @@ li[data-showhiddenlabel="false"] li.all-children-hided a.collapseSubLabel {
 }
 li[data-showhiddenlabel="true"] .label-showHiddenLabel {
   display: none;
+}
+li[data-showhiddenlabel="true"] .uiIconShowLabel:before {
+  content: "\e792";
 }
 li[data-showhiddenlabel="true"] .all-label-hidden {
   display: none;
@@ -215,6 +221,15 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
 #taskManagement .centerPanel.uiBox .projectListView .title .settingActionButtons .actionIcon {
   margin-top: 1px;
   float: left;
+}
+#taskManagement .centerPanel.uiBox .projectListView .title .settingActionButtons .Selected {
+  background-color: #f9f9f9;
+  background-image: linear-gradient(to bottom, #ffffff, #f0f0f0);
+  background-repeat: repeat-x;
+  border: 1px solid #cccccc;
+  border-radius: 3px;
+  box-shadow: 0 1px 2px 0 rgba(255, 255, 255, 0);
+  color: #333333;
 }
 @media (min-width: 1500px) {
   #taskManagement .accordion-heading .item .dropdown-menu {
