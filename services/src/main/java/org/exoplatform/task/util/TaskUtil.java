@@ -458,7 +458,7 @@ public final class TaskUtil {
     //
     long duration = normalizeDate(end).getTimeInMillis() - normalizeDate(start).getTimeInMillis();
     
-    SimpleDateFormat df = new SimpleDateFormat("dd MMMM YYYY");
+    SimpleDateFormat df = new SimpleDateFormat("dd MMM YYYY");
     df.setTimeZone(start.getTimeZone());
 
     StringBuilder workplan = new StringBuilder(bundle.getString("label.workPlaned")).append(" ");
