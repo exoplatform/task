@@ -457,7 +457,8 @@ define('ta_edit_inline',
                     var assg = options[assignee];
                     if (assg) {
                         $editable.find('.assigned img').attr('src', assg.avatar);
-                        $editable.find('.assigned .editAssignee').html(numberCoWorker == 0 ? editInline.taApp.escape(assg.text) : '+' + numberCoWorker + ' Coworkers');
+                        var coworkerLabel = numberCoWorker > 1 ? 'coworkers' : 'coworker';
+                        $editable.find('.assigned .editAssignee').html(numberCoWorker == 0 ? editInline.taApp.escape(assg.text) : '+' + numberCoWorker + ' ' + coworkerLabel);
                     }
                 },
                 error: function(response) {
