@@ -115,7 +115,7 @@ public class Task {
   private boolean completed = false;
   
   @Column(name = "CALENDAR_INTEGRATED")
-  private boolean calendarIntegrated = true;
+  private boolean calendarIntegrated = false;
 
   @ElementCollection
   @CollectionTable(name = "TASK_TASK_COWORKERS",
