@@ -31,7 +31,7 @@ import java.util.*;
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>
  */
-@Entity
+@Entity(name = "TaskProject")
 @ExoEntity
 @Table(name = "TASK_PROJECTS")
 public class Project {

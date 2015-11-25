@@ -31,16 +31,16 @@ import javax.persistence.NamedQuery;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-@Entity
+@Entity(name = "TaskChangeLog")
 @ExoEntity
 @Table(name = "TASK_CHANGE_LOGS")
 @NamedQueries({
         @NamedQuery(name = "TaskChangeLog.findChangeLogByTaskId",
-                    query = "SELECT log FROM ChangeLog log WHERE log.task.id = :taskId ORDER BY log.createdTime DESC"),
+                    query = "SELECT log FROM TaskChangeLog log WHERE log.task.id = :taskId ORDER BY log.createdTime DESC"),
         @NamedQuery(name = "TaskChangeLog.countChangeLogByTaskId",
-                query = "SELECT count(log) FROM ChangeLog log WHERE log.task.id = :taskId"),
+                query = "SELECT count(log) FROM TaskChangeLog log WHERE log.task.id = :taskId"),
         @NamedQuery(name = "TaskChangeLog.removeChangeLogByTaskId",
-                query = "DELETE FROM ChangeLog log WHERE log.task.id = :taskId")
+                query = "DELETE FROM TaskChangeLog log WHERE log.task.id = :taskId")
 })
 public class ChangeLog implements Comparable<ChangeLog> {
 

@@ -111,7 +111,7 @@ public abstract class CommonJPADAO<E, K extends Serializable> extends GenericDAO
       }
       
       //
-      q.select(cb.count(root));
+      q.select(cb.countDistinct(root));
       final TypedQuery<Long> countQuery = em.createQuery(q);
       
       //

@@ -28,7 +28,7 @@ import java.util.Set;
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
-@Entity
+@Entity(name = "TaskUserSetting")
 @ExoEntity
 @Table(name = "TASK_USER_SETTINGS")
 public class UserSetting {

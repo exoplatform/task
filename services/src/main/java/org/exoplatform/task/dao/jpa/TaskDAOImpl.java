@@ -195,6 +195,10 @@ public class TaskDAOImpl extends CommonJPADAO<Task, Long> implements TaskHandler
       }
 
       Task currentTask = find(currentTaskId);
+      // Load coworker and tag to avoid they will be deleted when save task
+      currentTask.getCoworker();
+      currentTask.getTag();
+
       Task prevTask = null;
       Task nextTask = null;
       if (currentTaskIndex < orders.length - 1) {
@@ -225,6 +229,10 @@ public class TaskDAOImpl extends CommonJPADAO<Task, Long> implements TaskHandler
                   if (task.getRank() > 0) {
                     break;
                   }
+                  // Load coworker and tag to avoid they will be deleted when save task
+                  task.getCoworker();
+                  task.getTag();
+
                   task.setRank(newRank + currentTaskIndex - i);
                   update(task);
                   if (exclude.length() > 0) {
@@ -235,7 +243,7 @@ public class TaskDAOImpl extends CommonJPADAO<Task, Long> implements TaskHandler
               }
           }
           //Update rank of tasks have rank >= newRank with rank := rank + increment
-          sql = new StringBuilder("UPDATE Task as ta SET ta.rank = ta.rank + ").append(increment)
+          sql = new StringBuilder("UPDATE TaskTask as ta SET ta.rank = ta.rank + ").append(increment)
                                 .append(" WHERE ta.rank >= ").append(newRank);
           if (exclude.length() > 0) {
               sql.append(" AND ta.id NOT IN (").append(exclude.toString()).append(")");
@@ -243,13 +251,13 @@ public class TaskDAOImpl extends CommonJPADAO<Task, Long> implements TaskHandler
 
       } else if (oldRank < newRank) {
           //Update all task where oldRank < rank < newRank: rank = rank - 1
-          sql = new StringBuilder("UPDATE Task as ta SET ta.rank = ta.rank - 1")
+          sql = new StringBuilder("UPDATE TaskTask as ta SET ta.rank = ta.rank - 1")
                                 .append(" WHERE ta.rank > ").append(oldRank)
                                 .append(" AND ta.rank < ").append(newRank);
           newRank --;
       } else if (oldRank > newRank) {
           //Update all task where newRank <= rank < oldRank: rank = rank + 1
-          sql = new StringBuilder("UPDATE Task as ta SET ta.rank = ta.rank + 1")
+          sql = new StringBuilder("UPDATE TaskTask as ta SET ta.rank = ta.rank + 1")
                   .append(" WHERE ta.rank >= ").append(newRank)
                   .append(" AND ta.rank < ").append(oldRank);
           newRank ++;

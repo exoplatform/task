@@ -54,36 +54,36 @@ import org.exoplatform.task.util.TaskUtil;
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>
  */
-@Entity
+@Entity(name = "TaskTask")
 @ExoEntity
 @Table(name = "TASK_TASKS")
 @NamedQueries({
     @NamedQuery(name = "Task.findByMemberships",
-        query = "SELECT ta FROM Task ta LEFT JOIN ta.coworker coworkers " +
+        query = "SELECT ta FROM TaskTask ta LEFT JOIN ta.coworker coworkers " +
             "WHERE ta.assignee = :userName " +
             "OR ta.createdBy = :userName " +
             "OR coworkers = :userName " +
-            "OR ta.status IN (SELECT st.id FROM Status st " +
+            "OR ta.status IN (SELECT st.id FROM TaskStatus st " +
             "WHERE project IN " +
-            "(SELECT pr1.id FROM Project pr1 LEFT JOIN pr1.manager managers WHERE managers IN :memberships) " +
+            "(SELECT pr1.id FROM TaskProject pr1 LEFT JOIN pr1.manager managers WHERE managers IN :memberships) " +
             "OR project IN " +
-            "(SELECT pr2.id FROM Project pr2 LEFT JOIN pr2.participator participators " +
+            "(SELECT pr2.id FROM TaskProject pr2 LEFT JOIN pr2.participator participators " +
             "WHERE participators IN :memberships) " +
             ") "),
     @NamedQuery(name = "Task.findTaskByProject",
-        query = "SELECT t FROM Task t WHERE t.status.project.id = :projectId"),
+        query = "SELECT t FROM TaskTask t WHERE t.status.project.id = :projectId"),
     @NamedQuery(name = "Task.findTaskByActivityId",
-        query = "SELECT t FROM Task t WHERE t.activityId = :activityId"),
+        query = "SELECT t FROM TaskTask t WHERE t.activityId = :activityId"),
     @NamedQuery(name = "Task.getCoworker",
-        query = "SELECT c FROM Task t inner join t.coworker c WHERE t.id = :taskid"),
+        query = "SELECT c FROM TaskTask t inner join t.coworker c WHERE t.id = :taskid"),
     @NamedQuery(name = "Task.getTag",
-        query = "SELECT tg FROM Task t inner join t.tag tg WHERE t.id = :taskid"),
+        query = "SELECT tg FROM TaskTask t inner join t.tag tg WHERE t.id = :taskid"),
     @NamedQuery(name = "Task.findTagsByKeyword",
-        query = "SELECT DISTINCT tg FROM Task t inner join t.tag tg WHERE tg LIKE :keyword ORDER BY tg ASC"),
+        query = "SELECT DISTINCT tg FROM TaskTask t inner join t.tag tg WHERE tg LIKE :keyword ORDER BY tg ASC"),
     @NamedQuery(name = "Task.findTagsByKeyword.count",
-        query = "SELECT count(DISTINCT tg) FROM Task t inner join t.tag tg WHERE tg LIKE :keyword"),
+        query = "SELECT count(DISTINCT tg) FROM TaskTask t inner join t.tag tg WHERE tg LIKE :keyword"),
     @NamedQuery(name = "Task.updateStatus",
-    query = "UPDATE Task t SET t.status = :status_new WHERE t.status = :status_old")
+    query = "UPDATE TaskTask t SET t.status = :status_new WHERE t.status = :status_old")
 })
 public class Task {
 

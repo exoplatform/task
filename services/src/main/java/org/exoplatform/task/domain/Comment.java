@@ -27,16 +27,16 @@ import java.util.Date;
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
-@Entity
+@Entity(name = "TaskComment")
 @ExoEntity
 @Table(name = "TASK_COMMENTS")
 @NamedQueries({
     @NamedQuery(name = "Comment.countCommentOfTask",
-        query = "SELECT count(c) FROM Comment c WHERE c.task.id = :taskId"),
+        query = "SELECT count(c) FROM TaskComment c WHERE c.task.id = :taskId"),
     @NamedQuery(name = "Comment.findCommentsOfTask",
-        query = "SELECT c FROM Comment c WHERE c.task.id = :taskId ORDER BY c.createdTime DESC"),
+        query = "SELECT c FROM TaskComment c WHERE c.task.id = :taskId ORDER BY c.createdTime DESC"),
     @NamedQuery(name = "Comment.deleteCommentOfTask",
-        query = "DELETE FROM Comment c WHERE c.task.id = :taskId")
+        query = "DELETE FROM TaskComment c WHERE c.task.id = :taskId")
 })
 public class Comment {
   @Id

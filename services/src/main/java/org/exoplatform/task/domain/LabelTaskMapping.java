@@ -29,7 +29,7 @@ import java.io.Serializable;
 
 import org.exoplatform.commons.api.persistence.ExoEntity;
 
-@Entity
+@Entity(name = "TaskLabelTaskMapping")
 @ExoEntity
 @Table(name = "TASK_LABEL_TASK")
 public class LabelTaskMapping implements Serializable {

@@ -38,14 +38,14 @@ import java.util.Set;
 
 import org.exoplatform.commons.api.persistence.ExoEntity;
 
-@Entity
+@Entity(name = "TaskLabel")
 @ExoEntity
 @Table(name = "TASK_LABELS")
 @NamedQueries({  
   @NamedQuery(name = "Label.findLabelsByTask",
-      query = "SELECT lbl FROM Label lbl inner join lbl.lblMapping m WHERE lbl.username = :username AND m.task.id = :taskid"),
+      query = "SELECT lbl FROM TaskLabel lbl inner join lbl.lblMapping m WHERE lbl.username = :username AND m.task.id = :taskid"),
       @NamedQuery(name = "Label.findLabelsByTaskCount",
-      query = "SELECT count(*) FROM Label lbl inner join lbl.lblMapping m WHERE lbl.username = :username AND m.task.id = :taskid")
+      query = "SELECT count(*) FROM TaskLabel lbl inner join lbl.lblMapping m WHERE lbl.username = :username AND m.task.id = :taskid")
 })
 public class Label {
   @Id

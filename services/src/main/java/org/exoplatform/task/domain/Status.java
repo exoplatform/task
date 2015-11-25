@@ -43,20 +43,20 @@ import javax.persistence.Table;
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>
  */
-@Entity
+@Entity(name = "TaskStatus")
 @ExoEntity
 @Table(name = "TASK_STATUS")
 @NamedQueries({
     @NamedQuery(name = "Status.findLowestRankStatusByProject",
-        query = "SELECT s FROM Status s WHERE s.rank = (SELECT MIN(s2.rank) FROM Status s2 " +
+        query = "SELECT s FROM TaskStatus s WHERE s.rank = (SELECT MIN(s2.rank) FROM TaskStatus s2 " +
             "WHERE s2.project.id = :projectId) AND s.project.id = :projectId)"),
     @NamedQuery(name = "Status.findHighestRankStatusByProject",
-            query = "SELECT s FROM Status s WHERE s.rank = (SELECT MAX(s2.rank) FROM Status s2 " +
+            query = "SELECT s FROM TaskStatus s WHERE s.rank = (SELECT MAX(s2.rank) FROM TaskStatus s2 " +
                 "WHERE s2.project.id = :projectId) AND s.project.id = :projectId)"),
     @NamedQuery(name = "Status.findByName",
-                query = "SELECT s FROM Status s WHERE s.name = :name AND s.project.id = :projectID"),
+                query = "SELECT s FROM TaskStatus s WHERE s.name = :name AND s.project.id = :projectID"),
     @NamedQuery(name = "Status.findStatusByProject",
-                query = "SELECT s FROM Status s WHERE s.project.id = :projectId ORDER BY s.rank ASC")
+                query = "SELECT s FROM TaskStatus s WHERE s.project.id = :projectId ORDER BY s.rank ASC")
 })
 public class Status implements Comparable<Status>{
   @Id
