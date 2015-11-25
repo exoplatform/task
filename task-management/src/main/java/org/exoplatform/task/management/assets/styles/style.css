@@ -989,7 +989,8 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
   padding: 4px 6px;
   color: white;
 }
-.taskBoardView .table-project-collapse .no-label {
+.taskBoardView .table-project-collapse .no-label,
+.taskBoardView .table-project-collapse .null {
   background: #999;
 }
 .taskBoardView .uiEditableInline.active .number-tasks,
