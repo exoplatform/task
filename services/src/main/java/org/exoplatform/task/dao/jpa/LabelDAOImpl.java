@@ -16,7 +16,10 @@
 */
 package org.exoplatform.task.dao.jpa;
 
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+
+import java.util.List;
 
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.task.dao.LabelHandler;
@@ -24,6 +27,20 @@ import org.exoplatform.task.dao.LabelQuery;
 import org.exoplatform.task.domain.Label;
 
 public class LabelDAOImpl extends CommonJPADAO<Label, Long> implements LabelHandler {
+
+  @Override
+  public void delete(Label entity) {
+    Query query = getEntityManager().createNamedQuery("LabelTaskMapping.removeLabelTaskMapping");
+    query.setParameter("labelId", entity.getId());
+    query.executeUpdate();
+    List<Label> children = entity.getChildren();
+    if (children != null) {
+      for (Label child : children) {
+        delete(child);
+      }
+    }
+    super.delete(entity);    
+  }
 
   @Override
   public ListAccess<Label> findLabelsByUser(String username) {

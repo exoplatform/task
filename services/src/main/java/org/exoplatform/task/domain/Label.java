@@ -18,7 +18,6 @@
  */
 package org.exoplatform.task.domain;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -70,10 +69,10 @@ public class Label {
   @JoinColumn(name = "PARENT_LABEL_ID", nullable = true)
   private Label parent;
 
-  @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY, cascade=CascadeType.REMOVE, orphanRemoval=true)
+  @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
   private List<Label> children = new LinkedList<Label>();
   
-  @OneToMany(mappedBy = "label", fetch=FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval=true)
+  @OneToMany(mappedBy = "label", fetch=FetchType.LAZY)
   private Set<LabelTaskMapping> lblMapping = new HashSet<LabelTaskMapping>();
 
   public Label() {

@@ -133,6 +133,45 @@ public class TestLabelDAO extends AbstractTest {
   }
   
   @Test
+  public void testRemoveLabel() throws Exception {
+    Task task = new Task();
+    task.setTitle("task1");
+    taskService.getTaskHandler().create(task);
+    
+    Task task2 = new Task();
+    task2.setTitle("task2");
+    taskService.getTaskHandler().create(task2);
+    //
+    Label label1 = new Label("test label1", "root");
+    lblDAO.create(label1);    
+    //
+    LabelTaskMapping mapping = new LabelTaskMapping();
+    mapping.setLabel(label1);
+    mapping.setTask(task);
+    
+    LabelTaskMapping mapping2 = new LabelTaskMapping();
+    mapping2.setLabel(label1);
+    mapping2.setTask(task2);
+    taskService.getLabelTaskMappingHandler().create(mapping);
+    taskService.getLabelTaskMappingHandler().create(mapping2);
+    
+    endRequestLifecycle();
+    initializeContainerAndStartRequestLifecycle();
+    
+    //
+    Assert.assertNotNull(lblDAO.find(label1.getId()));
+    ListAccess<Task> tasks = taskService.getTaskHandler().findTasksByLabel(label1.getId(), null, "root", null);
+    Assert.assertEquals(2, tasks.getSize());
+
+    lblDAO.delete(lblDAO.find(label1.getId()));    
+    
+    //
+    Assert.assertNull(lblDAO.find(label1.getId()));
+    tasks = taskService.getTaskHandler().findTasksByLabel(label1.getId(), null, "root", null);
+    Assert.assertEquals(0, tasks.getSize());
+  }
+  
+  @Test
   public void testQuery() throws Exception {
     Label label1 = new Label("test label1", "root");
     Label label2 = new Label("test label2", "demo");

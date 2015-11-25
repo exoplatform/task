@@ -23,6 +23,8 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 import java.io.Serializable;
@@ -32,6 +34,10 @@ import org.exoplatform.commons.api.persistence.ExoEntity;
 @Entity(name = "TaskLabelTaskMapping")
 @ExoEntity
 @Table(name = "TASK_LABEL_TASK")
+@NamedQueries({  
+  @NamedQuery(name = "LabelTaskMapping.removeLabelTaskMapping",
+      query = "DELETE FROM TaskLabelTaskMapping m WHERE m.label.id = :labelId")
+})
 public class LabelTaskMapping implements Serializable {
   @Id
   @ManyToOne
