@@ -367,7 +367,7 @@
     </createTable>
     <modifySql dbms="mysql">
       <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
-    </modifySql>
+    </modifySql>    
   </changeSet>
 
   <!-- Definition of sequence for TASK_COMMENTS -->
@@ -396,5 +396,11 @@
                  tableName="TASK_TASKS">
       <column name="CREATED_BY" type="NVARCHAR(50)"/>
     </createIndex>
+  </changeSet>
+
+  <changeSet author="task" id="1.0.0-25">
+    <addUniqueConstraint columnNames="LABEL_ID, TASK_ID"
+            constraintName="UQ_TASK_LABEL_TASK"
+            tableName="TASK_LABEL_TASK"/>
   </changeSet>
 </databaseChangeLog>
