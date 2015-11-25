@@ -18,7 +18,7 @@
 	def task = taskModel.getTask();
 	def breadcumbs = taskModel.getBreadcumbs();
 	def assignee = taskModel.getAssignee();
-   def hasAssignee = (assignee != null);
+    def hasAssignee = (assignee != null);
 	def countCoWorker = taskModel.getNumberCoworkers();
 	def commentCount = taskModel.getCommentCount();
 	def comments = taskModel.getComments();
@@ -118,17 +118,18 @@
     </div>
     <div class="pull-left">
         <div class="uiEditableInline inactive">
-            <span class = "unassigned ${!hasAssignee ? "" : "hide"}" style = "">
-                <i class="uiIconUser"></i>
-                <a data-original-title="&{tooltip.clickToEdit}" rel="tooltip" data-placement="bottom" class="hoverStatus muted small editableField editAssignee">&{label.unassigned}</a>
-            </span>
-            <span class = "assigned clearfix ${!hasAssignee ? "hide" : ""}">
-                <a class="avatarMini pull-left" href="#"><img alt="avatar" src="${hasAssignee ? assignee.avatar : ""}"></a>
-                <a title="Click to edit" data-toggle="tooltip" data-placement="bottom" class="hoverStatus small editableField editAssignee" style="text-transform: lowercase;">
-                    <% if (countCoWorker == 0) {%>
-                        ${hasAssignee ? encoder.encode(assignee.displayName) : ""}
+            <span>
+                <span class="unassigned ${!hasAssignee ? "" : "hide"}"><i class="uiIconUser"></i></span>
+                <a class="avatarMini pull-left assigned ${!hasAssignee ? "hide" : ""}" href="#">
+                    <img alt="avatar" src="${hasAssignee ? assignee.avatar : ""}">
+                </a>
+                <a title="&{tooltip.clickToEdit}" data-toggle="tooltip" data-placement="bottom" class="hoverStatus small editableField editAssignee">
+                    <% if (countCoWorker > 0) {%>
+                        +${countCoWorker} ${bundle.getString(countCoWorker > 1 ? "label.coworkers" : "label.coworker").toLowerCase()}
+                    <%} else if (hasAssignee) {%>
+                        ${encoder.encode(assignee.displayName)}
                     <%} else {%>
-                        +${countCoWorker} <% if(countCoWorker > 1) {%> &{label.coworkers} <%} else {%> &{label.coworker} <%}%>
+                        &{label.unassigned}
                     <%}%>
                 </a>
             </span>

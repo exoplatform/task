@@ -131,18 +131,9 @@ public final class TaskUtil {
     taskModel.setTask(task);
 
     org.exoplatform.task.model.User assignee = null;
-    int numberCoworkers = 0;
-    if(task.getAssignee() != null && !task.getAssignee().isEmpty()) {
+    int numberCoworkers = coworker != null ? coworker.size() : 0;
+    if (task.getAssignee() != null && !task.getAssignee().isEmpty()) {
       assignee = userService.loadUser(task.getAssignee());
-      numberCoworkers = coworker != null ? coworker.size() : 0;
-    } else if (coworker != null && coworker.size() > 0) {
-      for (String u : coworker) {
-        if (assignee == null && u != null && !u.isEmpty()) {
-          assignee = userService.loadUser(coworker.iterator().next());
-        } else {
-          numberCoworkers++;
-        }
-      }
     }
     taskModel.setAssignee(assignee);
     taskModel.setNumberCoworkers(numberCoworkers);

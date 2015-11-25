@@ -435,12 +435,10 @@ define('ta_edit_inline',
                     var $editable = $assignee.closest('.uiEditableInline');
                     var assignee = $assignee.val();
                     var coworkders = $rightPanel.find('input[name="coworker"]').val();
-                    if (assignee == '' && coworkders == '') {
-                        $editable.find('.unassigned').removeClass('hide');
-                        $editable.find('.assigned').addClass('hide');
-                    } else {
-                        $editable.find('.unassigned').addClass('hide');
-                        $editable.find('.assigned').removeClass('hide');
+
+                    var assg = false;
+                    if (assignee != '' && options[assignee] != undefined) {
+                        var assg = options[assignee];
                     }
                     if (coworkders == '') {
                         coworkders = [];
@@ -448,17 +446,24 @@ define('ta_edit_inline',
                         coworkders = coworkders.split(',');
                     }
                     var numberCoWorker = coworkders.length;
-                    if (assignee == '') {
-                        assignee = coworkders[0];
-                        numberCoWorker--;
+
+                    if (!assg) {
+                        $editable.find('.unassigned').removeClass('hide');
+                        $editable.find('.assigned').addClass('hide');
+                    } else {
+                        $editable.find('.assigned img').attr('src', assg.avatar);
+                        $editable.find('.unassigned').addClass('hide');
+                        $editable.find('.assigned').removeClass('hide');
                     }
 
-                    // Update avatar and display name
-                    var assg = options[assignee];
-                    if (assg) {
-                        $editable.find('.assigned img').attr('src', assg.avatar);
+                    var $editAssignee = $editable.find('.editAssignee');
+                    if (numberCoWorker > 0) {
                         var coworkerLabel = numberCoWorker > 1 ? 'coworkers' : 'coworker';
-                        $editable.find('.assigned .editAssignee').html(numberCoWorker == 0 ? editInline.taApp.escape(assg.text) : '+' + numberCoWorker + ' ' + coworkerLabel);
+                        $editAssignee.html('+' + numberCoWorker + ' ' + coworkerLabel);
+                    } else if (!assg){
+                        $editAssignee.html('Unassigned');
+                    } else {
+                        $editAssignee.html(editInline.taApp.escape(assg.text));
                     }
                 },
                 error: function(response) {
