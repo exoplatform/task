@@ -32,7 +32,7 @@ def displayProject(project, level) {
         </a>
         <% if (project.children != null && project.children.size() > 0) {%>
             <ul>
-                <%project.children.each {p -> displayProject(p, level + 1)}%>
+                <% for (def p in project.children) { displayProject(p, level + 1) }%>
             </ul>
         <% }%>
     </li>
@@ -43,7 +43,7 @@ def displayProject(project, level) {
         <li>
             <a href="javascript:void(0)" data-canview="true" data-matched="${keyword == "" ? "true" : "false"}" data-projectid="0">&{label.projects}</a>
             <ul>
-                <%projects.each{p -> displayProject(p, 1)}%>
+                <% for (def p in projects) { displayProject(p, 1) }%>
             </ul>
         </li>
     </ul>

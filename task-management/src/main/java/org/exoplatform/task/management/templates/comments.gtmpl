@@ -10,7 +10,7 @@
 
 <%if(commentCount == 0) {%>
     <li class="no-comment">There are no comment yet!</li>
-<%} else { comments.each {comment -> 	
+<%} else { for (def comment in comments) {
 	def avatar = encoder.encode(comment.getAuthor().getAvatar());
 	def displayName = encoder.encode(comment.getAuthor().getDisplayName());
 	def formattedComment = encoder.encode(comment.getFormattedComment());

@@ -73,7 +73,7 @@
         def labelOptions = '';
         if (labels != null && !labels.isEmpty()) {
             labelHtml = "";
-            labels.each{label ->
+            for (def label in labels) {
             	 def labelName = encoder.encode(label.name);
                 labelHtml += '<span class="'+ label.color+' label">' + labelName +'</span>';
                 if (labelIds.length() > 0) {
@@ -181,7 +181,7 @@
     <%
         def tags = '';
         if (task.tag != null && task.tag.size() > 0) {
-            task.tag.each {tag ->
+            for (def tag in task.tag) {
                 if (!tag.isEmpty())
                     tags += '<div class="label primary">'+ encoder.encode(tag) +'</div>';
             };
@@ -423,7 +423,7 @@
 	            <ul class="list-comments media-list">
 	                <%if(commentCount == 0) {%>
 	                    <li class="no-comment">There are no comment yet!</li>
-	                <%} else { comments.each {comment -> %>
+	                <%} else { for (def comment in comments) { %>
 	                    <li class="comment media">
 	                        <a class="pull-left avatarXSmall" href="#">
 	                            <img class="media-object" src="${comment.author.avatar}" alt="${encoder.encode(comment.author.displayName)}">

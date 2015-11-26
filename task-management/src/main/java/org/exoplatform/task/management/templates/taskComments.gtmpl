@@ -26,7 +26,7 @@
     <div class="empty center">&{comment.message.noComment}</div>
     <%} else {%>
     <div class="commentList">
-        <% comments.each {comment -> %>
+        <% for (def comment in comments) {%>
         <div class="commentItem" data-commentid="${comment.id}">
             <div class="commmentLeft pull-left">
                 <a class="avatarXSmall" href="${comment.author.url}">

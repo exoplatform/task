@@ -63,7 +63,7 @@
           </tr>
         </thead>
         <tbody>
-        <% if (users.size() > 0) { users.each {user -> %>
+        <% if (users.size() > 0) { for (def user in users) {%>
             <tr>
                 <td class="center" style="width:20px">
                     <span class="uiCheckbox" style="margin-left: 10px">
