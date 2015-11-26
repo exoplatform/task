@@ -51,7 +51,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <org.exoplatform.depmgt.version>11-SNAPSHOT</org.exoplatform.depmgt.version>
     <platform.version>4.3.x-SNAPSHOT</platform.version>
-    <juzu.version>1.1.x-SNAPSHOT</juzu.version>
+    <juzu.version>1.1.0</juzu.version>
     <hibernate.version>4.1.12.Final</hibernate.version>
     <org.antlr.version>3.4</org.antlr.version>
   </properties>
