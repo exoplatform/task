@@ -19,6 +19,7 @@ package org.exoplatform.task.util;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -160,7 +161,7 @@ public final class ProjectUtil {
       return null;
     }
 
-    List<Project> projects = new LinkedList<Project>();
+    Set<Project> projects = new HashSet<Project>();
     for (Project p : projectTree) {
       projects.add(p);
       ListAccess<Project> tmp = projectService.getSubProjects(p.getId());
@@ -174,7 +175,7 @@ public final class ProjectUtil {
         projects.addAll(flattenTree(children, projectService));
       }
     }    
-    return projects;
+    return new ArrayList<Project>(projects);
   }
 
 

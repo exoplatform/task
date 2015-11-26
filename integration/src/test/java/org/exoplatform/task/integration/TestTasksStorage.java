@@ -155,10 +155,17 @@ public class TestTasksStorage {
 
     cals = calDAO.findCalendars(query);
     Assert.assertEquals(4, cals.size());
-    Assert.assertEquals(String.valueOf(p3.getId()), cals.get(3).getId());
+    assertContainCalendarId(cals, String.valueOf(p3.getId()));
     
     query.setExclusions(String.valueOf(ProjectUtil.TODO_PROJECT_ID));
     cals = calDAO.findCalendars(query);
     Assert.assertEquals(3, cals.size());
+  }
+
+  private void assertContainCalendarId(List<Calendar> cals, String calId) {
+    for (Calendar c : cals) {
+      if (c.getId().equals(calId)) return;
+    }
+    fail("Calendar with ID " + calId + " Should be found in calendar list");
   }
 }

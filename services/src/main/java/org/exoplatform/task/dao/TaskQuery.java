@@ -175,7 +175,7 @@ public class TaskQuery extends Query implements Cloneable {
   public void setAssigneeOrInProject(String username, List<Long> projectIds) {
     this.assignee = Arrays.asList(username);
     this.projectIds = projectIds;
-    this.add(Conditions.or(eq(TASK_ASSIGNEE, username), in(TASK_PROJECT, projectIds)));
+    this.add(Conditions.or(eq(TASK_ASSIGNEE, username), eq(TASK_COWORKER, username), in(TASK_PROJECT, projectIds)));
   }
 
   public void setStatus(Status status) {
