@@ -43,6 +43,15 @@ public class DateUtil {
 
     return (calendar.getTimeInMillis() < current.getTimeInMillis());
   }
+
+  public static boolean isYesterday(Calendar calendar) {
+    Calendar cal = newCalendarInstance(calendar.getTimeZone());
+    cal.add(Calendar.DATE, -1);
+    return (calendar.get(Calendar.DATE) == cal.get(Calendar.DATE)
+            && calendar.get(Calendar.MONTH) == cal.get(Calendar.MONTH)
+            && calendar.get(Calendar.YEAR) == cal.get(Calendar.YEAR));
+  }
+
   public static boolean isToday(Calendar calendar) {
     TimeZone tz = calendar.getTimeZone();
     Calendar current = Calendar.getInstance(tz);
@@ -84,8 +93,11 @@ public class DateUtil {
       return "";
     }
 
-    if (isOverdue(calendar)) {
+    /*if (isOverdue(calendar)) {
       return bundle.getString("label.overdue");
+    }*/
+    if (isYesterday(calendar)) {
+      return bundle.getString("label.yesterday");
     }
     if (isToday(calendar)) {
       return bundle.getString("label.today");
