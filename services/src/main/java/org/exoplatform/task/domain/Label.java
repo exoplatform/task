@@ -72,6 +72,7 @@ public class Label {
   @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
   private List<Label> children = new LinkedList<Label>();
   
+  //Still use for named query
   @OneToMany(mappedBy = "label", fetch=FetchType.LAZY)
   private Set<LabelTaskMapping> lblMapping = new HashSet<LabelTaskMapping>();
 

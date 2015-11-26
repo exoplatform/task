@@ -43,6 +43,18 @@ public class LabelDAOImpl extends CommonJPADAO<Label, Long> implements LabelHand
   }
 
   @Override
+  public void deleteAll(List<Label> entities) {
+    for (Label lb : entities) {
+      delete(lb);
+    }
+  }
+
+  @Override
+  public void deleteAll() {
+    deleteAll(findAll());
+  }
+
+  @Override
   public ListAccess<Label> findLabelsByUser(String username) {
     LabelQuery query = new LabelQuery();
     query.setUserName(username);
