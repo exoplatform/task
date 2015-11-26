@@ -40,8 +40,8 @@
     <module>integration</module>
   </modules>
   <scm>
-    <connection>scm:git:git://github.com/exo-addons/task.git</connection>
-    <developerConnection>scm:git:git@github.com:exo-addons/task.git</developerConnection>
+    <connection>scm:git:git://github.com/exoplatform/task.git</connection>
+    <developerConnection>scm:git:git@github.com:exoplatform/task.git</developerConnection>
     <tag>HEAD</tag>
     <url>https://github.com/exo-addons/task</url>
   </scm>
