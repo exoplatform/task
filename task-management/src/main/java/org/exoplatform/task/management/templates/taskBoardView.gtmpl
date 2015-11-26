@@ -49,9 +49,9 @@
                             <span>${orderBy != null && orderBy != "" ? orders[orderBy] : orders["dueDate"]}</span>
                         </a>
                         <ul class="dropdown-menu">
-                            <%orders.each{k,v ->
-                                if (k != orderBy) {%>
-                                    <li><a href="javascript:void(0)" data-orderby="${k}">${v}</a></li>
+                            <% for (def e in orders) {
+                                if (e.key != orderBy) {%>
+                                    <li><a href="javascript:void(0)" data-orderby="${e.key}">${e.value}</a></li>
                             <%  }
                             }%>
                         </ul>
@@ -62,9 +62,9 @@
                             <span>${groups[groupBy]}</span>
                         </a>
                         <ul class="dropdown-menu">
-                            <%groups.each{k,v -> %>
-                            <% if (k != groupBy) {%>
-                            <li><a href="javascript:void(0)" data-groupby="${k}">${v}</a></li>
+                            <% for (def e in groups) {%>
+                            <% if (e.key != groupBy) {%>
+                            <li><a href="javascript:void(0)" data-groupby="${e.key}">${e.value}</a></li>
                             <%}%>
                             <%}%>
                         </ul>
@@ -89,7 +89,9 @@
         <div class="table-project-collapse">
             <div class="caption-heading table-project">
                 <div class="row-item  has-border taskItem">
-                    <%status.eachWithIndex {st, index -> %>
+                    <% for (def index in 0 .. status.size() - 1) {
+                        def st = status.get(index);
+                    %>
                         <div class="col col${index} hover-action-reveal uiEditableInline" data-statusid="${st.id}">
                             <strong class="${editableClasses}" data-pk="${st.id}" data-type="text" data-name="name">${encoder.encode(st.name)} </strong><span class="${numberTasksByStatus[st.id] != null ? 'number-tasks' : ''}" data-taskcount-status="${numberTasksByStatus[st.id] != null ? numberTasksByStatus[st.id] : ''}">${numberTasksByStatus[st.id] != null ? numberTasksByStatus[st.id] : ''}</span>
                             <% if (index == numberStatus - 1 && canEdit) {%>
@@ -109,7 +111,7 @@
                 </div>
             </div>
 
-            <% groupTasks.each {group -> %>
+            <% for (def group in groupTasks) {%>
                 <%
                     def groupKey = group.key.toString();
                     groupKey = groupKey.replaceAll(' ', '-');
@@ -144,12 +146,12 @@
                     <ul class="table-project">
                         <li  class="row-item has-border taskItem">
                             <% def subGroups = TaskUtil.groupTasks(group.value, "status", currentUser, TimeZone.getDefault(), bundle, taskService, null);%>
-                            <%status.eachWithIndex {st, index -> %>
-                                <%
+                            <% for (def index in 0 .. status.size() - 1) {
+                                    def st = status.get(index);
                                     def key = new GroupKey(st.name, st, st.getRank());
                                 %>
                                 <div class="col col${index + 1} taskBoardContainer taskContainer${groupKey} taskContainer${groupKey}${st.id}" data-connected=".taskContainer${groupKey}" data-statusid="${st.id}">
-                                    <% subGroups[key].each {task -> %>
+                                    <% for (def task in subGroups[key]) {%>
                                         <!-- user name  task-done for check task.completed -->
                                         <div class="box-small has-background hover-action-reveal ${task.completed ? "task-completed": ""} taskItem" data-taskid="${task.id}">
                                             <span class="project-color priority-${task.priority.name().toLowerCase()}">&nbsp;</span>

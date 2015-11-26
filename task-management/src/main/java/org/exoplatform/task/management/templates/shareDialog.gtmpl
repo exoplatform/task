@@ -19,7 +19,7 @@
    <div class="PopupContent popupContent">
     <div class="hidden listMembershipType">
         <ul class="dropdown-menu">
-            <%msTypes.each {type ->%>
+            <% for (def type in msTypes) {%>
             <li><a href="javascript:void(0)" data-mstype="${type}">${type == '*' ? 'Any' : type}</a></li>
             <%}%>
         </ul>
@@ -46,7 +46,7 @@
                         <% if (managers.size() == 0) {%>
                             <div class="muted no-assisement">&{label.noAssignment}</div>
                         <%} else {%>
-                            <% managers.each {permission ->%>
+                            <% for (def permission in managers) {%>
                                 <p class="item"><strong>${encoder.encode(permission.displayName)}</strong> (${permission.id})</p>
                             <%}%>
                         <%}%>
@@ -59,12 +59,12 @@
                             <!-- display mention-->
                             <div class="replaceTextArea editable" g_editable="true" data-mentions="true" style="overflow: visible">
                                 <% if (managers.size() > 0) {%>
-                                    <%managers.each {permission ->
+                                    <% for (def permission in managers) {
                                         if (permission.type == 2) {%>
                                             <div class="groupMembership" data-permission="${permission.id}">
                                                 <span data-toggle="dropdown" class="dropdown-toggle" >${permission.membershipType == '*' ? 'Any' : permission.membershipType} <i  class="uiIconArrowDownMini uiIconLightGray"></i></span>
                                                 <ul class="dropdown-menu">
-                                                    <%msTypes.each {type ->%>
+                                                    <% for (def type in msTypes) {%>
                                                         <li><a href="javascript:void(0)" data-mstype="${type}">${type == '*' ? 'Any' : type}</a></li>
                                                     <%}%>
                                                 </ul>
@@ -144,7 +144,7 @@
                         <% if (participants.size() == 0) {%>
                         <div class="muted no-assisement">&{label.noAssignment}</div>
                         <%} else {%>
-                        <% participants.each {permission ->%>
+                        <% for (def permission in participants) {%>
                         <p class="item"><strong>${permission.displayName}</strong> (${permission.id})</p>
                         <%}%>
                         <%}%>
@@ -157,12 +157,12 @@
                             <!-- display mention-->
                             <div class="replaceTextArea editable" g_editable="true" data-mentions="true" style="overflow: visible">
                                 <% if (participants.size() > 0) {%>
-                                <%participants.each {permission ->
+                                <% for (def permission in participants) {
                                     if (permission.type == 2) {%>
                                 <div class="groupMembership" data-permission="${permission.id}">
                                     <span data-toggle="dropdown" class="dropdown-toggle" >${permission.membershipType == '*' ? 'Any' : permission.membershipType} <i  class="uiIconArrowDownMini uiIconLightGray"></i></span>
                                     <ul class="dropdown-menu">
-                                        <%msTypes.each {type ->%>
+                                        <% for (def type in msTypes) {%>
                                         <li><a href="javascript:void(0)" data-mstype="${type}">${type == '*' ? 'Any' : type}</a></li>
                                         <%}%>
                                     </ul>

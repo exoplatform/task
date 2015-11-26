@@ -21,7 +21,7 @@
             <a href="javascript:void(0);" data-groupid="${userGroup.id}" data-displayname="${encoder.encode(userGroup.displayName)}" class="${linkClasses}"><i class="uiIconGroup uiIconLightGray"></i>&nbsp;${encoder.encode(userGroup.displayName)}</a>
             <% if (hasChildren) {%>
             <ul class="childrenContainer nodeGroup">
-                <%userGroup.children.each {g -> renderGroup(g, false)}%>
+                <% for (def g in userGroup.children) { renderGroup(g, false) }%>
             </ul>
             <%}%>
         </li>
@@ -57,7 +57,7 @@
                         <div class="uiTrees scrollArea">
                             <div class="treeContainer jsContainer">
                                 <ul class="nodeGroup">
-                                    <%groups.each {g -> renderGroup(g, false)}%>
+                                    <% for (def g in groups) { renderGroup(g, false) }%>
                                 </ul>
                             </div>
                         </div>
@@ -73,7 +73,7 @@
                                         <span class="uiIconMiniArrowRight"></span>
                                         <a title="Select this group" data-membershiptype="" href="javascript:void(0);">Select this group</a>
                                     </li>
-                                <%} else membershipTypes.each {mst ->%>
+                                <%} else for (def mst in membershipTypes) {%>
                                     <li>
                                         <span class="uiIconMiniArrowRight"></span>
                                         <a title="${mst}" data-membershiptype="${mst}" href="javascript:void(0);">${mst}</a>

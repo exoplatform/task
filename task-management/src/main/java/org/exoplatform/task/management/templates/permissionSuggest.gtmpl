@@ -14,8 +14,8 @@
     </div>
 <%} else {%>
 <ul>
-    <%permissions.eachWithIndex {perm, index -> %>
-        <%
+    <% for (def index in 0 .. permissions.size() - 1) {
+            def perm = permissions.get(index);
             def display = perm.displayName;
             display = StringUtil.highlight(display, keyword, '<strong>', '</strong>');
         %>
