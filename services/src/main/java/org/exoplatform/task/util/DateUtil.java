@@ -30,8 +30,8 @@ import java.util.TimeZone;
  */
 public class DateUtil {
 
-  public static final String DUE_DATE_FORMAT = "MMM d";
-  public static final String DUE_DATE_FORMAT_WITH_YEAR = "MMM d, yyyy";
+  public static final String DUE_DATE_FORMAT = "MMM dd";
+  public static final String DUE_DATE_FORMAT_WITH_YEAR = "MMM dd, yyyy";
 
   public static boolean isOverdue(Calendar calendar) {
     TimeZone tz = calendar.getTimeZone();
