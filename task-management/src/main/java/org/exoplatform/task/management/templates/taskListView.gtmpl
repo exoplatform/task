@@ -81,9 +81,8 @@
             <% for (def group in groupTasks) { %>
             <% if (groupBy != null && !groupBy.isEmpty() && !"none".equals(groupBy)) { %>
             <div class="heading primaryBackground">
-                <% if (groupBy == 'assignee') {%>
                 <a class="toggle-collapse-group" href="#"><i class="uiIcon uiIconMiniArrowDown"></i></a>
-                <%
+                <% if (groupBy == 'assignee') {
                     def user = group.key.value;
                     def isGuest = (user == null || user.username == 'guest' || user.username == null);
                 %>
@@ -92,7 +91,7 @@
                 <%}%>
                 <a href="${isGuest ? "javascript:void(0)" : user.url}"><span class="group-name">${isGuest ? "Unassigned" : encoder.encode(user.displayName)}</span> <span class="amount-item">(${group.value.size()})</span></a>
                 <% } else { %>
-                <div class="heading-title"><span class="group-name">${encoder.encode(group.key.name)}</span> <span class="amount-item">(${group.value.size()})</span></div>
+                <span class="heading-title"><span class="group-name">${encoder.encode(group.key.name)}</span> <span class="amount-item">(${group.value.size()})</span></span>
                 <% } %>
             </div>
             <%}%>

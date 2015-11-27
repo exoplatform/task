@@ -124,9 +124,8 @@
                 %>
                 <% if (groupBy != null && !groupBy.isEmpty() && !"none".equals(groupBy)) { %>
                     <div class="heading primaryBackground ">
-                        <% if (groupBy == 'assignee') {%>
                         <a class="toggle-collapse-group" href="#"><i class="uiIcon uiIconMiniArrowDown"></i></a>
-                        <%
+                        <% if (groupBy == 'assignee') {
                             def user = group.key.value;
                             def isGuest = (user == null || user.username == 'guest' || user.username == null);
                         %>
@@ -138,7 +137,7 @@
                             <span class="amount-item user-${group.key.value == null ? "" : group.key.value.username}" data-taskcount-assignee="${group.value.size()}">(${group.value.size()})</span>
                         </a>
                         <% } else { %>
-                        <div class="heading-title"><span class="group-name ${groupColorClass}">${encoder.encode(group.key.name)}</span> </div>
+                        <span class="heading-title"><span class="group-name ${groupColorClass}">${encoder.encode(group.key.name)}</span> </span>
                         <% } %>
                     </div>
                 <%}%>
