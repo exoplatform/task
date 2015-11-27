@@ -198,8 +198,21 @@
         <%} else if (currentProjectId == 0) {%>
         <div class="empty-box no-project ">
             <div class="empty-content">
+            <% if (ProjectUtil.isCurrentUserHasNoProject()) {%>
+                <img class="image" src="/task-management/assets/org/exoplatform/task/management/assets/images/img-folder.png" alt="no-task" />
+                <div class="text-notify muted">&{label.noProject}</div>
+                <script type="text/javascript">
+                    require(['taskManagementApp'], function(taApp) {
+                        taApp.onReady(function() {
+                            var $leftPanel = taApp.getUI().$leftPanel;
+                            taApp.showOneTimePopover($leftPanel.find('.add-new-project'));
+                        });
+                    });
+                </script>
+            <%} else {%>
                 <img class="image" src="/task-management/assets/org/exoplatform/task/management/assets/images/img-task.png" alt="no-task" />
                 <div class="text-notify muted">&{label.noTask}</div>
+            <%}%>
             </div>
         </div>
         <%} else {

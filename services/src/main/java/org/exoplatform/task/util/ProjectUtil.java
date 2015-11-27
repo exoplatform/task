@@ -371,6 +371,16 @@ public final class ProjectUtil {
     return service.getManager(projectId);
   }
 
+  public static boolean isCurrentUserHasNoProject() {
+    ProjectService projectService = getProjectService();
+    Identity identity = ConversationState.getCurrent().getIdentity();
+    List<String> memberships = new LinkedList<String>();
+    memberships.addAll(UserUtil.getMemberships(identity));
+
+    ListAccess<Project> list = projectService.findProjects(memberships, null, null);
+    return (ListUtil.getSize(list) == 0);
+  }
+
   private static ProjectService getProjectService() {
     ExoContainer container = ExoContainerContext.getCurrentContainer();
     return container.getComponentInstanceOfType(ProjectService.class);
