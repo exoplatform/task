@@ -463,6 +463,7 @@ $(document).ready(function() {
                 $project.find('a.colorPie').attr('class', color + ' colorPie');
                 $project.find('a > i.uiIconTick').removeClass('uiIconTick');
                 $a.find('i').addClass('uiIconTick');
+                $centerPanelContent.find('[data-taskid][data-task-projectid="'+projectId+'"] .project-color').attr('class', 'project-color ' + color);
             },
             error: function(xhr) {
               taApp.showWarningDialog(xhr.responseText);

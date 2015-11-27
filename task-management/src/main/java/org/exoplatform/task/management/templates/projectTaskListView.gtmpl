@@ -81,7 +81,7 @@
                   name = bundle.getString("label." + filter);
                 }
               } else if (currentLabelId == 0) {
-                name = bundle.getString("label.label");
+                name = bundle.getString("label.labels");
               } else if (currentLabelId > 0) {
                 name = currentLabelName;
               }
