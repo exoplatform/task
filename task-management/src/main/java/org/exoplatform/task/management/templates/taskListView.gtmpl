@@ -113,7 +113,7 @@
                             }
                         }
                     %>
-                    <li class="row-item row-odd hover-action-reveal has-border has-background taskItem" data-taskid="${task.id}">
+                    <li class="row-item row-odd hover-action-reveal has-border has-background taskItem" data-taskid="${task.id}" data-task-projectid="${task.status != null ? task.status.project.id : 0}">
                         <div class="column-item column-checkbox">
                             <span class="project-color ${task.status != null ? task.status.project.color : ''}">&nbsp;</span>
                             <span class="inline-block-hide dragable">&nbsp;</span>
@@ -234,7 +234,7 @@
     </div>
     #{include path=paging.gtmpl/}
     <div data-template="list-task-item" style="display: none">
-        <li class="row-item row-odd hover-action-reveal has-border has-background taskItem" data-taskid="{{taskid}}">
+        <li class="row-item row-odd hover-action-reveal has-border has-background taskItem" data-taskid="{{taskid}}" data-task-projectid="{{task_ProjectId}}">
             <div class="column-item column-checkbox">
                 <span class="project-color {{projectColor}}">&nbsp;</span>
                 <span class="inline-block-hide dragable">&nbsp;</span>

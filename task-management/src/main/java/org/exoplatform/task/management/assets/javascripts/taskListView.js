@@ -12,6 +12,12 @@ define('taskListView', ['SHARED/jquery', 'taskManagementApp'], function($, taApp
         result = result.replace('{{taskid}}', task.id);
         result = result.replace('{{title}}', taApp.escape(task.title));
 
+        var projectId = 0;
+        if (task.status) {
+            projectId = task.status.project.id;
+        }
+        result = result.replace('{{task_ProjectId}}', projectId);
+
         var color = '';
         if (task.status) {
             color = task.status.project.color;
