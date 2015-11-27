@@ -297,7 +297,14 @@ $(document).ready(function() {
         
         var filter = $a.data('filter');
         var currentProject = $centerPanel.find('.projectListView').data('projectid');
-        if ((currentProject != projectId || filter != undefined) && ($a.data('canview') || projectId <= 0)) {
+
+        if (projectId > 0 && !$a.data('canview')) {
+            var projectName = $a.html();
+            taApp.showWarningDialog("You don't have permission to access " + projectName + " project.");
+            return false;
+        }
+
+        if ((currentProject != projectId || filter != undefined)) {
             taApp.reloadTaskList(projectId, -1, filter, function() {
               projectLoaded(projectId, $a);
             });
