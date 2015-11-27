@@ -37,7 +37,8 @@ define('project-menu', ['SHARED/jquery', 'ta_edit_inline', 'SHARED/task_ck_edito
             url: cloneURL,
             data: {'id': pId, 'cloneTask': cloneTask},
             success: function(data) {
-                window.location.reload();
+                $cloneProject.modal('hide');
+                taApp.reloadProjectTree(data.id);
             },
             error: function(xhr) {
               $cloneProject.modal('hide');
