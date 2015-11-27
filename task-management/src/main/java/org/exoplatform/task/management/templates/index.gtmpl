@@ -32,6 +32,7 @@
 	<div id="taskManagement" class="row-fluid">
 	    <div class="leftPanel uiAccordion span3">
 	        <ul class="left-menu">
+	             <%if (!isInSpace) { %>
                 <li class="accordion-heading dropdown">
                     <div class="item">
                         <a class="dropdownIcon collapseTree pull-right" href="javascript:void(0)">
@@ -40,13 +41,12 @@
                         <a class="project-name" href="javascript:void(0)">&{label.tasks}</a>
                     </div>
                     <ul class="list-projects">
-                    <%if (!isInSpace) { %>
+                    
                         <li class="dropdown project-item ${currentProjectId == -1 ? "active" : ""}">
                             <div class="sub-item">
                                 <a class="project-name" data-id="-1" href="javascript:void(0);">&{label.incoming}&nbsp;<span class="badgeDefault badgePrimary mini top">${incomNum}</span></a>
                             </div>
-                        </li>
-                     <%} %>
+                        </li>                     
                         <li class="dropdown project-item ${currentProjectId == -2 ? "active" : ""}"">
                             <div class="sub-item">
                                 <a href="javascript:void(0)" class="project-name" data-id="-2" data-filter="">
@@ -84,6 +84,7 @@
                         </li>
                     </ul>
                 </li>
+                <%} %>
 	            <!-- <li class="accordion-heading" style="display: none">
 	              <a class="dropdownIcon pull-right" href="javascript:void(0)">
                       <i class="uiIconLightGray uiIconArrowDown"></i>
