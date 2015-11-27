@@ -513,14 +513,33 @@ public final class TaskUtil {
       workplan.append("1 ").append(bundle.getString("label.hour")).append(")");
     } else if (duration == halfHour * 48) {
       workplan.append(bundle.getString("label.allday")).append(")");
-    } else {
+    } else {      
       long hour = duration / (halfHour*2);
-      long odd = duration % (halfHour * 2);
-      if (odd == 0) {
-        workplan.append(hour).append(" ").append(bundle.getString("label.hours")).append(")");
-      } else {
-        workplan.append(hour).append(" ").append(bundle.getString("label.hours")).append(" 30 ").append(bundle.getString("label.minutes")).append(")");
+      long day = hour / 24;
+      if (day > 0) {
+        hour = hour % 24;
       }
+      long odd = duration % (halfHour * 2);
+      
+      boolean conjunction = false;
+      if (day > 0) {
+        workplan.append(day).append(" ").append(bundle.getString("label.days"));
+        conjunction = true;
+      }
+      if (hour > 0) {
+        if (conjunction) {
+          workplan.append(" ");
+        }
+        workplan.append(hour).append(" ").append(bundle.getString("label.hours"));
+        conjunction = true;
+      }
+      if (odd > 0) {
+        if (conjunction) {
+          workplan.append(" ");
+        }
+        workplan.append("30 ").append(bundle.getString("label.minutes"));
+      }
+      workplan.append(")");
     }
   }
 
