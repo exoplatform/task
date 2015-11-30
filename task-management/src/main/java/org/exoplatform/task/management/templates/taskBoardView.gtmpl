@@ -115,6 +115,15 @@
                 <%
                     def groupKey = group.key.toString();
                     groupKey = groupKey.replaceAll(' ', '-');
+                    def groupValueId = '';
+                    if (group.key.value != null) {
+                        if (groupBy == 'label') {
+                            groupValueId = group.key.value.id;
+                        } else if (groupBy == 'assignee') {
+                            groupValueId = group.key.value.username;
+                        }
+                    }
+
                     def groupColorClass = '';
                     if (groupBy == 'label' && group.key.value != null) {
                         groupColorClass = group.key.value.color;
@@ -149,7 +158,7 @@
                                     def st = status.get(index);
                                     def key = new GroupKey(st.name, st, st.getRank());
                                 %>
-                                <div class="col col${index + 1} taskBoardContainer taskContainer${groupKey} taskContainer${groupKey}${st.id}" data-connected=".taskContainer${groupKey}" data-statusid="${st.id}">
+                                <div class="col col${index + 1} taskBoardContainer taskContainer${groupKey} taskContainer${groupKey}${st.id}" data-groupby="${groupBy}" data-groupby-value="${groupValueId}" data-groupkey="${groupKey}" data-statusid="${st.id}">
                                     <% for (def task in subGroups[key]) {%>
                                         <!-- user name  task-done for check task.completed -->
                                         <div class="box-small has-background hover-action-reveal ${task.completed ? "task-completed": ""} taskItem" data-taskid="${task.id}">

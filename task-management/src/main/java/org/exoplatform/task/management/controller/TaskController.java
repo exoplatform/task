@@ -319,14 +319,16 @@ public class TaskController extends AbstractController {
   @Resource
   @Ajax
   @MimeType("text/plain")
-  public Response saveTaskOrder(Long taskId, Long newStatusId, Long[] orders) throws EntityNotFoundException, UnAuthorizedOperationException {
+  public Response saveDragAndDropTask(Long taskId, Long newStatusId, String groupBy, String oldGroup, String newGroup, Boolean needUpdateOrder, Long[] orders, SecurityContext context) throws EntityNotFoundException, UnAuthorizedOperationException, ParameterEntityException {
     if (taskId == null || taskId == 0) {
       return Response.status(404).body("Task not found");
     }
+
     Task task = taskService.getTask(taskId);
     if (!TaskUtil.hasPermission(task)) {
       throw new UnAuthorizedOperationException(taskId, Task.class, getNoPermissionMsg());
     }
+
     Status newStatus = null;
     if (newStatusId != null && newStatusId > 0) {
       newStatus = statusService.getStatus(newStatusId);
@@ -334,11 +336,57 @@ public class TaskController extends AbstractController {
         throw new UnAuthorizedOperationException(taskId, Task.class, getNoPermissionMsg());
       }
     }
-    long[] ids = new long[orders.length];
-    for (int i = 0; i < ids.length; i++) {
-      ids[i] = orders[i];
+
+    String username = context.getRemoteUser();
+    TimeZone tz = userService.getUserTimezone(context.getRemoteUser());
+
+    if (needUpdateOrder != null && needUpdateOrder) {
+      long[] ids = new long[orders.length];
+      for (int i = 0; i < ids.length; i++) {
+        ids[i] = orders[i];
+      }
+      taskService.updateTaskOrder(taskId, newStatus, ids);
+      task = taskService.getTask(task.getId());
+    } else {
+      task = TaskUtil.saveTaskField(task, username, "status", new String[] {String.valueOf(newStatusId)}, tz, taskService, statusService);
     }
-    taskService.updateTaskOrder(taskId, newStatus, ids);
+
+    // Update new assignee or label if need
+    if (groupBy != null &&
+            !TaskUtil.NONE.equalsIgnoreCase(groupBy)
+            && !groupBy.trim().isEmpty()
+            && !oldGroup.equalsIgnoreCase(newGroup)) {
+      if (TaskUtil.ASSIGNEE.equalsIgnoreCase(groupBy)) {
+        TaskUtil.saveTaskField(task, username, TaskUtil.ASSIGNEE, new String[]{newGroup}, tz, taskService, statusService);
+
+      } else if (TaskUtil.LABEL.equalsIgnoreCase(groupBy)) {
+        long oldLabelId = 0, newLabelId = 0;
+        try {
+          oldLabelId = oldGroup.isEmpty() ? 0 : Long.parseLong(oldGroup);
+        } catch (NumberFormatException ex) {
+          throw new ParameterEntityException(task.getId(), Task.class, "Label ID", oldGroup, null, ex);
+        }
+        try {
+          newLabelId = newGroup.isEmpty() ? 0 : Long.parseLong(newGroup);
+        } catch (NumberFormatException ex) {
+          throw new ParameterEntityException(task.getId(), Task.class, "Label ID", newGroup, null, ex);
+        }
+
+        ListAccess<Label> list = taskService.findLabelsByTask(task.getId(), username);
+        Label[] labels = ListUtil.load(list, 0, -1);
+        List<String> newLabelIds = new ArrayList<String>(labels.length + 1);
+        for (Label l : labels) {
+          if (l.getId() == oldLabelId) continue;
+          newLabelIds.add(String.valueOf(l.getId()));
+        }
+        if (newLabelId > 0) {
+          newLabelIds.add(String.valueOf(newLabelId));
+        }
+
+        TaskUtil.saveTaskField(task, username, "labels", newLabelIds.toArray(new String[newLabelIds.size()]), tz, taskService, statusService);
+      }
+    }
+
     return Response.ok("Update successfully");
   }
 

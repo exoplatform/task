@@ -216,13 +216,14 @@ define('taskBoardView', ['SHARED/jquery', 'taskManagementApp', 'SHARED/edit_inli
         boardView.initDragDrop = function() {
             var taskUI = taApp.getUI();
             var $centerPanelContent = taskUI.$centerPanelContent;
+            var groupBy = $centerPanelContent.find('[name="groupBy"]').val();
             var orderBy = $centerPanelContent.find('[name="orderBy"]').val();
             var isSortable = (orderBy == 'rank');
 
             var placeHoderClass = isSortable ? 'draggableHighlight' : 'draggableFullContainer';
             $centerPanelContent.find('.taskBoardContainer').each(function() {
                 var $this = $(this);
-                var connected = '.taskBoardContainer' + $this.data('connected') + '';
+                var connected = '.taskBoardContainer';
                 $this.sortable({
                     items: ".taskItem",
                     connectWith: connected,
@@ -249,49 +250,41 @@ define('taskBoardView', ['SHARED/jquery', 'taskManagementApp', 'SHARED/edit_inli
                             return;
                         }
 
+                        var $sender = ui.sender;
+                        if ($sender == null) {
+                            $sender = $status;
+                        }
+                        var oldGroup = $sender.data('groupby-value');
+                        var newGroup = $status.data('groupby-value');
+
                         var statusId = $status.data('statusid');
                         var listItem = $status.sortable('toArray', {attribute: 'data-taskid'});
 
                         for(var i = 0; i < listItem.length; i++) {
                             listItem[i] = parseInt(listItem[i]);
                         }
-                        if (isSortable) {
-                            $centerPanelContent.jzAjax('TaskController.saveTaskOrder()',{
-                                data: {
-                                    taskId: taskId,
-                                    newStatusId: statusId,
-                                    orders: listItem
-                                },
-                                method: 'POST',
-                                traditional: true,
-                                success: function(response) {
 
-                                },
-                                error: function(xhr, textStatus, errorThrown ) {
-                                  taApp.showWarningDialog(xhr.responseText);
-                                  $status.sortable('cancel');
-                                  $(ui.sender).sortable('cancel');
-                                }
-                            });
-                        } else {
-                            $centerPanelContent.jzAjax('TaskController.saveTaskInfo()',{
-                                data: {
-                                    taskId: taskId,
-                                    name: 'status',
-                                    value: statusId
-                                },
-                                method: 'POST',
-                                traditional: true,
-                                success: function(response) {
+                        $centerPanelContent.jzAjax('TaskController.saveDragAndDropTask()', {
+                            data: {
+                                taskId: taskId,
+                                newStatusId: statusId,
+                                groupBy: groupBy,
+                                oldGroup: oldGroup,
+                                newGroup: newGroup,
+                                needUpdateOrder: isSortable,
+                                orders: listItem
+                            },
+                            method: 'POST',
+                            traditional: true,
+                            success: function(response) {
 
-                                },
-                                error: function(xhr, textStatus, errorThrown ) {
-                                  taApp.showWarningDialog(xhr.responseText);
-                                  $status.sortable('cancel');
-                                  $(ui.sender).sortable('cancel');
-                                }
-                            });
-                        }
+                            },
+                            error: function(xhr, textStatus, errorThrown ) {
+                                taApp.showWarningDialog(xhr.responseText);
+                                $status.sortable('cancel');
+                                $(ui.sender).sortable('cancel');
+                            }
+                        });
                     },
                     over: function(event, ui) {
                         var $container = $(event.target);
