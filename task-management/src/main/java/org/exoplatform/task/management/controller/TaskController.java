@@ -795,22 +795,22 @@ public class TaskController extends AbstractController {
 
       switch (DUE.valueOf(dueDate.toUpperCase())) {
       case OVERDUE:
-        today.roll(Calendar.DATE, -1);
+        today.add(Calendar.DATE, -1);
         due[1] = today.getTime();
         break;
       case TODAY:
         due[0] = today.getTime();
-        today.roll(Calendar.DATE, 1);
+        today.add(Calendar.DATE, 1);
         due[1] = new Date(today.getTimeInMillis() - 1);
         break;
       case TOMORROW:
-        today.roll(Calendar.DATE, 1);
+        today.add(Calendar.DATE, 1);
         due[0] = today.getTime();
-        today.roll(Calendar.DATE, 1);
+        today.add(Calendar.DATE, 1);
         due[1] = new Date(today.getTimeInMillis() - 1);
         break;
       case UPCOMING:
-        today.roll(Calendar.DATE, 2);
+        today.add(Calendar.DATE, 2);
         due[0] = today.getTime();
       }       
     }
