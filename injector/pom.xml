@@ -11,7 +11,7 @@
     <dependency>
       <groupId>org.exoplatform.commons</groupId>
       <artifactId>commons-component-common</artifactId>
-      <version>${platform.version}</version>
+      <version>${org.exoplatform.platform.version}</version>
     </dependency>
     <dependency>
       <groupId>org.exoplatform.addons.task</groupId>

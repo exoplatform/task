@@ -57,13 +57,13 @@
     <dependency>
       <groupId>org.exoplatform.commons</groupId>
       <artifactId>commons-api</artifactId>
-      <version>${platform.version}</version>
+      <version>${org.exoplatform.platform.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.exoplatform.social</groupId>
       <artifactId>social-component-core</artifactId>
-      <version>${platform.version}</version>
+      <version>${org.exoplatform.platform.version}</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>
@@ -79,13 +79,13 @@
     <dependency>
       <groupId>org.exoplatform.social</groupId>
       <artifactId>social-component-notification</artifactId>
-      <version>${platform.version}</version>
+      <version>${org.exoplatform.platform.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.exoplatform.calendar</groupId>
       <artifactId>calendar-service</artifactId>
-      <version>${platform.version}</version>
+      <version>${org.exoplatform.platform.version}</version>
       <scope>provided</scope>
     </dependency>
 
