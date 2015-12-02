@@ -35,6 +35,7 @@ import org.exoplatform.task.util.ListUtil;
 import org.exoplatform.task.util.ProjectUtil;
 import org.exoplatform.task.util.TaskUtil;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -70,7 +71,7 @@ public class TasksEventDAOImpl implements EventDAO {
   @Override
   public ListAccess<Event> findEventsByQuery(EventQuery query) {
      List<Long> ids = new LinkedList<Long>();
-     if (query.getCalendarIds() != null) {
+     if (query.getCalendarIds() != null) {       
        for (String calId : query.getCalendarIds()) {
          try {
            Long id = Long.valueOf(calId);
@@ -104,7 +105,6 @@ public class TasksEventDAOImpl implements EventDAO {
      }
      
      TaskQuery taskQuery = new TaskQuery();
-     //taskQuery.setProjectIds(ids);
      taskQuery.setOrderBy(orderBy);
      if (query.getFromDate() != null) {
        taskQuery.setStartDate(new Date(query.getFromDate()));
@@ -113,22 +113,31 @@ public class TasksEventDAOImpl implements EventDAO {
        taskQuery.setEndDate(new Date(query.getToDate()));
      }
      taskQuery.setKeyword(query.getText());
-     //taskQuery.setAssignee(query.getOwner());
-     taskQuery.setCalendarIntegrated(true);
-     //taskQuery.setOrFields(Arrays.asList(TaskUtil.ASSIGNEE, TaskUtil.PROJECT));
-     taskQuery.setAssigneeOrInProject(query.getOwner(), ids);
+     taskQuery.setCalendarIntegrated(true);     
 
      Task[] tasks = new Task[0];
-     if ((query.getCategoryIds() == null || (query.getCategoryIds().length == 1 && 
+     if ((query.getCalendarIds() == null || ids.size() > 0) && (query.getCategoryIds() == null || (query.getCategoryIds().length == 1 && 
          query.getCategoryIds()[0].equals(NewUserListener.DEFAULT_EVENTCATEGORY_ID_ALL))) &&  
          (query.getEventType() == null || query.getEventType().equals(Event.TYPE_TASK))) {
+       //
+       if (ids.contains(Long.valueOf(ProjectUtil.TODO_PROJECT_ID))) {
+         ids.remove(Long.valueOf(ProjectUtil.TODO_PROJECT_ID));
+         if (ids.size() > 0) {
+           taskQuery.setAssigneeOrInProject(query.getOwner(), ids);         
+         } else {
+           taskQuery.setAssignee(Arrays.asList(query.getOwner()));
+         }
+       } else {
+         taskQuery.setProjectIds(ids);
+       }
+
        tasks = ListUtil.load(taskService.findTasks(taskQuery), 0, -1); //taskService.findTaskByQuery(taskQuery);
      }
      final List<Event> events = new LinkedList<Event>();
      for (Task t : tasks) {
        Event event = newInstance();
        events.add(TaskUtil.buildEvent(event, t));       
-       if (event.getCalendarId() == null || (!ids.contains(Long.valueOf(event.getCalendarId())) && ids.contains((long)ProjectUtil.TODO_PROJECT_ID))) {
+       if (event.getCalendarId() == null || !ids.contains(Long.valueOf(event.getCalendarId()))) {
          event.setCalendarId(String.valueOf(ProjectUtil.TODO_PROJECT_ID));
        }
      }     
