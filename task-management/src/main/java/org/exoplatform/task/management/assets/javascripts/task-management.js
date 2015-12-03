@@ -304,7 +304,7 @@ $(document).ready(function() {
             return false;
         }
 
-        if ((currentProject != projectId || filter != undefined)) {
+        if ((currentProject != projectId || filter != undefined) && ($a.data('canview') || projectId <= 0)) {
             taApp.reloadTaskList(projectId, -1, filter, function() {
               projectLoaded(projectId, $a);
             });
