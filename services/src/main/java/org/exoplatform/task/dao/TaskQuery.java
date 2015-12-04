@@ -125,6 +125,10 @@ public class TaskQuery extends Query implements Cloneable {
   }
 
   public void setKeyword(String keyword) {
+    setKeyword(keyword, false);
+  }
+  
+  public void setKeyword(String keyword, boolean withTag) {
     if (keyword == null || keyword.trim().isEmpty()) return;
 
     List<Condition> conditions = new ArrayList<Condition>();
@@ -134,6 +138,9 @@ public class TaskQuery extends Query implements Cloneable {
         conditions.add(like(TASK_TITLE, k));
         conditions.add(like(TASK_DES, k));
         conditions.add(like(TASK_ASSIGNEE, k));
+        if (withTag) {
+          conditions.add(like(TASK_TAG, k));          
+        }
       }
     }
     add(Conditions.or(conditions.toArray(new Condition[conditions.size()])));
