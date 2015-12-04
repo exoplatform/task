@@ -46,7 +46,7 @@ public class ListUtil {
         return list.load(start, limit);
       }
     } catch (Exception ex) {
-      return (E[])(new Object[0]);
+      throw new RuntimeException(ex);
     }
   }
 }

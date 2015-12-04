@@ -120,15 +120,17 @@ public class TasksEventDAOImpl implements EventDAO {
          query.getCategoryIds()[0].equals(NewUserListener.DEFAULT_EVENTCATEGORY_ID_ALL))) &&  
          (query.getEventType() == null || query.getEventType().equals(Event.TYPE_TASK))) {
        //
-       if (ids.contains(Long.valueOf(ProjectUtil.TODO_PROJECT_ID))) {
-         ids.remove(Long.valueOf(ProjectUtil.TODO_PROJECT_ID));
-         if (ids.size() > 0) {
-           taskQuery.setAssigneeOrInProject(query.getOwner(), ids);         
+       if (ids.size() > 0) {
+         if (ids.contains(Long.valueOf(ProjectUtil.TODO_PROJECT_ID))) {
+           ids.remove(Long.valueOf(ProjectUtil.TODO_PROJECT_ID));
+           if (ids.size() > 0) {
+             taskQuery.setAssigneeOrInProject(query.getOwner(), ids);         
+           } else {
+             taskQuery.setAssignee(Arrays.asList(query.getOwner()));
+           }
          } else {
-           taskQuery.setAssignee(Arrays.asList(query.getOwner()));
-         }
-       } else {
-         taskQuery.setProjectIds(ids);
+           taskQuery.setProjectIds(ids);
+         }         
        }
 
        tasks = ListUtil.load(taskService.findTasks(taskQuery), 0, -1); //taskService.findTaskByQuery(taskQuery);
