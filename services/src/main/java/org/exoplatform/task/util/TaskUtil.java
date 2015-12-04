@@ -41,6 +41,8 @@ import org.exoplatform.commons.utils.HTMLEntityEncoder;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
+import org.exoplatform.container.PortalContainer;
+import org.exoplatform.container.RootContainer;
 import org.exoplatform.portal.mop.SiteKey;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -1004,6 +1006,9 @@ public final class TaskUtil {
 
   private static TaskService getTaskService() {
     ExoContainer container = ExoContainerContext.getCurrentContainer();
+    if (container instanceof RootContainer) {
+      container = ((RootContainer)container).getPortalContainer(PortalContainer.getCurrentPortalContainerName());
+    }
     return container.getComponentInstanceOfType(TaskService.class);
   }
 
