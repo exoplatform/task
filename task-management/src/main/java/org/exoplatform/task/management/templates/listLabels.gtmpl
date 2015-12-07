@@ -20,7 +20,7 @@ def displayListLabelItem(lbl, level, encoder, identity, colors) {
         isAllChildHidden = false;
     }
 %>
-    <li class="dropdown label-item ${lbl.color == '' ? 'no-color' : ''} ${isAllChildHidden ? "all-children-hided" : ""}" data-labelid="${lbl.id}" 
+    <li class="dropdown label-item ${lbl.color == '' ? 'no-color' : ''} ${isAllChildHidden ? "all-children-hided" : ""} ${currentLabelId == lbl.id ? "active" : ""}" data-labelid="${lbl.id}"
     				data-hiddenlabel="${isHidden}">
         <div class="sub-item" style="padding-left: <%=indent%>px">
                 <a class="dropdown-toggle pull-right"

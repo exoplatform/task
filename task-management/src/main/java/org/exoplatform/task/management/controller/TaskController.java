@@ -634,7 +634,7 @@ public class TaskController extends AbstractController {
         groupBy = TaskUtil.DUEDATE;
       }
       
-      Date[] filterDate = convertDueDate(filter, userTimezone);
+      Date[] filterDate = TaskUtil.convertDueDate(filter, userTimezone);
       taskQuery.setDueDateFrom(filterDate[0]);
       taskQuery.setDueDateTo(filterDate[1]);
       taskQuery.setOrderBy(Arrays.asList(order));
@@ -780,41 +780,6 @@ public class TaskController extends AbstractController {
         .set("numberTasksByStatus", numberTasks)
         .ok()
         .withCharset(Tools.UTF_8);
-  }
-
-
-  private Date[] convertDueDate(String dueDate, TimeZone timezone) {
-    Date[] due = new Date[] {null, null};
-    
-    if (dueDate != null && !dueDate.isEmpty()) {
-      Calendar today = Calendar.getInstance(timezone);
-      today.set(Calendar.HOUR_OF_DAY, 0);
-      today.set(Calendar.MINUTE, 0);
-      today.set(Calendar.SECOND, 0);
-      today.set(Calendar.MILLISECOND, 0);
-
-      switch (DUE.valueOf(dueDate.toUpperCase())) {
-      case OVERDUE:
-        today.add(Calendar.DATE, -1);
-        due[1] = today.getTime();
-        break;
-      case TODAY:
-        due[0] = today.getTime();
-        today.add(Calendar.DATE, 1);
-        due[1] = new Date(today.getTimeInMillis() - 1);
-        break;
-      case TOMORROW:
-        today.add(Calendar.DATE, 1);
-        due[0] = today.getTime();
-        today.add(Calendar.DATE, 1);
-        due[1] = new Date(today.getTimeInMillis() - 1);
-        break;
-      case UPCOMING:
-        today.add(Calendar.DATE, 2);
-        due[0] = today.getTime();
-      }       
-    }
-    return due;    
   }
 
   @Resource(method = HttpMethod.POST)
@@ -1033,7 +998,7 @@ public class TaskController extends AbstractController {
       query.setStatus(status);      
     }
     if (dueDate != null) {
-      Date[] due = convertDueDate(dueDate, timezone);
+      Date[] due = TaskUtil.convertDueDate(dueDate, timezone);
       query.setDueDateFrom(due[0]);
       query.setDueDateTo(due[1]);      
     }

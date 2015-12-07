@@ -1,11 +1,34 @@
-define('taskCenterView', ['SHARED/jquery', 'taskManagementApp'], function($, taApp) {
+define('taskCenterView', ['SHARED/jquery', 'taskManagementApp', 'SHARED/bootstrap_popover'], function($, taApp) {
     var centerView = {};
     centerView.init = function() {
         taApp.onReady(function($) {
-            //
+            centerView.initDomEvent();
         });
     };
-    
+
+    centerView.initDomEvent = function() {
+        var ui = taApp.getUI();
+        var $centerPanelContent = ui.$centerPanelContent;
+
+        var $permalink = $centerPanelContent.find('.projectPermalink');
+        var link = $permalink[0].href;
+        $centerPanelContent.find('.projectPermalinkPopoverContent input').attr("value", link);
+        $permalink.popover({
+            html: true,
+            content: $centerPanelContent.find('.projectPermalinkPopoverContent').html()
+        }).on('shown', function(e) {
+            $(e.target).closest('.projectPermalinkContainer').find('.popover-content input').select();
+        });
+        $(document).on('click', function(e) {
+            if ($(e.target).closest('.projectPermalinkContainer').length > 0) {
+                e.stopPropagation();
+                return false;
+            } else {
+                $permalink.popover('hide');
+            }
+        });
+    };
+
     centerView.initTaskLabel = function() {
       var ui = taApp.getUI();
       var $centerPanel = ui.$centerPanel;
