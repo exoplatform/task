@@ -22,11 +22,13 @@ package org.exoplatform.task.management.controller;
 import javax.inject.Inject;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.TimeZone;
 
 import juzu.Action;
 import juzu.Path;
@@ -44,6 +46,7 @@ import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
+import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.domain.Label;
 import org.exoplatform.task.domain.Project;
@@ -275,11 +278,193 @@ public class TaskManagement {
         .isInSpace(space_group_id != null)
         .viewType("")
         .currentLabelId(-1)
+        .currentLabelName("")
         .taskService(taskService)
         .currentUser(username)
         .paging(paging)
         .errorMessage(errorMessage)
         .ok().withCharset(Tools.UTF_8);
+  }
+
+  @View
+  public Response projectPermalink(String space_group_id, Long projectId, String filter, Long labelId, SecurityContext securityContext) throws EntityNotFoundException {
+    final long DEFAULT_PROJECT_ID = space_group_id == null ? ProjectUtil.INCOMING_PROJECT_ID : ProjectUtil.TODO_PROJECT_ID;
+    if (projectId == null) {
+      projectId = DEFAULT_PROJECT_ID;
+    }
+
+    String username = securityContext.getRemoteUser();
+    Identity identity = ConversationState.getCurrent().getIdentity();
+    String errorMessage = "";
+    TimeZone userTimezone = userService.getUserTimezone(username);
+
+    List<Long> spaceProjectIds = null;
+    List<Project> projects = ProjectUtil.getProjectTree(space_group_id, projectService);
+    if (space_group_id != null) {
+      spaceProjectIds = new LinkedList<Long>();
+      for (Project p : projects) {
+        spaceProjectIds.add(p.getId());
+      }
+      if (projectId > 0 && !spaceProjectIds.contains(projectId)) {
+        errorMessage = bundle.getString("popup.msg.projectNotExist");
+        projectId = DEFAULT_PROJECT_ID;
+      }
+    }
+
+    Project project = null;
+    Label label = null;
+    if (projectId > 0) {
+      project = projectService.getProject(projectId);
+      if (project == null) {
+        errorMessage = bundle.getString("popup.msg.projectNotExist");
+        projectId = DEFAULT_PROJECT_ID;
+      } else if (!project.canView(identity)) {
+        errorMessage = bundle.getString("popup.msg.noPermissionToViewProject");
+        projectId = DEFAULT_PROJECT_ID;
+      }
+    }
+
+    Map<String, String> defOrders = TaskUtil.getDefOrders(bundle);
+    Map<String, String> defGroupBys = TaskUtil.getDefGroupBys(projectId, bundle);
+    String groupBy = TaskUtil.NONE;
+    String orderBy = TaskUtil.CREATED_BY;
+
+    TaskModel taskModel = null;
+    TaskQuery taskQuery = new TaskQuery();
+    if (projectId > 0) {
+      taskQuery.setProjectIds(Arrays.asList(projectId));
+      orderBy = TaskUtil.DUEDATE;
+
+    } else if (projectId == ProjectUtil.INCOMING_PROJECT_ID) {
+      taskQuery.setIsIncomingOf(username);
+      orderBy = TaskUtil.CREATED_BY;
+
+    } else if (projectId == ProjectUtil.TODO_PROJECT_ID) {
+      taskQuery.setIsTodoOf(username);
+      if (spaceProjectIds != null) {
+        taskQuery.setProjectIds(spaceProjectIds);
+      }
+
+      orderBy = TaskUtil.DUEDATE;
+      if (filter != null && !filter.isEmpty()) {
+
+        if ("overDue".equalsIgnoreCase(filter)) {
+          defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT, TaskUtil.LABEL), bundle);
+          defOrders = TaskUtil.resolve(Arrays.asList(TaskUtil.TITLE, TaskUtil.PRIORITY, TaskUtil.DUEDATE), bundle);
+          groupBy = TaskUtil.PROJECT;
+        } else if ("today".equalsIgnoreCase(filter)) {
+          defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT, TaskUtil.LABEL), bundle);
+          defOrders = TaskUtil.resolve(Arrays.asList(TaskUtil.TITLE, TaskUtil.PRIORITY, TaskUtil.RANK), bundle);
+          if (orderBy == null || !defOrders.containsKey(orderBy)) {
+            orderBy = TaskUtil.PRIORITY;
+          }
+          groupBy = TaskUtil.NONE;
+        } else if ("tomorrow".equalsIgnoreCase(filter)) {
+          defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT, TaskUtil.LABEL), bundle);
+          defOrders = TaskUtil.resolve(Arrays.asList(TaskUtil.TITLE, TaskUtil.PRIORITY, TaskUtil.RANK), bundle);
+          if (orderBy == null || !defOrders.containsKey(orderBy)) {
+            orderBy = TaskUtil.PRIORITY;
+          }
+          groupBy = TaskUtil.NONE;
+        } else if ("upcoming".equalsIgnoreCase(filter)) {
+          defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT, TaskUtil.LABEL), bundle);
+          defOrders = TaskUtil.resolve(Arrays.asList(TaskUtil.TITLE, TaskUtil.PRIORITY, TaskUtil.DUEDATE, TaskUtil.RANK), bundle);
+          groupBy = TaskUtil.NONE;
+        }
+
+        if (orderBy == null || !defOrders.containsKey(orderBy)) {
+          orderBy = TaskUtil.DUEDATE;
+        }
+        if (groupBy == null || !defGroupBys.containsKey(groupBy)) {
+          groupBy = TaskUtil.DUEDATE;
+        }
+
+        Date[] filterDate = TaskUtil.convertDueDate(filter, userTimezone);
+        taskQuery.setDueDateFrom(filterDate[0]);
+        taskQuery.setDueDateTo(filterDate[1]);
+      }
+    } else if (projectId == ProjectUtil.LABEL_PROJECT_ID && labelId != null) {
+      if (labelId > 0) {
+        label = taskService.getLabel(labelId);
+        if (label != null && label.getUsername().equals(username)) {
+          taskQuery.setLabelIds(Arrays.asList(labelId));
+        } else {
+          // Rollback to incoming if this label is not belong to current user
+          taskQuery.setIsIncomingOf(username);
+          orderBy = TaskUtil.CREATED_BY;
+        }
+      } else {
+        taskQuery.setIsLabelOf(username);
+        groupBy = TaskUtil.LABEL;
+        orderBy = TaskUtil.DUEDATE;
+      }
+    }
+
+    OrderBy order = null;
+    if(orderBy != null && !orderBy.trim().isEmpty()) {
+      order = TaskUtil.TITLE.equals(orderBy) || TaskUtil.DUEDATE.equals(orderBy) ? new OrderBy.ASC(orderBy) : new OrderBy.DESC(orderBy);
+      taskQuery.setOrderBy(Arrays.asList(order));
+    }
+
+    ListAccess<Task> listTasks = taskService.findTasks(taskQuery);
+
+    int page = 1;
+    Paging paging = new Paging(page);
+    paging.setTotal(ListUtil.getSize(listTasks));
+    long taskNum = paging.getTotal();
+
+    Map<GroupKey, List<Task>> groupTasks = new HashMap<GroupKey, List<Task>>();
+    List<Task> tasks = Arrays.asList(ListUtil.load(listTasks, paging.getStart(), paging.getNumberItemPerPage()));
+    if (groupBy != null && !groupBy.isEmpty() && !TaskUtil.NONE.equalsIgnoreCase(groupBy)) {
+      groupTasks = TaskUtil.groupTasks(tasks, groupBy, username, userTimezone, bundle, taskService, userService);
+    }
+    if (groupTasks.isEmpty()) {
+      groupTasks.put(new GroupKey("", null, 0), tasks);
+    }
+
+    UserSetting setting = userService.getUserSetting(username);
+
+    // Count all incoming task
+    long incomNum = taskNum;
+    if (projectId != ProjectUtil.INCOMING_PROJECT_ID  && space_group_id == null) {
+      TaskQuery q = new TaskQuery();
+      q.setIsIncomingOf(username);
+      incomNum = ListUtil.getSize(taskService.findTasks(q));
+    }
+
+    ListAccess<Label> tmp = taskService.findLabelsByUser(username);
+    List<Label> labels = TaskUtil.buildRootLabels(Arrays.asList(ListUtil.load(tmp, 0, -1)));
+
+    return index.with()
+            .currentProjectId(projectId)
+            .taskId(-1)
+            .taskModel(taskModel)
+            .orders(defOrders)
+            .groups(defGroupBys)
+            .project(project)
+            .tasks(tasks)
+            .taskNum(taskNum)
+            .incomNum(incomNum)
+            .groupTasks(groupTasks)
+            .keyword("")
+            .advanceSearch(false)
+            .groupBy(groupBy)
+            .orderBy(orderBy)
+            .filter(filter == null ? "" : filter)
+            .projects(projects)
+            .labels(labels)
+            .userSetting(setting)
+            .userTimezone(userTimezone)
+            .bundle(bundle)
+            .isInSpace(space_group_id != null)
+            .viewType("")
+            .currentLabelId(labelId == null ? -1 : labelId)
+            .currentLabelName(label != null ? label.getName() : "")
+            .taskService(taskService)
+            .currentUser(username)
+            .paging(paging)
+            .errorMessage(errorMessage)
+            .ok().withCharset(Tools.UTF_8);
   }
 
   @Action

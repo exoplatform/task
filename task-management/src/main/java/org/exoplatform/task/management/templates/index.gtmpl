@@ -20,6 +20,7 @@
 #{param name=groups /}
 #{param name=viewType/}
 #{param name=currentLabelId/}
+#{param name=currentLabelName/}
 #{param name=advanceSearch/}
 #{param name=paging/}
 #{param name=errorMessage/}
@@ -47,35 +48,35 @@
                                 <a class="project-name" data-id="-1" href="javascript:void(0);">&{label.incoming}&nbsp;<span class="badgeDefault badgePrimary mini top">${incomNum}</span></a>
                             </div>
                         </li>                     
-                        <li class="dropdown project-item ${currentProjectId == -2 ? "active" : ""}"">
+                        <li class="dropdown project-item ${currentProjectId == -2 && (filter == null || filter == "") ? "active" : ""}">
                             <div class="sub-item">
                                 <a href="javascript:void(0)" class="project-name" data-id="-2" data-filter="">
                                     &{label.allTasks}
                                 </a>
                             </div>
                         </li>
-                        <li class="dropdown project-item">
+                        <li class="dropdown project-item ${currentProjectId == -2 && (filter == "overdue") ? "active" : ""}">
                             <div class="sub-item">
                                 <a href="javascript:void(0)" class="project-name" class="project-name" data-id="-2" data-filter="overdue">
                                     &{label.overdue}
                                 </a>
                             </div>
                         </li>
-                        <li class="dropdown project-item">
+                        <li class="dropdown project-item ${currentProjectId == -2 && (filter == "today") ? "active" : ""}">
                             <div class="sub-item">
                                 <a href="javascript:void(0)" class="project-name" class="project-name" data-id="-2"  data-filter="today">
                                     &{label.today}
                                 </a>
                             </div>
                         </li>
-                        <li class="dropdown project-item">
+                        <li class="dropdown project-item ${currentProjectId == -2 && (filter == "tomorrow") ? "active" : ""}">
                             <div class="sub-item">
                                 <a href="javascript:void(0)" class="project-name" class="project-name" data-id="-2"  data-filter="tomorrow">
                                     &{label.tomorrow}
                                 </a>
                             </div>
                         </li>
-                        <li class="dropdown project-item">
+                        <li class="dropdown project-item ${currentProjectId == -2 && (filter == "upcoming") ? "active" : ""}">
                             <div class="sub-item">
                                 <a href="javascript:void(0)" class="project-name" class="project-name" data-id="-2"  data-filter="upcoming">
                                     &{label.upcoming}
