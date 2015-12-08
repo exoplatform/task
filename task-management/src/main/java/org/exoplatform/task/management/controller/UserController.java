@@ -70,18 +70,13 @@ public class UserController extends AbstractController {
     @Ajax
     @MimeType.JSON
     public Response findUser(String query) throws Exception { // NOSONAR
-      UserHandler uHandler = orgService.getUserHandler();
-      Query uQuery = new Query();
-      uQuery.setUserName("*" + query + "*");
-      ListAccess<User> users = uHandler.findUsersByQuery(uQuery);
+      ListAccess<org.exoplatform.task.model.User> list = userService.findUserByName(query);
       JSONArray array = new JSONArray();
-      for(User u : users.load(0, users.getSize())) {
-        org.exoplatform.task.model.User user = userService.loadUser(u.getUserName());
+      for(org.exoplatform.task.model.User u : list.load(0, UserUtil.SEARCH_LIMIT)) {
         JSONObject json = new JSONObject();
-        json.put("id", u.getUserName());
-        String displayName = UserUtil.getDisplayName(u);
-        json.put("text", displayName);
-        json.put("avatar", user.getAvatar());
+        json.put("id", u.getUsername());
+        json.put("text", u.getDisplayName());
+        json.put("avatar", u.getAvatar());
         array.put(json);
       }
       return Response.ok(array.toString());
@@ -91,18 +86,14 @@ public class UserController extends AbstractController {
     @Ajax
     @MimeType.JSON
     public Response findUsersToMention(String query) throws Exception { // NOSONAR
-      UserHandler uHandler = orgService.getUserHandler();
-      Query uQuery = new Query();
-      uQuery.setUserName("*" + query + "*");
-      ListAccess<User> users = uHandler.findUsersByQuery(uQuery);
+      ListAccess<org.exoplatform.task.model.User> list = userService.findUserByName(query);
       EntityEncoder encoder = HTMLEntityEncoder.getInstance();
       JSONArray array = new JSONArray();
-      for(User u : users.load(0, users.getSize())) {
+      for(org.exoplatform.task.model.User u : list.load(0, UserUtil.SEARCH_LIMIT)) {
         JSONObject json = new JSONObject();
-        org.exoplatform.task.model.User user = userService.loadUser(u.getUserName());
-        json.put("id", "@" + u.getUserName());
-        json.put("name", encoder.encode(user.getDisplayName()));
-        json.put("avatar", user.getAvatar());
+        json.put("id", "@" + u.getUsername());
+        json.put("name", encoder.encode(u.getDisplayName()));
+        json.put("avatar", u.getAvatar());
         json.put("type", "contact");
         array.put(json);
       }

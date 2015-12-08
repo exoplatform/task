@@ -40,6 +40,8 @@ import org.exoplatform.task.model.UserGroup;
  */
 public final class UserUtil {
 
+  public static final int SEARCH_LIMIT = 10;
+
   private UserUtil() {
   }
 

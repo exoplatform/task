@@ -356,7 +356,7 @@ define('ta_edit_inline',
         var selectizeOptions = {
             valueField: 'id',
             labelField: 'text',
-            searchField: ['text', 'id'],
+            searchField: ['text'],
             openOnFocus: false,
             wrapperClass: 'exo-mentions dropdown',
             dropdownClass: 'dropdown-menu uiDropdownMenu autocomplete-menu',
@@ -364,6 +364,7 @@ define('ta_edit_inline',
             create: false,
             hideSelected: true,
             closeAfterSelect: true,
+            maxOptions: 10,
             plugins: {
                 task_remove_button: {
                     label: '<i class="uiIconClose uiIconLightGray"></i>',
