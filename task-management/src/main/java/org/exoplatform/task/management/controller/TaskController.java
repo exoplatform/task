@@ -674,14 +674,9 @@ public class TaskController extends AbstractController {
 
     long countTasks = paging.getTotal();
 
-    if (countTasks < MIN_NUMBER_TASK_GROUPABLE) {
-      //. We do not have enough tasks for grouping, so, set groupBy to empty
-      groupBy = "";
-    }
-
     //Map<GroupKey, ListAccess<Task>> groupTasks = TaskUtil.findTasks(taskService, taskQuery, groupBy, userTimezone, userService);
     Map<GroupKey, List<Task>> groupTasks = new HashMap<GroupKey, List<Task>>();
-    if (groupBy != null && !groupBy.isEmpty() && !TaskUtil.NONE.equalsIgnoreCase(groupBy)) {
+    if (countTasks >= MIN_NUMBER_TASK_GROUPABLE && groupBy != null && !groupBy.isEmpty() && !TaskUtil.NONE.equalsIgnoreCase(groupBy)) {
       groupTasks = TaskUtil.groupTasks(Arrays.asList(ListUtil.load(listTasks, paging.getStart(), paging.getNumberItemPerPage())), groupBy, currentUser, userTimezone, bundle, taskService, userService);
     }
     if (groupTasks.isEmpty()) {
