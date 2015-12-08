@@ -1,5 +1,5 @@
 #{param name=labels/}
-
+#{param name=currentLabelId/}
 <%
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.commons.utils.HTMLEntityEncoder;

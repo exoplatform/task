@@ -84,6 +84,7 @@ public class LabelController extends AbstractController {
     return listLabels
         .with()
         .labels(labels)
+        .currentLabelId(-1)
         .ok().withCharset(Tools.UTF_8);
   }
 
