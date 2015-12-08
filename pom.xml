@@ -49,8 +49,8 @@
     <maven.compiler.target>1.6</maven.compiler.target>
     <maven.compiler.source>1.6</maven.compiler.source>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <org.exoplatform.depmgt.version>11-SNAPSHOT</org.exoplatform.depmgt.version>
-    <org.exoplatform.platform.version>4.3.x-SNAPSHOT</org.exoplatform.platform.version>
+    <org.exoplatform.depmgt.version>11-RC1-1</org.exoplatform.depmgt.version>
+    <org.exoplatform.platform.version>4.3.0-RC1-1</org.exoplatform.platform.version>
     <juzu.version>1.1.0</juzu.version>
     <hibernate.version>4.1.12.Final</hibernate.version>
     <org.antlr.version>3.4</org.antlr.version>
