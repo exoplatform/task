@@ -996,10 +996,20 @@ li[data-hiddenlabel="false"] {
      }
 }
 
-
+.dropdown-loading {
+  display: none;
+}
 .exo-mentions.loading {
     .autocomplete-menu.loading {
         display: block;
+    }
+    .dropdown-loading {
+      display: block;
+    }
+    &.dropdown-opened {
+      .autocomplete-menu.loading {
+        display: none;
+      }
     }
 }
 .choose-time {

@@ -364,7 +364,7 @@ define('ta_edit_inline',
             create: false,
             hideSelected: true,
             closeAfterSelect: true,
-            maxOptions: 10,
+            maxOptions: 100,
             plugins: {
                 task_remove_button: {
                     label: '<i class="uiIconClose uiIconLightGray"></i>',
@@ -394,13 +394,23 @@ define('ta_edit_inline',
                 var $dropdown_content = self.$dropdown_content;
                 $dropdown_content.remove();
                 $dropdown_content = $('<ul>').addClass(settings.dropdownContentClass).appendTo($dropdown);
-                $('<div class="autocomplete-menu loading">' +
+                var $standaloneLoading = $('<div class="autocomplete-menu loading">' +
                     '<div class="loading center muted">' +
                     '<i class="uiLoadingIconMini"></i>' +
                     '<div class="loadingText">Loading...</div>' +
                     '</div>' +
                     '</div>').appendTo($wrapper);
+
+                $('<div class="dropdown-loading center">' +
+                '<i class="uiLoadingIconMini"></i>' +
+                '</div>').appendTo($dropdown);
                 self.$dropdown_content = $dropdown_content;
+            },
+            onDropdownOpen: function($dropdown) {
+                $dropdown.closest('.exo-mentions').addClass('dropdown-opened');
+            },
+            onDropdownClose: function($dropdown) {
+                $dropdown.closest('.exo-mentions').removeClass('dropdown-opened');
             },
             load: function(query, callback) {
                 if (!query.length) return callback();
