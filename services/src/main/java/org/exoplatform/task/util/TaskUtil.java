@@ -835,6 +835,9 @@ public final class TaskUtil {
           throw new ParameterEntityException(task.getId(), Task.class, param, value, "is unacceptable", ex);
         }
       } else if("description".equalsIgnoreCase(param)) {
+        //CKEditor encode user input already, but we still need to remove malicious code
+        //here in case user inject request using curl TA-387
+        value = StringUtil.encodeInjectedHtmlTag(value);
         task.setDescription(value);
       } else if("completed".equalsIgnoreCase(param)) {
         task.setCompleted(Boolean.parseBoolean(value));

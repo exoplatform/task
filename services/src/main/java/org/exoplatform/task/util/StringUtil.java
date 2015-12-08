@@ -19,7 +19,7 @@
 
 package org.exoplatform.task.util;
 
-import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.regex.Pattern;
 
 import org.exoplatform.commons.utils.HTMLEntityEncoder;
@@ -60,4 +60,31 @@ public class StringUtil {
     result.append(encoder.encode(text.substring(fromIndex)));
     return result.toString();
   }
+  
+  public static String encodeInjectedHtmlTag(String str) {
+    if (str != null && !str.isEmpty()) {
+      StringBuilder origin = new StringBuilder(str.toLowerCase());
+      StringBuilder builder = new StringBuilder(str);      
+      //
+      for (String entity : Arrays.asList("<script", "</script>", "<link", "<iframe", "</iframe>")) {
+        encode(origin, builder, entity);
+      }
+      str = builder.toString();
+    }
+    return str;
+  }
+
+  private static StringBuilder encode(StringBuilder origin, StringBuilder builder, String key) {
+    int begin = origin.indexOf(key);
+    if (begin > -1) {
+      int end = origin.indexOf(">", begin);
+      if (end > -1) {
+        builder.replace(end, end + 1, "&gt;");
+        origin.replace(end, end + 1, "&gt;");
+      }
+      builder.replace(begin, begin + 1, "&lt;");
+      origin.replace(begin, begin + 1, "&lt;");
+    }
+    return builder;
+  }    
 }

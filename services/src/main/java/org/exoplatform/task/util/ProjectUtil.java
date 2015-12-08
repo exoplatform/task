@@ -276,6 +276,9 @@ public final class ProjectUtil {
   }
 
   public static Project newProjectInstance(String name, String description, Set<String> managers, Set<String> participators) {
+    //CKEditor encode user input already, but we still need to remove malicious code
+    //here in case user inject request using curl TA-387
+    description = StringUtil.encodeInjectedHtmlTag(description);
     Project p = new Project(name, description, new HashSet<Status>(), managers, participators);
     return p;
   }
@@ -332,6 +335,9 @@ public final class ProjectUtil {
           }
         }
       } else if("description".equalsIgnoreCase(fieldName)) {
+        //CKEditor encode user input already, but we still need to remove malicious code
+        //here in case user inject request using curl TA-387
+        val = StringUtil.encodeInjectedHtmlTag(val);
         project.setDescription(val);
       } else if ("color".equalsIgnoreCase(fieldName)) {
         project.setColor(val);

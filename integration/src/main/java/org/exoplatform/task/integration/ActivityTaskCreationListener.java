@@ -28,6 +28,7 @@ import org.exoplatform.task.service.ParserContext;
 import org.exoplatform.task.service.TaskParser;
 import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.service.UserService;
+import org.exoplatform.task.util.StringUtil;
 
 public class ActivityTaskCreationListener extends ActivityListenerPlugin {
 
@@ -91,7 +92,8 @@ public class ActivityTaskCreationListener extends ActivityListenerPlugin {
           description = "";
         }
         Task task = parser.parse(title, context);
-        task.setDescription(description);
+        //we need to remove malicious code here in case user inject request using curl TA-387
+        task.setDescription(StringUtil.encodeInjectedHtmlTag(description));
         task.setContext(LinkProvider.getSingleActivityUrl(activity.getId()));
 
         
