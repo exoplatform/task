@@ -49,6 +49,7 @@ import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.Group;
 import org.exoplatform.services.organization.MembershipHandler;
 import org.exoplatform.services.organization.MembershipType;
+import org.exoplatform.services.organization.MembershipTypeHandler;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.Query;
 import org.exoplatform.services.organization.UserHandler;
@@ -446,28 +447,38 @@ public class ProjectController extends AbstractController {
     List<Permission> permissions = new ArrayList<Permission>();
 
     try {
-      String userKeyword = "*" + keyword + "*";
-      Query query = new Query();
-      query.setUserName(userKeyword);
-      //query.setFirstName(userKeyword);
-      //query.setLastName(userKeyword);
-      ListAccess<org.exoplatform.services.organization.User> users = orgService.getUserHandler().findUsersByQuery(query);
-      for(org.exoplatform.services.organization.User u : users.load(0, users.getSize())) {
-        permissions.add(Permission.parse(u.getUserName(), orgService));
+      ListAccess<User> list = userService.findUserByName(keyword);
+      for(User u : list.load(0, UserUtil.SEARCH_LIMIT)) {
+        permissions.add(new Permission(Permission.USER, u.getUsername(), u.getDisplayName()));
       }
     } catch (Exception ex) {
       LOG.warn(ex);
     }
 
-    try {
-      for(Group g : orgService.getGroupHandler().getAllGroups()) {
-        if (g.getLabel().contains(keyword)) {
-          String perm = "*:" + g.getId();
-          permissions.add(Permission.parse(perm, orgService));
+    if (permissions.size() < UserUtil.SEARCH_LIMIT) {
+      try {
+        for (Group g : orgService.getGroupHandler().getAllGroups()) {
+          if (g.getLabel().toLowerCase().contains(keyword)) {
+            String perm = "*:" + g.getId();
+            String displayName = new StringBuilder(bundle.getString("label.any")).append(" ")
+                                        .append(bundle.getString("label.in")).append(" ")
+                                        .append(g.getLabel())
+                                        .toString();
+
+            Permission p = new Permission(Permission.GROUP, perm, displayName);
+            p.setGroupId(g.getId());
+            p.setGroupName(g.getLabel());
+            p.setMembershipType(MembershipTypeHandler.ANY_MEMBERSHIP_TYPE);
+
+            permissions.add(p);
+          }
+          if (permissions.size() == UserUtil.SEARCH_LIMIT) {
+            break;
+          }
         }
+      } catch (Exception ex) {
+        LOG.warn(ex);
       }
-    } catch (Exception ex) {
-      LOG.warn(ex);
     }
 
     return permissionSuggest.with()

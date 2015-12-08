@@ -25,6 +25,7 @@ import javax.inject.Singleton;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.commons.api.persistence.ExoTransactional;
+import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
@@ -32,6 +33,7 @@ import org.exoplatform.services.security.Identity;
 import org.exoplatform.social.core.identity.model.Profile;
 import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
 import org.exoplatform.social.core.manager.IdentityManager;
+import org.exoplatform.social.core.profile.ProfileFilter;
 import org.exoplatform.social.core.service.LinkProvider;
 import org.exoplatform.task.dao.DAOHandler;
 import org.exoplatform.task.domain.Project;
@@ -41,6 +43,7 @@ import org.exoplatform.task.exception.NotAllowedOperationOnEntityException;
 import org.exoplatform.task.model.User;
 import org.exoplatform.task.service.UserService;
 
+import java.util.ArrayList;
 import java.util.TimeZone;
 
 /**
@@ -94,6 +97,46 @@ public class UserServiceImpl implements UserService {
       LOG.debug("User not find, return GUEST", ex);
       return GUEST;
     }
+  }
+
+  @Override
+  public ListAccess<User> findUserByName(String keyword) {
+    ProfileFilter filter = new ProfileFilter();
+    filter.setName(keyword);
+    filter.setCompany("");
+    filter.setPosition("");
+    filter.setSkills("");
+    filter.setExcludedIdentityList(new ArrayList<org.exoplatform.social.core.identity.model.Identity>());
+
+    final ListAccess<org.exoplatform.social.core.identity.model.Identity> list = identityManager.getIdentitiesByProfileFilter(OrganizationIdentityProvider.NAME, filter, true);
+    return new ListAccess<User>() {
+      @Override
+      public User[] load(int index, int length) throws Exception, IllegalArgumentException {
+        org.exoplatform.social.core.identity.model.Identity[] identities = list.load(index, length);
+        User[] users = new User[identities.length];
+
+        Profile p;
+        for (int i = 0; i < identities.length; i++) {
+          org.exoplatform.social.core.identity.model.Identity id = identities[i];
+          p = identities[i].getProfile();
+
+          //TODO: Maybe need to call organizationService to fetch email, firstName, lastName
+
+          String avatarURL = p.getAvatarUrl();
+          if (avatarURL == null) {
+            avatarURL = LinkProvider.PROFILE_DEFAULT_AVATAR_URL;
+          }
+          users[i] = new User(id.getRemoteId(), null, null, null, p.getFullName(), avatarURL, p.getUrl());
+        }
+
+        return users;
+      }
+
+      @Override
+      public int getSize() throws Exception {
+        return list.getSize();
+      }
+    };
   }
 
   @Override
