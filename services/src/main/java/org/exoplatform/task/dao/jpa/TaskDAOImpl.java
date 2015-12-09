@@ -362,7 +362,7 @@ public class TaskDAOImpl extends CommonJPADAO<Task, Long> implements TaskHandler
     if (TASK_COWORKER.equals(field)) {
       path = root.join(field, JoinType.LEFT);
     } else if (TASK_TAG.equals(condition.getField())) {
-      path = root.join("tag", JoinType.INNER);
+      path = root.join("tag", JoinType.LEFT);
     }
     
     return path;

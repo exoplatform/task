@@ -19,11 +19,13 @@
 
 package org.exoplatform.task.dao;
 
+import org.exoplatform.services.security.Identity;
 import org.exoplatform.task.dao.condition.AggregateCondition;
 import org.exoplatform.task.dao.condition.Condition;
 import org.exoplatform.task.dao.condition.Conditions;
 import org.exoplatform.task.domain.Priority;
 import org.exoplatform.task.domain.Status;
+import org.exoplatform.task.util.UserUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -174,9 +176,17 @@ public class TaskQuery extends Query implements Cloneable {
     add(Conditions.or(in(TASK_PARTICIPATOR, permissions), in(TASK_MANAGER, permissions)));
   }
 
+  @Deprecated
   public void setAssigneeOrMembership(String username, List<String> memberships) {
     this.assignee = Arrays.asList(username);
     this.add(Conditions.or(eq(TASK_ASSIGNEE, username), in(TASK_MANAGER, memberships), in(TASK_PARTICIPATOR, memberships)));
+  }
+  
+  public void setAccessible(Identity user) {
+    this.assignee = Arrays.asList(user.getUserId());
+    List<String> memberships = UserUtil.getMemberships(user);
+    this.add(Conditions.or(eq(TASK_ASSIGNEE, assignee), eq(TASK_COWORKER, assignee), eq(TASK_CREATOR, assignee),
+                           in(TASK_MANAGER, memberships), in(TASK_PARTICIPATOR, memberships)));
   }
 
   public void setAssigneeOrInProject(String username, List<Long> projectIds) {
