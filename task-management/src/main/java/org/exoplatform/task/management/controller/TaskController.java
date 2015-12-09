@@ -817,7 +817,7 @@ public class TaskController extends AbstractController {
 
     json.put("detail", detail);
 
-    return Response.ok(json.toString());
+    return Response.ok(json.toString()).withCharset(Tools.UTF_8);
   }
 
   @Resource
