@@ -174,7 +174,12 @@
                                                         }
                                                         def uiIconClass = task.completed ? 'uiIconBlue' : 'uiIconLightGray';
                                                     %>
-                                                    <i class="uiIconValidate ${uiIconClass} pull-right"></i>
+                                                    <a class="pull-right inline-block-hide"
+                                                       data-original-title="<% if (task.completed) {%> &{message.markAsUnCompleted} <%} else {%> &{message.markAsCompleted} <%}%>"
+                                                       rel="tooltip" data-placement="left"
+                                                       data-taskcompleted="${task.completed}" href="javascript:void(0)">
+                                                        <i class="uiIconValidate ${uiIconClass}"></i>
+                                                    </a>
                                                     <i class="${colorClass} pull-left"></i>
                                                     <div class="media-body taskName"> ${encoder.encode(task.title)}</div>
                                                 </div>
@@ -215,7 +220,12 @@
                     <div class="box-small-inner">
                         <span class="inline-block-hide dragable">&nbsp;</span>
                         <div class="media clearfix">
-                            <i class="uiIconValidate uiIconBlue pull-right"></i>
+                            <a class="pull-right inline-block-hide"
+                               data-original-title="&{message.markAsCompleted}"
+                               rel="tooltip" data-placement="left"
+                               data-taskcompleted="false" href="javascript:void(0)">
+                                <i class="uiIconValidate uiIconBlue"></i>
+                            </a>
                             <i class="{{dueDateColorClass}} pull-left"></i>
                             <div class="media-body taskName">{{title}}</div>
                         </div>

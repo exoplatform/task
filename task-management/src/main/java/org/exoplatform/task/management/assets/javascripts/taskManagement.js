@@ -168,6 +168,7 @@ define('taskManagementApp', ['SHARED/jquery', 'SHARED/juzu-ajax'],
         taApp.setTaskComplete = function(taskId, isCompleted) {
             var ui = taApp.getUI();
             var $taskItem = ui.$centerPanel.find('.taskItem[data-taskid="' + taskId + '"]');
+            var isRightPanelOpened = ui.$rightPanel.is(':visible');
             var $next = $taskItem.next('.taskItem').first();
             if ($next.length == 0) {
                 $next.prev('.taskItem').first();
@@ -182,10 +183,12 @@ define('taskManagementApp', ['SHARED/jquery', 'SHARED/juzu-ajax'],
                         $taskItem.fadeOut(500, function() {
                             $taskItem.remove();
                         });
-                        if ($next.length == 0) {
-                            ui.$leftPanel.find('.active .project-name').click();
-                        } else {
-                            $next.click();
+                        if (isRightPanelOpened) {
+                            if ($next.length > 0) {
+                                $next.click();
+                            } else {
+                                taApp.hideRightPanel(ui.$centerPanel, ui.$rightPanel, ui.$rightPanelContent);
+                            }
                         }
                     }
                 },

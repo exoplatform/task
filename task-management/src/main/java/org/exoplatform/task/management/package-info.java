@@ -60,7 +60,7 @@
     @Stylesheet(id = "style-less", value = "less/style.less")
 })
 @Stylesheets({
-    @Stylesheet(id = "style.css", value = "styles/style.css"),
+    @Stylesheet(id = "style.css", value = "less/style.css"),
     @Stylesheet(id = "bootstrap-datepicker.css", value = "bootstrap-datepicker/1.4.0/css/bootstrap-datepicker.css"),
     @Stylesheet(id = "selectize-css", value = "selectize.js/0.12.1/css/selectize.css"),
     @Stylesheet(id = "select2-css", value = "select2/3.5.2/select2.css"),

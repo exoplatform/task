@@ -9,7 +9,12 @@
     <script>
       <adapter>
         (function() {
+        // This is workaround to avoid conflict between jquery-ui and bootstrap
+        var oldTooltip = jQuery.fn.tooltip;
+
         <include>/WEB-INF/classes/org/exoplatform/task/management/assets/jquery-ui/1.11.4/jquery-ui.js</include>
+
+        jQuery.fn.tooltip = oldTooltip;
         return jQuery;
         })();
       </adapter>

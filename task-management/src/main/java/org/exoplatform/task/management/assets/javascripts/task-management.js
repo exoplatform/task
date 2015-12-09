@@ -487,15 +487,6 @@ $(document).ready(function() {
         return false;
     });
 
-    $centerPanel.on('click', '[data-taskcompleted]', function(e) {
-        var $a = $(e.target).closest('[data-taskcompleted]');
-        var $taskItem = $a.closest('.taskItem');
-        var taskId = $taskItem.data('taskid');
-        var isCompleted = $a.data('taskcompleted');
-        //
-        taApp.setTaskComplete(taskId, !isCompleted);
-    });
-
     // Table Project Collapse
      $centerPanel.on('click', '.table-project-collapse .toggle-collapse-group' ,function() {
         if($(this).parents('.heading').next('.collapse-content').is(':visible')) {
