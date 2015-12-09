@@ -169,8 +169,9 @@
                                                                 colorClass = 'uiIconColorWarningInBlue';
                                                             }
                                                         }
+                                                        def uiIconClass = task.completed ? 'uiIconBlue' : 'uiIconLightGray';
                                                     %>
-                                                    <i class="uiIconValidate uiIconBlue pull-right"></i>
+                                                    <i class="uiIconValidate ${uiIconClass} pull-right"></i>
                                                     <i class="${colorClass} pull-left"></i>
                                                     <div class="media-body taskName"> ${encoder.encode(task.title)}</div>
                                                 </div>

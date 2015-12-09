@@ -9,6 +9,7 @@ define('taskCenterView', ['SHARED/jquery', 'taskManagementApp', 'SHARED/bootstra
     centerView.initDomEvent = function() {
         var ui = taApp.getUI();
         var $centerPanelContent = ui.$centerPanelContent;
+        $centerPanelContent.find('*[rel="tooltip"]').tooltip();
 
         var $permalink = $centerPanelContent.find('.projectPermalink');
         var link = $permalink[0].href;

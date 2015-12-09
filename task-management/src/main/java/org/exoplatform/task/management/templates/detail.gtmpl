@@ -26,7 +26,7 @@
    def labels = taskModel.getLabels();
    def editableClasses = "hoverStatus editableField editable";
 %>
-<div class="addTask uiBox" data-taskid="${task.id}">
+<div class="addTask uiBox ${task.completed ? "task-completed" : ""}" data-taskid="${task.id}">
 <div class="uiContentBox">
 <div class="clearfix">
     <div class="pull-right action-buttons dropdown">
@@ -94,7 +94,13 @@
 </div>
 <div class="taskName uiEditableInline clearfix taskPermalinkContainer">
     <div class="title-container clearfix">
-      <a href="javascript:void(0);" data-taskcompleted="${task.completed}" class="pull-left validate-action" data-placement="top" rel="tooltip" data-original-title="&{message.markAsCompleted}"><i class="uiIconValidate uiIconLightGray"></i></a>
+      <a href="javascript:void(0);" data-taskcompleted="${task.completed}" class="pull-left validate-action"
+         rel="tooltip" data-placement="top" data-original-title="<% if (task.completed) {%> &{message.markAsUnCompleted} <%} else {%> &{message.markAsCompleted} <%}%>">
+          <%
+              def uiIconClass = task.completed ? 'uiIconBlue' : 'uiIconLightGray';
+          %>
+          <i class="uiIconValidate ${uiIconClass}"></i>
+      </a>
       <span class="projectName ${editableClasses} small "
              data-original-title="&{tooltip.clickToEdit}" rel="tooltip" data-placement="bottom"
         data-name="title" data-type="text" data-emptytext="&{label.untitledTask}">
