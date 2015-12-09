@@ -23,6 +23,7 @@ import juzu.MimeType;
 import juzu.Resource;
 import juzu.Response;
 
+import juzu.impl.common.Tools;
 import org.exoplatform.common.http.HTTPStatus;
 import org.exoplatform.commons.juzu.ajax.Ajax;
 import org.exoplatform.commons.utils.HTMLEntityEncoder;
@@ -80,7 +81,7 @@ public class StatusController extends AbstractController {
       array.put(json);
     }
 
-    return Response.ok(array.toString());
+    return Response.ok(array.toString()).withCharset(Tools.UTF_8);
   }
 
   @Resource
@@ -97,6 +98,6 @@ public class StatusController extends AbstractController {
     json.put("id", status.getId());
     json.put("name", encoder.encode(status.getName()));
     json.put("rank", status.getRank());
-    return Response.ok(json.toString());
+    return Response.ok(json.toString()).withCharset(Tools.UTF_8);
   }
 }
