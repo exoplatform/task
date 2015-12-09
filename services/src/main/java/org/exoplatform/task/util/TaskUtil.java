@@ -94,6 +94,19 @@ public final class TaskUtil {
   public static final String CREATED_BY = "createdBy";
   public static final String COWORKER = "coworker";
   
+  public static final ListAccess<Task> EMPTY_TASK_LIST = new ListAccess<Task>() {
+
+    @Override
+    public Task[] load(int index, int length) throws Exception, IllegalArgumentException {
+      return new Task[0];
+    }
+
+    @Override
+    public int getSize() throws Exception {
+      return 0;
+    }
+  };
+  
   public static enum DUE {
     OVERDUE, TODAY, TOMORROW, UPCOMING
   }
