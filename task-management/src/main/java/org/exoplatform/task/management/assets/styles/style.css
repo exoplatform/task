@@ -155,6 +155,18 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
 .projectListView .uiContentBox {
   padding: 0;
 }
+.projectListView .uiContentBox .table-project-collapse .heading .group-name,
+.projectListView .uiContentBox .table-project-collapse .heading .amount-item {
+  font-size: 18px;
+  font-weight: normal;
+  margin-left: 4px;
+}
+.projectListView .uiContentBox .table-project-collapse .heading .group-name.user,
+.projectListView .uiContentBox .table-project-collapse .heading .amount-item.user {
+  font-size: 13px;
+  font-weight: bold;
+  margin-left: 0px;
+}
 .taskMngCont {
   margin: 20px;
 }
@@ -424,6 +436,9 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
 }
 .rightPanel .addTask .inforBar1 > div:last-child {
   margin-right: 0;
+}
+.rightPanel .addTask .inforBar1 .uiEditableInline .assigned {
+  padding: 4px 0px 0px;
 }
 .rightPanel .addTask .inforBar1 .uiEditableInline .assigned .avatarMini img {
   margin-top: 6px;
