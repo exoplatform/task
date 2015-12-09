@@ -503,7 +503,7 @@ public class TaskController extends AbstractController {
         if (p.canView(currIdentity)) {
           spaceProjectIds.add(p.getId());          
         }
-      }      
+      }
     }
     List<Long> allProjectIds = null;
     if (projectId == 0) {
@@ -528,10 +528,6 @@ public class TaskController extends AbstractController {
     } else {
       taskQuery = new TaskQuery();
       taskQuery.setCompleted(false);
-    }
-
-    if (spaceProjectIds != null && !spaceProjectIds.isEmpty()) {
-      taskQuery.setProjectIds(spaceProjectIds);
     }
 
     //Get Tasks in good order
@@ -603,7 +599,7 @@ public class TaskController extends AbstractController {
           orderBy = TaskUtil.DUEDATE;
           order = new OrderBy.ASC(orderBy);
         }
-    
+                
         if (spaceProjectIds != null) {
           taskQuery.setProjectIds(spaceProjectIds);
         } else {
@@ -617,11 +613,7 @@ public class TaskController extends AbstractController {
         }
         if (!noProjPermission) {
           taskQuery.setProjectIds(Arrays.asList(projectId));          
-        } else {
-          //make sure query return empty result
-          taskQuery.setProjectIds(Arrays.asList(-100L));
         }
-        //tasks = projectService.getTasksWithKeywordByProjectId(Arrays.asList(projectId), order, keyword);
       }
       taskQuery.setOrderBy(Arrays.asList(order));
 
@@ -639,9 +631,6 @@ public class TaskController extends AbstractController {
         }
         if (!noLblPermission) {
           taskQuery.setLabelIds(Arrays.asList(labelId));          
-        } else {
-          //make sure query return empty results
-          taskQuery.setLabelIds(Arrays.asList(-100L));
         }
       } else {
         defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT, TaskUtil.LABEL, TaskUtil.DUEDATE, TaskUtil.STATUS), bundle);
@@ -651,17 +640,30 @@ public class TaskController extends AbstractController {
         taskQuery.setIsLabelOf(currentUser);
       }
       
+      if (spaceProjectIds != null) {
+        taskQuery.setProjectIds(spaceProjectIds);
+      }
       taskQuery.setOrderBy(Arrays.asList(order));
     }
-
 
     page = page == null ? 1 : page;
     if (page <= 0) {
       page = 1;
     }
     Paging paging = new Paging(page);
-
-    ListAccess<Task> listTasks = taskService.findTasks(taskQuery);
+    
+    ListAccess<Task> listTasks = null;
+    //there are cases that we return empty list of tasks with-out querying to DB
+    //1. In spaces, and no space project
+    //2. not in spaces, no accessible project, and projectId = 0
+    //3. no label permission and user is querying for tasks in that label
+    //4. no project permission and user is querying for tasks in that project
+    if ((spaceProjectIds != null  && spaceProjectIds.isEmpty()) || (projectId != null && projectId == 0 && allProjectIds.isEmpty()) ||
+        (noLblPermission && labelId != null && labelId > 0) || (noProjPermission && projectId != null && projectId > 0)) {
+      listTasks = TaskUtil.EMPTY_TASK_LIST;
+    } else {
+      listTasks = taskService.findTasks(taskQuery);      
+    }
     paging.setTotal(ListUtil.getSize(listTasks));
 
     //

@@ -129,7 +129,7 @@ public class TaskManagement {
         currProject = ProjectUtil.INCOMING_PROJECT_ID;
       }
     } else {
-      currProject = ProjectUtil.TODO_PROJECT_ID;
+      currProject = 0L;
     }        
 
     long taskId = navState.getTaskId();
@@ -145,7 +145,7 @@ public class TaskManagement {
     TaskQuery taskQuery = new TaskQuery();
 
     if (project != null && !project.canView(identity)) {
-      currProject = space_group_id == null ? ProjectUtil.INCOMING_PROJECT_ID : ProjectUtil.TODO_PROJECT_ID;
+      currProject = space_group_id == null ? ProjectUtil.INCOMING_PROJECT_ID : 0L;
       errorMessage = bundle.getString("popup.msg.noPermissionToViewProject");
     }
     
@@ -188,13 +188,9 @@ public class TaskManagement {
     //if (tasks == null) {
     if (taskId <= 0) {
       if (space_group_id != null) {
-
-        taskQuery.setIsTodoOf(username);
         taskQuery.setProjectIds(spaceProjectIds);
-
       } else if (currProject > 0) {
         taskQuery.setProjectIds(Arrays.asList(currProject));
-
       } else if (currProject == ProjectUtil.TODO_PROJECT_ID) {
         taskQuery.setIsTodoOf(username);
       } else {
@@ -202,7 +198,14 @@ public class TaskManagement {
       }
     }
 
-    ListAccess<Task> listTasks = taskService.findTasks(taskQuery);
+    ListAccess<Task> listTasks = null;
+    //there are cases that we return empty list of tasks with-out querying to DB
+    //1. In spaces, and no space project
+    if ((spaceProjectIds != null  && spaceProjectIds.isEmpty())) {
+      listTasks = TaskUtil.EMPTY_TASK_LIST;
+    } else {
+      listTasks = taskService.findTasks(taskQuery);
+    }
 
     int page = 1;
     Paging paging = new Paging(page);
@@ -232,7 +235,6 @@ public class TaskManagement {
       }
     }
     paging.setTotal(ListUtil.getSize(listTasks));
-
 
     Map<GroupKey, List<Task>> groupTasks = new HashMap<GroupKey, List<Task>>();
     groupTasks.put(new GroupKey("", null, 0), Arrays.asList(ListUtil.load(listTasks, paging.getStart(), paging.getNumberItemPerPage())));
