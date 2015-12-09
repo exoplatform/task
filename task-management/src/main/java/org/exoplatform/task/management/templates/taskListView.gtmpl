@@ -112,7 +112,7 @@
                             }
                         }
                     %>
-                    <li class="row-item row-odd hover-action-reveal has-border has-background taskItem" data-taskid="${task.id}" data-task-projectid="${task.status != null ? task.status.project.id : 0}">
+                    <li class="row-item row-odd hover-action-reveal has-border has-background ${task.completed ? "task-completed" : ""} taskItem" data-taskid="${task.id}" data-task-projectid="${task.status != null ? task.status.project.id : 0}">
                         <div class="column-item column-checkbox">
                             <span class="project-color ${task.status != null ? task.status.project.color : ''}">&nbsp;</span>
                             <span class="inline-block-hide dragable">&nbsp;</span>
@@ -149,8 +149,16 @@
                                     <li><a href="#">Next Week (next monday 9am)</a></li>
                                 </ul>
                             </span>
-                            <a class="actionIcon inline-block-hide" data-placement="left" data-original-title="Mark as completed" rel="tooltip" data-taskcompleted="${task.completed}" href="javascript:void(0)">
-                                <i class="uiIconValidate uiIconLightGray"></i>
+                            <a class="actionIcon inline-block-hide"
+                               data-placement="left"
+                               data-original-title="<% if (task.completed) {%> &{message.markAsUnCompleted} <%} else {%> &{message.markAsCompleted} <%}%>"
+                               rel="tooltip"
+                               data-taskcompleted="${task.completed}"
+                               href="javascript:void(0)">
+                                <%
+                                    def uiIconClass = task.completed ? 'uiIconBlue' : 'uiIconLightGray';
+                                %>
+                                <i class="uiIconValidate ${uiIconClass}"></i>
                             </a>
                         </div>
                     </li>
