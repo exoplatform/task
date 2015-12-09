@@ -502,6 +502,7 @@
 	    
 	    <!-- Modal -->
 	    <div class="modalPlace"></div>
+        <div class="modalPlaceForMessage"></div>
 	    <div class="confirmCloneProject uiPopup modal hide fade" tabindex="-1" role="dialog" aria-labelledby="cloneProjectLabel" aria-hidden="true">
 		  <div class="popupHeader clearfix">
 		  	<a onclick="" title="Close Window" data-dismiss="modal" aria-hidden="true" class="uiIconClose pull-right"></a>

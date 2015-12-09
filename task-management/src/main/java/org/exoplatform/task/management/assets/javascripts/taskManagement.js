@@ -50,7 +50,7 @@ define('taskManagementApp', ['SHARED/jquery', 'SHARED/juzu-ajax'],
         }
                 
         taApp.showWarningDialog = function(msg) {
-          var $modalPlace = $('.modalPlace');
+          var $modalPlace = $('.modalPlaceForMessage');
           if (msg) {
             $modalPlace.jzLoad('ProjectController.openWarningDialog()', {'msg': msg}, function() {
               taApp.showWarningDialog();
