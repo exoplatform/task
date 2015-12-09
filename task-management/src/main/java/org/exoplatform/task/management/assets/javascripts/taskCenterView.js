@@ -41,7 +41,7 @@ define('taskCenterView', ['SHARED/jquery', 'taskManagementApp', 'SHARED/bootstra
         var labels = '';
         $.get(taskLabelUrl, { taskId: taskId}, function(data) {
           $.each(data, function(i, lbl) {
-            labels += '<span class="inline-block-hide labels">';
+            labels += '<span class="labels">';
             labels += '<a href="#" class="' + lbl.color + ' label">' + taApp.escape(lbl.name) + '</a>';
             labels += '</span>';
           });

@@ -130,7 +130,7 @@
                             	  def taskLabels = null;
                             %>
                             <%if(taskLabels != null && taskLabels.size() > 0) {%>
-                                <span class="inline-block-hide labels">
+                                <span class="labels">
                                     <%for (def label in taskLabels) {%>
                                         <a href="#" class="${label.color} label">${encoder.encode(label.name)}</a>
                                     <%}%>
@@ -253,7 +253,7 @@
             <div class="column-item column-title taskName">{{title}}</div>
             <div class="column-item column-time">
                 <span class="text-time inline-block-show">{{taskDueDate}}</span>
-                <span class="inline-block-hide labels">
+                <span class="labels">
                 </span>
                 <span class="dropdown-group">
                     <a class="actionIcon inline-block-hide" data-toggle="dropdown" data-placement="bottom" data-original-title="Snooze due date" rel="tooltip" href="javascript:void(0)">
