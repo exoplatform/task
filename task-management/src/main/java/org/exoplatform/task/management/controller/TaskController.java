@@ -127,6 +127,7 @@ public class TaskController extends AbstractController {
   @Path("taskComments.gtmpl")
   org.exoplatform.task.management.templates.taskComments taskComments;
 
+  //TODO: This template is not used
   @Inject
   @Path("comments.gtmpl")
   org.exoplatform.task.management.templates.comments comments;
@@ -381,12 +382,13 @@ public class TaskController extends AbstractController {
     user.put("avatar", model.getAuthor().getAvatar());
     json.put("author", user);
     json.put("comment", encoder.encode(model.getComment()));
-    json.put("formattedComment", encoder.encode(model.getFormattedComment()));
+    json.put("formattedComment", model.getFormattedComment());
     json.put("createdTime", model.getCreatedTime().getTime());
     json.put("createdTimeString", df.format(model.getCreatedTime()));
     return Response.ok(json.toString()).withCharset(Tools.UTF_8);
   }
 
+  //TODO: this method is not used any more?
   @Resource
   @Ajax
   @MimeType.HTML

@@ -422,12 +422,12 @@
 	        <div class="comment-area">
 	            <% if(commentCount > 2) {%>
 	            <div class="text-right">
-	                <a href="#" class="load-all-comments">Show ${commentCount} comments</a>
+	                <a href="#" class="load-all-comments"><%=ResourceUtil.resolveMessage(bundle, "comment.message.showAll", commentCount);%></a>
 	            </div>
 	            <%}%>
 	            <ul class="list-comments media-list">
 	                <%if(commentCount == 0) {%>
-	                    <li class="no-comment">There are no comment yet!</li>
+	                    <li class="no-comment">&{comment.message.noComment}</li>
 	                <%} else { for (def comment in comments) { %>
 	                    <li class="comment media">
 	                        <a class="pull-left avatarXSmall" href="#">
@@ -444,7 +444,7 @@
 	                            </div>
 	                            <h6 class="media-heading"><a href="#">${encoder.encode(comment.author.displayName)}</a></h6>
 	                            <div>
-	                                ${encoder.encode(comment.formattedComment)}
+	                                ${comment.formattedComment}
 	                            </div>
 	                        </div>
 	                    </li>

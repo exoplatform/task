@@ -41,7 +41,7 @@
                                      </span>
                 </div>
                 <p class="contentComment">
-                    ${encoder.encode(comment.formattedComment)}
+                    ${comment.formattedComment}
                 </p>
             </div><!--end commentRight-->
 

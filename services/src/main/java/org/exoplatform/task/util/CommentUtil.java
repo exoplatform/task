@@ -21,6 +21,7 @@ package org.exoplatform.task.util;
 
 import java.util.StringTokenizer;
 
+import org.exoplatform.commons.utils.HTMLEntityEncoder;
 import org.exoplatform.task.model.User;
 import org.exoplatform.task.service.UserService;
 
@@ -36,6 +37,7 @@ public final class CommentUtil {
     if(text == null || text.isEmpty()) {
       return text;
     }
+    HTMLEntityEncoder encoder = HTMLEntityEncoder.getInstance();
     StringBuilder sb = new StringBuilder();
 
     StringTokenizer tokenizer = new StringTokenizer(text);
@@ -47,8 +49,12 @@ public final class CommentUtil {
         String username = next.substring(1);
         User user = userService.loadUser(username);
         if(user != null && !"guest".equals(user.getUsername())) {
-          next = "<a href=\"/portal/intranet/profile/" + user.getUsername() + "\">"+user.getDisplayName()+"</a>";
+          next = "<a href=\"" + user.getUrl() + "\">" + encoder.encodeHTML(user.getDisplayName()) + "</a>";
+        } else {
+          next = encoder.encodeHTML(next);
         }
+      } else {
+        next = encoder.encodeHTML(next);
       }
       sb.append(next);
       sb.append(' ');
