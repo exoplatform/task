@@ -157,6 +157,11 @@ define('taskBoardView', ['SHARED/jquery', 'taskManagementApp', 'SHARED/edit_inli
                                 }
                             }
 
+                            //show group by if there are more than 1 tasks
+                            var $taskRow = $centerPanelContent.find('.taskBoardView .table-project .taskItem[data-taskid]');
+                            if ($taskRow.length > 1) {
+                              $centerPanelContent.find('.groupByOptions').show();
+                            }
                         },
                         error: function(xhr) {
                           taApp.showWarningDialog(xhr.responseText);

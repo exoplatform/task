@@ -40,9 +40,13 @@
             <!--<div class="header-left pull-left">
                 <a href="#" class="btn btn-primary btn-add-task"><i class="uiIconSimplePlusMini"></i> New task</a>
             </div>-->
-            <div class="header-right pull-right">
+            <% 
+            def groupByClass="display:none";
+            if (taskNum >= TaskController.MIN_NUMBER_TASK_GROUPABLE) {
+              groupByClass = "";
+            }%>
+            <div class="header-right pull-right groupByOptions" style="${groupByClass}">
                 <!-- this is filter action-->
-                <% if (taskNum >= TaskController.MIN_NUMBER_TASK_GROUPABLE) { %>
                      <span class="action-bar dropdown pull-right" data-currentorderby="${orderBy}">
                         <a href="" class="actionIcon dropdown-toggle" data-original-title="Due date" data-toggle="dropdown"  rel="tooltip" data-placement="bottom">
                             <i class="uiIconSortDown uiIconLightGray"></i>
@@ -69,7 +73,6 @@
                             <%}%>
                         </ul>
                      </span>
-                <%}%>
             </div>
         </div>
         <!--<div class="input-field">

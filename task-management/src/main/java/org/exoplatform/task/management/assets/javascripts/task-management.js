@@ -368,6 +368,11 @@ $(document).ready(function() {
                     loadTaskDetail(task.id);
                 }
 
+                var $taskRow = $centerPanelContent.find('.taskList .taskItem');
+                if ($taskRow.length > 1) {
+                  $centerPanelContent.find('.groupByOptions').show();
+                }
+                
                 if (task.taskNum != -1) {
                   $('.project-name[data-id="-1"] .badgeDefault').text(task.taskNum);
                 }
