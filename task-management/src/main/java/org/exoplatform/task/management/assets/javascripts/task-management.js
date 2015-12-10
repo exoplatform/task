@@ -88,7 +88,7 @@ $(document).ready(function() {
 
         return false;
     };
-    var loadTaskDetail = function(taskId) {
+    function loadTaskDetail(taskId) {
         var currentTask = $rightPanelContent.find('[data-taskid]').data('taskid');
         if ($rightPanel.is(':visible') && currentTask == taskId) {
             return;
