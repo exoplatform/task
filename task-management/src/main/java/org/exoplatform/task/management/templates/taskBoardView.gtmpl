@@ -48,7 +48,7 @@
             <div class="header-right pull-right groupByOptions" style="${groupByClass}">
                 <!-- this is filter action-->
                      <span class="action-bar dropdown pull-right" data-currentorderby="${orderBy}">
-                        <a href="" class="actionIcon dropdown-toggle" data-original-title="Due date" data-toggle="dropdown"  rel="tooltip" data-placement="bottom">
+                        <a href="" class="actionIcon dropdown-toggle" data-original-title="&{label.orderBy}" data-toggle="dropdown"  rel="tooltip" data-placement="bottom">
                             <i class="uiIconSortDown uiIconLightGray"></i>
                             <span>${orderBy != null && orderBy != "" ? orders[orderBy] : orders["dueDate"]}</span>
                         </a>
@@ -61,7 +61,7 @@
                         </ul>
                      </span>
                      <span class="action-bar dropdown pull-right" data-currentgroupby="${groupBy}">
-                        <a href="" class="actionIcon dropdown-toggle"  data-original-title="Group by" data-toggle="dropdown"  rel="tooltip" data-placement="bottom">
+                        <a href="" class="actionIcon dropdown-toggle"  data-original-title="&{label.groupBy}" data-toggle="dropdown"  rel="tooltip" data-placement="bottom">
                             <i class="uiIconViewList uiIconLightGray"></i>
                             <span>${groups[groupBy]}</span>
                         </a>
@@ -98,10 +98,10 @@
                         <div class="col col${index} hover-action-reveal uiEditableInline" data-statusid="${st.id}">
                             <strong class="${editableClasses}" data-pk="${st.id}" data-type="text" data-name="name">${encoder.encode(st.name)} </strong><span class="${numberTasksByStatus[st.id] != null ? 'number-tasks' : ''}" data-taskcount-status="${numberTasksByStatus[st.id] != null ? numberTasksByStatus[st.id] : ''}">${numberTasksByStatus[st.id] != null ? numberTasksByStatus[st.id] : ''}</span>
                             <% if (index == numberStatus - 1 && canEdit) {%>
-                                <a href="#" rel="tooltip"  data-original-title="Add a Status" data-placement="left" class=" inline-block-hide pull-right mgL5 actionAddStatus"><i class="uiIcon uiIconPlus uiIconWhite"></i></a>
+                                <a href="#" rel="tooltip"  data-original-title="&{label.addStatus}" data-placement="left" class=" inline-block-hide pull-right mgL5 actionAddStatus"><i class="uiIcon uiIconPlus uiIconWhite"></i></a>
                             <%}%>
                             <% if (canEdit && numberStatus > 1) {%>
-                                <a href="#" class=" inline-block-hide pull-right actionRemoveStatus"><i class="uiIcon uiIconDelete uiIconWhite"></i></a>
+                                <a href="#" class="inline-block-hide pull-right actionRemoveStatus"><i class="uiIcon uiIconDelete uiIconWhite"></i></a>
                             <%}%>
                         </div>
                     <%}%>
@@ -416,7 +416,7 @@
                     </div>
                     <div class="col col4 hover-action-reveal">
                         <strong>Done</strong>(6)
-                        <a href="#" data-toggle="tooltip"  data-original-title="Add a Status" data-placement="left" class=" inline-block-hide pull-right mgL5"><i class="uiIcon uiIconPlus "></i></a>
+                        <a href="#" data-toggle="tooltip"  data-original-title="&{label.addStatus}" data-placement="left" class=" inline-block-hide pull-right mgL5"><i class="uiIcon uiIconPlus "></i></a>
                         <a href="#" class=" inline-block-hide pull-right"><i class="uiIcon uiIconDelete "></i></a>
 
                     </div>
