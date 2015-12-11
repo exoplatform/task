@@ -57,7 +57,7 @@
 
     <div class="uiEditableInline clearfix ">
         <span class="iconTaskName pull-left"><i title="&{tooltip.clickToEdit}" data-toggle="tooltip" data-placement="bottom" class="uiIconFolder"></i></span>
-        <div class="breadcrumbCont uiEditableInline" data-original-title="Click to edit" data-toggle="tooltip" data-placement="bottom">
+        <div class="breadcrumbCont uiEditableInline" data-original-title="&{tooltip.clickToEdit}" data-toggle="tooltip" data-placement="bottom">
             <ul class=" ${editableClasses} small"
                 data-name="project" data-type="ParentProject" data-breadcrumb="false" data-value="${task.status == null ? 0 : task.status.project.id}">
                 ${breadcumbs}
@@ -88,7 +88,7 @@
 
     %>
     <span class="pull-left icon-hash ${labelIds == "" ? "" : "hide"}"><i class="uiIconTag"></i></span>
-    <div class="${editableClasses} small pull-left" data-original-title="Click to edit" rel="tooltip" data-name="labels" data-type="selectize" data-inputclass="input-large" data-selectizie-opts='[${labelOptions}]' data-value="${labelIds}">
+    <div class="${editableClasses} small pull-left" data-original-title="&{tooltip.clickToEdit}" rel="tooltip" data-name="labels" data-type="selectize" data-inputclass="input-large" data-selectizie-opts='[${labelOptions}]' data-value="${labelIds}">
         ${labelHtml}
     </div>
 </div>

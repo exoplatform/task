@@ -36,6 +36,10 @@ define('taskManagementApp', ['SHARED/jquery', 'SHARED/juzu-ajax'],
             return taskUI;
         }
 
+        taApp.initTooltip = function($rootElement) {
+            $rootElement.find('[rel="tooltip"]').tooltip();
+        }
+
         taApp.showDialog = function(controllerURL, data) {
             var $modalPlace = $('.modalPlace');
             $modalPlace.jzLoad(controllerURL, data, function() {
