@@ -49,6 +49,10 @@ define('taskCenterView', ['SHARED/jquery', 'taskManagementApp', 'SHARED/bootstra
       $centerPanel.find('.taskItem').each(function(idx, elem) {
         var $taskItem = $(elem);
         var taskId = $taskItem.data('taskid');
+        if (typeof taskId != 'number') {
+            //. Ignore if taskId is not valid
+            return;
+        }
         //
         var labels = '';
         $.get(taskLabelUrl, { taskId: taskId}, function(data) {
