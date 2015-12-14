@@ -28,6 +28,7 @@ define('taskDetailView', ['SHARED/jquery', 'taskManagementApp', 'taskCenterView'
                     success: function(response) {
                         //
                         taskCenterView.submitFilter();
+                        taApp.updateTaskNum(response.incomNum);
                      },
                     error: function(xhr) {
                         if (xhr.status >= 400) {

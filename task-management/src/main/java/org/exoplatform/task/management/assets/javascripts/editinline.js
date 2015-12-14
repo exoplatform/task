@@ -193,6 +193,10 @@ define('ta_edit_inline',
                     if (params.name == 'title') {
                         $centerPanel.find('[data-taskid="'+data.taskId+'"] .taskName').text(params.value);
                     }
+                    
+                    if ($.isNumeric(response)) {
+                      editInline.taApp.updateTaskNum(response);                                      
+                    }
                 },
                 error: function(xhr, textStatus, errorThrown ) {
                   $('[data-name="' + params.name + '"]').first().editable('toggle');
@@ -465,6 +469,10 @@ define('ta_edit_inline',
                         $editAssignee.html(locale.unassigned);
                     } else {
                         $editAssignee.html(editInline.taApp.escape(assg.text));
+                    }
+                    
+                    if ($.isNumeric(response)) {
+                      editInline.taApp.updateTaskNum(response);                                      
                     }
                 },
                 error: function(response) {
@@ -750,6 +758,9 @@ define('ta_edit_inline',
                                     $editable.find('li').html('No Project').removeClass('active').addClass('muted');
                                     $editable.editable('setValue', 0);
                                     enableEditProject($editable);
+                                    if ($.isNumeric(e)) {
+                                      editInline.taApp.updateTaskNum(e);                                      
+                                    }
                                 }, 
                                 error: function(xhr) {
                                   editInline.taApp.showWarningDialog(xhr.responseText);

@@ -373,8 +373,8 @@ $(document).ready(function() {
                   $centerPanelContent.find('.groupByOptions').show();
                 }
                 
-                if (task.taskNum != -1) {
-                  $('.project-name[data-id="-1"] .badgeDefault').text(task.taskNum);
+                if (projectId < 0) {
+                  taApp.updateTaskNum(true);
                 }
             }, 
             error: function(xhr) {

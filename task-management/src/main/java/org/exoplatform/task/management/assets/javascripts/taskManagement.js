@@ -146,11 +146,16 @@ define('taskManagementApp', ['SHARED/jquery', 'SHARED/juzu-ajax'],
               if (xhr.status >= 400) {
                 taApp.showWarningDialog(xhr.responseText);
               } else {
+                if (projectId == -1) {
+                  var $items = $centerPanelContent.find('.table-project > .taskItem[data-taskid]:visible');
+                  taApp.updateTaskNum($items.length);
+                }
+                
                 if (callback) {
                   callback();
                 }                
               }
-            });
+            });            
         }
 
         taApp.reloadProjectTree = function(id) {
@@ -183,7 +188,7 @@ define('taskManagementApp', ['SHARED/jquery', 'SHARED/juzu-ajax'],
             $taskItem.jzAjax('TaskController.updateCompleted()', {
                 data: data,
                 success: function(message) {
-                    if (isCompleted) {
+                    if (isCompleted) {                        
                         $taskItem.fadeOut(500, function() {
                             $taskItem.remove();
                         });
@@ -195,11 +200,23 @@ define('taskManagementApp', ['SHARED/jquery', 'SHARED/juzu-ajax'],
                             }
                         }
                     }
+
+                    taApp.updateTaskNum(message);
                 },
                 error : function(xhr, textStatus, errorThrown) {
                   taApp.showWarningDialog(xhr.responseText);
                 }
             });
+        }
+        
+        taApp.updateTaskNum = function(increase) {
+          var $taskNum = $('.project-name[data-id="-1"] .badgeDefault');
+          if ($.isNumeric(increase)) {
+            $taskNum.text(increase);
+          } else if (typeof increase == 'boolean') {
+            var num = parseInt($taskNum.text());
+            $taskNum.text(num + (increase ? 1 : -1));            
+          }
         }
 
         return taApp;
