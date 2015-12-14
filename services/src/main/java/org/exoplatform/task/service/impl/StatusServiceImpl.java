@@ -45,7 +45,7 @@ public class StatusServiceImpl implements StatusService {
   @Inject
   private DAOHandler daoHandler;
 
-  private String[] DEFAULT_STATUS = {"To Do", "In Progress", "Waiting On", "Done"};
+  private String[] DEFAULT_STATUS = {"ToDo", "InProgress", "WaitingOn", "Done"};
   
   private static Log LOG = ExoLogger.getExoLogger(StatusServiceImpl.class);  
 

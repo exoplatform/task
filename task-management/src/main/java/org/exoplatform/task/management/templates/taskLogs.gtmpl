@@ -4,6 +4,7 @@
 
 <%
 import org.exoplatform.task.util.TaskUtil;
+import org.exoplatform.task.util.ResourceUtil;
 import org.exoplatform.commons.utils.HTMLEntityEncoder;
 
 def encoder = HTMLEntityEncoder.getInstance();
@@ -30,7 +31,11 @@ def encoder = HTMLEntityEncoder.getInstance();
                     }
                 %>
                 <a href="${href}">${encoder.encode(target)}</a>
-            <% } else {%>
+            <% } else {
+                if ("edit_status" == log.getActionName()) {
+                    target = ResourceUtil.resolveStatus(bundle, target);
+                }
+            %>
                 <span>
                     ${encoder.encode(target)}
                 </span>

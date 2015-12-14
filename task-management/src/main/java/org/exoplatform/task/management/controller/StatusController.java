@@ -38,6 +38,7 @@ import org.exoplatform.task.exception.NotAllowedOperationOnEntityException;
 import org.exoplatform.task.exception.UnAuthorizedOperationException;
 import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.StatusService;
+import org.exoplatform.task.util.ResourceUtil;
 import org.gatein.common.text.EntityEncoder;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -48,6 +49,7 @@ import javax.inject.Inject;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ResourceBundle;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
@@ -61,6 +63,9 @@ public class StatusController extends AbstractController {
 
   @Inject
   StatusService statusService;
+
+  @Inject
+  ResourceBundle bundle;
 
   @Resource
   @Ajax
@@ -77,7 +82,8 @@ public class StatusController extends AbstractController {
     for (Status status : statuses) {
       JSONObject json = new JSONObject();
       json.put("value", status.getId());
-      json.put("text", status.getName());
+      json.put("name", status.getName());
+      json.put("text", ResourceUtil.resolveStatus(bundle, status.getName()));
       array.put(json);
     }
 
@@ -97,7 +103,15 @@ public class StatusController extends AbstractController {
     JSONObject json = new JSONObject();
     json.put("id", status.getId());
     json.put("name", encoder.encode(status.getName()));
+    json.put("localizedName", encoder.encode(ResourceUtil.resolveStatus(bundle, status.getName())));
     json.put("rank", status.getRank());
     return Response.ok(json.toString()).withCharset(Tools.UTF_8);
+  }
+
+  @Resource
+  @Ajax
+  @MimeType.HTML
+  public Response resolveStatusName(String name) {
+    return Response.ok(ResourceUtil.resolveStatus(bundle, name));
   }
 }

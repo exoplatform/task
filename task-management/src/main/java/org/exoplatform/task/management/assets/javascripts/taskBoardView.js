@@ -186,7 +186,7 @@ define('taskBoardView', ['SHARED/jquery', 'taskManagementApp', 'SHARED/edit_inli
                     data: data,
                     method: 'POST',
                     success: function(response) {
-                        d.resolve();
+                        d.resolve(response);
                     },
                     error: function(xhr, textStatus, errorThrown ) {
                       $('[data-pk="' + params.pk + '"]').first().editable('toggle');
@@ -205,7 +205,15 @@ define('taskBoardView', ['SHARED/jquery', 'taskManagementApp', 'SHARED/edit_inli
                 emptyclass: 'muted',
                 highlight: false,
                 inputclass: 'input-small input-board',
-                clear: false
+                clear: false,
+                display: function(value, response) {
+                    if (response != undefined && response.localizedName != undefined && response.localizedName) {
+                        $(this).html(response.localizedName);
+                    } else {
+                        $(this).html(value);
+                        $(this).jzLoad('StatusController.resolveStatusName()', {name: value}, function() {});
+                    }
+                }
             };
             $centerPanelContent.find('.taskBoardView .editable').each(function() {
                 var $this = $(this);

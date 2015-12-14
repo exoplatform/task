@@ -105,7 +105,7 @@ public class FilterController {
     //user already filter by dueDate, we don't need to show the dueDate field anymore
     boolean filterDueDate = filter == null || filter.isEmpty();
         
-    return taskFilter.with().labels(lblArr).filterLabel(filterLabel).status(status)
+    return taskFilter.with().labels(lblArr).filterLabel(filterLabel).status(status).bundle(bundle)
         .filterStatus(filterStatus).filterAssignee(filterAssignee).filterDueDate(filterDueDate).ok().withCharset(Tools.UTF_8);
   }
 

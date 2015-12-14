@@ -10,6 +10,7 @@
     import org.exoplatform.task.util.TaskUtil;
     import org.exoplatform.task.util.DateUtil;
     import org.exoplatform.task.util.ListUtil;
+    import org.exoplatform.task.util.ResourceUtil;
     import org.exoplatform.services.security.ConversationState;
     import org.exoplatform.task.management.controller.TaskController;
   	 import org.exoplatform.commons.utils.HTMLEntityEncoder;
@@ -96,7 +97,7 @@
                         def st = status.get(index);
                     %>
                         <div class="col col${index} hover-action-reveal uiEditableInline" data-statusid="${st.id}">
-                            <strong class="${editableClasses}" data-pk="${st.id}" data-type="text" data-name="name">${encoder.encode(st.name)} </strong><span class="${numberTasksByStatus[st.id] != null ? 'number-tasks' : ''}" data-taskcount-status="${numberTasksByStatus[st.id] != null ? numberTasksByStatus[st.id] : ''}">${numberTasksByStatus[st.id] != null ? numberTasksByStatus[st.id] : ''}</span>
+                            <strong class="${editableClasses}" data-pk="${st.id}" data-type="text" data-name="name" data-value="${encoder.encode(st.name)}">${encoder.encode(ResourceUtil.resolveStatus(bundle, st.name))} </strong><span class="${numberTasksByStatus[st.id] != null ? 'number-tasks' : ''}" data-taskcount-status="${numberTasksByStatus[st.id] != null ? numberTasksByStatus[st.id] : ''}">${numberTasksByStatus[st.id] != null ? numberTasksByStatus[st.id] : ''}</span>
                             <% if (index == numberStatus - 1 && canEdit) {%>
                                 <a href="#" rel="tooltip"  data-original-title="&{label.addStatus}" data-placement="left" class=" inline-block-hide pull-right mgL5 actionAddStatus"><i class="uiIcon uiIconPlus uiIconWhite"></i></a>
                             <%}%>
@@ -151,7 +152,7 @@
                             <% def subGroups = TaskUtil.groupTasks(group.value, "status", currentUser, TimeZone.getDefault(), bundle, taskService, null);%>
                             <% for (def index in 0 .. status.size() - 1) {
                                     def st = status.get(index);
-                                    def key = new GroupKey(st.name, st, st.getRank());
+                                    def key = new GroupKey(ResourceUtil.resolveStatus(bundle, st.name), st, st.getRank());
                                 %>
                                 <div class="col col${index + 1} taskBoardContainer taskContainer${groupKey} taskContainer${groupKey}${st.id}" data-connected=".taskContainer${groupKey}" data-statusid="${st.id}">
                                     <% for (def task in subGroups[key]) {%>
