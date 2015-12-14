@@ -1,7 +1,7 @@
 // TODO: Move juzu-ajax, mentionsPlugin module into task management project if need
-require(['taskManagementApp', 'project-menu', 'taFilter', 'taskCenterView', 'taskListView', 'ta_edit_inline', 'SHARED/jquery',
+require(['taskManagementApp', 'project-menu', 'taFilter', 'taskCenterView', 'taskListView', 'ta_edit_inline', 'SHARED/jquery', 'SHARED/taskLocale',
         'SHARED/juzu-ajax', 'SHARED/mentionsPlugin', 'SHARED/bts_modal', 'SHARED/bts_tab', 'SHARED/task_ck_editor'
-        ], function(taApp, pMenu, taFilter, taskCenterView, taskListView, editInline, $) {
+        ], function(taApp, pMenu, taFilter, taskCenterView, taskListView, editInline, $, locale) {
   
 $(document).ready(function() {
     var ui = taApp.getUI();
@@ -300,7 +300,7 @@ $(document).ready(function() {
 
         if (projectId > 0 && !$a.data('canview')) {
             var projectName = $a.html();
-            taApp.showWarningDialog("You don't have permission to access " + projectName + " project.");
+            taApp.showWarningDialog(locale.resolve('noPermissionToAccessProject', projectName));
             return false;
         }
 

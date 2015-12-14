@@ -1,7 +1,7 @@
 define('ta_edit_inline',
-    ['SHARED/jquery', 'task_ui_calendar', 'SHARED/edit_inline_js', 'SHARED/selectize',
+    ['SHARED/jquery', 'task_ui_calendar', 'SHARED/edit_inline_js', 'SHARED/selectize','SHARED/taskLocale',
         'x_editable_select3', 'x_editable_selectize', 'x_editable_calendar', 'x_editable_ckeditor'],
-    function($, uiCalendar, editinline, selectize) {
+    function($, uiCalendar, editinline, selectize, locale) {
 
         /**
          * This is plugin for selectize, it is used to delete assignee of task
@@ -18,7 +18,7 @@ define('ta_edit_inline',
         selectize.define('task_remove_button', function(options) {
             options = $.extend({
                 label     : '&times;',
-                title     : 'Remove',
+                title     : locale.remove,
                 className : 'remove',
                 append    : true
             }, options);
@@ -74,7 +74,7 @@ define('ta_edit_inline',
                 html: function(data) {
                     return (
                         '<div class="autocomplete-menu not-found">' +
-                        ' <div class="noMatch center muted">No match</div>' +
+                        ' <div class="noMatch center muted">'+ locale.noMatch +'</div>' +
                         '</div>'
                         );
                 }
@@ -140,7 +140,7 @@ define('ta_edit_inline',
                 options.emptytext = "Description";
             } else if (type == 'calendar') {
                 options.mode = 'popup';
-                options.emptytext = ' Due date';
+                options.emptytext = ' ' + locale.dueDate;
             } else if (type == 'select') {
                 options.sourceCache = false;
             }
@@ -320,7 +320,7 @@ define('ta_edit_inline',
                         var tDate = new Date(toDates[0], toDates[1] - 1, toDates[2], toTimes[0], toTimes[1], 0).getTime();
 
                         if (fDate >= tDate) {
-                            $pop.find('.errorMessage').html('The End date time must be after the Start date time');
+                            $pop.find('.errorMessage').html(locale.taskPlan.errorMessage);
                             updatePopoverPossition();
                         } else {
                             $pop.find('.errorMessage').html('');
@@ -459,10 +459,10 @@ define('ta_edit_inline',
 
                     var $editAssignee = $editable.find('.editAssignee');
                     if (numberCoWorker > 0) {
-                        var coworkerLabel = numberCoWorker > 1 ? 'coworkers' : 'coworker';
+                        var coworkerLabel = numberCoWorker > 1 ? locale.coworkers.toLowerCase() : locale.coworker.toLowerCase();
                         $editAssignee.html('+' + numberCoWorker + ' ' + coworkerLabel);
                     } else if (!assg){
-                        $editAssignee.html('Unassigned');
+                        $editAssignee.html(locale.unassigned);
                     } else {
                         $editAssignee.html(editInline.taApp.escape(assg.text));
                     }
@@ -593,7 +593,7 @@ define('ta_edit_inline',
                     url: editInline.saveTaskDetailFunction
                 });
                 if (fieldName == 'dueDate') {
-                    editOptions.emptytext = " Due date";
+                    editOptions.emptytext = " " + locale.dueDate;
                     editOptions.mode = 'popup';
                 }
                 if (fieldName == 'status') {
@@ -628,8 +628,11 @@ define('ta_edit_inline',
                 if (fieldName == 'title') {
                 	editOptions.emptyclass = '';
                 }
+                if (fieldName == 'description') {
+                    editOptions.emptytext = locale.taskDescriptionEmpty;
+                }
                 if (fieldName == 'tags') {
-                    editOptions.emptytext = 'Tags';
+                    editOptions.emptytext = locale.tag;
                     editOptions.selectize = {
                         create: true,
                         valueField: 'id',
@@ -793,12 +796,12 @@ define('ta_edit_inline',
                     var findUserURL = $this.jzURL('UserController.findUser');
                     var getDisplayNameURL = $this.jzURL('UserController.getDisplayNameOfUser');
                     editOptions.showbuttons = true;
-                    editOptions.emptytext = (fieldName == 'manager' ? "No Manager" : "No Participator");
+                    editOptions.emptytext = (fieldName == 'manager' ? locale.noManager : locale.noParticipator);
                     editOptions.source = findUserURL;
                     editOptions.select2= {
                         multiple: true,
                         allowClear: true,
-                        placeholder: 'Select an user',
+                        placeholder: locale.selectUser,
                         tokenSeparators:[","],
                         minimumInputLength: 1,
                         initSelection: function (element, callback) {
@@ -830,7 +833,7 @@ define('ta_edit_inline',
                     };
                 }
                 if(fieldName == 'dueDate') {
-                    editOptions.emptytext = " Due date";
+                    editOptions.emptytext = " " + locale.dueDate;
                     editOptions.mode = 'popup';
                 }
                 $this.editable(editOptions);
