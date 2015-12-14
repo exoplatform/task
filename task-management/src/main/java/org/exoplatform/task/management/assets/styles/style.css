@@ -191,9 +191,18 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
   font-size: 9px;
 }
 .taskMngCont .addTask .assignmentPopup .dropdown-menu .text {
-  margin: 0 0 0 6px;
-  display: inline-block;
+  margin: 0 16px 0 26px;
+  display: block;
   vertical-align: middle;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.taskMngCont .addTask .assignmentPopup .dropdown-menu .avatarMini {
+  position: absolute;
+  top: 3px;
+}
+.taskMngCont .addTask .assignmentPopup .dropdown-menu .user-status {
+  top: 5px;
 }
 .taskMngCont .resizeButton .uiIconMiniArrowLeft,
 .taskMngCont .resizeButton .uiIconMiniArrowRight {
@@ -787,8 +796,17 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
   box-shadow: none;
   padding: 0;
 }
+.dropdown-loading {
+  display: none;
+}
 .exo-mentions.loading .autocomplete-menu.loading {
   display: block;
+}
+.exo-mentions.loading .dropdown-loading {
+  display: block;
+}
+.exo-mentions.loading.dropdown-opened .autocomplete-menu.loading {
+  display: none;
 }
 .choose-time.all-day .timeSelector {
   visibility: hidden;
@@ -1118,4 +1136,7 @@ li[data-hiddenlabel="false"] > .sub-item .label-show {
 }
 .taskFilter .form-horizontal .control-group .controls .multi .selectize-input {
   padding: 2px 4px;
+}
+.task-completed .taskName {
+  text-decoration: line-through;
 }
