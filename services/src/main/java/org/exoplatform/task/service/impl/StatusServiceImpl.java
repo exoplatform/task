@@ -50,7 +50,7 @@ public class StatusServiceImpl implements StatusService {
   private static Log LOG = ExoLogger.getExoLogger(StatusServiceImpl.class);  
 
   public StatusServiceImpl(DAOHandler daoHandler) {
-    String status = PropertyManager.getProperty("exo.tasks.default.status");
+    String status = PropertyManager.getProperty("exo.tasks.default.workflow");
     if (status != null) {
       List<String> stList = new LinkedList<String>();
       for (String s : status.split(",")) {
