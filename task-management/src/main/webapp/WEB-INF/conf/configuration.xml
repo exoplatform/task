@@ -12,7 +12,7 @@
       <init-params>
         <value-param>
           <name>override</name>
-          <value>false</value>
+          <value>${exo.tasks.portalConfig.metadata.override:false}</value>
         </value-param>
         <object-param>
           <name>portal.configuration</name>
