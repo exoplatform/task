@@ -177,30 +177,6 @@ require(['SHARED/jquery', 'taskManagementApp'], function($, taApp) {
         var labelId = $a.data('labelid');
         reloadTaskList(labelId);
       });
-
-      //listen to event of editing label of task
-      $rightPanelContent.on('labelAdded', '[data-name="labels"]', function(e, labelId) {
-        $rightPanelContent.data('edit_labelid', getActiveLabel());
-      });      
-      $rightPanelContent.on('labelRemoved', '[data-name="labels"]', function(e, labelId) {
-        $rightPanelContent.data('edit_labelid', getActiveLabel());
-      });
-      $rightPanelContent.on('saveLabel', function() {
-        var labelId = $rightPanelContent.data('edit_labelid'); 
-        if (labelId !== undefined && labelId != -1) {
-          reloadLabel(labelId);
-        }
-      });
-      
-      function getActiveLabel() {
-        var $container = $('.label-name[data-labelid="0"]').closest('.accordion-heading');
-        if ($container.hasClass('active')) {
-          return 0;
-        } else if ($container.find('.active').length) {
-          return $container.find('.active').data('labelid');
-        }
-        return -1;
-      }
       
       function labelLoaded(labelid) {
         $leftPanel.find('.active').removeClass('active');

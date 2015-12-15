@@ -44,7 +44,7 @@
     @Script(id = "x-editable-calendar", value = "javascripts/x-editable-calendar.js", depends = {"uicalendar"}),
     @Script(id = "x-editable-ckeditor", value = "javascripts/x-editable-ckeditor.js"),
     @Script(id = "task-edit-inline", value = "javascripts/editinline.js",
-            depends = {"taskManagementCommon", "x-editable-selectize-field","x-editable-customfield-js", "x-editable-calendar", "x-editable-ckeditor"}),
+            depends = {"taskManagementCommon", "filter_js", "x-editable-selectize-field","x-editable-customfield-js", "x-editable-calendar", "x-editable-ckeditor"}),
     @Script(id = "label_js", value = "javascripts/label.js", depends = {"taskManagementCommon"}),
     @Script(id = "filter_js", value = "javascripts/filter.js"),
     @Script(id = "project-menu-js", value = "javascripts/project-menu.js", depends = {"taskManagementCommon", "task-edit-inline"}),

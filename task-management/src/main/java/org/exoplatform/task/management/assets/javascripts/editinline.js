@@ -1,7 +1,7 @@
 define('ta_edit_inline',
-    ['SHARED/jquery', 'task_ui_calendar', 'SHARED/edit_inline_js', 'SHARED/selectize','SHARED/taskLocale',
+    ['SHARED/jquery', 'task_ui_calendar', 'taFilter', 'SHARED/edit_inline_js', 'SHARED/selectize','SHARED/taskLocale',
         'x_editable_select3', 'x_editable_selectize', 'x_editable_calendar', 'x_editable_ckeditor'],
-    function($, uiCalendar, editinline, selectize, locale) {
+    function($, uiCalendar, taFilter, editinline, selectize, locale) {
 
         /**
          * This is plugin for selectize, it is used to delete assignee of task
@@ -15,6 +15,21 @@ define('ta_edit_inline',
                 .replace(/>/g, '&gt;')
                 .replace(/"/g, '&quot;');
         };
+        
+        var reloadTaskList = function(taApp) {
+          var $rightPanelContent = taApp.getUI().$rightPanelContent;
+          var $center = taApp.getUI().$centerPanelContent;
+          var selectedTask = $center.find('.table-project > .selected').data('taskid');
+          var search = $rightPanelContent.find('.uiIconFilter').hasClass('uiIconBlue');
+          //
+          taFilter.submitFilter(!search, function() {
+            if (selectedTask) {
+              var $taskItem = taApp.getUI().$centerPanelContent.find('.table-project > *[data-taskid="' + selectedTask + '"]');
+              $taskItem.addClass('selected');
+            }
+          });
+        }
+        
         selectize.define('task_remove_button', function(options) {
             options = $.extend({
                 label     : '&times;',
@@ -197,6 +212,8 @@ define('ta_edit_inline',
                     if ($.isNumeric(response)) {
                       editInline.taApp.updateTaskNum(response);                                      
                     }
+
+                    reloadTaskList(editInline.taApp);
                 },
                 error: function(xhr, textStatus, errorThrown ) {
                   $('[data-name="' + params.name + '"]').first().editable('toggle');
@@ -474,6 +491,8 @@ define('ta_edit_inline',
                     if ($.isNumeric(response)) {
                       editInline.taApp.updateTaskNum(response);                                      
                     }
+                    
+                    reloadTaskList(editInline.taApp);
                 },
                 error: function(response) {
                   $('[data-name="' + name + '"]').editable('toggle');
@@ -761,6 +780,8 @@ define('ta_edit_inline',
                                     if ($.isNumeric(e)) {
                                       editInline.taApp.updateTaskNum(e);                                      
                                     }
+                                    
+                                    reloadTaskList(editInline.taApp);
                                 }, 
                                 error: function(xhr) {
                                   editInline.taApp.showWarningDialog(xhr.responseText);
