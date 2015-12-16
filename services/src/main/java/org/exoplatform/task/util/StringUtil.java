@@ -63,24 +63,28 @@ public class StringUtil {
   
   public static String encodeInjectedHtmlTag(String str) {
     if (str != null && !str.isEmpty()) {
-      StringBuilder builder = new StringBuilder(str);
+      StringBuilder origin = new StringBuilder(str.toLowerCase());
+      StringBuilder builder = new StringBuilder(str);      
+      //
       for (String entity : Arrays.asList("<script", "</script>", "<link", "<iframe", "</iframe>")) {
-        encode(builder, entity);
+        encode(origin, builder, entity);
       }
       str = builder.toString();
     }
     return str;
   }
 
-  private static StringBuilder encode(StringBuilder builder, String key) {
-    int begin = builder.indexOf(key);
+  private static StringBuilder encode(StringBuilder origin, StringBuilder builder, String key) {
+    int begin = origin.indexOf(key);
     if (begin > -1) {
-      int end = builder.indexOf(">", begin);
+      int end = origin.indexOf(">", begin);
       if (end > -1) {
-        builder.replace(end, end + 1, "&gt;");        
+        builder.replace(end, end + 1, "&gt;");
+        origin.replace(end, end + 1, "&gt;");
       }
       builder.replace(begin, begin + 1, "&lt;");
+      origin.replace(begin, begin + 1, "&lt;");
     }
     return builder;
-  }
+  }    
 }

@@ -86,7 +86,7 @@ public class TaskSearchConnector extends SearchServiceConnector {
     taskQuery.setKeyword(query, true);
     //taskQuery.setMemberships(permissions);
     //taskQuery.setOrFields(Arrays.asList(TaskUtil.ASSIGNEE, TaskUtil.MEMBERSHIP));
-    taskQuery.setAssigneeOrMembership(currentUser.getUserId(), permissions);
+    taskQuery.setAccessible(currentUser);
     OrderBy orderBy = buildOrderBy(sort, order);
     if (orderBy != null) {
       taskQuery.setOrderBy(Arrays.asList(orderBy));      

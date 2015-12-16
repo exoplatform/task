@@ -79,7 +79,6 @@ import org.exoplatform.task.util.DateUtil;
 import org.exoplatform.task.util.ListUtil;
 import org.exoplatform.task.util.ProjectUtil;
 import org.exoplatform.task.util.TaskUtil;
-import org.exoplatform.task.util.TaskUtil.DUE;
 import org.gatein.common.text.EntityEncoder;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -127,6 +126,7 @@ public class TaskController extends AbstractController {
   @Path("taskComments.gtmpl")
   org.exoplatform.task.management.templates.taskComments taskComments;
 
+  //TODO: This template is not used
   @Inject
   @Path("comments.gtmpl")
   org.exoplatform.task.management.templates.comments comments;
@@ -272,15 +272,19 @@ public class TaskController extends AbstractController {
   @Resource
   @Ajax
   @MimeType.JSON
-  public Response delete(Long id) throws EntityNotFoundException, JSONException, UnAuthorizedOperationException {
+  public Response delete(Long id, SecurityContext context) throws EntityNotFoundException, JSONException, UnAuthorizedOperationException {
     Task task = taskService.getTask(id);
     if (!TaskUtil.hasPermission(task)) {
       throw new UnAuthorizedOperationException(id, Task.class, getNoPermissionMsg());
     }
     taskService.removeTask(id);//Can throw TaskNotFoundException
 
+    String username = context.getRemoteUser();
+    long taskNum = getIncomingNum(username);    
+    
     JSONObject json = new JSONObject();
     json.put("id", id); //Can throw JSONException
+    json.put("incomNum", taskNum);
     return Response.ok(json.toString());
   }
 
@@ -293,7 +297,7 @@ public class TaskController extends AbstractController {
     if (!TaskUtil.hasPermission(task) || 
         !TaskUtil.hasPermissionOnField(task, name, value, statusService, taskService, projectService)) {
       throw new UnAuthorizedOperationException(taskId, Task.class, getNoPermissionMsg());
-    }
+    }    
     task = TaskUtil.saveTaskField(task, context.getRemoteUser(), name, value, timezone, taskService, statusService);
 
     String response = "Update successfully";
@@ -311,6 +315,13 @@ public class TaskController extends AbstractController {
       if (response == null) {
         response = bundle.getString("label.noWorkPlan");
       }
+    }
+    
+    //update project or assignee, or coworker, need to update Incomming task number
+    if ("project".equalsIgnoreCase(name) || "assignee".equalsIgnoreCase(name) || "coworker".equalsIgnoreCase(name)) {
+      String username = context.getRemoteUser();
+      long taskNum = getIncomingNum(username);
+      response = String.valueOf(taskNum);
     }
 
     return Response.ok(response);
@@ -400,7 +411,10 @@ public class TaskController extends AbstractController {
     }
     task.setCompleted(completed);
     taskService.updateTask(task);
-    return Response.ok("Update successfully");
+    
+    String username = securityContext.getRemoteUser();
+    long taskNum = getIncomingNum(username);    
+    return Response.ok(String.valueOf(taskNum));
   }
 
   @Resource
@@ -429,12 +443,13 @@ public class TaskController extends AbstractController {
     user.put("avatar", model.getAuthor().getAvatar());
     json.put("author", user);
     json.put("comment", encoder.encode(model.getComment()));
-    json.put("formattedComment", encoder.encode(model.getFormattedComment()));
+    json.put("formattedComment", model.getFormattedComment());
     json.put("createdTime", model.getCreatedTime().getTime());
     json.put("createdTimeString", df.format(model.getCreatedTime()));
     return Response.ok(json.toString()).withCharset(Tools.UTF_8);
   }
 
+  //TODO: this method is not used any more?
   @Resource
   @Ajax
   @MimeType.HTML
@@ -843,24 +858,14 @@ public class TaskController extends AbstractController {
       taskService.addTaskToLabel(task.getId(), labelId);
     }
 
-    long taskNum = -1;
-    if (projectId == -1) {
-      //incomming
-      TaskQuery taskQuery = new TaskQuery();
-      taskQuery.setIsIncomingOf(currentUser);
-      ListAccess<Task> taskListAccess = taskService.findTasks(taskQuery);
-      taskNum = ListUtil.getSize(taskListAccess);
-    }
-
     JSONObject detail = JsonUtil.buildTaskJSon(task, bundle);
 
     JSONObject json = new JSONObject();
     json.put("id", task.getId());
-    json.put("taskNum", taskNum);
 
     json.put("detail", detail);
 
-    return Response.ok(json.toString());
+    return Response.ok(json.toString()).withCharset(Tools.UTF_8);
   }
 
   @Resource
@@ -1017,5 +1022,12 @@ public class TaskController extends AbstractController {
     
     return query;
   }
-  
+
+  private long getIncomingNum(String username) {
+    TaskQuery taskQuery = new TaskQuery();
+    taskQuery.setIsIncomingOf(username);
+    taskQuery.setCompleted(false);
+    ListAccess<Task> taskListAccess = taskService.findTasks(taskQuery);
+    return ListUtil.getSize(taskListAccess);
+  }
 }

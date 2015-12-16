@@ -57,7 +57,7 @@
 
     <div class="uiEditableInline clearfix ">
         <span class="iconTaskName pull-left"><i title="&{tooltip.clickToEdit}" data-toggle="tooltip" data-placement="bottom" class="uiIconFolder"></i></span>
-        <div class="breadcrumbCont uiEditableInline" data-original-title="Click to edit" data-toggle="tooltip" data-placement="bottom">
+        <div class="breadcrumbCont uiEditableInline" data-original-title="&{tooltip.clickToEdit}" data-toggle="tooltip" data-placement="bottom">
             <ul class=" ${editableClasses} small"
                 data-name="project" data-type="ParentProject" data-breadcrumb="false" data-value="${task.status == null ? 0 : task.status.project.id}">
                 ${breadcumbs}
@@ -88,7 +88,7 @@
 
     %>
     <span class="pull-left icon-hash ${labelIds == "" ? "" : "hide"}"><i class="uiIconTag"></i></span>
-    <div class="${editableClasses} small pull-left" data-original-title="Click to edit" rel="tooltip" data-name="labels" data-type="selectize" data-inputclass="input-large" data-selectizie-opts='[${labelOptions}]' data-value="${labelIds}">
+    <div class="${editableClasses} small pull-left" data-original-title="&{tooltip.clickToEdit}" rel="tooltip" data-name="labels" data-type="selectize" data-inputclass="input-large" data-selectizie-opts='[${labelOptions}]' data-value="${labelIds}">
         ${labelHtml}
     </div>
 </div>
@@ -422,12 +422,12 @@
 	        <div class="comment-area">
 	            <% if(commentCount > 2) {%>
 	            <div class="text-right">
-	                <a href="#" class="load-all-comments">Show ${commentCount} comments</a>
+	                <a href="#" class="load-all-comments"><%=ResourceUtil.resolveMessage(bundle, "comment.message.showAll", commentCount);%></a>
 	            </div>
 	            <%}%>
 	            <ul class="list-comments media-list">
 	                <%if(commentCount == 0) {%>
-	                    <li class="no-comment">There are no comment yet!</li>
+	                    <li class="no-comment">&{comment.message.noComment}</li>
 	                <%} else { for (def comment in comments) { %>
 	                    <li class="comment media">
 	                        <a class="pull-left avatarXSmall" href="#">
@@ -444,7 +444,7 @@
 	                            </div>
 	                            <h6 class="media-heading"><a href="#">${encoder.encode(comment.author.displayName)}</a></h6>
 	                            <div>
-	                                ${encoder.encode(comment.formattedComment)}
+	                                ${comment.formattedComment}
 	                            </div>
 	                        </div>
 	                    </li>

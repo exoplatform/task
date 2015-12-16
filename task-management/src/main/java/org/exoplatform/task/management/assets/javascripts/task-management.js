@@ -1,7 +1,7 @@
 // TODO: Move juzu-ajax, mentionsPlugin module into task management project if need
-require(['taskManagementApp', 'project-menu', 'taFilter', 'taskCenterView', 'taskListView', 'ta_edit_inline', 'SHARED/jquery',
+require(['taskManagementApp', 'project-menu', 'taFilter', 'taskCenterView', 'taskListView', 'ta_edit_inline', 'SHARED/jquery', 'SHARED/taskLocale',
         'SHARED/juzu-ajax', 'SHARED/mentionsPlugin', 'SHARED/bts_modal', 'SHARED/bts_tab', 'SHARED/task_ck_editor'
-        ], function(taApp, pMenu, taFilter, taskCenterView, taskListView, editInline, $) {
+        ], function(taApp, pMenu, taFilter, taskCenterView, taskListView, editInline, $, locale) {
   
 $(document).ready(function() {
     var ui = taApp.getUI();
@@ -88,7 +88,7 @@ $(document).ready(function() {
 
         return false;
     };
-    var loadTaskDetail = function(taskId) {
+    function loadTaskDetail(taskId) {
         var currentTask = $rightPanelContent.find('[data-taskid]').data('taskid');
         if ($rightPanel.is(':visible') && currentTask == taskId) {
             return;
@@ -300,7 +300,7 @@ $(document).ready(function() {
 
         if (projectId > 0 && !$a.data('canview')) {
             var projectName = $a.html();
-            taApp.showWarningDialog("You don't have permission to access " + projectName + " project.");
+            taApp.showWarningDialog(locale.resolve('noPermissionToAccessProject', projectName));
             return false;
         }
 
@@ -368,8 +368,13 @@ $(document).ready(function() {
                     loadTaskDetail(task.id);
                 }
 
-                if (task.taskNum != -1) {
-                  $('.project-name[data-id="-1"] .badgeDefault').text(task.taskNum);
+                var $taskRow = $centerPanelContent.find('.taskList .taskItem');
+                if ($taskRow.length > 1) {
+                  $centerPanelContent.find('.groupByOptions').show();
+                }
+                
+                if (projectId < 0) {
+                  taApp.updateTaskNum(true);
                 }
             }, 
             error: function(xhr) {
@@ -480,15 +485,6 @@ $(document).ready(function() {
         $project.find('.sub-item.open').removeClass('open');
 
         return false;
-    });
-
-    $centerPanel.on('click', '[data-taskcompleted]', function(e) {
-        var $a = $(e.target).closest('[data-taskcompleted]');
-        var $taskItem = $a.closest('.taskItem');
-        var taskId = $taskItem.data('taskid');
-        var isCompleted = $a.data('taskcompleted');
-        //
-        taApp.setTaskComplete(taskId, !isCompleted);
     });
 
     // Table Project Collapse

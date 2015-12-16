@@ -38,7 +38,7 @@
                 <!-- this is result after choice permision-->
                 <div class="permission-display ${editingField == "manager" ? "hide" : ""}">
                     <div class="pull-right edit-action">
-                        <a href="javascript:void(0)" class="actionIcon action-edit-user actionEditPermission" data-original-title="edit" data-toggle="tooltip" rel="tooltip" data-placement="bottom">
+                        <a href="javascript:void(0)" class="actionIcon action-edit-user actionEditPermission" data-original-title="&{label.edit}" data-toggle="tooltip" rel="tooltip" data-placement="bottom">
                             <i class="uiIconEdit uiIconLightGray"></i>
                         </a>
                     </div>
@@ -82,10 +82,10 @@
                                 </div>
                             </div>
 
-                            <a href="javascript:void(0);" data-backdrop="false" rel="tooltip" data-placement="bottom" title="" class="actionIcon openUserSelector" data-original-title="Select User">
+                            <a href="javascript:void(0);" data-backdrop="false" rel="tooltip" data-placement="bottom" title="" class="actionIcon openUserSelector" data-original-title="&{popup.selectUser}">
                                 <i class="uiIconUser uiIconLightGray"></i>
                             </a>
-                            <a  href="javascript:void(0);"  data-backdrop="false" data-toggle="modal" rel="tooltip" data-placement="bottom" title="" class="actionIcon openGroupSelector" data-original-title="Select Group/Membership">
+                            <a  href="javascript:void(0);"  data-backdrop="false" data-toggle="modal" rel="tooltip" data-placement="bottom" title="" class="actionIcon openGroupSelector" data-original-title="&{popup.selectGroupOrMembership}">
                                 <i class="uiIconGroup uiIconLightGray"></i>
                             </a>
                             <a href="javascript:void(0)" class="btn savePermission" type="button">&{label.save}</a>
@@ -136,7 +136,7 @@
                 <!-- this is result after choice permision-->
                 <div class="permission-display ${editingField == "participant" ? "hide" : ""}">
                     <div class="pull-right edit-action">
-                        <a href="javascript:void(0)" class="actionIcon action-edit-user actionEditPermission" data-original-title="edit" data-toggle="tooltip" rel="tooltip" data-placement="bottom">
+                        <a href="javascript:void(0)" class="actionIcon action-edit-user actionEditPermission" data-original-title="&{label.edit}" data-toggle="tooltip" rel="tooltip" data-placement="bottom">
                             <i class="uiIconEdit uiIconLightGray"></i>
                         </a>
                     </div>
@@ -180,10 +180,10 @@
                                 </div>
                             </div>
 
-                            <a href="javascript:void(0);" data-backdrop="false" rel="tooltip" data-placement="bottom" title="" class="actionIcon openUserSelector" data-original-title="Select User">
+                            <a href="javascript:void(0);" data-backdrop="false" rel="tooltip" data-placement="bottom" title="" class="actionIcon openUserSelector" data-original-title="&{popup.selectUser}">
                                 <i class="uiIconUser uiIconLightGray"></i>
                             </a>
-                            <a  href="javascript:void(0);"  data-backdrop="false" data-toggle="modal" rel="tooltip" data-placement="bottom" title="" class="actionIcon openGroupSelector" data-original-title="Select Group/Membership">
+                            <a  href="javascript:void(0);"  data-backdrop="false" data-toggle="modal" rel="tooltip" data-placement="bottom" title="" class="actionIcon openGroupSelector" data-original-title="&{popup.selectGroupOrMembership}">
                                 <i class="uiIconGroup uiIconLightGray"></i>
                             </a>
                             <a href="javascript:void(0)" class="btn savePermission" type="button">&{label.save}</a>
@@ -235,7 +235,7 @@
           <!-- this is result after choice permision-->
           <div class="permission-display" style="display:none">
             <div class="pull-right edit-action">
-              <a href="" class="actionIcon action-edit-user" data-original-title="edit" data-toggle="tooltip" rel="tooltip" data-placement="bottom">
+              <a href="" class="actionIcon action-edit-user" data-original-title="&{label.edit}" data-toggle="tooltip" rel="tooltip" data-placement="bottom">
                 <i class="uiIconEdit uiIconLightGray"></i>
               </a>
              </div>
@@ -258,10 +258,10 @@
                       <div class="cursorText"></div>
                     </div>
 
-                      <a  data-backdrop="false" rel="tooltip" data-placement="bottom" title="" class="actionIcon openUserSelector" data-original-title="Select User">
+                      <a  data-backdrop="false" rel="tooltip" data-placement="bottom" title="" class="actionIcon openUserSelector" data-original-title="&{popup.selectUser}">
                        <i class="uiIconUser uiIconLightGray"></i>
                      </a>
-                     <a  href="#selectGroupModal" data-backdrop="false" data-toggle="modal" rel="tooltip" data-placement="bottom" title="" class="actionIcon" data-original-title="Select Group/Membership">
+                     <a  href="#selectGroupModal" data-backdrop="false" data-toggle="modal" rel="tooltip" data-placement="bottom" title="" class="actionIcon" data-original-title="&{popup.selectGroupOrMembership}">
                        <i class="uiIconGroup uiIconLightGray"></i>
                      </a>
                      <button  class="btn" type="button">Add</button>
@@ -317,7 +317,7 @@
           <!-- this is result after choice permision-->
           <div class="permission-display" style="display:none">
             <div class="pull-right edit-action">
-              <a href="" class="actionIcon action-edit-user" data-original-title="edit" data-toggle="tooltip" rel="tooltip" data-placement="bottom">
+              <a href="" class="actionIcon action-edit-user" data-original-title="&{label.edit}" data-toggle="tooltip" rel="tooltip" data-placement="bottom">
                 <i class="uiIconEdit uiIconLightGray"></i>
               </a>          
              </div>        
@@ -352,10 +352,10 @@
                       <div class="cursorText"></div>
                     </div>  
 
-                      <a  data-backdrop="false" rel="tooltip" data-placement="bottom" title="" class="actionIcon openUserSelector" data-original-title="Select User">
+                      <a  data-backdrop="false" rel="tooltip" data-placement="bottom" title="" class="actionIcon openUserSelector" data-original-title="&{popup.selectUser}">
                        <i class="uiIconUser uiIconLightGray"></i>
                      </a>                   
-                     <a  href="#selectGroupModal"  data-backdrop="false" data-toggle="modal" rel="tooltip" data-placement="bottom" title="" class="actionIcon" data-original-title="Select Group/Membership">
+                     <a  href="#selectGroupModal"  data-backdrop="false" data-toggle="modal" rel="tooltip" data-placement="bottom" title="" class="actionIcon" data-original-title="&{popup.selectGroupOrMembership}">
                        <i class="uiIconGroup uiIconLightGray"></i>
                      </a>             
                      <button  class="btn" type="button">Add</button>
@@ -408,7 +408,7 @@
           <!-- this is result after choice permision-->
           <div class="permission-display" style="display:block">
             <div class="pull-right edit-action">
-              <a href="" class="actionIcon action-edit-user" data-original-title="edit" data-toggle="tooltip" rel="tooltip" data-placement="bottom">
+              <a href="" class="actionIcon action-edit-user" data-original-title="&{label.edit}" data-toggle="tooltip" rel="tooltip" data-placement="bottom">
                 <i class="uiIconEdit uiIconLightGray"></i>
               </a>          
              </div>        
@@ -431,10 +431,10 @@
                       <div class="cursorText"></div>
                     </div>  
 
-                     <a  data-backdrop="false" rel="tooltip" data-placement="bottom" title="" class="actionIcon openUserSelector" data-original-title="Select User">
+                     <a  data-backdrop="false" rel="tooltip" data-placement="bottom" title="" class="actionIcon openUserSelector" data-original-title="&{popup.selectUser}">
                        <i class="uiIconUser uiIconLightGray"></i>
                      </a>                     
-                     <a  href="#selectGroupModal" data-backdrop="false"  data-toggle="modal" rel="tooltip" data-placement="bottom" title="" class="actionIcon" data-original-title="Select Group/Membership">
+                     <a  href="#selectGroupModal" data-backdrop="false"  data-toggle="modal" rel="tooltip" data-placement="bottom" title="" class="actionIcon" data-original-title="&{popup.selectGroupOrMembership}">
                        <i class="uiIconGroup uiIconLightGray"></i>
                      </a>             
                      <button  class="btn" type="button">Add</button>
@@ -491,7 +491,7 @@
           <!-- this is result after choice permision-->
           <div class="permission-display" style="display:none">
             <div class="pull-right edit-action">
-              <a href="" class="actionIcon action-edit-user" data-original-title="edit" data-toggle="tooltip" rel="tooltip" data-placement="bottom">
+              <a href="" class="actionIcon action-edit-user" data-original-title="&{label.edit}" data-toggle="tooltip" rel="tooltip" data-placement="bottom">
                 <i class="uiIconEdit uiIconLightGray"></i>
               </a>          
              </div>        
@@ -514,10 +514,10 @@
                       <div class="cursorText"></div>
                     </div>  
 
-                     <a  data-backdrop="false" rel="tooltip" data-placement="bottom" title="" class="actionIcon openUserSelector" data-original-title="Select User">
+                     <a  data-backdrop="false" rel="tooltip" data-placement="bottom" title="" class="actionIcon openUserSelector" data-original-title="&{popup.selectUser}">
                        <i class="uiIconUser uiIconLightGray"></i>
                      </a>                   
-                     <a  href="#selectGroupModal" data-backdrop="false" data-toggle="modal" rel="tooltip" data-placement="bottom" title="" class="actionIcon" data-original-title="Select Group/Membership">
+                     <a  href="#selectGroupModal" data-backdrop="false" data-toggle="modal" rel="tooltip" data-placement="bottom" title="" class="actionIcon" data-original-title="&{popup.selectGroupOrMembership}">
                        <i class="uiIconGroup uiIconLightGray"></i>
                      </a>             
                      <button  class="btn" type="button">Add</button>
@@ -574,7 +574,11 @@
   <!-- This is for select group in search user -->
   <div class="groupSelectorForSearchDialog"></div>
 </div>
-
+<script type="text/javascript">
+    require(['SHARED/jquery', 'taskManagementApp'], function($, taApp) {
+        taApp.initTooltip($('.uiPopup.sharePrjDialog'));
+    });
+</script>
 
 
 

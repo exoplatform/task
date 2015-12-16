@@ -4,9 +4,11 @@
 #{param name="filterStatus"/}
 #{param name="filterAssignee"/}
 #{param name="filterDueDate"/}
+#{param name=bundle /}
 
 <%
 	import org.exoplatform.task.util.TaskUtil;
+    import org.exoplatform.task.util.ResourceUtil;
 	import org.exoplatform.task.domain.Priority;
 	import org.exoplatform.commons.utils.HTMLEntityEncoder;
 
@@ -48,7 +50,7 @@
 		  			<select name="status">
 		  				<option value="">All</option>
 		  				<%for (def st : status) { %>
-		  				<option value="${st.id}">${encoder.encode(st.name)}</option>
+		  				<option value="${st.id}">${encoder.encode(ResourceUtil.resolveStatus(bundle, st.name))}</option>
 		  				<%} %>			
 		  			</select>
 		  		</div>

@@ -26,6 +26,7 @@ import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.service.UserService;
 import org.exoplatform.task.util.DateUtil;
+import org.exoplatform.task.util.ResourceUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -51,7 +52,7 @@ public class JsonUtil {
       json.put("priority", task.getPriority());
 
       if (task.getStatus() != null) {
-        JSONObject status = buildStatusJSON(task.getStatus());
+        JSONObject status = buildStatusJSON(task.getStatus(), bundle);
         json.put("status", status);
       } else {
         json.put("status", false);
@@ -86,7 +87,7 @@ public class JsonUtil {
       return null;
     }
   }
-  public static JSONObject buildStatusJSON(Status status) {
+  public static JSONObject buildStatusJSON(Status status, ResourceBundle bundle) {
     if (status == null) {
       throw new IllegalArgumentException("Status can not be null");
     }
@@ -94,6 +95,7 @@ public class JsonUtil {
       JSONObject json = new JSONObject();
       json.put("id", status.getId());
       json.put("name", status.getName());
+      json.put("localizedName", ResourceUtil.resolveStatus(bundle, status.getName()));
       json.put("rank", status.getRank());
 
       JSONObject project = buildProjectJSON(status.getProject());

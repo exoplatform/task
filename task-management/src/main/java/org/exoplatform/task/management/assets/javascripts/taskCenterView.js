@@ -1,4 +1,4 @@
-define('taskCenterView', ['SHARED/jquery', 'taskManagementApp', 'SHARED/bootstrap_popover'], function($, taApp) {
+define('taskCenterView', ['SHARED/jquery', 'taskManagementApp', 'SHARED/bootstrap_tooltip','SHARED/bootstrap_popover'], function($, taApp) {
     var centerView = {};
     centerView.init = function() {
         taApp.onReady(function($) {
@@ -8,8 +8,20 @@ define('taskCenterView', ['SHARED/jquery', 'taskManagementApp', 'SHARED/bootstra
 
     centerView.initDomEvent = function() {
         var ui = taApp.getUI();
+        var $centerPanel = ui.$centerPanel;
         var $centerPanelContent = ui.$centerPanelContent;
-        $centerPanelContent.find('*[rel="tooltip"]').tooltip();
+
+        $centerPanel.find('[rel="tooltip"]').tooltip();
+
+        $centerPanel.off('click', '[data-taskcompleted]').on('click', '[data-taskcompleted]', function(e) {
+            e.stopPropagation();
+            var $a = $(e.target).closest('[data-taskcompleted]');
+            var $taskItem = $a.closest('.taskItem');
+            var taskId = $taskItem.data('taskid');
+            var isCompleted = $a.data('taskcompleted');
+            //
+            taApp.setTaskComplete(taskId, !isCompleted);
+        });
 
         var $permalink = $centerPanelContent.find('.projectPermalink');
         var link = $permalink[0].href;
@@ -37,11 +49,15 @@ define('taskCenterView', ['SHARED/jquery', 'taskManagementApp', 'SHARED/bootstra
       $centerPanel.find('.taskItem').each(function(idx, elem) {
         var $taskItem = $(elem);
         var taskId = $taskItem.data('taskid');
+        if (typeof taskId != 'number') {
+            //. Ignore if taskId is not valid
+            return;
+        }
         //
         var labels = '';
         $.get(taskLabelUrl, { taskId: taskId}, function(data) {
           $.each(data, function(i, lbl) {
-            labels += '<span class="inline-block-hide labels">';
+            labels += '<span class="labels">';
             labels += '<a href="#" class="' + lbl.color + ' label">' + taApp.escape(lbl.name) + '</a>';
             labels += '</span>';
           });

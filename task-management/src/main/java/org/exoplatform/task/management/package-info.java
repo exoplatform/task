@@ -44,7 +44,7 @@
     @Script(id = "x-editable-calendar", value = "javascripts/x-editable-calendar.js", depends = {"uicalendar"}),
     @Script(id = "x-editable-ckeditor", value = "javascripts/x-editable-ckeditor.js"),
     @Script(id = "task-edit-inline", value = "javascripts/editinline.js",
-            depends = {"taskManagementCommon", "x-editable-selectize-field","x-editable-customfield-js", "x-editable-calendar", "x-editable-ckeditor"}),
+            depends = {"taskManagementCommon", "filter_js", "x-editable-selectize-field","x-editable-customfield-js", "x-editable-calendar", "x-editable-ckeditor"}),
     @Script(id = "label_js", value = "javascripts/label.js", depends = {"taskManagementCommon"}),
     @Script(id = "filter_js", value = "javascripts/filter.js"),
     @Script(id = "project-menu-js", value = "javascripts/project-menu.js", depends = {"taskManagementCommon", "task-edit-inline"}),
@@ -60,7 +60,7 @@
     @Stylesheet(id = "style-less", value = "less/style.less")
 })
 @Stylesheets({
-    @Stylesheet(id = "style.css", value = "styles/style.css"),
+    @Stylesheet(id = "style.css", value = "less/style.css"),
     @Stylesheet(id = "bootstrap-datepicker.css", value = "bootstrap-datepicker/1.4.0/css/bootstrap-datepicker.css"),
     @Stylesheet(id = "selectize-css", value = "selectize.js/0.12.1/css/selectize.css"),
     @Stylesheet(id = "select2-css", value = "select2/3.5.2/select2.css"),

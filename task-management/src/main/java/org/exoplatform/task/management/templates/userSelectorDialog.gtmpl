@@ -20,17 +20,17 @@
             <span class="inputLarge ">
               <input type="text" id="group" name="group" placeholder="Group" value="${groupId}">
             </span>
-            <a title="" data-placement="bottom" rel="tooltip"  href="javascript:void(0);" class="actionIcon openGroupSelectorForSearch" data-original-title="Group">
-              <i class="uiIconSearch uiIconLightGray"><span class="skipHidden">Group</span></i>
+            <a title="" data-placement="bottom" rel="tooltip"  href="javascript:void(0);" class="actionIcon openGroupSelectorForSearch" data-original-title="&{label.group}">
+              <i class="uiIconSearch uiIconLightGray"><span class="skipHidden">&{label.group}</span></i>
             </a>
           </span>
 
           <span class="searchByUser">
             <span class="inputLarge ">
-              <a type="submit" data-original-title="Quick Search" rel="tooltip" data-placement="left" class="btnSearchUser" id="">
-                <i class="uiIconSearch uiIconLightGray"><span class="skipHidden">Quick Search</span></i>
+              <a type="submit" data-original-title="&{label.quickSearch}" rel="tooltip" data-placement="left" class="btnSearchUser" id="">
+                <i class="uiIconSearch uiIconLightGray"><span class="skipHidden">&{label.quickSearch}</span></i>
               </a>
-              <input type="text" id="Quick Search" name="keyword" placeholder="Search" value="${keyword}">
+              <input type="text" id="Quick Search" name="keyword" placeholder="&{label.search}" value="${keyword}">
             </span>
             <span class="selectboxMedium">
               <span class="uiSelectbox">
@@ -97,4 +97,8 @@
     </div>
   </div>
 </div>
-
+<script type="text/javascript">
+    require(['SHARED/jquery', 'taskManagementApp'], function($, taApp) {
+        taApp.initTooltip($('#userSelectorDialog'));
+    });
+</script>

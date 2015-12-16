@@ -40,7 +40,7 @@ def displayListLabelItem(lbl, level, encoder, identity, colors) {
 
                   <li><a class="delete-label" href="#"><i class="uiIconTrash uiIconLightGray"></i>&{label.delete}</a></li>
                   <li><a class="new-sub-label" data-labelId="${lbl.id}" href="#"><i class="uiIconAddLabel uiIconLightGray"></i>&{label.addLabel}</a></li>
-                  <li class="noColor changeLabelColor" data-color="">No Color</li>
+                  <li class="noColor changeLabelColor" data-color="">&{label.noColor}</li>
                   <li class="calendarTableColor">
                       <%
                           for (def c in colors) { %>

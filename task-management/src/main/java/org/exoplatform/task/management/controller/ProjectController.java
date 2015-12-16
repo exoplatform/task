@@ -495,6 +495,11 @@ public class ProjectController extends AbstractController {
     String name = "manager".equals(type) ? type : "participator";
     Map<String, String[]> fields = new HashMap<String, String[]>();
     fields.put(name, permissions);
+
+    if ("manager".equals(type) && (permissions == null || permissions.length == 0)) {
+      return Response.status(406).body(bundle.getString("popup.shareProject.msg.noManager")).withCharset(Tools.UTF_8);
+    }
+
     //
     Project project = projectService.getProject(id);
     if (!project.canEdit(ConversationState.getCurrent().getIdentity())) {

@@ -33,12 +33,12 @@
         <div class="uiHeaderBar clearfix">
             <div class="settingActionButtons pull-right">
                 <span class="advancedSearch-action pull-left">
-                   <a href="javascript:void(0)" class="action-search actionIcon "  title="Search" data-toggle="tooltip"> <i class="uiIconSearch uiIconLightGray"></i></a>
+                   <a href="javascript:void(0)" class="action-search actionIcon "  title="Search" rel="tooltip"> <i class="uiIconSearch uiIconLightGray"></i></a>
                    <a href="javascript:void(0)" class="action-close  " style="display:none"> <i class="uiIconClose uiIconLightGray" ></i></a>
                 </span>
-                <a class="actionIcon" href="#"  title="Filter" data-toggle="tooltip"><i class="uiIcon uiIconFilter <%=advanceSearch ? "uiIconBlue" : ""%>"></i></a>
+                <a class="actionIcon" href="#"  title="Filter" rel="tooltip"><i class="uiIcon uiIconFilter <%=advanceSearch ? "uiIconBlue" : ""%>"></i></a>
                 <span class="pull-left">
-                    <span class="projectPermalinkContainer"  title="&{label.permalink}" data-toggle="tooltip">
+                    <span class="projectPermalinkContainer"  title="&{label.permalink}" rel="tooltip">
                         <a href="@{TaskManagement.projectPermalink(space_group_id=null, projectId=currentProjectId, filter=filter,labelId=currentLabelId)}" data-toggle="popover" data-placement="left"
                            class="permalink actionIcon projectPermalink" style="position: relative;">
                             <i class="uiIconPermalink"></i>
@@ -60,8 +60,8 @@
             <div class="pull-right search-container">
                 <form class="UIForm taskSearchForm" action="#" onsubmit="javascript:void(0)">
                     <div class="uiSearchForm uiSearchInput searchWithIcon">
-                         <a title="" class="advancedSearch" rel="tooltip" data-placement="bottom" href="javascript:void(0)" data-original-title="Search"><i class="uiIconSearch uiIconLightGray"></i></a>
-                         <input type="text"  name="keyword" value="${keyword}" placeholder="Search" >
+                         <a title="" class="advancedSearch" rel="tooltip" data-placement="bottom" href="javascript:void(0)" data-original-title="&{label.search}"><i class="uiIconSearch uiIconLightGray"></i></a>
+                         <input type="text"  name="keyword" value="${keyword}" placeholder="&{label.search}" >
                          <input type="hidden" name="groupBy" value="${groupBy}"/>
                          <input type="hidden" name="orderBy" value="${orderBy}"/>
                          <input type="hidden" name="filter" value="${filter}"/>

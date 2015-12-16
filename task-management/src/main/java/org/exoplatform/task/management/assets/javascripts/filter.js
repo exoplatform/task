@@ -87,11 +87,11 @@ define('taFilter', ['SHARED/jquery', 'SHARED/selectize'], function($) {
         taApp.hideRightPanel(ui.$centerPanel, ui.$rightPanel, ui.$rightPanelContent);
       },
 
-      submitFilter: function(reset) {
+      submitFilter: function(reset, callback) {
         var $content = taApp.getUI().$centerPanelContent;
         var data = taFilter.getFilterData(reset);
         $content.data('filterData', data);
-        $content.jzLoad('TaskController.listTasks()', data);
+        $content.jzLoad('TaskController.listTasks()', data, callback);
       },
       
       //reset = true --> not submit filter data from right panel 

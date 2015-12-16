@@ -23,11 +23,15 @@
                     <a href="#" class="btn btn-primary btn-add-task"><i class="uiIconSimplePlusMini"></i> &{list.label.newTask}</a>
                 </div>
             <%}%>
-            <div class="header-right pull-right">
+            <% 
+            def groupByClass="display:none";
+            if (taskNum >= TaskController.MIN_NUMBER_TASK_GROUPABLE) {
+              groupByClass = "";
+            }%>
+            <div class="header-right pull-right groupByOptions" style="${groupByClass}">            
                 <!-- this is filter action-->
-                <% if (taskNum >= TaskController.MIN_NUMBER_TASK_GROUPABLE) { %>
-                             <span class="action-bar dropdown pull-right" data-currentorderby="${orderBy}">
-                                <a href="" class="actionIcon dropdown-toggle" data-original-title="Due date" data-toggle="dropdown"  rel="tooltip" data-placement="bottom">
+                             <div class="action-bar dropdown pull-right" data-currentorderby="${orderBy}">
+                                <a href="" class="actionIcon dropdown-toggle" data-original-title="&{label.orderBy}" data-toggle="dropdown"  rel="tooltip" data-placement="bottom">
                                     <i class="uiIconSortDown uiIconLightGray"></i>
                                     <span>${orderBy != null && orderBy != "" ? orders[orderBy] : orders["dueDate"]}</span>
                                 </a>
@@ -39,9 +43,9 @@
                                       <%}
                                     }%>
                                 </ul>
-                             </span>
-                             <span class="action-bar dropdown pull-right" data-currentgroupby="${groupBy}">
-                                <a href="" class="actionIcon dropdown-toggle"  data-original-title="Group by" data-toggle="dropdown"  rel="tooltip" data-placement="bottom">
+                             </div>
+                             <div class="action-bar dropdown pull-right" data-currentgroupby="${groupBy}">
+                                <a href="" class="actionIcon dropdown-toggle"  data-original-title="&{label.groupBy}" data-toggle="dropdown"  rel="tooltip" data-placement="bottom">
                                     <i class="uiIconViewList uiIconLightGray"></i>
                                     <span>${groups[groupBy]}</span>
                                 </a>
@@ -53,8 +57,7 @@
                                     <%}%>
                                     <%}%>
                                 </ul>
-                             </span>
-                <%}%>
+                             </div>
             </div>
         </div>
         <% if (currentLabelId != 0 && currentProjectId != 0 && filter != 'overdue') {%>
@@ -129,26 +132,15 @@
                             	  def taskLabels = null;
                             %>
                             <%if(taskLabels != null && taskLabels.size() > 0) {%>
-                                <span class="inline-block-hide labels">
+                                <span class="labels">
                                     <%for (def label in taskLabels) {%>
                                         <a href="#" class="${label.color} label">${encoder.encode(label.name)}</a>
                                     <%}%>
                                 </span>
                             <%}%>
-                            <span class="dropdown-group">
-                                <a class="actionIcon inline-block-hide" data-toggle="dropdown" data-placement="bottom" data-original-title="Snooze due date" rel="tooltip" href="javascript:void(0)">
-                                    <i class="uiIcon uiIconClock"></i>
-                                </a>
-                                <% if (orderBy == 'priority') {%>
-                                    <a class="actionIcon inline-block" href="javascript:void(0)"><i class="uiIconColorPriority${task.priority == null ? 'UNDEFINED' : task.priority.name()}"></i></a>
-                                <% }%>
-                                <ul class="dropdown-menu pull-right">
-                                    <li><a href="#">Later Today (+5 hours)</a></li>
-                                    <li><a href="#">Tomorrow Morning (9am the next day)</a></li>
-                                    <li><a href="#">Tomorrow Afternoon (1pm the next day)</a></li>
-                                    <li><a href="#">Next Week (next monday 9am)</a></li>
-                                </ul>
-                            </span>
+                            <% if (orderBy == 'priority') {%>
+                                <a class="actionIcon inline-block" href="javascript:void(0)"><i class="uiIconColorPriority${task.priority == null ? 'UNDEFINED' : task.priority.name()}"></i></a>
+                            <% }%>
                             <a class="actionIcon inline-block-hide"
                                data-placement="left"
                                data-original-title="<% if (task.completed) {%> &{message.markAsUnCompleted} <%} else {%> &{message.markAsCompleted} <%}%>"
@@ -265,21 +257,9 @@
             <div class="column-item column-title taskName">{{title}}</div>
             <div class="column-item column-time">
                 <span class="text-time inline-block-show">{{taskDueDate}}</span>
-                <span class="inline-block-hide labels">
+                <span class="labels">
                 </span>
-                <span class="dropdown-group">
-                    <a class="actionIcon inline-block-hide" data-toggle="dropdown" data-placement="bottom" data-original-title="Snooze due date" rel="tooltip" href="javascript:void(0)">
-                        <i class="uiIcon uiIconClock"></i>
-                    </a>
-                    <!--<a class="actionIcon inline-block" href="javascript:void(0)"><i class="uiIconColorPriority{{taskPriority}}"></i></a>-->
-                    <ul class="dropdown-menu pull-right">
-                        <li><a href="#">Later Today (+5 hours)</a></li>
-                        <li><a href="#">Tomorrow Morning (9am the next day)</a></li>
-                        <li><a href="#">Tomorrow Afternoon (1pm the next day)</a></li>
-                        <li><a href="#">Next Week (next monday 9am)</a></li>
-                    </ul>
-                </span>
-                <a class="actionIcon inline-block-hide" data-placement="left" data-original-title="Mark as completed" rel="tooltip" data-taskcompleted="{{taskCompleted}}" href="javascript:void(0)">
+                <a class="actionIcon inline-block-hide" data-placement="left" data-original-title="&{message.markAsCompleted}" rel="tooltip" data-taskcompleted="{{taskCompleted}}" href="javascript:void(0)">
                     <i class="uiIconValidate uiIconLightGray"></i>
                 </a>
             </div>

@@ -10,6 +10,7 @@
     import org.exoplatform.task.util.TaskUtil;
     import org.exoplatform.task.util.DateUtil;
     import org.exoplatform.task.util.ListUtil;
+    import org.exoplatform.task.util.ResourceUtil;
     import org.exoplatform.services.security.ConversationState;
     import org.exoplatform.task.management.controller.TaskController;
   	 import org.exoplatform.commons.utils.HTMLEntityEncoder;
@@ -40,11 +41,15 @@
             <!--<div class="header-left pull-left">
                 <a href="#" class="btn btn-primary btn-add-task"><i class="uiIconSimplePlusMini"></i> New task</a>
             </div>-->
-            <div class="header-right pull-right">
+            <% 
+            def groupByClass="display:none";
+            if (taskNum >= TaskController.MIN_NUMBER_TASK_GROUPABLE) {
+              groupByClass = "";
+            }%>
+            <div class="header-right pull-right groupByOptions" style="${groupByClass}">
                 <!-- this is filter action-->
-                <% if (taskNum >= TaskController.MIN_NUMBER_TASK_GROUPABLE) { %>
                      <span class="action-bar dropdown pull-right" data-currentorderby="${orderBy}">
-                        <a href="" class="actionIcon dropdown-toggle" data-original-title="Due date" data-toggle="dropdown"  rel="tooltip" data-placement="bottom">
+                        <a href="" class="actionIcon dropdown-toggle" data-original-title="&{label.orderBy}" data-toggle="dropdown"  rel="tooltip" data-placement="bottom">
                             <i class="uiIconSortDown uiIconLightGray"></i>
                             <span>${orderBy != null && orderBy != "" ? orders[orderBy] : orders["dueDate"]}</span>
                         </a>
@@ -57,7 +62,7 @@
                         </ul>
                      </span>
                      <span class="action-bar dropdown pull-right" data-currentgroupby="${groupBy}">
-                        <a href="" class="actionIcon dropdown-toggle"  data-original-title="Group by" data-toggle="dropdown"  rel="tooltip" data-placement="bottom">
+                        <a href="" class="actionIcon dropdown-toggle"  data-original-title="&{label.groupBy}" data-toggle="dropdown"  rel="tooltip" data-placement="bottom">
                             <i class="uiIconViewList uiIconLightGray"></i>
                             <span>${groups[groupBy]}</span>
                         </a>
@@ -69,7 +74,6 @@
                             <%}%>
                         </ul>
                      </span>
-                <%}%>
             </div>
         </div>
         <!--<div class="input-field">
@@ -93,12 +97,12 @@
                         def st = status.get(index);
                     %>
                         <div class="col col${index} hover-action-reveal uiEditableInline" data-statusid="${st.id}">
-                            <strong class="${editableClasses}" data-pk="${st.id}" data-type="text" data-name="name">${encoder.encode(st.name)} </strong><span class="${numberTasksByStatus[st.id] != null ? 'number-tasks' : ''}" data-taskcount-status="${numberTasksByStatus[st.id] != null ? numberTasksByStatus[st.id] : ''}">${numberTasksByStatus[st.id] != null ? numberTasksByStatus[st.id] : ''}</span>
+                            <strong class="${editableClasses}" data-pk="${st.id}" data-type="text" data-name="name" data-value="${encoder.encode(st.name)}">${encoder.encode(ResourceUtil.resolveStatus(bundle, st.name))} </strong><span class="${numberTasksByStatus[st.id] != null ? 'number-tasks' : ''}" data-taskcount-status="${numberTasksByStatus[st.id] != null ? numberTasksByStatus[st.id] : ''}">${numberTasksByStatus[st.id] != null ? numberTasksByStatus[st.id] : ''}</span>
                             <% if (index == numberStatus - 1 && canEdit) {%>
-                                <a href="#" rel="tooltip"  data-original-title="Add a Status" data-placement="left" class=" inline-block-hide pull-right mgL5 actionAddStatus"><i class="uiIcon uiIconPlus uiIconWhite"></i></a>
+                                <a href="#" rel="tooltip"  data-original-title="&{label.addStatus}" data-placement="left" class=" inline-block-hide pull-right mgL5 actionAddStatus"><i class="uiIcon uiIconPlus uiIconWhite"></i></a>
                             <%}%>
                             <% if (canEdit && numberStatus > 1) {%>
-                                <a href="#" class=" inline-block-hide pull-right actionRemoveStatus"><i class="uiIcon uiIconDelete uiIconWhite"></i></a>
+                                <a href="#" class="inline-block-hide pull-right actionRemoveStatus"><i class="uiIcon uiIconDelete uiIconWhite"></i></a>
                             <%}%>
                         </div>
                     <%}%>
@@ -156,9 +160,9 @@
                             <% def subGroups = TaskUtil.groupTasks(group.value, "status", currentUser, TimeZone.getDefault(), bundle, taskService, null);%>
                             <% for (def index in 0 .. status.size() - 1) {
                                     def st = status.get(index);
-                                    def key = new GroupKey(st.name, st, st.getRank());
+                                    def key = new GroupKey(ResourceUtil.resolveStatus(bundle, st.name), st, st.getRank());
                                 %>
-                                <div class="col col${index + 1} taskBoardContainer taskContainer${groupKey} taskContainer${groupKey}${st.id}" data-groupby="${groupBy}" data-groupby-value="${groupValueId}" data-groupkey="${groupKey}" data-statusid="${st.id}">
+                                <div class="col col${index + 1} taskBoardContainer taskContainer${groupKey} taskContainer${groupKey}${st.id}" data-connected=".taskContainer${groupKey}" data-statusid="${st.id}">
                                     <% for (def task in subGroups[key]) {%>
                                         <!-- user name  task-done for check task.completed -->
                                         <div class="box-small has-background hover-action-reveal ${task.completed ? "task-completed": ""} taskItem" data-taskid="${task.id}">
@@ -179,7 +183,12 @@
                                                         }
                                                         def uiIconClass = task.completed ? 'uiIconBlue' : 'uiIconLightGray';
                                                     %>
-                                                    <i class="uiIconValidate ${uiIconClass} pull-right"></i>
+                                                    <a class="pull-right inline-block-hide"
+                                                       data-original-title="<% if (task.completed) {%> &{message.markAsUnCompleted} <%} else {%> &{message.markAsCompleted} <%}%>"
+                                                       rel="tooltip" data-placement="left"
+                                                       data-taskcompleted="${task.completed}" href="javascript:void(0)">
+                                                        <i class="uiIconValidate ${uiIconClass}"></i>
+                                                    </a>
                                                     <i class="${colorClass} pull-left"></i>
                                                     <div class="media-body taskName"> ${encoder.encode(task.title)}</div>
                                                 </div>
@@ -220,7 +229,12 @@
                     <div class="box-small-inner">
                         <span class="inline-block-hide dragable">&nbsp;</span>
                         <div class="media clearfix">
-                            <i class="uiIconValidate uiIconBlue pull-right"></i>
+                            <a class="pull-right inline-block-hide"
+                               data-original-title="&{message.markAsCompleted}"
+                               rel="tooltip" data-placement="left"
+                               data-taskcompleted="false" href="javascript:void(0)">
+                                <i class="uiIconValidate uiIconBlue"></i>
+                            </a>
                             <i class="{{dueDateColorClass}} pull-left"></i>
                             <div class="media-body taskName">{{title}}</div>
                         </div>
@@ -411,7 +425,7 @@
                     </div>
                     <div class="col col4 hover-action-reveal">
                         <strong>Done</strong>(6)
-                        <a href="#" data-toggle="tooltip"  data-original-title="Add a Status" data-placement="left" class=" inline-block-hide pull-right mgL5"><i class="uiIcon uiIconPlus "></i></a>
+                        <a href="#" data-toggle="tooltip"  data-original-title="&{label.addStatus}" data-placement="left" class=" inline-block-hide pull-right mgL5"><i class="uiIcon uiIconPlus "></i></a>
                         <a href="#" class=" inline-block-hide pull-right"><i class="uiIcon uiIconDelete "></i></a>
 
                     </div>

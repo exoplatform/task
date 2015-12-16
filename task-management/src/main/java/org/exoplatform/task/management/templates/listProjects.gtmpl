@@ -51,7 +51,7 @@ def displayListProjectItem(project, level, encoder, identity, colors) {
                     <%if (canEdit) { %>
                         <li><a class="delete-project" href="#"><i class="uiIconTrash uiIconLightGray"></i>&{label.delete}</a></li>
                         <li><a class="new-project" data-projectId="${project.id}" href="#"><i class="uiIconAddProject uiIconLightGray"></i>&{label.addProject}</a></li>
-                        <li class="noColor changeProjectColor" data-color="">No Color</li>
+                        <li class="noColor changeProjectColor" data-color="">&{label.noColor}</li>
                         <li class="calendarTableColor">
                             <%
                                 for (def c in colors) { %>

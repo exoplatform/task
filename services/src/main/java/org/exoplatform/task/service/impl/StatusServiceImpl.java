@@ -45,12 +45,12 @@ public class StatusServiceImpl implements StatusService {
   @Inject
   private DAOHandler daoHandler;
 
-  private String[] DEFAULT_STATUS = {"To Do", "In Progress", "Waiting On", "Done"};
+  private String[] DEFAULT_STATUS = {"ToDo", "InProgress", "WaitingOn", "Done"};
   
   private static Log LOG = ExoLogger.getExoLogger(StatusServiceImpl.class);  
 
   public StatusServiceImpl(DAOHandler daoHandler) {
-    String status = PropertyManager.getProperty("exo.tasks.default.status");
+    String status = PropertyManager.getProperty("exo.tasks.default.workflow");
     if (status != null) {
       List<String> stList = new LinkedList<String>();
       for (String s : status.split(",")) {

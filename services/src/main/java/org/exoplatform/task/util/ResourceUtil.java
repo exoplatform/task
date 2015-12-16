@@ -47,7 +47,8 @@ import org.exoplatform.web.controller.router.Router;
  */
 public class ResourceUtil {
   public static final String TASK_PAGE_NAME = "tasks";
-  public static final String TASK_PORTLET_NAME = "TaskManagementApplication";  
+  public static final String TASK_PORTLET_NAME = "TaskManagementApplication";
+  public static final String STATUS_KEY_PREFIX = "exo.tasks.status.";
   
   public static String resolveMessage(ResourceBundle bundle, String key, Object... args) {
     if (bundle == null || key == null) {
@@ -68,6 +69,19 @@ public class ResourceUtil {
       return msg;
     } catch (MissingResourceException ex) {
       return key;
+    }
+  }
+
+  public static String resolveStatus(ResourceBundle bundle, String name) {
+    if (name == null || name.isEmpty()) {
+      return "";
+    }
+
+    String key = STATUS_KEY_PREFIX + name.toLowerCase();
+    try {
+      return bundle.getString(key);
+    } catch (MissingResourceException ex) {
+      return name;
     }
   }
   

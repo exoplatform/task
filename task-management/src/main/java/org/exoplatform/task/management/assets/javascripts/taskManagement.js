@@ -36,6 +36,10 @@ define('taskManagementApp', ['SHARED/jquery', 'SHARED/juzu-ajax'],
             return taskUI;
         }
 
+        taApp.initTooltip = function($rootElement) {
+            $rootElement.find('[rel="tooltip"]').tooltip();
+        }
+
         taApp.showDialog = function(controllerURL, data) {
             var $modalPlace = $('.modalPlace');
             $modalPlace.jzLoad(controllerURL, data, function() {
@@ -50,7 +54,7 @@ define('taskManagementApp', ['SHARED/jquery', 'SHARED/juzu-ajax'],
         }
                 
         taApp.showWarningDialog = function(msg) {
-          var $modalPlace = $('.modalPlace');
+          var $modalPlace = $('.modalPlaceForMessage');
           if (msg) {
             $modalPlace.jzLoad('ProjectController.openWarningDialog()', {'msg': msg}, function() {
               taApp.showWarningDialog();
@@ -142,11 +146,16 @@ define('taskManagementApp', ['SHARED/jquery', 'SHARED/juzu-ajax'],
               if (xhr.status >= 400) {
                 taApp.showWarningDialog(xhr.responseText);
               } else {
+                if (projectId == -1) {
+                  var $items = $centerPanelContent.find('.table-project > .taskItem[data-taskid]:visible');
+                  taApp.updateTaskNum($items.length);
+                }
+                
                 if (callback) {
                   callback();
                 }                
               }
-            });
+            });            
         }
 
         taApp.reloadProjectTree = function(id) {
@@ -168,6 +177,7 @@ define('taskManagementApp', ['SHARED/jquery', 'SHARED/juzu-ajax'],
         taApp.setTaskComplete = function(taskId, isCompleted) {
             var ui = taApp.getUI();
             var $taskItem = ui.$centerPanel.find('.taskItem[data-taskid="' + taskId + '"]');
+            var isRightPanelOpened = ui.$rightPanel.is(':visible');
             var $next = $taskItem.next('.taskItem').first();
             if ($next.length == 0) {
                 $next.prev('.taskItem').first();
@@ -178,21 +188,35 @@ define('taskManagementApp', ['SHARED/jquery', 'SHARED/juzu-ajax'],
             $taskItem.jzAjax('TaskController.updateCompleted()', {
                 data: data,
                 success: function(message) {
-                    if (isCompleted) {
+                    if (isCompleted) {                        
                         $taskItem.fadeOut(500, function() {
                             $taskItem.remove();
                         });
-                        if ($next.length == 0) {
-                            ui.$leftPanel.find('.active .project-name').click();
-                        } else {
-                            $next.click();
+                        if (isRightPanelOpened) {
+                            if ($next.length > 0) {
+                                $next.click();
+                            } else {
+                                taApp.hideRightPanel(ui.$centerPanel, ui.$rightPanel, ui.$rightPanelContent);
+                            }
                         }
                     }
+
+                    taApp.updateTaskNum(message);
                 },
                 error : function(xhr, textStatus, errorThrown) {
                   taApp.showWarningDialog(xhr.responseText);
                 }
             });
+        }
+        
+        taApp.updateTaskNum = function(increase) {
+          var $taskNum = $('.project-name[data-id="-1"] .badgeDefault');
+          if ($.isNumeric(increase)) {
+            $taskNum.text(increase);
+          } else if (typeof increase == 'boolean') {
+            var num = parseInt($taskNum.text());
+            $taskNum.text(num + (increase ? 1 : -1));            
+          }
         }
 
         return taApp;

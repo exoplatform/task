@@ -19,6 +19,7 @@ package org.exoplatform.task.dao;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -26,6 +27,8 @@ import java.util.TimeZone;
 
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.container.PortalContainer;
+import org.exoplatform.services.security.Identity;
+import org.exoplatform.services.security.MembershipEntry;
 import org.exoplatform.task.AbstractTest;
 import org.exoplatform.task.domain.Label;
 import org.exoplatform.task.domain.LabelTaskMapping;
@@ -272,14 +275,31 @@ public class TestTaskDAO extends AbstractTest {
     TaskQuery query = new TaskQuery();
     query.setMemberships(Arrays.asList("root"));
     ListAccess<Task> listTasks = tDAO.findTasks(query);
-    //List<Task> tasks = tDAO.findTaskByQuery(query);
     Assert.assertEquals(1, ListUtil.getSize(listTasks));
     
     //
-    query.setAssigneeOrMembership("root", Arrays.asList("root"));
+    query = new TaskQuery();
+    Identity user = new Identity(username);
+    query.setAccessible(user);
     query.setKeyword("Task");
     listTasks = tDAO.findTasks(query);
     Assert.assertEquals(1, ListUtil.getSize(listTasks));
+    
+    //The only thing related to "root" of task2 is he is creator
+    //This is for the case user create task in label then search by unified search
+    Task task2 = newTaskInstance("task2", "", null);
+    tDAO.create(task2);
+    Label label = new Label("label1", username);
+    labelHandler.create(label);
+    LabelTaskMapping mapping = new LabelTaskMapping(label, task2);
+    daoHandler.getLabelTaskMappingHandler().create(mapping);
+    //
+    
+    query = new TaskQuery();
+    query.setAccessible(user);
+    query.setKeyword("Task");
+    listTasks = tDAO.findTasks(query);
+    Assert.assertEquals(2, ListUtil.getSize(listTasks));
   }
   
   @Test

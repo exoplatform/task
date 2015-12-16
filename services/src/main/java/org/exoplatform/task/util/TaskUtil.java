@@ -614,7 +614,7 @@ public final class TaskUtil {
       if(s == null) {
         return new GroupKey[] {new GroupKey("TODO", null, Integer.MIN_VALUE)};
       } else {
-        return new GroupKey[] {new GroupKey(s.getName(), s, s.getRank())};
+        return new GroupKey[] {new GroupKey(ResourceUtil.resolveStatus(bundle, s.getName()), s, s.getRank())};
       }
     } else if("tag".equalsIgnoreCase(groupBy)) {
       Set<String> tags = getTag(task.getId());
@@ -676,7 +676,8 @@ public final class TaskUtil {
 
   public static Event buildEvent(Event event, Task task) {
     if (task.getStatus() != null) {
-      event.setCalendarId(String.valueOf(task.getStatus().getProject().getId()));      
+      event.setCalendarId(String.valueOf(task.getStatus().getProject().getId()));
+      //TODO: how to process localization for status name when build calendar event
       event.setEventState(task.getStatus().getName());
     }
     event.setDescription(task.getDescription());

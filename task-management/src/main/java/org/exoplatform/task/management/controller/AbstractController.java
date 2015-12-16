@@ -30,6 +30,7 @@ import juzu.request.Phase;
 import juzu.request.RequestContext;
 import juzu.request.RequestLifeCycle;
 
+import org.exoplatform.commons.utils.HTMLEntityEncoder;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.task.exception.EntityNotFoundException;
@@ -91,15 +92,18 @@ public class AbstractController implements RequestLifeCycle {
         //TODO: we only overwrite response for resource method now
         if (context.getPhase() == Phase.RESOURCE) {
 
+          HTMLEntityEncoder encoder = HTMLEntityEncoder.getInstance();
+          String message = encoder.encodeHTML(ex.getMessage());
+
           Response response = null;
           if (ex instanceof EntityNotFoundException) {
-            response = Response.status(404).body(ex.getMessage());
+            response = Response.status(404).body(message);
           } else if (ex instanceof NotAllowedOperationOnEntityException) {
-            response = Response.status(403).body(ex.getMessage());
+            response = Response.status(403).body(message);
           } else if (ex instanceof UnAuthorizedOperationException) {
-            response = Response.status(401).body(ex.getMessage());
+            response = Response.status(401).body(message);
           } else if (ex instanceof ParameterEntityException) {
-            response = Response.status(406).body(ex.getMessage());
+            response = Response.status(406).body(message);
           }
 
           //
