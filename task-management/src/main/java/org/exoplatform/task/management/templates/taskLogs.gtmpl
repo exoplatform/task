@@ -15,11 +15,11 @@ def encoder = HTMLEntityEncoder.getInstance();
        <div class="pull-left">
             <%
                 def user = userMap[log.author];
+            	 def author = "<a href=\"${user.url}\">" + encoder.encode(user.displayName) + "</a>"; 
+            	 def key = "log." + log.getActionName();
             %>
-            <a href="${user.url}">  ${encoder.encode(user.displayName)} </a>
-            <span><%=bundle.getString("log." + log.getActionName())%></span>
             <%
-                def target = log.target;
+                def target = log.target == null ? "" : log.target;
             %>
             <% if (log.getActionName() == 'assign' || log.getActionName() == 'unassign') { %>
                 <%
@@ -29,17 +29,14 @@ def encoder = HTMLEntityEncoder.getInstance();
                         target = u.displayName;
                         href = u.url;
                     }
+                    target = "<a href=\"${href}\">" + encoder.encode(target) + "</a>";  
                 %>
-                <a href="${href}">${encoder.encode(target)}</a>
             <% } else {
                 if ("edit_status" == log.getActionName()) {
-                    target = ResourceUtil.resolveStatus(bundle, target);
+                    target = "<span>" + encoder.encode(ResourceUtil.resolveStatus(bundle, target)) + "</span>";
                 }
-            %>
-                <span>
-                    ${encoder.encode(target)}
-                </span>
-            <% }%>
+					}%>
+					${ResourceUtil.resolveMessage(bundle, key, author, target)}.
         </div>        
         <span class="date pull-right">
             <%= TaskUtil.getPeriod(log.getCreatedTime(), bundle)%>
