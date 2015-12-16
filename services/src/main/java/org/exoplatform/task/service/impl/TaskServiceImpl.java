@@ -87,7 +87,6 @@ public class TaskServiceImpl implements TaskService {
     }
 
     Task oldTask = daoHandler.getTaskHandler().find(task.getId());
-    oldTask.getCoworker();
     Task newTask = daoHandler.getTaskHandler().update(task);
     TaskPayload event = new TaskPayload(oldTask, newTask);
     try {

@@ -777,6 +777,12 @@ public final class TaskUtil {
     if (timezone == null) {
       timezone = TimeZone.getDefault();
     }
+    
+    // Load coworker and tag to avoid they will be deleted when save task
+    //This issue caused because we alway clone entity from DAO, but Tag and Coworker are loaded lazily
+    //This is need for TA-421
+    task.setTag(TaskUtil.getTag(task.getId()));      
+    task.setCoworker(TaskUtil.getCoworker(task.getId()));
 
     //
     if ("workPlan".equalsIgnoreCase(param)) {
