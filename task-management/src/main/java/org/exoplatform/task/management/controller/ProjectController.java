@@ -284,8 +284,8 @@ public class ProjectController extends AbstractController {
     boolean hasNext = true;
     //Project project = projectService.getProject(id); //Can throw ProjectNotFoundException
 
+    ListAccess<org.exoplatform.services.organization.User> list = null;
     UserHandler uHandler = orgService.getUserHandler();
-    List<org.exoplatform.services.organization.User> users = null;
     if (keyword != null && !keyword.isEmpty()) {
       String searchKeyword = keyword;
       if (searchKeyword.indexOf("*") < 0) {
@@ -308,36 +308,24 @@ public class ProjectController extends AbstractController {
       if ("email".equals(filter)) {
         q.setEmail(searchKeyword);
       }
-      ListAccess<org.exoplatform.services.organization.User> list = uHandler.findUsersByQuery(q);
-      total = ListUtil.getSize(list);
-      if (pageSize > total) {
-        pageSize = total;
-      }
-      org.exoplatform.services.organization.User[] uArr = new org.exoplatform.services.organization.User[0];
-      try {
-        uArr = list.load(page * pageSize, pageSize);
-      } catch (IllegalArgumentException ex) {
-        page = page - 1;
-        uArr = list.load(page * pageSize, pageSize);
-        hasNext = false;
-      }
-      users = Arrays.asList(uArr);
+      list = uHandler.findUsersByQuery(q);
+    } else {
+      list = uHandler.findAllUsers();
     }
 
-    if (users == null) {
-      ListAccess<org.exoplatform.services.organization.User> list = uHandler.findAllUsers();
-      total = list.getSize();
-      if (pageSize > total) {
-        pageSize = total;
-      }
-      users = Arrays.asList(list.load(page * pageSize, pageSize));
+    total = ListUtil.getSize(list);
+    int totalPage = total >= 0 ? (int)Math.ceil((float)total / pageSize) : -1;
+    if (page > totalPage) {
+      page = totalPage > 0 ? totalPage : 0;
     }
 
-    System.out.println("Page size: " + pageSize);
-    if (pageSize == 0) {
-      pageSize = 1;
+    int start = page * pageSize;
+    int length = pageSize;
+    if (start + length > total) {
+      length = total - start;
     }
-    int totalPage = total >= 0 ? (int)Math.ceil(total / pageSize) : -1;
+    org.exoplatform.services.organization.User[] uArr = list.load(start, length);
+    List<org.exoplatform.services.organization.User> users = Arrays.asList(uArr);
 
     return userSelectorDialog.with()
             .type(type)
