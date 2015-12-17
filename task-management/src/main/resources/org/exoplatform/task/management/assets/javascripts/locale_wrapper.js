@@ -1,5 +1,7 @@
 (function($) {
     var locale = {
+        'in' : '${label.in}',
+        'any': '${label.any}',
         dueDate: '${label.dueDate}',
         coworkers: '${label.coworkers}',
         coworker: '${label.coworker}',

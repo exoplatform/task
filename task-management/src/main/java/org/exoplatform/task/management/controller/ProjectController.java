@@ -275,17 +275,17 @@ public class ProjectController extends AbstractController {
   @Resource
   @Ajax
   @MimeType.HTML
-  public Response openUserSelector(Long id, String type, Integer page, String groupId, String keyword, String filter) throws EntityNotFoundException, Exception {
+  public Response openUserSelector(Long id, String type, Integer page, String keyword, String filter) throws EntityNotFoundException, Exception {
     int pageSize = 10;
     int total = 0;
     if (page == null) {
       page = 0;
     }
     boolean hasNext = true;
-    Project project = projectService.getProject(id); //Can throw ProjectNotFoundException
+    //Project project = projectService.getProject(id); //Can throw ProjectNotFoundException
 
     UserHandler uHandler = orgService.getUserHandler();
-    List<org.exoplatform.services.organization.User> tmp = null;
+    List<org.exoplatform.services.organization.User> users = null;
     if (keyword != null && !keyword.isEmpty()) {
       String searchKeyword = keyword;
       if (searchKeyword.indexOf("*") < 0) {
@@ -308,92 +308,40 @@ public class ProjectController extends AbstractController {
       if ("email".equals(filter)) {
         q.setEmail(searchKeyword);
       }
-      ListAccess<org.exoplatform.services.organization.User> users = uHandler.findUsersByQuery(q);
-      total = ListUtil.getSize(users);
+      ListAccess<org.exoplatform.services.organization.User> list = uHandler.findUsersByQuery(q);
+      total = ListUtil.getSize(list);
       if (pageSize > total) {
         pageSize = total;
       }
-      tmp = new ArrayList<org.exoplatform.services.organization.User>();
       org.exoplatform.services.organization.User[] uArr = new org.exoplatform.services.organization.User[0];
       try {
-        uArr = users.load(page * pageSize, pageSize);
+        uArr = list.load(page * pageSize, pageSize);
       } catch (IllegalArgumentException ex) {
-        //workaround because uHandler doesn't support search using keyword and group in one query
         page = page - 1;
-        uArr = users.load(page * pageSize, pageSize);
+        uArr = list.load(page * pageSize, pageSize);
         hasNext = false;
       }
-      for (org.exoplatform.services.organization.User u : uArr) {
-        tmp.add(u);
-      }
+      users = Arrays.asList(uArr);
     }
 
-    if (groupId != null && !groupId.isEmpty()) {
-      if (tmp == null) {
-        ListAccess<org.exoplatform.services.organization.User> users = uHandler.findUsersByGroupId(groupId);
-        total = users.getSize();
-        if (pageSize > total) {
-          pageSize = total;
-        }
-        tmp = new ArrayList<org.exoplatform.services.organization.User>();
-        org.exoplatform.services.organization.User[] uArr = new org.exoplatform.services.organization.User[0];
-        try {
-          uArr = users.load(page * pageSize, pageSize);
-        } catch (IllegalArgumentException ex) {
-          //workaround because uHandler doesn't support search using keyword and group in one query
-          page = page - 1;
-          uArr = users.load(page * pageSize, pageSize);
-          hasNext = false;
-        }
-        for (org.exoplatform.services.organization.User u : uArr) {
-          tmp.add(u);
-        }
-      } else {
-        MembershipHandler memberShipHandler = orgService.getMembershipHandler();
-        List<org.exoplatform.services.organization.User> results = new CopyOnWriteArrayList();
-        results.addAll(tmp);
-        for (org.exoplatform.services.organization.User u : tmp) {
-          if (memberShipHandler.findMembershipsByUserAndGroup(u.getUserName(), groupId).size() == 0) {
-            results.remove(u);
-          }
-        }
-        tmp = results;
-        total = tmp.size() == 0 ? 0 : -1;
-      }
-    }
-    if (tmp == null) {
-      ListAccess<org.exoplatform.services.organization.User> users = uHandler.findAllUsers();
-      total = users.getSize();
+    if (users == null) {
+      ListAccess<org.exoplatform.services.organization.User> list = uHandler.findAllUsers();
+      total = list.getSize();
       if (pageSize > total) {
         pageSize = total;
       }
-      tmp = new ArrayList<org.exoplatform.services.organization.User>();
-      for (org.exoplatform.services.organization.User u : users.load(page * pageSize, pageSize)) {
-        tmp.add(u);
-      }
+      users = Arrays.asList(list.load(page * pageSize, pageSize));
     }
 
-    Set<User> allUsers = new HashSet<User>();
-    if (tmp != null) {
-      for (org.exoplatform.services.organization.User u : tmp) {
-        User user = userService.loadUser(u.getUserName());
-        allUsers.add(user);
-      }
+    System.out.println("Page size: " + pageSize);
+    if (pageSize == 0) {
+      pageSize = 1;
     }
-    if ("manager".equals(type)) {
-      allUsers.removeAll(project.getManager());
-      total -= project.getManager().size();
-    } else {
-      allUsers.removeAll(project.getParticipator());
-      total -= project.getParticipator().size();
-    }
-
     int totalPage = total >= 0 ? (int)Math.ceil(total / pageSize) : -1;
 
     return userSelectorDialog.with()
             .type(type)
-            .users(allUsers)
-            .groupId(groupId == null ? "" : groupId)
+            .users(users)
             .keyword(keyword == null ? "" : keyword)
             .filter(filter == null ? "" : filter)
             .currentPage(page)
@@ -600,7 +548,7 @@ public class ProjectController extends AbstractController {
     Map<String, User> users = new HashMap<String, User>();
     if(project.getManager() != null && !project.getManager().isEmpty()) {
       for(String man : project.getManager()) {
-        Permission per = Permission.parse(man, orgService);
+        Permission per = Permission.parse(man, bundle, orgService);
         if (per.getType() == Permission.USER) {
           User user = userService.loadUser(man);
           users.put(man, user);
@@ -722,7 +670,7 @@ public class ProjectController extends AbstractController {
 
     if (project.getManager() != null && project.getManager().size() > 0) {
       for (String permission : project.getManager()) {
-        Permission p = Permission.parse(permission, orgService);
+        Permission p = Permission.parse(permission, bundle, orgService);
         if (p != null) {
           managers.add(p);
         }
@@ -731,7 +679,7 @@ public class ProjectController extends AbstractController {
 
     if (project.getParticipator() != null && project.getParticipator().size() > 0) {
       for (String permission : project.getParticipator()) {
-        Permission p = Permission.parse(permission, orgService);
+        Permission p = Permission.parse(permission, bundle, orgService);
         if (p != null) {
           participants.add(p);
         }
