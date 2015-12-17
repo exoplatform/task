@@ -210,7 +210,7 @@ define('taskBoardView', ['SHARED/jquery', 'taskManagementApp', 'SHARED/edit_inli
                     if (response != undefined && response.localizedName != undefined && response.localizedName) {
                         $(this).html(response.localizedName);
                     } else {
-                        $(this).html(value);
+                        $(this).html(taApp.escape(value));
                         $(this).jzLoad('StatusController.resolveStatusName()', {name: value}, function() {});
                     }
                 }

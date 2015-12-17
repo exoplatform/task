@@ -112,6 +112,7 @@ public class StatusController extends AbstractController {
   @Ajax
   @MimeType.HTML
   public Response resolveStatusName(String name) {
-    return Response.ok(ResourceUtil.resolveStatus(bundle, name));
+    EntityEncoder encoder = HTMLEntityEncoder.getInstance();
+    return Response.ok(encoder.encode(ResourceUtil.resolveStatus(bundle, name)));
   }
 }
