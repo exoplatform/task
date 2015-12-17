@@ -29,6 +29,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -497,24 +498,65 @@ public final class TaskUtil {
     
     //
     long duration = normalizeDate(end).getTimeInMillis() - normalizeDate(start).getTimeInMillis();
-    
-    SimpleDateFormat df = new SimpleDateFormat("dd MMM YYYY");
-    df.setTimeZone(start.getTimeZone());
+    long durationInMinute = duration / 60000; // 1 minute = 60 * 1000 milisecond
+    long durationInHours = durationInMinute / 60;
+    long durationInDays = durationInHours / 24;
+    boolean hasHalfOfHour = (durationInMinute % 60 != 0);
 
-    StringBuilder workplan = new StringBuilder(bundle.getString("label.workPlaned")).append(" ");
-    if (start.get(Calendar.MONTH) == end.get(Calendar.MONTH) && start.get(Calendar.YEAR) == end.get(Calendar.YEAR)) {
-      if (start.get(Calendar.DATE) == end.get(Calendar.DATE)) {
-        workplan.append(bundle.getString("label.for")).append(" ").append("<strong>").append(df.format(start.getTime())).append("</strong>");
-      } else {
-        workplan.append(bundle.getString("label.from")).append(" ").append("<strong>").append(start.get(Calendar.DATE)).append("</strong>");
-        workplan.append(" ").append(bundle.getString("label.to")).append(" ").append("<strong>").append(df.format(end.getTime())).append("</strong>");
-      }
+    Calendar current = Calendar.getInstance(start.getTimeZone());
+
+    boolean startTimeCurrentYear = start.get(Calendar.YEAR) == current.get(Calendar.YEAR);
+    boolean endTimeCurrentYear = end.get(Calendar.YEAR) == current.get(Calendar.YEAR);
+    boolean isSameYear = start.get(Calendar.YEAR) == end.get(Calendar.YEAR);
+    boolean isSameMonth = isSameYear && start.get(Calendar.MONTH) == end.get(Calendar.MONTH);
+    boolean isSameDay = isSameMonth && start.get(Calendar.DATE) == end.get(Calendar.DATE);
+
+    String endDateFormat = endTimeCurrentYear ? "dd MMM" : "dd MMM YYYY";
+    String startDateFormat;
+
+    if (isSameMonth) {
+      startDateFormat = "dd";
+    } else if (isSameYear || startTimeCurrentYear) {
+      startDateFormat = "dd MMM";
     } else {
-      workplan.append(bundle.getString("label.from")).append(" ").append("<strong>").append(df.format(start.getTime())).append("</strong>");
-      workplan.append(" ").append(bundle.getString("label.to")).append(" ").append("<strong>").append(df.format(end.getTime())).append("</strong>");
+      startDateFormat = "dd MMM YYYY";
     }
-    buildHour(duration, workplan, bundle);
-    return workplan.toString();
+
+    Locale locale = bundle != null ? bundle.getLocale() : Locale.getDefault(Locale.Category.FORMAT);
+    SimpleDateFormat startDF = new SimpleDateFormat(startDateFormat, locale);
+    startDF.setTimeZone(start.getTimeZone());
+    SimpleDateFormat endDF = new SimpleDateFormat(endDateFormat, locale);
+    endDF.setTimeZone(start.getTimeZone());
+
+    String fromDate = startDF.format(start.getTime());
+    String toDate = endDF.format(end.getTime());
+
+    String bundleKey;
+    List<String> params;
+
+    if (durationInHours == 0) {
+      // 30 minutes
+      bundleKey = "message.workPlaned.minutes";
+      params = Arrays.asList(endDF.format(start.getTime()));
+    } else if (isSameDay && durationInHours == 1) {
+      params = Arrays.asList(toDate);
+      bundleKey = hasHalfOfHour ? "message.workPlaned.hourMinutes" : "message.workPlaned.hour";
+    } else if (isSameDay && durationInHours < 24) {
+      params = Arrays.asList(toDate, String.valueOf(durationInHours));
+      bundleKey = hasHalfOfHour ? "message.workPlaned.hoursMinutes" : "message.workPlaned.hours";
+    } else if (isSameDay && durationInHours == 24) {
+      params = Arrays.asList(toDate);
+      bundleKey = "message.workPlaned.day";
+    } else {
+      params = Arrays.asList(fromDate, toDate, String.valueOf(durationInHours));
+      if (durationInHours == 1) {
+        bundleKey = hasHalfOfHour ? "message.workPlaned.daysHourMinutes" : "message.workPlaned.daysHour";
+      } else {
+        bundleKey = hasHalfOfHour ? "message.workPlaned.daysHoursMinutes" : "message.workPlaned.daysHours";
+      }
+    }
+
+    return ResourceUtil.resolveMessage(bundle, bundleKey, params.toArray());
   }
 
   public static long getTaskIdFromURI(String requestPath) {
@@ -796,6 +838,12 @@ public final class TaskUtil {
     if (timezone == null) {
       timezone = TimeZone.getDefault();
     }
+    
+    // Load coworker and tag to avoid they will be deleted when save task
+    //This issue caused because we alway clone entity from DAO, but Tag and Coworker are loaded lazily
+    //This is need for TA-421
+    task.setTag(TaskUtil.getTag(task.getId()));      
+    task.setCoworker(TaskUtil.getCoworker(task.getId()));
 
     //
     if ("workPlan".equalsIgnoreCase(param)) {

@@ -124,9 +124,9 @@ public class TasksEventDAOImpl implements EventDAO {
          if (ids.contains(Long.valueOf(ProjectUtil.TODO_PROJECT_ID))) {
            ids.remove(Long.valueOf(ProjectUtil.TODO_PROJECT_ID));
            if (ids.size() > 0) {
-             taskQuery.setAssigneeOrInProject(query.getOwner(), ids);         
+             taskQuery.setAssigneeOrCoworkerOrInProject(query.getOwner(), ids);
            } else {
-             taskQuery.setAssignee(Arrays.asList(query.getOwner()));
+             taskQuery.setAssigneeOrCoworker(Arrays.asList(query.getOwner()));
            }
          } else {
            taskQuery.setProjectIds(ids);

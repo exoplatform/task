@@ -126,6 +126,13 @@ public class TaskQuery extends Query implements Cloneable {
     this.assignee = assignee;
   }
 
+  public void setAssigneeOrCoworker(List<String> assignee) {
+    if (assignee != null && assignee.size() > 0) {
+      this.add(Conditions.or(in(TASK_ASSIGNEE, assignee), in(TASK_COWORKER, assignee)));
+    }
+    this.assignee = assignee;
+  }
+
   public void setKeyword(String keyword) {
     setKeyword(keyword, false);
   }
@@ -189,7 +196,7 @@ public class TaskQuery extends Query implements Cloneable {
                            in(TASK_MANAGER, memberships), in(TASK_PARTICIPATOR, memberships)));
   }
 
-  public void setAssigneeOrInProject(String username, List<Long> projectIds) {
+  public void setAssigneeOrCoworkerOrInProject(String username, List<Long> projectIds) {
     this.assignee = Arrays.asList(username);
     this.projectIds = projectIds;
     this.add(Conditions.or(eq(TASK_ASSIGNEE, username), eq(TASK_COWORKER, username), in(TASK_PROJECT, projectIds)));

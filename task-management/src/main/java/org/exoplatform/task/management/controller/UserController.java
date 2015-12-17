@@ -92,7 +92,7 @@ public class UserController extends AbstractController {
       for(org.exoplatform.task.model.User u : list.load(0, UserUtil.SEARCH_LIMIT)) {
         JSONObject json = new JSONObject();
         json.put("id", "@" + u.getUsername());
-        json.put("name", encoder.encode(u.getDisplayName()));
+        json.put("name", u.getDisplayName());
         json.put("avatar", u.getAvatar());
         json.put("type", "contact");
         array.put(json);

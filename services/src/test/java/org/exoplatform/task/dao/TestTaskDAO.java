@@ -19,16 +19,13 @@ package org.exoplatform.task.dao;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.services.security.Identity;
-import org.exoplatform.services.security.MembershipEntry;
 import org.exoplatform.task.AbstractTest;
 import org.exoplatform.task.domain.Label;
 import org.exoplatform.task.domain.LabelTaskMapping;
@@ -38,7 +35,6 @@ import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.domain.ChangeLog;
 import org.exoplatform.task.exception.EntityNotFoundException;
-import org.exoplatform.task.model.GroupKey;
 import org.exoplatform.task.service.ParserContext;
 import org.exoplatform.task.service.TaskParser;
 import org.exoplatform.task.service.impl.TaskParserImpl;
@@ -213,12 +209,12 @@ public class TestTaskDAO extends AbstractTest {
     
     //Find by assigneeOrProjectId
     query = new TaskQuery();
-    query.setAssigneeOrInProject(username, Arrays.asList(-100L));
+    query.setAssigneeOrCoworkerOrInProject(username, Arrays.asList(-100L));
     tasks = tDAO.findTasks(query);
     Assert.assertEquals(1, tasks.getSize());
     //
     query = new TaskQuery();
-    query.setAssigneeOrInProject("test", Arrays.asList(project.getId()));
+    query.setAssigneeOrCoworkerOrInProject("test", Arrays.asList(project.getId()));
     tasks = tDAO.findTasks(query);
     Assert.assertEquals(1, tasks.getSize());
     

@@ -736,6 +736,9 @@ public class TaskController extends AbstractController {
     }
 
     long countTasks = paging.getTotal();
+    if (countTasks < MIN_NUMBER_TASK_GROUPABLE) {
+      groupBy = TaskUtil.NONE;
+    }
 
     //Map<GroupKey, ListAccess<Task>> groupTasks = TaskUtil.findTasks(taskService, taskQuery, groupBy, userTimezone, userService);
     Map<GroupKey, List<Task>> groupTasks = new HashMap<GroupKey, List<Task>>();

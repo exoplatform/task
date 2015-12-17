@@ -112,6 +112,13 @@ public class AbstractController implements RequestLifeCycle {
           }
         }
       }
+    } else if (res instanceof Response.Body){
+      Response.Body body = (Response.Body)res;
+      // Set charset UTF-8 if controller method does not set
+      if (body.getCharset() == null) {
+        body.withCharset(Tools.UTF_8);
+        context.setResponse(body);
+      }
     }
   }
 }
