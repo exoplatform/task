@@ -182,6 +182,19 @@ define('taFilter', ['SHARED/jquery', 'SHARED/selectize'], function($) {
           }          
         }
         return data;
+      },
+
+      isShowCompletedTask: function() {
+          var ui = taApp.getUI();
+          var $rightPanelContent = ui.$rightPanelContent;
+          var $centerPanelContent = ui.$centerPanelContent;
+
+          var showCompletedTask = false;
+          if ($centerPanelContent.find('.uiIconFilter').hasClass('uiIconBlue')) {
+              showCompletedTask = $rightPanelContent.find('[name="completed"]').is(':checked');
+          }
+
+          return showCompletedTask;
       }
   };
   

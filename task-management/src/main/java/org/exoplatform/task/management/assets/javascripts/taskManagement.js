@@ -1,5 +1,5 @@
-define('taskManagementApp', ['SHARED/jquery', 'SHARED/juzu-ajax'],
-    function($) {
+define('taskManagementApp', ['SHARED/jquery', 'SHARED/taskLocale', 'SHARED/juzu-ajax'],
+    function($, locale) {
 
         var taApp = {};
 
@@ -174,37 +174,94 @@ define('taskManagementApp', ['SHARED/jquery', 'SHARED/juzu-ajax'],
             });
         }
 
-        taApp.setTaskComplete = function(taskId, isCompleted) {
+        taApp.setTaskComplete = function(taskId, isCompleted, isShownCompletedTask) {
             var ui = taApp.getUI();
             var $taskItem = ui.$centerPanel.find('.taskItem[data-taskid="' + taskId + '"]');
-            var isRightPanelOpened = ui.$rightPanel.is(':visible');
+            var isRightPanelOpened = false;
+            if (ui.$rightPanel.is(':visible')) {
+                isRightPanelOpened = taskId == ui.$rightPanel.find('[data-taskid]').data('taskid');
+            }
             var $next = $taskItem.next('.taskItem').first();
             if ($next.length == 0) {
                 $next.prev('.taskItem').first();
+            }
+
+            if (isCompleted) {
+                $taskItem.addClass('task-completed');
+            } else {
+                $taskItem.removeClass('task-completed');
             }
 
             var data = {taskId: taskId, completed: isCompleted};
             //
             $taskItem.jzAjax('TaskController.updateCompleted()', {
                 data: data,
+                type: 'POST',
                 success: function(message) {
-                    if (isCompleted) {                        
-                        $taskItem.fadeOut(500, function() {
-                            $taskItem.remove();
-                        });
-                        if (isRightPanelOpened) {
-                            if ($next.length > 0) {
-                                $next.click();
-                            } else {
-                                taApp.hideRightPanel(ui.$centerPanel, ui.$rightPanel, ui.$rightPanelContent);
-                            }
+                    if (isCompleted) {
+                        $taskItem.addClass('task-completed');
+                        if (!isShownCompletedTask) {
+                            setTimeout(function() {
+                                $taskItem.fadeOut(1000, function() {
+                                    $taskItem.remove();
+                                    if (isRightPanelOpened) {
+                                        if ($next.length > 0) {
+                                            $next.click();
+                                        } else {
+                                            taApp.hideRightPanel(ui.$centerPanel, ui.$rightPanel, ui.$rightPanelContent);
+                                        }
+                                    }
+                                });
+                            }, 1000);
                         }
+                    } else {
+                        $taskItem.removeClass('task-completed');
+                    }
+
+                    // Update tooltip and icon
+                    var $iconTemplate = $taskItem.find('.uiIconValidate');
+                    if (isCompleted) {
+                        $iconTemplate.removeClass('uiIconLightGray').addClass('uiIconBlue');
+                    } else {
+                        $iconTemplate.removeClass('uiIconBlue').addClass('uiIconLightGray');
+                    }
+                    $taskItem.find('[rel="tooltip"]')
+                        .attr('data-taskcompleted', isCompleted ? 'true' : 'false')
+                        .data('taskcompleted', isCompleted)
+                        .attr('data-original-title', isCompleted ? locale.markAsUnCompleted : locale.markAsCompleted)
+                        .tooltip('fixTitle');
+
+                    //
+                    if (isRightPanelOpened) {
+                        if (isCompleted) {
+                            ui.$rightPanel.find('[data-taskid]').addClass('task-completed');
+                        } else {
+                            ui.$rightPanel.find('[data-taskid]').removeClass('task-completed');
+                        }
+                        var $iconTemplateAtRight = ui.$rightPanel.find('.uiIconValidate');
+                        if (isCompleted) {
+                            $iconTemplateAtRight.removeClass('uiIconLightGray').addClass('uiIconBlue');
+                        } else {
+                            $iconTemplateAtRight.removeClass('uiIconBlue').addClass('uiIconLightGray');
+                        }
+
+                        ui.$rightPanel.find('[data-taskcompleted][rel="tooltip"]')
+                            .attr('data-taskcompleted', isCompleted ? 'true' : 'false')
+                            .data('taskcompleted', isCompleted)
+                            .attr('data-original-title', isCompleted ? locale.markAsUnCompleted : locale.markAsCompleted)
+                            .tooltip('fixTitle');
                     }
 
                     taApp.updateTaskNum(message);
                 },
                 error : function(xhr, textStatus, errorThrown) {
                   taApp.showWarningDialog(xhr.responseText);
+                  // Revert strike-through added before
+                  if (isCompleted) {
+                    $taskItem.addClass('task-completed');
+                  } else {
+                    $taskItem.removeClass('task-completed');
+                  }
                 }
             });
         }
