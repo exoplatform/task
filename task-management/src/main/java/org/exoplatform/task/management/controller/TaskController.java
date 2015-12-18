@@ -54,7 +54,6 @@ import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.domain.ChangeLog;
 import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Label;
-import org.exoplatform.task.domain.Priority;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
@@ -63,6 +62,9 @@ import org.exoplatform.task.exception.NotAllowedOperationOnEntityException;
 import org.exoplatform.task.exception.ParameterEntityException;
 import org.exoplatform.task.exception.UnAuthorizedOperationException;
 import org.exoplatform.task.management.model.Paging;
+import org.exoplatform.task.management.model.TaskFilterData;
+import org.exoplatform.task.management.model.TaskFilterData.Filter;
+import org.exoplatform.task.management.model.TaskFilterData.FilterKey;
 import org.exoplatform.task.management.util.JsonUtil;
 import org.exoplatform.task.model.CommentModel;
 import org.exoplatform.task.model.GroupKey;
@@ -79,6 +81,7 @@ import org.exoplatform.task.util.DateUtil;
 import org.exoplatform.task.util.ListUtil;
 import org.exoplatform.task.util.ProjectUtil;
 import org.exoplatform.task.util.TaskUtil;
+import org.exoplatform.task.util.TaskUtil.DUE;
 import org.gatein.common.text.EntityEncoder;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -138,6 +141,9 @@ public class TaskController extends AbstractController {
   @Inject
   @Path("confirmDeleteTask.gtmpl")
   org.exoplatform.task.management.templates.confirmDeleteTask confirmDeleteTask;
+  
+  @Inject
+  TaskFilterData filterData;
 
   @Resource
   @Ajax
@@ -448,10 +454,19 @@ public class TaskController extends AbstractController {
   @Resource
   @Ajax
   @MimeType.HTML
-  public Response listTasks(String space_group_id, Long projectId, Long labelId, String filterLabelIds, String tags, Long statusId, String dueDate, String priority,  
-                            String assignee, Boolean completed, String keyword, Boolean advanceSearch, String groupBy, String orderBy, String filter, String viewType, Integer page, SecurityContext securityContext) throws EntityNotFoundException, UnAuthorizedOperationException {
+  public Response listTasks(String space_group_id, Long projectId, Long labelId, String filterLabelIds, String tags, String statusId, String dueDate, String priority,  
+                            String assignee, Boolean showCompleted, String keyword, String groupBy, String orderBy, String filter, String viewType, Integer page, SecurityContext securityContext) throws EntityNotFoundException, UnAuthorizedOperationException {
+    boolean advanceSearch = filterData.isEnabled();
+    FilterKey filterKey = FilterKey.withProject(projectId, filter == null || filter.isEmpty() ? null : DUE.valueOf(filter.toUpperCase()));
+    if (labelId != null && labelId != -1L) {
+      filterKey = FilterKey.withLabel(labelId);
+    }
+    Filter fd = filterData.getFilter(filterKey);    
+    if (advanceSearch) {
+      fd.updateFilterData(filterLabelIds, tags, statusId, dueDate, priority, assignee, showCompleted, keyword);
+    }
+    
     Identity currIdentity = ConversationState.getCurrent().getIdentity();
-    advanceSearch = advanceSearch == null ? false : advanceSearch;
     if (projectId <= 0 || viewType == null || !VIEW_TYPES.contains(viewType)) {
       viewType = VIEW_TYPES.get(0);
     }
@@ -536,12 +551,11 @@ public class TaskController extends AbstractController {
       order = TaskUtil.TITLE.equals(orderBy) || TaskUtil.DUEDATE.equals(orderBy) ? new OrderBy.ASC(orderBy) : new OrderBy.DESC(orderBy);
     }
         
-    TaskQuery taskQuery;
+    TaskQuery taskQuery = new TaskQuery();
     if (advanceSearch) {
-      Status status = statusId != null ? statusService.getStatus(statusId) : null;
-      taskQuery = buildTaskQuery(keyword, filterLabelIds, tags, status, dueDate, priority, assignee, completed, userTimezone);      
+      Status status = fd.getStatus() != null ? statusService.getStatus(fd.getStatus()) : null;
+      TaskUtil.buildTaskQuery(taskQuery, fd.getKeyword(), fd.getLabel(), fd.getTag(), status, fd.getDue(), fd.getPriority(), fd.getAssignee(), fd.isShowCompleted(), userTimezone);      
     } else {
-      taskQuery = new TaskQuery();
       taskQuery.setCompleted(false);
     }
 
@@ -719,6 +733,13 @@ public class TaskController extends AbstractController {
     }
     
     long taskNum = countTasks;
+    long incomNum = -1;
+    if (projectId == ProjectUtil.INCOMING_PROJECT_ID && advanceSearch) {
+      TaskQuery q = new TaskQuery();
+      q.setIsIncomingOf(currentUser);
+      q.setCompleted(false);
+      incomNum = ListUtil.getSize(taskService.findTasks(q));
+    }
 
     return taskListView
         .with()
@@ -729,12 +750,14 @@ public class TaskController extends AbstractController {
         .projectStatuses(projectStatuses)
         .tasks(new ArrayList<Task>())
         .taskNum(taskNum)
+        .incomNum(incomNum)
         .groupTasks(groupTasks)
         .keyword(keyword == null ? "" : keyword)
+        .showCompleted(advanceSearch && fd.isShowCompleted())
         .groupBy(groupBy == null ? TaskUtil.NONE : groupBy)
         .orderBy(orderBy == null ? "" : orderBy)
         .filter(filter == null ? "" : filter)
-        .advanceSearch(advanceSearch == null ? false : advanceSearch)
+        .advanceSearch(advanceSearch)
         .bundle(bundle)
         .viewType(viewType)
         .userTimezone(userTimezone)
@@ -881,7 +904,7 @@ public class TaskController extends AbstractController {
     statusService.removeStatus(statusId);
 
     //spaceGrpId, projectId, currentLabelId, labelIds, tags, statusId, dueDate, priority, assignee, completed, keyword, advanceSearch, groupby, orderBy, filter, viewType, securityContext
-    return listTasks(space_group_id, project.getId(), null, null, null, null, null, null, null, null, null, null, null, null, null, "board", 0, securityContext);
+    return listTasks(space_group_id, project.getId(), null, null, null, null, null, null, null, null, null, null, null, null, "board", 0, securityContext);
   }
 
 
@@ -918,64 +941,7 @@ public class TaskController extends AbstractController {
     }
     statusService.createStatus(project, name);
     //spaceGrpId, projectId, currentLabelId, labelIds, tags, statusId, dueDate, priority, assignee, completed, keyword, advanceSearch, groupby, orderBy, filter, viewType, securityContext
-    return listTasks(space_group_id, projectId, null, null, null, null, null, null, null, null, null, null, null, null, null, "board", 0, securityContext);
-  }
-  
-  private TaskQuery buildTaskQuery(String keyword,
-                                   String labelIds,
-                                   String tags,
-                                   Status status,
-                                   String dueDate,
-                                   String priority,
-                                   String assignee,
-                                   Boolean completed, TimeZone timezone) {
-    TaskQuery query = new TaskQuery();
-    if (keyword != null && !keyword.trim().isEmpty()) {
-      query.setKeyword(keyword);      
-    }
-    if (labelIds != null) {
-      List<Long> tmp = new LinkedList<Long>();
-      for (String id : labelIds.split(",")) {
-        if (!(id = id.trim()).isEmpty()) {
-          tmp.add(Long.parseLong(id));          
-        }
-      }
-      query.setLabelIds(tmp);
-    }
-    if (tags != null) {
-      List<String> tmp = new LinkedList<String>();
-      for (String t : tags.split(",")) {
-        if (!(t = t.trim()).isEmpty()) {
-          tmp.add(t);
-        }
-      }
-      query.setTags(tmp);                
-    }
-    if (status != null) {
-      query.setStatus(status);      
-    }
-    if (dueDate != null) {
-      Date[] due = TaskUtil.convertDueDate(dueDate, timezone);
-      query.setDueDateFrom(due[0]);
-      query.setDueDateTo(due[1]);      
-    }
-    if (priority != null) {
-      query.setPriority(Priority.valueOf(priority));      
-    }
-    if (assignee != null) {
-      List<String> tmp = new LinkedList<String>();
-      for (String u : assignee.split(",")) {
-        if (!(u = u.trim()).isEmpty()) {
-          tmp.add(u);
-        }
-      }
-      query.setAssignee(tmp);      
-    }
-    if (completed != null) {
-      query.setCompleted(completed);      
-    }
-    
-    return query;
+    return listTasks(space_group_id, projectId, null, null, null, null, null, null, null, null, null, null, null, null, "board", 0, securityContext);
   }
 
   private long getIncomingNum(String username) {

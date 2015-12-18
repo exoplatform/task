@@ -1,56 +1,99 @@
-#{param name="labels"/}
+#{param name="taskService"/}
+#{param name="userService"/}
 #{param name="filterLabel"/}
 #{param name="status"/}
 #{param name="filterStatus"/}
 #{param name="filterAssignee"/}
 #{param name="filterDueDate"/}
 #{param name=bundle /}
+#{param name=filterData /}
 
 <%
 	import org.exoplatform.task.util.TaskUtil;
-    import org.exoplatform.task.util.ResourceUtil;
+   import org.exoplatform.task.util.ResourceUtil;
 	import org.exoplatform.task.domain.Priority;
 	import org.exoplatform.commons.utils.HTMLEntityEncoder;
+	import org.json.JSONArray;
+	import org.json.JSONObject;
 
 	def encoder = HTMLEntityEncoder.getInstance();
+	
+	JSONArray buildJSON(def labels) {
+    def encoder = HTMLEntityEncoder.getInstance();
+    def jsons = new JSONArray();
+    for (def lbl : labels) {
+      def obj = new JSONObject();
+      obj.put("id", lbl.getId());
+      obj.put("name", encoder.encode(lbl.getName()));
+      obj.put("color", lbl.getColor());
+      jsons.put(obj);
+    }
+    return jsons;
+  }
 %>
 
 <div class="taskFilter uiBox" data-projectid="0" data-canedit="0">
-    <h5 class="title">        
-        <span>Filter</span>
+    <h5 class="title">
+        <span>&{label.filter}</span>
+        <a class="actionIcon hideFilter pull-right" href="#"><i class="uiIconClose"></i></a>
     </h5>
     <div class="uiContentBox">        
       <div class="form-horizontal">		   
 		   <div class="form-horizontal">
 		  	<div class="control-group">
-		  		<label class="control-label" for="keyword">Contains</label>
+		  		<label class="control-label" for="keyword">&{filter.task.contains}</label>
 		  		<div class="controls">
-				   <input type="text" id="keyword" name="keyword" value="" maxlength="100"/>
+				   <input type="text" id="keyword" name="keyword" value="${filterData.getKeyword()}" maxlength="100"/>
 		  		</div>
 		  	</div>
 		  	<%if (filterLabel) { %>
 		  	<div class="control-group">
-		  		<label class="control-label" for="label">Labels</label>
+		  		<label class="control-label" for="label">&{label.label}</label>
 		  		<div class="controls">
-		  			<input type="text" id="label" name="label" value="" maxlength="100"
-		  				data-options='${labels}'/>
+		  		<%
+			  		def selectedLabels = filterData.getLabel();
+			      def labels = new LinkedList();
+			      for (def id : selectedLabels) {
+			        def label = taskService.getLabel(id);
+			        if (label != null) {
+			          labels.add(label);        
+			        }
+			      }
+			      JSONArray lblArr = buildJSON(labels);
+		  		%>
+		  			<input type="text" id="label" name="label" value="" data-items="<%= new JSONArray(selectedLabels)%>" maxlength="100"
+		  				data-options='${lblArr}'/>
 		  		</div>
 		  	</div>
 		  	<%} %>
 		  	<div class="control-group">
-		  		<label class="control-label" for="tag">Tags</label>
+		  		<label class="control-label" for="tag">&{label.tag}</label>
 		  		<div class="controls">
-		  			<input type="text" id="tag" name="tag" value="" maxlength="100"/>
+		  		<%
+		  		   def selectedTags = filterData.getTag();
+		  		   def tagArr = new JSONArray();
+		  		   for (def tag : selectedTags) {
+		  		     def jtag = new JSONObject();
+		  		     jtag.put("id", tag);
+		  		     jtag.put("text", tag);
+		  		     tagArr.put(jtag);
+		  		   }
+		  		%>
+		  			<input type="text" id="tag" name="tag" value="" data-items='<%=new JSONArray(selectedTags) %>' data-options='${tagArr}' maxlength="100"/>
 		  		</div>
 		  	</div>
 		  	<%if (filterStatus) { %>
 		  	<div class="control-group">
-		  		<label class="control-label" for="status">Status</label>
+		  		<label class="control-label" for="status">&{label.status}</label>
 		  		<div class="controls">
 		  			<select name="status">
-		  				<option value="">All</option>
-		  				<%for (def st : status) { %>
-		  				<option value="${st.id}">${encoder.encode(ResourceUtil.resolveStatus(bundle, st.name))}</option>
+		  				<option value="">&{filter.task.all}</option>
+		  				<%
+		  				for (def st : status) { 		  				  
+		  				%>
+		  				<option value="${st.id}" <%=filterData.getStatus() != null && filterData.getStatus() == st.id ? "selected" : ""%>>
+		  					${encoder.encode(ResourceUtil.resolveStatus(bundle, st.name))}
+		  				</option>
 		  				<%} %>			
 		  			</select>
 		  		</div>
@@ -58,41 +101,56 @@
 		  	<%}%>
 		  	<%if (filterAssignee) { %>
 		  	<div class="control-group">
-		  		<label class="control-label" for="assignee">Assignee</label>
+		  		<label class="control-label" for="assignee">&{label.assignee}</label>
 		  		<div class="controls">
-		  			<input type="text" id="assignee" name="assignee" value="" maxlength="100"/>
+		  		<%		  		
+		  			def selectedAssignees = filterData.getAssignee();
+	  		      def userArr = new JSONArray();
+		  		   for (def userId : selectedAssignees) {
+		  		     def user = userService.loadUser(userId);
+		  		     if (user != null && !user.getUsername().equals("guest")) {
+			  		     def juser = new JSONObject();
+			  		     juser.put("id", userId);
+			  		     juser.put("text", user.getDisplayName());
+			  		     userArr.put(juser);
+		  		     }
+		  		   }
+		  		%>
+		  			<input type="text" id="assignee" name="assignee" value="" data-options='${userArr}' data-items='<%=new JSONArray(selectedAssignees) %>' maxlength="100"/>
 		  		</div>
 		  	</div>
 		  	<%} %>
 		  	<%if (filterDueDate) { %>
 		  	<div class="control-group">
-		  		<label class="control-label" for="due">Due</label>
+		  		<label class="control-label" for="due">&{filter.task.due}</label>
 		  		<div class="controls">
 		  			<select name="due">
-		  				<option value="">All</option>
+		  				<option value="">&{filter.task.all}</option>
 		  				<%for (def due : TaskUtil.DUE.values()) {%>		  				
-		  				<option value="<%=due.name()%>"><%=due.name()%></option>
+		  				<option value="<%=due.name()%>" <%=due.equals(filterData.getDue()) ? "selected" : ""%>><%=due.name()%></option>
 		  				<%} %>
 		  			</select>
 		  		</div>
 		  	</div>
 		  	<%} %>
 		  	<div class="control-group">
-		  		<label class="control-label" for="priority">Priority</label>
+		  		<label class="control-label" for="priority">&{label.priority}</label>
 		  		<div class="controls">
 		  			<select name="priority">
 		  				<option value="">All</option>
 		  				<%for (def priority : Priority.values()) {%>										  					  				
-		  				<option value="<%=priority.name()%>"><%=priority.name()%></option>
+		  				<option value="<%=priority.name()%>" <%=priority.equals(filterData.getPriority()) ? "selected" : ""%>><%=priority.name()%></option>
 		  				<%} %>
 		  			</select>
 		  		</div>
 		  	</div>
 		  	<div class="control-group">
-		  		<label class="control-label" for="completed"></label>
+		  		<label class="control-label" for="showCompleted"></label>
 		  		<div class="controls">
 		  			<div class="checkBoxRepeat" id="IsEmailRepeatEventReminderTab">
-						<label class="uiCheckbox"><input type="checkbox" name="completed" class="checkbox" id="completed"><span>Show completed tasks.</span></label>
+						<label class="uiCheckbox">
+						<input type="checkbox" name="showCompleted" class="checkbox" id="showCompleted" <%=filterData.isShowCompleted() ? "checked" : ""%>/>
+						<span>&{filter.task.showCompleted}.</span></label>
 					</div>
 		  		</div>
 		  	</div>

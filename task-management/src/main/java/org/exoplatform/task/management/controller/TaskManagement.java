@@ -50,20 +50,26 @@ import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.domain.Label;
 import org.exoplatform.task.domain.Project;
+import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.domain.UserSetting;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.management.model.Paging;
+import org.exoplatform.task.management.model.TaskFilterData;
+import org.exoplatform.task.management.model.TaskFilterData.Filter;
+import org.exoplatform.task.management.model.TaskFilterData.FilterKey;
 import org.exoplatform.task.model.GroupKey;
 import org.exoplatform.task.model.TaskModel;
 import org.exoplatform.task.service.ParserContext;
 import org.exoplatform.task.service.ProjectService;
+import org.exoplatform.task.service.StatusService;
 import org.exoplatform.task.service.TaskParser;
 import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.service.UserService;
 import org.exoplatform.task.util.ListUtil;
 import org.exoplatform.task.util.ProjectUtil;
 import org.exoplatform.task.util.TaskUtil;
+import org.exoplatform.task.util.TaskUtil.DUE;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
@@ -86,6 +92,9 @@ public class TaskManagement {
 
   @Inject
   ProjectService projectService;
+  
+  @Inject
+  StatusService statusService;
 
   @Inject
   @Path("index.gtmpl")
@@ -99,9 +108,12 @@ public class TaskManagement {
   
   @Inject
   NavigationState navState;
+  
+  @Inject
+  TaskFilterData filterData;
 
   @View
-  public Response.Content index(String space_group_id, SecurityContext securityContext) throws EntityNotFoundException {
+  public Response.Content index(String space_group_id, SecurityContext securityContext) throws EntityNotFoundException {        
     String username = securityContext.getRemoteUser();
     PortalRequestContext prc = Util.getPortalRequestContext();
     String requestPath = prc.getControllerContext().getParameter(RequestNavigationData.REQUEST_PATH);
@@ -198,12 +210,29 @@ public class TaskManagement {
       }
     }
 
+    boolean advanceSearch = filterData.isEnabled();
+    boolean showCompleted = false;
+    String keyword = "";
+    
     ListAccess<Task> listTasks = null;
     //there are cases that we return empty list of tasks with-out querying to DB
     //1. In spaces, and no space project
     if ((spaceProjectIds != null  && spaceProjectIds.isEmpty())) {
       listTasks = TaskUtil.EMPTY_TASK_LIST;
     } else {
+      if (advanceSearch) {
+        FilterKey filterKey = FilterKey.withProject(currProject, null);
+        Filter fd = filterData.getFilter(filterKey);
+        keyword = fd.getKeyword();
+        showCompleted = fd.isShowCompleted();
+        String currentUser = securityContext.getRemoteUser();
+        TimeZone timezone = userService.getUserTimezone(currentUser);
+        Status status = fd.getStatus() != null ? statusService.getStatus(fd.getStatus()) : null;
+        //
+        TaskUtil.buildTaskQuery(taskQuery, fd.getKeyword(), fd.getLabel(), fd.getTag(), status, fd.getDue(), fd.getPriority(), fd.getAssignee(), fd.isShowCompleted(), timezone);
+      } else {
+        taskQuery.setCompleted(false);
+      }
       listTasks = taskService.findTasks(taskQuery);
     }
 
@@ -244,9 +273,10 @@ public class TaskManagement {
     // Count all incoming task
     long taskNum = paging.getTotal();
     long incomNum = taskNum;
-    if (currProject != ProjectUtil.INCOMING_PROJECT_ID  && space_group_id == null) {
+    if (advanceSearch || currProject != ProjectUtil.INCOMING_PROJECT_ID) {
       TaskQuery q = new TaskQuery();
       q.setIsIncomingOf(username);
+      q.setCompleted(false);
       incomNum = ListUtil.getSize(taskService.findTasks(q));
     }
 
@@ -267,8 +297,9 @@ public class TaskManagement {
         .taskNum(taskNum)
         .incomNum(incomNum)
         .groupTasks(groupTasks)
-        .keyword("")
-        .advanceSearch(false)
+        .keyword(keyword)
+        .showCompleted(advanceSearch && showCompleted)
+        .advanceSearch(advanceSearch)
         .groupBy(TaskUtil.NONE)
         .orderBy("createdTime")
         .filter("")
@@ -332,7 +363,8 @@ public class TaskManagement {
     String orderBy = TaskUtil.CREATED_BY;
 
     TaskModel taskModel = null;
-    TaskQuery taskQuery = new TaskQuery();
+    
+    TaskQuery taskQuery = new TaskQuery();    
     if (projectId > 0) {
       taskQuery.setProjectIds(Arrays.asList(projectId));
       orderBy = TaskUtil.DUEDATE;
@@ -408,6 +440,27 @@ public class TaskManagement {
       taskQuery.setOrderBy(Arrays.asList(order));
     }
 
+    boolean advanceSearch = filterData.isEnabled();
+    boolean showCompleted = false;
+    String keyword = "";
+    if (advanceSearch) {
+      FilterKey filterKey = FilterKey.withProject(projectId, filter == null || filter.isEmpty() ? null : DUE.valueOf(filter.toUpperCase()));
+      if (labelId != null && labelId != -1L) {
+        filterKey = FilterKey.withLabel(labelId);
+      }
+      Filter fd = filterData.getFilter(filterKey);
+
+      keyword = fd.getKeyword();
+      showCompleted = fd.isShowCompleted();
+      String currentUser = securityContext.getRemoteUser();
+      TimeZone timezone = userService.getUserTimezone(currentUser);
+      Status status = fd.getStatus() != null ? statusService.getStatus(fd.getStatus()) : null;
+
+      TaskUtil.buildTaskQuery(taskQuery, fd.getKeyword(), fd.getLabel(), fd.getTag(), status, fd.getDue(), fd.getPriority(), fd.getAssignee(), fd.isShowCompleted(), timezone);
+    } else {
+      taskQuery.setCompleted(false);
+    }
+    
     ListAccess<Task> listTasks = taskService.findTasks(taskQuery);
 
     int page = 1;
@@ -428,9 +481,10 @@ public class TaskManagement {
 
     // Count all incoming task
     long incomNum = taskNum;
-    if (projectId != ProjectUtil.INCOMING_PROJECT_ID  && space_group_id == null) {
+    if (advanceSearch || projectId != ProjectUtil.INCOMING_PROJECT_ID) {
       TaskQuery q = new TaskQuery();
       q.setIsIncomingOf(username);
+      q.setCompleted(false);
       incomNum = ListUtil.getSize(taskService.findTasks(q));
     }
 
@@ -448,8 +502,9 @@ public class TaskManagement {
             .taskNum(taskNum)
             .incomNum(incomNum)
             .groupTasks(groupTasks)
-            .keyword("")
-            .advanceSearch(false)
+            .keyword(keyword)
+            .showCompleted(advanceSearch && showCompleted)
+            .advanceSearch(advanceSearch)
             .groupBy(groupBy)
             .orderBy(orderBy)
             .filter(filter == null ? "" : filter)
@@ -505,5 +560,5 @@ public class TaskManagement {
     }
 
     return false;
-  }
+  }  
 }

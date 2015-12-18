@@ -147,8 +147,11 @@ define('taskManagementApp', ['SHARED/jquery', 'SHARED/taskLocale', 'SHARED/juzu-
                 taApp.showWarningDialog(xhr.responseText);
               } else {
                 if (projectId == -1) {
-                  var $items = $centerPanelContent.find('.table-project > .taskItem[data-taskid]:visible');
-                  taApp.updateTaskNum($items.length);
+                  var $items = $centerPanelContent.find('[name="incomNum"]');
+                  var incomNum = parseInt($items.val());
+                  if (incomNum != -1) {
+                    taApp.updateTaskNum(incomNum);                    
+                  }
                 }
                 
                 if (callback) {
