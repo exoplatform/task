@@ -204,7 +204,7 @@ define('taFilter', ['SHARED/jquery', 'SHARED/selectize'], function($) {
     var isLoaded = false;
     var allLabels = {};
     //
-    $lblFilter.selectize($.extend({
+    $lblFilter.selectize($.extend({}, defOpts, {
       options: $lblFilter.data('options'),
       create: false,
       searchField: ['name'],
@@ -242,7 +242,7 @@ define('taFilter', ['SHARED/jquery', 'SHARED/selectize'], function($) {
             }
         });
       }
-    }, defOpts));
+    }));
   }
   
   function initTagFilter($filter, defOpts) {
