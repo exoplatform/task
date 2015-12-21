@@ -137,7 +137,7 @@
 		  		<label class="control-label" for="priority">&{label.priority}</label>
 		  		<div class="controls">
 		  			<select name="priority">
-		  				<option value="">All</option>
+		  				<option value="">&{filter.task.all}</option>
 		  				<%for (def priority : Priority.values()) {%>										  					  				
 		  				<option value="<%=priority.name()%>" <%=priority.equals(filterData.getPriority()) ? "selected" : ""%>><%=priority.name()%></option>
 		  				<%} %>

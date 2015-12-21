@@ -16,6 +16,7 @@
         noPermissionToAccessProject: '${popup.msg.noPermissionToAccessProject}',
         markAsCompleted: '${message.markAsCompleted}',
         markAsUnCompleted: '${message.markAsUnCompleted}',
+        projectDescriptionEmpty: '${editinline.projectDescription.empty}',
         taskPlan: {
             errorMessage: '${editinline.taskPlan.errorMessage}'
         }

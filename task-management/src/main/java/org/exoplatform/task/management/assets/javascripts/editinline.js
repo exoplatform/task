@@ -823,6 +823,9 @@ define('ta_edit_inline',
                 if (fieldName == 'name') {
                 	editOptions.emptyclass = '';
                 }
+                if (fieldName == 'description') {
+                    editOptions.emptytext = locale.projectDescriptionEmpty;
+                }
                 if(fieldName == 'manager' || fieldName == 'participator') {
                     var findUserURL = $this.jzURL('UserController.findUser');
                     var getDisplayNameURL = $this.jzURL('UserController.getDisplayNameOfUser');
