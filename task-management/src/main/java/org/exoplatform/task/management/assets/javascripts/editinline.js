@@ -20,9 +20,8 @@ define('ta_edit_inline',
           var $rightPanelContent = taApp.getUI().$rightPanelContent;
           var $center = taApp.getUI().$centerPanelContent;
           var selectedTask = $center.find('.table-project > .selected').data('taskid');
-          var search = $rightPanelContent.find('.uiIconFilter').hasClass('uiIconBlue');
           //
-          taFilter.submitFilter(!search, function() {
+          taFilter.submitFilter(!taFilter.isEnable(), function() {
             if (selectedTask) {
               var $taskItem = taApp.getUI().$centerPanelContent.find('.table-project > *[data-taskid="' + selectedTask + '"]');
               $taskItem.addClass('selected');

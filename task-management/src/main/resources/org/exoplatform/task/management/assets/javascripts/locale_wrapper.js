@@ -1,5 +1,7 @@
 (function($) {
     var locale = {
+        'in' : '${label.in}',
+        'any': '${label.any}',
         dueDate: '${label.dueDate}',
         coworkers: '${label.coworkers}',
         coworker: '${label.coworker}',
@@ -12,6 +14,8 @@
         noParticipator: '${message.noParticipator}',
         taskDescriptionEmpty: '${editinline.taskDescription.empty}',
         noPermissionToAccessProject: '${popup.msg.noPermissionToAccessProject}',
+        markAsCompleted: '${message.markAsCompleted}',
+        markAsUnCompleted: '${message.markAsUnCompleted}',
         taskPlan: {
             errorMessage: '${editinline.taskPlan.errorMessage}'
         }

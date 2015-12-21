@@ -1123,11 +1123,18 @@ li[data-hiddenlabel="false"] {
     }
   }
 }
+.exo-mentions {
+  .autocomplete-menu li {
+    text-overflow: ellipsis;
+  }
+}
 .exo-mentions .replaceTextArea {
     padding: 0 5px;
   .groupMembership {
     display: inline-block;
     position: relative;
+    height: 20px;
+    margin: 0 3px 0 0;
     > span {
       background: #e2eafa;
       border-radius: 3px;
@@ -1137,15 +1144,25 @@ li[data-hiddenlabel="false"] {
       display: inline-block;
     }
   }
-  .cursorText input {
-    display: inline;
-    width: 3em;
-    border: none;
-    outline: none;
-    box-shadow: none;
-    margin-bottom: 0px;
-    margin: 2px 0 0;
-    height: 26px;
+  .cursorText {
+    display: inline-block;
+    overflow: hidden;
+    position: relative;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    top: 3px;
+    width: auto;
+
+    input {
+      display: inline;
+      width: 10px;
+      border: none;
+      outline: none;
+      box-shadow: none;
+      margin: 2px 0 0;
+      height: 26px;
+      padding: 0;
+    }
   }
 }
 .header-right .action-bar + .action-bar {
@@ -1355,6 +1372,15 @@ li[data-hiddenlabel="false"] {
         tr td {
             width: 50%;
         }
+    }
+    .exo-mentions {
+      position: static;
+
+      .autocomplete-menu {
+        width: 48%;
+        right: 0;
+        left: auto;
+      }
     }
 }
 

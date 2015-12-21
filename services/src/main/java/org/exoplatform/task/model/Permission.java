@@ -22,6 +22,8 @@ package org.exoplatform.task.model;
 import org.exoplatform.services.organization.*;
 import org.exoplatform.task.util.UserUtil;
 
+import java.util.ResourceBundle;
+
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
@@ -43,7 +45,7 @@ public class Permission {
     this.type = type;
   }
 
-  public static Permission parse(String permission, OrganizationService orgService) {
+  public static Permission parse(String permission, ResourceBundle bundle, OrganizationService orgService) {
     if (permission == null || permission.isEmpty()) {
       return null;
     }
@@ -70,8 +72,8 @@ public class Permission {
         Group g = orgService.getGroupHandler().findGroupById(groupId);
         perm.setGroupName(g.getLabel());
 
-        String displayName = new StringBuilder("*".equals(membershipType) ? "Any" : membershipType)
-                .append(" in ").append(g.getLabel()).toString();
+        String displayName = new StringBuilder("*".equals(membershipType) ? bundle.getString("label.any") : membershipType)
+                .append(" ").append(bundle.getString("label.in")).append(" ").append(g.getLabel()).toString();
         perm.setDisplayName(displayName);
       } catch (Exception ex) {
 

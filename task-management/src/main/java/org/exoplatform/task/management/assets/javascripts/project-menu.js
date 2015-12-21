@@ -1,4 +1,4 @@
-define('project-menu', ['SHARED/jquery', 'ta_edit_inline', 'SHARED/task_ck_editor'], function($, editinline) {
+define('project-menu', ['SHARED/jquery', 'SHARED/taskLocale', 'ta_edit_inline', 'SHARED/task_ck_editor'], function($, locale, editinline) {
   var pMenu = {};
   
   pMenu.init = function(taApp) {
@@ -241,26 +241,45 @@ define('project-menu', ['SHARED/jquery', 'ta_edit_inline', 'SHARED/task_ck_edito
 
     $modalPlace.on('click', '.replaceTextArea', function(e) {
         var $replaceTextArea = $(e.target).closest('.replaceTextArea');
-        $replaceTextArea.find('.cursorText input').focus();
+        $replaceTextArea.find('.cursorText input').trigger("keyup").focus();
     });
 
     $modalPlace.on('keydown keyup', '.replaceTextArea .cursorText input', function(e) {
         var $input = $(e.target);
-        var $replaceTextArea = $input.closest('.replaceTextArea');
-        var $td = $input.closest('td');
-        var maxWidth = $replaceTextArea.width();
-        var tdWidth = $td.width();
+        var val = $input.val();
 
+        var $replaceTextArea = $input.closest('.replaceTextArea');
+        var maxWidth = $replaceTextArea.width();
+        var $td = $input.closest('td');
+        var tdWidth = $td.width();
         $td.css('width', tdWidth + 'px')
 
-        var val = $input.val();
-        var width = (val.length + 1) * 8;
-        if (width <= 0) {
-            width = 3;
-        } else if (width > maxWidth) {
+        var $test = $input.next('.input-width-test');
+        if ($test.length == 0) {
+            $test = $('<div/>').css({
+                position: 'absolute',
+                top: -9999,
+                left: -9999,
+                width: 'auto',
+                fontSize: $input.css('fontSize'),
+                fontFamily: $input.css('fontFamily'),
+                fontWeight: $input.css('fontWeight'),
+                letterSpacing: $input.css('letterSpacing'),
+                whiteSpace: 'nowrap'
+            });
+            $test.addClass('input-width-test');
+            $test.insertAfter($input);
+        }
+
+        var escaped = val.replace(/&/g, '&amp;').replace(/\s/g,'&nbsp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        $test.html(escaped);
+        var width = $test.width() + 10;
+
+        if (width > maxWidth) {
             width = maxWidth;
         }
-        $input.css('width', width + 'px');
+        //$input.css('width', width + 'px');
+        $input.width(width);
     });
 
     var permissionTimeout = false;
@@ -310,6 +329,9 @@ define('project-menu', ['SHARED/jquery', 'ta_edit_inline', 'SHARED/task_ck_edito
                         $next = $autoCompleted.find('[data-suggest-permission]').first();
                     }
                     $next.addClass('active');
+                }
+                if ($autoCompleted.find('ul li').length > 1) {
+                    $input.val(val);
                 }
             }
         }
@@ -544,7 +566,7 @@ define('project-menu', ['SHARED/jquery', 'ta_edit_inline', 'SHARED/task_ck_edito
         }
     });
     
-    $modalPlace.on('click', '.sharePrjDialog .close', function(e) {
+    $modalPlace.on('click', '.sharePrjDialog .close, .sharePrjDialog .btnClose', function(e) {
       var $close = $(e.target);
       $close.closest('.modal').remove();
     });
@@ -583,7 +605,7 @@ define('project-menu', ['SHARED/jquery', 'ta_edit_inline', 'SHARED/task_ck_edito
         if ($existing.length > 0) {
             return;
         }
-        var html = '<span data-permission="'+username+'">'+displayName+'<a href="javascript:void(0)" class="removePermission"><i  class="uiIconClose uiIconLightGray"></i></a></span>';
+        var html = '<span data-permission="'+username+'">'+displayName+'<a href="javascript:void(0)" class="removePermission removeValue"><i  class="uiIconClose uiIconLightGray"></i></a></span>';
         $(html).insertBefore($container.find('.cursorText'));
     };
     function addMembership(type, msType, groupId, groupName) {
@@ -597,10 +619,10 @@ define('project-menu', ['SHARED/jquery', 'ta_edit_inline', 'SHARED/task_ck_edito
         var $item = $('<div/>');
         $item.addClass('groupMembership');
         $item.attr('data-permission', permission);
-        $item.append('<span data-toggle="dropdown" class="dropdown-toggle">'+(msType == '*' ? 'Any' : msType)+' <i class="uiIconArrowDownMini uiIconLightGray"></i></span>');
+        $item.append('<span data-toggle="dropdown" class="dropdown-toggle">'+(msType == '*' ? locale.any : msType)+' <i class="uiIconArrowDownMini uiIconLightGray"></i></span>');
         $item.append($listMembershipType.html());
-        $item.append(' in ');
-        $item.append('<span>'+groupName+' <a href="javascript:void(0)" class="removePermission"><i class="uiIconClose uiIconLightGray"></i></a></span>');
+        $item.append(' ' + locale.in + ' ');
+        $item.append('<span>'+groupName+' <a href="javascript:void(0)" class="removePermission removeValue"><i class="uiIconClose uiIconLightGray"></i></a></span>');
 
         $item.insertBefore($container.find('.cursorText'));
     }

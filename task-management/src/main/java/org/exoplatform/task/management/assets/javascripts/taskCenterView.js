@@ -1,4 +1,4 @@
-define('taskCenterView', ['SHARED/jquery', 'taskManagementApp', 'SHARED/bootstrap_tooltip','SHARED/bootstrap_popover'], function($, taApp) {
+define('taskCenterView', ['SHARED/jquery', 'taskManagementApp', 'taFilter', 'SHARED/bootstrap_tooltip','SHARED/bootstrap_popover'], function($, taApp, taFilter) {
     var centerView = {};
     centerView.init = function() {
         taApp.onReady(function($) {
@@ -20,7 +20,7 @@ define('taskCenterView', ['SHARED/jquery', 'taskManagementApp', 'SHARED/bootstra
             var taskId = $taskItem.data('taskid');
             var isCompleted = $a.data('taskcompleted');
             //
-            taApp.setTaskComplete(taskId, !isCompleted);
+            taApp.setTaskComplete(taskId, !isCompleted, taFilter.isShowCompletedTask());
         });
 
         var $permalink = $centerPanelContent.find('.projectPermalink');

@@ -7,24 +7,35 @@ define('taFilter', ['SHARED/jquery', 'SHARED/selectize'], function($) {
         var ui = taApp.getUI();
         var $centerContent = ui.$centerPanelContent;
 
-        $centerContent.on('click', '.uiIconFilter', function(e) {
-          var $icon = $(e.target);
-          
-          if (ui.$rightPanelContent.find('.taskFilter').length || !$icon.hasClass('uiIconBlue')) {
-            $icon.toggleClass('uiIconBlue').parent().toggleClass('Selected');
-          }
+        $centerContent.off('click.toggleFilter').on('click.toggleFilter', '.toggleFilter', function(e) {
+          var $icon = $(e.target).find('.uiIconFilter');
+          var $rightContent = ui.$rightPanelContent; 
 
-          //
-          if ($icon.hasClass('uiIconBlue')) {
-            ui.$rightPanelContent.jzLoad('FilterController.showFilter()', taFilter.getFilterData(), function() {
-              taApp.showRightPanel(ui.$centerPanel, ui.$rightPanel);
-              
-              taFilter.initSearchForm();
-            });
-          } else {
-            taFilter.removeFilter();            
-          }
+          $rightContent.jzAjax('FilterController.toggleFilter()', {
+            data: taFilter.getFilterData(),
+
+            success: function(response) {
+              $rightContent.html(response);
+
+              if ($rightContent.find('.taskFilter').length) {
+                $icon.addClass('uiIconBlue');                
+                taApp.showRightPanel(ui.$centerPanel, ui.$rightPanel);
+                taFilter.initSearchForm();
+                taFilter.submitFilter();
+              } else {
+                $icon.removeClass('uiIconBlue');
+                taFilter.removeFilter();
+              }
+            }
+          });
         });
+        
+        ui.$rightPanelContent.off('click.hideFilter').on('click.hideFilter', '.hideFilter', taFilter.hide);
+      },
+      
+      hide: function(e) {        
+        var ui = taApp.getUI();
+        taApp.hideRightPanel(ui.$centerPanel, ui.$rightPanel, ui.$rightPanelContent);
       },
 
       isEnable: function() {
@@ -47,7 +58,7 @@ define('taFilter', ['SHARED/jquery', 'SHARED/selectize'], function($) {
           taFilter.submitFilter();
         });
         //completed
-        $filter.find('[name="completed"]').on('click', function(e) {
+        $filter.find('[name="showCompleted"]').on('click', function(e) {
           taFilter.submitFilter();
         });
         
@@ -99,6 +110,7 @@ define('taFilter', ['SHARED/jquery', 'SHARED/selectize'], function($) {
         var ui = taApp.getUI();
         var $content = ui.$centerPanelContent; 
         var $view = $content.find('.projectListView, .taskBoardView');
+        var $taskFilter = ui.$rightPanelContent.find('.taskFilter');
         
         var projectId = $view.data('projectid');
         var labelId = $view.data('labelid');
@@ -119,11 +131,10 @@ define('taFilter', ['SHARED/jquery', 'SHARED/selectize'], function($) {
             viewType = 'list';
         }
 
-        //projectId, labelId, filterLabelIds, tags, statusId, dueDate, priority, assignee, completed, keyword, advanceSearch, groupby, orderBy, filter, viewType, securityContext
+        //projectId, labelId, filterLabelIds, tags, statusId, dueDate, priority, assignee, completed, keyword, groupby, orderBy, filter, viewType, securityContext
         var data = {
           'projectId': projectId,
           'labelId': labelId,
-          'advanceSearch': !reset,
           'groupBy': groupBy,
           'orderBy': orderBy,
           'filter': filter,
@@ -132,65 +143,72 @@ define('taFilter', ['SHARED/jquery', 'SHARED/selectize'], function($) {
          
         if (!reset) {
           var $rightPanelContent = ui.$rightPanelContent;
-          if ($content.find('.uiIconFilter').hasClass('uiIconBlue')) {
-            var keyword = $.trim($rightPanelContent.find('[name="keyword"]').val());
-            data.keyword = keyword;
+          if (taFilter.isEnable()) {
+            var keyword = $taskFilter.find('[name="keyword"]');
+            if (keyword.length) {
+              data.keyword = $.trim(keyword.val());              
+            }
             
-            var labelIds = $rightPanelContent.find('[name="label"]').data('selectize');
+            var labelIds = $taskFilter.find('[name="label"]').data('selectize');
             if (labelIds) {
               var val = labelIds.getValue();
-              if (val) {
-                data.filterLabelIds = val;              
-              }
+              data.filterLabelIds = val;
             }
             
-            var tags = $rightPanelContent.find('[name="tag"]').data('selectize');
+            var tags = $taskFilter.find('[name="tag"]').data('selectize');
             if (tags) {
               var val = tags.getValue();
-              if (val) {
-                data.tags = val;              
-              }
+              data.tags = val;
             }
             
-            var status = $.trim($rightPanelContent.find('[name="status"]').val());
-            if (status) {
-              data.statusId = status;
+            var status = $taskFilter.find('[name="status"]');
+            if (status.length) {
+              data.statusId = $.trim(status.val());              
             }
-            
-            var assignee = $rightPanelContent.find('[name="assignee"]').data('selectize');
+
+            var assignee = $taskFilter.find('[name="assignee"]').data('selectize');
             if (assignee) {
               var val = assignee.getValue();
-              if (val) {
-                data.assignee = val;              
-              }
+              data.assignee = val;
             }
             
-            var due = $rightPanelContent.find('[name="due"]').val();
-            if (due) {
-              data.dueDate = due;
+            var due = $taskFilter.find('[name="due"]');
+            if (due.length) {
+              data.dueDate = due.val();
             }
             
-            var priority = $.trim($rightPanelContent.find('[name="priority"]').val());
-            if (priority) {
-              data.priority = priority;
+            var priority = $taskFilter.find('[name="priority"]');
+            if (priority.length) {
+              data.priority = $.trim(priority.val());
             }
             
-            var completed = $rightPanelContent.find('[name="completed"]').is(':checked');
-            if (!completed) {
-              data.completed = completed;
+            var showCompleted = $taskFilter.find('[name="showCompleted"]');
+            if (showCompleted.length) {
+              data.showCompleted = showCompleted.is(':checked');
             }
           }          
         }
         return data;
+      },
+
+      isShowCompletedTask: function() {
+          var ui = taApp.getUI();
+          var $centerPanelContent = ui.$centerPanelContent;
+
+          return $centerPanelContent.find('[name="showCompleted"]').val() == 'true';
       }
   };
   
   function initLabelFilter($filter, defOpts) {
     var $lblFilter = $filter.find('[name="label"]'); 
+    var isLoaded = false;
+    var allLabels = {};
+    //
     $lblFilter.selectize($.extend({
       options: $lblFilter.data('options'),
       create: false,
       searchField: ['name'],
+      items: $lblFilter.data('items'),
       labelField: 'name',
       valueField: 'id',
       render: {
@@ -201,7 +219,28 @@ define('taFilter', ['SHARED/jquery', 'SHARED/selectize'], function($) {
         },
         item: function(item, escape) {
             return '<div class="label '+item.color+'">' + escape(item.name) +'</div>';
+        }        
+      },
+      load: function(query, callback) {
+        if (isLoaded) {
+            callback(allLabels);
         }
+        //. Load all label of user
+        $.ajax({
+            url: $filter.jzURL('UserController.findLabel'),
+            data: {},
+            type: 'GET',
+            error: function() {
+                callback();
+            },
+            success: function(res) {
+                callback(res);
+                isLoaded = true;
+                $.each(res, function(index, val) {
+                    allLabels[val.id] = val;
+                });
+            }
+        });
       }
     }, defOpts));
   }
@@ -209,6 +248,10 @@ define('taFilter', ['SHARED/jquery', 'SHARED/selectize'], function($) {
   function initTagFilter($filter, defOpts) {
     var $tagFilter = $filter.find('[name="tag"]');
     $tagFilter.selectize($.extend({
+      valueField: 'id',
+      labelField: 'text',
+      options: $tagFilter.data('options'),
+      items: $tagFilter.data('items'),
       render: {
         option: function(item, escape) {
             return '<li class="data">' +
@@ -226,10 +269,13 @@ define('taFilter', ['SHARED/jquery', 'SHARED/selectize'], function($) {
   }
   
   function initAssignee($filter, defOpts) {    
+    var $asFilter = $filter.find('[name="assignee"]');
     var selectizeOptions = $.extend({}, defOpts, {
         valueField: 'id',
         labelField: 'text',
         searchField: ['text', 'id'],
+        options: $asFilter.data('options'),
+        items: $asFilter.data('items'),
         openOnFocus: false,
         wrapperClass: 'exo-mentions dropdown',
         dropdownClass: 'dropdown-menu uiDropdownMenu autocomplete-menu',
@@ -289,8 +335,7 @@ define('taFilter', ['SHARED/jquery', 'SHARED/selectize'], function($) {
             });
         }
     });
-    
-    var $asFilter = $filter.find('[name="assignee"]');
+        
     $asFilter.selectize(selectizeOptions);
   }
   

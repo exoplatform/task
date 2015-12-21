@@ -116,7 +116,7 @@ $(document).ready(function() {
     $rightPanel.on('click', '[data-taskcompleted]', function(e){
         var $a = $(e.target).closest('[data-taskcompleted]');
         var taskId = $a.closest('.uiBox').data('taskid');
-        taApp.setTaskComplete(taskId, !$a.data('taskcompleted'));
+        taApp.setTaskComplete(taskId, !$a.data('taskcompleted'), taFilter.isShowCompletedTask());
     });
     $rightPanel.on('click', 'a.action-clone-task', function(e){
         var $a = $(e.target).closest('a');

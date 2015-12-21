@@ -137,6 +137,44 @@ public final class TaskUtil {
     }
     return labels;
   }
+  
+  public static TaskQuery buildTaskQuery(TaskQuery query, String keyword,
+                                   List<Long> searchLabelIds,
+                                   List<String> searchTags,
+                                   Status status,
+                                   DUE dueDate,
+                                   Priority priority,
+                                   List<String> searchAssignee,
+                                   Boolean showCompleted, TimeZone timezone) {
+    if (keyword != null && !keyword.trim().isEmpty()) {
+      query.setKeyword(keyword);
+    }
+    if (searchLabelIds != null && !searchLabelIds.isEmpty()) {
+      query.setLabelIds(searchLabelIds);
+    }
+    if (searchTags != null && !searchTags.isEmpty()) {
+      query.setTags(searchTags);                
+    }
+    if (status != null) {
+      query.setStatus(status);
+    }
+    if (dueDate != null) {
+      Date[] due = TaskUtil.convertDueDate(dueDate.name(), timezone);
+      query.setDueDateFrom(due[0]);
+      query.setDueDateTo(due[1]);
+    }
+    if (priority != null) {
+      query.setPriority(priority);      
+    }
+    if (searchAssignee != null && !searchAssignee.isEmpty()) {      
+      query.setAssignee(searchAssignee);      
+    }
+    if (showCompleted != null && !showCompleted) {
+      query.setCompleted(showCompleted);
+    }
+    
+    return query;
+  }
 
   public static Date[] convertDueDate(String dueDate, TimeZone timezone) {
     Date[] due = new Date[] {null, null};

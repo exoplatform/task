@@ -1,6 +1,5 @@
 #{param name=users /}
 #{param name=type /}
-#{param name=groupId/}
 #{param name=keyword/}
 #{param name=filter/}
 #{param name=totalPage /}
@@ -16,15 +15,6 @@
   <div class="PopupContent popupContent uiUserSelector">
     <div class="uiSearch clearfix">
       <form action="#" class="formSearchUser" method="GET">
-          <span class="pull-left searchByGroup">
-            <span class="inputLarge ">
-              <input type="text" id="group" name="group" placeholder="Group" value="${groupId}">
-            </span>
-            <a title="" data-placement="bottom" rel="tooltip"  href="javascript:void(0);" class="actionIcon openGroupSelectorForSearch" data-original-title="&{label.group}">
-              <i class="uiIconSearch uiIconLightGray"><span class="skipHidden">&{label.group}</span></i>
-            </a>
-          </span>
-
           <span class="searchByUser">
             <span class="inputLarge ">
               <a type="submit" data-original-title="&{label.quickSearch}" rel="tooltip" data-placement="left" class="btnSearchUser" id="">
@@ -67,11 +57,11 @@
             <tr>
                 <td class="center" style="width:20px">
                     <span class="uiCheckbox" style="margin-left: 10px">
-                        <input type="checkbox" class="chkUser checkbox" name="username" value="${user.username}" data-dispayname="${user.displayName}" id="root">
+                        <input type="checkbox" class="chkUser checkbox" name="username" value="${user.userName}" data-dispayname="${user.displayName}" id="root">
                         <span></span>
                     </span>
                 </td>
-                <td><span class="text">${user.username}</span></td>
+                <td><span class="text">${user.userName}</span></td>
                 <td><span class="text">${user.firstName}</span></td>
                 <td><span class="text">${user.lastName}</span></td>
                 <td><a class="text" href="javascript:void(0);">${user.email}</a></td>
@@ -93,7 +83,7 @@
 	 <% } %>
     <div class="uiAction uiActionBorder">    
       <a class="btn addUser"  href="javascript:void(0);" >&{popup.add}</a>  
-      <a class="btn"  href="javascript:void(0);">&{popup.close}</a>
+      <a class="btn btnClose"  href="javascript:void(0);">&{popup.close}</a>
     </div>
   </div>
 </div>

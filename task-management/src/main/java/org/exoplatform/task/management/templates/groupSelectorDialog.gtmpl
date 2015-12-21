@@ -31,7 +31,7 @@
 <div class="groupSelectorDialog modal hide fade in uiPopup" role="dialog" data-type="${type}" >
     <div class="popupHeader clearfix">
         <a onclick="" title="Close Window" class="uiIconClose pull-right close"></a>
-        <h3 id="shareProjectLabel" class="PopupTitle popupTitle">Select Permision</h3>
+        <h3 id="shareProjectLabel" class="PopupTitle popupTitle">&{label.selectPermission}</h3>
     </div>
     <div class="PopupContent popupContent">
         <div id="UIGroupSelector" class="uiGroupSelector uiGroupMembershipSelector">
@@ -53,7 +53,7 @@
             <div class="row-fluid">
                 <div class="span6">
                     <div class="uiBox selectGroup noRounded">
-                        <h6 class="title">Browse and select a group</h6>
+                        <h6 class="title">&{popup.browseAndSelectGroup}</h6>
                         <div class="uiTrees scrollArea">
                             <div class="treeContainer jsContainer">
                                 <ul class="nodeGroup">
@@ -65,13 +65,13 @@
                 </div>
                 <div class="span6">
                     <div class="uiBox noRounded childGoup">
-                        <h6 class="title">Select a Membership</h6>
+                        <h6 class="title">&{popup.selectMembership}</h6>
                         <div class="uiContentBox">
                             <ul>
                                 <% if (groupOnly) {%>
                                     <li>
                                         <span class="uiIconMiniArrowRight"></span>
-                                        <a title="Select this group" data-membershiptype="" href="javascript:void(0);">Select this group</a>
+                                        <a title="Select this group" data-membershiptype="" href="javascript:void(0);">&{popup.selectThisGroup}</a>
                                     </li>
                                 <%} else for (def mst in membershipTypes) {%>
                                     <li>

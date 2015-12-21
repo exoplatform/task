@@ -3,8 +3,10 @@
 #{param name=projectStatuses /}
 #{param name=tasks /}
 #{param name=taskNum /}
+#{param name=incomNum/}
 #{param name=groupTasks /}
 #{param name=keyword /}
+#{param name=showCompleted/}
 #{param name=groupBy /}
 #{param name=orderBy /}
 #{param name=filter /}
@@ -36,7 +38,7 @@
                    <a href="javascript:void(0)" class="action-search actionIcon "  title="Search" rel="tooltip"> <i class="uiIconSearch uiIconLightGray"></i></a>
                    <a href="javascript:void(0)" class="action-close  " style="display:none"> <i class="uiIconClose uiIconLightGray" ></i></a>
                 </span>
-                <a class="actionIcon" href="#"  title="Filter" rel="tooltip"><i class="uiIcon uiIconFilter <%=advanceSearch ? "uiIconBlue" : ""%>"></i></a>
+                <a class="actionIcon toggleFilter" href="#"  title="Filter" rel="tooltip"><i class="uiIcon uiIconFilter <%=advanceSearch ? "uiIconBlue" : ""%>"></i></a>
                 <span class="pull-left">
                     <span class="projectPermalinkContainer"  title="&{label.permalink}" rel="tooltip">
                         <a href="@{TaskManagement.projectPermalink(space_group_id=null, projectId=currentProjectId, filter=filter,labelId=currentLabelId)}" data-toggle="popover" data-placement="left"
@@ -67,6 +69,8 @@
                          <input type="hidden" name="filter" value="${filter}"/>
                          <input type="hidden" name="viewType" value="${viewType}"/>
                          <input type="hidden" name="page" value="${paging.currentPage}"/>
+                         <input type="hidden" name="showCompleted" value="${showCompleted}"/>
+                         <input type="hidden" name=incomNum value="${incomNum}"/>
                      </div>
                 </form>
             </div>

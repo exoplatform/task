@@ -21,7 +21,6 @@ package org.exoplatform.task.management.controller;
 
 import javax.inject.Inject;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -34,25 +33,22 @@ import juzu.impl.common.Tools;
 import juzu.request.SecurityContext;
 
 import org.exoplatform.commons.juzu.ajax.Ajax;
-import org.exoplatform.commons.utils.HTMLEntityEncoder;
-import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.security.ConversationState;
-import org.exoplatform.task.domain.Label;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.exception.EntityNotFoundException;
+import org.exoplatform.task.management.model.TaskFilterData;
+import org.exoplatform.task.management.model.TaskFilterData.Filter;
+import org.exoplatform.task.management.model.TaskFilterData.FilterKey;
 import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.StatusService;
 import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.service.UserService;
-import org.exoplatform.task.util.ListUtil;
 import org.exoplatform.task.util.ProjectUtil;
-import org.gatein.common.text.EntityEncoder;
-import org.json.JSONArray;
+import org.exoplatform.task.util.TaskUtil.DUE;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 public class FilterController {
 
@@ -74,52 +70,48 @@ public class FilterController {
   ResourceBundle bundle;
   
   @Inject
+  TaskFilterData filterData;
+  
+  @Inject
   @Path("taskFilter.gtmpl")
   org.exoplatform.task.management.templates.taskFilter taskFilter;
 
   @Resource
   @Ajax
   @MimeType.HTML
-  public Response showFilter(Long projectId, Long labelId, String filter, SecurityContext securityContext) throws JSONException, EntityNotFoundException {
-    String username = securityContext.getRemoteUser();
-    //don't allow to filter label when user already select specific label
-    boolean filterLabel = labelId == null || labelId <= 0;
-
-    //only allow to filter status with concrete project 
-    boolean filterStatus = projectId != null && projectId > 0;
-    Project project = filterStatus ? projectService.getProject(projectId) : null;
-    if (project != null && !project.canView(ConversationState.getCurrent().getIdentity())) {
-      project = null;
+  public Response toggleFilter(Long projectId, Long labelId, String filter, SecurityContext securityContext) throws JSONException, EntityNotFoundException {
+    filterData.setEnabled(!filterData.isEnabled());
+    //
+    if (filterData.isEnabled()) {
+      FilterKey filterKey = FilterKey.withProject(projectId, filter == null || filter.isEmpty() ? null : DUE.valueOf(filter.toUpperCase()));
+      if (labelId != null && labelId != -1L) {
+        filterKey = FilterKey.withLabel(labelId);
+      }
+      Filter fd = filterData.getFilter(filterKey);
+      
+      //don't allow to filter label when user already select specific label
+      boolean filterLabel = labelId == null || labelId <= 0;
+      
+      //only allow to filter status with concrete project 
+      boolean filterStatus = projectId != null && projectId > 0;
+      Project project = filterStatus ? projectService.getProject(projectId) : null;
+      if (project != null && !project.canView(ConversationState.getCurrent().getIdentity())) {
+        project = null;
+      }
+      
+      List<Status> status = Collections.emptyList();
+      if (filterStatus && project != null) {      
+        status = statusService.getStatuses(project.getId());
+      }
+      
+      boolean filterAssignee = projectId == null || projectId != ProjectUtil.INCOMING_PROJECT_ID;
+      //user already filter by dueDate, we don't need to show the dueDate field anymore
+      boolean filterDueDate = filter == null || filter.isEmpty();
+      
+      return taskFilter.with().filterData(fd).taskService(taskService).userService(userService).filterLabel(filterLabel).status(status).bundle(bundle)
+          .filterStatus(filterStatus).filterAssignee(filterAssignee).filterDueDate(filterDueDate).ok().withCharset(Tools.UTF_8);      
+    } else {
+      return Response.ok();
     }
-    
-    List<Status> status = Collections.emptyList();
-    if (filterStatus && project != null) {      
-      status = statusService.getStatuses(project.getId());
-    }
-    
-    ListAccess<Label> tmp = taskService.findLabelsByUser(username);
-    List<Label> labels = Arrays.asList(ListUtil.load(tmp, 0, -1));
-    JSONArray lblArr = buildJSON(labels);
-
-    boolean filterAssignee = projectId == null || projectId != ProjectUtil.INCOMING_PROJECT_ID;
-    //user already filter by dueDate, we don't need to show the dueDate field anymore
-    boolean filterDueDate = filter == null || filter.isEmpty();
-        
-    return taskFilter.with().labels(lblArr).filterLabel(filterLabel).status(status).bundle(bundle)
-        .filterStatus(filterStatus).filterAssignee(filterAssignee).filterDueDate(filterDueDate).ok().withCharset(Tools.UTF_8);
   }
-
-  private JSONArray buildJSON(List<Label> labels) throws JSONException {
-    EntityEncoder encoder = HTMLEntityEncoder.getInstance();
-    JSONArray jsons = new JSONArray();
-    for (Label lbl : labels) {
-      JSONObject obj = new JSONObject();
-      obj.put("id", lbl.getId());
-      obj.put("name", encoder.encode(lbl.getName()));
-      obj.put("color", lbl.getColor());
-      jsons.put(obj);
-    }
-    return jsons;
-  }
-
 }
