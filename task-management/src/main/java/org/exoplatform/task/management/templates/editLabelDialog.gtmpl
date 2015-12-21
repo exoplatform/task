@@ -11,7 +11,7 @@
 <div class="edit-label-dialog uiPopup modal hide fade" data-id="${lbl.id}" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="popupHeader clearfix">
   	<a href="#" title="Close Window" data-dismiss="modal" aria-hidden="true" class="uiIconClose pull-right"></a>    
-  	<span class="PopupTitle popupTitle">Edit Label</span>
+  	<span class="PopupTitle popupTitle">&{label.editLabel}</span>
   </div>
   <div class="PopupContent popupContent">
 	  <div class="form-horizontal">
@@ -27,7 +27,7 @@
 	   %>
 	   <div class="form-horizontal">
 	  	<div class="control-group">
-	  		<label class="control-label" for="lblParent:">Label Parent:</label>
+	  		<label class="control-label" for="lblParent:">&{label.labelParent}:</label>
 	  		<div class="controls">
 			   <select id="lblParent" class="lblParent">
 			   <option value="0" style="padding-left: 10px;" <%= lbl.parent == null ? "selected" : "" %>>&{label.label}</option>
@@ -44,7 +44,7 @@
 	  		</div>
 	  	</div>
 	  	<div class="control-group">
-	  		<label class="control-label" for="lblName:">Label Name:</label>
+	  		<label class="control-label" for="lblName:">&{label.labelName}:</label>
 	  		<div class="controls">
 	  			<input type="text" id="lblName" class="lblName" value="<%=encoder.encode(lbl.getName())%>" maxlength="100"/>
 	  		</div>
