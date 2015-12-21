@@ -734,6 +734,9 @@ define('ta_edit_inline',
                             item: function(item, escape) {
                                 var it = allLabels[item.id] != undefined ? allLabels[item.id] : item;
                                 return '<div class="label '+it.color+'">' + escape(it.text) +'</div>';
+                            },
+                            option_create: function(data, escape) {
+                                return '<li class="create"><a href="javascript:void(0)">'+ locale.createLabel +' <strong>' + escape(data.input) + '</strong>&hellip;</a></li>';
                             }
                         }
                     };

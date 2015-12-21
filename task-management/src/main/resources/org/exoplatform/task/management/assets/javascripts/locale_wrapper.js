@@ -7,6 +7,8 @@
         coworker: '${label.coworker}',
         unassigned: '${label.unassigned}',
         tag: '${label.tag}',
+        createTag: '${label.createTag}',
+        createLabel: '${label.createLabel}',
         noMatch: '${label.noMatch}',
         remove: '${label.remove}',
         selectUser: '${popup.selectUser}',
