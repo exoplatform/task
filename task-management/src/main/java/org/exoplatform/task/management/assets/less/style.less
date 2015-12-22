@@ -768,7 +768,7 @@ li[data-hiddenlabel="false"] {
         width: 60%;
         padding:5px;
          margin-right: 5px;
-         min-height: 16px;
+         min-height: 26px;
         &.open {
             overflow: visible;
         }
@@ -1133,15 +1133,22 @@ li[data-hiddenlabel="false"] {
   .groupMembership {
     display: inline-block;
     position: relative;
-    height: 20px;
-    margin: 0 3px 0 0;
+    height: 27px;
+    margin: 2px 3px 0 0;
     > span {
       background: #e2eafa;
       border-radius: 3px;
       color: #215ab2;
       border: 1px solid #215ab2;
-      padding: 1px 5px;
+      padding: 1px 16px 1px 5px;
       display: inline-block;
+      position: relative;
+    }
+    .dropdown-toggle{
+        padding: 1px 5px;
+    }
+    span .removePermission{
+        right: 4px;
     }
   }
   .cursorText {
@@ -1150,9 +1157,9 @@ li[data-hiddenlabel="false"] {
     position: relative;
     text-overflow: ellipsis;
     white-space: nowrap;
-    top: 3px;
+    top: 2px;
     width: auto;
-
+    height: 20px;
     input {
       display: inline;
       width: 10px;
@@ -1160,9 +1167,12 @@ li[data-hiddenlabel="false"] {
       outline: none;
       box-shadow: none;
       margin: 2px 0 0;
-      height: 26px;
+      height: 22px;
       padding: 0;
     }
+  }
+  span + .cursorText{
+    top: -3px;
   }
 }
 .header-right .action-bar + .action-bar {
