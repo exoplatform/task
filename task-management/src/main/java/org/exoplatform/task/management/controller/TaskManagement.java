@@ -210,7 +210,9 @@ public class TaskManagement {
       }
     }
 
-    boolean advanceSearch = filterData.isEnabled();
+    FilterKey filterKey = FilterKey.withProject(currProject, null);
+    Filter fd = filterData.getFilter(filterKey);
+    boolean advanceSearch = fd.isEnabled();
     boolean showCompleted = false;
     String keyword = "";
     
@@ -221,8 +223,6 @@ public class TaskManagement {
       listTasks = TaskUtil.EMPTY_TASK_LIST;
     } else {
       if (advanceSearch) {
-        FilterKey filterKey = FilterKey.withProject(currProject, null);
-        Filter fd = filterData.getFilter(filterKey);
         keyword = fd.getKeyword();
         showCompleted = fd.isShowCompleted();
         String currentUser = securityContext.getRemoteUser();
@@ -440,16 +440,15 @@ public class TaskManagement {
       taskQuery.setOrderBy(Arrays.asList(order));
     }
 
-    boolean advanceSearch = filterData.isEnabled();
+    FilterKey filterKey = FilterKey.withProject(projectId, filter == null || filter.isEmpty() ? null : DUE.valueOf(filter.toUpperCase()));
+    if (labelId != null && labelId != -1L) {
+      filterKey = FilterKey.withLabel(labelId);
+    }
+    Filter fd = filterData.getFilter(filterKey);
+    boolean advanceSearch = fd.isEnabled();
     boolean showCompleted = false;
     String keyword = "";
     if (advanceSearch) {
-      FilterKey filterKey = FilterKey.withProject(projectId, filter == null || filter.isEmpty() ? null : DUE.valueOf(filter.toUpperCase()));
-      if (labelId != null && labelId != -1L) {
-        filterKey = FilterKey.withLabel(labelId);
-      }
-      Filter fd = filterData.getFilter(filterKey);
-
       keyword = fd.getKeyword();
       showCompleted = fd.isShowCompleted();
       String currentUser = securityContext.getRemoteUser();

@@ -80,14 +80,18 @@ public class FilterController {
   @Ajax
   @MimeType.HTML
   public Response toggleFilter(Long projectId, Long labelId, String filter, SecurityContext securityContext) throws JSONException, EntityNotFoundException {
-    filterData.setEnabled(!filterData.isEnabled());
+
+    FilterKey filterKey = FilterKey.withProject(projectId, filter == null || filter.isEmpty() ? null : DUE.valueOf(filter.toUpperCase()));
+    if (labelId != null && labelId != -1L) {
+      filterKey = FilterKey.withLabel(labelId);
+    }
+    Filter fd = filterData.getFilter(filterKey);
+
     //
-    if (filterData.isEnabled()) {
-      FilterKey filterKey = FilterKey.withProject(projectId, filter == null || filter.isEmpty() ? null : DUE.valueOf(filter.toUpperCase()));
-      if (labelId != null && labelId != -1L) {
-        filterKey = FilterKey.withLabel(labelId);
-      }
-      Filter fd = filterData.getFilter(filterKey);
+    fd.setEnabled(!fd.isEnabled());
+
+    //
+    if (fd.isEnabled()) {
       
       //don't allow to filter label when user already select specific label
       boolean filterLabel = labelId == null || labelId <= 0;
