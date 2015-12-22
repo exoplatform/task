@@ -127,7 +127,7 @@
 		  			<select name="due">
 		  				<option value="">&{filter.task.all}</option>
 		  				<%for (def due : TaskUtil.DUE.values()) {%>		  				
-		  				<option value="<%=due.name()%>" <%=due.equals(filterData.getDue()) ? "selected" : ""%>><%=due.name()%></option>
+		  				<option value="<%=due.name()%>" <%=due.equals(filterData.getDue()) ? "selected" : ""%>><%=bundle.getString('label.' + due.name().toLowerCase())%></option>
 		  				<%} %>
 		  			</select>
 		  		</div>
@@ -139,7 +139,7 @@
 		  			<select name="priority">
 		  				<option value="">&{filter.task.all}</option>
 		  				<%for (def priority : Priority.values()) {%>										  					  				
-		  				<option value="<%=priority.name()%>" <%=priority.equals(filterData.getPriority()) ? "selected" : ""%>><%=priority.name()%></option>
+		  				<option value="<%=priority.name()%>" <%=priority.equals(filterData.getPriority()) ? "selected" : ""%>><%=bundle.getString('label.priority.' + priority.name().toLowerCase())%></option>
 		  				<%} %>
 		  			</select>
 		  		</div>
