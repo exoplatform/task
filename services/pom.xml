@@ -70,6 +70,13 @@
       <version>${org.exoplatform.platform.version}</version>
       <scope>provided</scope>
     </dependency>
+    
+    <!-- OTHER -->
+    <dependency>
+	   <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
+	   <artifactId>owasp-java-html-sanitizer</artifactId>
+	 </dependency>
+    
     <!-- TEST -->
     <dependency>
       <groupId>junit</groupId>

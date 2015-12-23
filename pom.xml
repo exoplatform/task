@@ -54,6 +54,7 @@
     <juzu.version>1.1.0</juzu.version>
     <hibernate.version>4.1.12.Final</hibernate.version>
     <org.antlr.version>3.4</org.antlr.version>
+    <owasp.html-sanitizer.version>20151202.2</owasp.html-sanitizer.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -93,6 +94,12 @@
         <groupId>org.exoplatform.addons.task</groupId>
         <artifactId>task-management-config</artifactId>
         <version>${project.version}</version>
+      </dependency>
+      <!-- HTML Sanitizer -->
+      <dependency>
+        <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
+        <artifactId>owasp-java-html-sanitizer</artifactId>
+        <version>${owasp.html-sanitizer.version}</version>
       </dependency>
       <!--less4j 1.4.0 is not compatible with antlr 3.5-->
       <dependency>

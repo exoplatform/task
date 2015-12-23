@@ -152,10 +152,10 @@ public class TasksCalendarDAOImpl implements CalendarDAO {
     if (project == null || calendar == null) {
       return null;
     }
-    if (project.getColor() != null) {
-      calendar.setCalendarColor(project.getColor());
-    }
     HTMLEntityEncoder encoder = HTMLEntityEncoder.getInstance();
+    if (project.getColor() != null) {
+      calendar.setCalendarColor(encoder.encodeHTMLAttribute(project.getColor()));
+    }
     calendar.setDescription(project.getDescription());
     calendar.setEditPermission(null);
     //ProjectService service = ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(ProjectService.class);

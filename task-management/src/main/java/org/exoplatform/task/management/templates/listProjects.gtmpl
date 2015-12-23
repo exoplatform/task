@@ -67,7 +67,7 @@ def displayListProjectItem(project, level, encoder, identity, colors) {
 		        </ul>
 		    </div>
             <%}%>
-	        <a href="javascript:void(0)" class="${project.color == null ? '' : project.color} colorPie"><span class=""></span></a>
+	        <a href="javascript:void(0)" class="${project.color == null ? '' : encoder.encodeHTMLAttribute(project.color)} colorPie"><span class=""></span></a>
             <span>
                 <a href="javascript:void(0);" class="collapseSubProject">
                     <i class="${hasChild ? "uiIconArrowDownMini uiIconLightGray" : ""}"></i>

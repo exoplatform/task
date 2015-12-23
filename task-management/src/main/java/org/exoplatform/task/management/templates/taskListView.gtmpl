@@ -118,7 +118,7 @@
                     %>
                     <li class="row-item row-odd hover-action-reveal has-border has-background ${task.completed ? "task-completed" : ""} taskItem" data-taskid="${task.id}" data-task-projectid="${task.status != null ? task.status.project.id : 0}">
                         <div class="column-item column-checkbox">
-                            <span class="project-color ${task.status != null ? task.status.project.color : ''}">&nbsp;</span>
+                            <span class="project-color ${task.status != null && task.status.project.color != null ? encoder.encodeHTMLAttribute(task.status.project.color) : ''}">&nbsp;</span>
                             <span class="inline-block-hide dragable">&nbsp;</span>
                             <span class="status-task block-hide">
                                 <i class="${colorClass}">&nbsp;</i>
