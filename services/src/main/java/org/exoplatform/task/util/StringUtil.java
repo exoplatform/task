@@ -19,11 +19,13 @@
 
 package org.exoplatform.task.util;
 
-import java.util.Arrays;
 import java.util.regex.Pattern;
 
 import org.exoplatform.commons.utils.HTMLEntityEncoder;
 import org.gatein.common.text.EntityEncoder;
+import org.owasp.html.HtmlPolicyBuilder;
+import org.owasp.html.PolicyFactory;
+import org.owasp.html.Sanitizers;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
@@ -36,6 +38,10 @@ public class StringUtil {
   public static final String DESC = "desc";  
   
   public static final  Pattern FUZZY = Pattern.compile(".[~][0]([\\.][0-9])");
+  
+  private static final PolicyFactory htmlPolicy = new HtmlPolicyBuilder().allowCommonInlineFormattingElements()
+      .allowElements("cite", "q", "pre").allowWithoutAttributes("span").allowAttributes("class").onElements("div", "p", "span", "a", "pre").toFactory()
+      .and(Sanitizers.LINKS).and(Sanitizers.BLOCKS).and(Sanitizers.IMAGES).and(Sanitizers.STYLES).and(Sanitizers.TABLES);
   
   public static String highlight(String text, String keyword, String before, String after) {
     if (text == null || text.isEmpty() || keyword == null || keyword.isEmpty()) {
@@ -63,28 +69,8 @@ public class StringUtil {
   
   public static String encodeInjectedHtmlTag(String str) {
     if (str != null && !str.isEmpty()) {
-      StringBuilder origin = new StringBuilder(str.toLowerCase());
-      StringBuilder builder = new StringBuilder(str);      
-      //
-      for (String entity : Arrays.asList("<script", "</script>", "<link", "<iframe", "</iframe>")) {
-        encode(origin, builder, entity);
-      }
-      str = builder.toString();
+      return htmlPolicy.sanitize(str);
     }
     return str;
-  }
-
-  private static StringBuilder encode(StringBuilder origin, StringBuilder builder, String key) {
-    int begin = origin.indexOf(key);
-    if (begin > -1) {
-      int end = origin.indexOf(">", begin);
-      if (end > -1) {
-        builder.replace(end, end + 1, "&gt;");
-        origin.replace(end, end + 1, "&gt;");
-      }
-      builder.replace(begin, begin + 1, "&lt;");
-      origin.replace(begin, begin + 1, "&lt;");
-    }
-    return builder;
-  }    
+  }  
 }
