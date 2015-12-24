@@ -688,7 +688,7 @@ define('ta_edit_inline',
                         allLabels[val.id] = val;
                     });
 
-                    editOptions.emptyText = 'Labels';
+                    editOptions.emptytext = locale.labels;
                     editOptions.selectize = {
                         create: true,
                         options: opts,

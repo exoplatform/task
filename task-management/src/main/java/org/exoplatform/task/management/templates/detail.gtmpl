@@ -67,7 +67,7 @@
 </div>
 <div class="tags uiEditableInline clearfix">
     <%
-        def labelHtml = "Labels";
+        def labelHtml = bundle.getString("label.labels");
         def labelIds = '';
         def labelOptions = '';
         if (labels != null && !labels.isEmpty()) {
