@@ -212,6 +212,13 @@ public class TaskManagement {
 
     FilterKey filterKey = FilterKey.withProject(currProject, null);
     Filter fd = filterData.getFilter(filterKey);
+
+    //
+    if (taskId > 0 && taskModel.getTask().isCompleted()) {
+      fd.setEnabled(true);
+      fd.setShowCompleted(true);
+    }
+
     boolean advanceSearch = fd.isEnabled();
     boolean showCompleted = false;
     String keyword = "";
