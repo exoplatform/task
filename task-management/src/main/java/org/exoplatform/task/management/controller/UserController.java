@@ -112,6 +112,8 @@ public class UserController extends AbstractController {
           json.put("id", user.getUsername());
           json.put("text", user.getDisplayName());
           json.put("avatar", user.getAvatar());
+          json.put("deleted", user.isDeleted());
+          json.put("enable", user.isEnable());
           array.put(json);
         }
         return Response.ok(array.toString()).withCharset(Tools.UTF_8);

@@ -30,8 +30,11 @@ public class User {
   private String displayName;
   private String avatar;
   private String url;
+  private boolean enable;
+  private boolean deleted;
 
-  public User() {}
+  public User() {
+  }
 
   public User(String username, String email, String firstName, String lastName, String displayName, String avatar, String url) {
     this.username = username;
@@ -97,5 +100,21 @@ public class User {
 
   public void setUrl(String url) {
     this.url = url;
+  }
+
+  public boolean isDeleted() {
+    return deleted;
+  }
+
+  public void setDeleted(boolean deleted) {
+    this.deleted = deleted;
+  }
+
+  public boolean isEnable() {
+    return enable;
+  }
+
+  public void setEnable(boolean enable) {
+    this.enable = enable;
   }
 }

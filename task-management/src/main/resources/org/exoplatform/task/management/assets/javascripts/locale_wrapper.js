@@ -2,6 +2,7 @@
     var locale = {
         'in' : '${label.in}',
         'any': '${label.any}',
+        inactive: '${label.inactive}',
         dueDate: '${label.dueDate}',
         coworkers: '${label.coworkers}',
         coworker: '${label.coworker}',

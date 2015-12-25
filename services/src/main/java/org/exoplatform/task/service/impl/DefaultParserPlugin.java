@@ -48,7 +48,7 @@ public class DefaultParserPlugin implements TaskParserPlugin {
 
   private static final Map<String, Integer> MONTHS       = new HashMap<String, Integer>();
 
-  private Pattern ASSIGNEE_REGEX = Pattern.compile("(\\s)(@)([a-zA-Z]+)");
+  private Pattern ASSIGNEE_REGEX = Pattern.compile("(\\s)(@)([\\S]+)");
 
   private Pattern PRIORITY_REGEX = Pattern.compile("(\\s)(!)([a-zA-Z]+)");
 

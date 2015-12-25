@@ -93,7 +93,7 @@ public class AbstractController implements RequestLifeCycle {
         if (context.getPhase() == Phase.RESOURCE) {
 
           HTMLEntityEncoder encoder = HTMLEntityEncoder.getInstance();
-          String message = encoder.encodeHTML(ex.getMessage());
+          String message = ex.getMessage() != null ? encoder.encodeHTML(ex.getMessage()) : "";
 
           Response response = null;
           if (ex instanceof EntityNotFoundException) {

@@ -18,7 +18,7 @@
 	def task = taskModel.getTask();
 	def breadcumbs = taskModel.getBreadcumbs();
 	def assignee = taskModel.getAssignee();
-    def hasAssignee = (assignee != null);
+    def hasAssignee = (assignee != null && assignee.getUsername() != "guest" && assignee.getUsername() != null);
 	def countCoWorker = taskModel.getNumberCoworkers();
 	def commentCount = taskModel.getCommentCount();
 	def comments = taskModel.getComments();
@@ -128,11 +128,11 @@
                 <a class="avatarMini pull-left assigned ${!hasAssignee ? "hide" : ""}" href="#">
                     <img alt="avatar" src="${hasAssignee ? assignee.avatar : ""}">
                 </a>
-                <a title="&{tooltip.clickToEdit}" data-toggle="tooltip" data-placement="bottom" class="hoverStatus small editableField editAssignee">
+                <a title="&{tooltip.clickToEdit}" data-toggle="tooltip" data-placement="bottom" class="hoverStatus small editableField editAssignee ${hasAssignee && countCoWorker == 0 && assignee.deleted ? "muted" : ""}">
                     <% if (countCoWorker > 0) {%>
                         +${countCoWorker} ${bundle.getString(countCoWorker > 1 ? "label.coworkers" : "label.coworker").toLowerCase()}
                     <%} else if (hasAssignee) {%>
-                        ${encoder.encode(assignee.displayName)}
+                        ${encoder.encode(assignee.displayName)} <% if (!assignee.enable) {%> <span class = "muted"><i>(&{label.inactive})</i></span> <%}%>
                     <%} else {%>
                         &{label.unassigned}
                     <%}%>
@@ -143,7 +143,7 @@
                     <div class="contBlock">
                         <div class="mgB10 mgT5">&{label.assignTo}:</div>
                         <div class="inputUser">
-                            <input type = "text" name="assignee" value="${task.assignee != null ? encoder.encode(task.assignee) : ""}"/>
+                            <input type = "text" name="assignee" value="${hasAssignee ? encoder.encode(task.assignee) : ""}"/>
                         </div>
                     </div>
                     <div class="contBlock tags">

@@ -394,6 +394,9 @@ define('ta_edit_inline',
             },
             render: {
                 option: function(item, escape) {
+                    if (item.deleted === true || item.enable === false) {
+                        return '';
+                    }
                     return '<li class="data">' +
                         '<span class="avatarMini">' +
                         '   <img src="'+item.avatar+'">' +
@@ -403,7 +406,14 @@ define('ta_edit_inline',
                         '</li>';
                 },
                 item: function(item, escape) {
-                    return '<span class="" href="#">' + editInline.taApp.escape(item.text) +'</span>';
+                    var text = editInline.taApp.escape(item.text);
+                    var cssClass = '';
+                    if (item.deleted === true) {
+                        cssClass = 'muted';
+                    } else if (item.enable === false) {
+                        text += '&nbsp;<span class="muted" style="font-style: italic">(' + locale.inactive + ')</span>';
+                    }
+                    return '<span class="'+cssClass+'">' + text +'</span>';
                 }
             },
             onInitialize: function() {
@@ -435,6 +445,16 @@ define('ta_edit_inline',
                         callback(res);
                     }
                 });
+            },
+            score: function(search) {
+                var score = this.getScoreFunction(search);
+                return function(item) {
+                    if (item.deleted === true || item.enable === false) {
+                        return 0;
+                    } else {
+                        return score(item);
+                    }
+                };
             }
         };
         var saveAssignee = function(taskId, name, value, selectize) {
@@ -484,7 +504,13 @@ define('ta_edit_inline',
                     } else if (!assg){
                         $editAssignee.html(locale.unassigned);
                     } else {
-                        $editAssignee.html(editInline.taApp.escape(assg.text));
+                        var text = editInline.taApp.escape(assg.text);
+                        if (assg.deleted === true) {
+                            $editAssignee.addClass('muted');
+                        } else if (assg.enable === false) {
+                            text += '&nbsp;<span class="muted" style="font-style: italic">(' + locale.inactive + ')</span>';
+                        }
+                        $editAssignee.html(text);
                     }
                     
                     if ($.isNumeric(response)) {
