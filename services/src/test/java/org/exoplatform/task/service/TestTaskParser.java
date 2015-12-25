@@ -205,8 +205,12 @@ public class TestTaskParser {
   @Test
   public void testParserDueDateAtMar24() {
     Calendar nextMonth = Calendar.getInstance();
+    long currentTime = nextMonth.getTimeInMillis();
     nextMonth.set(Calendar.MONTH, Calendar.MARCH);
     nextMonth.set(Calendar.DATE, 24);
+    if (currentTime > nextMonth.getTimeInMillis()) {
+      nextMonth.add(Calendar.YEAR, 1);
+    }
 
     Task task = creator.parse("Test task ^24-mar need to do", context);
     Assert.assertNotNull(task);

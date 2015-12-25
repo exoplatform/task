@@ -220,10 +220,10 @@ public class DefaultParserPlugin implements TaskParserPlugin {
     }
 
     // Pattern dd-mon
+    long timeInMillis = calendar.getTimeInMillis();
     StringTokenizer tokenizer = new StringTokenizer(dateString, "-");
     String day = (String) tokenizer.nextElement();
     try {
-      long timeInMillis = calendar.getTimeInMillis();
       calendar.set(Calendar.DATE, Integer.parseInt(day));
       // . If the day is in the past, we will set to next month
       if (timeInMillis > calendar.getTimeInMillis()) {
@@ -236,6 +236,10 @@ public class DefaultParserPlugin implements TaskParserPlugin {
       String month = ((String) tokenizer.nextElement()).toLowerCase();
       if (MONTHS.containsKey(month)) {
         calendar.set(Calendar.MONTH, MONTHS.get(month));
+      }
+      if (timeInMillis > calendar.getTimeInMillis()) {
+        //. If the day is in the past, we will set to next year
+        calendar.add(Calendar.YEAR, 1);
       }
     }
 
