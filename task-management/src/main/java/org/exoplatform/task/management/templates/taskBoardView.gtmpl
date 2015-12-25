@@ -146,7 +146,7 @@
                         <img width="20px" height="20px" src="${user.avatar}" alt="${user.displayName}">
                         <%}%>
                         <a href="${isGuest ? "javascript:void(0)" : user.url}">
-                            <span class="user-name-task">${isGuest ? "Unassigned" : encoder.encode(user.displayName)}</span>
+                            <span class="user-name-task">${isGuest ? bundle.getString("label.unassigned") : encoder.encode(user.displayName)}</span>
                             <span class="amount-item user-${group.key.value == null ? "" : group.key.value.username}" data-taskcount-assignee="${group.value.size()}">(${group.value.size()})</span>
                         </a>
                         <% } else { %>

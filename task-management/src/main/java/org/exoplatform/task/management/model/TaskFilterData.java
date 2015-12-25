@@ -58,14 +58,6 @@ public class TaskFilterData implements Serializable {
     return filter;
   }
 
-  public boolean isEnabled() {
-    return enabled;
-  }
-
-  public void setEnabled(boolean enabled) {
-    this.enabled = enabled;
-  }
-
   public void clear() {
     filters.clear();
   }
@@ -73,7 +65,16 @@ public class TaskFilterData implements Serializable {
   public static class Filter implements Serializable {
     private static final long        serialVersionUID = -1199208518296375306L;
 
+    private boolean enabled = false;
     private Map<FILTER_NAME, Object> data             = new ConcurrentHashMap<FILTER_NAME, Object>();
+
+    public boolean isEnabled() {
+      return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+      this.enabled = enabled;
+    }
 
     public String getKeyword() {
       Object keyword = data.get(FILTER_NAME.KEYWORD);

@@ -46,7 +46,7 @@
             </div><!--end commentRight-->
 
             <% if (comment.canEdit(identity)) {%>
-                <a href="javascript:void(0)" class="actionIcon controllDelete" data-toggle="tooltip" data-placement="left" title="Remove">
+                <a href="javascript:void(0)" class="actionIcon controllDelete" data-toggle="tooltip" data-placement="left" title="&{label.remove}">
                     <i class="uiIconTrashMini uiIconLightGray "></i>
                 </a>
             <%}%>
@@ -66,9 +66,7 @@
                     <div class="commentRight">
                         <div class="commentInputBox ">
                             <div class="commentInput">
-                                <!--<textarea title="Add your comment..." cols="30" rows="10" id="" name="" class="textarea" style="visibility: hidden; display: none;">
-                                </textarea>-->
-                                <textarea title="Add your comment..." name="comment" cols="30" rows="10" class="textarea"></textarea>
+                                <textarea title="&{comment.message.addYourComment}" name="comment" cols="30" rows="10" class="textarea"></textarea>
                             </div>
                         </div>
                     </div><!--end commentRight-->

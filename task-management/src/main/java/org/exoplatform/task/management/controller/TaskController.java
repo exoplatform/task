@@ -504,12 +504,14 @@ public class TaskController extends AbstractController {
   @MimeType.HTML
   public Response listTasks(String space_group_id, Long projectId, Long labelId, String filterLabelIds, String tags, String statusId, String dueDate, String priority,  
                             String assignee, Boolean showCompleted, String keyword, String groupBy, String orderBy, String filter, String viewType, Integer page, SecurityContext securityContext) throws EntityNotFoundException, UnAuthorizedOperationException {
-    boolean advanceSearch = filterData.isEnabled();
+
     FilterKey filterKey = FilterKey.withProject(projectId, filter == null || filter.isEmpty() ? null : DUE.valueOf(filter.toUpperCase()));
     if (labelId != null && labelId != -1L) {
       filterKey = FilterKey.withLabel(labelId);
     }
-    Filter fd = filterData.getFilter(filterKey);    
+    Filter fd = filterData.getFilter(filterKey);
+
+    boolean advanceSearch = fd.isEnabled();
     if (advanceSearch) {
       fd.updateFilterData(filterLabelIds, tags, statusId, dueDate, priority, assignee, showCompleted, keyword);
     }

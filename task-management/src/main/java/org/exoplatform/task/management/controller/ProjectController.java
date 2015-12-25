@@ -68,6 +68,7 @@ import org.exoplatform.task.service.StatusService;
 import org.exoplatform.task.service.UserService;
 import org.exoplatform.task.util.ListUtil;
 import org.exoplatform.task.util.ProjectUtil;
+import org.exoplatform.task.util.StringUtil;
 import org.exoplatform.task.util.UserUtil;
 import org.gatein.common.text.EntityEncoder;
 import org.json.JSONArray;
@@ -170,6 +171,10 @@ public class ProjectController extends AbstractController {
     if(name == null || name.isEmpty()) {
       return Response.status(412).body("Name of project is required");
     }
+    
+    //CKEditor encode user input already, but we still need to remove malicious code
+    //here in case user inject request using curl TA-387
+    description = StringUtil.encodeInjectedHtmlTag(description);
 
     Project project;
     if (space_group_id  != null) {
@@ -586,6 +591,9 @@ public class ProjectController extends AbstractController {
 
     Map<String, String[]> fields = new HashMap<String, String[]>();
     fields.put("name", new String[] {name});
+    //CKEditor encode user input already, but we still need to remove malicious code
+    //here in case user inject request using curl TA-387
+    description = StringUtil.encodeInjectedHtmlTag(description);
     fields.put("description", new String[] {description});
     fields.put("parent", new String[] {parent});
     fields.put("calendarIntegrated", new String[] {calendarIntegrated});

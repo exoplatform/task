@@ -20,6 +20,7 @@ package org.exoplatform.task.integration.calendar;
 import org.exoplatform.calendar.model.Calendar;
 import org.exoplatform.calendar.model.query.CalendarQuery;
 import org.exoplatform.calendar.storage.CalendarDAO;
+import org.exoplatform.commons.utils.HTMLEntityEncoder;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -154,6 +155,7 @@ public class TasksCalendarDAOImpl implements CalendarDAO {
     if (project.getColor() != null) {
       calendar.setCalendarColor(project.getColor());
     }
+    HTMLEntityEncoder encoder = HTMLEntityEncoder.getInstance();
     calendar.setDescription(project.getDescription());
     calendar.setEditPermission(null);
     //ProjectService service = ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(ProjectService.class);
@@ -164,7 +166,7 @@ public class TasksCalendarDAOImpl implements CalendarDAO {
     ListAccess<Task> listTask = taskService.findTasks(taskQuery);
     calendar.setHasChildren(ListUtil.getSize(listTask) > 0);
     calendar.setId(String.valueOf(project.getId()));
-    calendar.setName(project.getName() + NAME_SUFFIX);
+    calendar.setName(encoder.encode(project.getName()) + NAME_SUFFIX);
     Set<String> permissions = new HashSet<String>();
     if (project.getManager() != null) {
       permissions.addAll(project.getManager());

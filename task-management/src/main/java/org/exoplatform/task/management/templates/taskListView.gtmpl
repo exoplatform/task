@@ -92,7 +92,7 @@
                 <% if (!isGuest) {%>
                 <img width="20px" height="20px" src="${user.avatar}" alt="${user.displayName}">
                 <%}%>
-                <a href="${isGuest ? "javascript:void(0)" : user.url}"><span class="group-name user">${isGuest ? "Unassigned" : encoder.encode(user.displayName)}</span> <span class="amount-item user">(${group.value.size()})</span></a>
+                <a href="${isGuest ? "javascript:void(0)" : user.url}"><span class="group-name">${isGuest ? bundle.getString("label.unassigned") : encoder.encode(user.displayName)}</span> <span class="amount-item">(${group.value.size()})</span></a>
                 <% } else { %>
                 <span class="heading-title"><span class="group-name">${encoder.encode(group.key.name)}</span> <span class="amount-item">(${group.value.size()})</span></span>
                 <% } %>

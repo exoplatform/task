@@ -7,6 +7,10 @@
         coworker: '${label.coworker}',
         unassigned: '${label.unassigned}',
         tag: '${label.tag}',
+        label: '${label.label}',
+        labels: '${label.labels}',
+        createTag: '${label.createTag}',
+        createLabel: '${label.createLabel}',
         noMatch: '${label.noMatch}',
         remove: '${label.remove}',
         selectUser: '${popup.selectUser}',
@@ -16,6 +20,7 @@
         noPermissionToAccessProject: '${popup.msg.noPermissionToAccessProject}',
         markAsCompleted: '${message.markAsCompleted}',
         markAsUnCompleted: '${message.markAsUnCompleted}',
+        projectDescriptionEmpty: '${editinline.projectDescription.empty}',
         taskPlan: {
             errorMessage: '${editinline.taskPlan.errorMessage}'
         }

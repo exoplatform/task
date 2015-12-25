@@ -755,10 +755,11 @@ public final class TaskUtil {
   }
 
   public static Event buildEvent(Event event, Task task) {
+    HTMLEntityEncoder encoder = HTMLEntityEncoder.getInstance();
     if (task.getStatus() != null) {
       event.setCalendarId(String.valueOf(task.getStatus().getProject().getId()));
       //TODO: how to process localization for status name when build calendar event
-      event.setEventState(task.getStatus().getName());
+      event.setEventState(encoder.encode(task.getStatus().getName()));
     }
     event.setDescription(task.getDescription());
     event.setEventCategoryId(NewUserListener.DEFAULT_EVENTCATEGORY_ID_ALL);
@@ -785,9 +786,13 @@ public final class TaskUtil {
         default:
           event.setPriority(Event.PRIORITY_NONE);
       }   
+    }    
+    event.setSummary(encoder.encode(task.getTitle()));
+    String assignee = task.getAssignee();
+    if (assignee != null) {
+      assignee = encoder.encode(assignee);
     }
-    event.setSummary(task.getTitle());
-    event.setTaskDelegator(task.getAssignee());    
+    event.setTaskDelegator(assignee);    
     return event;
   }
   
