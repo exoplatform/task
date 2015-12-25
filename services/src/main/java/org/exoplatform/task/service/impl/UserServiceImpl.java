@@ -76,26 +76,15 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public User loadUser(String username) {
-    if (username == null) {
+    if (username == null || username.isEmpty()) {
       return GUEST;
     }
-    try {
-      org.exoplatform.services.organization.User u = orgService.getUserHandler().findUserByName(username);
-      if (u == null) {
-        return GUEST;
-      }
-      Profile profile = identityManager
-              .getOrCreateIdentity(OrganizationIdentityProvider.NAME, username, false)
-              .getProfile();
-      String avatarURL = profile.getAvatarUrl();
-      if (avatarURL == null) {
-        avatarURL = LinkProvider.PROFILE_DEFAULT_AVATAR_URL;
-      }
-      return new User(username, u.getEmail(), u.getFirstName(), u.getLastName(), profile.getFullName(), avatarURL, profile.getUrl());
+    org.exoplatform.social.core.identity.model.Identity identity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, username, true);
 
-    } catch (Exception ex) {// NOSONAR Throw by orgService
-      LOG.debug("User not find, return GUEST", ex);
+    if (identity == null) {
       return GUEST;
+    } else {
+      return convertToUser(identity);
     }
   }
 
@@ -115,18 +104,9 @@ public class UserServiceImpl implements UserService {
         org.exoplatform.social.core.identity.model.Identity[] identities = list.load(index, length);
         User[] users = new User[identities.length];
 
-        Profile p;
         for (int i = 0; i < identities.length; i++) {
           org.exoplatform.social.core.identity.model.Identity id = identities[i];
-          p = identities[i].getProfile();
-
-          //TODO: Maybe need to call organizationService to fetch email, firstName, lastName
-
-          String avatarURL = p.getAvatarUrl();
-          if (avatarURL == null) {
-            avatarURL = LinkProvider.PROFILE_DEFAULT_AVATAR_URL;
-          }
-          users[i] = new User(id.getRemoteId(), null, null, null, p.getFullName(), avatarURL, p.getUrl());
+          users[i] = convertToUser(id);
         }
 
         return users;
@@ -137,6 +117,26 @@ public class UserServiceImpl implements UserService {
         return list.getSize();
       }
     };
+  }
+
+  private User convertToUser(org.exoplatform.social.core.identity.model.Identity identity) {
+    Profile profile = identity.getProfile();
+    String username = identity.getRemoteId();
+    String email = profile.getEmail();
+    String firstName = (String)profile.getProperty(Profile.FIRST_NAME);
+    String lastName = (String)profile.getProperty(Profile.LAST_NAME);
+    String displayName = profile.getFullName();
+    String avatar = profile.getAvatarUrl();
+    if (avatar == null) {
+      avatar = LinkProvider.PROFILE_DEFAULT_AVATAR_URL;
+    }
+    String url = profile.getUrl();
+
+    User u = new User(username, email, firstName, lastName, displayName, avatar, url);
+    u.setDeleted(identity.isDeleted());
+    u.setEnable(identity.isEnable());
+
+    return u;
   }
 
   @Override
