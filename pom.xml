@@ -28,7 +28,7 @@
   </parent>
   <groupId>org.exoplatform.addons.task</groupId>
   <artifactId>task-management-parent</artifactId>
-  <version>1.0.x-SNAPSHOT</version>
+  <version>1.0.0</version>
   <packaging>pom</packaging>
   <name>Task management parent POM</name>
   <description>Task management add-on parent POM</description>
@@ -42,7 +42,7 @@
   <scm>
     <connection>scm:git:git://github.com/exoplatform/task.git</connection>
     <developerConnection>scm:git:git@github.com:exoplatform/task.git</developerConnection>
-    <tag>HEAD</tag>
+    <tag>1.0.0</tag>
     <url>https://github.com/exoplatform/task</url>
   </scm>
   <properties>
