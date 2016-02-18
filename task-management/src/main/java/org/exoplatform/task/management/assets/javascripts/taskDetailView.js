@@ -3,6 +3,7 @@ define('taskDetailView', ['SHARED/jquery', 'taskManagementApp', 'taskCenterView'
     detailView.init = function() {
         taApp.onReady(function($) {
             detailView.initDomEvent();
+            detailView.enhanceCommentsLinks();
         });
     };
 
@@ -37,6 +38,19 @@ define('taskDetailView', ['SHARED/jquery', 'taskManagementApp', 'taskCenterView'
                     }
                 });
             });
+    };
+
+    /**
+     * Converts all URLs in comments as HTTP links
+     */
+    detailView.enhanceCommentsLinks = function() {
+        var ui = taApp.getUI();
+        var $rightPanel = ui.$rightPanel;
+
+        $rightPanel.find('.contentComment').each(function(index, ele) {
+            var commentContainer = $(ele);
+            commentContainer.html(taApp.convertURLsAsLinks(commentContainer.html()));
+        });
     };
 
     return detailView;

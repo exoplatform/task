@@ -279,5 +279,21 @@ define('taskManagementApp', ['SHARED/jquery', 'SHARED/taskLocale', 'SHARED/juzu-
           }
         }
 
+        /**
+         * This function parses the given text and convert URLs to HTTP links
+         * @param text
+         * @returns {string}
+         */
+        taApp.convertURLsAsLinks = function(text) {
+            return text.replace(/((((https?|ftp|file):\/\/)|www\.)[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])/ig,
+              function(url){
+                  var value = url;
+                  if(url.indexOf('www.') == 0) {
+                      url = 'http://' + url;
+                  }
+                  return '<a href="' + url + '" target="_blank">' + value + '</a>';
+              });
+        };
+
         return taApp;
 });

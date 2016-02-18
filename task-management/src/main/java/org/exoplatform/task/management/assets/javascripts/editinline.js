@@ -691,7 +691,11 @@ define('ta_edit_inline',
                 	editOptions.emptyclass = '';
                 }
                 if (fieldName == 'description') {
+                    editOptions.toggle = 'dblclick';
                     editOptions.emptytext = locale.taskDescriptionEmpty;
+                    editOptions.display = function(value, response) {
+                        $(this).html(editInline.taApp.convertURLsAsLinks(value));
+                    };
                 }
                 if (fieldName == 'tags') {
                     editOptions.emptytext = locale.tag;
@@ -790,7 +794,6 @@ define('ta_edit_inline',
                     }
                 }
 
-                $this.editable(editOptions);
                 $this.on('shown', function (e, editable) {
                     if (editable != undefined) {
                         $this.parent().removeClass('inactive').addClass('active');
@@ -800,6 +803,7 @@ define('ta_edit_inline',
                         $this.parent().removeClass('active').addClass('inactive');
                     }
                 });
+                $this.editable(editOptions);
                 if (fieldName == 'project') {
                     var enableEditProject = function($editable) {
                         $editable.editable('enable');

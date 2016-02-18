@@ -171,6 +171,13 @@ $(document).ready(function() {
             }
         });
     };
+    var enhanceCommentsLinks = function() {
+        $rightPanelContent.find('.contentComment').each(function(index, ele) {
+            var commentContainer = $(ele);
+            commentContainer.html(taApp.convertURLsAsLinks(commentContainer.html()));
+        });
+    };
+
     $rightPanel.on('submit', '.commentFormBox form', function(e) {
         e.preventDefault();
         var $form = $(e.target).closest('form');
@@ -188,6 +195,7 @@ $(document).ready(function() {
         var postCommentURL = $form.jzURL('TaskController.comment');
         var xhr = $.post(postCommentURL, { taskId: taskId, comment: comment}, function(data) {
             $commentContainer.jzLoad('TaskController.renderTaskComments()', {id: taskId, loadAllComment: loadAllComment}, function() {
+                enhanceCommentsLinks();
                 initCommentEditor();
             });
         },'json');
@@ -215,6 +223,7 @@ $(document).ready(function() {
             type: 'POST',
             success: function(data) {
                 $commentContainer.jzLoad('TaskController.renderTaskComments()', {id: taskId, loadAllComment: loadAllComment}, function() {
+                  enhanceCommentsLinks();
                   initCommentEditor();
                 });
             },
@@ -234,6 +243,7 @@ $(document).ready(function() {
           if (xhr.status >= 400) {
             taApp.showWarningDialog(xhr.responseText);
           } else {
+            enhanceCommentsLinks();
             initCommentEditor();            
           }
         });
