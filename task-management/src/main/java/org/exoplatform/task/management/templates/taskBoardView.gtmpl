@@ -38,9 +38,10 @@
     %>
     <div class="header ">
         <div class="clearfix">
-            <!--<div class="header-left pull-left">
-                <a href="#" class="btn btn-primary btn-add-task"><i class="uiIconSimplePlusMini"></i> New task</a>
-            </div>-->
+            <div class="header-left pull-left">
+                <a href="#" class="btn btn-primary btn-add-task" data-action="newtask"><i class="uiIconSimplePlusMini"></i> &{list.label.newTask}</a>
+            </div>
+
             <% 
             def groupByClass="display:none";
             if (taskNum >= TaskController.MIN_NUMBER_TASK_GROUPABLE) {

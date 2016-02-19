@@ -171,6 +171,10 @@ define('taskBoardView', ['SHARED/jquery', 'taskManagementApp', 'SHARED/edit_inli
                 $form.css('visibility', 'hidden');
                 return false;
             });
+
+            $centerPanel.off('click', '[data-action="newtask"]').on('click', '[data-action="newtask"]', function(e) {
+                $centerPanel.find('.taskBoardContainer').first().click();
+            });
         };
 
         boardView.initEditInline = function() {
