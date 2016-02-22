@@ -42,6 +42,8 @@ import org.gatein.common.text.EntityEncoder;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -53,7 +55,10 @@ import java.util.Map;
     @TemplateConfig(pluginId = TaskAssignPlugin.ID, template = "war:/notification/templates/mail/TaskAssignPlugin.gtmpl"),
     @TemplateConfig(pluginId = TaskCoworkerPlugin.ID, template = "war:/notification/templates/mail/TaskCoworkerPlugin.gtmpl"),
     @TemplateConfig(pluginId = TaskDueDatePlugin.ID, template = "war:/notification/templates/mail/TaskDueDatePlugin.gtmpl"),
-    @TemplateConfig(pluginId = TaskCompletedPlugin.ID, template = "war:/notification/templates/mail/TaskCompletedPlugin.gtmpl")})
+    @TemplateConfig(pluginId = TaskCompletedPlugin.ID, template = "war:/notification/templates/mail/TaskCompletedPlugin.gtmpl"),
+    @TemplateConfig(pluginId = TaskCommentPlugin.ID, template = "war:/notification/templates/mail/TaskCommentPlugin.gtmpl"),
+    @TemplateConfig(pluginId = TaskMentionPlugin.ID, template = "war:/notification/templates/mail/TaskMentionPlugin.gtmpl")
+})
 public class MailTemplateProvider extends TemplateProvider {
 
   public MailTemplateProvider(InitParams initParams) {
@@ -62,6 +67,8 @@ public class MailTemplateProvider extends TemplateProvider {
     this.templateBuilders.put(PluginKey.key(TaskCoworkerPlugin.ID), new TemplateBuilder());
     this.templateBuilders.put(PluginKey.key(TaskDueDatePlugin.ID), new TemplateBuilder());
     this.templateBuilders.put(PluginKey.key(TaskCompletedPlugin.ID), new TemplateBuilder());
+    this.templateBuilders.put(PluginKey.key(TaskCommentPlugin.ID), new CommentTemplateBuilder());
+    this.templateBuilders.put(PluginKey.key(TaskMentionPlugin.ID), new TemplateBuilder());
   }
   
   private class TemplateBuilder extends AbstractTemplateBuilder {
@@ -75,6 +82,7 @@ public class MailTemplateProvider extends TemplateProvider {
       String projectName = notification.getValueOwnerParameter(NotificationUtils.PROJECT_NAME);
       String taskTitle = notification.getValueOwnerParameter(NotificationUtils.TASK_TITLE);
       String taskDesc = notification.getValueOwnerParameter(NotificationUtils.TASK_DESCRIPTION);
+      String commentText = notification.getValueOwnerParameter(NotificationUtils.COMMENT_TEXT);
       String taskUrl = notification.getValueOwnerParameter(NotificationUtils.TASK_URL);
       String projectUrl = notification.getValueOwnerParameter(NotificationUtils.PROJECT_URL);
 
@@ -92,6 +100,7 @@ public class MailTemplateProvider extends TemplateProvider {
       templateContext.put("PROJECT_NAME", projectName == null ? "" : encoder.encode(projectName));
       templateContext.put("TASK_TITLE", encoder.encode(taskTitle));
       templateContext.put("TASK_DESCRIPTION", encoder.encode(getExcerpt(taskDesc, 130)));
+      templateContext.put("COMMENT_TEXT", commentText == null ? "" : encoder.encode(getExcerpt(commentText, 130)));
       templateContext.put("DUE_DATE", getDueDate(notification));
       templateContext.put("TASK_URL", taskUrl);
       templateContext.put("PROJECT_URL", projectUrl);
@@ -129,7 +138,7 @@ public class MailTemplateProvider extends TemplateProvider {
       return true;
     }
 
-    private String buildDigestMsg(List<NotificationInfo> notifications, TemplateContext templateContext) {
+    protected String buildDigestMsg(List<NotificationInfo> notifications, TemplateContext templateContext) {
       EntityEncoder encoder = HTMLEntityEncoder.getInstance();
       
       Map<String, List<NotificationInfo>> map = new HashMap<String, List<NotificationInfo>>();
@@ -182,7 +191,7 @@ public class MailTemplateProvider extends TemplateProvider {
       return sb.toString();
     }
 
-    private String getDueDate(NotificationInfo notification) {
+    protected String getDueDate(NotificationInfo notification) {
       String dueDate = notification.getValueOwnerParameter(NotificationUtils.DUE_DATE);
       if (dueDate != null) {
         Date date = new Date(Long.parseLong(dueDate));
@@ -193,6 +202,115 @@ public class MailTemplateProvider extends TemplateProvider {
       }
     }
   };
+
+  private class CommentTemplateBuilder extends TemplateBuilder {
+    protected String buildDigestMsg(List<NotificationInfo> notifications, TemplateContext templateContext) {
+      EntityEncoder encoder = HTMLEntityEncoder.getInstance();
+
+      Map<String, List<NotificationInfo>> map = new HashMap<String, List<NotificationInfo>>();
+      for (NotificationInfo notif : notifications) {
+        String activityID = notif.getValueOwnerParameter(NotificationUtils.ACTIVITY_ID);
+        List<NotificationInfo> tmp = map.get(activityID);
+        if (tmp == null) {
+          tmp = new LinkedList<NotificationInfo>();
+          map.put(activityID, tmp);
+        }
+        tmp.add(notif);
+      }
+
+      StringBuilder sb = new StringBuilder();
+      for (String activityID : map.keySet()) {
+        List<NotificationInfo> notifs = map.get(activityID);
+        NotificationInfo first = notifs.get(0);
+        String taskUrl = first.getValueOwnerParameter(NotificationUtils.TASK_URL);
+        String projectUrl = first.getValueOwnerParameter(NotificationUtils.PROJECT_URL);
+
+        PluginConfig config = CommonsUtils.getService(PluginSettingService.class).getPluginConfig(templateContext.getPluginId());
+        Locale locale = org.exoplatform.commons.notification.NotificationUtils.getLocale(templateContext.getLanguage());
+        String resourcePath = config.getBundlePath();
+
+        //. Count user
+        List<String> creators = new ArrayList<>();
+        for (NotificationInfo n : notifs) {
+          String creator = n.getValueOwnerParameter(NotificationUtils.CREATOR.getKey());
+          creators.remove(creator);
+          creators.add(creator);
+        }
+        Collections.reverse(creators);
+
+        IdentityManager idManager = CommonsUtils.getService(IdentityManager.class);
+        Profile lastUser = idManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, creators.get(0), true).getProfile();
+        String lastProfileURL = LinkProviderUtils.getRedirectUrl("user", creators.get(0));
+        String user = "<a href=\"" + lastProfileURL + "\" style=\"text-decoration: none; color: #2f5e92; font-family: 'HelveticaNeue Bold', Helvetica, Arial, sans-serif\">" + encoder.encode(lastUser.getFullName()) + "</a>";
+
+        if (creators.size() <= 1) {
+          templateContext.digestType(ElementType.DIGEST_ONE.getValue());
+        } else {
+          templateContext.digestType(ElementType.DIGEST_MORE.getValue());
+
+          lastUser = idManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, creators.get(1), true).getProfile();
+          lastProfileURL = LinkProviderUtils.getRedirectUrl("user", creators.get(1));
+
+          if (creators.size() == 2) {
+            user += " " + TemplateUtils.getResourceBundle("Notification.label.and", locale, resourcePath);
+          } else {
+            user += ", ";
+          }
+          user += " <a href=\"" + lastProfileURL + "\" style=\"text-decoration: none; color: #2f5e92; font-family: 'HelveticaNeue Bold', Helvetica, Arial, sans-serif\">" + encoder.encode(lastUser.getFullName()) + "</a>";
+
+          if (creators.size() == 3) {
+            user += " " + TemplateUtils.getResourceBundle("Notification.label.one.other", locale, resourcePath);
+          } else if (creators.size() > 3) {
+            String s = TemplateUtils.getResourceBundle("Notification.label.more.other", locale, resourcePath);
+            s = s.replace("{0}", String.valueOf(creators.size() - 2));
+            user += " " + s;
+          }
+        }
+        templateContext.put("USER", user);
+
+        // Count task
+        List<Long> tasks = new ArrayList<>();
+        for (NotificationInfo n : notifs) {
+          long id = Long.parseLong(n.getValueOwnerParameter(NotificationUtils.TASKS));
+          tasks.remove(id);
+          tasks.add(id);
+        }
+
+        String countTask = "";
+        if (tasks.size() <= 1) {
+          countTask = TemplateUtils.getResourceBundle("Notification.label.task", locale, resourcePath);
+          String taskTitle = first.getValueOwnerParameter(NotificationUtils.TASK_TITLE);
+          templateContext.put("TASK_TITLE", "<a href=\"" + taskUrl + "\" style=\"text-decoration: none; color: #2f5e92; font-family: 'HelveticaNeue Bold', Helvetica, Arial, sans-serif\">" + encoder.encode(getExcerpt(taskTitle, 30)) + "</a>");
+        } else {
+          countTask = TemplateUtils.getResourceBundle("Notification.label.tasks", locale, resourcePath);
+          countTask = countTask.replace("{0}", String.valueOf(tasks.size()));
+          templateContext.put("TASK_TITLE", "");
+        }
+        templateContext.put("COUNT_TASK", countTask);
+
+        String projectName = first.getValueOwnerParameter(NotificationUtils.PROJECT_NAME);
+        String inProject = "";
+        if (projectName != null && !projectName.isEmpty()) {
+          inProject = TemplateUtils.getResourceBundle("Notification.message.inProject", locale, resourcePath);
+          inProject = inProject.replace("{0}", "<a href=\"" + projectUrl + "\" style=\"text-decoration: none; color: #2f5e92; font-family: 'HelveticaNeue Bold', Helvetica, Arial, sans-serif\"><strong>" +
+                  encoder.encode(projectName) + "</strong></a>");
+        } else {
+          inProject = "";
+        }
+        if (tasks.size() <= 1) {
+          inProject += ":";
+        }
+        templateContext.put("PROJECT_NAME", inProject);
+
+        sb.append("<li style=\"margin:0 0 13px 14px;font-size:13px;line-height:18px;font-family:HelveticaNeue,Helvetica,Arial,sans-serif\"><div style=\"color: #333;\">");
+        String digester = TemplateUtils.processDigest(templateContext);
+        sb.append(digester);
+        sb.append("</div></li>");
+      }
+
+      return sb.toString();
+    }
+  }
 
   public static String getExcerpt(String str, int len) {
     if (str == null) {

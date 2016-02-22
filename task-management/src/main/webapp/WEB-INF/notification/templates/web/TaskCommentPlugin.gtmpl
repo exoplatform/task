@@ -1,0 +1,58 @@
+<li class="$READ clearfix" data-id="$NOTIFICATION_ID">
+  <div class="media">
+    <div class="avatarXSmall pull-left">
+      <img src="$AVATAR" alt="$USER" />
+    </div> 
+    <div class="media-body">
+      <%
+        String URL = PROJECT_URL;
+      	String msg = "";
+
+      	String profileUrl = "<a class=\"user-name text-bold\" href=\"" + PROFILE_URL + "\">" + USER + "</a>";
+        if (TOTAL_USER != null && TOTAL_USER >= 2) {
+            if (TOTAL_USER == 2) {
+                profileUrl += " " + _ctx.appRes("Notification.label.and") + " ";
+            } else {
+                profileUrl += ", ";
+            }
+            profileUrl += "<a class=\"user-name text-bold\" href=\"" + PROFILE_URL2 + "\">" + USER2 + "</a>";
+            if (COUNT_USER != null && COUNT_USER > 0) {
+                if (COUNT_USER == 1) {
+                    profileUrl += " " + _ctx.appRes("Notification.label.one.other");
+                } else {
+                    profileUrl += " " + _ctx.appRes("Notification.label.more.other", String.valueOf(COUNT_USER));
+                }
+            }
+        }
+
+       	if (COUNT != null && Integer.parseInt(COUNT) > 1) {
+            if (TOTAL_USER <= 1) {
+                msg = _ctx.appRes("Notification.message.more.TaskCommentPlugin", profileUrl, COUNT);
+            } else {
+                msg = _ctx.appRes("Notification.message.morePeople.more.TaskCommentPlugin", profileUrl, COUNT);
+            }
+       	} else {
+         URL = TASK_URL;
+            if (TOTAL_USER <= 1) {
+                msg = _ctx.appRes("Notification.message.TaskCommentPlugin", profileUrl);
+            } else {
+                msg = _ctx.appRes("Notification.message.morePeople.TaskCommentPlugin", profileUrl);
+            }
+       	}
+       	if (PROJECT_NAME != null && !PROJECT_NAME.isEmpty()) {
+       	  msg += " " + _ctx.appRes("Notification.message.inProject", "<b>" + PROJECT_NAME + "</b>");
+       	}
+      %> 
+      <div class="contentSmall" data-link="$URL">
+        <div class="status"><%=msg%></div>
+        <%if (TASK_TITLE != null && !TASK_TITLE.isEmpty()) {%>
+        <div class="content"><i class="uiIcon uiIconTick uiIconBlue"></i>
+        	<span>$TASK_TITLE</span>
+        </div>
+        <%} %>
+        <div class="lastUpdatedTime">$LAST_UPDATED_TIME</div>
+      </div>
+    </div>
+  </div>
+  <span class="remove-item" data-rest=""><i class="uiIconClose uiIconLightGray"></i></span>
+</li>

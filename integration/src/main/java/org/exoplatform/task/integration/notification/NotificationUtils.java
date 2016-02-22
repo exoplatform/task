@@ -18,19 +18,25 @@
 package org.exoplatform.task.integration.notification;
 
 import org.exoplatform.commons.api.notification.model.ArgumentLiteral;
+import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Task;
 
 import java.util.Set;
 
 public class NotificationUtils {
   public final static ArgumentLiteral<Task> TASK = new ArgumentLiteral<Task>(Task.class, "task");
+  public final static ArgumentLiteral<Comment> COMMENT = new ArgumentLiteral<Comment>(Comment.class, "comment");
   public final static ArgumentLiteral<String> CREATOR = new ArgumentLiteral<String>(String.class, "creator");
   public static final ArgumentLiteral<Set> COWORKER = new ArgumentLiteral<Set>(Set.class, "coworker");
+  public static final ArgumentLiteral<Set> MENTIONED = new ArgumentLiteral<Set>(Set.class, "mentioned");
+  public static final ArgumentLiteral<Set> RECEIVERS = new ArgumentLiteral<Set>(Set.class, "receivers");
+  public static final String TASKS = "tasks";
   public final static String TASK_TITLE = "taskName";
   public final static String TASK_DESCRIPTION = "taskDescription";
   public final static String DUE_DATE = "dueDate";
   public final static String PROJECT_NAME = "projectName";
   public final static String COUNT = "count";
+  public final static String COMMENT_TEXT = "commentText";
   //workaround because WebNotificationStorage#get(filter) has not been implemented properly
   //in Task we use this to group task notifications, used in WebNotificationStorage#getUnreadNotification
   public final static String ACTIVITY_ID = "activityId";

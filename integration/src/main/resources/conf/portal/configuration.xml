@@ -93,6 +93,11 @@
       <set-method>addListener</set-method>
       <type>org.exoplatform.task.integration.TaskLoggingListener</type>
     </component-plugin>
+    <component-plugin>
+      <name>exo.task.taskCommentCreation</name>
+      <set-method>addListener</set-method>
+      <type>org.exoplatform.task.integration.TaskCommentNotificationListener</type>
+    </component-plugin>
   </external-component-plugins>
 
   <import>jar:/conf/portal/task-notification-plugin.xml</import>

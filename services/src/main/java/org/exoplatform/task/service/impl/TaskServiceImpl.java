@@ -159,6 +159,13 @@ public class TaskServiceImpl implements TaskService {
     newComment.setComment(comment);
     newComment.setCreatedTime(new Date());
     Comment obj = daoHandler.getCommentHandler().create(newComment);
+
+    try {
+      listenerService.broadcast(TASK_COMMENT_CREATION, this, obj);
+    } catch (Exception e) {
+      LOG.error("Error while broadcasting task creation event", e);
+    }
+
     return obj;
   }
   

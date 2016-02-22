@@ -1,0 +1,33 @@
+<li class="$READ clearfix" data-id="$NOTIFICATION_ID">
+  <div class="media">
+    <div class="avatarXSmall pull-left">
+      <img src="$AVATAR" alt="$USER" />
+    </div> 
+    <div class="media-body">
+      <%
+        String URL = PROJECT_URL;
+      	String msg = "";
+      	//String profileUrl = "<a class=\"user-name text-bold\" href=\"" + PROFILE_URL + "\">" + USER + "</a>";
+       	if (COUNT != null && Integer.parseInt(COUNT) > 1) {
+       	 msg = _ctx.appRes("Notification.message.more.TaskMentionPlugin", COUNT);
+       	} else {
+         URL = TASK_URL;
+       	 msg = _ctx.appRes("Notification.message.TaskMentionPlugin");
+       	}
+       	if (PROJECT_NAME != null && !PROJECT_NAME.isEmpty()) {
+       	  msg += " " + _ctx.appRes("Notification.message.inProject", "<b>" + PROJECT_NAME + "</b>");
+       	}
+      %> 
+      <div class="contentSmall" data-link="$URL">
+        <div class="status"><%=msg%></div>
+        <%if (TASK_TITLE != null && !TASK_TITLE.isEmpty()) {%>
+        <div class="content"><i class="uiIcon uiIconTick uiIconBlue"></i>
+        	<span>$TASK_TITLE</span>
+        </div>
+        <%} %>
+        <div class="lastUpdatedTime">$LAST_UPDATED_TIME</div>
+      </div>
+    </div>
+  </div>
+  <span class="remove-item" data-rest=""><i class="uiIconClose uiIconLightGray"></i></span>
+</li>

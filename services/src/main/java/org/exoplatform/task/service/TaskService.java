@@ -22,6 +22,8 @@ public interface TaskService {
 
   String TASK_UPDATE = "exo.task.taskUpdate";
 
+  String TASK_COMMENT_CREATION = "exo.task.taskCommentCreation";
+
   /**
    * Create a new task.
    *
