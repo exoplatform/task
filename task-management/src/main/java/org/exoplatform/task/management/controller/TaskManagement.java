@@ -21,6 +21,7 @@ package org.exoplatform.task.management.controller;
 
 import javax.inject.Inject;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -58,6 +59,8 @@ import org.exoplatform.task.management.model.Paging;
 import org.exoplatform.task.management.model.TaskFilterData;
 import org.exoplatform.task.management.model.TaskFilterData.Filter;
 import org.exoplatform.task.management.model.TaskFilterData.FilterKey;
+import org.exoplatform.task.management.model.ViewType;
+import org.exoplatform.task.management.service.ViewStateService;
 import org.exoplatform.task.model.GroupKey;
 import org.exoplatform.task.model.TaskModel;
 import org.exoplatform.task.service.ParserContext;
@@ -111,6 +114,9 @@ public class TaskManagement {
   
   @Inject
   TaskFilterData filterData;
+
+  @Inject
+  ViewStateService viewStateService;
 
   @View
   public Response.Content index(String space_group_id, SecurityContext securityContext) throws EntityNotFoundException {        
@@ -212,6 +218,7 @@ public class TaskManagement {
 
     FilterKey filterKey = FilterKey.withProject(currProject, null);
     Filter fd = filterData.getFilter(filterKey);
+    ViewType viewType = viewStateService.getViewType(username, currProject);
 
     //
     if (taskId > 0 && taskModel.getTask().isCompleted()) {
@@ -292,7 +299,24 @@ public class TaskManagement {
     
     ListAccess<Label> tmp = taskService.findLabelsByUser(username);
     List<Label> labels = TaskUtil.buildRootLabels(Arrays.asList(ListUtil.load(tmp, 0, -1)));
-    
+
+    List<Status> projectStatus = new ArrayList<Status>();
+    Map<Long, Integer> numberTasks = new HashMap<Long, Integer>();
+    if (ViewType.BOARD == viewType && currProject > 0) {
+      projectStatus = statusService.getStatuses(currProject);
+      for(List<Task> list : groupTasks.values()) {
+        for (Task task : list) {
+          Status st = task.getStatus();
+          int num = 0;
+          if (numberTasks.containsKey(st.getId())) {
+            num = numberTasks.get(st.getId());
+          }
+          num++;
+          numberTasks.put(st.getId(), num);
+        }
+      }
+    }
+
     return index.with()
         .currentProjectId(currProject)
         .taskId(taskId)
@@ -300,6 +324,7 @@ public class TaskManagement {
         .orders(defOrders)
         .groups(defGroupBys)
         .project(project)
+        .projectStatuses(projectStatus)
         .tasks(tasks)
         .taskNum(taskNum)
         .incomNum(incomNum)
@@ -316,13 +341,14 @@ public class TaskManagement {
         .userTimezone(userService.getUserTimezone(username))
         .bundle(bundle)
         .isInSpace(space_group_id != null)
-        .viewType("")
+        .viewType(viewType)
         .currentLabelId(-1)
         .currentLabelName("")
         .taskService(taskService)
         .currentUser(username)
         .paging(paging)
         .errorMessage(errorMessage)
+        .numberTasksByStatus(numberTasks)
         .ok().withCharset(Tools.UTF_8);
   }
 
@@ -520,7 +546,7 @@ public class TaskManagement {
             .userTimezone(userTimezone)
             .bundle(bundle)
             .isInSpace(space_group_id != null)
-            .viewType("")
+            .viewType(ViewType.LIST)
             .currentLabelId(labelId == null ? -1 : labelId)
             .currentLabelName(label != null ? label.getName() : "")
             .taskService(taskService)

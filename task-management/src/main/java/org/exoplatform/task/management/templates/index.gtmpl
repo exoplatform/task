@@ -1,5 +1,7 @@
 #{param name=currentProjectId /}
 #{param name=project /}
+#{param name=projectStatuses /}
+#{param name=numberTasksByStatus/}
 #{param name=tasks /}
 #{param name=taskNum/}
 #{param name=incomNum/}

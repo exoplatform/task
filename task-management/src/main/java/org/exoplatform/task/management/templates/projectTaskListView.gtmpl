@@ -26,7 +26,9 @@
 
 <%
 	import org.exoplatform.commons.utils.HTMLEntityEncoder;
+    import org.exoplatform.task.management.model.ViewType;
 
+    def isBoardView = (ViewType.BOARD == viewType)
 	def encoder = HTMLEntityEncoder.getInstance();
 %>
 
@@ -67,7 +69,7 @@
                          <input type="hidden" name="groupBy" value="${groupBy}"/>
                          <input type="hidden" name="orderBy" value="${orderBy}"/>
                          <input type="hidden" name="filter" value="${filter}"/>
-                         <input type="hidden" name="viewType" value="${viewType}"/>
+                         <input type="hidden" name="viewType" value="${viewType.name()}"/>
                          <input type="hidden" name="page" value="${paging.currentPage}"/>
                          <input type="hidden" name="showCompleted" value="${showCompleted}"/>
                          <input type="hidden" name=incomNum value="${incomNum}"/>
@@ -96,11 +98,11 @@
             <div class="alignBtnGroup center">
                     <%if (currentProjectId > 0) { %>
                 <ul class="btn-group normal-group">
-                    <li class="btn ${viewType != 'board' ? 'active' : ''}">
-                        <a href="javascript:void(0);" data-viewtype="list">&{label.listView}</a>
+                    <li class="btn ${!isBoardView ? 'active' : ''}">
+                        <a href="javascript:void(0);" data-viewtype="${ViewType.LIST.name()}">&{label.listView}</a>
                     </li>
-                    <li class="btn ${currentProjectId <= 0 ? "disabled" : ""} ${viewType == 'board' ? 'active' : ''}">
-                        <a href="javascript:void(0);" data-viewtype="board">&{label.boardView}</a>
+                    <li class="btn ${currentProjectId <= 0 ? "disabled" : ""} ${isBoardView ? 'active' : ''}">
+                        <a href="javascript:void(0);" data-viewtype="${ViewType.BOARD.name()}">&{label.boardView}</a>
                     </li>
                 </ul>
                     <%} %>
@@ -108,7 +110,7 @@
         </div>
     </div>
     <div class="uiContentBox">
-        <% if (viewType == "board") {%>
+        <% if (isBoardView) {%>
             #{include path=taskBoardView.gtmpl/}
         <%} else {%>
             #{include path=taskListView.gtmpl/}

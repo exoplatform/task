@@ -65,6 +65,8 @@ import org.exoplatform.task.management.model.Paging;
 import org.exoplatform.task.management.model.TaskFilterData;
 import org.exoplatform.task.management.model.TaskFilterData.Filter;
 import org.exoplatform.task.management.model.TaskFilterData.FilterKey;
+import org.exoplatform.task.management.model.ViewType;
+import org.exoplatform.task.management.service.ViewStateService;
 import org.exoplatform.task.management.util.JsonUtil;
 import org.exoplatform.task.model.CommentModel;
 import org.exoplatform.task.model.GroupKey;
@@ -91,8 +93,6 @@ import org.json.JSONObject;
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
 public class TaskController extends AbstractController {
-
-  private static final List<String> VIEW_TYPES = Arrays.asList("list", "board");
 
   public static final int MIN_NUMBER_TASK_GROUPABLE = 2;
 
@@ -144,6 +144,9 @@ public class TaskController extends AbstractController {
   
   @Inject
   TaskFilterData filterData;
+
+  @Inject
+  ViewStateService viewStateService;
 
   @Resource
   @Ajax
@@ -517,11 +520,15 @@ public class TaskController extends AbstractController {
     }
     
     Identity currIdentity = ConversationState.getCurrent().getIdentity();
-    if (projectId <= 0 || viewType == null || !VIEW_TYPES.contains(viewType)) {
-      viewType = VIEW_TYPES.get(0);
+    ViewType vType;
+    if (projectId <= 0 || viewType == null || viewType.isEmpty()) {
+      vType = viewStateService.getViewType(securityContext.getRemoteUser(), projectId);
+    } else {
+      vType = ViewType.getViewType(viewType);
+      viewStateService.saveViewType(securityContext.getRemoteUser(), projectId, vType);
     }
-    boolean isBoardView = viewType.equals(VIEW_TYPES.get(1));
-    
+    boolean isBoardView = (ViewType.BOARD == vType);
+
     Project project = null;
     boolean noProjPermission = false;
     List<Status> projectStatuses = Collections.emptyList();
@@ -809,7 +816,7 @@ public class TaskController extends AbstractController {
         .filter(filter == null ? "" : filter)
         .advanceSearch(advanceSearch)
         .bundle(bundle)
-        .viewType(viewType)
+        .viewType(vType)
         .userTimezone(userTimezone)
         .taskService(taskService)
         .currentUser(currentUser)

@@ -13,7 +13,8 @@
     import org.exoplatform.task.util.ResourceUtil;
     import org.exoplatform.services.security.ConversationState;
     import org.exoplatform.task.management.controller.TaskController;
-  	 import org.exoplatform.commons.utils.HTMLEntityEncoder;
+    import org.exoplatform.commons.utils.HTMLEntityEncoder;
+    import org.exoplatform.task.management.model.ViewType;
 
   	 def encoder = HTMLEntityEncoder.getInstance();
   	
@@ -209,7 +210,7 @@
                                         <input type="hidden" name="projectId" value="${st.project.id}"/>
                                         <input type="hidden" name="groupBy" value="${groupBy}"/>
                                         <input type="hidden" name="orderBy" value="${orderBy}"/>
-                                        <input type="hidden" name="viewType" value="board"/>
+                                        <input type="hidden" name="viewType" value="${ViewType.BOARD.name()}"/>
                                         <% if (groupBy != null && groupBy != 'none' && groupBy != '') {%>
                                             <input type="hidden" name="${groupBy}" value="${group.key.value == null ? "" : group.key.value.username}"/>
                                         <%}%>

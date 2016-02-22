@@ -28,7 +28,9 @@
     @Binding(value = ProjectService.class),
     @Binding(value = StatusService.class),
     @Binding(value = OrganizationService.class),
-    @Binding(value = UserService.class)
+    @Binding(value = UserService.class),
+    @Binding(value = SettingService.class),
+    @Binding(value = ViewStateService.class)
 })
 @WebJars({
     @WebJar("x-editable-bootstrap"),
@@ -84,10 +86,12 @@ import juzu.plugin.portlet.Portlet;
 import juzu.plugin.webjars.WebJar;
 import juzu.plugin.webjars.WebJars;
 
+import org.exoplatform.commons.api.settings.SettingService;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.task.dao.DAOHandler;
 import org.exoplatform.task.management.controller.NavigationState;
 import org.exoplatform.task.management.controller.TaskManagement;
+import org.exoplatform.task.management.service.ViewStateService;
 import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.StatusService;
 import org.exoplatform.task.service.TaskParser;
