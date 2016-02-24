@@ -1,0 +1,8 @@
+= Task
+:ci-url: https://ci.exoplatform.org/job/
+:ci-job-name: addon-task-1.0.x-ci
+
+image:https://img.shields.io/badge/eXo%20Add--on-supported-blue.svg[]
+image:https://ci.exoplatform.org/buildStatus/icon?job={ci-job-name}["Build Status", link="{ci-url}{ci-job-name}/"]
+
+Tasks management add-on

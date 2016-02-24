@@ -2,34 +2,40 @@
 #{param name=bundle/}
 
 <%
-    import org.exoplatform.task.utils.TaskUtil;
-    import org.exoplatform.task.utils.ResourceUtil;
+    import org.exoplatform.task.util.TaskUtil;
+    import org.exoplatform.task.util.ResourceUtil;
+    import org.exoplatform.services.security.ConversationState;
+  	 import org.exoplatform.commons.utils.HTMLEntityEncoder;
+
+  	 def encoder = HTMLEntityEncoder.getInstance();
 
     def commentCount = taskModel.getCommentCount();
     def comments = taskModel.getComments();
     def currentUser = taskModel.getCurrentUser();
     def allCommentsLoaded = commentCount == comments.size();
+
+    def identity = ConversationState.getCurrent().getIdentity();
 %>
 <div class="commentBox" data-allcomment="${allCommentsLoaded}">
-    <% if (!allCommentsLoaded && commentCount > 2) {%>
+    <% if (commentCount > 2) {%>
     <div class="commentListInfo ">
-        <a href="javascript:void(0);" class="load-all-comments"><%= ResourceUtil.resolveMessage(bundle, "comment.message.showAll", commentCount);%></a>
+        <a href="javascript:void(0);" class="load-all-comments" data-loadall="${!allCommentsLoaded}"><%= ResourceUtil.resolveMessage(bundle, !allCommentsLoaded ? "comment.message.showAll" : "comment.message.hideAll", commentCount);%></a>
     </div>
     <%}%>
     <% if (commentCount == 0) {%>
     <div class="empty center">&{comment.message.noComment}</div>
     <%} else {%>
     <div class="commentList">
-        <% comments.each {comment -> %>
+        <% for (def comment in comments) {%>
         <div class="commentItem" data-commentid="${comment.id}">
             <div class="commmentLeft pull-left">
                 <a class="avatarXSmall" href="${comment.author.url}">
-                    <img src="${comment.author.avatar}" alt="${comment.author.displayName}">
+                    <img src="${comment.author.avatar}" alt="${encoder.encode(comment.author.displayName)}">
                 </a>
             </div><!--end commentLeft-->
             <div class="commentRight">
                 <div class="author">
-                    <a href="${comment.author.url}">${comment.author.displayName}</a>
+                    <a href="${comment.author.url}">${encoder.encode(comment.author.displayName)}</a>
                                     <span class="date">
                                         <%= TaskUtil.getPeriod(comment.getCreatedTime().getTime(), bundle)%>
                                      </span>
@@ -39,9 +45,11 @@
                 </p>
             </div><!--end commentRight-->
 
-            <a   href="javascript:void(0)" class="actionIcon controllDelete" data-toggle="tooltip" data-placement="left" title="Remove">
-                <i class="uiIconTrashMini uiIconLightGray "></i>
-             </a>
+            <% if (comment.canEdit(identity)) {%>
+                <a href="javascript:void(0)" class="actionIcon controllDelete" data-toggle="tooltip" data-placement="left" title="&{label.remove}">
+                    <i class="uiIconTrashMini uiIconLightGray "></i>
+                </a>
+            <%}%>
         </div>
         <%}%>
     </div>
@@ -52,15 +60,13 @@
                 <div class="clearfix">
                     <div class="commmentLeft pull-left">
                         <a class="avatarXSmall" href="${currentUser.url}">
-                            <img src="${currentUser.avatar}" alt="${currentUser.displayName}">
+                            <img src="${currentUser.avatar}" alt="${encoder.encode(currentUser.displayName)}">
                         </a>
                     </div><!--end commentLeft-->
                     <div class="commentRight">
                         <div class="commentInputBox ">
                             <div class="commentInput">
-                                <!--<textarea title="Add your comment..." cols="30" rows="10" id="" name="" class="textarea" style="visibility: hidden; display: none;">
-                                </textarea>-->
-                                <textarea title="Add your comment..." name="comment" cols="30" rows="10" class="textarea"></textarea>
+                                <textarea title="&{comment.message.addYourComment}" name="comment" cols="30" rows="10" class="textarea"></textarea>
                             </div>
                         </div>
                     </div><!--end commentRight-->

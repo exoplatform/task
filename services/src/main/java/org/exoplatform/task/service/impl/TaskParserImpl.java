@@ -22,6 +22,7 @@ package org.exoplatform.task.service.impl;
 import java.util.ServiceLoader;
 
 import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.service.ParserContext;
 import org.exoplatform.task.service.TaskBuilder;
 import org.exoplatform.task.service.TaskParser;
 import org.exoplatform.task.service.TaskParserPlugin;
@@ -30,19 +31,19 @@ import org.exoplatform.task.service.TaskParserPlugin;
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
 public class TaskParserImpl implements TaskParser {
+  ServiceLoader<TaskParserPlugin> parsers = ServiceLoader.load(TaskParserPlugin.class,
+                                                               this.getClass().getClassLoader());
 
   @Override
-  public Task parse(String input) {
+  public Task parse(String input, ParserContext context) {
     if(input == null) {
       return null;
     }
 
     TaskBuilder builder = new TaskBuilder();
-    ServiceLoader<TaskParserPlugin> parsers = ServiceLoader.load(TaskParserPlugin.class,
-        this.getClass().getClassLoader());
     String in = input;
     for(TaskParserPlugin parser : parsers) {
-      in = parser.parse(in, builder);
+      in = parser.parse(in, context, builder);
     }
     builder.withTitle(in);
 

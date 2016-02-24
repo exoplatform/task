@@ -22,55 +22,26 @@
 
 package org.exoplatform.task.dao.jpa;
 
-import java.util.Collections;
-import java.util.List;
+import javax.persistence.TypedQuery;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-
-import org.exoplatform.commons.persistence.impl.EntityManagerService;
 import org.exoplatform.commons.persistence.impl.GenericDAOJPAImpl;
+import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.task.dao.CommentHandler;
 import org.exoplatform.task.domain.Comment;
-import org.exoplatform.task.domain.Task;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
-public class CommentDAOImpl extends GenericDAOJPAImpl<Comment, Long> implements CommentHandler {
-
-  private EntityManagerService entityService;
-
-  public CommentDAOImpl(EntityManagerService entityService) {
-    this.entityService = entityService;
-  }
-  
-  @Override
-  public EntityManager getEntityManager() {
-    return entityService.getEntityManager();
-  }
+public class CommentDAOImpl extends CommonJPADAO<Comment, Long> implements CommentHandler {
 
   @Override
-  public long count(Task task) {
-    Long count = getEntityManager().createNamedQuery("Comment.countCommentOfTask", Long.class)
-            .setParameter("taskId", task.getId())
-            .getSingleResult();
-    return count;
-  }
+  public ListAccess<Comment> findComments(long taskId) {
+    TypedQuery<Comment> query = getEntityManager().createNamedQuery("Comment.findCommentsOfTask", Comment.class);
+    TypedQuery<Long> count = getEntityManager().createNamedQuery("Comment.countCommentOfTask", Long.class);
 
-  @Override
-  public List<Comment> findCommentsOfTask(Task task, int start, int limit) {
-    Query query = getEntityManager().createNamedQuery("Comment.findCommentsOfTask", Comment.class);
-    query.setParameter("taskId", task.getId());
-    if(limit > 0) {
-      query.setFirstResult(start);
-      query.setMaxResults(limit);
-    }
-    List<Comment> comments = query.getResultList();
+    query.setParameter("taskId", taskId);
+    count.setParameter("taskId", taskId);
 
-    //TODO: should re-order by java code or by query
-    Collections.reverse(comments);
-
-    return comments;
+    return new JPAQueryListAccess<Comment>(Comment.class, count, query);
   }
 }

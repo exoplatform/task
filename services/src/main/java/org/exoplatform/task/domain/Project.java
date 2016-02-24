@@ -19,68 +19,28 @@
 
 package org.exoplatform.task.domain;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
-import javax.persistence.CascadeType;
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
 import org.exoplatform.commons.api.persistence.ExoEntity;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.services.security.MembershipEntry;
+import org.exoplatform.task.util.ProjectUtil;
+
+import javax.persistence.*;
+
+import java.util.*;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>
  */
-@Entity
+@Entity(name = "TaskProject")
 @ExoEntity
 @Table(name = "TASK_PROJECTS")
-@NamedQueries({
-    @NamedQuery(name = "Project.getRootProjects",
-        query = "SELECT p FROM Project p WHERE p.parent.id = 0 OR p.parent is null"),
-    @NamedQuery(name = "Project.findSubProjects",
-        query = "SELECT p FROM Project p WHERE p.parent.id = :projectId"),
-    @NamedQuery(name = "Project.findAllByMembership",
-        query = "SELECT p FROM Project p " +
-            "  LEFT JOIN p.manager managers " +
-            "  LEFT JOIN p.participator participators " +
-            "WHERE managers in (:memberships) OR participators in (:memberships)"),
-    @NamedQuery(name = "Project.findRootProjectsByMemberships",
-        query = "SELECT p FROM Project p " +
-            "  LEFT JOIN p.manager managers " +
-            "  LEFT JOIN p.participator participators " +
-            "WHERE (managers in (:memberships) OR participators in (:memberships)) " +
-            "AND (p.parent.id = 0 OR p.parent is null)"),
-    @NamedQuery(name = "Project.findSubProjectsByMemberships",
-        query = "SELECT p FROM Project p " +
-            "  LEFT JOIN p.manager managers " +
-            "  LEFT JOIN p.participator participators " +
-            "WHERE (managers in (:memberships) OR participators in (:memberships)) " +
-            "AND p.parent.id = :projectId")
-})
 public class Project {
 
-  private static final String PREFIX_CLONE = "Copy of ";
+  public static final String PREFIX_CLONE = "Copy of ";
 
   @Id
-  @GeneratedValue
+  @SequenceGenerator(name="SEQ_TASK_PROJECTS_PROJECT_ID", sequenceName="SEQ_TASK_PROJECTS_PROJECT_ID")
+  @GeneratedValue(strategy=GenerationType.AUTO, generator="SEQ_TASK_PROJECTS_PROJECT_ID")
   @Column(name = "PROJECT_ID")
   private long      id;
 
@@ -93,7 +53,8 @@ public class Project {
   @Column(name = "CALENDAR_INTEGRATED")
   private boolean calendarIntegrated = false;
 
-  @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+  //TODO: should remove cascade ALL on this field
+  @OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE, orphanRemoval = true)
   private Set<Status> status = new HashSet<Status>();
 
   @ElementCollection
@@ -116,6 +77,10 @@ public class Project {
 
   @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY, cascade=CascadeType.REMOVE)
   private List<Project> children = new LinkedList<Project>();
+
+  // This field is used for remove cascade
+  @ManyToMany(mappedBy = "hiddenProjects", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+  private Set<UserSetting> hiddenOn = new HashSet<UserSetting>();
 
   public Project() {
   }
@@ -144,15 +109,22 @@ public class Project {
     this.name = name;
   }
 
+  //TODO: get list status of project via StatusService
+  @Deprecated
   public Set<Status> getStatus() {
     return status;
   }
 
+  @Deprecated
   public void setStatus(Set<Status> status) {
     this.status = status;
   }
 
+  @Deprecated
   public Set<String> getParticipator() {
+    if (participator == null) {
+      participator = ProjectUtil.getParticipator(getId());
+    }
     return participator;
   }
 
@@ -160,7 +132,11 @@ public class Project {
     this.participator = participator;
   }
 
+  @Deprecated
   public Set<String> getManager() {
+    if (manager == null) {
+      manager = ProjectUtil.getManager(getId());
+    }
     return manager;
   }
 
@@ -208,37 +184,42 @@ public class Project {
     this.parent = parent;
   }
 
+  @Deprecated
   public List<Project> getChildren() {
     return children;
   }
 
+  @Deprecated
   public void setChildren(List<Project> children) {
     this.children = children;
   }
 
   public Project clone(boolean cloneTask) {
-    Project project = new Project(PREFIX_CLONE + this.getName(), this.getDescription(), new HashSet<Status>(),
-        new HashSet<String>(this.getManager()), new HashSet<String>(this.getParticipator()));
+//    Set<String> manager = new HashSet<String>();
+//    Set<String> participator = new HashSet<String>();
 
+    //This create performance issue, we need this to be loaded lazily
+//    if (getManager() != null) {
+//      manager.addAll(getManager());
+//    }
+//    if (getParticipator() != null) {
+//      participator.addAll(getParticipator());
+//    }
+
+    Project project = new Project(this.getName(), this.getDescription(), new HashSet<Status>(),
+        null, null);
+
+    project.setId(getId());
     project.setColor(this.getColor());
     project.setDueDate(this.getDueDate());
-    project.setParent(this.getParent());
-
-    if (this.getStatus() != null) {
-      for (Status st : this.getStatus()) {
-        Status cloned = st.clone(cloneTask);
-        project.getStatus().add(cloned);
-        cloned.setProject(project);
-      }
+    if (this.getParent() != null) {
+      project.setParent(getParent().clone(false));
     }
+    project.setCalendarIntegrated(isCalendarIntegrated());
 
-    if (this.getChildren() != null) {
-      for (Project p : this.getChildren()) {
-        Project cloned = p.clone(cloneTask);
-        project.getChildren().add(cloned);
-        cloned.setParent(project);
-      }
-    }
+    //
+    project.status = new HashSet<Status>();
+    project.children = new LinkedList<Project>();
 
     return project;
   }

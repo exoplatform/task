@@ -16,39 +16,32 @@
 */
 package org.exoplatform.task.service.impl;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ServiceLoader;
-import java.util.Set;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.persistence.TypedQuery;
+
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.exoplatform.commons.api.persistence.ExoTransactional;
+import org.exoplatform.commons.utils.ListAccess;
+import org.exoplatform.services.listener.ListenerService;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.exoplatform.task.dao.DAOHandler;
 import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.domain.Comment;
-import org.exoplatform.task.domain.Priority;
+import org.exoplatform.task.domain.Label;
+import org.exoplatform.task.domain.LabelTaskMapping;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.domain.TaskLog;
-import org.exoplatform.task.exception.CommentNotFoundException;
-import org.exoplatform.task.exception.ParameterEntityException;
-import org.exoplatform.task.exception.StatusNotFoundException;
-import org.exoplatform.task.exception.TaskNotFoundException;
-import org.exoplatform.task.service.DAOHandler;
-import org.exoplatform.task.service.TaskListener;
+import org.exoplatform.task.domain.ChangeLog;
+import org.exoplatform.task.exception.EntityNotFoundException;
+import org.exoplatform.task.service.TaskPayload;
 import org.exoplatform.task.service.TaskService;
-import org.exoplatform.task.service.impl.TaskEvent.EventBuilder;
-import org.exoplatform.task.service.impl.TaskEvent.Type;
 
 /**
  * Created by The eXo Platform SAS
@@ -63,21 +56,12 @@ public class TaskServiceImpl implements TaskService {
 
   @Inject
   private DAOHandler daoHandler;
+
+  private ListenerService listenerService;
   
-  private List<TaskListener> listeners = new LinkedList<TaskListener>();
-
-  public TaskServiceImpl(DAOHandler daoHandler) {
+  public TaskServiceImpl(DAOHandler daoHandler, ListenerService listenerService) {
     this.daoHandler = daoHandler;
-    for (TaskListener listener : ServiceLoader.load(TaskListener.class)) {
-      listeners.add(listener);
-    }
-  }
-
-  // Just for test purpose
-  static public TaskServiceImpl createInstance(DAOHandler hl, List<TaskListener> ls) {
-    TaskServiceImpl sv = new TaskServiceImpl(hl);
-    sv.listeners = ls;
-    return sv;
+    this.listenerService = listenerService;
   }
 
   @Override
@@ -85,189 +69,33 @@ public class TaskServiceImpl implements TaskService {
   public Task createTask(Task task) {
     Task result = daoHandler.getTaskHandler().create(task);
     //
-    EventBuilder builder = new TaskEvent.EventBuilder(this);
-    builder.withTask(result).withType(TaskEvent.Type.CREATED);
-    triggerEvent(builder.build());
+    TaskPayload event = new TaskPayload(null, result);
+    try {
+      listenerService.broadcast(TASK_CREATION, this, event);
+    } catch (Exception e) {
+      LOG.error("Error while broadcasting task creation event", e);
+    }
 
     return result;
   }
-
+  
   @Override
   @ExoTransactional
-  public Task updateTaskInfo(long id, String param, String[] values)
-      throws TaskNotFoundException, ParameterEntityException, StatusNotFoundException {
-
-    Task task = getTaskById(id);
-
-    if(task == null) {
-      LOG.info("Can not find task with ID: " + id);
-      throw new TaskNotFoundException(id);
+  public Task updateTask(Task task) {
+    if (task == null) {
+      throw new IllegalArgumentException("Task must not be NULL");
     }
 
-    //
-    EventBuilder builder = new TaskEvent.EventBuilder(this);
-    builder.withTask(task);
-    //
-    if ("workPlan".equalsIgnoreCase(param)) {
-      long oldStartTime = -1;
-      if (task.getStartDate() != null) {
-        oldStartTime = task.getStartDate().getTime();
-      }
-      long oldEndTime = -1;
-      if (task.getEndDate() != null) {
-        oldEndTime = task.getEndDate().getTime();
-      }
-      builder.withType(Type.EDIT_WORKPLAN).withOldVal(oldStartTime + "/" + oldEndTime);
-      //
-      if (values == null) {
-        task.setStartDate(null);
-        task.setEndDate(null);
-      } else {
-        if (values.length != 2) {
-          LOG.error("workPlan updating lack of params");
-        }
-
-        try {
-          Calendar dateFrom = Calendar.getInstance();
-          dateFrom.setTimeInMillis(Long.parseLong(values[0]));
-          Calendar dateTo = Calendar.getInstance();
-          dateTo.setTimeInMillis(Long.parseLong(values[1]));
-
-          task.setStartDate(dateFrom.getTime());
-          task.setEndDate(dateTo.getTime());
-          builder.withNewVal(dateFrom.getTimeInMillis() + "/" + dateTo.getTimeInMillis());
-        } catch (NumberFormatException ex) {
-          LOG.info("Can parse date time value: "+values[0]+" or "+values[1]+" for Task with ID: "+id);
-          throw new ParameterEntityException(id, "Task", param, values[0]+" or "+values[1],
-              "cannot be parse to date", ex);
-        }
-      }
-    } else {
-      String value = values != null && values.length > 0 ? values[0] : null;
-
-      if("title".equalsIgnoreCase(param)) {
-        builder.withType(Type.EDIT_TITLE).withOldVal(task.getTitle());
-        //
-        task.setTitle(value);
-        builder.withNewVal(task.getTitle());
-      } else if("dueDate".equalsIgnoreCase(param)) {
-        builder.withType(Type.EDIT_DUEDATE).withOldVal(task.getDueDate());
-        //
-        if(value == null || value.trim().isEmpty()) {
-          task.setDueDate(null);
-        } else {
-          DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-          try {
-            Date date = df.parse(value);
-            task.setDueDate(date);
-            builder.withNewVal(task.getDueDate());
-          } catch (ParseException ex) {
-            LOG.info("Can parse date time value: "+value+" for Task with ID: "+id);
-            throw new ParameterEntityException(id, "Task", param, value, "cannot be parse to date", ex);
-          }
-        }
-      } else if("status".equalsIgnoreCase(param)) {
-        builder.withType(Type.EDIT_STATUS).withOldVal(task.getStatus());
-        //
-        try {
-          Long statusId = Long.parseLong(value);
-          Status status = daoHandler.getStatusHandler().find(statusId);
-          if(status == null) {
-            LOG.info("Status does not exist with ID: " + value);
-            throw new StatusNotFoundException(id);
-          }
-          task.setStatus(status);
-          builder.withNewVal(task.getStatus());
-        } catch (NumberFormatException ex) {
-          LOG.info("Status is unacceptable: "+value+" for Task with ID: "+id);
-          throw new ParameterEntityException(id, "Task", param, value, "is unacceptable", ex);
-        }
-      } else if("description".equalsIgnoreCase(param)) {
-        builder.withType(Type.EDIT_DESCRIPTION).withOldVal(task.getDescription());
-        task.setDescription(value);
-        builder.withNewVal(task.getDescription());
-      } else if("completed".equalsIgnoreCase(param)) {
-        builder.withType(Type.MARK_DONE).withOldVal(task.isCompleted());
-        task.setCompleted(Boolean.parseBoolean(value));
-        builder.withNewVal(task.isCompleted());
-      } else if("assignee".equalsIgnoreCase(param)) {
-        builder.withType(Type.EDIT_ASSIGNEE).withOldVal(task.getAssignee());
-        task.setAssignee(value);
-        builder.withNewVal(task.getAssignee());
-      } else if("coworker".equalsIgnoreCase(param)) {
-        Set<String> coworker = new HashSet<String>();
-        if (values != null) {
-          for (String v : values) {
-            if (v != null && !v.isEmpty()) {
-              coworker.add(v);
-            }
-          }
-        }
-        task.setCoworker(coworker);
-      } else if("tags".equalsIgnoreCase(param)) {
-        Set<String> old = task.getTags();
-        Set<String> tags = new HashSet<String>();
-        for(String t : values) {
-          tags.add(t);
-        }
-        task.setTags(tags);
-
-        Set<String> newTags = new HashSet<String>(task.getTags());
-        builder.withType(Type.ADD_LABEL).withNewVal(newTags.removeAll(old));
-      } else if ("priority".equalsIgnoreCase(param)) {
-        Priority priority = Priority.valueOf(value);
-        task.setPriority(priority);
-      } else if ("project".equalsIgnoreCase(param)) {
-        builder.withType(Type.EDIT_PROJECT).withOldVal(task.getStatus() != null ? task.getStatus().getProject() : null);
-        try {
-          Long projectId = Long.parseLong(value);
-          if (projectId > 0) {
-            Status st = daoHandler.getStatusHandler().findLowestRankStatusByProject(projectId);
-            if (st == null) {
-              throw new ParameterEntityException(id, "Task", param, value, "Status for project is not found", null);
-            }
-            task.setStatus(st);
-            builder.withNewVal(task.getStatus().getProject());
-          } else {
-            task.setStatus(null);
-          }
-        } catch (NumberFormatException ex) {
-          throw new ParameterEntityException(id, "Task", param, value, "ProjectID must be long", ex);
-        }
-      } else if ("calendarIntegrated".equalsIgnoreCase(param)) {
-        task.setCalendarIntegrated(Boolean.parseBoolean(value));
-      } else {
-        LOG.info("Field name: " + param + " is not supported for entity Task");
-        throw new ParameterEntityException(id, "Task", param, value, "is not supported for the entity Task", null);
-      }
+    Task oldTask = daoHandler.getTaskHandler().find(task.getId());
+    Task newTask = daoHandler.getTaskHandler().update(task);
+    TaskPayload event = new TaskPayload(oldTask, newTask);
+    try {
+      listenerService.broadcast(TASK_UPDATE, this, event);
+    } catch (Exception e) {
+      LOG.error("Error while broadcasting task creation event", e);
     }
-
-    Task result = updateTask(task);
-    TaskEvent event = builder.build();
-    if (event.getType() != null) {      
-      triggerEvent(builder.build());
-    }
-
-    //TODO: save order of task here?
-
-    //.
-    if ("status".equalsIgnoreCase(param) && values.length > 2) {
-      //TODO: need save order of task (update rank)
-      long[] taskIds = new long[values.length - 1];
-      int currentTaskIndex = -1;
-      for (int i = 1; i < values.length; i++) {
-        taskIds[i - 1] = Long.parseLong(values[i]);
-        if (taskIds[i - 1] == id) {
-          currentTaskIndex = i - 1;
-        }
-      }
-      if (currentTaskIndex > -1) {
-        //. Update here
-
-      }
-    }
-
-    return result;
+ 
+    return newTask;
   }
 
   @Override
@@ -278,74 +106,52 @@ public class TaskServiceImpl implements TaskService {
 
   @Override
   @ExoTransactional
-  public Task updateTaskCompleted(long id, Boolean completed)
-      throws TaskNotFoundException, ParameterEntityException, StatusNotFoundException {
+  public void removeTask(long id) throws EntityNotFoundException {
+    Task task = getTask(id);// Can throw TaskNotFoundException
 
-    String[] values = new String[1];
-    values[0] = completed.toString();
-    return updateTaskInfo(id, "completed", values);
-  }
-
-  @Override
-  @ExoTransactional
-  public void deleteTask(Task task) {    
     daoHandler.getTaskHandler().delete(task);
   }
 
   @Override
   @ExoTransactional
-  public void deleteTaskById(long id) throws TaskNotFoundException {
+  public Task cloneTask(long id) throws EntityNotFoundException {
 
-    Task task = getTaskById(id);// Can throw TaskNotFoundException
-
-    deleteTask(task);
-
-  }
-
-  @Override
-  @ExoTransactional
-  public Task cloneTaskById(long id) throws TaskNotFoundException {
-
-    Task task = getTaskById(id);// Can throw TaskNotFoundException
+    Task task = getTask(id);// Can throw TaskNotFoundException
 
     Task newTask = task.clone();
+    newTask.setId(0L);
+    newTask.setCoworker(getCoworker(id));
+    newTask.setTag(getTag(id));
+    newTask.setTitle(Task.PREFIX_CLONE + newTask.getTitle());
 
     return createTask(newTask);
   }
 
   @Override
-  public Task getTaskById(long id) throws TaskNotFoundException {
+  public Task getTask(long id) throws EntityNotFoundException {
     Task task = daoHandler.getTaskHandler().find(id);
     if (task == null) {
       LOG.info("Can not find task with ID: " + id);
-      throw new TaskNotFoundException(id);
+      throw new org.exoplatform.task.exception.EntityNotFoundException(id, Task.class);
     }
     return task;
   }
 
   @Override
-  public Long getNbOfCommentsByTask(Task task) {
-    return daoHandler.getCommentHandler().count(task);
+  public Comment getComment(long commentId) {
+    return daoHandler.getCommentHandler().find(commentId);
   }
 
   @Override
-  public List<Comment> getCommentsByTaskId(long id, int start, int limit) throws TaskNotFoundException {
-
-    Task task = getTaskById(id); //Can throws TaskNotFoundException
-
-    return getCommentsByTask(task, start, limit);
-  }
-
-  @Override
-  public List<Comment> getCommentsByTask(Task task, int start, int limit) {
-    return daoHandler.getCommentHandler().findCommentsOfTask(task, start, limit);
+  public ListAccess<Comment> getComments(long taskId) {
+    return daoHandler.getCommentHandler().findComments(taskId);
   }
 
   @Override
   @ExoTransactional
-  public Comment addCommentToTaskId(long id, String username, String comment) throws TaskNotFoundException {
+  public Comment addComment(long id, String username, String comment) throws EntityNotFoundException {
 
-    Task task = getTaskById(id); //Can throws TaskNotFoundException
+    Task task = getTask(id); //Can throws TaskNotFoundException
 
     Comment newComment = new Comment();
     newComment.setTask(task);
@@ -357,60 +163,144 @@ public class TaskServiceImpl implements TaskService {
   }
   
   @Override
-  public TaskLog addTaskLog(long id, String username, String msg, String target) throws TaskNotFoundException {
-    Task task = getTaskById(id); //Can throws TaskNotFoundException
-
-    TaskLog log = new TaskLog();
+  @ExoTransactional
+  public ChangeLog addTaskLog(long id, String username, String actionName, String target) throws EntityNotFoundException {
+    ChangeLog log = new ChangeLog();
+    log.setTask(getTask(id));
     log.setAuthor(username);
-    log.setMsg(msg);
+    log.setActionName(actionName);
     log.setTarget(target);
-    task.getTaskLogs().add(log);
-    daoHandler.getTaskHandler().update(task);
-    return log;
+    return daoHandler.getTaskLogHandler().create(log);
+  }
+
+  @Override
+  public ListAccess<ChangeLog> getTaskLogs(long taskId) {
+    return daoHandler.getTaskLogHandler().findTaskLogs(taskId);
   }
 
   @Override
   @ExoTransactional
-  public void deleteCommentById(long commentId) throws CommentNotFoundException {
+  public void removeComment(long commentId) throws EntityNotFoundException {
 
     Comment comment = daoHandler.getCommentHandler().find(commentId);
 
     if(comment == null) {
       LOG.info("Can not find comment with ID: " + commentId);
-      throw new CommentNotFoundException(commentId);
+      throw new EntityNotFoundException(commentId, Comment.class);
     }
 
     daoHandler.getCommentHandler().delete(comment);
   }
 
   @Override
-  public List<Task> getIncomingTasksByUser(String username, OrderBy orderBy) {
-    return daoHandler.getTaskHandler().getIncomingTask(username, orderBy);
+  public ListAccess<Task> findTasks(TaskQuery query) {
+    return daoHandler.getTaskHandler().findTasks(query);
   }
 
   @Override
-  public List<Task> getToDoTasksByUser(String username, List<Long> projectIds, OrderBy orderBy, Date fromDueDate, Date toDueDate) {
-    return daoHandler.getTaskHandler().getToDoTask(username, projectIds, orderBy, fromDueDate, toDueDate);
-  }
-  
-  @Override
-  public List<Task> findTaskByQuery(TaskQuery query) {
-    return daoHandler.getTaskHandler().findTaskByQuery(query);
+  public <T> List<T> selectTaskField(TaskQuery query, String fieldName) {
+    return daoHandler.getTaskHandler().selectTaskField(query, fieldName);
   }
 
   @Override
-  public long getTaskNum(String username, List<Long> projectIds) {
-    return daoHandler.getTaskHandler().getTaskNum(username, projectIds);
+  @ExoTransactional
+  public void addTaskToLabel(Long taskId, Long labelId) throws EntityNotFoundException {
+    LabelTaskMapping mapping = new LabelTaskMapping();
+    mapping.setLabel(getLabel(labelId));
+    mapping.setTask(getTask(taskId));
+    daoHandler.getLabelTaskMappingHandler().create(mapping);
   }
   
-  private Task updateTask(Task task) {
-    return daoHandler.getTaskHandler().update(task);
+  @Override
+  @ExoTransactional
+  public void removeTaskFromLabel(Long taskId, Long labelId) throws EntityNotFoundException {
+    LabelTaskMapping mapping = new LabelTaskMapping();
+    mapping.setLabel(getLabel(labelId));
+    mapping.setTask(getTask(taskId));
+    daoHandler.getLabelTaskMappingHandler().delete(mapping);
   }
-  
-  private void triggerEvent(TaskEvent event) {
-    for (TaskListener listener : listeners) {
-      listener.event(event);
+
+  @Override
+  public ListAccess<Task> findTasksByLabel(long labelId, List<Long> projectIds, String username, OrderBy orderBy) throws EntityNotFoundException {
+    if (labelId > 0) {
+      Label label = getLabel(labelId);
+      if (label == null) {
+        throw new EntityNotFoundException(labelId, Label.class);
+      }
     }
+    return daoHandler.getTaskHandler().findTasksByLabel(labelId, projectIds, username, orderBy);
   }
 
+  @Override
+  public ListAccess<Label> findLabelsByUser(String username) {
+    return daoHandler.getLabelHandler().findLabelsByUser(username);
+  }
+
+  @Override
+  public ListAccess<Label> findLabelsByTask(long taskId, String username) throws EntityNotFoundException {
+    return daoHandler.getLabelHandler().findLabelsByTask(taskId, username);
+  }
+
+  @Override
+  public Label getLabel(long labelId) {
+    return daoHandler.getLabelHandler().find(labelId);
+  }
+
+  @Override
+  @ExoTransactional
+  public Label createLabel(Label label) {
+    return daoHandler.getLabelHandler().create(label);
+  }
+
+  @Override
+  @ExoTransactional
+  public Label updateLabel(Label label, List<Label.FIELDS> fields) throws EntityNotFoundException {
+    Label lb = getLabel(label.getId());
+    if (lb == null) {
+      throw new EntityNotFoundException(label.getId(), Label.class);
+    }
+    
+    //Todo: validate input and throw exception if need
+    for (Label.FIELDS field : fields) {
+      switch (field) {
+      case NAME:
+        lb.setName(label.getName());
+        break;
+      case COLOR:
+        lb.setColor(label.getColor());
+        break;
+      case PARENT:      
+        lb.setParent(label.getParent());
+        break;
+      case HIDDEN:
+        lb.setHidden(label.isHidden());
+      }
+    }
+    return daoHandler.getLabelHandler().update(lb);
+  }
+
+  @Override
+  @ExoTransactional
+  public void removeLabel(long labelId) {
+    daoHandler.getLabelHandler().delete(getLabel(labelId));
+  }
+
+  public Task findTaskByActivityId(String id) {
+    return daoHandler.getTaskHandler().findTaskByActivityId(id);
+  }
+
+  @Override
+  public Set<String> getTag(long taskId) {
+    return daoHandler.getTaskHandler().getTag(taskId);
+  }
+
+  @Override
+  public Set<String> getCoworker(long taskId) { 
+    return daoHandler.getTaskHandler().getCoworker(taskId);
+  }
+
+  @Override
+  public ListAccess<String> findTags(String keyword) {
+    return daoHandler.getTaskHandler().findTags(keyword);
+  }
 }

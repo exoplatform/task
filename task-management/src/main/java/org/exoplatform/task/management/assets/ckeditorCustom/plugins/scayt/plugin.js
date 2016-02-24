@@ -1,4 +1,4 @@
-﻿'use strict';
+'use strict';
 CKEDITOR.plugins.add('scayt', {
 
 	//requires : ['menubutton', 'dialog'],

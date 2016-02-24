@@ -1,4 +1,4 @@
-define('taskBoardView', ['jquery', 'taskManagementApp', 'SHARED/edit_inline_js', 'SHARED/task_jquery_ui'],
+define('taskBoardView', ['SHARED/jquery', 'taskManagementApp', 'SHARED/edit_inline_js', 'SHARED/task_jquery_ui'],
     function($, taApp, editinline) {
 
         var boardView = {};
@@ -9,6 +9,26 @@ define('taskBoardView', ['jquery', 'taskManagementApp', 'SHARED/edit_inline_js',
                 boardView.initDragDrop();
             });
         };
+
+        boardView.renderTask = function(task) {
+            var template = $('[data-template-name="board-view-task-item"]').html();
+            var result = template;
+
+            result = result.replace('{{taskid}}', task.id);
+            result = result.replace('{{title}}', taApp.escape(task.title));
+
+            var completedClass = '';
+            if (task.completed) {
+                completedClass = 'task-completed';
+            }
+            result = result.replace('{{completedClass}}', completedClass);
+
+            result = result.replace('{{priority}}', task.priority.toLowerCase());
+            result = result.replace('{{dueDateColorClass}}', task.dueDateCssClass);
+            result = result.replace('{{taskDueDate}}', task.dueDateString);
+
+            return result;
+        }
 
         boardView.initDomEventListener = function() {
             var ui = taApp.getUI();
@@ -27,6 +47,9 @@ define('taskBoardView', ['jquery', 'taskManagementApp', 'SHARED/edit_inline_js',
                         method: 'POST',
                         success: function(response) {
                             $centerPanelContent.html(response);
+                        },
+                        error: function(xhr) {
+                          taApp.showWarningDialog(xhr.responseText);
                         }
                     });
                 } else {
@@ -58,6 +81,9 @@ define('taskBoardView', ['jquery', 'taskManagementApp', 'SHARED/edit_inline_js',
                         method: 'POST',
                         success: function(response) {
                             $centerPanelContent.html(response);
+                        }, 
+                        error: function(xhr) {
+                          taApp.showWarningDialog(xhr.responseText);
                         }
                     });
                 }
@@ -103,16 +129,51 @@ define('taskBoardView', ['jquery', 'taskManagementApp', 'SHARED/edit_inline_js',
                     $centerPanel.jzAjax('TaskController.createTaskInListView()', {
                         method: 'POST',
                         data: data,
-                        success: function(response) {
-                            $centerPanelContent.html(response);
+                        success: function(task) {
+                            var html = boardView.renderTask(task);
+                            $form.before(html);
+
+                            // Update task number in status column
+                            var statusId = $form.closest('[data-statusid]').data('statusid');
+                            var $count = $('[data-statusid="'+statusId+'"] > [data-taskcount-status]');
+                            var count = $count.data('taskcount-status');
+                            count++;
+                            $count.html(count);
+                            if (!$count.hasClass('number-tasks')) {
+                                $count.addClass('number-tasks');
+                            }
+                            $count.data('taskcount-status', count);
+                            $count.attr('data-taskcount-status', count);
+
+                            // Update task number in assignee group
+                            if (data['groupBy'] == 'assignee') {
+                                var $ac = $('.amount-item.user-'+data['assignee']+'[data-taskcount-assignee]');
+                                if ($ac.length > 0) {
+                                    var c = $ac.data('taskcount-assignee');
+                                    c++;
+                                    $ac.html(c);
+                                    $ac.data('taskcount-assignee', c);
+                                    $ac.attr('data-taskcount-assignee', c);
+                                }
+                            }
+
+                            //show group by if there are more than 1 tasks
+                            var $taskRow = $centerPanelContent.find('.taskBoardView .table-project .taskItem[data-taskid]');
+                            if ($taskRow.length > 1) {
+                              $centerPanelContent.find('.groupByOptions').show();
+                            }
                         },
-                        error: function() {
-                            alert('error while create new task');
+                        error: function(xhr) {
+                          taApp.showWarningDialog(xhr.responseText);
                         }
                     });
                 }
                 $form.css('visibility', 'hidden');
                 return false;
+            });
+
+            $centerPanel.off('click', '[data-action="newtask"]').on('click', '[data-action="newtask"]', function(e) {
+                $centerPanel.find('.taskBoardContainer').first().click();
             });
         };
 
@@ -129,10 +190,12 @@ define('taskBoardView', ['jquery', 'taskManagementApp', 'SHARED/edit_inline_js',
                     data: data,
                     method: 'POST',
                     success: function(response) {
-                        d.resolve();
+                        d.resolve(response);
                     },
-                    error: function(jqXHR, textStatus, errorThrown ) {
-                        d.reject('update failure: ' + jqXHR.responseText);
+                    error: function(xhr, textStatus, errorThrown ) {
+                      $('[data-pk="' + params.pk + '"]').first().editable('toggle');
+                      d.reject('update failure: ' + xhr.responseText);
+                      taApp.showWarningDialog(xhr.responseText);
                     }
                 });
                 return d.promise();
@@ -146,7 +209,15 @@ define('taskBoardView', ['jquery', 'taskManagementApp', 'SHARED/edit_inline_js',
                 emptyclass: 'muted',
                 highlight: false,
                 inputclass: 'input-small input-board',
-                clear: false
+                clear: false,
+                display: function(value, response) {
+                    if (response != undefined && response.localizedName != undefined && response.localizedName) {
+                        $(this).html(response.localizedName);
+                    } else {
+                        $(this).html(taApp.escape(value));
+                        $(this).jzLoad('StatusController.resolveStatusName()', {name: value}, function() {});
+                    }
+                }
             };
             $centerPanelContent.find('.taskBoardView .editable').each(function() {
                 var $this = $(this);
@@ -162,13 +233,14 @@ define('taskBoardView', ['jquery', 'taskManagementApp', 'SHARED/edit_inline_js',
         boardView.initDragDrop = function() {
             var taskUI = taApp.getUI();
             var $centerPanelContent = taskUI.$centerPanelContent;
+            var groupBy = $centerPanelContent.find('[name="groupBy"]').val();
             var orderBy = $centerPanelContent.find('[name="orderBy"]').val();
             var isSortable = (orderBy == 'rank');
 
             var placeHoderClass = isSortable ? 'draggableHighlight' : 'draggableFullContainer';
             $centerPanelContent.find('.taskBoardContainer').each(function() {
                 var $this = $(this);
-                var connected = '.taskBoardContainer' + $this.data('connected') + '';
+                var connected = '.taskBoardContainer';
                 $this.sortable({
                     items: ".taskItem",
                     connectWith: connected,
@@ -195,49 +267,41 @@ define('taskBoardView', ['jquery', 'taskManagementApp', 'SHARED/edit_inline_js',
                             return;
                         }
 
+                        var $sender = ui.sender;
+                        if ($sender == null) {
+                            $sender = $status;
+                        }
+                        var oldGroup = $sender.data('groupby-value');
+                        var newGroup = $status.data('groupby-value');
+
                         var statusId = $status.data('statusid');
                         var listItem = $status.sortable('toArray', {attribute: 'data-taskid'});
 
                         for(var i = 0; i < listItem.length; i++) {
                             listItem[i] = parseInt(listItem[i]);
                         }
-                        if (isSortable) {
-                            $centerPanelContent.jzAjax('TaskController.saveTaskOrder()',{
-                                data: {
-                                    taskId: taskId,
-                                    newStatusId: statusId,
-                                    orders: listItem
-                                },
-                                method: 'POST',
-                                traditional: true,
-                                success: function(response) {
 
-                                },
-                                error: function(jqXHR, textStatus, errorThrown ) {
-                                    alert('can not update task status and order');
-                                    $status.sortable('cancel');
-                                    $(ui.sender).sortable('cancel');
-                                }
-                            });
-                        } else {
-                            $centerPanelContent.jzAjax('TaskController.saveTaskInfo()',{
-                                data: {
-                                    taskId: taskId,
-                                    name: 'status',
-                                    value: statusId
-                                },
-                                method: 'POST',
-                                traditional: true,
-                                success: function(response) {
+                        $centerPanelContent.jzAjax('TaskController.saveDragAndDropTask()', {
+                            data: {
+                                taskId: taskId,
+                                newStatusId: statusId,
+                                groupBy: groupBy,
+                                oldGroup: oldGroup,
+                                newGroup: newGroup,
+                                needUpdateOrder: isSortable,
+                                orders: listItem
+                            },
+                            method: 'POST',
+                            traditional: true,
+                            success: function(response) {
 
-                                },
-                                error: function(jqXHR, textStatus, errorThrown ) {
-                                    alert('can not update task status');
-                                    $status.sortable('cancel');
-                                    $(ui.sender).sortable('cancel');
-                                }
-                            });
-                        }
+                            },
+                            error: function(xhr, textStatus, errorThrown ) {
+                                taApp.showWarningDialog(xhr.responseText);
+                                $status.sortable('cancel');
+                                $(ui.sender).sortable('cancel');
+                            }
+                        });
                     },
                     over: function(event, ui) {
                         var $container = $(event.target);

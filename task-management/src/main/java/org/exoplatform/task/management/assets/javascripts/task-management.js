@@ -1,122 +1,7 @@
 // TODO: Move juzu-ajax, mentionsPlugin module into task management project if need
-require(['taskManagementApp', 'project-menu', 'ta_edit_inline', 'SHARED/jquery',
+require(['taskManagementApp', 'project-menu', 'taFilter', 'taskCenterView', 'taskListView', 'ta_edit_inline', 'SHARED/jquery', 'SHARED/taskLocale',
         'SHARED/juzu-ajax', 'SHARED/mentionsPlugin', 'SHARED/bts_modal', 'SHARED/bts_tab', 'SHARED/task_ck_editor'
-        ], function(taApp, pMenu, editInline, $) {
-  /*var taApp = {};
-
-  taApp.getUI = function() {
-    var $taskManagement = $('#taskManagement');
-    var $leftPanel = $('#taskManagement > .leftPanel');
-    var $centerPanel = $('#taskManagement > .centerPanel');
-    var $rightPanel = $('#taskManagement > .rightPanel');
-    var $rightPanelContent = $rightPanel.find('.rightPanelContent');
-    var $centerPanelContent = $centerPanel.find('.centerPanelContent');
-    
-    return {
-      '$taskManagement' : $taskManagement,
-      '$leftPanel' : $leftPanel,
-      '$centerPanel' : $centerPanel,
-      '$rightPanel' : $rightPanel,
-      '$rightPanelContent' : $rightPanelContent,
-      '$centerPanelContent' : $centerPanelContent
-    };
-  }
-  
-  taApp.showDialog = function(controllerURL, data) {
-    var $modalPlace = $('.modalPlace');
-    $modalPlace.jzLoad(controllerURL, data, function() {
-      var $dialog = $modalPlace.children().first();
-      $dialog.modal({'backdrop': false});
-    });
-  }
-  
-  taApp.showOneTimePopover = function($popover) {
-    if ($popover.data('content')) { 
-      $popover.popover('show');
-      $(document).one('click', function() {
-        $popover.popover('hide'); 
-        $popover.popover('destroy');
-      });
-    }
-  }
-
-  taApp.showRightPanel = function($centerPanel, $rightPanel) {
-    $centerPanel.removeClass('span9').addClass('span5');
-    $rightPanel.show();
-    $rightPanel.find('[data-toggle="tooltip"]').tooltip();
-    $rightPanel.find('*[rel="tooltip"]').tooltip({
-        placement: 'top'
-    });
-  };
-  
-  taApp.hideRightPanel = function($centerPanel, $rightPanel, $rightPanelContent) {
-    $rightPanelContent.html('');
-    $rightPanel.hide();
-    $centerPanel.removeClass('span5').addClass('span9');
-  };
-  
-  taApp.reloadTaskList = function(projectId, filter, callback) {
-    var $centerPanelContent = taApp.getUI().$centerPanelContent;
-    if ($.isFunction(filter)) {
-        filter = '';
-        callback = filter;
-    }
-    if (typeof filter !== 'string') {
-        filter = '';
-    }
-    var data = {projectId: projectId, filter: filter};
-    $centerPanelContent.jzLoad('TaskController.listTasks()', data, function() {
-      if (callback) {
-        callback();
-      }
-    });
-  }
-    
-  taApp.reloadProjectTree = function(id) {
-    var $leftPanel = taApp.getUI().$leftPanel;
-    var $listProject = $leftPanel.find('ul.list-projects.projectTree');
-    $listProject.jzLoad('ProjectController.projectTree()', function() {
-        if (id) {
-          $listProject.find('a.project-name[data-id="' + id+ '"]').click();          
-        } else {
-          if ($listProject.find('a.project-name').length > 0) {
-            $listProject.find('.project-name').first().click();
-          } else {
-            $leftPanel.find('.project-name[data-id="0"]').first().click();
-          }
-        }
-    });    
-  }
-  
-  taApp.setTaskComplete = function(taskId, isCompleted) {
-    var ui = taApp.getUI();
-    var $taskItem = ui.$centerPanel.find('.taskItem[data-taskid="' + taskId + '"]');    
-    var $next = $taskItem.next('.taskItem').first();
-    if ($next.length == 0) {
-      $next.prev('.taskItem').first();
-    }
-
-    var data = {taskId: taskId, completed: isCompleted};    
-    //
-    $taskItem.jzAjax('TaskController.updateCompleted()', {
-      data: data,
-      success: function(message) {
-        if (isCompleted) {
-          $taskItem.fadeOut(500, function() {
-            $taskItem.remove();
-          });
-          if ($next.length == 0) {
-            ui.$leftPanel.find('.active .project-name').click();
-          } else {
-            $next.click();            
-          }
-        }
-      },
-      error : function(jqXHR, textStatus, errorThrown) {
-        console.error && console.error('update failure: ' + jqXHR.responseText);
-      }
-    });
-  }*/
+        ], function(taApp, pMenu, taFilter, taskCenterView, taskListView, editInline, $, locale) {
   
 $(document).ready(function() {
     var ui = taApp.getUI();
@@ -129,6 +14,7 @@ $(document).ready(function() {
     
     pMenu.init(taApp);
     editInline.init(taApp);
+    taFilter.init(taApp);
 
     $('[data-toggle="tooltip"]').tooltip();
     $('*[rel="tooltip"]').tooltip({
@@ -138,8 +24,16 @@ $(document).ready(function() {
     //welcome    
     var $inputTask = $centerPanelContent.find('input[name="taskTitle"]');
     taApp.showOneTimePopover($inputTask);
-    $inputTask.focus();
 
+    $centerPanel.on('click', '.show-hide-left', function(e) {
+    	var $icon = $(e.target);
+    	if ($icon.hasClass('uiIconMiniArrowLeft')) {
+    	  taApp.hideLeftPanel();    		
+    	} else {
+    	  taApp.showLeftPanel();
+    	}
+    });
+    
     $rightPanel.on('click', '.close-right-panel', function(e) {
         taApp.hideRightPanel($centerPanel, $rightPanel, $rightPanelContent);
         return false;
@@ -156,6 +50,8 @@ $(document).ready(function() {
         $permalink.popover({
             html: true,
             content: $rightPanelContent.find('.taskPermalinkPopoverContent').html()
+        }).on('shown', function(e) {
+            $(e.target).closest('.taskPermalinkContainer').find('.popover-content input').select();
         });
         $(document).on('click', function(e) {
             if ($(e.target).closest('.taskPermalinkContainer').length > 0) {
@@ -192,15 +88,25 @@ $(document).ready(function() {
 
         return false;
     };
-    $centerPanel.on('click', '[data-taskid]', function(e) {
+    function loadTaskDetail(taskId) {
+        var currentTask = $rightPanelContent.find('[data-taskid]').data('taskid');
+        if ($rightPanel.is(':visible') && currentTask == taskId) {
+            return;
+        }
+        $rightPanelContent.jzLoad('TaskController.detail()', {id: taskId}, function(html, status, xhr) {
+            if (xhr.status >= 400) {
+                taApp.showWarningDialog(xhr.responseText);
+            } else {
+                taApp.showRightPanel($centerPanel, $rightPanel);
+                taskLoadedCallback(taskId, true);
+                return false;
+            }
+        });
+    };
+    $centerPanel.off('click', '[data-taskid]').on('click', '[data-taskid]', function(e) {
         var $li = $(e.target || e.srcElement).closest('[data-taskid]');
         var taskId = $li.data('taskid');
-        var currentTask = $rightPanelContent.find('.task-detail').attr('task-id');
-        $rightPanelContent.jzLoad('TaskController.detail()', {id: taskId}, function(html) {
-          taApp.showRightPanel($centerPanel, $rightPanel);
-          taskLoadedCallback(taskId, true);
-          return false;
-        });
+        loadTaskDetail(taskId);
     });
     if ($rightPanel.is(':visible') && $rightPanel.find('[data-taskid]')) {
         var taskId = $rightPanel.find('[data-taskid]').data('taskid');
@@ -210,7 +116,7 @@ $(document).ready(function() {
     $rightPanel.on('click', '[data-taskcompleted]', function(e){
         var $a = $(e.target).closest('[data-taskcompleted]');
         var taskId = $a.closest('.uiBox').data('taskid');
-        taApp.setTaskComplete(taskId, !$a.data('taskcompleted'));
+        taApp.setTaskComplete(taskId, !$a.data('taskcompleted'), taFilter.isShowCompletedTask());
     });
     $rightPanel.on('click', 'a.action-clone-task', function(e){
         var $a = $(e.target).closest('a');
@@ -220,19 +126,12 @@ $(document).ready(function() {
             success: function(response) {
               var id = response.id; 
               var projectId = $leftPanel.find('.active .project-name').data('id');
-              taApp.reloadTaskList(projectId, function() {
+              taApp.reloadTaskList(projectId, -1, function() {
                 $centerPanel.find('.taskItem[data-taskid="' + id + '"]').click();
               });
-            }
-        });
-    });
-    $rightPanel.on('click', 'a.action-delete-task', function(e){
-        var $a = $(e.target).closest('a');
-        var taskId = $a.closest('[data-taskid]').data('taskid');
-        $a.jzAjax('TaskController.delete()', {
-            data: {id: taskId},
-            success: function(response) {
-                window.location.reload();
+            },
+            error: function(xhr) {
+              taApp.showWarningDialog(xhr.responseText);
             }
         });
     });
@@ -272,6 +171,13 @@ $(document).ready(function() {
             }
         });
     };
+    var enhanceCommentsLinks = function() {
+        $rightPanelContent.find('.contentComment').each(function(index, ele) {
+            var commentContainer = $(ele);
+            commentContainer.html(taApp.convertURLsAsLinks(commentContainer.html()));
+        });
+    };
+
     $rightPanel.on('submit', '.commentFormBox form', function(e) {
         e.preventDefault();
         var $form = $(e.target).closest('form');
@@ -287,11 +193,15 @@ $(document).ready(function() {
             return false;
         }
         var postCommentURL = $form.jzURL('TaskController.comment');
-        $.post(postCommentURL, { taskId: taskId, comment: comment}, function(data) {
+        var xhr = $.post(postCommentURL, { taskId: taskId, comment: comment}, function(data) {
             $commentContainer.jzLoad('TaskController.renderTaskComments()', {id: taskId, loadAllComment: loadAllComment}, function() {
+                enhanceCommentsLinks();
                 initCommentEditor();
             });
         },'json');
+        xhr.fail(function() {
+          taApp.showWarningDialog(xhr.responseText);
+        });
 
         return false;
     });
@@ -313,11 +223,12 @@ $(document).ready(function() {
             type: 'POST',
             success: function(data) {
                 $commentContainer.jzLoad('TaskController.renderTaskComments()', {id: taskId, loadAllComment: loadAllComment}, function() {
-                    initCommentEditor();
+                  enhanceCommentsLinks();
+                  initCommentEditor();
                 });
             },
-            error: function() {
-                alert('Error while delete comment, please try again.');
+            error: function(xhr, textStatus, errorThrown) {
+                alert(xhr.responseText);
             }
         });
     });
@@ -325,53 +236,32 @@ $(document).ready(function() {
     $rightPanel.on('click', 'a.load-all-comments', function(e) {
         e.preventDefault();
         var $a = $(e.target).closest('a');
+        var loadAll = $a.data('loadall');
         var $comment = $a.closest('#tab-comments');
         var taskId = $comment.closest('[data-taskid]').data('taskid');
-        $comment.jzLoad('TaskController.renderTaskComments()', {id: taskId, loadAllComment: "true"}, function() {
-            initCommentEditor();
+        $comment.jzLoad('TaskController.renderTaskComments()', {id: taskId, loadAllComment: loadAll}, function(html, status, xhr) {
+          if (xhr.status >= 400) {
+            taApp.showWarningDialog(xhr.responseText);
+          } else {
+            enhanceCommentsLinks();
+            initCommentEditor();            
+          }
         });
-    });
-
-    $rightPanel.on('submit', 'form.create-project-form', function(e) {
-        var $form = $(e.target).closest('form');
-        var name = $form.find('input[name="name"]').val();
-        var description = $form.find('textarea[name="description"]').val();
-        var $breadcumbs = $rightPanel.find('.breadcrumb');
-        var parentId = $breadcumbs.data('value');
-
-        if(name == '') {
-            name = 'Untitled Project';
-        }
-
-        var createURL = $rightPanel.jzURL('ProjectController.createProject');        
-        $.ajax({
-            type: 'POST',
-            url: createURL,
-            data: {name: name, description: description, parentId: parentId},
-            success: function(data) {
-                // Reload project tree;
-                taApp.reloadProjectTree(data.id);
-            },
-            error: function() {
-                alert('error while create new project. Please try again.')
-            }
-        });
-
-        return false;
     });
 
     $leftPanel.on('click', 'a.collapseTree', function(e) {
         var $a = $(e.target).closest('a');
         var $icon = $a.find('.uiIconLightGray');
-        var $list = $a.closest('.dropdown').find('> .list-projects');
+        var $list = $a.closest('.dropdown').find('> .list-projects, .list-labels').first();
         $list.slideToggle(300, 'linear', function() {
             $icon.toggleClass('uiIconArrowDownMini').toggleClass('uiIconArrowRightMini');
+            $a.closest('.accordion-heading').toggleClass('collapsed');
         });
     });
-    $leftPanel.on('click', 'a.collapseSubProject', function(e){
+    $leftPanel.on('click', 'a.collapseSubProject, .collapseSubLabel', function(e){
         var $a = $(e.target).closest('a');
         var $icon = $a.find('.uiIconLightGray');
-        var $list = $a.closest('.dropdown').find('> .list-projects');
+        var $list = $a.closest('.dropdown').find('> .list-projects, .list-labels').first();
 
         $list.slideToggle(300, 'linear', function() {
             $icon.toggleClass('uiIconArrowDownMini').toggleClass('uiIconArrowRightMini');
@@ -393,7 +283,6 @@ $(document).ready(function() {
       
       var $inputTask = $centerPanelContent.find('input[name="taskTitle"]');
       taApp.showOneTimePopover($inputTask);
-      $inputTask.focus();
     }
     
     var loadProjectDetail = function(id) {
@@ -401,27 +290,36 @@ $(document).ready(function() {
       $a.closest('.leftPanel > ul').find('li.active').removeClass('active');
       $a.closest('li').addClass('active');
 
-      $rightPanelContent.jzLoad('ProjectController.projectDetail()', {id: id}, function () {
-        taApp.showRightPanel($centerPanel, $rightPanel);
-        //TODO: check can edit to init editInline
-        if($rightPanelContent.find('[data-projectid]').data('canedit')) {
-            editInline.initEditInlineForProject(id);
-        }
-      });
+      //We move project detail to popup instead of right panel: TA-254
+//      $rightPanelContent.jzLoad('ProjectController.projectDetail()', {id: id}, function () {
+//        taApp.showRightPanel($centerPanel, $rightPanel);
+//        //TODO: check can edit to init editInline
+//        if($rightPanelContent.find('[data-projectid]').data('canedit')) {
+//            editInline.initEditInlineForProject(id);
+//        }
+//      });
+      taApp.hideRightPanel($centerPanel, $rightPanel, $rightPanelContent);
     }
 
     $leftPanel.on('click', 'a.project-name', function(e) {
         var $a = $(e.target).closest('a');
         var projectId = $a.data('id');
+        
         var filter = $a.data('filter');
         var currentProject = $centerPanel.find('.projectListView').data('projectid');
 
+        if (projectId > 0 && !$a.data('canview')) {
+            var projectName = $a.html();
+            taApp.showWarningDialog(locale.resolve('noPermissionToAccessProject', projectName));
+            return false;
+        }
+
         if ((currentProject != projectId || filter != undefined) && ($a.data('canview') || projectId <= 0)) {
-            taApp.reloadTaskList(projectId, filter, function() {
+            taApp.reloadTaskList(projectId, -1, filter, function() {
               projectLoaded(projectId, $a);
             });
         }
-        // Show project summary at right panel
+
         if(projectId > 0 && $a.data('canedit') && (currentProject != projectId || $rightPanel.is(':hidden') || !$rightPanelContent.children().first().data('projectid'))) {
           loadProjectDetail(projectId);
         } else {
@@ -442,64 +340,61 @@ $(document).ready(function() {
         $centerPanel.find('.input-field input').focus();
         return false;
     });
+    
+    $centerPanel.on('blur', '.input-field input', function(e) {
+    	if ($(e.target).val()) {
+    		$centerPanel.find('.form-create-task').submit();    		
+    	}
+    });
 
     $centerPanel.on('submit', 'form.form-create-task', function(e) {
         var $form = $(e.target).closest('form');
         var projectId = $form.closest('.projectListView').attr('data-projectId');
-        var taskInput = $form.find('input[name="taskTitle"]').val();
+        var labelId = $form.closest('[data-labelid]').data('labelid');
+        var $input = $form.find('input[name="taskTitle"]');
+        var taskInput = $input.val();
+        if (!taskInput) return false;
+        $input.val('');
         var filter = $leftPanel.find('.active .project-name[data-id="' + projectId + '"]').data('filter');
         if (filter == undefined) {
             filter = '';
         }
+
         $form.jzAjax('TaskController.createTask()', {
             method: 'POST',
-            data: {projectId: projectId, taskInput: taskInput, filter: filter},
+            data: {projectId: projectId, labelId: labelId, taskInput: taskInput, filter: filter},
             success: function(task) {
-                var id = task.id;
-                var projectId = $leftPanel.find('.active .project-name').data('id');
-                taApp.reloadTaskList(projectId, filter, function() {
-                    $centerPanel.find('.taskItem[data-taskid="' + id + '"]').click();
-                    $centerPanel.find('input[name="taskTitle"]').focus();
-                });
+                var $taskContainer = $centerPanelContent.find('.newTaskContainer ul');
+                if ($taskContainer.length == 0) {
+                    var id = task.id;
+                    taApp.reloadTaskList(projectId, labelId, filter, function() {
+                        $centerPanel.find('.taskItem[data-taskid="' + id + '"]').click();
+                        $centerPanel.find('input[name="taskTitle"]').focus();
+                    });
+                } else {
+                    var taskDetail = task.detail;
+                    var html = taskListView.renderTask(taskDetail);
+                    $taskContainer.prepend(html);
+                    loadTaskDetail(task.id);
+                }
+
+                var $taskRow = $centerPanelContent.find('.taskList .taskItem');
+                if ($taskRow.length > 1) {
+                  $centerPanelContent.find('.groupByOptions').show();
+                }
+                
+                if (projectId < 0) {
+                  taApp.updateTaskNum(true);
+                }
+            }, 
+            error: function(xhr) {
+              taApp.showWarningDialog(xhr.responseText);
             }
         });
         return false;
     });
 
-    var submitFilter = function(e) {
-        var $projectListView =  $(e.target).closest('.projectListView');
-        var projectId = $projectListView.attr('data-projectId');
-        var groupBy = $projectListView.find('[name="groupBy"]').val();
-        if(groupBy == undefined) {
-            groupBy = '';
-        }
-        var orderBy = $projectListView.find('[name="orderBy"]').val();
-        if(orderBy == undefined) {
-            orderBy = '';
-        }
-        var filter = $projectListView.find('[name="filter"]').val();
-        if (filter == undefined) {
-            filter = '';
-        }
-        var viewType = $projectListView.find('[name="viewType"]').val();
-        if (viewType == undefined) {
-            viewType = 'list';
-        }
-        var keyword = $projectListView.closest('.projectListView').find('input[name="keyword"]').val();
-        $centerPanelContent.jzLoad('TaskController.listTasks()',
-            {
-                projectId: projectId,
-                keyword: keyword,
-                groupBy: groupBy,
-                orderBy: orderBy,
-                filter: filter,
-                viewType: viewType
-            },
-            function() {
-                taApp.hideRightPanel($centerPanel, $rightPanel, $rightPanelContent);
-            }
-        );
-    };
+    var submitFilter = taskCenterView.submitFilter;
 
     $centerPanel.on('submit', '.projectListView form.taskSearchForm', function(e) {
         submitFilter(e);
@@ -514,13 +409,21 @@ $(document).ready(function() {
         var $searchForm = $centerPanel.find('form.form-search');
         var $a = $(e.target || e.srcElement).closest('[data-groupby]');
         var $input = $('[name="groupBy"]').val($a.data('groupby'));
-        submitFilter(e);
+        if (taFilter.isEnable()) {
+          taFilter.submitFilter();
+        } else {
+          submitFilter(e);          
+        }
     });
     $centerPanel.on('click', '[data-orderby]', function(e) {
         var $searchForm = $centerPanel.find('form.form-search');
         var $a = $(e.target || e.srcElement).closest('[data-orderby]');
         $('[name="orderBy"]').val($a.data('orderby'));
-        submitFilter(e);
+        if (taFilter.isEnable()) {
+          taFilter.submitFilter();
+        } else {
+          submitFilter(e);          
+        }
     });
     $centerPanel.on('click', '[data-taskfilter]', function(e) {
         var $searchForm = $centerPanel.find('form.form-search');
@@ -536,6 +439,12 @@ $(document).ready(function() {
         }
         var viewType = $a.data('viewtype');
         $('[name="viewType"]').val(viewType);
+        submitFilter(e);
+    });
+    $centerPanel.on('click', 'a[data-viewpage]', function(e) {
+        var $a = $(e.target).closest('[data-viewpage]');
+        var page = $a.data('viewpage');
+        $('[name="page"]').val(page);
         submitFilter(e);
     });
 
@@ -564,22 +473,22 @@ $(document).ready(function() {
         var projectId = $project.attr('data-projectId');
         var color = $a.attr('data-color');
 
-        var updateProjectURL = $a.jzURL('ProjectController.saveProjectInfo');
+        var updateProjectURL = $a.jzURL('ProjectController.changeProjectColor');
         $.ajax({
             url: updateProjectURL,
             data: {
                 projectId: projectId,
-                name: 'color',
-                value: color
+                color: color
             },
             type: 'POST',
             success: function(data) {
                 $project.find('a.colorPie').attr('class', color + ' colorPie');
-                $project.find('a > i.iconCheckBox').removeClass('iconCheckBox');
-                $a.find('i').addClass('iconCheckBox');
+                $project.find('a > i.uiIconTick').removeClass('uiIconTick');
+                $a.find('i').addClass('uiIconTick');
+                $centerPanelContent.find('[data-taskid][data-task-projectid="'+projectId+'"] .project-color').attr('class', 'project-color ' + color);
             },
-            error: function() {
-                alert('Error while update color of project, please try again.');
+            error: function(xhr) {
+              taApp.showWarningDialog(xhr.responseText);
             }
         });
 
@@ -588,24 +497,15 @@ $(document).ready(function() {
         return false;
     });
 
-    $centerPanel.on('click', '[data-taskcompleted]', function(e) {
-        var $a = $(e.target).closest('[data-taskcompleted]');
-        var $taskItem = $a.closest('.taskItem');
-        var taskId = $taskItem.data('taskid');
-        var isCompleted = $a.data('taskcompleted');
-        //
-        taApp.setTaskComplete(taskId, !isCompleted);
-    });
-
     // Table Project Collapse
      $centerPanel.on('click', '.table-project-collapse .toggle-collapse-group' ,function() {
         if($(this).parents('.heading').next('.collapse-content').is(':visible')) {
             $(this).parents('.heading').next('.collapse-content').slideUp(200);
-            $(this).find('.uiIcon').attr('class','uiIcon uiIconArrowRight');
+            $(this).find('.uiIcon').attr('class','uiIcon uiIconMiniArrowRight');
         }
         else {
             $(this).parents('.heading').next('.collapse-content').slideDown(500);
-            $(this).find('.uiIcon').attr('class','uiIcon uiIconArrowDown');
+            $(this).find('.uiIcon').attr('class','uiIcon uiIconMiniArrowDown');
         }
     });
 
@@ -654,8 +554,8 @@ $(document).ready(function() {
                         .addClass('not-all-project-hidden');
                 }
             },
-            error : function(jqXHR, textStatus, errorThrown) {
-                console.error && console.error('update failure: ' + jqXHR.responseText);
+            error : function(xhr, textStatus, errorThrown) {
+              taApp.showWarningDialog(xhr.responseText);
             }
         });
 

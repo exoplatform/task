@@ -1,7 +1,7 @@
 define('ta_edit_inline',
-    ['jquery', 'task_ui_calendar', 'SHARED/edit_inline_js', 'selectize',
+    ['SHARED/jquery', 'task_ui_calendar', 'taFilter', 'SHARED/edit_inline_js', 'SHARED/selectize','SHARED/taskLocale',
         'x_editable_select3', 'x_editable_selectize', 'x_editable_calendar', 'x_editable_ckeditor'],
-    function($, uiCalendar, editinline, selectize) {
+    function($, uiCalendar, taFilter, editinline, selectize, locale) {
 
         /**
          * This is plugin for selectize, it is used to delete assignee of task
@@ -15,10 +15,24 @@ define('ta_edit_inline',
                 .replace(/>/g, '&gt;')
                 .replace(/"/g, '&quot;');
         };
+        
+        var reloadTaskList = function(taApp) {
+          var $rightPanelContent = taApp.getUI().$rightPanelContent;
+          var $center = taApp.getUI().$centerPanelContent;
+          var selectedTask = $center.find('.table-project > .selected').data('taskid');
+          //
+          taFilter.submitFilter(!taFilter.isEnable(), function() {
+            if (selectedTask) {
+              var $taskItem = taApp.getUI().$centerPanelContent.find('.table-project > *[data-taskid="' + selectedTask + '"]');
+              $taskItem.addClass('selected');
+            }
+          });
+        }
+        
         selectize.define('task_remove_button', function(options) {
             options = $.extend({
                 label     : '&times;',
-                title     : 'Remove',
+                title     : locale.remove,
                 className : 'remove',
                 append    : true
             }, options);
@@ -74,7 +88,7 @@ define('ta_edit_inline',
                 html: function(data) {
                     return (
                         '<div class="autocomplete-menu not-found">' +
-                        ' <div class="noMatch center muted">No match</div>' +
+                        ' <div class="noMatch center muted">'+ locale.noMatch +'</div>' +
                         '</div>'
                         );
                 }
@@ -140,7 +154,9 @@ define('ta_edit_inline',
                 options.emptytext = "Description";
             } else if (type == 'calendar') {
                 options.mode = 'popup';
-                options.emptytext = 'No Due Date';
+                options.emptytext = ' ' + locale.dueDate;
+            } else if (type == 'select') {
+                options.sourceCache = false;
             }
 
             return options;
@@ -174,6 +190,11 @@ define('ta_edit_inline',
                 return;
             }
             var d = new $.Deferred;
+            //if left empty, task title will be set to Untitled Task
+            if (params.name == 'title' && !params.value) {
+            	var $title = $rightPanel.find('[data-name="title"]');
+            	params.value = $title.data('emptytext');
+            }
             var data = params;
             params.pk = currentTaskId;
             data.taskId = currentTaskId;
@@ -186,9 +207,17 @@ define('ta_edit_inline',
                     if (params.name == 'title') {
                         $centerPanel.find('[data-taskid="'+data.taskId+'"] .taskName').text(params.value);
                     }
+                    
+                    if ($.isNumeric(response)) {
+                      editInline.taApp.updateTaskNum(response);                                      
+                    }
+
+                    reloadTaskList(editInline.taApp);
                 },
-                error: function(jqXHR, textStatus, errorThrown ) {
-                    d.reject('update failure: ' + jqXHR.responseText);
+                error: function(xhr, textStatus, errorThrown ) {
+                  $('[data-name="' + params.name + '"]').first().editable('toggle');
+                  d.reject('update failure: ' + xhr.responseText);
+                  editInline.taApp.showWarningDialog(xhr.responseText);
                 }
             });
             return d.promise();
@@ -222,12 +251,12 @@ define('ta_edit_inline',
                 callback.done(function(response) {
                     $popover.html(response);
                     if (plan == null) {
-                        $removeWorkPlan.addClass("hidden");
+                        $removeWorkPlan.addClass("hide");
                     } else {
-                        $removeWorkPlan.removeClass("hidden");
+                        $removeWorkPlan.removeClass("hide");
                     }
                 }).fail(function() {
-                    alert('fail to update');
+//                    alert('fail to update');
                 });
             };
 
@@ -311,13 +340,20 @@ define('ta_edit_inline',
                         var tDate = new Date(toDates[0], toDates[1] - 1, toDates[2], toTimes[0], toTimes[1], 0).getTime();
 
                         if (fDate >= tDate) {
-                            $pop.find('.errorMessage').html('To time can not be lesser than from time');
+                            $pop.find('.errorMessage').html(locale.taskPlan.errorMessage);
                             updatePopoverPossition();
                         } else {
                             $pop.find('.errorMessage').html('');
                             updatePopoverPossition();
-                            saveWorkPlan([fDate, tDate]);
+                            saveWorkPlan([fromDate + " " + fromTime, toDate + " " + toTime]);
                             var $rangeCalendar = $fieldWorkPlan.find('.rangeCalendar');
+                            if (isAllDay) {
+                                $rangeCalendar.find('.choose-time').addClass('all-day');
+                                $rangeCalendar.find('[name="allday"]').attr('checked', true);
+                            } else {
+                                $rangeCalendar.find('.choose-time').removeClass('all-day');
+                                $rangeCalendar.find('[name="allday"]').attr('checked', false);
+                            }
                             $rangeCalendar.find('[name="fromDate"]').val(fromDate);
                             $rangeCalendar.find('[name="toDate"]').val(toDate);
                             $rangeCalendar.find('[name="fromTime"]').val(fromTime).attr('value', fromTime);
@@ -340,7 +376,7 @@ define('ta_edit_inline',
         var selectizeOptions = {
             valueField: 'id',
             labelField: 'text',
-            searchField: ['text', 'id'],
+            searchField: ['text'],
             openOnFocus: false,
             wrapperClass: 'exo-mentions dropdown',
             dropdownClass: 'dropdown-menu uiDropdownMenu autocomplete-menu',
@@ -348,6 +384,7 @@ define('ta_edit_inline',
             create: false,
             hideSelected: true,
             closeAfterSelect: true,
+            maxOptions: 10,
             plugins: {
                 task_remove_button: {
                     label: '<i class="uiIconClose uiIconLightGray"></i>',
@@ -357,16 +394,26 @@ define('ta_edit_inline',
             },
             render: {
                 option: function(item, escape) {
+                    if (item.deleted === true || item.enable === false) {
+                        return '';
+                    }
                     return '<li class="data">' +
-                        '<div class="avatarSmall">' +
+                        '<span class="avatarMini">' +
                         '   <img src="'+item.avatar+'">' +
-                        '</div>' +
-                        '<span class="text">' + escape(item.text) + ' (' + item.id +')' + '</span>' +
+                        '</span>' +
+                        '<span class="text">' + editInline.taApp.escape(item.text) + ' (' + item.id +')' + '</span>' +
                         '<span class="user-status"><i class="uiIconColorCircleGray"></i></span>' +
                         '</li>';
                 },
                 item: function(item, escape) {
-                    return '<span class="" href="#">' + escape(item.text) +'</span>';
+                    var text = editInline.taApp.escape(item.text);
+                    var cssClass = '';
+                    if (item.deleted === true) {
+                        cssClass = 'muted';
+                    } else if (item.enable === false) {
+                        text += '&nbsp;<span class="muted" style="font-style: italic">(' + locale.inactive + ')</span>';
+                    }
+                    return '<span class="'+cssClass+'">' + text +'</span>';
                 }
             },
             onInitialize: function() {
@@ -377,13 +424,23 @@ define('ta_edit_inline',
                 var $dropdown_content = self.$dropdown_content;
                 $dropdown_content.remove();
                 $dropdown_content = $('<ul>').addClass(settings.dropdownContentClass).appendTo($dropdown);
-                $('<div class="autocomplete-menu loading">' +
+                var $standaloneLoading = $('<div class="autocomplete-menu loading">' +
                     '<div class="loading center muted">' +
                     '<i class="uiLoadingIconMini"></i>' +
                     '<div class="loadingText">Loading...</div>' +
                     '</div>' +
                     '</div>').appendTo($wrapper);
+
+                $('<div class="dropdown-loading center">' +
+                '<i class="uiLoadingIconMini"></i>' +
+                '</div>').appendTo($dropdown);
                 self.$dropdown_content = $dropdown_content;
+            },
+            onDropdownOpen: function($dropdown) {
+                $dropdown.closest('.exo-mentions').addClass('dropdown-opened');
+            },
+            onDropdownClose: function($dropdown) {
+                $dropdown.closest('.exo-mentions').removeClass('dropdown-opened');
             },
             load: function(query, callback) {
                 if (!query.length) return callback();
@@ -398,6 +455,16 @@ define('ta_edit_inline',
                         callback(res);
                     }
                 });
+            },
+            score: function(search) {
+                var score = this.getScoreFunction(search);
+                return function(item) {
+                    if (item.deleted === true || item.enable === false) {
+                        return 0;
+                    } else {
+                        return score(item);
+                    }
+                };
             }
         };
         var saveAssignee = function(taskId, name, value, selectize) {
@@ -419,12 +486,10 @@ define('ta_edit_inline',
                     var $editable = $assignee.closest('.uiEditableInline');
                     var assignee = $assignee.val();
                     var coworkders = $rightPanel.find('input[name="coworker"]').val();
-                    if (assignee == '' && coworkders == '') {
-                        $editable.find('.unassigned').removeClass('hidden');
-                        $editable.find('.assigned').addClass('hidden');
-                    } else {
-                        $editable.find('.unassigned').addClass('hidden');
-                        $editable.find('.assigned').removeClass('hidden');
+
+                    var assg = false;
+                    if (assignee != '' && options[assignee] != undefined) {
+                        var assg = options[assignee];
                     }
                     if (coworkders == '') {
                         coworkders = [];
@@ -432,20 +497,41 @@ define('ta_edit_inline',
                         coworkders = coworkders.split(',');
                     }
                     var numberCoWorker = coworkders.length;
-                    if (assignee == '') {
-                        assignee = coworkders[0];
-                        numberCoWorker--;
+
+                    if (!assg) {
+                        $editable.find('.unassigned').removeClass('hide');
+                        $editable.find('.assigned').addClass('hide');
+                    } else {
+                        $editable.find('.assigned img').attr('src', assg.avatar);
+                        $editable.find('.unassigned').addClass('hide');
+                        $editable.find('.assigned').removeClass('hide');
                     }
 
-                    // Update avatar and display name
-                    var assg = options[assignee];
-                    if (assg) {
-                        $editable.find('.assigned img').attr('src', assg.avatar);
-                        $editable.find('.assigned .editAssignee').html(numberCoWorker == 0 ? assg.text : '+' + numberCoWorker + ' Coworkers');
+                    var $editAssignee = $editable.find('.editAssignee');
+                    if (numberCoWorker > 0) {
+                        var coworkerLabel = numberCoWorker > 1 ? locale.coworkers.toLowerCase() : locale.coworker.toLowerCase();
+                        $editAssignee.html('+' + numberCoWorker + ' ' + coworkerLabel);
+                    } else if (!assg){
+                        $editAssignee.html(locale.unassigned);
+                    } else {
+                        var text = editInline.taApp.escape(assg.text);
+                        if (assg.deleted === true) {
+                            $editAssignee.addClass('muted');
+                        } else if (assg.enable === false) {
+                            text += '&nbsp;<span class="muted" style="font-style: italic">(' + locale.inactive + ')</span>';
+                        }
+                        $editAssignee.html(text);
                     }
+                    
+                    if ($.isNumeric(response)) {
+                      editInline.taApp.updateTaskNum(response);                                      
+                    }
+                    
+                    reloadTaskList(editInline.taApp);
                 },
                 error: function(response) {
-                    alert('can not save co-workers');
+                  $('[data-name="' + name + '"]').editable('toggle');
+                  editInline.taApp.showWarningDialog(response.responseText);
                 }
             });
         }
@@ -537,8 +623,12 @@ define('ta_edit_inline',
 
                 var $tab = $(this);
                 if ($tab.attr('href') == '.taskLogs') {
-                    $tab.closest('.task-detail').find('.taskLogs').jzLoad('TaskController.renderTaskLogs()', {taskId: taskId}, function() {
-                        $tab.tab('show');
+                    $tab.closest('.task-detail').find('.taskLogs').jzLoad('TaskController.renderTaskLogs()', {taskId: taskId}, function(html, status, xhr) {
+                      if (xhr.status >= 400) {
+                        editInline.taApp.showWarningDialog(xhr.responseText);
+                      } else {
+                        $tab.tab('show');                        
+                      }
                     });
                 } else {
                     $tab.tab('show');
@@ -547,7 +637,11 @@ define('ta_edit_inline',
 
             $rightPanel.on('show.bs.tab', '[href="#tab-changes"]', function(e) {
                 var taskId = $(e.target).closest('[data-taskid]').data('taskid');
-                $rightPanel.find('#tab-changes').jzLoad('TaskController.renderTaskLogs()', {taskId: taskId});
+                $rightPanel.find('#tab-changes').jzLoad('TaskController.renderTaskLogs()', {taskId: taskId}, function(html, status, xhr) {
+                  if (xhr.status >= 400) {
+                    editInline.taApp.showWarningDialog(xhr.responseText);
+                  }
+                });
             });
 
             var $taskDetailContainer = $('#taskDetailContainer, [data-taskid]');
@@ -561,7 +655,7 @@ define('ta_edit_inline',
                     url: editInline.saveTaskDetailFunction
                 });
                 if (fieldName == 'dueDate') {
-                    editOptions.emptytext = "No Due Date";
+                    editOptions.emptytext = " " + locale.dueDate;
                     editOptions.mode = 'popup';
                 }
                 if (fieldName == 'status') {
@@ -569,30 +663,137 @@ define('ta_edit_inline',
                     editOptions.value = currentStatus;
                 }
                 if (fieldName == 'priority') {
-                    var priority = [];
+                    /*var priority = [];
                     $.each($this.data('priority').split(','), function (idx, elem) {
                         priority.push({'text': elem, 'value': elem});
                     });
                     //
-                    editOptions.source = priority;
+                    editOptions.source = priority;*/
                     editOptions.success = function (response, newValue) {
                         $this.parent().find('i').attr('class', 'uiIconColorPriority' + newValue);
                     }
                 }
-                if (fieldName == 'tags') {
-                    editOptions.emptytext = 'No Tags';
+                if (fieldName == 'tags' || fieldName == 'labels') {
                     editOptions.success = function (response, newValue) {
                         var isEmpty = newValue.length == 0 || newValue[0] == '';
                         var $i = $this.parent().find('.icon-hash');
                         if (isEmpty) {
-                            $i.removeClass('hidden');
+                            $i.removeClass('hide');
                         } else {
-                            $i.addClass('hidden');
+                            $i.addClass('hide');
+                        }
+                        if (fieldName == 'labels') {
+                          $('.rightPanelContent ').trigger('saveLabel');
                         }
                     }
                 }
+                if (fieldName == 'title') {
+                	editOptions.emptyclass = '';
+                }
+                if (fieldName == 'description') {
+                    editOptions.toggle = 'dblclick';
+                    editOptions.emptytext = locale.taskDescriptionEmpty;
+                    editOptions.display = function(value, response) {
+                        $(this).html(editInline.taApp.convertURLsAsLinks(value));
+                    };
+                }
+                if (fieldName == 'tags') {
+                    editOptions.emptytext = locale.tag;
+                    editOptions.selectize = {
+                        create: true,
+                        valueField: 'id',
+                        labelField: 'text',
+                        searchField: 'text',
+                        options: [],
+                        load: function(query, callback) {
+                            $.ajax({
+                                url: $rightPanel.jzURL('TaskController.findTags'),
+                                data: {keyword: query},
+                                type: 'GET',
+                                error: function() {
+                                    callback();
+                                },
+                                success: function(res) {
+                                    callback(res);
+                                }
+                            });
+                        }
+                    };
 
-                $this.editable(editOptions);
+                } else if (fieldName == 'labels') {
+                    var isLoaded = false;
+                    var allLabels = {};
+                    var opts = $this.data('selectizie-opts');
+                    $.each(opts, function(index, val) {
+                        allLabels[val.id] = val;
+                    });
+
+                    editOptions.emptytext = locale.labels;
+                    editOptions.selectize = {
+                        create: true,
+                        options: opts,
+                        valueField: 'id',
+                        labelField: 'text',
+                        searchField: 'text',
+                        highlight: true,
+                        openOnFocus: true,
+                        onItemRemove: function(value) {
+                          $this.trigger('labelRemoved', value);
+                        },
+                        onItemAdd: function(value, $item) {
+                          $this.trigger('labelAdded', value);
+                        },
+                        load: function(query, callback) {
+                            if (isLoaded) {
+                                callback(allLabels);
+                            }
+                            //. Load all label of user
+                            $.ajax({
+                                url: $rightPanel.jzURL('UserController.findLabel'),
+                                data: {},
+                                type: 'GET',
+                                error: function() {
+                                    callback();
+                                },
+                                success: function(res) {
+                                    callback(res);
+                                    isLoaded = true;
+                                    $.each(res, function(index, val) {
+                                        allLabels[val.id] = val;
+                                    });
+                                }
+                            });
+                        },
+                        render: {
+                            option: function(item, escape) {
+                                var it = allLabels[item.id] != undefined ? allLabels[item.id] : item;
+                                return '<li class="data">' +
+                                    '<a href="" class="text">' + escape(it.text) + '</a>'
+                                '</li>';
+                            },
+                            item: function(item, escape) {
+                                var it = allLabels[item.id] != undefined ? allLabels[item.id] : item;
+                                return '<div class="label '+it.color+'">' + escape(it.text) +'</div>';
+                            },
+                            option_create: function(data, escape) {
+                                return '<li class="create"><a href="javascript:void(0)">'+ locale.createLabel +' <strong>' + escape(data.input) + '</strong>&hellip;</a></li>';
+                            }
+                        }
+                    };
+                    editOptions.value2html = function(val) {
+                        var text = val, color = '';
+
+                        var label = allLabels[val];
+                        if (label != undefined) {
+                            text = label.text;
+                            color = label.color;
+                        }
+
+                        var encoder = $('<div></div>');
+                        return '<span class="'+color+' label">'+ encoder.text(text).html()+'</span>';
+                    }
+                }
+
                 $this.on('shown', function (e, editable) {
                     if (editable != undefined) {
                         $this.parent().removeClass('inactive').addClass('active');
@@ -602,6 +803,7 @@ define('ta_edit_inline',
                         $this.parent().removeClass('active').addClass('inactive');
                     }
                 });
+                $this.editable(editOptions);
                 if (fieldName == 'project') {
                     var enableEditProject = function($editable) {
                         $editable.editable('enable');
@@ -617,6 +819,14 @@ define('ta_edit_inline',
                                     $editable.find('li').html('No Project').removeClass('active').addClass('muted');
                                     $editable.editable('setValue', 0);
                                     enableEditProject($editable);
+                                    if ($.isNumeric(e)) {
+                                      editInline.taApp.updateTaskNum(e);                                      
+                                    }
+                                    
+                                    reloadTaskList(editInline.taApp);
+                                }, 
+                                error: function(xhr) {
+                                  editInline.taApp.showWarningDialog(xhr.responseText);
                                 }
                             });
                         });
@@ -642,54 +852,33 @@ define('ta_edit_inline',
             editInline.initAssignment(taskId);
         };
 
-        editInline.saveProjectDetailFunction = function(params) {
-            var d = new $.Deferred;
-            var data = params;
-            data.projectId = params.pk;
-            $rightPanel.jzAjax('ProjectController.saveProjectInfo()',{
-                data: data,
-                method: 'POST',
-                traditional: true,
-                success: function(response) {
-                    d.resolve();
-                    //
-                    if (params.name == 'name') {
-                        $leftPanel
-                            .find('li.project-item a.project-name[data-id="'+ data.projectId +'"]')
-                            .html(data.value);
-                        $centerPanel.find('[data-projectid="'+data.projectId+'"] .projectName').html(data.value);
-                    } else if (params.name == 'parent') {
-                        editInline.taApp.reloadProjectTree(data.projectId);
-                    }
-                },
-                error: function(jqXHR, textStatus, errorThrown ) {
-                    d.reject('update failure: ' + jqXHR.responseText);
-                }
-            });
-            return d.promise();
-        };
-
-        editInline.initEditInlineForProject = function(projectId) {
-            var $project = $rightPanel.find('[data-projectid]');
+        editInline.initEditInlineForProject = function(projectId, $projectForm) {
+            var $project = $projectForm;
             $project.find('.editable').each(function(){
                 var $this = $(this);
                 var dataType = $this.attr('data-type');
                 var fieldName = $this.attr('data-name');
                 var editOptions = getDefaultOptionForType(dataType);
                 editOptions = $.extend({}, editOptions, {
-                    pk: projectId,
-                    url: editInline.saveProjectDetailFunction
+                    pk: projectId
+//                    url: editInline.saveProjectDetailFunction
                 });
+                if (fieldName == 'name') {
+                	editOptions.emptyclass = '';
+                }
+                if (fieldName == 'description') {
+                    editOptions.emptytext = locale.projectDescriptionEmpty;
+                }
                 if(fieldName == 'manager' || fieldName == 'participator') {
                     var findUserURL = $this.jzURL('UserController.findUser');
                     var getDisplayNameURL = $this.jzURL('UserController.getDisplayNameOfUser');
                     editOptions.showbuttons = true;
-                    editOptions.emptytext = (fieldName == 'manager' ? "No Manager" : "No Participator");
+                    editOptions.emptytext = (fieldName == 'manager' ? locale.noManager : locale.noParticipator);
                     editOptions.source = findUserURL;
                     editOptions.select2= {
                         multiple: true,
                         allowClear: true,
-                        placeholder: 'Select an user',
+                        placeholder: locale.selectUser,
                         tokenSeparators:[","],
                         minimumInputLength: 1,
                         initSelection: function (element, callback) {
@@ -721,7 +910,7 @@ define('ta_edit_inline',
                     };
                 }
                 if(fieldName == 'dueDate') {
-                    editOptions.emptytext = "No Due Date";
+                    editOptions.emptytext = " " + locale.dueDate;
                     editOptions.mode = 'popup';
                 }
                 $this.editable(editOptions);
@@ -730,12 +919,14 @@ define('ta_edit_inline',
                     $this.parent().removeClass('inactive').addClass('active');
                 }).on('hidden', function(e, editable) {
                     $this.parent().removeClass('active').addClass('inactive');
+                }).on('save', function() {                  
+                  $this.closest('.addProject').find('.btn-primary').attr('disabled', false);
                 });
             });
             
-            $project.find('.calInteg').on('change', function() {
-              editInline.saveProjectDetailFunction({'pk': projectId, 'name': $(this).attr('name'), 'value': $(this).is(':checked')});
-            });
+//            $project.find('.calInteg').on('change', function() {
+//              editInline.saveProjectDetailFunction({'pk': projectId, 'name': $(this).attr('name'), 'value': $(this).is(':checked')});
+//            });
         };
 
         return editInline;

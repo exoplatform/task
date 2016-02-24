@@ -1,16 +1,23 @@
 <%
     import java.util.List;
+    import java.util.Arrays;
     import java.util.ArrayList;
     import java.util.Collections;
     import java.util.TimeZone;
     import java.util.Calendar;
     import org.exoplatform.task.domain.Status;
     import org.exoplatform.task.model.GroupKey;
-    import org.exoplatform.task.utils.TaskUtil;
-    import org.exoplatform.task.utils.DateUtil;
+    import org.exoplatform.task.util.TaskUtil;
+    import org.exoplatform.task.util.DateUtil;
+    import org.exoplatform.task.util.ListUtil;
+    import org.exoplatform.task.util.ResourceUtil;
     import org.exoplatform.services.security.ConversationState;
     import org.exoplatform.task.management.controller.TaskController;
-    List<Status> status = new ArrayList<Status>(project.getStatus());
+  	 import org.exoplatform.commons.utils.HTMLEntityEncoder;
+
+  	 def encoder = HTMLEntityEncoder.getInstance();
+  	
+    List<Status> status = projectStatuses;
     Collections.sort(status);
     def numberStatus = status.size();
 
@@ -31,44 +38,48 @@
     %>
     <div class="header ">
         <div class="clearfix">
-            <!--<div class="header-left pull-left">
-                <a href="#" class="btn btn-primary btn-add-task"><i class="uiIconSimplePlusMini"></i> New task</a>
-            </div>-->
-            <div class="header-right pull-right">
+            <div class="header-left pull-left">
+                <a href="#" class="btn btn-primary btn-add-task" data-action="newtask"><i class="uiIconSimplePlusMini"></i> &{list.label.newTask}</a>
+            </div>
+
+            <% 
+            def groupByClass="display:none";
+            if (taskNum >= TaskController.MIN_NUMBER_TASK_GROUPABLE) {
+              groupByClass = "";
+            }%>
+            <div class="header-right pull-right groupByOptions" style="${groupByClass}">
                 <!-- this is filter action-->
-                <% if (tasks.size() >= TaskController.MIN_NUMBER_TASK_GROUPABLE) { %>
                      <span class="action-bar dropdown pull-right" data-currentorderby="${orderBy}">
-                        <a href="" class="actionIcon dropdown-toggle" data-original-title="Due date" data-toggle="dropdown"  rel="tooltip" data-placement="bottom">
+                        <a href="" class="actionIcon dropdown-toggle" data-original-title="&{label.orderBy}" data-toggle="dropdown"  rel="tooltip" data-placement="bottom">
                             <i class="uiIconSortDown uiIconLightGray"></i>
                             <span>${orderBy != null && orderBy != "" ? orders[orderBy] : orders["dueDate"]}</span>
                         </a>
                         <ul class="dropdown-menu">
-                            <%orders.each{k,v ->
-                                if (k != orderBy) {%>
-                                    <li><a href="javascript:void(0)" data-orderby="${k}">${v}</a></li>
+                            <% for (def e in orders) {
+                                if (e.key != orderBy) {%>
+                                    <li><a href="javascript:void(0)" data-orderby="${e.key}">${e.value}</a></li>
                             <%  }
                             }%>
                         </ul>
                      </span>
                      <span class="action-bar dropdown pull-right" data-currentgroupby="${groupBy}">
-                        <a href="" class="actionIcon dropdown-toggle"  data-original-title="group By" data-toggle="dropdown"  rel="tooltip" data-placement="bottom">
+                        <a href="" class="actionIcon dropdown-toggle"  data-original-title="&{label.groupBy}" data-toggle="dropdown"  rel="tooltip" data-placement="bottom">
                             <i class="uiIconViewList uiIconLightGray"></i>
                             <span>${groups[groupBy]}</span>
                         </a>
                         <ul class="dropdown-menu">
-                            <%groups.each{k,v -> %>
-                            <% if (k != groupBy) {%>
-                            <li><a href="javascript:void(0)" data-groupby="${k}">${v}</a></li>
+                            <% for (def e in groups) {%>
+                            <% if (e.key != groupBy) {%>
+                            <li><a href="javascript:void(0)" data-groupby="${e.key}">${e.value}</a></li>
                             <%}%>
                             <%}%>
                         </ul>
                      </span>
-                <%}%>
             </div>
         </div>
         <!--<div class="input-field">
             <form action="#" method="GET" class="form-create-task">
-                <input type="text" name="taskTitle" placeholder="Untiled Task"
+                <input type="text" name="taskTitle" placeholder="Untitled Task"
                         <%if (taskNum == 0) { %>
                        data-content="&{label.welcome.firstTask}"
                        data-placement="bottom"
@@ -78,18 +89,21 @@
         </div>-->
     </div>
     <%} %>
+    #{include path=paging.gtmpl/}
     <div class="body relative">
         <div class="table-project-collapse">
             <div class="caption-heading table-project">
                 <div class="row-item  has-border taskItem">
-                    <%status.eachWithIndex {st, index -> %>
+                    <% for (def index in 0 .. status.size() - 1) {
+                        def st = status.get(index);
+                    %>
                         <div class="col col${index} hover-action-reveal uiEditableInline" data-statusid="${st.id}">
-                            <strong class="${editableClasses}" data-pk="${st.id}" data-type="text" data-name="name">${st.name} </strong><span class="number-tasks">${numberTasksByStatus[st.id] == null ? "" : "(" + numberTasksByStatus[st.id] + ")"}</span>
+                            <strong class="${editableClasses}" data-pk="${st.id}" data-type="text" data-name="name" data-value="${encoder.encode(st.name)}">${encoder.encode(ResourceUtil.resolveStatus(bundle, st.name))} </strong><span class="${numberTasksByStatus[st.id] != null ? 'number-tasks' : ''}" data-taskcount-status="${numberTasksByStatus[st.id] != null ? numberTasksByStatus[st.id] : ''}">${numberTasksByStatus[st.id] != null ? numberTasksByStatus[st.id] : ''}</span>
                             <% if (index == numberStatus - 1 && canEdit) {%>
-                                <a href="#" rel="tooltip"  data-original-title="Add a Status" data-placement="left" class=" inline-block-hide pull-right mgL5 actionAddStatus"><i class="uiIcon uiIconPlus "></i></a>
+                                <a href="#" rel="tooltip"  data-original-title="&{label.addStatus}" data-placement="left" class=" inline-block-hide pull-right mgL5 actionAddStatus"><i class="uiIcon uiIconPlus uiIconWhite"></i></a>
                             <%}%>
                             <% if (canEdit && numberStatus > 1) {%>
-                                <a href="#" class=" inline-block-hide pull-right actionRemoveStatus"><i class="uiIcon uiIconDelete "></i></a>
+                                <a href="#" class="inline-block-hide pull-right actionRemoveStatus"><i class="uiIcon uiIconDelete uiIconWhite"></i></a>
                             <%}%>
                         </div>
                     <%}%>
@@ -102,42 +116,61 @@
                 </div>
             </div>
 
-            <% groupTasks.each {group -> %>
+            <% for (def group in groupTasks) {%>
                 <%
                     def groupKey = group.key.toString();
                     groupKey = groupKey.replaceAll(' ', '-');
+                    def groupValueId = '';
+                    if (group.key.value != null) {
+                        if (groupBy == 'label') {
+                            groupValueId = group.key.value.id;
+                        } else if (groupBy == 'assignee') {
+                            groupValueId = group.key.value.username;
+                        }
+                    }
+
+                    def groupColorClass = '';
+                    if (groupBy == 'label' && group.key.value != null) {
+                        groupColorClass = group.key.value.color;
+                    } else{
+                        groupColorClass = 'no-label';
+                    }
                 %>
                 <% if (groupBy != null && !groupBy.isEmpty() && !"none".equals(groupBy)) { %>
-                    <div class="heading primaryBackground">
-                        <% if (groupBy == 'assignee') {%>
-                        <a class="toggle-collapse-group" href="#"><i class="uiIcon uiIconArrowDown"></i></a>
-                        <%
-                            def user = userMap[group.key.value];
+                    <div class="heading primaryBackground ">
+                        <a class="toggle-collapse-group" href="#"><i class="uiIcon uiIconMiniArrowDown"></i></a>
+                        <% if (groupBy == 'assignee') {
+                            def user = group.key.value;
+                            def isGuest = (user == null || user.username == 'guest' || user.username == null);
                         %>
-                        <% if (user.username != 'guest') {%>
+                        <% if (!isGuest) {%>
                         <img width="20px" height="20px" src="${user.avatar}" alt="${user.displayName}">
                         <%}%>
-                        <a href="javascript:void(0)"><span class="group-name">${user.username == "guest" ? "UnAssigned" : user.displayName}</span> <span class="amount-item">(${group.value.size()})</span></a>
+                        <a href="${isGuest ? "javascript:void(0)" : user.url}">
+                            <span class="user-name-task">${isGuest ? bundle.getString("label.unassigned") : encoder.encode(user.displayName)}</span>
+                            <span class="amount-item user-${group.key.value == null ? "" : group.key.value.username}" data-taskcount-assignee="${group.value.size()}">(${group.value.size()})</span>
+                        </a>
                         <% } else { %>
-                        <div class="heading-title"><span class="group-name">${group.key}</span> <span class="amount-item">(${group.value.size()})</span></div>
+                        <span class="heading-title"><span class="group-name ${groupColorClass}">${encoder.encode(group.key.name)}</span> </span>
                         <% } %>
                     </div>
                 <%}%>
                 <div class="collapse-content">
                     <ul class="table-project">
-                        <li  class="row-item  has-border taskItem">
-                            <% def subGroups = TaskUtil.groupTasks(group.value, "status", TimeZone.getDefault(), bundle);%>
-                            <%status.eachWithIndex {st, index -> %>
-                                <%
-                                    def key = new GroupKey(st.name, st, 0);
+                        <li  class="row-item has-border taskItem">
+                            <% def subGroups = TaskUtil.groupTasks(group.value, "status", currentUser, TimeZone.getDefault(), bundle, taskService, null);%>
+                            <% for (def index in 0 .. status.size() - 1) {
+                                    def st = status.get(index);
+                                    def key = new GroupKey(ResourceUtil.resolveStatus(bundle, st.name), st, st.getRank());
                                 %>
                                 <div class="col col${index + 1} taskBoardContainer taskContainer${groupKey} taskContainer${groupKey}${st.id}" data-connected=".taskContainer${groupKey}" data-statusid="${st.id}">
-                                    <% subGroups[key].each {task -> %>
-                                        <div class="box-small has-background hover-action-reveal taskItem" data-taskid="${task.id}">
-                                            <span class="project-color ${task.status.project.color} ">&nbsp;</span>
+                                    <% for (def task in subGroups[key]) {%>
+                                        <!-- user name  task-done for check task.completed -->
+                                        <div class="box-small has-background hover-action-reveal ${task.completed ? "task-completed": ""} taskItem" data-taskid="${task.id}">
+                                            <span class="project-color priority-${task.priority.name().toLowerCase()}">&nbsp;</span>
                                             <div class="box-small-inner  ">
                                                 <span class="inline-block-hide dragable">&nbsp;</span>
-                                                <div class="media">
+                                                <div class="media clearfix">
                                                     <%
                                                         def colorClass = '';
                                                         if (task.dueDate != null) {
@@ -149,22 +182,36 @@
                                                                 colorClass = 'uiIconColorWarningInBlue';
                                                             }
                                                         }
+                                                        def uiIconClass = task.completed ? 'uiIconBlue' : 'uiIconLightGray';
                                                     %>
+                                                    <a class="pull-right inline-block-hide"
+                                                       data-original-title="<% if (task.completed) {%> &{message.markAsUnCompleted} <%} else {%> &{message.markAsCompleted} <%}%>"
+                                                       rel="tooltip" data-placement="left"
+                                                       data-taskcompleted="${task.completed}" href="javascript:void(0)">
+                                                        <i class="uiIconValidate ${uiIconClass}"></i>
+                                                    </a>
                                                     <i class="${colorClass} pull-left"></i>
-                                                    <div class="media-body taskName"> ${task.title}</div>
+                                                    <div class="media-body taskName"> ${encoder.encode(task.title)}</div>
+                                                </div>
+                                                <div class="text-right date-task">
+                                                <%if (task.dueDate != null) {
+                                                    def calendar = DateUtil.newCalendarInstance(userTimezone);
+                                                    calendar.setTime(task.dueDate);%>
+                                                    <%=DateUtil.formatDueDate(calendar, bundle)%>
+                                                <%}%>
                                                 </div>
                                             </div>
                                         </div>
                                     <%}%>
                                     <form class="create-task createTaskInListView" method="POST" action="#" style="visibility: hidden">
-                                        <input type="text" placeholder="Untiled Task" name="taskTitle">
+                                        <input type="text" placeholder="Untitled Task" name="taskTitle">
                                         <input type="hidden" name="statusId" value="${st.id}"/>
                                         <input type="hidden" name="projectId" value="${st.project.id}"/>
                                         <input type="hidden" name="groupBy" value="${groupBy}"/>
                                         <input type="hidden" name="orderBy" value="${orderBy}"/>
                                         <input type="hidden" name="viewType" value="board"/>
                                         <% if (groupBy != null && groupBy != 'none' && groupBy != '') {%>
-                                            <input type="hidden" name="${groupBy}" value="${group.key.value}"/>
+                                            <input type="hidden" name="${groupBy}" value="${group.key.value == null ? "" : group.key.value.username}"/>
                                         <%}%>
                                     </form>
                                 </div>
@@ -177,8 +224,30 @@
                 </div>
             <%}%>
 
+            <div data-template-name="board-view-task-item" style="display:none;">
+                <div class="box-small has-background hover-action-reveal {{completedClass}} taskItem" data-taskid="{{taskid}}">
+                    <span class="project-color priority-{{priority}}">&nbsp;</span>
+                    <div class="box-small-inner">
+                        <span class="inline-block-hide dragable">&nbsp;</span>
+                        <div class="media clearfix">
+                            <a class="pull-right inline-block-hide"
+                               data-original-title="&{message.markAsCompleted}"
+                               rel="tooltip" data-placement="left"
+                               data-taskcompleted="false" href="javascript:void(0)">
+                                <i class="uiIconValidate uiIconBlue"></i>
+                            </a>
+                            <i class="{{dueDateColorClass}} pull-left"></i>
+                            <div class="media-body taskName">{{title}}</div>
+                        </div>
+                        <div class="text-right date-task">
+                            {{taskDueDate}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="heading primaryBackground" style="display:none">
-                <a href="#" class="toggle-collapse-group"><i class="uiIcon uiIconArrowDown"></i></a>
+                <a href="#" class="toggle-collapse-group"><i class="uiIcon uiIconMiniArrowDown"></i></a>
                 <img width="20px" height="20px" alt="Root Root" src="/eXoSkin/skin/images/system/UserAvtDefault.png">
                 <a href="javascript:void(0)"><span class="group-name">Root Root</span> <span class="amount-item">(6)</span></a>
             </div>
@@ -187,7 +256,7 @@
                     <li  class="row-item  hover-action-reveal has-border taskItem">
                         <div class="col col1">
                             <form  method="GET" action="#">
-                                <input type="text" placeholder="Untiled Task" name="taskTitle">
+                                <input type="text" placeholder="Untitled Task" name="taskTitle">
                             </form>
                         </div>
                         <div class="col col2"></div>
@@ -197,7 +266,7 @@
                 </ul>
             </div>
             <div class="heading primaryBackground" style="display:none">
-                <a href="#" class="toggle-collapse-group"><i class="uiIcon uiIconArrowDown"></i></a>
+                <a href="#" class="toggle-collapse-group"><i class="uiIcon uiIconMiniArrowDown"></i></a>
                 <img width="20px" height="20px" alt="Root Root" src="/eXoSkin/skin/images/system/UserAvtDefault.png">
                 <a href="javascript:void(0)"><span class="group-name">Root Root</span> <span class="amount-item">(6)</span></a>
             </div>
@@ -227,7 +296,7 @@
                                 </div>
                             </div>
                             <form class="create-task"  method="GET" action="#">
-                                <input type="text" placeholder="Untiled Task" name="taskTitle">
+                                <input type="text" placeholder="Untitled Task" name="taskTitle">
                             </form>
                         </div>
                         <div class="col col2"></div>
@@ -244,7 +313,7 @@
                                 </div>
                             </div>
                             <form class="create-task"  method="GET" action="#">
-                                <input type="text" placeholder="Untiled Task" name="taskTitle">
+                                <input type="text" placeholder="Untitled Task" name="taskTitle">
                             </form>
                         </div>
                     </li>
@@ -253,7 +322,7 @@
 
 
             <div class="heading primaryBackground" style="display:none">
-                <a href="#" class="toggle-collapse-group"><i class="uiIcon uiIconArrowDown"></i></a>
+                <a href="#" class="toggle-collapse-group"><i class="uiIcon uiIconMiniArrowDown"></i></a>
                 <img width="20px" height="20px" alt="Root Root" src="/eXoSkin/skin/images/system/UserAvtDefault.png">
                 <a href="javascript:void(0)"><span class="group-name">Root Root</span> <span class="amount-item">(6)</span></a>
             </div>
@@ -275,7 +344,7 @@
                                 </div>
                             </div>
                             <form class="create-task"  method="GET" action="#">
-                                <input type="text" placeholder="Untiled Task" name="taskTitle">
+                                <input type="text" placeholder="Untitled Task" name="taskTitle">
                             </form>
                         </div>
                         <div class="col col4">
@@ -287,7 +356,7 @@
 
 
             <div class="heading primaryBackground" style="display:none">
-                <a href="#" class="toggle-collapse-group"><i class="uiIcon uiIconArrowDown"></i></a>
+                <a href="#" class="toggle-collapse-group"><i class="uiIcon uiIconMiniArrowDown"></i></a>
                 <span class="label red">Next</span>
                 <span class="label moss_green">Writing</span>
                 <span class="label">No Label</span>
@@ -308,7 +377,7 @@
                                 </div>
                             </div>
                             <form class="create-task"  method="GET" action="#">
-                                <input type="text" placeholder="Untiled Task" name="taskTitle">
+                                <input type="text" placeholder="Untitled Task" name="taskTitle">
                             </form>
                         </div>
 
@@ -327,6 +396,7 @@
 
         </div>
     </div>
+    #{include path=paging.gtmpl/}
 </div>
 <script type="text/javascript">
     require(['taskBoardView'], function(boardView) {
@@ -356,7 +426,7 @@
                     </div>
                     <div class="col col4 hover-action-reveal">
                         <strong>Done</strong>(6)
-                        <a href="#" data-toggle="tooltip"  data-original-title="Add a Status" data-placement="left" class=" inline-block-hide pull-right mgL5"><i class="uiIcon uiIconPlus "></i></a>
+                        <a href="#" data-toggle="tooltip"  data-original-title="&{label.addStatus}" data-placement="left" class=" inline-block-hide pull-right mgL5"><i class="uiIcon uiIconPlus "></i></a>
                         <a href="#" class=" inline-block-hide pull-right"><i class="uiIcon uiIconDelete "></i></a>
 
                     </div>
@@ -373,7 +443,7 @@
 
 
             <div class="heading primaryBackground">
-                <a href="#" class="toggle-collapse-group"><i class="uiIcon uiIconArrowDown"></i></a>
+                <a href="#" class="toggle-collapse-group"><i class="uiIcon uiIconMiniArrowDown"></i></a>
                 <span class="label red">Next</span>
                 <span class="label moss_green">Writing</span>
                 <span class="label">No Label</span>
@@ -394,7 +464,7 @@
                                 </div>
                             </div>
                             <form class="create-task"  method="GET" action="#">
-                                <input type="text" placeholder="Untiled Task" name="taskTitle">
+                                <input type="text" placeholder="Untitled Task" name="taskTitle">
                             </form>
                         </div>
 

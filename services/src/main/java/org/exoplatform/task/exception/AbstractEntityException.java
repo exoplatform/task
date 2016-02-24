@@ -25,19 +25,18 @@ package org.exoplatform.task.exception;
 public abstract class AbstractEntityException extends Exception {
 
   private Long entityId;
-  private String entityType;
-  private Integer httpStatusCode;
 
-  public AbstractEntityException(Long entityId, String entityType, Integer httpStatusCode) {
+  private Class<?> entityType;
+
+  public AbstractEntityException(Long entityId, Class<?> entityType) {
     this.entityId = entityId;
     this.entityType = entityType;
-    this.httpStatusCode = httpStatusCode;
   }
 
   @Override
   public String getMessage() {
     if (entityId != null && entityType != null) {
-      return "Exception on "+entityType+" with ID: "+entityId;
+      return "Exception on " + getEntityType() + " with ID: "+entityId;
     }
     return super.getMessage();
   }
@@ -47,10 +46,6 @@ public abstract class AbstractEntityException extends Exception {
   }
 
   public String getEntityType() {
-    return entityType;
-  }
-
-  public Integer getHttpStatusCode() {
-    return httpStatusCode;
+    return entityType != null ? entityType.getSimpleName() : null;
   }
 }

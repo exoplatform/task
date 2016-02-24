@@ -21,41 +21,33 @@ package org.exoplatform.task.domain;
 
 import org.exoplatform.commons.api.persistence.ExoEntity;
 
+import javax.persistence.*;
 import java.util.Date;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
-@Entity
+@Entity(name = "TaskComment")
 @ExoEntity
 @Table(name = "TASK_COMMENTS")
 @NamedQueries({
     @NamedQuery(name = "Comment.countCommentOfTask",
-        query = "SELECT count(c) FROM Comment c WHERE c.task.id = :taskId"),
+        query = "SELECT count(c) FROM TaskComment c WHERE c.task.id = :taskId"),
     @NamedQuery(name = "Comment.findCommentsOfTask",
-        query = "SELECT c FROM Comment c WHERE c.task.id = :taskId ORDER BY c.createdTime DESC")
+        query = "SELECT c FROM TaskComment c WHERE c.task.id = :taskId ORDER BY c.createdTime DESC"),
+    @NamedQuery(name = "Comment.deleteCommentOfTask",
+        query = "DELETE FROM TaskComment c WHERE c.task.id = :taskId")
 })
 public class Comment {
   @Id
-  @GeneratedValue
+  @SequenceGenerator(name="SEQ_TASK_COMMENTS_COMMENT_ID", sequenceName="SEQ_TASK_COMMENTS_COMMENT_ID")
+  @GeneratedValue(strategy=GenerationType.AUTO, generator="SEQ_TASK_COMMENTS_COMMENT_ID")
   @Column(name = "COMMENT_ID")
   private long id;
 
   private String author;
 
+  @Column(name = "CMT")
   private String comment;
 
   @Temporal(TemporalType.TIMESTAMP)
@@ -106,5 +98,16 @@ public class Comment {
 
   public void setTask(Task task) {
     this.task = task;
+  }
+
+  @Override
+  public Comment clone() {
+    Comment c = new Comment();
+    c.setId(getId());
+    c.setAuthor(getAuthor());
+    c.setComment(getComment());
+    c.setCreatedTime(getCreatedTime());
+    c.setTask(getTask().clone());
+    return c;
   }
 }

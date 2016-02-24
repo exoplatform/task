@@ -6,6 +6,7 @@ body {
    .editable-click, a.editable-click, a.editable-click:hover{
        border:  1px solid transparent;
     } 
+
 }
 
 input.grayLarge {
@@ -56,12 +57,16 @@ li[data-showhiddenproject="true"] {
   .label-showHiddenProject {
     display: none;
   }
+  .uiIconShowProject:before {
+    content: "\e792";
+  }
   .all-project-hidden {
     display: none;
   }
 }
 li[data-hiddenproject="true"] {
-  a.project-name {
+  a.project-name,
+  a.label-name {
     opacity: 0.5;
   }
   > .sub-item {
@@ -79,6 +84,55 @@ li[data-hiddenproject="false"] {
 }
 .not-all-project-hidden {
   display: none;
+}
+
+/*for label*/
+li[data-showhiddenlabel="false"] {
+  li[data-hiddenlabel="true"] {
+    display: none;
+  }
+  .label-hideHiddenLabel {
+    display: none;
+  }
+  li.all-children-hided {
+    a.collapseSubLabel {
+      display: none;
+    }
+  }
+}
+li[data-showhiddenlabel="true"] {
+  .label-showHiddenLabel {
+    display: none;
+  }
+  .uiIconShowLabel:before{
+    content: "\e792";
+  }
+  .all-label-hidden {
+    display: none;
+  }
+}
+li[data-hiddenlabel="true"] {
+  a.label-name {
+    opacity: 0.5;
+  }
+  > .sub-item {
+    .label-hide {
+      display: none;
+    }
+  }
+}
+li[data-hiddenlabel="false"] {
+  > .sub-item {
+    .label-show {
+      display: none;
+    }
+  }
+}
+.not-all-label-hidden {
+  display: none;
+}
+.uiAccordion.leftPanel .accordion-heading .sub-item .label-name {
+    padding-left: 30px;
 }
 
 .empty-box {
@@ -134,16 +188,102 @@ li[data-hiddenproject="false"] {
     }
     .uiContentBox {
         padding: 0;
+        .table-project-collapse .heading {
+            .group-name, .amount-item{
+                font-size: 18px;
+                font-weight: normal;
+                margin-left: 4px;
+            }
+            .group-name.user, .amount-item.user{
+                font-size: 13px;
+                font-weight: bold;
+                margin-left: 0px;
+            }
+        }
     }
 }
 
 
 .taskMngCont {
 	margin: 20px;
+    .taskList{
+        .pagination{
+            margin: 20px 15px;
+        }
+    }
+    .taskBoardView{
+        .hover-action-reveal{
+            .inline-block-hide:hover{
+                .uiIcon{
+                    color: white;
+                }
+            }
+        }
+    }
+    .modalPlace{
+        .popupTitle{
+            .dropdown{
+                .uiIconArrowDown{
+                    margin: 0;
+                }
+            }
+        }
+        .popupHeader{
+            .uiIconClose{
+                color: #626262;
+            }
+        }
+    }
+    .accordion-heading{
+        .dropdown{
+            .calendarTableColor{
+                .colorCell{
+                    .uiIconTick{
+                        top: -1px;
+                        color: white;
+                    }
+                }
+            }
+        }
+        .dropdownIcon{
+            .uiIconArrowDownMini, .uiIconArrowRightMini{
+                font-size: 9px;
+            }
+        }
+    }
+    .addTask{
+        .assignmentPopup{
+            .dropdown-menu{
+                .text{
+                    margin: 0 16px 0 26px;
+                    display: block;
+                    vertical-align: middle;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+                .avatarMini{
+                    position: absolute;
+                    top: 3px;
+                }
+                .user-status{
+                    top: 5px;
+                }
+            }
+        }
+    }
+    .resizeButton{
+        .uiIconMiniArrowLeft, .uiIconMiniArrowRight{
+            font-size: 10px;
+        }
+    }
+
 }
 
 /* Projects Area */
 #taskManagement {
+    .tooltip {
+        white-space: nowrap;
+    }
     .centerPanel.uiBox .projectListView {
         .title {
             padding:4px 5px;
@@ -153,7 +293,7 @@ li[data-hiddenproject="false"] {
                 font-weight: bold;
                 padding-left: 10px;
                 padding-right: 10px;
-                  max-width: 170px;
+                max-width: 38%;
                 .text-overflow();
             }
             .uiSearchInput input[type="text"] {
@@ -164,7 +304,7 @@ li[data-hiddenproject="false"] {
             }
             .uiSearchInput .advancedSearch,
             .uiSearchInput .AdvancedSearch {
-                top: 1px;
+                top: 5px;
             }
             .settingActionButtons {
                 margin-left: 5px;
@@ -172,6 +312,88 @@ li[data-hiddenproject="false"] {
                     margin-top: 1px;
                     float: left;
                 }
+                .Selected{
+                    background-color: #f9f9f9;
+                    background-image: linear-gradient(to bottom, #ffffff, #f0f0f0);
+                    background-repeat: repeat-x;
+                    border: 1px solid #cccccc;
+                    border-radius: 3px;
+                    box-shadow: 0 1px 2px 0 rgba(255, 255, 255, 0);
+                    color: #333333;
+                }
+            }
+        }
+    }
+    @media(min-width: 1500px) {
+        .accordion-heading {
+            .item {
+                .dropdown-menu {
+                    left: 88.5%!important;   
+                }
+            }
+        }
+    }
+    @media(min-width: 1600px) {
+        .accordion-heading {
+            .item {
+                .dropdown-menu {
+                    left: 90%!important;   
+                }
+            }
+        }
+    }
+    @media(min-width: 1700px) {
+        .accordion-heading {
+            .item {
+                .dropdown-menu {
+                    left: 90.5%!important;   
+                }
+            }
+        }
+    }
+    @media(min-width: 1800px) {
+        .accordion-heading {
+            .item {
+                .dropdown-menu {
+                    left: 91%!important;   
+                }
+            }
+        }
+    }
+    @media(min-width: 1900px) {
+        .accordion-heading {
+            .item {
+                .dropdown-menu {
+                    left: 91.5%!important;   
+                }
+            }
+        }
+    }
+    .uiAccordion.leftPanel .accordion-heading {
+        .item {
+            border-bottom: none;
+        }
+        .item + .list-projects, .list-labels {
+            border-top: 1px solid #ccc;
+        }
+        .sub-item {
+            border-bottom: none;
+            + .sub-menu {
+                border-top: 1px solid white;
+            }
+        }
+        .sub-item + .list-labels{
+            border-top: none;
+        }
+    }
+    .centerPanel.span5 .title .label-title {
+        max-width: 130px;
+    }
+
+    .centerPanel.span9 {
+        .uiHeaderBar.toggle {
+            .label-title  {
+                display: block;
             }
         }
     }
@@ -243,50 +465,24 @@ li[data-hiddenproject="false"] {
 .advancedSearch-action {
     display: none;
 }
-.leftPanel,.rightPanel  {
+.centerPanel,.rightPanel  {
      position: relative;
      .resizeButton {
         cursor: pointer;
         height: 16px;
-        right: -18px;
-        margin-top: -8px;
+        left: -18px;
         position: absolute;
-        top: 50%;
+        top: 230px;
 
     }
 }
+/* To Override z-idex tooltip */
+.breadcrumbCont {
+    .dropdown-menu {
+        z-index: 1050!important;
+    }
+}
 .rightPanel{
-    .resizeButton {
-        left: -18px;
-        right: auto;
-    }
-    .addProject {
-        .breadcrumbCont, .inputName, .prjAuthor, .prjDescription {
-            margin: 0 0 10px;  
-        }
-        .breadcrumbCont {
-            position: relative;
-            input {
-                width: 100%;
-            }
-
-        }
-        .prjAuthor { 
-            padding: 0 10px;
-            line-height: 30px; 
-            .avatarSmall {
-                font-weight: bold;
-            }
-        } 
-        
-        .inputName {
-            font-size: 18px;
-            line-height: 26px;
-        }
-        .viewInCal {
-            padding: 7px 28px;
-        }
-    }
     .addTask {
         .iconTaskName {
             margin: 5px 5px 0 0;
@@ -297,12 +493,16 @@ li[data-hiddenproject="false"] {
             }
         }
         .breadcrumbCont {
-            display: block;
-            margin-left: 22px;
+            display: inline-block;
              li {
                 font-weight: bold;
+                .project-name{
+                    color: #333;
+                }
                     i {
                         font-weight: normal;
+                        margin-left: 4px;
+                        top: -1px;
                     }
             }
 
@@ -325,24 +525,33 @@ li[data-hiddenproject="false"] {
                  display: block;
             }
             .title-container{
+                position: relative;
                 .validate-action {
-                    margin-top: 6px;
+                    //margin-top: 6px;
+                    position: absolute;
+                    top: 50%;
+                    left: 0;
+                    -webkit-transform: translate(0, -50%);
+                    -moz-transform: translate(0, -50%);
+                    -ms-transform: translate(0, -50%);
+                    -o-transform: translate(0, -50%);
+                    transform: translate(0, -50%);
                 }
                  span {
                   &:nth-child(1){
                     margin: 8px 0 0;
                   }
                   &.projectName {
-                    margin-left: 22px;
+                    margin-left: 22px!important;
                     border: none;
                   }
                   &:nth-child(3){
-                    margin-left: 5px; 
+                    margin-left: 22px; 
                   }
                 }
             }
             .editable-container.editable-inline {
-                display: inline-block;
+                margin-left: 22px;
             }
             
             input.blackLarge {
@@ -369,14 +578,28 @@ li[data-hiddenproject="false"] {
                     margin-right: 0;
                 }
             }
+            .uiEditableInline{
+                .assigned{
+                    padding: 4px 0px 0px;
+                    .avatarMini{
+                        img{
+                            margin-top: 6px;
+                        }
+                    }
+                }
+            }
             .uiEditableInline .popover {
                 min-width: 252px;
                 .popover-content {
                     .header {
                         &.nav-inline {
+                            white-space: nowrap;
                             a {
                                 padding-left: 5px;
                                 margin:10px 0 10px 2px;
+                                &.active {
+                                    font-weight: bold;
+                                }
                             }
                             a:first-child {
                                 margin-left: 0;padding-left: 0;
@@ -400,6 +623,9 @@ li[data-hiddenproject="false"] {
             > .icon-hash {
                 margin-top: 8px;
                 margin-right: 6px;
+            }
+            &.uiEditableInline .hoverStatus {
+                color: #999;
             }
             &.active {
                 .icon-hash {
@@ -433,6 +659,9 @@ li[data-hiddenproject="false"] {
         .settingActionButtons {
              .advancedSearch-action  {
                 display: inline-block;
+                .action-close{
+                    margin: 5px 6px 0 0;
+                }
             }
         }
         .uiSearchInput   {
@@ -457,19 +686,6 @@ li[data-hiddenproject="false"] {
     }
 }
 
-#taskManagement .centerPanel.span5 .title .label-title {
-    max-width: 130px;
-
-}
-
-#taskManagement .centerPanel.span9 {
-    .uiHeaderBar.toggle {
-        .label-title  {
-            display: block;
-        }
-    }
-}
-
 .uiHeaderBar.toggle {
    .label-title , .action-search  {
         display: none;
@@ -488,8 +704,13 @@ li[data-hiddenproject="false"] {
             background-position: -39px -120px;
            }
            .uiIconClock {
-                background-position: -160px -81px;
+                background-position: -160px -80px;
             }
+        }
+    }
+    .column-checkbox{
+        .status-task{
+            display: inline-block; 
         }
     }
 }
@@ -547,7 +768,7 @@ li[data-hiddenproject="false"] {
         width: 60%;
         padding:5px;
          margin-right: 5px;
-         min-height: 16px;
+         min-height: 26px;
         &.open {
             overflow: visible;
         }
@@ -571,9 +792,11 @@ li[data-hiddenproject="false"] {
     }
 }
 
-.list-projects .no-project {
+.list-projects .no-project,
+.list-labels .no-label {
     padding: 6px 0px;
 }
+
 .row-item {
     .dragable {
         width: 6px;
@@ -602,13 +825,14 @@ li[data-hiddenproject="false"] {
     }
     .commentItem {
         position: relative;
-        margin: 10px 0 15px 0;
-    }
-    .commentFormBox {
-        margin-bottom: 0;
+        margin: 10px 0 0;
         .exo-mentions {
             margin-bottom: 15px;
+            .replaceTextArea{
+                padding: 5px 10px;
+            }
         }
+
     }
     .contentComment {        
         word-wrap: break-word;
@@ -653,8 +877,17 @@ li[data-hiddenproject="false"] {
    
 }
 
-.tags .label   {
-    margin:1px 1px 1px ;
+.tags, .taskFilter {
+    .label   {
+        margin:1px ;
+    }
+}
+.taskItem {
+    .column-item .labels{
+        .label   {
+            margin:1px ;
+        }
+    }
 }
 .tags {
     .hoverStatus {
@@ -738,7 +971,12 @@ li[data-hiddenproject="false"] {
 }
 .taskList {
     .heading  {
-        img {max-width: 20px;}
+        img {
+            max-width: 20px;
+            border-radius: 2px;
+            vertical-align: top;
+            margin-right: 5px;
+        }
     }
 }
 .prjDescription,
@@ -779,10 +1017,20 @@ li[data-hiddenproject="false"] {
      }
 }
 
-
+.dropdown-loading {
+  display: none;
+}
 .exo-mentions.loading {
     .autocomplete-menu.loading {
         display: block;
+    }
+    .dropdown-loading {
+      display: block;
+    }
+    &.dropdown-opened {
+      .autocomplete-menu.loading {
+        display: none;
+      }
     }
 }
 .choose-time {
@@ -822,6 +1070,14 @@ li[data-hiddenproject="false"] {
          .removeWorkPlan  {
             margin-top: 4px;
          }
+    }
+    .pull-right .removeWorkPlan{
+        display: none;
+    }
+    &:hover {
+        .pull-right .removeWorkPlan{
+            display: block;
+        }
     }
 }
 .date-work-plan {
@@ -867,27 +1123,56 @@ li[data-hiddenproject="false"] {
     }
   }
 }
+.exo-mentions {
+  .autocomplete-menu li {
+    text-overflow: ellipsis;
+  }
+}
 .exo-mentions .replaceTextArea {
+    padding: 0 5px;
   .groupMembership {
     display: inline-block;
     position: relative;
+    height: 27px;
+    margin: 2px 3px 0 0;
     > span {
       background: #e2eafa;
       border-radius: 3px;
       color: #215ab2;
       border: 1px solid #215ab2;
-      padding: 1px 5px;
+      padding: 1px 16px 1px 5px;
       display: inline-block;
+      position: relative;
+    }
+    .dropdown-toggle{
+        padding: 1px 5px;
+    }
+    span .removePermission{
+        right: 4px;
     }
   }
-  .cursorText input {
-    display: inline;
-    width: 3em;
-    border: none;
-    outline: none;
-    box-shadow: none;
-    margin-bottom: 0px;
-    padding: 0;
+  .cursorText {
+    display: inline-block;
+    overflow: hidden;
+    position: relative;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    top: 2px;
+    width: auto;
+    height: 20px;
+    input {
+      display: inline;
+      width: 10px;
+      border: none;
+      outline: none;
+      box-shadow: none;
+      margin: 2px 0 0;
+      height: 22px;
+      padding: 0;
+    }
+  }
+  span + .cursorText{
+    top: -3px;
   }
 }
 .header-right .action-bar + .action-bar {
@@ -914,62 +1199,281 @@ li[data-hiddenproject="false"] {
            vertical-align: 1px;
         }
     }
+    .table-project-collapse{
+        .caption-heading{
+            .hover-action-reveal{
+                background: #545454;
+                padding: 10px 24px;
+                border-radius:3px 5px 5px 3px;
+                outline: 1px solid white;
+                position: relative;
+                color: white;
+                text-align: center;
+                word-wrap: break-word;
+                .editable{
+                    font-size: 14px;
+                }
+                .uiIconDelete{
+                    position: absolute;
+                    right: 10px;
+                    top: 13px;
+                    &:hover{
+                        background-position: -21px -1px;
+                    }
+                }
+                .number-tasks{
+                    background: #4f72ac;
+                    border-radius: 3px;
+                    padding: 1px 6px;
+                    font-size: 11px;
+                    vertical-align: top;
+                    margin-left: 3px;
+                }
+
+            }
+            .hover-action-reveal:nth-last-child(2){
+                padding: 10px 32px 10px 18px;
+                border-radius:3px;
+                .uiIconDelete{
+                    position: absolute;
+                    right: 30px;
+                }
+                .uiIconPlus{
+                    position: absolute;
+                    right: 10px;
+                    top: 13px;
+                    &:hover{
+                        background-position: -101px -61px;
+                    }
+                }
+            }
+            + .heading{
+                margin-top: 10px;
+            }
+        }
+        .col-new {
+            .formCreateNewStatus {
+                width: 78%;
+            }
+            .actionRemoveStatus {
+                display: block;
+                margin-top: 3px;
+            }
+        }
+        .taskItem{
+            .col + .col{
+                border-left: 1px dashed #cfcfcf;
+            }
+            .createTaskInListView{
+                input[type="text"]{
+                    border-radius: 0;
+                }
+            }
+            .box-small {
+                background: #f6f6f6; 
+                color: #333333;
+                margin-top: 10px;
+                .priority-high{
+                    background: #f09c93;
+                }
+                .priority-normal{
+                    background: #fadd96;
+                }
+                .priority-low{
+                    background: #c2ecbf;
+                }
+                .priority-none{
+                    background: #dedede;
+                }
+                .box-small-inner{
+                    border: 1px solid transparent;
+                    &:hover{
+                        border: 1px solid #dedede;
+                        background: #f6f6f6; 
+                    }
+                }   
+            }
+            .box-small.selected{
+                .box-small-inner{
+                    .uiIconValidate{
+                        display: block;
+                    }
+                    &:hover{
+                        background: #d8e9f2; 
+                    }
+                }   
+            }
+            .box-small.task-done{
+                .box-small-inner{
+                    .uiIconBlue{
+                        display: block;
+                    }
+                    .taskName{
+                        text-decoration: line-through;
+                    }
+                }
+            }
+            .date-task{
+                color: #999;
+                margin-top: 4px;
+            }
+        }
+        .user-name-task{
+            font-weight: bold;
+        }
+        .group-name{
+            border-radius: 4px;   
+            font-size: 11px;
+            padding: 4px 6px;
+            color: white;
+        }
+        .no-label, .null{
+            background: #999;
+        }
+        
+    }
+    .uiEditableInline.active  {
+        .number-tasks,.actionRemoveStatus,.actionAddStatus {display: none!important;}
+    }
 }
 
 .taskBoardContainer {
-  position: relative;
-}
-.taskBoardContainer .draggableHighlight {
-  height: 1.5em;
-  line-height: 1.2em;
-   background: url("/eXoSkin/skin/images/themes/default/Container/DragAndDropPreview4x4.gif") repeat  0 0;
-}
-.taskBoardContainer .draggableFullContainer {
-  position: absolute;
-  height: auto;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 10;
-  background: url("/eXoSkin/skin/images/themes/default/Container/DragAndDropPreview4x4.gif") repeat  0 0;
+    position: relative;
+    .draggableHighlight {
+      height: 1.5em;
+      line-height: 1.2em;
+       background: url("/eXoSkin/skin/images/themes/default/Container/DragAndDropPreview4x4.gif") repeat  0 0;
+    }
+    .draggableFullContainer {
+      position: absolute;
+      height: auto;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 10;
+      background: url("/eXoSkin/skin/images/themes/default/Container/DragAndDropPreview4x4.gif") repeat  0 0;
+    }
 }
 
-
-.collapseSubProject {
+.collapseSubProject, .collapseSubLabel {
     left: 10px;
     position: absolute;
     top: 5px;
 }
-.uiAccordion.leftPanel .accordion-heading .sub-item .project-name {
+.uiAccordion.leftPanel .accordion-heading .sub-item .project-name,
+.uiAccordion.leftPanel .accordion-heading .sub-item .label-name {
     padding-left: 30px;
-}
-
-.project-item.active .collapseSubProject .uiIconLightGray  {
-     background-image: url("/eXoSkin/skin/images/themes/default/Icons/uiIconsSecondary.png");
-}
-
-.taskBoardView .uiEditableInline.active  {
-    .number-tasks,.actionRemoveStatus,.actionAddStatus {display: none!important;}
-}
-.taskBoardView .table-project-collapse .caption-heading .col {
-    padding: 10px 18px;
-}
-.taskBoardView {
-    .table-project-collapse  .col-new {
-        .formCreateNewStatus {
-            width: 78%;
-        }
-         .actionRemoveStatus {
-            display: block;
-            margin-top: 3px;
-         }
+    .badgeDefault.mini{
+        margin-top: 5px;
     }
 }
+
 .table-project .column-checkbox .status-task.block-hide {
     margin-left: 8px;
 }
 .breadcrumb .removeProject {
     display: inline;
     float: none;
+}
+
+.sharePrjDialog {
+    .table {
+        tr td {
+            width: 50%;
+        }
+    }
+    .exo-mentions {
+      position: static;
+
+      .autocomplete-menu {
+        width: 48%;
+        right: 0;
+        left: auto;
+      }
+    }
+}
+
+.form-add-label {
+    padding: 5px 20px;
+    .input-add-label {
+        max-width: 100%;
+        margin: 5px 0;
+    }
+}
+.uiEditableInline .highlight {
+  font-weight: bold;
+}
+
+// add new project popup
+.addProject {
+	.popupContent {
+		padding-top: 10px!important;
+	}
+	.breadcrumbCont, .inputName, .prjAuthor, .prjDescription {
+		margin: 0 0 10px;  
+	}
+
+	.breadcrumbCont {
+		position: relative;
+		input {
+			width: 100%;
+		}
+
+	}
+	.prjAuthor { 
+		padding: 0 10px;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;
+		line-height: 30px; 
+		.avatarSmall {
+			font-weight: bold;
+		}
+	} 
+
+	.inputName {
+		font-size: 18px;
+		line-height: 26px;
+	}
+	.viewInCal {
+		padding: 7px 28px;
+	}
+	.uiGroupBoundCheckBox {
+		margin: 10px 0;
+	}
+}
+.taskFilter{
+    .form-horizontal .control-group {
+        .control-label{
+            width: 80px;
+            text-align: left;
+        }
+        .controls{
+            margin-left: 85px;
+            line-height: 10px;
+            input{
+                width: 100%;
+            }
+            select{
+                width: 50%;
+            }
+            .multi {
+                width: 100%;
+                .selectize-input{
+                    padding: 2px 4px;
+                }
+            }
+        }
+    }
+}
+.actionIcon.hideFilter {
+    margin-top: -1px;
+    .uiIconClose{
+        top: -2px;
+    }
+}
+.task-completed {
+  .taskName {
+    text-decoration: line-through;
+  }
 }

@@ -1,4 +1,4 @@
-define('project-menu', ['SHARED/jquery'], function($) {
+define('project-menu', ['SHARED/jquery', 'SHARED/taskLocale', 'ta_edit_inline', 'SHARED/task_ck_editor'], function($, locale, editinline) {
   var pMenu = {};
   
   pMenu.init = function(taApp) {
@@ -37,15 +37,17 @@ define('project-menu', ['SHARED/jquery'], function($) {
             url: cloneURL,
             data: {'id': pId, 'cloneTask': cloneTask},
             success: function(data) {
-                window.location.reload();
+                $cloneProject.modal('hide');
+                taApp.reloadProjectTree(data.id);
             },
-            error: function() {
-                alert('error while clone project. Please try again.')
+            error: function(xhr) {
+              $cloneProject.modal('hide');
+              taApp.showWarningDialog(xhr.responseText);
             }
         });
     });
     
-    $rightPanel.on('click', '.projectDetail .action-clone-project', function() {
+    $modalPlace.on('click', '.action-clone-project', function() {
       var $detail = $(this).closest('[data-projectid]');
       var pId = $detail.attr('data-projectId');
       var projectName = $detail.find('.projectName').html();
@@ -53,44 +55,161 @@ define('project-menu', ['SHARED/jquery'], function($) {
       showCloneProject(pId, projectName);
     });    
     //end clone-project
-
-      $leftPanel.on('click', 'a.new-project', function(e) {
-          var parentId = $(e.target).closest('a').attr('data-projectId');
-          $rightPanelContent.jzLoad('ProjectController.projectForm()', {parentId: parentId}, function() {
-              taApp.showRightPanel($centerPanel, $rightPanel);
-              $rightPanel.find('[name="name"]').on('blur', function(e) {
-                  $(e.target || e.srcElement).closest('form').submit();
-              }).on('keydown', function(e) {
-                if (e.which == 13) {
-                  //submit form by enter key, remove listener for blur that submit the form second time
-                  $(this).off('blur');
-                }
-              });
-              
-              var $ancestors = $rightPanel.find('.editable');
-              $ancestors.editable({
-                  mode : 'inline',
-                  showbuttons: false
-              });
-
-              CKEDITOR.basePath = '/task-management/assets/org/exoplatform/task/management/assets/ckeditorCustom/';
-              $rightPanel.find('textarea').ckeditor({
-                  customConfig: '/task-management/assets/org/exoplatform/task/management/assets/ckeditorCustom/config.js'
-              });
-              CKEDITOR.on('instanceReady', function(e) {
-                  $rightPanel.find('.cke').removeClass('cke');
-              });
+    
+    $leftPanel.on('click', 'a.new-project', function(e) {
+      var parentId = $(e.target).closest('a').attr('data-projectId');
+      
+      $modalPlace.jzLoad('ProjectController.projectForm()', {parentId: parentId}, function(text, status, xhr) {
+        var $dialog = $modalPlace.find('.addProject');
+        if (xhr.status >= 400) {
+          taApp.showWarningDialog(xhr.responseText);
+        } else {
+          $dialog.modal({'backdrop': false});
+          
+          $dialog.find('[name="name"]').on('keyup', function(e) {
+            if (e.which == 13) {
+              //don't submit form by enter keypress
+              return false;
+            } else {
+              if ($.trim($(e.target).val()) != '') {
+                $dialog.find('.btn-primary').attr('disabled', false);
+              }
+            }
           });
-          return true;
+          
+          $dialog.find('.calInteg').click(function() {
+            $dialog.find('.btn-primary').attr('disabled', false);
+          });
+          
+          var $ancestors = $dialog.find('.editable');
+          $ancestors.editable({
+            mode : 'inline',
+            showbuttons: false
+          }).on('save', function() {                  
+            $dialog.find('.btn-primary').attr('disabled', false);
+          });
+          
+          
+          CKEDITOR.basePath = '/task-management/assets/org/exoplatform/task/management/assets/ckeditorCustom/';
+          $dialog.find('textarea').ckeditor({
+            customConfig: '/task-management/assets/org/exoplatform/task/management/assets/ckeditorCustom/config.js'
+          });
+          CKEDITOR.on('instanceReady', function(e) {
+            $dialog.find('.cke').removeClass('cke');
+          });
+          
+          CKEDITOR.instances.description.on('change', function(e) {
+            $dialog.find('.btn-primary').attr('disabled', false);
+          });          
+        }
       });
+      return true;
+    });
+    
+    $modalPlace.on('submit', 'form.create-project-form', function(e) {
+      var $dialog = $modalPlace.find('.addProject');
+      var $form = $(e.target).closest('form');
+      var $title = $form.find('input[name="name"]');
+      var name = $title.val();
+      var description = $form.find('textarea[name="description"]').val();
+      var $breadcumbs = $dialog.find('.breadcrumb');
+      var parentId = $breadcumbs.data('value');
+      var calInteg = $dialog.find('.calInteg').is(':checked');
 
-      $leftPanel.on('click', '.delete-project', function(e) {
+      if(name == '') {
+          name = $title.attr('placeholder');
+      }
+
+      var createURL = $dialog.jzURL('ProjectController.createProject');        
+      $.ajax({
+          type: 'POST',
+          url: createURL,
+          data: {name: name, description: description, parentId: parentId, calInteg: calInteg},
+          success: function(data) {
+              // Reload project tree;
+              taApp.reloadProjectTree(data.id);
+          },
+          error: function(xhr) {
+            if (xhr.status >= 400) {
+              taApp.showWarningDialog(xhr.responseText);
+            } else {
+              alert('error while create new project. Please try again.');              
+            }
+          }
+      });
+      $dialog.modal('hide');
+      return false;
+  });
+
+    $leftPanel.on('click', '.edit-project', function(e) {
+      var projectId = $(e.target).closest('.project-item').attr('data-projectId');
+      
+      $modalPlace.jzLoad('ProjectController.projectDetail()', {id: projectId}, function (html, status, xhr) {
+        var $dialog = $modalPlace.find('.addProject');
+        if (xhr.status >= 400) {
+          taApp.showWarningDialog(xhr.responseText);
+        } else {
+          $dialog.modal({'backdrop': false});
+          //
+          if($modalPlace.find('[data-projectid]').data('canedit')) {
+            editinline.initEditInlineForProject(projectId, $dialog);
+            //
+            $modalPlace.find('.calInteg').click(function() {
+              $dialog.find('.btn-primary').attr('disabled', false);
+            });
+            //
+            $modalPlace.find('.btn-primary').click(function() {
+              saveProjectDetail();
+              $dialog.modal('hide');
+            });
+          }          
+        }
+      });
+    });
+    
+    var saveProjectDetail = function() {
+      var params = {};
+      params.pk = $modalPlace.find('[data-projectid]').data('projectid');
+      params.parent = $modalPlace.find('[data-name="parent"]').data('editable').value;
+      var $title = $modalPlace.find('[data-name="name"]').data('editable');      
+      params.name = $title.value;
+      if (!params.name) {
+    	  params.name = $modalPlace.find('[data-name="name"]').text();
+      }
+      
+      params.description = $modalPlace.find('[data-name="description"]').data('editable').value;
+      params.calendarIntegrated = $modalPlace.find('[name="calendarIntegrated"]').is(':checked');
+      
+      var d = new $.Deferred;
+      var data = params;
+      data.projectId = params.pk;
+      $rightPanel.jzAjax('ProjectController.saveProjectInfo()',{
+          data: data,
+          method: 'POST',
+          traditional: true,
+          success: function(response) {
+              d.resolve();
+              //
+              $leftPanel
+                .find('li.project-item a.project-name[data-id="'+ data.projectId +'"]').text(data.name);
+              $centerPanel.find('[data-projectid="'+data.projectId+'"] .projectName').text(data.name);
+              taApp.reloadProjectTree(data.projectId);
+          },
+          error: function(xhr, textStatus, errorThrown ) {
+            d.reject('update failure: ' + xhr.responseText);
+            taApp.showWarningDialog(xhr.responseText);
+          }
+      });
+      return d.promise();
+  };
+
+    $leftPanel.on('click', '.delete-project', function(e) {
       var $deleteBtn = $(e.target);
       var pid = $deleteBtn.closest('.project-menu').attr('data-projectId');
       taApp.showDialog('ProjectController.openConfirmDelete()', {id : pid});
     });
     
-    $rightPanel.on('click', 'a.action-delete-project', function(e) {
+    $modalPlace.on('click', 'a.action-delete-project', function(e) {
       var $projectDetail = $(e.target).closest('[data-projectid]');
       var projectId = $projectDetail.attr('data-projectId');
       taApp.showDialog('ProjectController.openConfirmDelete()', {id : projectId});
@@ -98,9 +217,13 @@ define('project-menu', ['SHARED/jquery'], function($) {
     
     //begin share-project            
     function openShareDialog(pid) {
-      $modalPlace.jzLoad('ProjectController.openShareDialog()', {'id': pid}, function() {
+      $modalPlace.jzLoad('ProjectController.openShareDialog()', {'id': pid}, function(html, status, xhr) {
         var $dialog = $('.sharePrjDialog');
-        $dialog.modal({'backdrop': false});
+        if (xhr.status >= 400) {
+          taApp.showWarningDialog(xhr.responseText);
+        } else {
+          $dialog.modal({'backdrop': false});          
+        }
       });
     }
     
@@ -112,32 +235,51 @@ define('project-menu', ['SHARED/jquery'], function($) {
     $modalPlace.on('click', '.actionEditPermission, .actionCloseEditPermission', function(e) {
         var $a = $(e.target || e.srcElement).closest('a');
         var $td = $a.closest('td');
-        $td.find('.permission-display').toggleClass('hidden');
-        $td.find('.action-mentions').toggleClass('hidden');
+        $td.find('.permission-display').toggleClass('hide');
+        $td.find('.action-mentions').toggleClass('hide');
     });
 
     $modalPlace.on('click', '.replaceTextArea', function(e) {
         var $replaceTextArea = $(e.target).closest('.replaceTextArea');
-        $replaceTextArea.find('.cursorText input').focus();
+        $replaceTextArea.find('.cursorText input').trigger("keyup").focus();
     });
 
     $modalPlace.on('keydown keyup', '.replaceTextArea .cursorText input', function(e) {
         var $input = $(e.target);
-        var $replaceTextArea = $input.closest('.replaceTextArea');
-        var $td = $input.closest('td');
-        var maxWidth = $replaceTextArea.width();
-        var tdWidth = $td.width();
+        var val = $input.val();
 
+        var $replaceTextArea = $input.closest('.replaceTextArea');
+        var maxWidth = $replaceTextArea.width();
+        var $td = $input.closest('td');
+        var tdWidth = $td.width();
         $td.css('width', tdWidth + 'px')
 
-        var val = $input.val();
-        var width = (val.length + 1) * 8;
-        if (width <= 0) {
-            width = 3;
-        } else if (width > maxWidth) {
+        var $test = $input.next('.input-width-test');
+        if ($test.length == 0) {
+            $test = $('<div/>').css({
+                position: 'absolute',
+                top: -9999,
+                left: -9999,
+                width: 'auto',
+                fontSize: $input.css('fontSize'),
+                fontFamily: $input.css('fontFamily'),
+                fontWeight: $input.css('fontWeight'),
+                letterSpacing: $input.css('letterSpacing'),
+                whiteSpace: 'nowrap'
+            });
+            $test.addClass('input-width-test');
+            $test.insertAfter($input);
+        }
+
+        var escaped = val.replace(/&/g, '&amp;').replace(/\s/g,'&nbsp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        $test.html(escaped);
+        var width = $test.width() + 10;
+
+        if (width > maxWidth) {
             width = maxWidth;
         }
-        $input.css('width', width + 'px');
+        //$input.css('width', width + 'px');
+        $input.width(width);
     });
 
     var permissionTimeout = false;
@@ -187,6 +329,9 @@ define('project-menu', ['SHARED/jquery'], function($) {
                         $next = $autoCompleted.find('[data-suggest-permission]').first();
                     }
                     $next.addClass('active');
+                }
+                if ($autoCompleted.find('ul li').length > 1) {
+                    $input.val(val);
                 }
             }
         }
@@ -255,6 +400,12 @@ define('project-menu', ['SHARED/jquery'], function($) {
       });
     });
     
+    $modalPlace.on('click', '.sharePrjDialog .uiPageIterator [data-page]', function() {
+      var page = $(this).data('page');
+      var $form = $('.userSelectorDialog form.formSearchUser');
+      openUserSelector($form, page);
+    });
+    
     $modalPlace.on('click', '.sharePrjDialog .openGroupSelector', function(e) {
       var $openGroupSelector = $(e.target);
       var pid = $openGroupSelector.closest('.sharePrjDialog').attr('data-projectId');
@@ -288,11 +439,21 @@ define('project-menu', ['SHARED/jquery'], function($) {
     $modalPlace.on('change', '.userSelectorDialog input[name="selectall"]', function(e) {
         var $checkbox = $(e.target);
         var isChecked = $checkbox.is(':checked');
-        $checkbox.closest('.userSelectorDialog').find('input[name="username"]').attr('checked', isChecked);
+        $checkbox.closest('.userSelectorDialog').find('input[name="username"]').click();
     });
 
     $modalPlace.on('change', '.userSelectorDialog input[name="username"]', function(e) {
       var $checkbox = $(e.target);
+      
+      var users = $modalPlace.data('selected_users');
+      users = users || {};
+      if ($checkbox.is(':checked')) {
+        users[$checkbox.val()] = $checkbox.data('dispayname');
+      } else {
+        users[$checkbox.val()] = null;
+      }
+      $modalPlace.data('selected_users', users);
+      
       var $container = $checkbox.closest('.userSelectorDialog');
       var $unchecked = $container.find('input[name="username"]:not(:checked)');
       var isCheckall = $unchecked.length == 0;
@@ -304,12 +465,14 @@ define('project-menu', ['SHARED/jquery'], function($) {
       var pid = $add.closest('.sharePrjDialog').attr('data-projectId');
       var type = $add.closest('.userSelectorDialog').attr('data-type');
       var users = [];
-      $('.userSelectorDialog .chkUser:checked').each(function(idx, elem) {
-          var $el = $(elem);
-          var username = $el.val();
-          var displayName = $el.data('dispayname');
-            users.push({username: username, displayName: displayName});
-      });
+      var selected = $modalPlace.data('selected_users');
+      if (selected) {
+        for (var uid in selected) {
+          if (selected[uid]) {
+            users.push({username: uid, displayName: selected[uid]});            
+          }
+        }
+      }      
       
       //
       if (users.length == 0) {
@@ -320,33 +483,46 @@ define('project-menu', ['SHARED/jquery'], function($) {
           });
           $add.closest('.modal').remove();
       }
+      $modalPlace.data('selected_users', null);
     });
 
     $modalPlace.on('click', '.userSelectorDialog form.formSearchUser a[type="submit"]', function(e) {
         $(e.target).closest('form').submit();
-    });
+    });    
+    
+    var openUserSelector = function($form, page) {
+      // Submit form search user      
+      var keyword = $form.find('[name="keyword"]').val();
+      var groupId = $form.find('[name="group"]').val();
+      var filter = $form.find('[name="filter"]').val();        
+
+      var pid = $form.closest('.sharePrjDialog').attr('data-projectId');
+      var type = $form.closest('[data-type]').data('type');
+
+      $('.sharePrjDialog .selectorDialog').jzLoad('ProjectController.openUserSelector()',
+          {'id': pid, 'type': type, groupId: groupId, keyword: keyword, filter: filter, page: page},
+          function() {
+              var $dialog = $('.userSelectorDialog');
+              $dialog.modal({'backdrop': false});
+              var users = $modalPlace.data('selected_users');
+              if (users) {
+                for (var uid in users) {
+                  if (users[uid]) {
+                    $('.userSelectorDialog .chkUser[value="' + uid + '"]').click();                    
+                  }
+                }
+              }
+          }
+      );
+    }
 
     $modalPlace.on('submit', '.userSelectorDialog form.formSearchUser', function(e) {
-        // Submit form search user
+        $modalPlace.data('selected_users', null);
         var $form = $(e.target);
-        var keyword = $form.find('[name="keyword"]').val();
-        var groupId = $form.find('[name="group"]').val();
-        var filter = $form.find('[name="filter"]').val();
-
-        var pid = $form.closest('.sharePrjDialog').attr('data-projectId');
-        var type = $form.closest('[data-type]').data('type');
-
-        $('.sharePrjDialog .selectorDialog').jzLoad('ProjectController.openUserSelector()',
-            {'id': pid, 'type': type, groupId: groupId, keyword: keyword, filter: filter},
-            function() {
-                var $dialog = $('.userSelectorDialog');
-                $dialog.modal({'backdrop': false});
-            }
-        );
-
+        openUserSelector($form, 0);
         return false;
     });
-    
+
     $modalPlace.on('click', '.groupSelectorDialog [data-membershiptype]', function(e) {
       var $msItem = $(e.target);
       var pid = $msItem.closest('.sharePrjDialog').attr('data-projectId');
@@ -390,7 +566,7 @@ define('project-menu', ['SHARED/jquery'], function($) {
         }
     });
     
-    $modalPlace.on('click', '.sharePrjDialog .close', function(e) {
+    $modalPlace.on('click', '.sharePrjDialog .close, .sharePrjDialog .btnClose', function(e) {
       var $close = $(e.target);
       $close.closest('.modal').remove();
     });
@@ -413,10 +589,12 @@ define('project-menu', ['SHARED/jquery'], function($) {
                 success: function(response) {
                     $modalPlace.html(response);
                     var $dialog = $('.sharePrjDialog');
-                    $dialog.modal({'backdrop': false});
+                    if ($dialog.length) {
+                      $dialog.modal({'backdrop': false});                      
+                    }
                 },
-                error: function(jqXHR, textStatus, errorThrown ) {
-                    alert('save permission failure: ' + jqXHR.responseText);
+                error: function(xhr, textStatus, errorThrown ) {
+                  taApp.showWarningDialog(xhr.responseText);
                 }
         });
     });
@@ -427,7 +605,7 @@ define('project-menu', ['SHARED/jquery'], function($) {
         if ($existing.length > 0) {
             return;
         }
-        var html = '<span data-permission="'+username+'">'+displayName+'<a href="javascript:void(0)" class="removePermission"><i  class="uiIconClose uiIconLightGray"></i></a></span>';
+        var html = '<span data-permission="'+username+'">'+displayName+'<a href="javascript:void(0)" class="removePermission removeValue"><i  class="uiIconClose uiIconLightGray"></i></a></span>';
         $(html).insertBefore($container.find('.cursorText'));
     };
     function addMembership(type, msType, groupId, groupName) {
@@ -441,10 +619,10 @@ define('project-menu', ['SHARED/jquery'], function($) {
         var $item = $('<div/>');
         $item.addClass('groupMembership');
         $item.attr('data-permission', permission);
-        $item.append('<span data-toggle="dropdown" class="dropdown-toggle">'+(msType == '*' ? 'Any' : msType)+' <i class="uiIconArrowDownMini uiIconLightGray"></i></span>');
+        $item.append('<span data-toggle="dropdown" class="dropdown-toggle">'+(msType == '*' ? locale.any : msType)+' <i class="uiIconArrowDownMini uiIconLightGray"></i></span>');
         $item.append($listMembershipType.html());
-        $item.append(' in ');
-        $item.append('<span>'+groupName+' <a href="javascript:void(0)" class="removePermission"><i class="uiIconClose uiIconLightGray"></i></a></span>');
+        $item.append(' ' + locale.in + ' ');
+        $item.append('<span>'+groupName+' <a href="javascript:void(0)" class="removePermission removeValue"><i class="uiIconClose uiIconLightGray"></i></a></span>');
 
         $item.insertBefore($container.find('.cursorText'));
     }
@@ -466,8 +644,8 @@ define('project-menu', ['SHARED/jquery'], function($) {
         success: function () {
           pMenu.taApp.reloadProjectTree();
         },
-        error: function () {
-          alert('Delete project failure, please try again.');
+        error: function (xhr) {
+          taApp.showWarningDialog(xhr.responseText);
         }
       });
     });

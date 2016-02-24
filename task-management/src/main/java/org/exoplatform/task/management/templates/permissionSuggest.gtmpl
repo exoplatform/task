@@ -2,7 +2,10 @@
 #{param name=keyword/}
 
 <%
-    import org.exoplatform.task.utils.StringUtil;
+  import org.exoplatform.task.util.StringUtil;
+  import org.exoplatform.commons.utils.HTMLEntityEncoder;
+	
+  def encoder = HTMLEntityEncoder.getInstance();
 %>
 
 <% if (permissions.size() == 0) {%>
@@ -11,14 +14,14 @@
     </div>
 <%} else {%>
 <ul>
-    <%permissions.eachWithIndex {perm, index -> %>
-        <%
+    <% for (def index in 0 .. permissions.size() - 1) {
+            def perm = permissions.get(index);
             def display = perm.displayName;
             display = StringUtil.highlight(display, keyword, '<strong>', '</strong>');
         %>
         <li class="data ${index == 0 ? 'active' : ''}"
             data-suggest-permission="${perm.id}"
-            data-suggest-displayname="${perm.displayName}"
+            data-suggest-displayname="${encoder.encode(perm.displayName)}"
             data-suggest-type="${perm.type}"
             data-suggest-mstype="${perm.membershipType}"
             data-suggest-groupid="${perm.groupId}"

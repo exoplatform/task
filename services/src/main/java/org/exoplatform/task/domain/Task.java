@@ -19,9 +19,11 @@
 
 package org.exoplatform.task.domain;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -33,49 +35,63 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.exoplatform.commons.api.persistence.ExoEntity;
 import org.exoplatform.task.service.TaskBuilder;
+import org.exoplatform.task.util.TaskUtil;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>
  */
-@Entity
+@Entity(name = "TaskTask")
 @ExoEntity
 @Table(name = "TASK_TASKS")
 @NamedQueries({
     @NamedQuery(name = "Task.findByMemberships",
-        query = "SELECT ta FROM Task ta LEFT JOIN ta.coworker coworkers " +
+        query = "SELECT ta FROM TaskTask ta LEFT JOIN ta.coworker coworkers " +
             "WHERE ta.assignee = :userName " +
             "OR ta.createdBy = :userName " +
             "OR coworkers = :userName " +
-            "OR ta.status IN (SELECT st.id FROM Status st " +
+            "OR ta.status IN (SELECT st.id FROM TaskStatus st " +
             "WHERE project IN " +
-            "(SELECT pr1.id FROM Project pr1 LEFT JOIN pr1.manager managers WHERE managers IN :memberships) " +
+            "(SELECT pr1.id FROM TaskProject pr1 LEFT JOIN pr1.manager managers WHERE managers IN :memberships) " +
             "OR project IN " +
-            "(SELECT pr2.id FROM Project pr2 LEFT JOIN pr2.participator participators " +
+            "(SELECT pr2.id FROM TaskProject pr2 LEFT JOIN pr2.participator participators " +
             "WHERE participators IN :memberships) " +
             ") "),
     @NamedQuery(name = "Task.findTaskByProject",
-        query = "SELECT t FROM Task t WHERE t.status.project.id = :projectId"),
+        query = "SELECT t FROM TaskTask t WHERE t.status.project.id = :projectId"),
     @NamedQuery(name = "Task.findTaskByActivityId",
-        query = "SELECT t FROM Task t WHERE t.activityId = :activityId")
+        query = "SELECT t FROM TaskTask t WHERE t.activityId = :activityId"),
+    @NamedQuery(name = "Task.getCoworker",
+        query = "SELECT c FROM TaskTask t inner join t.coworker c WHERE t.id = :taskid"),
+    @NamedQuery(name = "Task.getTag",
+        query = "SELECT tg FROM TaskTask t inner join t.tag tg WHERE t.id = :taskid"),
+    @NamedQuery(name = "Task.findTagsByKeyword",
+        query = "SELECT DISTINCT tg FROM TaskTask t inner join t.tag tg WHERE tg LIKE :keyword ORDER BY tg ASC"),
+    @NamedQuery(name = "Task.findTagsByKeyword.count",
+        query = "SELECT count(DISTINCT tg) FROM TaskTask t inner join t.tag tg WHERE tg LIKE :keyword"),
+    @NamedQuery(name = "Task.updateStatus",
+    query = "UPDATE TaskTask t SET t.status = :status_new WHERE t.status = :status_old")
 })
 public class Task {
 
-  private static final String PREFIX_CLONE = "Copy of ";
+  public static final String PREFIX_CLONE = "Copy of ";
 
   @Id
-  @GeneratedValue
+  @SequenceGenerator(name="SEQ_TASK_TASKS_TASK_ID", sequenceName="SEQ_TASK_TASKS_TASK_ID")
+  @GeneratedValue(strategy=GenerationType.AUTO, generator="SEQ_TASK_TASKS_TASK_ID")
   @Column(name = "TASK_ID")
   private long        id;
 
@@ -83,14 +99,14 @@ public class Task {
 
   private String      description;
 
-  @Enumerated(EnumType.STRING)
+  @Enumerated(EnumType.ORDINAL)
   private Priority    priority;
 
   private String      context;
 
   private String      assignee;
 
-  @ManyToOne
+  @ManyToOne(fetch=FetchType.LAZY)
   @JoinColumn(name = "STATUS_ID")
   private Status      status;
 
@@ -99,7 +115,7 @@ public class Task {
   private boolean completed = false;
   
   @Column(name = "CALENDAR_INTEGRATED")
-  private boolean calendarIntegrated = true;
+  private boolean calendarIntegrated = false;
 
   @ElementCollection
   @CollectionTable(name = "TASK_TASK_COWORKERS",
@@ -109,7 +125,7 @@ public class Task {
   @ElementCollection
   @CollectionTable(name = "TASK_TAGS",
       joinColumns = @JoinColumn(name = "TASK_ID"))
-  private Set<String> tags = new HashSet<String>();
+  private Set<String> tag = new HashSet<String>();
 
   @Column(name = "CREATED_BY")
   private String      createdBy;
@@ -130,18 +146,22 @@ public class Task {
   @Column(name = "DUE_DATE")
   private Date        dueDate;
 
-  @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
-  private Set<Comment> comments = new HashSet<Comment>();
-  
-  @ElementCollection(fetch=FetchType.LAZY)
-  @CollectionTable(name = "TASK_LOGS",
-      joinColumns = @JoinColumn(name = "TASK_ID"))
-  private Set<TaskLog> taskLogs = new HashSet<TaskLog>();
+  //This field is only used for remove cascade
+  @OneToMany(mappedBy = "task", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
+  private List<Comment> comments = new ArrayList<Comment>();
+
+  //This field is only used for remove cascade
+  @OneToMany(mappedBy = "task", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
+  private List<ChangeLog> logs = new ArrayList<ChangeLog>();
+
+  @OneToMany(mappedBy = "task", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
+  private Set<LabelTaskMapping> lblMapping = new HashSet<LabelTaskMapping>();
 
   @Column(name = "ACTIVITY_ID")
   private String activityId;
 
   public Task() {
+    this.priority = Priority.NORMAL;
   }
 
   public long getId() {
@@ -224,19 +244,23 @@ public class Task {
     this.calendarIntegrated = calendarIntegrated;
   }
 
-  public Set<String> getTags() {
-    return tags != null ? Collections.unmodifiableSet(tags) : Collections.<String> emptySet();
+  @Deprecated
+  public Set<String> getTag() {
+    if (tag == null) {
+      tag = TaskUtil.getTag(getId());
+    }
+    return Collections.unmodifiableSet(tag);
   }
 
-  public void setTags(Set<String> tags) {
-    this.tags = tags;
+  public void setTag(Set<String> tag) {
+    this.tag = tag;
   }
 
   public void addTag(String tag) {
-    if (this.tags == null) {
-      this.tags = new HashSet<String>();
+    if (this.tag == null) {
+      this.tag = new HashSet<String>();
     }
-    this.tags.add(tag);
+    this.tag.add(tag);
   }
 
   public String getCreatedBy() {
@@ -279,28 +303,16 @@ public class Task {
     this.dueDate = dueDate;
   }
 
+  @Deprecated
   public Set<String> getCoworker() {
+    if (coworker == null) {
+      coworker = TaskUtil.getCoworker(getId());
+    }
     return coworker;
   }
 
   public void setCoworker(Set<String> coworker) {
     this.coworker = coworker;
-  }
-
-  public Set<Comment> getComments() {
-    return comments;
-  }
-
-  public void setComments(Set<Comment> comments) {
-    this.comments = comments;
-  }
-
-  public Set<TaskLog> getTaskLogs() {
-    return taskLogs;
-  }
-
-  public void setTaskLogs(Set<TaskLog> taskLogs) {
-    this.taskLogs = taskLogs;
   }
 
   public String getActivityId() {
@@ -312,7 +324,7 @@ public class Task {
   }
 
   public Task clone() {
-    Task newTask = new TaskBuilder().withTitle(PREFIX_CLONE+this.getTitle())
+    Task newTask = new TaskBuilder().withTitle(this.getTitle())
         .withAssignee(this.getAssignee())
         .withContext(this.getContext())
         .withCreatedBy(this.getCreatedBy())
@@ -321,10 +333,31 @@ public class Task {
         .withPriority(this.getPriority())
         .withStartDate(this.getStartDate())
         .withEndDate(this.getEndDate())
-        .withStatus(this.status)
+        .withStatus(this.getStatus() != null ? this.getStatus().clone() : null)
         .build();
-    newTask.setCoworker(new HashSet<String>(this.getCoworker()));
-    newTask.setTags(new HashSet<String>(this.getTags()));
+
+    newTask.setCalendarIntegrated(isCalendarIntegrated());
+    newTask.setCreatedTime(getCreatedTime());
+    newTask.setActivityId(getActivityId());
+    newTask.setCompleted(isCompleted());
+    newTask.setRank(getRank());
+    
+    //performance issue, need lazy load
+//    Set<String> coworker = new HashSet<String>();
+//    if (this.getCoworker() != null) {
+//      coworker.addAll(getCoworker());
+//    }
+//    newTask.setCoworker(coworker);
+
+    //performance issue, need lazy load
+//    Set<String> tags = new HashSet<String>();
+//    if (getTag() != null) {
+//      tags.addAll(getTag());
+//    }
+//    newTask.setTag(tags);    
+
+    newTask.setId(getId());
+
     return newTask;
   }
 
@@ -338,7 +371,6 @@ public class Task {
     if (completed != task.completed) return false;
     if (id != task.id) return false;
     if (assignee != null ? !assignee.equals(task.assignee) : task.assignee != null) return false;
-    if (comments != null ? !comments.equals(task.comments) : task.comments != null) return false;
     if (context != null ? !context.equals(task.context) : task.context != null) return false;
     if (coworker != null ? !coworker.equals(task.coworker) : task.coworker != null) return false;
     if (createdBy != null ? !createdBy.equals(task.createdBy) : task.createdBy != null) return false;
@@ -349,10 +381,9 @@ public class Task {
     if (startDate != null ? !startDate.equals(task.startDate) : task.startDate != null) return false;
     if (endDate != null ? !endDate.equals(task.endDate) : task.endDate != null) return false;
     if (status != null ? !status.equals(task.status) : task.status != null) return false;
-    if (tags != null ? !tags.equals(task.tags) : task.tags != null) return false;
+    if (tag != null ? !tag.equals(task.tag) : task.tag != null) return false;
     if (title != null ? !title.equals(task.title) : task.title != null) return false;
 
     return true;
   }
-
 }

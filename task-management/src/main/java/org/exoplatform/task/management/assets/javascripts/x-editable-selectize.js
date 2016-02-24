@@ -1,4 +1,4 @@
-define('x_editable_selectize', ['jquery', 'SHARED/edit_inline_js', 'selectize'], function(jquery, editinline, selectize) {
+define('x_editable_selectize', ['SHARED/jquery', 'SHARED/edit_inline_js', 'SHARED/selectize', 'SHARED/taskLocale'], function(jquery, editinline, selectize, locale) {
     (function ($) {
         "use strict";
 
@@ -31,9 +31,17 @@ define('x_editable_selectize', ['jquery', 'SHARED/edit_inline_js', 'selectize'],
                     $(element).html(this.options.emptytext);
                     return;
                 }
+
+                var _this = this;
                 var html = [];
                 $.each(value, function(index, val) {
-                    var span = '<div  class="label primary">'+ val +'</div>';
+                    var span;
+                    if (_this.options.value2html) {
+                        span = _this.options.value2html(val);
+                    } else {
+                        var encoder = $('<div></div>');
+                        span = '<div  class="label primary">'+ encoder.text(val).html() +'</div>';
+                    }
                     html.push(span);
                 });
                 var $html = html.join("\n");
@@ -147,7 +155,7 @@ define('x_editable_selectize', ['jquery', 'SHARED/edit_inline_js', 'selectize'],
                     return '<div class="label primary">' + escape(item.text) +'</div>';
                 },
                 option_create: function(data, escape) {
-                    return '<li class="create"><a href="javascript:void(0)">Add <strong>' + escape(data.input) + '</strong>&hellip;</a></li>';
+                    return '<li class="create"><a href="javascript:void(0)">' + locale.createTag + ' <strong>' + escape(data.input) + '</strong>&hellip;</a></li>';
                 }
             },
             onInitialize: function() {
@@ -165,7 +173,8 @@ define('x_editable_selectize', ['jquery', 'SHARED/edit_inline_js', 'selectize'],
             score: function(search) {
                 var score = this.getScoreFunction(search);
                 return function(item) {
-                    return score(item) * (1 + Math.min(item.watchers / 100, 1));
+                    var s = score(item);
+                    return s;
                 };
             }
         });
@@ -176,7 +185,8 @@ define('x_editable_selectize', ['jquery', 'SHARED/edit_inline_js', 'selectize'],
                  '</div>',
             inputclass: '',
             emptytext: '',
-            selectize: {}
+            selectize: {},
+            value2html: false
         });
 
         $.fn.editabletypes.selectize = Selectize;

@@ -21,8 +21,10 @@ package org.exoplatform.task.model;
 
 import java.util.Date;
 
+import org.exoplatform.services.security.Identity;
 import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.util.TaskUtil;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
@@ -60,5 +62,9 @@ public class CommentModel {
 
   public String getFormattedComment() {
     return formattedComment;
+  }
+
+  public boolean canEdit(Identity identity) {
+    return TaskUtil.canDeleteComment(identity, comment);
   }
 }

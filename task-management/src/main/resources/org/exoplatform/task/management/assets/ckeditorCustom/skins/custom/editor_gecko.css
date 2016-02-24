@@ -395,7 +395,7 @@
   -moz-box-shadow: 0 0 2px rgba(0, 0, 0, 0.1) inset;
   box-shadow: 0 0 2px rgba(0, 0, 0, 0.1) inset;
 }
-.title {
+.cke_editor_description .title {
   border-bottom: 1px solid #b6b6b6;
   color: #474747;
   cursor: default;

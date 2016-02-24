@@ -22,43 +22,38 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.exoplatform.addons</groupId>
     <artifactId>addons-parent-pom</artifactId>
-    <version>6-SNAPSHOT</version>
+    <groupId>org.exoplatform.addons</groupId>
+    <version>6</version>
   </parent>
   <groupId>org.exoplatform.addons.task</groupId>
   <artifactId>task-management-parent</artifactId>
-  <version>1.0.x-SNAPSHOT</version>
+  <version>1.1.x-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Task management parent POM</name>
   <description>Task management add-on parent POM</description>
-
-  <scm>
-    <connection>scm:git:git://github.com/exo-addons/task.git</connection>
-    <developerConnection>scm:git:git@github.com:exo-addons/task.git</developerConnection>
-    <url>https://github.com/exo-addons/task</url>
-    <tag>HEAD</tag>
-  </scm>
-
   <modules>
     <module>services</module>
     <module>task-management</module>
     <module>packaging</module>
     <module>injector</module>
+    <module>integration</module>
   </modules>
-
+  <scm>
+    <connection>scm:git:git://github.com/exoplatform/task.git</connection>
+    <developerConnection>scm:git:git@github.com:exoplatform/task.git</developerConnection>
+    <tag>HEAD</tag>
+    <url>https://github.com/exoplatform/task</url>
+  </scm>
   <properties>
-    <maven.compiler.target>1.6</maven.compiler.target>
-    <maven.compiler.source>1.6</maven.compiler.source>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-    <org.exoplatform.depmgt.version>11-SNAPSHOT</org.exoplatform.depmgt.version>
-    <platform.version>4.3.x-SNAPSHOT</platform.version>
-    <juzu.version>1.1.x-SNAPSHOT</juzu.version>
+    <org.exoplatform.depmgt.version>12-SNAPSHOT</org.exoplatform.depmgt.version>
+    <org.exoplatform.platform.version>4.3.0</org.exoplatform.platform.version>
+    <juzu.version>1.1.0</juzu.version>
     <hibernate.version>4.1.12.Final</hibernate.version>
     <org.antlr.version>3.4</org.antlr.version>
+    <owasp.html-sanitizer.version>20151202.2</owasp.html-sanitizer.version>
   </properties>
-
   <dependencyManagement>
     <dependencies>
       <!-- Import versions of external dependencies to use -->
@@ -73,11 +68,10 @@
       <dependency>
         <groupId>org.exoplatform.platform</groupId>
         <artifactId>platform</artifactId>
-        <version>4.3.x-plf-task-SNAPSHOT</version>
+        <version>${org.exoplatform.platform.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
-
       <dependency>
         <groupId>org.exoplatform.addons.task</groupId>
         <artifactId>task-management-services</artifactId>
@@ -85,22 +79,32 @@
       </dependency>
       <dependency>
         <groupId>org.exoplatform.addons.task</groupId>
-        <artifactId>task-management</artifactId>
-        <type>war</type>
+        <artifactId>task-management-integration</artifactId>
         <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.exoplatform.addons.task</groupId>
+        <artifactId>task-management</artifactId>
+        <version>${project.version}</version>
+        <type>war</type>
       </dependency>
       <dependency>
         <groupId>org.exoplatform.addons.task</groupId>
         <artifactId>task-management-config</artifactId>
         <version>${project.version}</version>
       </dependency>
-
+      <!-- HTML Sanitizer -->
+      <dependency>
+        <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
+        <artifactId>owasp-java-html-sanitizer</artifactId>
+        <version>${owasp.html-sanitizer.version}</version>
+      </dependency>
       <!--less4j 1.4.0 is not compatible with antlr 3.5-->
       <dependency>
         <groupId>org.antlr</groupId>
         <artifactId>antlr-runtime</artifactId>
         <version>${org.antlr.version}</version>
-	<scope>provided</scope>
+        <scope>provided</scope>
       </dependency>
       <!--need for juzu-plugins-validation-->
       <dependency>
@@ -113,7 +117,6 @@
         <artifactId>hibernate-validator</artifactId>
         <version>5.1.0.Final</version>
       </dependency>
-
       <!--missing version declaration in maven-depmgt-pom-->
       <dependency>
         <groupId>org.juzu</groupId>
@@ -133,9 +136,8 @@
       <dependency>
         <groupId>org.exoplatform.commons</groupId>
         <artifactId>commons-api</artifactId>
-        <version>${platform.version}</version>
+        <version>${org.exoplatform.platform.version}</version>
       </dependency>
-
       <!-- Junit for testing -->
       <dependency>
         <groupId>org.juzu</groupId>

@@ -17,11 +17,14 @@
 package org.exoplatform.task.service.impl;
 
 import org.exoplatform.task.dao.CommentHandler;
+import org.exoplatform.task.dao.LabelHandler;
+import org.exoplatform.task.dao.DAOHandler;
+import org.exoplatform.task.dao.LabelTaskMappingHandler;
 import org.exoplatform.task.dao.ProjectHandler;
 import org.exoplatform.task.dao.StatusHandler;
 import org.exoplatform.task.dao.TaskHandler;
+import org.exoplatform.task.dao.TaskLogHandler;
 import org.exoplatform.task.dao.UserSettingHandler;
-import org.exoplatform.task.service.DAOHandler;
 
 /**
  * @author <a href="trongtt@gmail.com">Trong Tran</a>
@@ -35,10 +38,16 @@ abstract public class AbstractDAOHandler implements DAOHandler {
   
   protected CommentHandler cHandler;
 
+  protected TaskLogHandler taskLogHandler;
+
   protected StatusHandler sHandler;
 
   protected UserSettingHandler uHandler;
 
+  protected LabelHandler lHandler;
+  
+  protected LabelTaskMappingHandler ltmHandler;
+  
   public ProjectHandler getProjectHandler() {
     return pHandler;
   }
@@ -58,6 +67,21 @@ abstract public class AbstractDAOHandler implements DAOHandler {
   @Override
   public UserSettingHandler getUserSettingHandler() {
     return uHandler;
+  }
+
+  @Override
+  public LabelHandler getLabelHandler() {
+    return lHandler;
+  }
+  
+  @Override
+  public LabelTaskMappingHandler getLabelTaskMappingHandler() {
+    return ltmHandler;
+  }
+
+  @Override
+  public TaskLogHandler getTaskLogHandler() {
+    return taskLogHandler;
   }
 }
 

@@ -1,59 +1,117 @@
 package org.exoplatform.task.service;
 
-import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
+import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.domain.Comment;
+import org.exoplatform.task.domain.Label;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.domain.TaskLog;
-import org.exoplatform.task.exception.CommentNotFoundException;
-import org.exoplatform.task.exception.ParameterEntityException;
-import org.exoplatform.task.exception.StatusNotFoundException;
-import org.exoplatform.task.exception.TaskNotFoundException;
+import org.exoplatform.task.domain.ChangeLog;
+import org.exoplatform.task.exception.EntityNotFoundException;
 
 /**
  * Created by TClement on 6/3/15.
  */
 public interface TaskService {
 
+  String TASK_CREATION = "exo.task.taskCreation";
+
+  String TASK_UPDATE = "exo.task.taskUpdate";
+
+  /**
+   * Create a new task.
+   *
+   * @param task
+   * @return the created task.
+   */
   Task createTask(Task task);
 
-  Task updateTaskInfo(long id, String param, String[] values)
-      throws TaskNotFoundException, ParameterEntityException, StatusNotFoundException;
+  /**
+   * Update the task.
+   *
+   * @param task
+   * @return the updated task.
+   */
+  Task updateTask(Task task);
 
   void updateTaskOrder(long currentTaskId, Status newStatus, long[] orders);
 
-  Task updateTaskCompleted(long id, Boolean completed)
-      throws TaskNotFoundException, ParameterEntityException, StatusNotFoundException;
+  /**
+   * Remove the task with given <code>taskId</code>
+   *
+   * @param taskId
+   * @throws EntityNotFoundException
+   */
+  void removeTask(long taskId) throws EntityNotFoundException;
 
-  void deleteTask(Task task);
+  /**
+   * Clone the task from a task with given <code>taskId</code>.
+   */
+  Task cloneTask(long taskId) throws EntityNotFoundException;
 
-  void deleteTaskById(long id) throws TaskNotFoundException;
+  /**
+   * Return the task with given <code>taskId</code>.
+   *
+   * @param taskId
+   * @return
+   * @throws EntityNotFoundException
+   */
+  Task getTask(long taskId) throws EntityNotFoundException;
 
-  Task cloneTaskById(long id) throws TaskNotFoundException;
+  Comment getComment(long commentId);
 
-  Task getTaskById(long id) throws TaskNotFoundException;
+  ListAccess<Comment> getComments(long taskId);
 
-  Long getNbOfCommentsByTask(Task task);
+  Comment addComment(long taskId, String username, String commentText) throws EntityNotFoundException;
 
-  List<Comment> getCommentsByTaskId(long id, int start, int limit) throws TaskNotFoundException;
+  void removeComment(long commentId) throws EntityNotFoundException;
 
-  List<Comment> getCommentsByTask(Task task, int start, int limit);
+  ListAccess<Task> findTasks(TaskQuery query);
 
-  Comment addCommentToTaskId(long id, String username, String comment) throws TaskNotFoundException;
+  public <T> List<T> selectTaskField(TaskQuery query, String fieldName);
 
-  void deleteCommentById(long commentId) throws CommentNotFoundException;
+  ListAccess<Task> findTasksByLabel(long labelId, List<Long> projectIds, String username, OrderBy orderBy) throws EntityNotFoundException;  
 
-  List<Task> getIncomingTasksByUser(String username, OrderBy orderBy);
-
-  List<Task> getToDoTasksByUser(String username, List<Long> projectIds, OrderBy orderBy, Date fromDueDate, Date toDueDate);
-
-  List<Task> findTaskByQuery(TaskQuery query);
+  /**
+   * Create a log associated with a task with given <code>taskId</code>.
+   * 
+   * @param taskId
+   * @param username
+   * @param actionName
+   * @param target
+   * @return
+   * @throws EntityNotFoundException
+   */
+  ChangeLog addTaskLog(long taskId, String username, String actionName, String target) throws EntityNotFoundException;
   
-  long getTaskNum(String username, List<Long> projectIds);
+  void addTaskToLabel(Long taskId, Long labelId) throws EntityNotFoundException;
+  
+  void removeTaskFromLabel(Long taskId, Long labelId) throws EntityNotFoundException;
+  
+  ListAccess<Label> findLabelsByUser(String username);
+  
+  ListAccess<Label> findLabelsByTask(long taskId, String username) throws EntityNotFoundException;
+  
+  Label getLabel(long labelId);
+  
+  Label createLabel(Label label);
+  
+  Label updateLabel(Label label, List<Label.FIELDS> fields) throws EntityNotFoundException;
 
-  TaskLog addTaskLog(long taskId, String username, String msg, String target) throws TaskNotFoundException;
+  void removeLabel(long labelId);
+
+  ListAccess<ChangeLog> getTaskLogs(long taskId);
+
+  //TODO: should use via #findTasks(TaskQuery)?
+  Task findTaskByActivityId(String activityId);
+
+  Set<String> getTag(long taskId);
+
+  Set<String> getCoworker(long taskId);
+
+  ListAccess<String> findTags(String keyword);
 }

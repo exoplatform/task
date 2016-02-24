@@ -19,13 +19,13 @@
 
 package org.exoplatform.task.service;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.exoplatform.task.domain.Priority;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
+
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
@@ -34,7 +34,7 @@ public class TaskBuilder {
   private String title;
   private String description;
 
-  private Priority priority = Priority.UNDEFINED;
+  private Priority priority = Priority.NORMAL;
   private String context;
   private String assignee;
   private Set<String> coworker;
@@ -59,7 +59,7 @@ public class TaskBuilder {
     task.setAssignee(assignee);
     task.setCoworker(coworker);
     task.setStatus(status);
-    task.setTags(tags);
+    task.setTag(tags);
     task.setCreatedBy(createdBy);
     task.setCreatedTime(createdTime);
     task.setEndDate(endDate);

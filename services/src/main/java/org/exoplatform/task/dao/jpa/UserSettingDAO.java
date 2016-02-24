@@ -19,27 +19,15 @@
 
 package org.exoplatform.task.dao.jpa;
 
-import javax.persistence.EntityManager;
-
-import org.exoplatform.commons.persistence.impl.EntityManagerService;
-import org.exoplatform.commons.persistence.impl.GenericDAOJPAImpl;
 import org.exoplatform.task.dao.UserSettingHandler;
 import org.exoplatform.task.domain.UserSetting;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
-public class UserSettingDAO extends GenericDAOJPAImpl<UserSetting, String> implements UserSettingHandler {
+public class UserSettingDAO extends CommonJPADAO<UserSetting, String> implements UserSettingHandler {
 
-  private EntityManagerService entityService;
-
-  public UserSettingDAO(EntityManagerService entityService) {
-    this.entityService = entityService;
-  }
-
-  @Override
-  public EntityManager getEntityManager() {
-    return entityService.getEntityManager();
+  public UserSettingDAO() {
   }
 
   @Override
@@ -47,8 +35,15 @@ public class UserSettingDAO extends GenericDAOJPAImpl<UserSetting, String> imple
     UserSetting setting = this.find(username);
     if (setting == null) {
       setting = new UserSetting(username);
-      this.create(setting);
+      setting = this.create(setting);
+      synchronized (this) {
+        if (this.find(username) == null) {
+          setting = new UserSetting(username);
+          this.create(setting);
+          getEntityManager().flush();
+        }
+      }
     }
-    return this.find(username);
+    return cloneEntity(setting);
   }
 }

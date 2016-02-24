@@ -19,26 +19,22 @@
  02110-1301 USA, or see the FSF site: http://www.fsf.org.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.exoplatform.addons.task</groupId>
     <artifactId>task-management-parent</artifactId>
-    <version>1.0.x-SNAPSHOT</version>
+    <groupId>org.exoplatform.addons.task</groupId>
+    <version>1.1.x-SNAPSHOT</version>
   </parent>
   <artifactId>task-management</artifactId>
   <packaging>war</packaging>
-
   <name>Task Management Application</name>
-
   <dependencies>
     <dependency>
       <groupId>org.exoplatform.addons.task</groupId>
       <artifactId>task-management-services</artifactId>
       <scope>provided</scope>
     </dependency>
-
     <!-- Juzu -->
     <dependency>
       <groupId>org.juzu</groupId>
@@ -67,7 +63,6 @@
       <artifactId>juzu-plugins-portlet</artifactId>
       <scope>provided</scope>
     </dependency>
-
     <!-- JS libraries -->
     <dependency>
       <groupId>org.webjars</groupId>
@@ -104,39 +99,27 @@
       <artifactId>jquery-ui</artifactId>
       <version>1.11.4</version>
     </dependency>
-
-    <!-- Liquibase -->
-    <dependency>
-      <groupId>org.liquibase</groupId>
-      <artifactId>liquibase-core</artifactId>
-      <version>3.3.2</version>
-    </dependency>
-
     <dependency>
       <groupId>org.exoplatform.core</groupId>
       <artifactId>exo.core.component.organization.api</artifactId>
       <scope>provided</scope>
     </dependency>
-
-    <dependency>
-      <groupId>org.exoplatform.social</groupId>
-      <artifactId>social-component-core</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
     <dependency>
       <groupId>org.exoplatform.commons</groupId>
       <artifactId>commons-juzu</artifactId>
       <scope>provided</scope>
     </dependency>
-
+    <dependency>
+      <groupId>org.gatein.portal</groupId>
+      <artifactId>exo.portal.webui.portal</artifactId>
+      <scope>provided</scope>
+    </dependency>
     <!-- Groovy is shipped with GateIn -->
     <dependency>
       <groupId>org.codehaus.groovy</groupId>
       <artifactId>groovy-all</artifactId>
       <scope>provided</scope>
     </dependency>
-
     <!-- Dependencies for Guice in GateIn portal -->
     <dependency>
       <groupId>javax.inject</groupId>
@@ -148,7 +131,6 @@
       <artifactId>guice</artifactId>
       <scope>provided</scope>
     </dependency>
-
     <!-- Junit for testing -->
     <dependency>
       <groupId>org.juzu</groupId>
@@ -172,10 +154,8 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
   <build>
     <finalName>task-management</finalName>
-
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -213,14 +193,14 @@
           <driver>com.mysql.jdbc.Driver</driver>
           <url>jdbc:mysql://localhost:3306/plf?autoReconnect=true</url>
           <username>root</username>
-          <password></password>
+          <password />
           <!-- $ mvn liquibase:diff -->
           <referenceDriver>com.mysql.jdbc.Driver</referenceDriver>
           <referenceUrl>jdbc:mysql://localhost:3306/plf?autoReconnect=true</referenceUrl>
           <referenceUsername>root</referenceUsername>
-          <referencePassword></referencePassword>
+          <referencePassword />
           <!-- db.changelog file -->
-          <changeLogFile>src/main/resources/db/changelog/db.changelog-master.xml</changeLogFile>
+          <changeLogFile>src/main/resources/db/changelog/task.db.changelog-master.xml</changeLogFile>
         </configuration>
         <!--<executions>
           <execution>

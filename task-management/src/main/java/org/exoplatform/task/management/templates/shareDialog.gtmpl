@@ -4,17 +4,23 @@
 #{param name=editingField/}
 #{param name=msTypes/}
 
+<%
+	import org.exoplatform.commons.utils.HTMLEntityEncoder;
+
+	def encoder = HTMLEntityEncoder.getInstance();
+%>
+
 <!-- share-project -->
 <div class="sharePrjDialog modal hide fade in uiPopup" data-projectid="${pid}" tabindex="-1" role="dialog" aria-labelledby="shareProjectLabel" aria-hidden="true">
   <div class="popupHeader clearfix">
         <a onclick="" title="Close Window" data-dismiss="modal" aria-hidden="true" class="uiIconClose pull-right"></a>
-        <h3 id="shareProjectLabel" class="PopupTitle popupTitle">&{popup.shareProject}</h3>
+        <div id="shareProjectLabel" class="PopupTitle popupTitle">&{popup.shareProject}</div>
    </div>
    <div class="PopupContent popupContent">
     <div class="hidden listMembershipType">
         <ul class="dropdown-menu">
-            <%msTypes.each {type ->%>
-            <li><a href="javascript:void(0)" data-mstype="${type}">${type == '*' ? 'Any' : type}</a></li>
+            <% for (def type in msTypes) {%>
+            <li><a href="javascript:void(0)" data-mstype="${type}"><% if (type == '*') {%> &{label.any} <%} else {%> ${type} <%}%></a></li>
             <%}%>
         </ul>
     </div>
@@ -30,9 +36,9 @@
             </td>
             <td class="manager" data-type="manager">
                 <!-- this is result after choice permision-->
-                <div class="permission-display ${editingField == "manager" ? "hidden" : ""}">
+                <div class="permission-display ${editingField == "manager" ? "hide" : ""}">
                     <div class="pull-right edit-action">
-                        <a href="javascript:void(0)" class="actionIcon action-edit-user actionEditPermission" data-original-title="edit" data-toggle="tooltip" rel="tooltip" data-placement="bottom">
+                        <a href="javascript:void(0)" class="actionIcon action-edit-user actionEditPermission" data-original-title="&{label.edit}" data-toggle="tooltip" rel="tooltip" data-placement="bottom">
                             <i class="uiIconEdit uiIconLightGray"></i>
                         </a>
                     </div>
@@ -40,33 +46,33 @@
                         <% if (managers.size() == 0) {%>
                             <div class="muted no-assisement">&{label.noAssignment}</div>
                         <%} else {%>
-                            <% managers.each {permission ->%>
-                                <p class="item"><strong>${permission.displayName}</strong> (${permission.id})</p>
+                            <% for (def permission in managers) {%>
+                                <p class="item"><strong>${encoder.encode(permission.displayName)}</strong> (${permission.id})</p>
                             <%}%>
                         <%}%>
                     </div>
                 </div>
                 <!-- this is mention action-->
-                <div class="action-mentions ${editingField == "manager" ? "" : "hidden"}">
+                <div class="action-mentions ${editingField == "manager" ? "" : "hide"}">
                     <div class="exo-mentions" >
                         <div class="permission-owner clearfix">
                             <!-- display mention-->
                             <div class="replaceTextArea editable" g_editable="true" data-mentions="true" style="overflow: visible">
                                 <% if (managers.size() > 0) {%>
-                                    <%managers.each {permission ->
+                                    <% for (def permission in managers) {
                                         if (permission.type == 2) {%>
                                             <div class="groupMembership" data-permission="${permission.id}">
-                                                <span data-toggle="dropdown" class="dropdown-toggle" >${permission.membershipType == '*' ? 'Any' : permission.membershipType} <i  class="uiIconArrowDownMini uiIconLightGray"></i></span>
+                                                <span data-toggle="dropdown" class="dropdown-toggle" ><% if (permission.membershipType == '*') {%> &{label.any} <%} else {%> ${permission.membershipType} <%}%> <i  class="uiIconArrowDownMini uiIconLightGray"></i></span>
                                                 <ul class="dropdown-menu">
-                                                    <%msTypes.each {type ->%>
-                                                        <li><a href="javascript:void(0)" data-mstype="${type}">${type == '*' ? 'Any' : type}</a></li>
+                                                    <% for (def type in msTypes) {%>
+                                                        <li><a href="javascript:void(0)" data-mstype="${type}"><% if (type == '*') {%> &{label.any} <%} else {%> ${type} <%}%></a></li>
                                                     <%}%>
                                                 </ul>
-                                                in
-                                                <span >${permission.groupName} <a href="javascript:void(0)" class="removePermission"><i class="uiIconClose uiIconLightGray"></i></a></span>
+                                                &{label.in}
+                                                <span >${permission.groupName} <a href="javascript:void(0)" class="removePermission removeValue"><i class="uiIconClose uiIconLightGray"></i></a></span>
                                             </div>
                                         <%} else {%>
-                                            <span data-permission="${permission.id}">${permission.displayName}<a href="javascript:void(0)" class="removePermission"><i  class="uiIconClose uiIconLightGray"></i></a></span>
+                                            <span data-permission="${permission.id}">${encoder.encode(permission.displayName)}<a href="javascript:void(0)" class="removePermission removeValue"><i  class="uiIconClose uiIconLightGray"></i></a></span>
                                         <%}
                                     }%>
                                 <%}%>
@@ -76,10 +82,10 @@
                                 </div>
                             </div>
 
-                            <a href="javascript:void(0);" data-backdrop="false" rel="tooltip" data-placement="bottom" title="" class="actionIcon openUserSelector" data-original-title="Select User">
+                            <a href="javascript:void(0);" data-backdrop="false" rel="tooltip" data-placement="bottom" title="" class="actionIcon openUserSelector" data-original-title="&{popup.selectUser}">
                                 <i class="uiIconUser uiIconLightGray"></i>
                             </a>
-                            <a  href="javascript:void(0);"  data-backdrop="false" data-toggle="modal" rel="tooltip" data-placement="bottom" title="" class="actionIcon openGroupSelector" data-original-title="Select Group/Membership">
+                            <a  href="javascript:void(0);"  data-backdrop="false" data-toggle="modal" rel="tooltip" data-placement="bottom" title="" class="actionIcon openGroupSelector" data-original-title="&{popup.selectGroupOrMembership}">
                                 <i class="uiIconGroup uiIconLightGray"></i>
                             </a>
                             <a href="javascript:void(0)" class="btn savePermission" type="button">&{label.save}</a>
@@ -128,9 +134,9 @@
             </td>
             <td class="manager" data-type="participant">
                 <!-- this is result after choice permision-->
-                <div class="permission-display ${editingField == "participant" ? "hidden" : ""}">
+                <div class="permission-display ${editingField == "participant" ? "hide" : ""}">
                     <div class="pull-right edit-action">
-                        <a href="javascript:void(0)" class="actionIcon action-edit-user actionEditPermission" data-original-title="edit" data-toggle="tooltip" rel="tooltip" data-placement="bottom">
+                        <a href="javascript:void(0)" class="actionIcon action-edit-user actionEditPermission" data-original-title="&{label.edit}" data-toggle="tooltip" rel="tooltip" data-placement="bottom">
                             <i class="uiIconEdit uiIconLightGray"></i>
                         </a>
                     </div>
@@ -138,33 +144,33 @@
                         <% if (participants.size() == 0) {%>
                         <div class="muted no-assisement">&{label.noAssignment}</div>
                         <%} else {%>
-                        <% participants.each {permission ->%>
+                        <% for (def permission in participants) {%>
                         <p class="item"><strong>${permission.displayName}</strong> (${permission.id})</p>
                         <%}%>
                         <%}%>
                     </div>
                 </div>
                 <!-- this is mention action-->
-                <div class="action-mentions ${editingField == "participant" ? "" : "hidden"}">
+                <div class="action-mentions ${editingField == "participant" ? "" : "hide"}">
                     <div class="exo-mentions" >
                         <div class="permission-owner clearfix">
                             <!-- display mention-->
                             <div class="replaceTextArea editable" g_editable="true" data-mentions="true" style="overflow: visible">
                                 <% if (participants.size() > 0) {%>
-                                <%participants.each {permission ->
+                                <% for (def permission in participants) {
                                     if (permission.type == 2) {%>
                                 <div class="groupMembership" data-permission="${permission.id}">
-                                    <span data-toggle="dropdown" class="dropdown-toggle" >${permission.membershipType == '*' ? 'Any' : permission.membershipType} <i  class="uiIconArrowDownMini uiIconLightGray"></i></span>
+                                    <span data-toggle="dropdown" class="dropdown-toggle" > <% if (permission.membershipType == '*') {%> &{label.any} <%} else {%> ${permission.membershipType} <%}%> <i  class="uiIconArrowDownMini uiIconLightGray"></i></span>
                                     <ul class="dropdown-menu">
-                                        <%msTypes.each {type ->%>
-                                        <li><a href="javascript:void(0)" data-mstype="${type}">${type == '*' ? 'Any' : type}</a></li>
+                                        <% for (def type in msTypes) {%>
+                                        <li><a href="javascript:void(0)" data-mstype="${type}"><% if (type == '*') {%> &{label.any} <%} else {%> ${type} <%}%></a></li>
                                         <%}%>
                                     </ul>
-                                    in
-                                    <span >${permission.groupName} <a href="javascript:void(0)" class="removePermission"><i class="uiIconClose uiIconLightGray"></i></a></span>
+                                    &{label.in}
+                                    <span >${permission.groupName} <a href="javascript:void(0)" class="removePermission removeValue"><i class="uiIconClose uiIconLightGray"></i></a></span>
                                 </div>
                                 <%} else {%>
-                                <span data-permission="${permission.id}">${permission.displayName}<a href="javascript:void(0)" class="removePermission"><i  class="uiIconClose uiIconLightGray"></i></a></span>
+                                <span data-permission="${permission.id}">${permission.displayName}<a href="javascript:void(0)" class="removePermission removeValue"><i  class="uiIconClose uiIconLightGray"></i></a></span>
                                 <%}
                                 }%>
                                 <%}%>
@@ -174,10 +180,10 @@
                                 </div>
                             </div>
 
-                            <a href="javascript:void(0);" data-backdrop="false" rel="tooltip" data-placement="bottom" title="" class="actionIcon openUserSelector" data-original-title="Select User">
+                            <a href="javascript:void(0);" data-backdrop="false" rel="tooltip" data-placement="bottom" title="" class="actionIcon openUserSelector" data-original-title="&{popup.selectUser}">
                                 <i class="uiIconUser uiIconLightGray"></i>
                             </a>
-                            <a  href="javascript:void(0);"  data-backdrop="false" data-toggle="modal" rel="tooltip" data-placement="bottom" title="" class="actionIcon openGroupSelector" data-original-title="Select Group/Membership">
+                            <a  href="javascript:void(0);"  data-backdrop="false" data-toggle="modal" rel="tooltip" data-placement="bottom" title="" class="actionIcon openGroupSelector" data-original-title="&{popup.selectGroupOrMembership}">
                                 <i class="uiIconGroup uiIconLightGray"></i>
                             </a>
                             <a href="javascript:void(0)" class="btn savePermission" type="button">&{label.save}</a>
@@ -219,357 +225,21 @@
                 </div>
             </td>
         </tr>
-
-      <tr style="display: none">
-        <td>
-          <p><strong>&{label.manager}</strong></p>
-          <div class="des">&{label.manager.description}</div>
-        </td>
-        <td class="manager" data-type="participant">
-          <!-- this is result after choice permision-->
-          <div class="permission-display" style="display:none">
-            <div class="pull-right edit-action">
-              <a href="" class="actionIcon action-edit-user" data-original-title="edit" data-toggle="tooltip" rel="tooltip" data-placement="bottom">
-                <i class="uiIconEdit uiIconLightGray"></i>
-              </a>
-             </div>
-             <div class="list-users">
-                <p class="item"><strong>An Nguyen</strong> (anbn)</p>
-                <p class="item"><strong>Ha Le</strong> (any:/platform/administrator)</p>
-                <p class="item"><strong>Root</strong> (john)</p>
-             </div>
-           </div>
-           <!-- this is mention action-->
-           <div class="action-mentions" style="display: block">
-            <textarea title="What are you working on?" cols="30" rows="10" id="composerInput" name="composerInput"
-                 class="textarea-mentions" style="visibility: hidden; display: none;"></textarea>
-             <div class="exo-mentions" >
-                <div class="permission-owner clearfix">
-                    <!-- display mention-->
-                    <div  class="replaceTextArea editable" g_editable="true" id="DisplaycomposerInput" data-mentions="true">
-
-                      <!-- CURSOR POINTER-->
-                      <div class="cursorText"></div>
-                    </div>
-
-                      <a  data-backdrop="false" rel="tooltip" data-placement="bottom" title="" class="actionIcon openUserSelector" data-original-title="Select User">
-                       <i class="uiIconUser uiIconLightGray"></i>
-                     </a>
-                     <a  href="#selectGroupModal" data-backdrop="false" data-toggle="modal" rel="tooltip" data-placement="bottom" title="" class="actionIcon" data-original-title="Select Group/Membership">
-                       <i class="uiIconGroup uiIconLightGray"></i>
-                     </a>
-                     <button  class="btn" type="button">Add</button>
-                </div>
-                <!-- dropdow for mention -->
-                <div class="autocomplete-menu" style="display: none;">
-                    <ul>
-                        <li class="data">
-                          <div class="avatarSmall">
-                            <img src="/eXoSkin/skin/images/system/UserAvtDefault.png">
-                          </div>
-                          Roo<strong>t</strong> Roo<strong>t</strong> (root)
-                          <span class="user-status"><i class="uiIconColorCircleOrange"></i></span>
-                        </li>
-                        <li class="data">
-                          <div class="avatarSmall">
-                            <img src="/eXoSkin/skin/images/system/UserAvtDefault.png">
-                          </div>
-                          Roo<strong>t</strong> Roo<strong>t</strong> (root)
-                          <span class="user-status"><i class="uiIconColorCircleGreen"></i></span>
-                        </li>
-                        <li class="data">
-                          <div class="avatarSmall">
-                            <img src="/eXoSkin/skin/images/system/UserAvtDefault.png">
-                          </div>
-                          Roo<strong>t</strong> Roo<strong>t</strong> (root)
-                          <span class="user-status"><i class="uiIconColorCircleRed"></i></span>
-                        </li>
-                        <li class="data active">
-                          <div class="avatarSmall">
-                            <img src="/eXoSkin/skin/images/system/UserAvtDefault.png">
-                          </div>
-                          <strong>t</strong>rung (trung)
-                          <span class="user-status"><i class="uiIconColorCircleGray"></i></span>
-                        </li>
-                      </ul>
-                  </div>
-                  <!-- placeholder alias -->
-                <div class="placeholder" style="top: 5px; display: block;">Select a user</div>
-
-              </div>
-           </div>
-        </td>
-      </tr>  
-
-
-       <tr style="display: none">
-        <td>
-          <p><strong>&{label.manager}</strong></p>
-          <div class="des">&{label.manager.description}</div>
-        </td>
-        <td class="manager">
-          <!-- this is result after choice permision-->
-          <div class="permission-display" style="display:none">
-            <div class="pull-right edit-action">
-              <a href="" class="actionIcon action-edit-user" data-original-title="edit" data-toggle="tooltip" rel="tooltip" data-placement="bottom">
-                <i class="uiIconEdit uiIconLightGray"></i>
-              </a>          
-             </div>        
-             <div class="list-users">
-                <p class="item"><strong>An Nguyen</strong> (anbn)</p>
-                <p class="item"><strong>Ha Le</strong> (any:/platform/administrator)</p>
-                <p class="item"><strong>Root</strong> (john)</p>
-             </div>  
-           </div>
-           <!-- this is mention action-->
-           <div class="action-mentions" style="display: block">
-            <textarea title="What are you working on?" cols="30" rows="10" id="composerInput" name="composerInput"
-                 class="textarea-mentions" style="visibility: hidden; display: none;"></textarea>
-             <div class="exo-mentions" >                
-                <div class="permission-owner clearfix">
-                    <!-- display mention-->
-                    <div  class="replaceTextArea editable" g_editable="true" id="DisplaycomposerInput" data-mentions="true">
-                      <span >Chris B<i  class="uiIconClose uiIconLightGray"></i></span>
-                      <span >Patric<i  class="uiIconClose uiIconLightGray"></i></span> 
-                      <span >root<i  class="uiIconClose uiIconLightGray"></i></span> 
-                      <span >An Nguyen<i  class="uiIconClose uiIconLightGray"></i></span>
-                      <br/><!-- start group/membership -->
-                      <span  data-toggle="dropdown" class="dropdown-toggle" >Any <i  class="uiIconArrowDownMini uiIconLightGray"></i></span> 
-                        <ul class="dropdown-menu">
-                          <li><a  href="#">Any</a></li>
-                          <li><a  href="#">Author</a></li>
-                          <li><a  href="#">Editor</a></li>
-                        </ul>
-                      in
-                      <span >Administrator<i  class="uiIconClose uiIconLightGray"></i></span> 
-                      <!-- CURSOR POINTER-->
-                      <div class="cursorText"></div>
-                    </div>  
-
-                      <a  data-backdrop="false" rel="tooltip" data-placement="bottom" title="" class="actionIcon openUserSelector" data-original-title="Select User">
-                       <i class="uiIconUser uiIconLightGray"></i>
-                     </a>                   
-                     <a  href="#selectGroupModal"  data-backdrop="false" data-toggle="modal" rel="tooltip" data-placement="bottom" title="" class="actionIcon" data-original-title="Select Group/Membership">
-                       <i class="uiIconGroup uiIconLightGray"></i>
-                     </a>             
-                     <button  class="btn" type="button">Add</button>
-                </div>   
-                <!-- dropdow for mention -->
-                <div class="autocomplete-menu" style="display: none;">
-                    <ul>
-                        <li class="data">
-                          <div class="avatarSmall">
-                            <img src="/eXoSkin/skin/images/system/UserAvtDefault.png">
-                          </div>
-                          Roo<strong>t</strong> Roo<strong>t</strong> (root)
-                          <span class="user-status"><i class="uiIconColorCircleOrange"></i></span>
-                        </li> 
-                        <li class="data">
-                          <div class="avatarSmall">
-                            <img src="/eXoSkin/skin/images/system/UserAvtDefault.png">
-                          </div>
-                          Roo<strong>t</strong> Roo<strong>t</strong> (root)
-                          <span class="user-status"><i class="uiIconColorCircleGreen"></i></span>
-                        </li>    
-                        <li class="data">
-                          <div class="avatarSmall">
-                            <img src="/eXoSkin/skin/images/system/UserAvtDefault.png">
-                          </div>
-                          Roo<strong>t</strong> Roo<strong>t</strong> (root)
-                          <span class="user-status"><i class="uiIconColorCircleRed"></i></span>
-                        </li>                       
-                        <li class="data active">
-                          <div class="avatarSmall">
-                            <img src="/eXoSkin/skin/images/system/UserAvtDefault.png">
-                          </div>
-                          <strong>t</strong>rung (trung)
-                          <span class="user-status"><i class="uiIconColorCircleGray"></i></span>
-                        </li>
-                      </ul>
-                  </div>     
-              </div>
-           </div>
-        </td>
-      </tr>  
-
-
-      <tr style="display: none">
-        <td>
-          <p><strong>&{label.manager}</strong></p>
-          <div class="des">&{label.manager.description}</div>
-        </td>
-        <td class="manager">
-          <!-- this is result after choice permision-->
-          <div class="permission-display" style="display:block">
-            <div class="pull-right edit-action">
-              <a href="" class="actionIcon action-edit-user" data-original-title="edit" data-toggle="tooltip" rel="tooltip" data-placement="bottom">
-                <i class="uiIconEdit uiIconLightGray"></i>
-              </a>          
-             </div>        
-             <div class="list-users">
-                <p class="item"><strong>An Nguyen</strong> (anbn)</p>
-                <p class="item"><strong>Ha Le</strong> (any:/platform/administrator)</p>
-                <p class="item"><strong>Root</strong> (john)</p>
-             </div>  
-           </div>
-           <!-- this is mention action-->
-           <div class="action-mentions" style="display: none">
-            <textarea title="What are you working on?" cols="30" rows="10" id="composerInput" name="composerInput"
-                 class="textarea-mentions" style="visibility: hidden; display: none;"></textarea>
-             <div class="exo-mentions" >                
-                <div class="permission-owner clearfix">
-                    <!-- display mention-->
-                    <div  class="replaceTextArea editable" g_editable="true" id="DisplaycomposerInput" data-mentions="true">
-                     
-                      <!-- CURSOR POINTER-->
-                      <div class="cursorText"></div>
-                    </div>  
-
-                     <a  data-backdrop="false" rel="tooltip" data-placement="bottom" title="" class="actionIcon openUserSelector" data-original-title="Select User">
-                       <i class="uiIconUser uiIconLightGray"></i>
-                     </a>                     
-                     <a  href="#selectGroupModal" data-backdrop="false"  data-toggle="modal" rel="tooltip" data-placement="bottom" title="" class="actionIcon" data-original-title="Select Group/Membership">
-                       <i class="uiIconGroup uiIconLightGray"></i>
-                     </a>             
-                     <button  class="btn" type="button">Add</button>
-                </div>   
-                <!-- dropdow for mention -->
-                <div class="autocomplete-menu" style="display: none;">
-                    <ul>
-                        <li class="data">
-                          <div class="avatarSmall">
-                            <img src="/eXoSkin/skin/images/system/UserAvtDefault.png">
-                          </div>
-                          Roo<strong>t</strong> Roo<strong>t</strong> (root)
-                          <span class="user-status"><i class="uiIconColorCircleOrange"></i></span>
-                        </li> 
-                        <li class="data">
-                          <div class="avatarSmall">
-                            <img src="/eXoSkin/skin/images/system/UserAvtDefault.png">
-                          </div>
-                          Roo<strong>t</strong> Roo<strong>t</strong> (root)
-                          <span class="user-status"><i class="uiIconColorCircleGreen"></i></span>
-                        </li>    
-                        <li class="data">
-                          <div class="avatarSmall">
-                            <img src="/eXoSkin/skin/images/system/UserAvtDefault.png">
-                          </div>
-                          Roo<strong>t</strong> Roo<strong>t</strong> (root)
-                          <span class="user-status"><i class="uiIconColorCircleRed"></i></span>
-                        </li>                       
-                        <li class="data active">
-                          <div class="avatarSmall">
-                            <img src="/eXoSkin/skin/images/system/UserAvtDefault.png">
-                          </div>
-                          <strong>t</strong>rung (trung)
-                          <span class="user-status"><i class="uiIconColorCircleGray"></i></span>
-                        </li>
-                      </ul>
-                  </div>
-                  <!-- placeholder alias -->
-                <div class="placeholder" style="top: 5px; display: block;">Select a user</div>  
-                     
-              </div>
-           </div>
-        </td>
-      </tr> 
-
-
-       
-      <tr style="display: none">
-        <td>
-          <p><strong>&{label.manager}</strong></p>
-          <div class="des">&{label.manager.description}</div>
-        </td>
-        <td class="manager">
-          <!-- this is result after choice permision-->
-          <div class="permission-display" style="display:none">
-            <div class="pull-right edit-action">
-              <a href="" class="actionIcon action-edit-user" data-original-title="edit" data-toggle="tooltip" rel="tooltip" data-placement="bottom">
-                <i class="uiIconEdit uiIconLightGray"></i>
-              </a>          
-             </div>        
-             <div class="list-users">
-                <p class="item"><strong>An Nguyen</strong> (anbn)</p>
-                <p class="item"><strong>Ha Le</strong> (any:/platform/administrator)</p>
-                <p class="item"><strong>Root</strong> (john)</p>
-             </div>  
-           </div>
-           <!-- this is mention action-->
-           <div class="action-mentions" style="display: block">
-            <textarea title="What are you working on?" cols="30" rows="10" id="composerInput" name="composerInput"
-                 class="textarea-mentions" style="visibility: hidden; display: none;"></textarea>
-             <div class="exo-mentions" >                
-                <div class="permission-owner clearfix">
-                    <!-- display mention-->
-                    <div  class="replaceTextArea editable" g_editable="true" id="DisplaycomposerInput" data-mentions="true">
-                     
-                      <!-- CURSOR POINTER-->
-                      <div class="cursorText"></div>
-                    </div>  
-
-                     <a  data-backdrop="false" rel="tooltip" data-placement="bottom" title="" class="actionIcon openUserSelector" data-original-title="Select User">
-                       <i class="uiIconUser uiIconLightGray"></i>
-                     </a>                   
-                     <a  href="#selectGroupModal" data-backdrop="false" data-toggle="modal" rel="tooltip" data-placement="bottom" title="" class="actionIcon" data-original-title="Select Group/Membership">
-                       <i class="uiIconGroup uiIconLightGray"></i>
-                     </a>             
-                     <button  class="btn" type="button">Add</button>
-                </div>   
-                <!-- dropdow for mention -->
-                <div class="autocomplete-menu" style="display: block;">
-                   <ul>
-                        <li class="data">
-                          <div class="avatarSmall">
-                            <img src="/eXoSkin/skin/images/system/UserAvtDefault.png">
-                          </div>
-                          Roo<strong>t</strong> Roo<strong>t</strong> (root)
-                          <span class="user-status"><i class="uiIconColorCircleOrange"></i></span>
-                        </li> 
-                        <li class="data">
-                          <div class="avatarSmall">
-                            <img src="/eXoSkin/skin/images/system/UserAvtDefault.png">
-                          </div>
-                          Roo<strong>t</strong> Roo<strong>t</strong> (root)
-                          <span class="user-status"><i class="uiIconColorCircleGreen"></i></span>
-                        </li>    
-                        <li class="data">
-                          <div class="avatarSmall">
-                            <img src="/eXoSkin/skin/images/system/UserAvtDefault.png">
-                          </div>
-                          Roo<strong>t</strong> Roo<strong>t</strong> (root)
-                          <span class="user-status"><i class="uiIconColorCircleRed"></i></span>
-                        </li>                       
-                        <li class="data active">
-                          <div class="avatarSmall">
-                            <img src="/eXoSkin/skin/images/system/UserAvtDefault.png">
-                          </div>
-                          <strong>t</strong>rung (trung)
-                          <span class="user-status"><i class="uiIconColorCircleGray"></i></span>
-                        </li>
-                      </ul>
-                  </div>
-                  <!-- placeholder alias -->
-                <div class="placeholder" style="top: 5px; display: block;">Select a user</div>  
-                     
-              </div>
-           </div>
-        </td>
-      </tr>
-
-
   	</table>
     <div class="uiAction uiActionBorder">
       <button class="btn" data-dismiss="modal" aria-hidden="true">&{popup.close}</button>
     </div>	    
   </div>
-   <span class="uiIconResize pull-right uiIconLightGray"></span>
   <div class="selectorDialog"></div>
 
   <!-- This is for select group in search user -->
   <div class="groupSelectorForSearchDialog"></div>
 </div>
-
+<script type="text/javascript">
+    require(['SHARED/jquery', 'taskManagementApp'], function($, taApp) {
+        taApp.initTooltip($('.uiPopup.sharePrjDialog'));
+    });
+</script>
 
 
 

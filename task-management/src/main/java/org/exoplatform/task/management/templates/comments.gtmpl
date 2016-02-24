@@ -2,12 +2,22 @@
 #{param name=comments/}
 #{param name=currentUser/}
 
+<%
+	import org.exoplatform.commons.utils.HTMLEntityEncoder;
+
+	def encoder = HTMLEntityEncoder.getInstance();
+%>
+
 <%if(commentCount == 0) {%>
-    <li class="no-comment">There are no comment yet!</li>
-<%} else { comments.each {comment -> %>
+    <li class="no-comment">&{comment.message.noComment}</li>
+<%} else { for (def comment in comments) {
+	def avatar = encoder.encode(comment.getAuthor().getAvatar());
+	def displayName = encoder.encode(comment.getAuthor().getDisplayName());
+	def formattedComment = comment.getFormattedComment();
+%>
     <li class="comment media">
         <a class="pull-left avatarXSmall" href="#">
-            <img class="media-object" src="${comment.author.avatar}" alt="${comment.author.displayName}">
+            <img class="media-object" src="${avatar}" alt="${displayName}">
         </a>
         <div class="media-body">
             <div class="pull-right">
@@ -18,9 +28,9 @@
                     <%}%>
                 </span>
             </div>
-            <h6 class="media-heading"><a href="#">${comment.author.displayName}</a></h6>
+            <h6 class="media-heading"><a href="#">${displayName}</a></h6>
             <div>
-                ${comment.formattedComment}
+                ${formattedComment}
             </div>
         </div>
     </li>

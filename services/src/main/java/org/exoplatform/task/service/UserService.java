@@ -19,10 +19,11 @@
 
 package org.exoplatform.task.service;
 
+import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.task.domain.UserSetting;
+import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.exception.NotAllowedOperationOnEntityException;
-import org.exoplatform.task.exception.ProjectNotFoundException;
 import org.exoplatform.task.model.User;
 
 import java.util.TimeZone;
@@ -34,11 +35,21 @@ public interface UserService {
 
   User loadUser(String username);
 
+  /**
+   * For now, this method is used only for search user in assignee, permission or mention.
+   * These function use username, fullName and avatar, so some other infos will be null to avoid recall organizationService
+   * @param keyword
+   * @return
+   */
+  ListAccess<User> findUserByName(String keyword);
+
   UserSetting getUserSetting(String username);
 
   void showHiddenProject(String username, boolean show);
+  
+  void showHiddenLabel(String username, boolean show);
 
-  void hideProject(Identity identity, Long projectId, boolean hide) throws ProjectNotFoundException, NotAllowedOperationOnEntityException;
+  void hideProject(Identity identity, Long projectId, boolean hide) throws EntityNotFoundException, NotAllowedOperationOnEntityException;
 
   TimeZone getUserTimezone(String username);
 }

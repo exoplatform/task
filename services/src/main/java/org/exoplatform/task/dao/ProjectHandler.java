@@ -3,6 +3,7 @@ package org.exoplatform.task.dao;
 import java.util.List;
 
 import org.exoplatform.commons.api.persistence.GenericDAO;
+import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.task.domain.Project;
 
 /**
@@ -10,11 +11,14 @@ import org.exoplatform.task.domain.Project;
  * @version $Revision$
  */
 public interface ProjectHandler extends GenericDAO<Project, Long> {
-  List<Project> findSubProjects(Project project);
 
-  List<Project> findSubProjectsByMemberships(Project project, List<String> memberships);
+  public <T> List<T> selectProjectField(ProjectQuery query, String fieldName);
+  
+  Project removeProject(long projectId, boolean deleteChild);
 
-  List<Project> findAllByMemberships(List<String> memberships);
+  ListAccess<Project> findSubProjects(Project project);
 
-  List<Project> findAllByMembershipsAndKeyword(List<String> membership, String keyword, OrderBy order);
+  ListAccess<Project> findAllByMembershipsAndKeyword(List<String> membership, String keyword, OrderBy order);
+
+  ListAccess<Project> findProjects(ProjectQuery query);
 }

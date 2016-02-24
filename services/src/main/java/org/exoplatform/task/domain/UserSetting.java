@@ -21,24 +21,16 @@ package org.exoplatform.task.domain;
 
 import org.exoplatform.commons.api.persistence.ExoEntity;
 
+import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
-@Entity
+@Entity(name = "TaskUserSetting")
 @ExoEntity
-@Table(name = "TASK_USER_SETTING")
+@Table(name = "TASK_USER_SETTINGS")
 public class UserSetting {
   @Id
   @Column(name = "USERNAME")
@@ -46,10 +38,13 @@ public class UserSetting {
 
   @Column(name = "SHOW_HIDDEN_PROJECT")
   private boolean showHiddenProject = false;
+  
+  @Column(name = "SHOW_HIDDEN_LABEL")
+  private boolean showHiddenLabel = false;
 
   @ManyToMany(cascade = CascadeType.REMOVE)
   @JoinTable(
-          name = "TASK_HIDDEN_PROJECT",
+          name = "TASK_HIDDEN_PROJECTS",
           joinColumns = {@JoinColumn(name = "USERNAME", referencedColumnName = "USERNAME")},
           inverseJoinColumns = {@JoinColumn(name = "PROJECT_ID", referencedColumnName = "PROJECT_ID")}
   )
@@ -75,6 +70,14 @@ public class UserSetting {
     this.showHiddenProject = showHiddenProject;
   }
 
+  public boolean isShowHiddenLabel() {
+    return showHiddenLabel;
+  }
+
+  public void setShowHiddenLabel(boolean showHiddenLabel) {
+    this.showHiddenLabel = showHiddenLabel;
+  }
+
   public Set<Project> getHiddenProjects() {
     return hiddenProjects;
   }
@@ -83,6 +86,7 @@ public class UserSetting {
     this.hiddenProjects = hiddenProjects;
   }
 
+  //TODO: This method does not work any more, re-implement it in ProjectService
   public boolean isHiddenProject(Project project) {
     if (project == null) return false;
 
@@ -92,5 +96,21 @@ public class UserSetting {
       }
     }
     return false;
+  }
+
+  @Override
+  public UserSetting clone() {
+    UserSetting setting = new UserSetting(getUsername());
+    setting.setShowHiddenProject(isShowHiddenProject());
+
+    //TODO: clone hiddenProjects here is not good for performance
+    Set<Project> hiddenProjects = new HashSet<Project>();
+    if (getHiddenProjects() != null) {
+      for (Project p : getHiddenProjects()) {
+        hiddenProjects.add(p.clone(false));
+      }
+    }
+    setting.setHiddenProjects(hiddenProjects);
+    return setting;
   }
 }

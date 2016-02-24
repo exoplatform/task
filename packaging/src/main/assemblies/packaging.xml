@@ -33,8 +33,9 @@
       <outputFileNameMapping>${artifact.artifactId}${dashClassifier?}.${artifact.extension}</outputFileNameMapping>
       <includes>
         <include>org.exoplatform.addons.task:task-management-services</include>
+        <include>org.exoplatform.addons.task:task-management-integration</include>
         <include>org.exoplatform.addons.task:task-management</include>
-        <include>org.hibernate:hibernate-entitymanager</include>
+	<include>com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer</include>
       </includes>
     </dependencySet>
   </dependencySets>

@@ -3,7 +3,11 @@
 #{param name=bundle/}
 
 <%
-import org.exoplatform.task.utils.TaskUtil;
+import org.exoplatform.task.util.TaskUtil;
+import org.exoplatform.task.util.ResourceUtil;
+import org.exoplatform.commons.utils.HTMLEntityEncoder;
+
+def encoder = HTMLEntityEncoder.getInstance();
 %>
 <ul class="list-changes">
 <%for (def log : taskLogs) {%>
@@ -11,10 +15,28 @@ import org.exoplatform.task.utils.TaskUtil;
        <div class="pull-left">
             <%
                 def user = userMap[log.author];
+            	 def author = "<a href=\"${user.url}\">" + encoder.encode(user.displayName) + "</a>"; 
+            	 def key = "log." + log.getActionName();
             %>
-            <a href="${user.url}">  ${user.displayName} </a>
-            <span><%=bundle.getString(log.getMsg()) %>
-            ${log.target != null ? log.target : ""}</span>
+            <%
+                def target = log.target == null ? "" : log.target;
+            %>
+            <% if (log.getActionName() == 'assign' || log.getActionName() == 'unassign') { %>
+                <%
+                    def href = '#';
+                    if (target != null && userMap[target] != null) {
+                        def u = userMap[target];
+                        target = u.displayName;
+                        href = u.url;
+                    }
+                    target = "<a href=\"${href}\">" + encoder.encode(target) + "</a>";  
+                %>
+            <% } else {
+                if ("edit_status" == log.getActionName()) {
+                    target = "<span>" + encoder.encode(ResourceUtil.resolveStatus(bundle, target)) + "</span>";
+                }
+					}%>
+					${ResourceUtil.resolveMessage(bundle, key, author, target)}.
         </div>        
         <span class="date pull-right">
             <%= TaskUtil.getPeriod(log.getCreatedTime(), bundle)%>

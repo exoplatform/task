@@ -2,12 +2,14 @@
 #{param name=project /}
 #{param name=tasks /}
 #{param name=taskNum/}
+#{param name=incomNum/}
 #{param name=groupTasks /}
 #{param name=keyword /}
 #{param name=groupBy /}
 #{param name=orderBy /}
 #{param name=filter /}
 #{param name=projects/}
+#{param name=labels/}
 #{param name=userSetting/}
 #{param name=userTimezone/}
 #{param name=bundle/}
@@ -17,11 +19,22 @@
 #{param name=orders /}
 #{param name=groups /}
 #{param name=viewType/}
+#{param name=currentLabelId/}
+#{param name=currentLabelName/}
+#{param name=advanceSearch/}
+#{param name=showCompleted/}
+#{param name=paging/}
+#{param name=errorMessage/}
+
+<!-- Consider this -->
+#{param name=taskService/}
+#{param name=currentUser/}
 
 <div class="taskMngCont">
 	<div id="taskManagement" class="row-fluid">
 	    <div class="leftPanel uiAccordion span3">
 	        <ul class="left-menu">
+	             <%if (!isInSpace) { %>
                 <li class="accordion-heading dropdown">
                     <div class="item">
                         <a class="dropdownIcon collapseTree pull-right" href="javascript:void(0)">
@@ -30,40 +43,41 @@
                         <a class="project-name" href="javascript:void(0)">&{label.tasks}</a>
                     </div>
                     <ul class="list-projects">
-                        <li class="dropdown project-item active">
+                    
+                        <li class="dropdown project-item ${currentProjectId == -1 ? "active" : ""}">
                             <div class="sub-item">
-                                <a class="project-name" data-id="-1" href="@{TaskManagement.index()}">&{label.incoming}&nbsp;<span class="badgeDefault badgePrimary mini top">1</span></a>
+                                <a class="project-name" data-id="-1" href="javascript:void(0);">&{label.incoming}&nbsp;<span class="badgeDefault badgePrimary mini top">${incomNum}</span></a>
                             </div>
-                        </li>
-                        <li class="dropdown project-item">
+                        </li>                     
+                        <li class="dropdown project-item ${currentProjectId == -2 && (filter == null || filter == "") ? "active" : ""}">
                             <div class="sub-item">
                                 <a href="javascript:void(0)" class="project-name" data-id="-2" data-filter="">
                                     &{label.allTasks}
                                 </a>
                             </div>
                         </li>
-                        <li class="dropdown project-item">
+                        <li class="dropdown project-item ${currentProjectId == -2 && (filter == "overdue") ? "active" : ""}">
                             <div class="sub-item">
                                 <a href="javascript:void(0)" class="project-name" class="project-name" data-id="-2" data-filter="overdue">
                                     &{label.overdue}
                                 </a>
                             </div>
                         </li>
-                        <li class="dropdown project-item">
+                        <li class="dropdown project-item ${currentProjectId == -2 && (filter == "today") ? "active" : ""}">
                             <div class="sub-item">
                                 <a href="javascript:void(0)" class="project-name" class="project-name" data-id="-2"  data-filter="today">
                                     &{label.today}
                                 </a>
                             </div>
                         </li>
-                        <li class="dropdown project-item">
+                        <li class="dropdown project-item ${currentProjectId == -2 && (filter == "tomorrow") ? "active" : ""}">
                             <div class="sub-item">
                                 <a href="javascript:void(0)" class="project-name" class="project-name" data-id="-2"  data-filter="tomorrow">
                                     &{label.tomorrow}
                                 </a>
                             </div>
                         </li>
-                        <li class="dropdown project-item">
+                        <li class="dropdown project-item ${currentProjectId == -2 && (filter == "upcoming") ? "active" : ""}">
                             <div class="sub-item">
                                 <a href="javascript:void(0)" class="project-name" class="project-name" data-id="-2"  data-filter="upcoming">
                                     &{label.upcoming}
@@ -72,6 +86,7 @@
                         </li>
                     </ul>
                 </li>
+                <%} %>
 	            <!-- <li class="accordion-heading" style="display: none">
 	              <a class="dropdownIcon pull-right" href="javascript:void(0)">
                       <i class="uiIconLightGray uiIconArrowDown"></i>
@@ -96,15 +111,11 @@
                                         <i class="uiIconAddProject uiIconLightGray"></i>&{label.addProject}
                                     </a>
                                 </li>
-			                    <li><a href="javascript:void(0)" class="actionShowHiddenProject">
-                                    <i class="uiIconShowProject uiIconLightGray"></i>
-                                    <span class="label-showHiddenProject">
-                                        &{label.showHiddenProject}
-                                    </span>
-                                    <span class="label-hideHiddenProject">
-                                        &{label.hideHiddenProject}
-                                    </span>
-                                </a></li>
+			                    <li>
+                                    <a href="javascript:void(0)" class="actionShowHiddenProject">
+                                        <i class="uiIconShowProject uiIconLightGray"></i><span class="label-showHiddenProject">&{label.showHiddenProject}</span><span class="label-hideHiddenProject">&{label.hideHiddenProject}</span>
+                                    </a>
+                                </li>
 			                </ul>
 			            </div>
 		                <a class="project-name" data-id="0" href="#">&{label.projects}</a>
@@ -112,12 +123,12 @@
 	
 	                #{include path=listProjects.gtmpl /}
 	            </li>
-	            <li class="accordion-heading dropdown">
+	            <li class="accordion-heading dropdown" data-showhiddenlabel="${userSetting.showHiddenLabel}">
 	               <div class="item">  
                       <a class="dropdownIcon collapseTree pull-right" href="javascript:void(0)">
                           <i class="uiIconLightGray uiIconArrowDownMini"></i>
                       </a>
-                      <a href="javascript:void(0)" data-placement="bottom" data-content="Click here to create your first label." data-toggle="dropdown" class="dropdown-toggle actionIconSmall dropdownIcon add-new-label pull-right">
+                      <a href="javascript:void(0)" data-placement="bottom" data-content="&{label.welcome.firstLabel}" data-toggle="dropdown" class="dropdown-toggle actionIconSmall dropdownIcon add-new-label pull-right">
                         <i class="uiIconLightGray uiIconSimplePlusMini addLabel"></i>
                       </a>
                       <div class="dropdown-menu uiDropdownWithIcon" style="left: 88%; top: -22px">
@@ -125,367 +136,34 @@
                         <ul class="uiDropdownMenu">
                             <li>
                               <a class="new-label" data-projectId="0" href="#">
-                                <i class="uiIconAddLabel uiIconLightGray"></i>Add label
+                                <i class="uiIconAddLabel uiIconLightGray"></i>&{label.addLabel}
                               </a>
                             </li>
                             <li>
-                              <a href="javascript:void(0)" class="actionShowHiddenProject">
-                                <i class="uiIconHide uiIconLightGray"></i>
-                                <span class="label-showHiddenLabel">
-                                    Hide hidden label
-                                </span>
-                                <i class="uiIconShowLabel uiIconLightGray"></i>
-                                <span class="label-hideHiddenLabel">
-                                    Show hidden label
-                                </span>
+                              <a href="javascript:void(0)" class="actionShowHiddenLabel">
+                                <i class="uiIconShowLabel uiIconLightGray"></i><span class="label-showHiddenLabel">&{label.showHiddenLabel}</span><span class="label-hideHiddenLabel">&{label.hideHiddenLabel}</span>
                               </a>
 	                         </li>
                           </ul>
                       </div>
-                      <a class="project-name" href="#">Label</a>
+                      <a class="label-name" data-labelid="0" href="#">&{label.labels}</a>
                    </div>
-                   <ul class="list-projects">
-                       <li>
-                           <div class="noLabel center muted">No label</div>
-                       </li>
-                   </ul>
+                   
+                   <div class="lblContainer">
+                   	#{include path=listLabels.gtmpl /}
+                   </div>
 	            </li>
-	        </ul>
-	        <div class="resizeButton " id="ShowHideLeft">
-			  <i  class="uiIconMiniArrowLeft"></i>
-			</div>
+	        </ul>	   
 	    </div>
 	    <div class="centerPanel uiBox <%=taskId == -1 ? "span9" : "span5" %>">
+	         <div class="resizeButton show-hide-left" id="ShowHideLeft">
+				  <i  class="uiIconMiniArrowLeft"></i>
+				</div>
             <div class="centerPanelContent ">            	
                 #{include path=projectTaskListView.gtmpl /}
             </div>
 	    </div>
 	    <div class="rightPanel span4" style="<%= taskId == -1 ? "display: none" : ""%>">
-	    	<div class="sample uiBox pd10" style="display: none">
-				<!-- ##################################### -->
-				<br>
-				<!-- when click to .hoverStatus need add class .active to .uiEditableInline -->
-				<div class="uiEditableInline hover-action-reveal">
-					<i class="uiIconPLFCalendar" data-toggle="tooltip" title="Click to show in Calendar"></i>
-					<span class="hoverStatus small" data-toggle="tooltip" title="Click to edit">
-					<span class="text-label"></span>
-					<!-- you can use classes like .input-medium, .input-small to set size availabel  -->
-					<input type="text" class="input-value input-small" value="21 Sep 2011">
-					</span>
-					<span class="actionIcon inline-hide"><i class="uiIcon uiIconTrash"></i></span>
-				</div>
-				<br>
-				<!-- when click to .hoverStatus need add class .active to .uiEditableInline -->
-				<div class="uiEditableInline active">
-					<i class="uiIconPLFCalendar" data-toggle="tooltip" title="Click to show in Calendar"></i>
-					<span class="hoverStatus small" data-toggle="tooltip" title="Click to edit">
-						<span class="text-label"></span>
-						<!-- you can use classes like .input-medium, .input-small to set size availabel  -->
-						<input type="text" class="input-value input-small" value="21 Sep 2011">
-					</span>
-					<span class="actionIcon inline-hide"><i class="uiIcon uiIconTrash"></i></span>
-				</div>
-				<br>
-				<!-- when click to .hoverStatus need add class .edit to .uiEditableInline -->
-				<div class="uiEditableInline hover-action-reveal">
-					<i class="uiIconPLFCalendar" data-toggle="tooltip" title="Click to show in Calendar"></i>
-					<span class="hoverStatus small editableField" data-toggle="tooltip" title="Click to edit">
-					<span class="text-label">Work planned for</span>
-					<!-- you can use classes like .input-medium, .input-small to set size availabel  -->
-					<input type="text" class="input-value input-small" value="21 Sep 2011">
-					</span>
-					<span class="actionIcon inline-hide"><i class="uiIcon uiIconTrash"></i></span>
-				</div>
-				<br>
-				<!-- when click to .hoverStatus need add class .edit to .uiEditableInline -->
-				<div class="uiEditableInline active hover-action-reveal">
-					<i class="uiIconPLFCalendar uiIconPLFBlue" data-toggle="tooltip" title="Click to show in Calendar"></i>
-					<span class="hoverStatus small editableField" data-toggle="tooltip" title="Click to edit">
-					<span class="text-label">Work planned for</span>
-					<input type="text" class="input-value input-small" value="21 Sep 2011">
-					</span>
-					<span class="actionIcon inline-hide"><i class="uiIcon uiIconTrash"></i></span>
-				</div>
-				<br>
-				<hr>
-				<div class="uiEditableInline hover-action-reveal">
-					<i class="uiIconPLFCalendar" data-toggle="tooltip" title="Click to show in Calendar"></i>
-					<!-- After selected date and time finish will add class .editableField to .hoverStatus -->
-					<div class="hoverStatus small">
-						<span class="text-label"> </span>
-						<span class="view-value">Unscheduled</span>
-					</div>
-					<span class="actionIcon inline-hide"><i class="uiIcon uiIconTrash"></i></span>
-				</div>
-				<br>
-				<div class="uiEditableInline active">
-					<i class="uiIconPLFCalendar" data-toggle="tooltip" title="Click to show in Calendar"></i>
-					<!-- After selected date and time finish will add class .editableField to .hoverStatus -->
-					<div class="hoverStatus small">
-						<span class="text-label"></span>
-						<span class="view-value">Unscheduled</span>
-					</div>
-					<span class="actionIcon inline-hide"><i class="uiIcon uiIconTrash"></i></span>
-				</div>
-				<br>
-				<!-- when click to .hoverStatus need add class .edit to .uiEditableInline -->
-				<div class="uiEditableInline hover-action-reveal">
-					<i class="uiIconPLFCalendar" data-toggle="tooltip" title="Click to show in Calendar"></i>
-					<span class="hoverStatus small editableField" data-toggle="tooltip" title="Click to edit">
-					<span class="text-label">Work planned for</span>
-					<span class="view-value"><strong>21 Sep 2011</strong>(All day)</span>
-					</span>
-					<span class="actionIcon inline-hide"><i class="uiIcon uiIconTrash"></i></span>
-				</div>
-				<br>
-				<!-- Added class .edit -->
-				<div class="uiEditableInline active">
-					<!-- Added class .uiIconPLFBlue to change to saved status -->
-					<i class="uiIconPLFCalendar" data-toggle="tooltip" title="Click to show in Calendar"></i>
-					<div class="hoverStatus small editableField" data-toggle="tooltip" title="Click to edit">
-						<span class="text-label ">Work planned for</span>
-						<span class="view-value"><strong>21 Sep 2011</strong>(All day)</span>
-					</div>
-					<span class="actionIcon inline-hide"><i class="uiIcon uiIconTrash"></i></span>
-				</div>
-				<hr>
-				<!-- when click to .hoverStatus need add class .edit to .uiEditableInline -->
-				<div class="uiEditableInline hover-action-reveal">
-					<i class="uiIconPLFCalendar uiIconPLFBlue" data-toggle="tooltip" title="Click to show in Calendar"></i>
-					<span class="hoverStatus small editableField" data-toggle="tooltip" title="Click to edit">
-					<span class="text-label">Work planned for</span> 
-					<span class="view-value"><strong>21 Sep 2011</strong>(All day)</span>
-					</span>
-					<span class="actionIcon inline-hide"><i class="uiIcon uiIconTrash"></i></span>
-				</div>
-				<br>
-				<div class="uiEditableInline active">
-					<!-- Added class .uiIconPLFBlue to change to saved status -->
-					<i class="uiIconPLFCalendar" data-toggle="tooltip" title="Click to show in Calendar"></i>
-					<div class="hoverStatus small editableField" data-toggle="tooltip" title="Click to edit">
-						<span class="text-label ">Work planned for</span>
-						<span class="view-value"><strong>21 Sep 2011</strong>(All day)</span>
-						<!-- You can use classes .left, .right, .bottom, .top to set arrow -->
-						<div class="popover fade left in" role="tooltip" style="display: block;top: -134px; left: -380px;">
-							<div class="arrow"></div>
-							<div class="popover-content">
-								<div class="row-fluid">
-									<div class="span6"><strong>From</strong></div>
-									<div class="span6"><strong>To</strong></div>
-								</div>
-								<div class="clearfix">
-									<div class="uiCalendarComponent uiBox pull-left" id="BlockCalendar">
-										<div style="cursor: default" onmousedown="event.cancelBubble = true">
-											<h5 class="title clearfix">
-											<a data-original-title="Previous Month" class="actionIcon pull-left" onclick="" rel="tooltip" data-placement="right">
-											<i class="uiIconMiniArrowLeft uiIconLightGray"></i></a>
-											<span>January, 2015</span>
-											<a data-original-title="Next Month" class="actionIcon pull-right" onclick="" rel="tooltip" data-placement="right">
-											<i class="uiIconMiniArrowRight uiIconLightGray"></i></a>
-											</h5>
-											<table class="weekList">
-												<tbody>
-													<tr>
-														<td>
-														<font color="red">S</font></td>
-														<td>M</td>
-														<td>T</td>
-														<td>W</td>
-														<td>T</td>
-														<td>F</td>
-														<td>S</td>
-													</tr>
-												</tbody>
-											</table>
-											<hr>
-											<table cellspacing="0" cellpadding="0" class="weekDays" id="">
-												<tbody>
-													<tr>
-														<td><a onclick="" class="otherMonth" href="#">28</a></td>
-														<td><a onclick="" class="otherMonth" href="#">29</a></td>
-														<td><a onclick="" class="otherMonth" href="#">30</a></td>
-														<td><a onclick="" class="otherMonth" href="#">31</a></td>
-														<td><a onclick="" href="#" class="">1</a></td>
-														<td><a onclick="" href="#" class="">2</a></td>
-														<td><a onclick="" href="#" class="">3</a></td>
-													</tr>
-													<tr>
-														<td><a onclick="" href="#" class="">4</a></td>
-														<td><a onclick="" href="#" class="">5</a></td>
-														<td><a onclick="" href="#" class="">6</a></td>
-														<td><a onclick="" href="#" class="">7</a></td>
-														<td><a onclick="" href="#" class="">8</a></td>
-														<td><a onclick="" href="#" class="">9</a></td>
-														<td><a onclick="" href="#" class="">10</a></td>
-													</tr>
-													<tr class="currentWeek">
-														<td><a onclick="" href="#" class="">11</a></td>
-														<td><a onclick="" href="#" class="">12</a></td>
-														<td><a onclick="" href="#" class="">13</a></td>
-														<td><a onclick="" href="#" class="">14</a></td>
-														<td><a onclick="" href="#" class="">15</a></td>
-														<td><a onclick="" href="#" class="highLight today">16</a></td>
-														<td><a onclick="" href="#" class="">17</a></td>
-													</tr>
-													<tr>
-														<td><a onclick="" href="#" class="">18</a></td>
-														<td><a onclick="" href="#" class="">19</a></td>
-														<td><a onclick="eXo.webui.UICalendar.setDate(2015,1,20)" href="#" class="">20</a></td>
-														<td><a onclick="" href="#" class="">21</a></td>
-														<td><a onclick="" href="#" class="">22</a></td>
-														<td><a onclick="" href="#" class="">23</a></td>
-														<td><a onclick="" href="#" class="">24</a></td>
-													</tr>
-													<tr>
-														<td><a onclick="" href="#" class="">25</a></td>
-														<td><a onclick="" href="#" class="">26</a></td>
-														<td><a onclick="" href="#" class="">27</a></td>
-														<td><a onclick="" href="#" class="">28</a></td>
-														<td><a onclick="" href="#" class="">29</a></td>
-														<td><a onclick="" href="#" class="">30</a></td>
-														<td><a onclick="" href="#" class="">31</a></td>
-													</tr>
-													<tr>
-													</tr>
-												</tbody>
-											</table>
-										</div>
-									</div>
-									<div class="uiCalendarComponent uiBox pull-left" id="BlockCalendar">
-										<div style="cursor: default" onmousedown="event.cancelBubble = true">
-											<h5 class="title clearfix">
-											<a data-original-title="Previous Month" class="actionIcon pull-left" onclick="" rel="tooltip" data-placement="right">
-											<i class="uiIconMiniArrowLeft uiIconLightGray"></i></a>
-											<span>January, 2015</span>
-											<a data-original-title="Next Month" class="actionIcon pull-right" onclick="" rel="tooltip" data-placement="right">
-											<i class="uiIconMiniArrowRight uiIconLightGray"></i></a>
-											</h5>
-											<table class="weekList">
-												<tbody>
-													<tr>
-														<td>
-														<font color="red">S</font></td>
-														<td>M</td>
-														<td>T</td>
-														<td>W</td>
-														<td>T</td>
-														<td>F</td>
-														<td>S</td>
-													</tr>
-												</tbody>
-											</table>
-											<hr>
-											<table cellspacing="0" cellpadding="0" class="weekDays" id="">
-												<tbody>
-													<tr>
-														<td><a onclick="" class="otherMonth" href="#">28</a></td>
-														<td><a onclick="" class="otherMonth" href="#">29</a></td>
-														<td><a onclick="" class="otherMonth" href="#">30</a></td>
-														<td><a onclick="" class="otherMonth" href="#">31</a></td>
-														<td><a onclick="" href="#" class="">1</a></td>
-														<td><a onclick="" href="#" class="">2</a></td>
-														<td><a onclick="" href="#" class="">3</a></td>
-													</tr>
-													<tr>
-														<td><a onclick="" href="#" class="">4</a></td>
-														<td><a onclick="" href="#" class="">5</a></td>
-														<td><a onclick="" href="#" class="">6</a></td>
-														<td><a onclick="" href="#" class="">7</a></td>
-														<td><a onclick="" href="#" class="">8</a></td>
-														<td><a onclick="" href="#" class="">9</a></td>
-														<td><a onclick="" href="#" class="">10</a></td>
-													</tr>
-													<tr class="currentWeek">
-														<td><a onclick="" href="#" class="">11</a></td>
-														<td><a onclick="" href="#" class="">12</a></td>
-														<td><a onclick="" href="#" class="">13</a></td>
-														<td><a onclick="" href="#" class="">14</a></td>
-														<td><a onclick="" href="#" class="">15</a></td>
-														<td><a onclick="" href="#" class="highLight today">16</a></td>
-														<td><a onclick="" href="#" class="">17</a></td>
-													</tr>
-													<tr>
-														<td><a onclick="" href="#" class="">18</a></td>
-														<td><a onclick="" href="#" class="">19</a></td>
-														<td><a onclick="eXo.webui.UICalendar.setDate(2015,1,20)" href="#" class="">20</a></td>
-														<td><a onclick="" href="#" class="">21</a></td>
-														<td><a onclick="" href="#" class="">22</a></td>
-														<td><a onclick="" href="#" class="">23</a></td>
-														<td><a onclick="" href="#" class="">24</a></td>
-													</tr>
-													<tr>
-														<td><a onclick="" href="#" class="">25</a></td>
-														<td><a onclick="" href="#" class="">26</a></td>
-														<td><a onclick="" href="#" class="">27</a></td>
-														<td><a onclick="" href="#" class="">28</a></td>
-														<td><a onclick="" href="#" class="">29</a></td>
-														<td><a onclick="" href="#" class="">30</a></td>
-														<td><a onclick="" href="#" class="">31</a></td>
-													</tr>
-													<tr>
-													</tr>
-												</tbody>
-											</table>
-										</div>
-									</div>
-								</div>
-								<!-- /.clearfix -->
-								<div class="row-fluid choose-time">
-									<div class="span5 center">
-										<div class="form-dropdown">
-											<input data-toggle="dropdown" class="input-size-mini" type="text" maxlength="5" value="09:00">
-											<ul class="dropdown-menu">
-												<li><a href="#">01:00</a></li>
-												<li><a href="#">01:30</a></li>
-												<li><a href="#">02:00</a></li>
-												<li><a href="#">02:30</a></li>
-												<li><a href="#">03:00</a></li>
-												<li><a href="#">03:30</a></li>
-												<li><a href="#">04:00</a></li>
-												<li><a href="#">04:30</a></li>
-												<li><a href="#">05:00</a></li>
-												<li><a href="#">05:30</a></li>
-											</ul>
-										</div>
-									</div>
-									<div class="span2 center">
-										<label class="uiCheckbox">
-											<input type="checkbox" class="checkbox">
-											<span>All day</span>
-										</label>
-									</div>
-									<div class="span5 center">
-										<div class="form-dropdown">
-											<input data-toggle="dropdown" class="input-size-mini" type="text" maxlength="5" value="09:00">
-											<ul class="dropdown-menu">
-												<li><a href="#">01:00</a></li>
-												<li><a href="#">01:30</a></li>
-												<li><a href="#">02:00</a></li>
-												<li><a href="#">02:30</a></li>
-											</ul>
-										</div>
-									</div>
-								</div>
-							</div>
-							<!-- /.popover-content -->
-						</div>
-						<!-- /.popover -->
-					</div>
-					<span class="actionIcon inline-hide"><i class="uiIcon uiIconTrash"></i></span>
-				</div>
-				<hr>
-				<!-- when click to .hoverStatus need add class .edit to .uiEditableInline -->
-				<div class="uiEditableInline hover-action-reveal">
-					<i class="uiIconPLFCalendar uiIconPLFBlue" data-toggle="tooltip" title="Click to show in Calendar"></i>
-					<span class="hoverStatus small editableField" data-toggle="tooltip" title="Click to edit">
-					<span class="text-label">Work planned for</span>
-					<span class="view-value"><strong>21 Sep 2011</strong>(All day)</span>
-					</span>
-					<span class="actionIcon inline-hide"><i class="uiIcon uiIconTrash"></i></span>
-				</div>
-				<br>
-				<!-- ##################################### -->
-			</div><!-- ./samples -->
 	    	<div class="resizeButton close-right-panel" id="ShowHideRight" >
 			  <!-- after click this icon add class .saved -->
 			  <i class="uiIconMiniArrowRight saved"></i>
@@ -500,10 +178,11 @@
 	    
 	    <!-- Modal -->
 	    <div class="modalPlace"></div>
+        <div class="modalPlaceForMessage"></div>
 	    <div class="confirmCloneProject uiPopup modal hide fade" tabindex="-1" role="dialog" aria-labelledby="cloneProjectLabel" aria-hidden="true">
 		  <div class="popupHeader clearfix">
 		  	<a onclick="" title="Close Window" data-dismiss="modal" aria-hidden="true" class="uiIconClose pull-right"></a>
-		    <h3 id="cloneProjectLabel" class="PopupTitle popupTitle">&{popup.confirm}</h3>
+		    <div id="cloneProjectLabel" class="PopupTitle popupTitle">&{popup.confirm}</div>
 		  </div>
 		  <div class="PopupContent popupContent">
 			  <div class="media">
@@ -526,7 +205,13 @@
 			    <button class="btn" data-dismiss="modal" aria-hidden="true">&{popup.cancel}</button>
 			  </div>
 		  </div>
-		  <span class="uiIconResize pull-right uiIconLightGray"></span>
 		</div>
 	</div>
 </div>
+<script type="text/javascript">
+<%if (errorMessage != null && !errorMessage.isEmpty()) {%>
+    require(['taskManagementApp'], function(taApp) {
+        taApp.showWarningDialog("${errorMessage}");
+    });
+<%}%>
+</script>

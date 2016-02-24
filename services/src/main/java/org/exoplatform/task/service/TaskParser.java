@@ -25,5 +25,5 @@ import org.exoplatform.task.domain.Task;
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
 public interface TaskParser {
-  Task parse(String input);
+  Task parse(String input, ParserContext context);
 }

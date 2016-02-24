@@ -1,0 +1,406 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+
+  <!-- Managing both DB that use sequences and db that use auto increment -->
+  <property name="autoIncrement" value="true" dbms="mysql,mssql,h2,sybase,db2,hsqldb"/>
+  <property name="autoIncrement" value="false" dbms="oracle,postgresql"/>
+
+  <!-- Definition of TASK_PROJECTS table -->
+  <changeSet author="task" id="1.0.0-1">
+    <createTable tableName="TASK_PROJECTS">
+      <column name="PROJECT_ID" type="BIGINT" autoIncrement="${autoIncrement}" startWith="1">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="PK_TASK_PROJECTS" />
+      </column>
+      <column name="NAME" type="NVARCHAR(50)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="DESCRIPTION" type="NVARCHAR(2000)">
+        <constraints nullable="true"/>
+      </column>
+      <column name="COLOR" type="NVARCHAR(100)">
+        <constraints nullable="true"/>
+      </column>
+      <column name="CALENDAR_INTEGRATED" type="BIT" defaultValue="0">
+        <constraints nullable="false"/>
+      </column>
+      <column name="DUE_DATE" type="TIMESTAMP">
+        <constraints nullable="true"/>
+      </column>
+      <column name="PARENT_PROJECT_ID" type="BIGINT">
+        <constraints foreignKeyName="FK_TASK_PRJ_TASK_PRJ_01" references="TASK_PROJECTS(PROJECT_ID)" nullable="true"/>
+      </column>
+    </createTable>
+    <modifySql dbms="mysql">
+      <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
+    </modifySql>
+  </changeSet>
+  <changeSet author="task" id="1.0.0-2" dbms="oracle,postgresql">
+    <createSequence sequenceName="SEQ_TASK_PROJECTS_PROJECT_ID" startValue="1"/>
+  </changeSet>
+
+  <!-- Definition of TASK_PROJECT_MANAGER table -->
+  <changeSet author="task" id="1.0.0-3">
+    <createTable tableName="TASK_PROJECT_MANAGERS">
+      <column name="PROJECT_ID" type="BIGINT">
+        <constraints foreignKeyName="FK_TASK_PRJ_MGR_TASK_PRJ_01" references="TASK_PROJECTS(PROJECT_ID)" nullable="false"/>
+      </column>
+      <column name="MANAGER" type="NVARCHAR(50)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <modifySql dbms="mysql">
+      <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
+    </modifySql>
+  </changeSet>
+
+  <!-- Definition of TASK_PROJECT_PARTICIPATOR table -->
+  <changeSet author="task" id="1.0.0-4">
+    <createTable tableName="TASK_PROJECT_PARTICIPATORS">
+      <column name="PROJECT_ID" type="BIGINT">
+        <constraints foreignKeyName="FK_TASK_PRJ_PTOR_TASK_PRJ_01" references="TASK_PROJECTS(PROJECT_ID)" nullable="false"/>
+      </column>
+      <column name="PARTICIPATOR" type="NVARCHAR(50)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <modifySql dbms="mysql">
+      <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
+    </modifySql>
+  </changeSet>
+
+  <!-- Definition of TASK_STATUS table -->
+  <changeSet author="task" id="1.0.0-5">
+    <createTable tableName="TASK_STATUS">
+      <column name="STATUS_ID" type="BIGINT" autoIncrement="${autoIncrement}" startWith="1">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="PK_TASK_STATUS"/>
+      </column>
+      <column name="NAME" type="NVARCHAR(50)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="RANK" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="PROJECT_ID" type="BIGINT">
+        <constraints foreignKeyName="FK_TASK_STATUS_TASK_PRJ_01" references="TASK_PROJECTS(PROJECT_ID)" nullable="false"/>
+      </column>
+    </createTable>
+    <modifySql dbms="mysql">
+      <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
+    </modifySql>
+  </changeSet>
+  <changeSet author="task" id="1.0.0-6" dbms="oracle,postgresql">
+    <createSequence sequenceName="SEQ_TASK_STATUS_STATUS_ID" startValue="1"/>
+  </changeSet>
+
+  <!-- Definition of TASK_TASKS table -->
+  <changeSet author="task" id="1.0.0-7">
+    <createTable tableName="TASK_TASKS">
+      <column name="TASK_ID" type="BIGINT" autoIncrement="${autoIncrement}" startWith="1">
+        <constraints primaryKey="true" primaryKeyName="PK_TASK_TASKS" nullable="false"/>
+      </column>
+      <column name="TITLE" type="NVARCHAR(250)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="DESCRIPTION" type="NVARCHAR(2000)">
+        <constraints nullable="true"/>
+      </column>
+      <column name="PRIORITY" type="INTEGER" defaultValue="0">
+        <constraints nullable="true"/>
+      </column>
+      <column name="CONTEXT" type="NVARCHAR(255)">
+        <constraints nullable="true"/>
+      </column>
+      <column name="ASSIGNEE" type="NVARCHAR(50)">
+        <constraints nullable="true"/>
+      </column>
+      <column name="STATUS_ID" type="BIGINT">
+        <constraints foreignKeyName="FK_TASK_TASKS_TASK_STATUS_01" references="TASK_STATUS(STATUS_ID)" nullable="true"/>
+      </column>
+      <column name="CREATED_BY" type="NVARCHAR(50)">
+        <constraints nullable="true"/>
+      </column>
+      <column name="CREATED_TIME" type="TIMESTAMP">
+        <constraints nullable="true"/>
+      </column>
+      <column name="END_DATE" type="TIMESTAMP">
+        <constraints nullable="true"/>
+      </column>
+      <column name="START_DATE" type="TIMESTAMP">
+        <constraints nullable="true"/>
+      </column>
+      <column name="DUE_DATE" type="TIMESTAMP">
+        <constraints nullable="true"/>
+      </column>
+      <column name="COMPLETED" type="BIT" defaultValue="0">
+        <constraints nullable="false"/>
+      </column>
+      <column name="CALENDAR_INTEGRATED" type="BIT" defaultValue="1">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <modifySql dbms="mysql">
+      <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
+    </modifySql>
+  </changeSet>
+  <changeSet author="task" id="1.0.0-8" dbms="oracle,postgresql">
+    <createSequence sequenceName="SEQ_TASK_TASKS_TASK_ID" startValue="1"/>
+  </changeSet>
+
+  <!-- Definition of TASK_TASK_COWORKER table -->
+  <changeSet author="task" id="1.0.0-9">
+    <createTable tableName="TASK_TASK_COWORKERS">
+      <column name="TASK_ID" type="BIGINT">
+        <constraints foreignKeyName="FK_TK_TK_COWKR_TK_TK_01" references="TASK_TASKS(TASK_ID)" nullable="false"/>
+      </column>
+      <column name="COWORKER" type="NVARCHAR(50)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <modifySql dbms="mysql">
+      <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
+    </modifySql>
+  </changeSet>
+
+  <!-- Definition of TASK_TAGS table -->
+  <changeSet author="task" id="1.0.0-10">
+    <createTable tableName="TASK_TAGS">
+      <column name="TASK_ID" type="BIGINT">
+        <constraints foreignKeyName="FK_TASK_TAGS_TASK_TASKS_01" references="TASK_TASKS(TASK_ID)" nullable="false"/>
+      </column>
+      <column name="TAG" type="NVARCHAR(50)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <modifySql dbms="mysql">
+      <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
+    </modifySql>
+  </changeSet>
+
+  <!-- Definition of TASK_COMMENTS table -->
+  <changeSet author="task" id="1.0.0-11">
+    <createTable tableName="TASK_COMMENTS">
+      <column name="COMMENT_ID" type="BIGINT" autoIncrement="${autoIncrement}" startWith="1">
+        <constraints primaryKey="true" primaryKeyName="PK_TASK_COMMENTS" nullable="false"/>
+      </column>
+      <column name="AUTHOR" type="NVARCHAR(100)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="CMT" type="NVARCHAR(2000)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="CREATED_TIME" type="TIMESTAMP">
+        <constraints nullable="true"/>
+      </column>
+      <column name="TASK_ID" type="BIGINT">
+        <constraints nullable="false" foreignKeyName="FK_COMMENT_TASK_01" references="TASK_TASKS(TASK_ID)"/>
+      </column>
+    </createTable>
+    <modifySql dbms="mysql">
+      <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
+    </modifySql>
+  </changeSet>
+
+  <!-- Definition of TASK_USER_SETTINGS table -->
+  <changeSet author="task" id="1.0.0-12">
+    <createTable tableName="TASK_USER_SETTINGS">
+      <column name="USERNAME" type="NVARCHAR(50)">
+        <constraints primaryKey="true" primaryKeyName="PK_TASK_USER_SETTINGS" nullable="false"/>
+      </column>
+      <column name="SHOW_HIDDEN_PROJECT" type="BIT" defaultValue="0">
+        <constraints nullable="true"/>
+      </column>
+      <column name="SHOW_HIDDEN_LABEL" type="BIT" defaultValue="0">
+        <constraints nullable="true"/>
+      </column>
+    </createTable>
+    <modifySql dbms="mysql">
+      <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
+    </modifySql>
+  </changeSet>
+  <!-- Definition of TASK_HIDDEN_PROJECTS table -->
+  <changeSet author="task" id="1.0.0-13">
+    <createTable tableName="TASK_HIDDEN_PROJECTS">
+      <column name="USERNAME" type="NVARCHAR(50)">
+        <constraints foreignKeyName="FK_TK_HID_PRJ_TK_USR_SET_01" references="TASK_USER_SETTINGS(USERNAME)" nullable="false"/>
+      </column>
+      <column name="PROJECT_ID" type="BIGINT">
+        <constraints foreignKeyName="FK_TASK_HID_PRJ_TK_PRJ_01" references="TASK_PROJECTS(PROJECT_ID)" nullable="false"/>
+      </column>
+    </createTable>
+    <modifySql dbms="mysql">
+      <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
+    </modifySql>
+  </changeSet>
+  
+  <!-- Definition of TASK_LOGS table -->
+  <changeSet author="task" id="1.0.0-14">
+    <createTable tableName="TASK_CHANGE_LOGS">
+      <column name="CHANGE_LOG_ID" type="BIGINT" autoIncrement="${autoIncrement}" startWith="1">
+        <constraints primaryKey="true" primaryKeyName="PK_TASK_CHANGE_LOG" nullable="false"/>
+      </column>
+      <column name="TASK_ID" type="BIGINT">
+        <constraints nullable="false" foreignKeyName="FK_LOG_TASK" references="TASK_TASKS(TASK_ID)"/>
+      </column>
+      <column name="AUTHOR" type="NVARCHAR(100)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="ACTION_NAME" type="NVARCHAR(2000)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="TARGET" type="NVARCHAR(100)">
+      </column>
+      <column name="CREATED_TIME" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <modifySql dbms="mysql">
+      <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
+    </modifySql>
+  </changeSet>
+
+  <!-- Add index for performance -->
+  <changeSet author="task" id="1.0.0-15">
+    <createIndex indexName="IDX_TASK_TASKS_01"
+                 tableName="TASK_TASKS">
+      <column name="COMPLETED" type="BIT"/>
+    </createIndex>
+    <createIndex indexName="IDX_TASK_PRJ_MGR_01"
+                 tableName="TASK_PROJECT_MANAGERS">
+      <column name="MANAGER" type="NVARCHAR(50)"/>
+    </createIndex>
+    <createIndex indexName="IDX_TASK_PRJ_PTOR_01"
+                 tableName="TASK_PROJECT_PARTICIPATORS">
+      <column name="PARTICIPATOR" type="NVARCHAR(50)"/>
+    </createIndex>
+    <createIndex indexName="IDX_TASK_TASK_COWORKERS_01"
+                 tableName="TASK_TASK_COWORKERS">
+      <column name="COWORKER" type="NVARCHAR(50)"/>
+    </createIndex>
+  </changeSet>
+
+  <!-- Definition column RANK for TASK_TASKS table -->
+  <changeSet author="task" id="1.0.0-16">
+    <addColumn tableName="TASK_TASKS">
+      <column name="RANK" type="INT" defaultValue="0">
+        <constraints nullable="true"/>
+      </column>
+    </addColumn>
+  </changeSet>
+
+  <!-- Update FK for TASK_HIDDEN_PROJECTS table -->
+  <changeSet author="task" id="1.0.0-17">
+    <!-- Drop old FK -->
+    <dropForeignKeyConstraint baseTableName="TASK_HIDDEN_PROJECTS" constraintName="FK_TK_HID_PRJ_TK_USR_SET_01"/>
+    <dropForeignKeyConstraint baseTableName="TASK_HIDDEN_PROJECTS" constraintName="FK_TASK_HID_PRJ_TK_PRJ_01"/>
+
+    <!-- ReAdd FK with adding onDelete Cascade-->
+    <addForeignKeyConstraint constraintName="FK_TK_HID_PRJ_TK_USR_SET_01"
+                             baseTableName="TASK_HIDDEN_PROJECTS"
+                             baseColumnNames="USERNAME"
+                             referencedTableName="TASK_USER_SETTINGS"
+                             referencedColumnNames="USERNAME"
+                             onDelete="CASCADE" />
+    <addForeignKeyConstraint constraintName="FK_TASK_HID_PRJ_TK_PRJ_01"
+                             baseTableName="TASK_HIDDEN_PROJECTS"
+                             baseColumnNames="PROJECT_ID"
+                             referencedTableName="TASK_PROJECTS"
+                             referencedColumnNames="PROJECT_ID"
+                             onDelete="CASCADE" />
+
+    <rollback>
+      <!--
+        Do not execute any sql rollback here because we just re-create FK constraint.
+        If we let it default (drop FK constraint), the rollback of change set [author="task" id="1.0.0-13"] will be failure
+       -->
+    </rollback>
+  </changeSet>
+
+  <!-- Definition column ACTIVITY_ID for TASK_TASKS table -->
+  <changeSet author="task" id="1.0.0-18">
+    <addColumn tableName="TASK_TASKS">
+      <column name="ACTIVITY_ID" type="NVARCHAR(50)" defaultValue="">
+        <constraints nullable="true"/>
+      </column>
+    </addColumn>
+  </changeSet>
+  
+  <!-- Definition of TASK_LABELS table -->
+  <changeSet author="task" id="1.0.0-19">
+    <createTable tableName="TASK_LABELS">
+      <column name="LABEL_ID" type="BIGINT" autoIncrement="${autoIncrement}" startWith="1">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="PK_TASK_LABELS"/>
+      </column>
+      <column name="NAME" type="NVARCHAR(50)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="USERNAME" type="NVARCHAR(50)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="COLOR" type="NVARCHAR(100)">
+        <constraints nullable="true"/>
+      </column>
+      <column name="HIDDEN" type="BIT" defaultValue="0">
+        <constraints nullable="true"/>
+      </column>
+      <column name="PARENT_LABEL_ID" type="BIGINT">
+        <constraints foreignKeyName="FK_TASK_LBL_TASK_LBL_01" references="TASK_LABELS(LABEL_ID)" nullable="true"/>
+      </column>
+    </createTable>
+    <modifySql dbms="mysql">
+      <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
+    </modifySql>
+  </changeSet>
+  
+  <!-- Definition of TASK_LABEL_TASK table -->
+  <changeSet author="task" id="1.0.0-20">
+    <createTable tableName="TASK_LABEL_TASK">
+      <column name="LABEL_ID" type="BIGINT">
+        <constraints foreignKeyName="FK_TK_LBL_TK_LBL_TK_LBL__01" references="TASK_LABELS(LABEL_ID)" nullable="false"/>
+      </column>
+      <column name="TASK_ID" type="BIGINT">
+        <constraints foreignKeyName="FK_TK_LBL_TK_TK_TK_01" references="TASK_TASKS(TASK_ID)" nullable="false"/>
+      </column>
+    </createTable>
+    <modifySql dbms="mysql">
+      <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
+    </modifySql>    
+  </changeSet>
+
+  <!-- Definition of sequence for TASK_COMMENTS -->
+  <changeSet author="task" id="1.0.0-21" dbms="oracle,postgresql">
+    <createSequence sequenceName="SEQ_TASK_COMMENTS_COMMENT_ID" startValue="1"/>
+  </changeSet>
+
+  <!-- Definition of sequence for TASK_CHANGE_LOG -->
+  <changeSet author="task" id="1.0.0-22" dbms="oracle,postgresql">
+    <createSequence sequenceName="SEQ_TASK_CHANGE_LOG_ID" startValue="1"/>
+  </changeSet>
+
+  <!-- Add index for performance -->
+  <changeSet author="task" id="1.0.0-23">
+    <createIndex indexName="IDX_TASK_LABELS_01"
+                 tableName="TASK_LABELS">
+      <column name="USERNAME" type="NVARCHAR(50)"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="task" id="1.0.0-24">
+    <createIndex indexName="IDX_TASK_TASKS_02"
+                 tableName="TASK_TASKS">
+      <column name="ASSIGNEE" type="NVARCHAR(50)"/>
+    </createIndex>
+    <createIndex indexName="IDX_TASK_TASKS_03"
+                 tableName="TASK_TASKS">
+      <column name="CREATED_BY" type="NVARCHAR(50)"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="task" id="1.0.0-25">
+    <addUniqueConstraint columnNames="LABEL_ID, TASK_ID"
+            constraintName="UQ_TASK_LABEL_TASK"
+            tableName="TASK_LABEL_TASK"/>
+  </changeSet>
+</databaseChangeLog>
