@@ -20,6 +20,7 @@ import org.exoplatform.commons.api.notification.NotificationContext;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.task.domain.Task;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class TaskCoworkerPlugin extends AbstractNotificationPlugin {
@@ -44,6 +45,17 @@ public class TaskCoworkerPlugin extends AbstractNotificationPlugin {
   @SuppressWarnings("unchecked")
   @Override
   protected Set<String> getReceiver(Task task, NotificationContext ctx) {
-    return (Set<String>)ctx.value(NotificationUtils.COWORKER);
+    Set<String> receivers = null;
+    if(ctx != null) {
+      receivers = (Set<String>) ctx.value(NotificationUtils.COWORKER);
+    }
+
+    if(receivers == null) {
+      receivers = new HashSet<>();
+    } else if(ctx != null) {
+      receivers.remove(ctx.value(NotificationUtils.CREATOR));
+    }
+
+    return receivers;
   }
 }

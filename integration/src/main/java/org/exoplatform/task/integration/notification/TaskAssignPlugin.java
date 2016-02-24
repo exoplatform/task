@@ -48,6 +48,9 @@ public class TaskAssignPlugin extends AbstractNotificationPlugin {
     if (task.getAssignee() != null) {
       receivers.add(task.getAssignee());
     }
+    if(ctx != null) {
+      receivers.remove(ctx.value(NotificationUtils.CREATOR));
+    }
     return receivers;
   }
   

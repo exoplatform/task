@@ -97,6 +97,9 @@ public abstract class AbstractNotificationPlugin extends BaseNotificationPlugin 
     if (task.getCoworker() != null && task.getCoworker().size() > 0) {
       receivers.addAll(task.getCoworker());
     }
+    if(ctx != null) {
+      receivers.remove(ctx.value(NotificationUtils.CREATOR));
+    }
     return receivers;
   }
   
