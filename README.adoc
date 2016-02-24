@@ -1,0 +1,80 @@
+= eXo Tasks
+// GitHub/AsciiDoc Configuration
+ifdef::env-github[]
+:note-caption: :information_source:
+:tip-caption: :bulb:
+endif::[]
+// eXo CI informations
+:ci-url: https://ci.exoplatform.org/job/
+:project-branch: develop
+:ci-job-name: addon-task-{project-branch}-ci
+// Add-on documentation
+:plf-version-compatibility: 4.3.0+
+:plf-download-url: http://sourceforge.net/projects/exo/files/Platform4.3/eXo-Platform-community-tomcat-4.3.0.zip/download
+:task-install-screenshot-url: https://www.exoplatform.com/blog/wp-content/uploads/2015/08/01-tasks-management.png
+:task-create-screenshot-url: https://www.exoplatform.com/blog/wp-content/uploads/2015/08/02-incoming-task.png
+:task-dashboard-screenshot-url: https://www.exoplatform.com/blog/wp-content/uploads/2016/02/BD-2829_image2.jpg
+:task-capturing-screenshot-url: https://www.exoplatform.com/blog/wp-content/uploads/2016/02/The-Incoming-Review.gif
+
+Tasks management add-on.
+
+[NOTE]
+--
+* image:https://img.shields.io/badge/eXo%20Addon-supported-blue.svg[] image:https://ci.exoplatform.org/buildStatus/icon?job={ci-job-name}["Build Status", link="{ci-url}{ci-job-name}/"]
+* Quick install: +./addon install exo-tasks+
+--
+
+== Overview
+
+eXo Tasks gives you the ability to:
+
+* *Create tasks* (it is as simple as typing a quick description)
+* *Organize tasks* into projects (group them into projects, sub-projects, add labels...)
+* Get work done by *filter and group your tasks* based on their due date: Overdue, Today, Tomorrow and Upcoming.
+* And much more to discover, you can have an overview with the following blog posts:
+** https://www.exoplatform.com/blog/2016/02/18/getting-things-done-with-exo-tasks[Getting Things Done with eXo Tasks!]
+** https://www.exoplatform.com/blog/2015/08/24/better-task-management-is-coming-in-exo-platform[Better Task Management is Coming in eXo Platform]
+
+=== Screenshots
+
+.Create a task
+image::{task-create-screenshot-url}[]
+
+.Organize tasks
+image::{task-dashboard-screenshot-url}[]
+
+.Capturing Stuff
+image::{task-capturing-screenshot-url}[]
+
+== Installation
+
+* Start by downloading {plf-download-url}[eXo Platform 4.3] and install the add-on :
+
+[source,shell]
+----
+cd <PLF_ROOT_DIR>
+./addon install exo-tasks
+----
+
+* Once it starts, you should see a “Tasks” menu. Click it and welcome to the new Tasks application.
+
+.Tasks menu
+image::{task-install-screenshot-url}[]
+
+
+== eXo Platform Compatibility
+
+[caption=""]
+|===
+|eXo Tasks Version |eXo Platform Version
+
+|1.2.x
+|4.3.0+
+
+|1.1.x
+|4.3.0+
+
+|1.0.x
+|4.3.0+
+
+|===
