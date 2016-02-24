@@ -43,11 +43,21 @@
     </dependency>
     <dependency>
       <groupId>org.juzu</groupId>
-      <artifactId>juzu-plugins-validation</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.juzu</groupId>
       <artifactId>juzu-plugins-less4j</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-io</groupId>
+          <artifactId>commons-io</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-beanutils</groupId>
+          <artifactId>commons-beanutils</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.json</groupId>
+          <artifactId>json</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.juzu</groupId>
@@ -67,37 +77,26 @@
     <dependency>
       <groupId>org.webjars</groupId>
       <artifactId>jquery</artifactId>
-      <version>1.11.2</version>
     </dependency>
     <dependency>
       <groupId>org.webjars</groupId>
       <artifactId>x-editable-bootstrap</artifactId>
-      <version>1.4.6</version>
     </dependency>
     <dependency>
       <groupId>org.webjars</groupId>
       <artifactId>bootstrap-datepicker</artifactId>
-      <version>1.4.0</version>
     </dependency>
     <dependency>
       <groupId>org.webjars</groupId>
       <artifactId>selectize.js</artifactId>
-      <version>0.12.1</version>
     </dependency>
-    <!--<dependency>
-      <groupId>org.webjars</groupId>
-      <artifactId>ckeditor</artifactId>
-      <version>4.4.7-1</version>
-    </dependency>-->
     <dependency>
       <groupId>org.webjars</groupId>
       <artifactId>select2</artifactId>
-      <version>3.5.2</version>
     </dependency>
     <dependency>
       <groupId>org.webjars</groupId>
       <artifactId>jquery-ui</artifactId>
-      <version>1.11.4</version>
     </dependency>
     <dependency>
       <groupId>org.exoplatform.core</groupId>
@@ -154,63 +153,4 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  <build>
-    <finalName>task-management</finalName>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-      </plugin>
-      <!--<plugin>
-        <groupId>org.codehaus.gmaven</groupId>
-        <artifactId>gmaven-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>compile</goal>
-            </goals>
-            <configuration>
-              <providerSelection>1.7</providerSelection>
-              <sources>
-                <fileset>
-                  <directory>${project.build.outputDirectory}</directory>
-                  <includes>
-                    <include>**/*.groovy</include>
-                  </includes>
-                </fileset>
-              </sources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>-->
-      <!-- Liquibase Plugin -->
-      <plugin>
-        <groupId>org.liquibase</groupId>
-        <artifactId>liquibase-maven-plugin</artifactId>
-        <version>3.3.2</version>
-        <configuration>
-          <!-- $ mvn liquibase:update -->
-          <driver>com.mysql.jdbc.Driver</driver>
-          <url>jdbc:mysql://localhost:3306/plf?autoReconnect=true</url>
-          <username>root</username>
-          <password />
-          <!-- $ mvn liquibase:diff -->
-          <referenceDriver>com.mysql.jdbc.Driver</referenceDriver>
-          <referenceUrl>jdbc:mysql://localhost:3306/plf?autoReconnect=true</referenceUrl>
-          <referenceUsername>root</referenceUsername>
-          <referencePassword />
-          <!-- db.changelog file -->
-          <changeLogFile>src/main/resources/db/changelog/task.db.changelog-master.xml</changeLogFile>
-        </configuration>
-        <!--<executions>
-          <execution>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>update</goal>
-            </goals>
-          </execution>
-        </executions>-->
-      </plugin>
-    </plugins>
-  </build>
 </project>

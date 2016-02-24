@@ -34,7 +34,6 @@
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-entitymanager</artifactId>
-      <version>${hibernate.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -45,13 +44,7 @@
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
-      <version>3.1.0</version>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.jbossts</groupId>
-      <artifactId>jbossjta</artifactId>
-      <version>4.16.4.Final</version>
     </dependency>
     <dependency>
       <groupId>org.exoplatform.core</groupId>
@@ -61,13 +54,11 @@
     <dependency>
       <groupId>org.exoplatform.commons</groupId>
       <artifactId>commons-api</artifactId>
-      <version>${org.exoplatform.platform.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.exoplatform.calendar</groupId>
       <artifactId>calendar-service</artifactId>
-      <version>${org.exoplatform.platform.version}</version>
       <scope>provided</scope>
     </dependency>
     
@@ -86,30 +77,21 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
-      <version>2.0.13-beta</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
-      <version>1.2.145</version>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>mysql</groupId>
-      <artifactId>mysql-connector-java</artifactId>
-      <version>5.1.10</version>
     </dependency>
     <dependency>
       <groupId>org.hsqldb</groupId>
       <artifactId>hsqldb</artifactId>
-      <version>2.3.2</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.liquibase</groupId>
       <artifactId>liquibase-core</artifactId>
-      <version>3.3.2</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
