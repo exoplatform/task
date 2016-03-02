@@ -691,10 +691,13 @@ define('ta_edit_inline',
                 	editOptions.emptyclass = '';
                 }
                 if (fieldName == 'description') {
-                    editOptions.toggle = 'dblclick';
                     editOptions.emptytext = locale.taskDescriptionEmpty;
                     editOptions.display = function(value, response) {
                         $(this).html(editInline.taApp.convertURLsAsLinks(value));
+                        // do not propagate event when clicking a link in the description
+                        $("a", this).click(function(e) {
+                            e.stopPropagation();
+                        });
                     };
                 }
                 if (fieldName == 'tags') {
