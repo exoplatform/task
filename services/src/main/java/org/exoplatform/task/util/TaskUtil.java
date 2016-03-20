@@ -23,6 +23,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -232,6 +233,7 @@ public final class TaskUtil {
 
     int limitComment = loadAllComment ? -1 : 2;
     List<Comment> cmts = Arrays.asList(ListUtil.load(listComments, 0, limitComment));
+    Collections.reverse(cmts);
     List<CommentModel> comments = new ArrayList<CommentModel>(cmts.size());
     for(Comment c : cmts) {
       org.exoplatform.task.model.User u = userService.loadUser(c.getAuthor());
