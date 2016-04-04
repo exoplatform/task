@@ -111,9 +111,5 @@ public interface TaskService {
   //TODO: should use via #findTasks(TaskQuery)?
   Task findTaskByActivityId(String activityId);
 
-  Set<String> getTag(long taskId);
-
   Set<String> getCoworker(long taskId);
-
-  ListAccess<String> findTags(String keyword);
 }

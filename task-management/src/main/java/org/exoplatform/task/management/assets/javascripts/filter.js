@@ -62,7 +62,7 @@ define('taFilter', ['SHARED/jquery', 'SHARED/selectize'], function($) {
           taFilter.submitFilter();
         });
         
-        //selectize: labels, tags, assignee
+        //selectize: labels, assignee
         var defOpts = {
             create: true,
             wrapperClass: 'exo-mentions dropdown',
@@ -86,8 +86,6 @@ define('taFilter', ['SHARED/jquery', 'SHARED/selectize'], function($) {
 
         //labels
         initLabelFilter($filter, defOpts);
-        //tags
-        initTagFilter($filter, defOpts);
         //assignee
         initAssignee($filter, defOpts);
       },
@@ -131,7 +129,7 @@ define('taFilter', ['SHARED/jquery', 'SHARED/selectize'], function($) {
             viewType = 'list';
         }
 
-        //projectId, labelId, filterLabelIds, tags, statusId, dueDate, priority, assignee, completed, keyword, groupby, orderBy, filter, viewType, securityContext
+        //projectId, labelId, filterLabelIds, statusId, dueDate, priority, assignee, completed, keyword, groupby, orderBy, filter, viewType, securityContext
         var data = {
           'projectId': projectId,
           'labelId': labelId,
@@ -153,12 +151,6 @@ define('taFilter', ['SHARED/jquery', 'SHARED/selectize'], function($) {
             if (labelIds) {
               var val = labelIds.getValue();
               data.filterLabelIds = val;
-            }
-            
-            var tags = $taskFilter.find('[name="tag"]').data('selectize');
-            if (tags) {
-              var val = tags.getValue();
-              data.tags = val;
             }
             
             var status = $taskFilter.find('[name="status"]');
@@ -243,29 +235,6 @@ define('taFilter', ['SHARED/jquery', 'SHARED/selectize'], function($) {
         });
       }
     }));
-  }
-  
-  function initTagFilter($filter, defOpts) {
-    var $tagFilter = $filter.find('[name="tag"]');
-    $tagFilter.selectize($.extend({
-      valueField: 'id',
-      labelField: 'text',
-      options: $tagFilter.data('options'),
-      items: $tagFilter.data('items'),
-      render: {
-        option: function(item, escape) {
-            return '<li class="data">' +
-                '<a href="">' + escape(item.text) + '</a>'
-                '</li>';
-        },
-        item: function(item, escape) {
-            return '<div class="label primary">' + escape(item.text) +'</div>';
-        },
-        option_create: function(data, escape) {
-            return '<li class="create"><a href="javascript:void(0)">Add <strong>' + escape(data.input) + '</strong>&hellip;</a></li>';
-        }
-      }
-    }, defOpts));
   }
   
   function initAssignee($filter, defOpts) {    

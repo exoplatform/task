@@ -121,7 +121,6 @@ public class TaskServiceImpl implements TaskService {
     Task newTask = task.clone();
     newTask.setId(0L);
     newTask.setCoworker(getCoworker(id));
-    newTask.setTag(getTag(id));
     newTask.setTitle(Task.PREFIX_CLONE + newTask.getTitle());
 
     return createTask(newTask);
@@ -297,17 +296,7 @@ public class TaskServiceImpl implements TaskService {
   }
 
   @Override
-  public Set<String> getTag(long taskId) {
-    return daoHandler.getTaskHandler().getTag(taskId);
-  }
-
-  @Override
   public Set<String> getCoworker(long taskId) { 
     return daoHandler.getTaskHandler().getCoworker(taskId);
-  }
-
-  @Override
-  public ListAccess<String> findTags(String keyword) {
-    return daoHandler.getTaskHandler().findTags(keyword);
   }
 }

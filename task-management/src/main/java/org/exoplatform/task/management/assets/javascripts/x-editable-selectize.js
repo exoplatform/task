@@ -155,7 +155,7 @@ define('x_editable_selectize', ['SHARED/jquery', 'SHARED/edit_inline_js', 'SHARE
                     return '<div class="label primary">' + escape(item.text) +'</div>';
                 },
                 option_create: function(data, escape) {
-                    return '<li class="create"><a href="javascript:void(0)">' + locale.createTag + ' <strong>' + escape(data.input) + '</strong>&hellip;</a></li>';
+                    return '<li class="create"><a href="javascript:void(0)">' + locale.createLabel + ' <strong>' + escape(data.input) + '</strong>&hellip;</a></li>';
                 }
             },
             onInitialize: function() {

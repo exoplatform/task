@@ -113,17 +113,6 @@ public class TaskLoggingListener extends Listener<TaskService, TaskPayload> {
       }
     }
 
-    if (isDiff(before.getTag(), after.getTag())) {
-      Set<String> tags = new HashSet<String>();
-      if (after.getTag() != null) {
-        tags.addAll(after.getTag());
-      }
-      if (before.getTag() != null && !before.getTag().isEmpty()) {
-        tags.removeAll(before.getTag());
-      }
-      service.addTaskLog(after.getId(), username, "add_label", StringUtils.join(tags, ","));
-    }
-
     if (isProjectChange(before, after)) {
       if (after.getStatus() != null) {
         service.addTaskLog(after.getId(), username, "edit_project", after.getStatus().getProject().getName());

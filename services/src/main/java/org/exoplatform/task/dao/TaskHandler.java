@@ -44,10 +44,6 @@ public interface TaskHandler extends GenericDAO<Task, Long> {
 
   void updateTaskOrder(long currentTaskId, Status newStatus, long[] orders);
   
-  Set<String> getTag(long taskid);
-  
   Set<String> getCoworker(long taskid);
-
-  ListAccess<String> findTags(String keyword);
 }
 

@@ -219,27 +219,6 @@ public class TaskServiceTest {
   }
 
   @Test
-  public void testUpdateTaskTag() throws ParameterEntityException, EntityNotFoundException {
-
-    Set<String> newTags = new HashSet<String>();
-    newTags.add("Flip");
-    newTags.add("Flop");
-
-    Task task = taskService.getTask(TestUtils.EXISTING_TASK_ID);
-    task.setTag(newTags);
-    taskService.updateTask(task);
-
-    verify(taskHandler, times(1)).update(taskCaptor.capture());
-
-    Set<String> tags = new HashSet<String>();
-    for(String v : newTags) {
-      tags.add(v);
-    }
-    assertEquals(tags, taskCaptor.getValue().getTag());
-
-  }
-
-  @Test
   public void testUpdateTaskStatus() throws ParameterEntityException, EntityNotFoundException {
 
     Task task = taskService.getTask(TestUtils.EXISTING_TASK_ID);
@@ -293,7 +272,6 @@ public class TaskServiceTest {
     assertEquals(defaultTask.getAssignee(), taskCaptor.getValue().getAssignee());
 //    assertEquals(defaultTask.getCoworker(), taskCaptor.getValue().getCoworker());
     assertEquals(defaultTask.getStatus(), taskCaptor.getValue().getStatus());
-//    assertEquals(defaultTask.getTag(), taskCaptor.getValue().getTag());
     assertEquals(defaultTask.getCreatedBy(), taskCaptor.getValue().getCreatedBy());
     //Only the createdTime must be different for the cloned task
     assertFalse(defaultTask.getCreatedTime() == taskCaptor.getValue().getCreatedTime());

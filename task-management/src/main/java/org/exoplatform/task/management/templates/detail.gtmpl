@@ -182,26 +182,6 @@
         ${task.description == null ? "" : task.description}
     </div>
 </div>
-<div class="tags uiEditableInline clearfix"   >
-    <%
-        def tags = '';
-        if (task.tag != null && task.tag.size() > 0) {
-            for (def tag in task.tag) {
-                if (!tag.isEmpty())
-                    tags += '<div class="label primary">'+ encoder.encode(tag) +'</div>';
-            };
-        }
-        tags = tags.trim();
-    %>
-    <span class="pull-left icon-hash ${tags.length() > 0 ? "hide" : ""}"><i class="uiIconHag" ></i></span>
-    <div class="${editableClasses} small pull-left"
-       data-original-title="&{tooltip.clickToEdit}" rel="tooltip"
-       data-name="tags" data-type="selectize"
-       data-inputclass="input-large"
-       data-value="${task.tag != null && task.tag.size() > 0 ? encoder.encode(task.tag.join(',')) : ''}">
-        ${tags}
-    </div>
-</div>
 <div class="inforBar2 clearfix">   
     <div class="pull-left">
         <%
@@ -397,12 +377,6 @@
     <div class="row-fluid task-info-row task-description">
         <a class="editable" href="#" data-name="description" data-type="textarea">
         ${task.description != null ? task.description : ''}
-        </a>
-    </div>
-    <div class="row-fluid task-info-row">
-        <i class="uiIconTagMini"></i>
-        <a class="editable" href="#" data-name="tags" data-type="select2" data-inputclass="input-large" data-value="${task.tag != null && task.tag.size() > 0 ? encoder.encode(task.tag.join(',')) : ''}">
-        ${task.tag != null && task.tag.size() > 0 ? encoder.encode(task.tag.join(', ')) : ''}
         </a>
     </div>
     <ul class="nav nav-tabs taskTabs" role="tablist">

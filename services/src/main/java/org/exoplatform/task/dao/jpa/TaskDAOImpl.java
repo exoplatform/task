@@ -20,7 +20,6 @@ import static org.exoplatform.task.dao.condition.Conditions.TASK_COWORKER;
 import static org.exoplatform.task.dao.condition.Conditions.TASK_MANAGER;
 import static org.exoplatform.task.dao.condition.Conditions.TASK_PARTICIPATOR;
 import static org.exoplatform.task.dao.condition.Conditions.TASK_PROJECT;
-import static org.exoplatform.task.dao.condition.Conditions.TASK_TAG;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
@@ -142,7 +141,7 @@ public class TaskDAOImpl extends CommonJPADAO<Task, Long> implements TaskHandler
     } else {
       path = task.get(fieldName);
     }
-    if ("tag".equals(fieldName) || "coworker".equals(fieldName)) {
+    if ("coworker".equals(fieldName)) {
       path = task.join(fieldName);
     }
     q.select(path).distinct(true);
@@ -195,9 +194,8 @@ public class TaskDAOImpl extends CommonJPADAO<Task, Long> implements TaskHandler
       }
 
       Task currentTask = find(currentTaskId);
-      // Load coworker and tag to avoid they will be deleted when save task
+      // Load coworker to avoid they will be deleted when save task
       currentTask.getCoworker();
-      currentTask.getTag();
 
       Task prevTask = null;
       Task nextTask = null;
@@ -229,9 +227,8 @@ public class TaskDAOImpl extends CommonJPADAO<Task, Long> implements TaskHandler
                   if (task.getRank() > 0) {
                     break;
                   }
-                  // Load coworker and tag to avoid they will be deleted when save task
+                  // Load coworker to avoid they will be deleted when save task
                   task.getCoworker();
-                  task.getTag();
 
                   task.setRank(newRank + currentTaskIndex - i);
                   update(task);
@@ -303,27 +300,6 @@ public class TaskDAOImpl extends CommonJPADAO<Task, Long> implements TaskHandler
   }
 
   @Override
-  public Set<String> getTag(long taskid) {
-    TypedQuery<String> query = getEntityManager().createNamedQuery("Task.getTag", String.class);
-    query.setParameter("taskid", taskid);
-    List<String> tags = query.getResultList();
-    return new HashSet<String>(tags);
-  }
-
-  @Override
-  public ListAccess<String> findTags(String keyword) {
-    String key = "%" + keyword + "%";
-    EntityManager em = getEntityManager();
-    TypedQuery<String> query = em.createNamedQuery("Task.findTagsByKeyword", String.class);
-    query.setParameter("keyword", key);
-
-    TypedQuery<Long> count = em.createNamedQuery("Task.findTagsByKeyword.count", Long.class);
-    count.setParameter("keyword", key);
-
-    return new JPAQueryListAccess<String>(String.class, count, query);
-  }
-
-  @Override
   public Set<String> getCoworker(long taskid) {
     TypedQuery<String> query = getEntityManager().createNamedQuery("Task.getCoworker", String.class);
     query.setParameter("taskid", taskid);
@@ -361,8 +337,6 @@ public class TaskDAOImpl extends CommonJPADAO<Task, Long> implements TaskHandler
     
     if (TASK_COWORKER.equals(field)) {
       path = root.join(field, JoinType.LEFT);
-    } else if (TASK_TAG.equals(condition.getField())) {
-      path = root.join("tag", JoinType.LEFT);
     }
     
     return path;

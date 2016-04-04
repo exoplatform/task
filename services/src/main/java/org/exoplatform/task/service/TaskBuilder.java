@@ -40,7 +40,6 @@ public class TaskBuilder {
   private Set<String> coworker;
 
   private Status status;
-  private Set<String> tags;
 
   private String createdBy;
   private Date createdTime = new Date();
@@ -59,7 +58,6 @@ public class TaskBuilder {
     task.setAssignee(assignee);
     task.setCoworker(coworker);
     task.setStatus(status);
-    task.setTag(tags);
     task.setCreatedBy(createdBy);
     task.setCreatedTime(createdTime);
     task.setEndDate(endDate);
@@ -107,14 +105,6 @@ public class TaskBuilder {
 
   public TaskBuilder withStatus(Status status) {
     this.status = status;
-    return this;
-  }
-
-  public TaskBuilder addTag(String tag) {
-    if(this.tags == null) {
-      this.tags = new HashSet<String>();
-    }
-    this.tags.add(tag);
     return this;
   }
 

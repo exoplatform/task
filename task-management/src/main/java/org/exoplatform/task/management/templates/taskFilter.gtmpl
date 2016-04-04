@@ -66,25 +66,6 @@
 		  		</div>
 		  	</div>
 		  	<%} %>
-		  	<div class="control-group">
-		  		<label class="control-label" for="tag">&{label.tag}</label>
-		  		<div class="controls">
-		  		<%
-		  		   def selectedTags = filterData.getTag();
-                   def selectedArr = new JSONArray();
-		  		   def tagArr = new JSONArray();
-		  		   for (def tag : selectedTags) {
-		  		     def jtag = new JSONObject();
-		  		     jtag.put("id", encoder.encode(tag));
-		  		     jtag.put("text", encoder.encode(tag));
-		  		     tagArr.put(jtag);
-
-                     selectedArr.put(encoder.encode(tag));
-		  		   }
-		  		%>
-		  			<input type="text" id="tag" name="tag" value="" data-items='${selectedArr}' data-options='${tagArr}' maxlength="100"/>
-		  		</div>
-		  	</div>
 		  	<%if (filterStatus) { %>
 		  	<div class="control-group">
 		  		<label class="control-label" for="status">&{label.status}</label>

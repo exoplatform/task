@@ -41,7 +41,7 @@ public class TaskFilterData implements Serializable {
   private boolean                enabled;
 
   public enum FILTER_NAME {
-    KEYWORD, LABEL, TAG, STATUS, ASSIGNEE, DUE, PRIORITY, SHOW_COMPLETE
+    KEYWORD, LABEL, STATUS, ASSIGNEE, DUE, PRIORITY, SHOW_COMPLETE
   }
 
   public Filter getFilter(FilterKey key) {
@@ -95,14 +95,6 @@ public class TaskFilterData implements Serializable {
 
     public void setLabel(List<Long> labels) {
       data.put(FILTER_NAME.LABEL, labels);
-    }
-
-    public List<String> getTag() {
-      return getList(FILTER_NAME.TAG);
-    }
-
-    public void setTag(List<String> tags) {
-      data.put(FILTER_NAME.TAG, tags);
     }
 
     public Long getStatus() {
@@ -163,7 +155,6 @@ public class TaskFilterData implements Serializable {
     }
 
     public void updateFilterData(String filterLabelIds,
-                                 String tags,
                                  String statusId,
                                  String dueDate,
                                  String priority,
@@ -182,15 +173,6 @@ public class TaskFilterData implements Serializable {
         }
       }
 
-      List<String> searchTags = new LinkedList<String>();
-      if (tags != null) {
-        for (String t : tags.split(",")) {
-          if (!(t = t.trim()).isEmpty()) {
-            searchTags.add(t);
-          }
-        }
-      }
-
       List<String> searchAssignee = new LinkedList<String>();
       if (assignee != null) {
         for (String u : assignee.split(",")) {
@@ -205,9 +187,6 @@ public class TaskFilterData implements Serializable {
       }
       if (filterLabelIds != null) {
         this.setLabel(searchLabelIds);
-      }
-      if (tags != null) {
-        this.setTag(searchTags);
       }
       if (statusId != null) {
         if (statusId.isEmpty()) {

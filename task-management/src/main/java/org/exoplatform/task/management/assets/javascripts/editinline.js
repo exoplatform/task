@@ -673,20 +673,6 @@ define('ta_edit_inline',
                         $this.parent().find('i').attr('class', 'uiIconColorPriority' + newValue);
                     }
                 }
-                if (fieldName == 'tags' || fieldName == 'labels') {
-                    editOptions.success = function (response, newValue) {
-                        var isEmpty = newValue.length == 0 || newValue[0] == '';
-                        var $i = $this.parent().find('.icon-hash');
-                        if (isEmpty) {
-                            $i.removeClass('hide');
-                        } else {
-                            $i.addClass('hide');
-                        }
-                        if (fieldName == 'labels') {
-                          $('.rightPanelContent ').trigger('saveLabel');
-                        }
-                    }
-                }
                 if (fieldName == 'title') {
                 	editOptions.emptyclass = '';
                 }
@@ -700,36 +686,26 @@ define('ta_edit_inline',
                         });
                     };
                 }
-                if (fieldName == 'tags') {
-                    editOptions.emptytext = locale.tag;
-                    editOptions.selectize = {
-                        create: true,
-                        valueField: 'id',
-                        labelField: 'text',
-                        searchField: 'text',
-                        options: [],
-                        load: function(query, callback) {
-                            $.ajax({
-                                url: $rightPanel.jzURL('TaskController.findTags'),
-                                data: {keyword: query},
-                                type: 'GET',
-                                error: function() {
-                                    callback();
-                                },
-                                success: function(res) {
-                                    callback(res);
-                                }
-                            });
-                        }
-                    };
-
-                } else if (fieldName == 'labels') {
+                if (fieldName == 'labels') {
                     var isLoaded = false;
                     var allLabels = {};
                     var opts = $this.data('selectizie-opts');
                     $.each(opts, function(index, val) {
                         allLabels[val.id] = val;
                     });
+
+                    editOptions.success = function (response, newValue) {
+                        var isEmpty = newValue.length == 0 || newValue[0] == '';
+                        var $i = $this.parent().find('.icon-hash');
+                        if (isEmpty) {
+                            $i.removeClass('hide');
+                        } else {
+                            $i.addClass('hide');
+                        }
+                        if (fieldName == 'labels') {
+                            $('.rightPanelContent ').trigger('saveLabel');
+                        }
+                    };
 
                     editOptions.emptytext = locale.labels;
                     editOptions.selectize = {

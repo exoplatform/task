@@ -181,15 +181,6 @@ public class TestTaskDAO extends AbstractTest {
     query.setLabelIds(Arrays.asList(label.getId()));
     tasks = tDAO.findTasks(query);
     Assert.assertEquals(1, tasks.getSize());
-
-    //Find by tag
-    task.setTag(new HashSet<String>(Arrays.asList("testTag")));
-    tDAO.update(task);
-    //
-    query = new TaskQuery();
-    query.setTags(Arrays.asList("testTag"));
-    tasks = tDAO.findTasks(query);
-    Assert.assertEquals(1, tasks.getSize());
     
     //Find by status
     Project project = new Project();
@@ -447,17 +438,13 @@ public class TestTaskDAO extends AbstractTest {
   @Test
   public void testTaskField() throws Exception {
     Task task = newTaskInstance("Task 1", "", null);
-    //
-    Set<String> tags = new HashSet<String>();
-    tags.add("tag1");
-    task.setTag(tags);
+
     Set<String> coworkers = new HashSet<String>();
     coworkers.add("worker1");
     task.setCoworker(coworkers);
     //
     tDAO.create(task);
-    
-    Assert.assertEquals(1, tDAO.getTag(task.getId()).size());
+
     Assert.assertEquals(1, tDAO.getCoworker(task.getId()).size());    
   }
 

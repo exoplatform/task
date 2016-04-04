@@ -83,7 +83,7 @@ public class TaskSearchConnector extends SearchServiceConnector {
 
     TaskQuery taskQuery = new TaskQuery();
     //taskQuery.setAssignee(currentUser.getUserId());
-    taskQuery.setKeyword(query, true);
+    taskQuery.setKeyword(query);
     //taskQuery.setMemberships(permissions);
     //taskQuery.setOrFields(Arrays.asList(TaskUtil.ASSIGNEE, TaskUtil.MEMBERSHIP));
     taskQuery.setAccessible(currentUser);

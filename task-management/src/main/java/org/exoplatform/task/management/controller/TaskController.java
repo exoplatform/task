@@ -505,7 +505,7 @@ public class TaskController extends AbstractController {
   @Resource
   @Ajax
   @MimeType.HTML
-  public Response listTasks(String space_group_id, Long projectId, Long labelId, String filterLabelIds, String tags, String statusId, String dueDate, String priority,  
+  public Response listTasks(String space_group_id, Long projectId, Long labelId, String filterLabelIds, String statusId, String dueDate, String priority,
                             String assignee, Boolean showCompleted, String keyword, String groupBy, String orderBy, String filter, String viewType, Integer page, SecurityContext securityContext) throws EntityNotFoundException, UnAuthorizedOperationException {
 
     FilterKey filterKey = FilterKey.withProject(projectId, filter == null || filter.isEmpty() ? null : DUE.valueOf(filter.toUpperCase()));
@@ -516,7 +516,7 @@ public class TaskController extends AbstractController {
 
     boolean advanceSearch = fd.isEnabled();
     if (advanceSearch) {
-      fd.updateFilterData(filterLabelIds, tags, statusId, dueDate, priority, assignee, showCompleted, keyword);
+      fd.updateFilterData(filterLabelIds, statusId, dueDate, priority, assignee, showCompleted, keyword);
     }
     
     Identity currIdentity = ConversationState.getCurrent().getIdentity();
@@ -611,7 +611,7 @@ public class TaskController extends AbstractController {
     TaskQuery taskQuery = new TaskQuery();
     if (advanceSearch) {
       Status status = fd.getStatus() != null ? statusService.getStatus(fd.getStatus()) : null;
-      TaskUtil.buildTaskQuery(taskQuery, fd.getKeyword(), fd.getLabel(), fd.getTag(), status, fd.getDue(), fd.getPriority(), fd.getAssignee(), fd.isShowCompleted(), userTimezone);      
+      TaskUtil.buildTaskQuery(taskQuery, fd.getKeyword(), fd.getLabel(), status, fd.getDue(), fd.getPriority(), fd.getAssignee(), fd.isShowCompleted(), userTimezone);
     } else {
       taskQuery.setCompleted(false);
     }
@@ -941,8 +941,8 @@ public class TaskController extends AbstractController {
     JSONObject json = JsonUtil.buildTaskJSon(task, bundle);
     return Response.ok(json.toString()).withCharset(Tools.UTF_8);
 
-    //spaceGrpId, projectId, currentLabelId, labelIds, tags, statusId, dueDate, priority, assignee, completed, keyword, advanceSearch, groupby, orderBy, filter, viewType, securityContext
-    //return listTasks(space_group_id, projectId, null, null, null, null, null, null, null, null, null, null, groupBy, orderBy, null, viewType, 1, securityContext);
+    //spaceGrpId, projectId, currentLabelId, labelIds, statusId, dueDate, priority, assignee, completed, keyword, advanceSearch, groupby, orderBy, filter, viewType, securityContext
+    //return listTasks(space_group_id, projectId, null, null, null, null, null, null, null, null, null, groupBy, orderBy, null, viewType, 1, securityContext);
   }
 
   @Resource(method = HttpMethod.POST)
@@ -960,33 +960,10 @@ public class TaskController extends AbstractController {
     //
     statusService.removeStatus(statusId);
 
-    //spaceGrpId, projectId, currentLabelId, labelIds, tags, statusId, dueDate, priority, assignee, completed, keyword, advanceSearch, groupby, orderBy, filter, viewType, securityContext
-    return listTasks(space_group_id, project.getId(), null, null, null, null, null, null, null, null, null, null, null, null, "board", 0, securityContext);
+    //spaceGrpId, projectId, currentLabelId, labelIds, statusId, dueDate, priority, assignee, completed, keyword, advanceSearch, groupby, orderBy, filter, viewType, securityContext
+    return listTasks(space_group_id, project.getId(), null, null, null, null, null, null, null, null, null, null, null, "board", 0, securityContext);
   }
 
-
-  @Resource
-  @Ajax
-  @MimeType.JSON
-  public Response findTags(String keyword) throws JSONException {
-    JSONArray array = new JSONArray();
-
-    if (keyword != null && !keyword.trim().isEmpty()) {
-      ListAccess<String> list = taskService.findTags(keyword);
-      String[] tags = ListUtil.load(list, 0, 20);
-      JSONObject json;
-      for (String tag : tags) {
-        json = new JSONObject();
-        json.put("id", tag);
-        json.put("text", tag);
-
-        array.put(json);
-      }
-    }
-
-    return Response.ok(array.toString())
-            .withCharset(Tools.UTF_8);
-  }
 
   @Resource(method = HttpMethod.POST)
   @Ajax
@@ -997,8 +974,8 @@ public class TaskController extends AbstractController {
       throw new UnAuthorizedOperationException(projectId, Task.class, getNoPermissionMsg());
     }
     statusService.createStatus(project, name);
-    //spaceGrpId, projectId, currentLabelId, labelIds, tags, statusId, dueDate, priority, assignee, completed, keyword, advanceSearch, groupby, orderBy, filter, viewType, securityContext
-    return listTasks(space_group_id, projectId, null, null, null, null, null, null, null, null, null, null, null, null, "board", 0, securityContext);
+    //spaceGrpId, projectId, currentLabelId, labelIds, statusId, dueDate, priority, assignee, completed, keyword, advanceSearch, groupby, orderBy, filter, viewType, securityContext
+    return listTasks(space_group_id, projectId, null, null, null, null, null, null, null, null, null, null, null, "board", 0, securityContext);
   }
 
   private long getIncomingNum(String username) {

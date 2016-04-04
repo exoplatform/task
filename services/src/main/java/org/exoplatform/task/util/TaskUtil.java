@@ -141,7 +141,6 @@ public final class TaskUtil {
   
   public static TaskQuery buildTaskQuery(TaskQuery query, String keyword,
                                    List<Long> searchLabelIds,
-                                   List<String> searchTags,
                                    Status status,
                                    DUE dueDate,
                                    Priority priority,
@@ -152,9 +151,6 @@ public final class TaskUtil {
     }
     if (searchLabelIds != null && !searchLabelIds.isEmpty()) {
       query.setLabelIds(searchLabelIds);
-    }
-    if (searchTags != null && !searchTags.isEmpty()) {
-      query.setTags(searchTags);                
     }
     if (status != null) {
       query.setStatus(status);
@@ -698,18 +694,6 @@ public final class TaskUtil {
       } else {
         return new GroupKey[] {new GroupKey(ResourceUtil.resolveStatus(bundle, s.getName()), s, s.getRank())};
       }
-    } else if("tag".equalsIgnoreCase(groupBy)) {
-      Set<String> tags = getTag(task.getId());
-      GroupKey[] keys = new GroupKey[tags != null && tags.size() > 0 ? tags.size() : 1];
-      if (tags == null || tags.size() == 0) {
-        keys[0] = new GroupKey("Un tagged", null, Integer.MAX_VALUE);
-      } else {
-        int index = 0;
-        for (String tag : tags) {
-          keys[index++] = new GroupKey(tag, tag, tag.hashCode());
-        }
-      }
-      return keys;
     } else if ("assignee".equalsIgnoreCase(groupBy)) {
       String assignee = task.getAssignee();
       User user = userService.loadUser(assignee);
@@ -884,10 +868,9 @@ public final class TaskUtil {
       timezone = TimeZone.getDefault();
     }
     
-    // Load coworker and tag to avoid they will be deleted when save task
-    //This issue caused because we alway clone entity from DAO, but Tag and Coworker are loaded lazily
+    // Load coworker to avoid they will be deleted when save task
+    //This issue caused because we alway clone entity from DAO, but Coworker are loaded lazily
     //This is need for TA-421
-    task.setTag(TaskUtil.getTag(task.getId()));      
     task.setCoworker(TaskUtil.getCoworker(task.getId()));
 
     //
@@ -968,12 +951,6 @@ public final class TaskUtil {
           }
         }
         task.setCoworker(coworker);
-      } else if("tags".equalsIgnoreCase(param)) {
-        Set<String> tags = new HashSet<String>();
-        for(String t : values) {
-          tags.add(t);
-        }
-        task.setTag(tags);
       } else if ("priority".equalsIgnoreCase(param)) {
         Priority priority = Priority.valueOf(value);
         task.setPriority(priority);
@@ -1107,11 +1084,6 @@ public final class TaskUtil {
       LOG.error("Can not check permission on task field", ex);
     }
     return true;
-  }
-
-  public static Set<String> getTag(long taskId) {
-    TaskService service = getTaskService();
-    return service.getTag(taskId);
   }
 
   private static TaskService getTaskService() {

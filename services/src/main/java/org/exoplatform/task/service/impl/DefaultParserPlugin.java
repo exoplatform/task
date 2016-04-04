@@ -52,8 +52,6 @@ public class DefaultParserPlugin implements TaskParserPlugin {
 
   private Pattern PRIORITY_REGEX = Pattern.compile("(\\s)(!)([a-zA-Z]+)");
 
-  private Pattern TAG_REGEX = Pattern.compile("(\\s)(#)([0-9a-zA-Z_]+)");
-
   static {
     DAY_OF_WEEKS.put("monday", Calendar.MONDAY);
     DAY_OF_WEEKS.put("mon", Calendar.MONDAY);
@@ -117,7 +115,6 @@ public class DefaultParserPlugin implements TaskParserPlugin {
   public String parse(String input, ParserContext context, TaskBuilder builder) {
     input = parseAssignee(input, builder);
     input = parsePriority(input, builder);
-    input = parseTag(input, builder);
     input = parseDueDate(input, builder, context);
     return input;
   }
@@ -144,17 +141,6 @@ public class DefaultParserPlugin implements TaskParserPlugin {
       } catch (IllegalArgumentException ex) {
         LOG.debug("Issue during parsing task priority: ", ex);
       }
-    }
-
-    String in = m.replaceAll(" ").trim();
-    return in;
-  }
-
-  //
-  private String parseTag(String input, TaskBuilder builder) {
-    Matcher m = TAG_REGEX.matcher(input);
-    while (m.find()) {
-      builder.addTag(m.group(3));
     }
 
     String in = m.replaceAll(" ").trim();

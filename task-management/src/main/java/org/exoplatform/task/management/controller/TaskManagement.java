@@ -243,7 +243,7 @@ public class TaskManagement {
         TimeZone timezone = userService.getUserTimezone(currentUser);
         Status status = fd.getStatus() != null ? statusService.getStatus(fd.getStatus()) : null;
         //
-        TaskUtil.buildTaskQuery(taskQuery, fd.getKeyword(), fd.getLabel(), fd.getTag(), status, fd.getDue(), fd.getPriority(), fd.getAssignee(), fd.isShowCompleted(), timezone);
+        TaskUtil.buildTaskQuery(taskQuery, fd.getKeyword(), fd.getLabel(), status, fd.getDue(), fd.getPriority(), fd.getAssignee(), fd.isShowCompleted(), timezone);
       } else {
         taskQuery.setCompleted(false);
       }
@@ -488,7 +488,7 @@ public class TaskManagement {
       TimeZone timezone = userService.getUserTimezone(currentUser);
       Status status = fd.getStatus() != null ? statusService.getStatus(fd.getStatus()) : null;
 
-      TaskUtil.buildTaskQuery(taskQuery, fd.getKeyword(), fd.getLabel(), fd.getTag(), status, fd.getDue(), fd.getPriority(), fd.getAssignee(), fd.isShowCompleted(), timezone);
+      TaskUtil.buildTaskQuery(taskQuery, fd.getKeyword(), fd.getLabel(), status, fd.getDue(), fd.getPriority(), fd.getAssignee(), fd.isShowCompleted(), timezone);
     } else {
       taskQuery.setCompleted(false);
     }

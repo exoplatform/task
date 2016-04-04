@@ -52,6 +52,7 @@
           <name>changelogs</name>
           <description>Change logs of task management</description>
           <value>db/changelog/task.db.changelog-1.0.0.xml</value>
+          <value>db/changelog/task.db.changelog-1.1.0.xml</value>
         </values-param>
       </init-params>
     </component-plugin>

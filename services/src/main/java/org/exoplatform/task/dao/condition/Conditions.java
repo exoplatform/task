@@ -30,7 +30,6 @@ public class Conditions {
   public static String ID = "id";
   public static String TASK_TITLE = "title";
   public static String TASK_DES = "description";
-  public static String TASK_TAG = "tag";
   public static String TASK_PRIORITY = "priority";
   public static String TASK_ASSIGNEE = "assignee";
   public static String TASK_COWORKER = "coworker";

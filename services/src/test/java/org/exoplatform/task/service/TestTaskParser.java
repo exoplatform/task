@@ -224,15 +224,6 @@ public class TestTaskParser {
     Assert.assertEquals(nextMonth.get(Calendar.YEAR), dueCalendar.get(Calendar.YEAR));
   }
 
-  @Test
-  public void testParseTag() {
-    Task task = creator.parse("Test task tomorrow #tag1 #tag2 #tag3", context);
-    Assert.assertNotNull(task);
-    Set<String> labels = task.getTag();
-    Assert.assertEquals(3, labels.size());
-    assertEqual(Arrays.asList("tag1", "tag2", "tag3"), labels);
-  }
-
   private void assertEqual(Collection<String> expected, Collection<String> actual) {
     if(expected.size() != actual.size()) {
       Assert.fail("Size of 2 collection must be the same");

@@ -20,7 +20,6 @@
 package org.exoplatform.task.domain;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -76,14 +75,8 @@ import org.exoplatform.task.util.TaskUtil;
         query = "SELECT t FROM TaskTask t WHERE t.activityId = :activityId"),
     @NamedQuery(name = "Task.getCoworker",
         query = "SELECT c FROM TaskTask t inner join t.coworker c WHERE t.id = :taskid"),
-    @NamedQuery(name = "Task.getTag",
-        query = "SELECT tg FROM TaskTask t inner join t.tag tg WHERE t.id = :taskid"),
-    @NamedQuery(name = "Task.findTagsByKeyword",
-        query = "SELECT DISTINCT tg FROM TaskTask t inner join t.tag tg WHERE tg LIKE :keyword ORDER BY tg ASC"),
-    @NamedQuery(name = "Task.findTagsByKeyword.count",
-        query = "SELECT count(DISTINCT tg) FROM TaskTask t inner join t.tag tg WHERE tg LIKE :keyword"),
     @NamedQuery(name = "Task.updateStatus",
-    query = "UPDATE TaskTask t SET t.status = :status_new WHERE t.status = :status_old")
+        query = "UPDATE TaskTask t SET t.status = :status_new WHERE t.status = :status_old")
 })
 public class Task {
 
@@ -121,11 +114,6 @@ public class Task {
   @CollectionTable(name = "TASK_TASK_COWORKERS",
       joinColumns = @JoinColumn(name = "TASK_ID"))
   private Set<String> coworker = new HashSet<String>();
-
-  @ElementCollection
-  @CollectionTable(name = "TASK_TAGS",
-      joinColumns = @JoinColumn(name = "TASK_ID"))
-  private Set<String> tag = new HashSet<String>();
 
   @Column(name = "CREATED_BY")
   private String      createdBy;
@@ -244,25 +232,6 @@ public class Task {
     this.calendarIntegrated = calendarIntegrated;
   }
 
-  @Deprecated
-  public Set<String> getTag() {
-    if (tag == null) {
-      tag = TaskUtil.getTag(getId());
-    }
-    return Collections.unmodifiableSet(tag);
-  }
-
-  public void setTag(Set<String> tag) {
-    this.tag = tag;
-  }
-
-  public void addTag(String tag) {
-    if (this.tag == null) {
-      this.tag = new HashSet<String>();
-    }
-    this.tag.add(tag);
-  }
-
   public String getCreatedBy() {
     return createdBy;
   }
@@ -349,13 +318,6 @@ public class Task {
 //    }
 //    newTask.setCoworker(coworker);
 
-    //performance issue, need lazy load
-//    Set<String> tags = new HashSet<String>();
-//    if (getTag() != null) {
-//      tags.addAll(getTag());
-//    }
-//    newTask.setTag(tags);    
-
     newTask.setId(getId());
 
     return newTask;
@@ -381,7 +343,6 @@ public class Task {
     if (startDate != null ? !startDate.equals(task.startDate) : task.startDate != null) return false;
     if (endDate != null ? !endDate.equals(task.endDate) : task.endDate != null) return false;
     if (status != null ? !status.equals(task.status) : task.status != null) return false;
-    if (tag != null ? !tag.equals(task.tag) : task.tag != null) return false;
     if (title != null ? !title.equals(task.title) : task.title != null) return false;
 
     return true;

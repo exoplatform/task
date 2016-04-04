@@ -49,7 +49,6 @@ import static org.exoplatform.task.dao.condition.Conditions.TASK_PRIORITY;
 import static org.exoplatform.task.dao.condition.Conditions.TASK_PROJECT;
 import static org.exoplatform.task.dao.condition.Conditions.TASK_START_DATE;
 import static org.exoplatform.task.dao.condition.Conditions.TASK_STATUS;
-import static org.exoplatform.task.dao.condition.Conditions.TASK_TAG;
 import static org.exoplatform.task.dao.condition.Conditions.TASK_TITLE;
 import static org.exoplatform.task.dao.condition.Conditions.and;
 import static org.exoplatform.task.dao.condition.Conditions.eq;
@@ -134,10 +133,6 @@ public class TaskQuery extends Query implements Cloneable {
   }
 
   public void setKeyword(String keyword) {
-    setKeyword(keyword, false);
-  }
-  
-  public void setKeyword(String keyword, boolean withTag) {
     if (keyword == null || keyword.trim().isEmpty()) return;
 
     List<Condition> conditions = new ArrayList<Condition>();
@@ -147,9 +142,6 @@ public class TaskQuery extends Query implements Cloneable {
         conditions.add(like(TASK_TITLE, k));
         conditions.add(like(TASK_DES, k));
         conditions.add(like(TASK_ASSIGNEE, k));
-        if (withTag) {
-          conditions.add(like(TASK_TAG, k));          
-        }
       }
     }
     add(Conditions.or(conditions.toArray(new Condition[conditions.size()])));
@@ -241,16 +233,6 @@ public class TaskQuery extends Query implements Cloneable {
   
   public void setIsLabelOf(String username) {
     this.add(eq(TASK_LABEL_USERNAME, username));
-  }
-
-  public void setTags(List<String> tags) {
-    if (tags != null) {
-      List<Condition> cond = new LinkedList<Condition>();
-      for (String tag : tags) {
-        cond.add(eq(TASK_TAG, tag));
-      }
-      this.add(Conditions.and(cond.toArray(new Condition[cond.size()])));
-    }
   }
 
   public void setPriority(Priority priority) {
