@@ -1,0 +1,37 @@
+ <%
+ def rcontext = _ctx.getRequestContext();
+def scripts = "var form = jq('#"+uicomponent.id+"'); form.find('input').focus().on('keyup', function(e) { if (e.which == 27 || e.keyCode == 27) {eXo.webui.UIForm.submitForm('"+uicomponent.id+"','Cancel',true);}});";
+scripts    += "form.on('submit', function(e) {e.stopPropagation(); e.preventDefault(); eXo.webui.UIForm.submitForm('"+uicomponent.id+"','Add',true); return false;});";
+
+rcontext.getJavascriptManager().require("SHARED/uiForm", "uiForm")
+		 .require("SHARED/jquery", "jq")
+		 .addScripts(scripts);
+
+def error = uicomponent.getError();
+ %>
+<% uiform.begin()%>
+<div class="uiCreateForm uiCreateTask" id="QuickAddTaskContainer">
+		<div class="quickAddEventContainer">
+			<div class="form-horizontal">
+				<h6><%=uicomponent.getLabel("createTask")%></h6>
+				<div class="control-group title <%=(error != null ? "error" : "")%>">
+					<label class="control-label"><%=uicomponent.getLabel(uicomponent.TITLE )%>:</label>
+					<div class="controls">
+						<% uicomponent.renderField(uicomponent.TITLE) %>
+						<% if (error != null) {%>
+							<br/>
+							<span class="help"><%=error%></span>
+						<%}%>
+					</div>
+				</div>
+			</div>
+		</div>
+		<% if(uicomponent.getActions() != null) { %>
+			<div class="uiAction uiActionBorder">
+				<% for(action in uicomponent.getActions()) { %>
+				<a href="<%=uicomponent.event(action)%>" class="btn"><%=_ctx.appRes(uicomponent.getId() + ".action." + action)%></a>
+				<% } %>
+			</div>
+		<% }%>
+</div>
+<%uiform.end()%>

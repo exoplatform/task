@@ -100,5 +100,32 @@
     </component-plugin>
   </external-component-plugins>
 
+  <external-component-plugins>
+    <target-component>org.exoplatform.webui.ext.UIExtensionManager</target-component>
+    <component-plugin>
+      <name>addTaskCreation</name>
+      <!-- The method to call to register a new UI Extension -->
+      <set-method>registerUIExtensionPlugin</set-method>
+      <type>org.exoplatform.webui.ext.UIExtensionPlugin</type>
+      <init-params>
+        <object-param>
+          <name>PLFQuickAddTask</name>
+          <object type="org.exoplatform.webui.ext.UIExtension">
+            <!-- The type of extension, here it is the type related to the Action Bar in the File Explorer -->
+            <field name="type"><string>org.exoplatform.platform.component.UICreateList</string></field>
+
+            <field name="rank"><int>9</int></field>
+            <!-- The name of your action -->
+            <field name="name"><string>quickCreateTask</string></field>
+            <field name="category"><string>uiIconExt-tasks</string></field>
+
+            <!-- The full qualified name of your webui component -->
+            <field name="component"><string>org.exoplatform.task.integration.platform.UICreateTask</string></field>
+          </object>
+        </object-param>
+      </init-params>
+    </component-plugin>
+  </external-component-plugins>
+
   <import>jar:/conf/portal/task-notification-plugin.xml</import>
 </configuration>
