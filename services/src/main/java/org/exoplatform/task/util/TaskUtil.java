@@ -616,6 +616,21 @@ public final class TaskUtil {
     return taskId;
   }
 
+  public static String buildTaskURL(Task task) {
+    if (task == null) {
+      return "#";
+    }
+
+    StringBuilder urlBuilder = new StringBuilder(ResourceUtil.buildBaseURL());
+    if (urlBuilder.length() <= 1) {
+      return urlBuilder.toString();
+    } else {
+      return urlBuilder.append(URL_TASK_DETAIL)
+              .append(task.getId())
+              .toString();
+    }
+  }
+
   public static String buildTaskURL(Task task, SiteKey siteKey, ExoContainer container, Router router) {
     if (task == null) {
       return "#";

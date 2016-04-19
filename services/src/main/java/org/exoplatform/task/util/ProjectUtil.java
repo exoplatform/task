@@ -61,6 +61,10 @@ public final class ProjectUtil {
   private static final Log LOG = ExoLogger.getExoLogger(ProjectUtil.class);
 
   public static final String URL_PROJECT_DETAIL = "/projectDetail/";
+  public static final String URL_PROJECT_ALL = "/projects";
+  public static final String URL_PROJECT_MY_TASK = "/my-task";
+  public static final String URL_LABEL_ALL = "/labels";
+  public static final String URL_LABEL_DETAIL = "/label/";
   public static final int INCOMING_PROJECT_ID = -1;
   public static final int TODO_PROJECT_ID = -2;
   public static final int LABEL_PROJECT_ID = -5;
@@ -230,6 +234,120 @@ public final class ProjectUtil {
     builder.insert(0, el.toString());
 
     return builder.toString();
+  }
+
+  public static String permalink(Long projectId, String filter, Long labelId) {
+    if (labelId == null && projectId == null) {
+      return "#";
+    }
+
+    StringBuilder url = new StringBuilder(ResourceUtil.buildBaseURL());
+    if (url.length() <= 1) {
+      return url.toString();
+    }
+
+    if (labelId != null && labelId >= 0) {
+      if (labelId == 0){
+        url.append(URL_LABEL_ALL);
+      } else {
+        url.append(URL_LABEL_DETAIL).append(labelId);
+      }
+
+    } else if (projectId == 0){
+      url.append(URL_PROJECT_ALL);
+
+    } else if (INCOMING_PROJECT_ID == projectId) {
+      // Don't need to append because default URL will point to incoming
+    } else if (TODO_PROJECT_ID == projectId) {
+      url.append(URL_PROJECT_MY_TASK);
+      if (filter != null && !filter.isEmpty()) {
+        url.append("/").append(filter);
+      }
+    } else {
+      url.append(URL_PROJECT_DETAIL).append(projectId);
+    }
+    return url.toString();
+  }
+
+  private static Long parseLong(String l) {
+    try {
+      return l != null ? Long.parseLong(l) : null;
+    } catch (NumberFormatException ex) {
+      return null;
+    }
+  }
+  public static Object[] parsePermalinkURL(String requestPath) {
+    if (requestPath == null || requestPath.isEmpty()) {
+      return null;
+    }
+
+    if (requestPath.charAt(requestPath.length() - 1) == '/') {
+      requestPath = requestPath.substring(0, requestPath.length() - 1);
+    }
+
+    Long projectId = null;
+    String filter = null;
+    Long labelId = null;
+
+    int index;
+    int lastSlashIndex;
+    String id;
+
+    if (requestPath.endsWith(URL_PROJECT_ALL)) {
+      projectId = 0L;
+
+    } else if ((index = requestPath.indexOf(URL_PROJECT_MY_TASK)) >= 0) {
+      lastSlashIndex = requestPath.indexOf('/', index + 1);
+      String path = lastSlashIndex == -1 ? requestPath.substring(index) : requestPath.substring(index, lastSlashIndex);
+      if (URL_PROJECT_MY_TASK.equals(path)) {
+        // Valid my-task URL
+        projectId = new Long(TODO_PROJECT_ID);
+        if (lastSlashIndex != -1) {
+          int lastIndex = requestPath.indexOf('/', lastSlashIndex + 1);
+          String s;
+          if (lastIndex == -1) {
+            s = requestPath.substring(lastSlashIndex + 1);
+          } else {
+            s = requestPath.substring(lastSlashIndex + 1, lastIndex);
+          }
+          try {
+            TaskUtil.DUE.valueOf(s.toUpperCase());
+            filter = s;
+          } catch (IllegalArgumentException ex) {
+            // Not valid filter
+            filter = null;
+          }
+        }
+      }
+    } if ((index = requestPath.indexOf(URL_PROJECT_DETAIL)) >= 0) {
+      index = index + URL_PROJECT_DETAIL.length();
+      lastSlashIndex = requestPath.indexOf('/', index);
+      if (lastSlashIndex > 0) {
+        id = requestPath.substring(index, lastSlashIndex);
+      } else {
+        id = requestPath.substring(index);
+      }
+      projectId = parseLong(id);
+
+    } else if (requestPath.endsWith(URL_LABEL_ALL)) {
+      labelId = 0L;
+
+    } else if ((index = requestPath.indexOf(URL_LABEL_DETAIL)) >= 0) {
+      index = index + URL_LABEL_DETAIL.length();
+      lastSlashIndex = requestPath.indexOf('/', index);
+      if (lastSlashIndex > 0) {
+        id = requestPath.substring(index, lastSlashIndex);
+      } else {
+        id = requestPath.substring(index);
+      }
+      labelId = parseLong(id);
+    }
+
+    if (projectId != null || labelId != null) {
+      return new Object[] {projectId, filter, labelId};
+    } else {
+      return null;
+    }
   }
 
   public static String buildProjectURL(Project project, SiteKey siteKey, ExoContainer container, Router router) {

@@ -31,7 +31,7 @@
 <div class="clearfix">
     <div class="pull-right action-buttons dropdown">
         <span class="taskPermalinkContainer" title="&{label.permalink}" data-toggle="tooltip" data-placement="bottom">
-            <a href="@{TaskManagement.permalink(space_group_id=null, taskId=task.id)}" data-toggle="popover" data-placement="left"
+            <a href="${TaskUtil.buildTaskURL(task)}" data-toggle="popover" data-placement="left"
             class="permalink actionIcon taskPermalink" style="position: relative;">
                 <i class="uiIconPermalink"></i>           
             </a>

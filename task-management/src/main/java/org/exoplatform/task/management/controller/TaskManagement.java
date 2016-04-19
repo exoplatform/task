@@ -119,10 +119,22 @@ public class TaskManagement {
   ViewStateService viewStateService;
 
   @View
-  public Response.Content index(String space_group_id, SecurityContext securityContext) throws EntityNotFoundException {        
+  public Response index(String space_group_id, SecurityContext securityContext) throws EntityNotFoundException {
     String username = securityContext.getRemoteUser();
     PortalRequestContext prc = Util.getPortalRequestContext();
     String requestPath = prc.getControllerContext().getParameter(RequestNavigationData.REQUEST_PATH);
+
+    Object[] params = ProjectUtil.parsePermalinkURL(requestPath);
+    if (params != null) {
+      Long pId = (Long)params[0];
+      String f = (String) params[1];
+      Long lId = (Long)params[2];
+
+      if (lId != null) {
+        pId = new Long(ProjectUtil.LABEL_PROJECT_ID);
+      }
+      return projectPermalink(space_group_id, pId, f, lId, securityContext);
+    }
 
     String errorMessage = "";
 
@@ -401,6 +413,14 @@ public class TaskManagement {
     if (projectId > 0) {
       taskQuery.setProjectIds(Arrays.asList(projectId));
       orderBy = TaskUtil.DUEDATE;
+
+    } else if (projectId == 0) {
+      // Find in all project
+      List<Long> projectIds = new ArrayList<>();
+      for (Project p : projects) {
+        projectIds.add(p.getId());
+      }
+      taskQuery.setProjectIds(projectIds);
 
     } else if (projectId == ProjectUtil.INCOMING_PROJECT_ID) {
       taskQuery.setIsIncomingOf(username);

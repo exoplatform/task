@@ -32,6 +32,9 @@ import java.util.ResourceBundle;
 
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
+import org.exoplatform.container.PortalContainer;
+import org.exoplatform.portal.application.PortalRequestContext;
+import org.exoplatform.portal.application.RequestNavigationData;
 import org.exoplatform.portal.mop.SiteKey;
 import org.exoplatform.portal.mop.SiteType;
 import org.exoplatform.portal.mop.navigation.NavigationContext;
@@ -39,6 +42,11 @@ import org.exoplatform.portal.mop.navigation.NavigationService;
 import org.exoplatform.portal.mop.navigation.NodeContext;
 import org.exoplatform.portal.mop.navigation.NodeModel;
 import org.exoplatform.portal.mop.navigation.Scope;
+import org.exoplatform.portal.webui.util.Util;
+import org.exoplatform.social.common.router.ExoRouter;
+import org.exoplatform.social.core.space.model.Space;
+import org.exoplatform.social.core.space.spi.SpaceService;
+import org.exoplatform.web.WebAppController;
 import org.exoplatform.web.controller.QualifiedName;
 import org.exoplatform.web.controller.router.Router;
 
@@ -101,8 +109,44 @@ public class ResourceUtil {
     limit = offset + limit > it.size() ? it.size() - offset : limit;    
     return (limit == it.size() && offset == 0) ? it : it.subList(offset, offset + limit);    
   }
-  
-  public static String buildBaseURL(SiteKey siteKey, ExoContainer container, Router router) {
+
+
+  public static String buildBaseURL() {
+    PortalContainer container = PortalContainer.getInstance();
+    WebAppController webAppController = container.getComponentInstanceOfType(WebAppController.class);
+    Router router = webAppController.getRouter();
+
+
+    PortalRequestContext pContext = null;
+    try {
+      pContext = Util.getPortalRequestContext();
+    } catch (NullPointerException e) {
+      pContext = null;
+    }
+
+    Space space = null;
+    SiteKey siteKey;
+    if (pContext != null) {
+      siteKey = pContext.getSiteKey();
+
+      String requestPath = pContext.getControllerContext().getParameter(RequestNavigationData.REQUEST_PATH);
+      ExoRouter.Route er = ExoRouter.route(requestPath);
+      if (er != null && er.localArgs != null) {
+        String spacePrettyName = er.localArgs.get("spacePrettyName");
+        SpaceService sService = container.getComponentInstanceOfType(SpaceService.class);
+
+        if (spacePrettyName != null && !spacePrettyName.isEmpty()) {
+          space = sService.getSpaceByPrettyName(spacePrettyName);
+        }
+      }
+    } else {
+      siteKey = SiteKey.portal("intranet");
+    }
+
+    return baseURL(siteKey, container, router, space);
+  }
+
+  private static String baseURL(SiteKey siteKey, ExoContainer container, Router router, Space space) {
     if (siteKey == null) {
       return "#";
     }
@@ -141,21 +185,32 @@ public class ResourceUtil {
 
     String portalName = container.getComponentInstanceOfType(ExoContainerContext.class).getPortalContainerName();
 
+    String path;
+    if (space == null) {
+      path = page.getName();
+    } else {
+      path = space.getPrettyName() + "/" + page.getName();
+    }
+
     Map<QualifiedName, String> qualifiedName = new HashMap<QualifiedName, String>();
     qualifiedName.put(QualifiedName.create("gtn", "handler"), portalName);
     qualifiedName.put(QualifiedName.create("gtn", "sitetype"), siteKey.getTypeName());
     qualifiedName.put(QualifiedName.create("gtn", "sitename"), siteKey.getName());
-    qualifiedName.put(QualifiedName.create("gtn", "path"), page.getName());
+    qualifiedName.put(QualifiedName.create("gtn", "path"), path);
     qualifiedName.put(QualifiedName.create("gtn", "lang"), "");
 
     try {
-    return new StringBuilder("/")
-            .append(portalName)
-            .append(URLDecoder.decode(router.render(qualifiedName), "UTF-8"))
-            .toString();
+      return new StringBuilder("/")
+              .append(portalName)
+              .append(URLDecoder.decode(router.render(qualifiedName), "UTF-8"))
+              .toString();
 
     } catch (UnsupportedEncodingException e) {
       return "";
     }
+  }
+
+  public static String buildBaseURL(SiteKey siteKey, ExoContainer container, Router router) {
+    return baseURL(siteKey, container, router, null);
   }
 }

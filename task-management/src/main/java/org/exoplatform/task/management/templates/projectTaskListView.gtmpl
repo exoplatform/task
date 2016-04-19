@@ -27,6 +27,7 @@
 <%
 	import org.exoplatform.commons.utils.HTMLEntityEncoder;
     import org.exoplatform.task.management.model.ViewType;
+    import org.exoplatform.task.util.ProjectUtil;
 
     def isBoardView = (ViewType.BOARD == viewType)
 	def encoder = HTMLEntityEncoder.getInstance();
@@ -43,7 +44,7 @@
                 <a class="actionIcon toggleFilter" href="#"  title="&{label.filter}" rel="tooltip"><i class="uiIcon uiIconFilter <%=advanceSearch ? "uiIconBlue" : ""%>"></i></a>
                 <span class="pull-left">
                     <span class="projectPermalinkContainer"  title="&{label.permalink}" rel="tooltip">
-                        <a href="@{TaskManagement.projectPermalink(space_group_id=null, projectId=currentProjectId, filter=filter,labelId=currentLabelId)}" data-toggle="popover" data-placement="left"
+                        <a href="${ProjectUtil.permalink(currentProjectId, filter, currentLabelId)}" data-toggle="popover" data-placement="left"
                            class="permalink actionIcon projectPermalink" style="position: relative;">
                             <i class="uiIconPermalink"></i>
                         </a>
