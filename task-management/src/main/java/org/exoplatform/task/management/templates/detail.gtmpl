@@ -144,6 +144,7 @@
                         <div class="mgB10 mgT5">&{label.assignTo}:</div>
                         <div class="inputUser">
                             <input type = "text" name="assignee" value="${hasAssignee ? encoder.encode(task.assignee) : ""}"/>
+                            <a href="javascript:void(0);" data-action="assign" data-value="${currentUser.username}">&{label.assignToMe}</a>
                         </div>
                     </div>
                     <div class="contBlock tags">
@@ -155,6 +156,7 @@
                         %>
                         <div class="mgB10 mgT5">&{label.coworkers}:</div>
                         <input type="text" name="coworker" value="${encoder.encode(coWorkers)}"/>
+                        <a href="javascript:void(0);" data-action="add-coworker" data-value="${currentUser.username}">&{label.addMeAsCoworker}</a>
                     </div>
                 </div>
             </div>

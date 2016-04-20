@@ -540,7 +540,18 @@ define('ta_edit_inline',
             var options = [];
             var val = [];
             var $assignee = $rightPanel.find('input[name="assignee"]');
-            var $coworkder = $rightPanel.find('input[name="coworker"]');
+            var $coworker = $rightPanel.find('input[name="coworker"]');
+            var $assignMe = $rightPanel.find('[data-action="assign"], [data-action="add-coworker"]');
+
+            if ($assignMe.length > 0) {
+                $assignMe.each(function() {
+                    var v = $(this).data('value');
+                    if (v) {
+                        val.push(v);
+                    }
+                });
+            }
+
             var assignee = $assignee.val();
             // This is workaround because some failure action in save before,
             // it save "[object Object]" or "undefined" to database
@@ -552,8 +563,8 @@ define('ta_edit_inline',
             if (assignee != '') {
                 val.push(assignee);
             }
-            if ($coworkder.val() != '') {
-                val.push($coworkder.val());
+            if ($coworker.val() != '') {
+                val.push($coworker.val());
             }
             val = val.join(',');
 
@@ -575,13 +586,20 @@ define('ta_edit_inline',
                     onInit.apply(this, arguments);
                     if (assignee != '') {
                         this.disable();
+                        this.$input.closest('.inputUser').addClass('disabled');
                     }
                 },
                 onItemAdd: function(value, $item) {
                     this.disable();
+                    this.$input.closest('.inputUser').addClass('disabled');
                 },
                 onItemRemove: function(value, $item) {
                     this.enable();
+                    this.$input.closest('.inputUser').removeClass('disabled');
+                    var _this = this;
+                    setTimeout(function() {
+                        _this.close();
+                    }, 1);
                     this.close();
                 },
                 onChange: function(value) {
@@ -595,7 +613,19 @@ define('ta_edit_inline',
                     saveAssignee(taskId,'coworker', value, this);
                 }
             });
-            $coworkder.selectize(opts)
+            $coworker.selectize(opts)
+
+            $assignMe.click(function(e) {
+                var $action = $(e.target).closest('[data-action]');
+                var action = $action.data('action');
+                var value = $action.data('value');
+
+                if (action == 'assign') {
+                    $assignee[0].selectize.setValue(value, false);
+                } else {
+                    $coworker[0].selectize.addItem(value, false);
+                }
+            });
         };
 
         editInline.initEditInline = function(taskId) {
