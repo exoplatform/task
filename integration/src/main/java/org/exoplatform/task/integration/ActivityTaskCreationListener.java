@@ -18,41 +18,56 @@ package org.exoplatform.task.integration;
 
 import org.exoplatform.social.core.activity.ActivityLifeCycleEvent;
 import org.exoplatform.social.core.activity.ActivityListenerPlugin;
+import org.exoplatform.social.core.activity.model.ActivityStream;
 import org.exoplatform.social.core.activity.model.ExoSocialActivity;
 import org.exoplatform.social.core.identity.model.Identity;
 import org.exoplatform.social.core.manager.ActivityManager;
 import org.exoplatform.social.core.manager.IdentityManager;
 import org.exoplatform.social.core.service.LinkProvider;
+import org.exoplatform.social.core.space.model.Space;
+import org.exoplatform.social.core.space.spi.SpaceService;
+import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.service.ParserContext;
+import org.exoplatform.task.service.ProjectService;
+import org.exoplatform.task.service.StatusService;
 import org.exoplatform.task.service.TaskParser;
 import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.service.UserService;
+import org.exoplatform.task.util.ProjectUtil;
 import org.exoplatform.task.util.StringUtil;
+
+import java.util.List;
 
 public class ActivityTaskCreationListener extends ActivityListenerPlugin {
 
   private TaskService taskService;
+  private ProjectService projectService;
+  private StatusService statusService;
   
   private TaskParser parser;
 
   private final IdentityManager identityManager;
   private final ActivityManager activityManager;
+  private final SpaceService spaceService;
   private UserService userService;
   
   public static final String PREFIX = "++";
 
-  public ActivityTaskCreationListener(TaskService taskServ, TaskParser parser, IdentityManager identityManager, ActivityManager activityManager, UserService userService) {
+  public ActivityTaskCreationListener(TaskService taskServ, ProjectService projectService, StatusService statusService, TaskParser parser, IdentityManager identityManager, ActivityManager activityManager, SpaceService spaceService, UserService userService) {
     this.taskService = taskServ;
+    this.projectService = projectService;
+    this.statusService = statusService;
     this.parser = parser;
     this.identityManager = identityManager;
     this.activityManager = activityManager;
+    this.spaceService = spaceService;
     this.userService = userService;
   }
 
   @Override
   public void saveActivity(ActivityLifeCycleEvent event) {
-    createTask(event);
+    createTask(event, false);
   }
 
   @Override
@@ -61,15 +76,16 @@ public class ActivityTaskCreationListener extends ActivityListenerPlugin {
 
   @Override
   public void saveComment(ActivityLifeCycleEvent event) {
-    createTask(event);
+    createTask(event, true);
   }
 
   @Override
   public void likeActivity(ActivityLifeCycleEvent event) {
   }
 
-  private void createTask(ActivityLifeCycleEvent event) {
+  private void createTask(ActivityLifeCycleEvent event, boolean isComment) {
     ExoSocialActivity activity = event.getActivity();
+    ExoSocialActivity rootActivity = isComment ? activityManager.getActivity(activity.getParentId()) : activity;
     Identity identity = identityManager.getIdentity(activity.getPosterId(), false);    
     ParserContext context = new ParserContext(userService.getUserTimezone(identity.getRemoteId()));
     String comment = activity.getTitle();
@@ -101,10 +117,15 @@ public class ActivityTaskCreationListener extends ActivityListenerPlugin {
 
         task.setActivityId(activity.getId());
 
-        //TODO: process if this activity is in space
-        //Now, it's impossible to find project of space, be cause space (group) can have many project
-        // which project will contains this task?
-        //String spaceGroup = getSpaceGroup(activity);
+        // If task is created in space, it will belong to the top project
+        if(rootActivity.getActivityStream().getType() == ActivityStream.Type.SPACE) {
+          String spaceName = rootActivity.getActivityStream().getPrettyId();
+          Space space = spaceService.getSpaceByPrettyName(spaceName);
+          List<Project> projects = ProjectUtil.getProjectTree(space.getGroupId(), projectService);
+          if (projects != null && projects.size() > 0) {
+            task.setStatus(statusService.getDefaultStatus(projects.get(0).getId()));
+          }
+        }
         
         taskService.createTask(task);
 
