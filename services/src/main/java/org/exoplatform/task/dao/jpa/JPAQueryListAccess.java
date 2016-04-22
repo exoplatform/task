@@ -54,8 +54,21 @@ public class JPAQueryListAccess<E> implements ListAccess<E> {
 
     E[] e = (E[])Array.newInstance(clazz, list.size());
     for (int i = 0; i < e.length; i++) {
-      E clone = DAOHandlerJPAImpl.clone(list.get(i));
-      e[i] = clone != null ? clone : list.get(i);
+      Object obj = list.get(i);
+      E entity = null;
+      if (clazz.isInstance(obj)) {
+        entity = (E)obj;
+      } else if (obj instanceof Object[]){
+        for (Object o : (Object[])obj) {
+          if (clazz.isInstance(o)) {
+            entity = (E)o;
+            break;
+          }
+        }
+      }
+
+      E clone = DAOHandlerJPAImpl.clone(entity);
+      e[i] = clone != null ? clone : entity;
     }
     return e;
   }

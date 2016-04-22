@@ -17,6 +17,7 @@
 package org.exoplatform.task.dao;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -27,6 +28,7 @@ import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.task.AbstractTest;
+import org.exoplatform.task.dao.condition.Conditions;
 import org.exoplatform.task.domain.Label;
 import org.exoplatform.task.domain.LabelTaskMapping;
 import org.exoplatform.task.domain.Priority;
@@ -159,7 +161,53 @@ public class TestTaskDAO extends AbstractTest {
     Assert.assertEquals(1, tasks.getSize());
     Assert.assertEquals(1, ListUtil.load(tasks, 0, -1).length);
   }  
-  
+
+  @Test
+  public void testFindTaskOrderByDueDate() throws Exception {
+    Calendar calendar = Calendar.getInstance();
+
+    Task task = newTaskInstance("task 1", "description of task 1", "root");
+    task.setDueDate(calendar.getTime());
+    tDAO.create(task);
+
+    task = newTaskInstance("task 2", "description of task 2", "root");
+    calendar.add(Calendar.DATE, 1);
+    task.setDueDate(calendar.getTime());
+    tDAO.create(task);
+
+    task = newTaskInstance("task 3", "description of task 3", "root");
+    calendar.add(Calendar.DATE, -2);
+    task.setDueDate(calendar.getTime());
+    tDAO.create(task);
+
+
+    task = newTaskInstance("task 4", "description of task 4", "root");
+    calendar.add(Calendar.DATE, 3);
+    task.setDueDate(calendar.getTime());
+    tDAO.create(task);
+
+
+    task = newTaskInstance("task 5", "description of task 5", "root");
+    tDAO.create(task);
+
+
+    TaskQuery taskQuery = new TaskQuery();
+    taskQuery.setAssignee(Arrays.asList("root"));
+    OrderBy order = new OrderBy.ASC(Conditions.TASK_DUEDATE);
+    taskQuery.setOrderBy(Arrays.asList(order));
+
+    ListAccess<Task> list = tDAO.findTasks(taskQuery);
+
+    Assert.assertEquals(5, list.getSize());
+
+    Task[] tasks = list.load(0, -1);
+    Assert.assertEquals("task 3", tasks[0].getTitle());
+    Assert.assertEquals("task 1", tasks[1].getTitle());
+    Assert.assertEquals("task 2", tasks[2].getTitle());
+    Assert.assertEquals("task 4", tasks[3].getTitle());
+    Assert.assertEquals("task 5", tasks[4].getTitle());
+  }
+
   @Test
   public void testFindTaskByQueryAdvance() throws Exception {
     Task task = newTaskInstance("testTask", "task with label", username);

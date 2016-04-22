@@ -23,12 +23,14 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Selection;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -113,20 +115,35 @@ public abstract class CommonJPADAO<E, K extends Serializable> extends GenericDAO
       //
       q.select(cb.countDistinct(root));
       final TypedQuery<Long> countQuery = em.createQuery(q);
-      
-      //
-      q.select(root).distinct(true);
+
+      // Some RDBMS only allow sort by selected field
+      // So we need multi-selection here to add the selectCase into selection in case we need the null value at last of results
+      List<Selection> selections = new ArrayList<>();
+      selections.add(root);
       
       List<OrderBy> orderby = query.getOrderBy();
       if(orderby != null && !orderby.isEmpty()) {
-        Order[] orders = new Order[orderby.size()];
-        for(int i = 0; i < orders.length; i++) {
-          OrderBy orderBy = orderby.get(i);
-          Path p = root.get(orderBy.getFieldName());
-          orders[i] = orderBy.isAscending() ? cb.asc(p) : cb.desc(p);
+        List<Order> orders = new ArrayList<Order>(orderby.size());
+        for(OrderBy orderBy : orderby) {
+          Expression p = root.get(orderBy.getFieldName());
+          Order order;
+          if (orderBy.isAscending()) {
+            // NULL value should be at last when order by
+            Expression nullCase = cb.selectCase().when(p.isNull(), 1).otherwise(0);
+            selections.add(nullCase);
+            orders.add(cb.asc(nullCase));
+
+            order = cb.asc(p);
+          } else {
+            order = cb.desc(p);
+          }
+          orders.add(order);
         }
         q.orderBy(orders);
       }
+
+      //
+      q.multiselect(selections).distinct(true);
       
       TypedQuery<E> selectQuery = em.createQuery(q);      
       return new JPAQueryListAccess<E>(clazz, countQuery, selectQuery);
