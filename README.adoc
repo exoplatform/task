@@ -22,6 +22,7 @@ Tasks management add-on.
 [NOTE]
 --
 * image:https://img.shields.io/badge/eXo%20Addon-supported-blue.svg[] image:https://ci.exoplatform.org/buildStatus/icon?job={ci-job-name}["Build Status", link="{ci-url}{ci-job-name}/"]
+* Contribute: image:http://beta.codenvy.com/factory/resources/codenvy-contribute.svg["Codenvy eXo Developer Workspace", link="http://beta.codenvy.com/f?id=vu1kgww8udkbd6ie"]
 * Quick install: `./addon install exo-tasks`
 --
 
