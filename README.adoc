@@ -1,4 +1,6 @@
 = eXo Tasks
+:toc: preamble
+:toclevels: 2
 // GitHub/AsciiDoc Configuration
 ifdef::env-github[]
 :note-caption: :information_source:
@@ -9,7 +11,6 @@ endif::[]
 :project-branch: develop
 :ci-job-name: addon-task-{project-branch}-ci
 // Add-on documentation
-:plf-version-compatibility: 4.3.0+
 :plf-download-url: http://sourceforge.net/projects/exo/files/Platform4.3/eXo-Platform-community-tomcat-4.3.0.zip/download
 :task-install-screenshot-url: https://www.exoplatform.com/blog/wp-content/uploads/2015/08/01-tasks-management.png
 :task-create-screenshot-url: https://www.exoplatform.com/blog/wp-content/uploads/2015/08/02-incoming-task.png
@@ -21,7 +22,7 @@ Tasks management add-on.
 [NOTE]
 --
 * image:https://img.shields.io/badge/eXo%20Addon-supported-blue.svg[] image:https://ci.exoplatform.org/buildStatus/icon?job={ci-job-name}["Build Status", link="{ci-url}{ci-job-name}/"]
-* Quick install: +./addon install exo-tasks+
+* Quick install: `./addon install exo-tasks`
 --
 
 == Overview
