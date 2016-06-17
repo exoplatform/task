@@ -1,4 +1,4 @@
-define('project-menu', ['SHARED/jquery', 'SHARED/taskLocale', 'ta_edit_inline', 'SHARED/task_ck_editor'], function($, locale, editinline) {
+define('project-menu', ['SHARED/jquery', 'SHARED/taskLocale', 'ta_edit_inline', 'SHARED/commons-editor'], function($, locale, editinline) {
   var pMenu = {};
   
   pMenu.init = function(taApp) {
@@ -90,7 +90,7 @@ define('project-menu', ['SHARED/jquery', 'SHARED/taskLocale', 'ta_edit_inline', 
           });
           
           
-          CKEDITOR.basePath = '/task-management/assets/org/exoplatform/task/management/assets/ckeditorCustom/';
+          //CKEDITOR.basePath = '/CommonsResources/ckeditor/';
           $dialog.find('textarea').ckeditor({
             customConfig: '/task-management/assets/org/exoplatform/task/management/assets/ckeditorCustom/config.js'
           });

@@ -1,8 +1,8 @@
-define('x_editable_ckeditor', ['SHARED/jquery', 'SHARED/edit_inline_js', 'SHARED/task_ck_editor'], function(jquery, editinline) {
+define('x_editable_ckeditor', ['SHARED/jquery', 'SHARED/edit_inline_js', 'SHARED/commons-editor'], function(jquery, editinline, ckeditor) {
     (function ($) {
         "use strict";
 
-        CKEDITOR.basePath = '/task-management/assets/org/exoplatform/task/management/assets/ckeditorCustom/';
+        CKEDITOR.basePath = '/CommonsResources/ckeditor/';
         var CKEditor = function (options) {
             this.init('ckeditor', options, CKEditor.defaults);
         };

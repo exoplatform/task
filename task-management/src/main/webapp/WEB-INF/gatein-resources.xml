@@ -159,27 +159,6 @@
     </depends>
   </module>
   <module>
-    <name>task_ck_editor</name>
-    <script>
-      <adapter>
-        (function() {
-        var oldJQuery = window.jQuery;
-        window.jQuery = $;
-        <include>/WEB-INF/classes/org/exoplatform/task/management/assets/ckeditorCustom/ckeditor.js</include>
-        <include>/WEB-INF/classes/org/exoplatform/task/management/assets/ckeditorCustom/adapters/jquery.js</include>
-        <include>/WEB-INF/classes/org/exoplatform/task/management/assets/ckeditorCustom/lang/en.js</include>
-        <include>/WEB-INF/classes/org/exoplatform/task/management/assets/ckeditorCustom/styles.js</include>
-        window.jQuery = oldJQuery;
-        return $;
-        })();
-      </adapter>
-    </script>
-    <depends>
-      <module>jquery</module>
-      <as>$</as>
-    </depends>
-  </module>
-  <module>
     <name>edit_inline_js</name>
     <script>
       <adapter>
