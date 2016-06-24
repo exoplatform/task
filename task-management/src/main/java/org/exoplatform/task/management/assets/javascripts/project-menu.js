@@ -90,7 +90,7 @@ define('project-menu', ['SHARED/jquery', 'SHARED/taskLocale', 'ta_edit_inline', 
           });
           
           
-          //CKEDITOR.basePath = '/CommonsResources/ckeditor/';
+          //CKEDITOR.basePath = '/commons-extension/ckeditor/';
           $dialog.find('textarea').ckeditor({
             customConfig: '/task-management/assets/org/exoplatform/task/management/assets/ckeditorCustom/config.js'
           });

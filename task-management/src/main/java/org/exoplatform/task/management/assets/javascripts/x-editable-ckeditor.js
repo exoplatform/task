@@ -2,7 +2,7 @@ define('x_editable_ckeditor', ['SHARED/jquery', 'SHARED/edit_inline_js', 'SHARED
     (function ($) {
         "use strict";
 
-        CKEDITOR.basePath = '/CommonsResources/ckeditor/';
+        CKEDITOR.basePath = '/commons-extension/ckeditor/';
         var CKEditor = function (options) {
             this.init('ckeditor', options, CKEditor.defaults);
         };
