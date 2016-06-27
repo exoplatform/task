@@ -126,6 +126,21 @@
       </init-params>
     </component-plugin>
   </external-component-plugins>
+  
+  <external-component-plugins>
+    <target-component>org.exoplatform.commons.api.ui.PlugableUIService</target-component>
+    <component-plugin>
+      <name>taskPlugin</name>
+      <set-method>addPlugin</set-method>
+      <type>org.exoplatform.task.integration.chat.ChatTaskPlugin</type>
+      <init-params>
+        <value-param>
+          <name>type</name>
+          <value>task</value>
+        </value-param>
+      </init-params>
+    </component-plugin>
+  </external-component-plugins>
 
   <import>jar:/conf/portal/task-notification-plugin.xml</import>
 </configuration>

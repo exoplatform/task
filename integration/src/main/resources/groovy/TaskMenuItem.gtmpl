@@ -1,0 +1,4 @@
+<a href="#">
+	<i class="uiIconChatCreateTask uiIconChatLightGray"></i> 
+	<%=rs.getString("exoplatform.chat.assign.task")%>
+</a>
