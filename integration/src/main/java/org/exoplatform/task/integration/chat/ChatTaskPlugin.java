@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.output.StringBuilderWriter;
+import org.apache.commons.lang.StringUtils;
+
 import org.exoplatform.commons.api.ui.ActionContext;
 import org.exoplatform.commons.api.ui.BaseUIPlugin;
 import org.exoplatform.commons.api.ui.RenderContext;
@@ -118,7 +120,9 @@ public class ChatTaskPlugin extends BaseUIPlugin<RenderContext, ActionContext> {
   @Override
   public void processAction(ActionContext context) {
     Map<String, Object> params = context.getParams();
+    String creator = ConversationState.getCurrent().getIdentity().getUserId();
     String username = (String) params.get("username");
+    username = StringUtils.isEmpty(username) ? creator : username;
 
     SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm");
     Date today = new Date();
@@ -133,23 +137,27 @@ public class ChatTaskPlugin extends BaseUIPlugin<RenderContext, ActionContext> {
 
     String taskTitle = (String) params.get("task");
     String roomName = (String) params.get("roomName");
-    boolean isSpace = (boolean) params.get("isSpace");
+    String isSpace = (String) params.get("isSpace");
 
-    if (isSpace) {
+    for (String name : username.split(",")) {
       Task task = new Task();
-      task.setAssignee(username);
+      task.setAssignee(name);
       task.setTitle(taskTitle);
       task.setDueDate(dueDate);
-      task.setCreatedBy(ConversationState.getCurrent().getIdentity().getUserId());
+      task.setCreatedBy(creator);
       
-      Space space = spaceService.getSpaceByPrettyName(roomName);
-      List<Project> projects = ProjectUtil.getProjectTree(space.getGroupId(), projectService);
-      if (projects != null && projects.size() > 0) {
-        task.setStatus(statusService.getDefaultStatus(projects.get(0).getId()));
+      //find default project of space
+      if ("true".equals(isSpace)) {
+        if (StringUtils.isNotEmpty(roomName)) {
+          Space space = spaceService.getSpaceByPrettyName(roomName);
+          List<Project> projects = ProjectUtil.getProjectTree(space.getGroupId(), projectService);
+          if (projects != null && projects.size() > 0) {
+            task.setStatus(statusService.getDefaultStatus(projects.get(0).getId()));          
+          }
+        }
       }
-      taskService.createTask(task);
+      taskService.createTask(task);      
     }
-
   }
 
   @Override
