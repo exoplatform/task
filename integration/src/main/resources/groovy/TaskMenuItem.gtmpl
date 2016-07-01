@@ -1,4 +1,6 @@
-<a href="#">
-	<i class="uiIconChatCreateTask uiIconChatLightGray"></i> 
-	<%=rs.getString("exoplatform.chat.assign.task")%>
-</a>
+<li class="meeting-action-link meeting-action-task" data-toggle="meeting-action-task-panel" style="display: none;">
+	<a href="#">
+		<i class="uiIconChatCreateTask uiIconChatLightGray"></i> 
+		<%=rs.getString("exoplatform.chat.assign.task")%>
+	</a>
+</li>

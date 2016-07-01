@@ -71,6 +71,7 @@
 						$.ajax({
 							url : createTaskUrl,
 							data : {
+								"extension_action" : "createTask",
 								"username" : selectedUsers,
 								"dueDate" : dueDate,
 								"task" : task,

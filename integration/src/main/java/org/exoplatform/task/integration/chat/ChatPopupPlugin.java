@@ -22,14 +22,15 @@ package org.exoplatform.task.integration.chat;
 import javax.ws.rs.core.MediaType;
 
 import java.nio.charset.Charset;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.commons.lang.StringUtils;
-
 import org.exoplatform.commons.api.ui.ActionContext;
 import org.exoplatform.commons.api.ui.BaseUIPlugin;
 import org.exoplatform.commons.api.ui.RenderContext;
@@ -52,15 +53,15 @@ import org.exoplatform.task.service.StatusService;
 import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.util.ProjectUtil;
 
-public class ChatTaskPlugin extends BaseUIPlugin<RenderContext, ActionContext> {
+public class ChatPopupPlugin extends BaseUIPlugin {
 
-  private static Log          log        = ExoLogger.getExoLogger(ChatTaskPlugin.class);
-
-  private static final String MENU_ITEM  = "classpath:/groovy/TaskMenuItem.gtmpl";
+  private static Log          log        = ExoLogger.getExoLogger(ChatPopupPlugin.class);
 
   private static final String POPUP      = "classpath:/groovy/TaskPopup.gtmpl";
 
   private static final String TYPE       = "type";
+
+  private static final String CREATE_TASK_ACTION = "createTask";
 
   private TemplateService     templateService;
 
@@ -72,9 +73,9 @@ public class ChatTaskPlugin extends BaseUIPlugin<RenderContext, ActionContext> {
 
   private TaskService         taskService;
 
-  private String              pluginType = "task";
+  private String              pluginType = "chat_extension_popup";
 
-  public ChatTaskPlugin(InitParams params,
+  public ChatPopupPlugin(InitParams params,
                         TemplateService templateService,
                         ProjectService projectService,
                         StatusService statusService,
@@ -96,20 +97,18 @@ public class ChatTaskPlugin extends BaseUIPlugin<RenderContext, ActionContext> {
   public Response render(RenderContext renderContext) {
     ResourceResolver resolver = new ClasspathResourceResolver();
     StringBuilderWriter writer = new StringBuilderWriter();
+    
+    DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
+    Date today = Calendar.getInstance().getTime();
+    String todayDate = df.format(today);
 
     BindingContext bindingContext = new BindingContext(resolver, writer);
     bindingContext.put("rs", renderContext.getRsBundle());
 
-    Map<String, ?> params = renderContext.getParams();
     try {
-      Object renderPopup = params.get("renderPopup");
-      if (renderPopup != null && (boolean) renderPopup) {
-        bindingContext.put("today", params.get("today"));
-        bindingContext.put("actionUrl", renderContext.getActionUrl());
-        templateService.merge(POPUP, bindingContext);
-      } else {
-        templateService.merge(MENU_ITEM, bindingContext);
-      }
+      bindingContext.put("today", todayDate);
+      bindingContext.put("actionUrl", renderContext.getActionUrl());
+      templateService.merge(POPUP, bindingContext);
     } catch (Exception ex) {
       log.error(ex.getMessage(), ex);
     }
@@ -119,45 +118,56 @@ public class ChatTaskPlugin extends BaseUIPlugin<RenderContext, ActionContext> {
 
   @Override
   public void processAction(ActionContext context) {
-    Map<String, Object> params = context.getParams();
-    String creator = ConversationState.getCurrent().getIdentity().getUserId();
-    String username = (String) params.get("username");
-    username = StringUtils.isEmpty(username) ? creator : username;
-
-    SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm");
-    Date today = new Date();
-    today.setHours(0);
-    today.setMinutes(0);
-    Date dueDate = new Date();
-    try {
-      dueDate = sdf.parse((String) params.get("dueDate") + " 23:59");
-    } catch (Exception ex) {
-      log.error(ex.getMessage(), ex);
-    }
-
-    String taskTitle = (String) params.get("task");
-    String roomName = (String) params.get("roomName");
-    String isSpace = (String) params.get("isSpace");
-
-    for (String name : username.split(",")) {
-      Task task = new Task();
-      task.setAssignee(name);
-      task.setTitle(taskTitle);
-      task.setDueDate(dueDate);
-      task.setCreatedBy(creator);
+    Map<String, List<String>> params = context.getParams();
+    String actionName = context.getName();
+    
+    if (CREATE_TASK_ACTION.equals(actionName)) {
+      String creator = ConversationState.getCurrent().getIdentity().getUserId();
+      String username = getParam("username", params);
+      username = StringUtils.isEmpty(username) ? creator : username;
       
-      //find default project of space
-      if ("true".equals(isSpace)) {
-        if (StringUtils.isNotEmpty(roomName)) {
-          Space space = spaceService.getSpaceByPrettyName(roomName);
-          List<Project> projects = ProjectUtil.getProjectTree(space.getGroupId(), projectService);
-          if (projects != null && projects.size() > 0) {
-            task.setStatus(statusService.getDefaultStatus(projects.get(0).getId()));          
+      SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm");
+      Date today = new Date();
+      today.setHours(0);
+      today.setMinutes(0);
+      Date dueDate = new Date();
+      try {
+        dueDate = sdf.parse(getParam("dueDate", params) + " 23:59");
+      } catch (Exception ex) {
+        log.error(ex.getMessage(), ex);
+      }
+      
+      String taskTitle = getParam("task", params);
+      String roomName = getParam("roomName", params);
+      String isSpace = getParam("isSpace", params);
+      
+      for (String name : username.split(",")) {
+        Task task = new Task();
+        task.setAssignee(name);
+        task.setTitle(taskTitle);
+        task.setDueDate(dueDate);
+        task.setCreatedBy(creator);
+        
+        //find default project of space
+        if ("true".equals(isSpace)) {
+          if (StringUtils.isNotEmpty(roomName)) {
+            Space space = spaceService.getSpaceByPrettyName(roomName);
+            List<Project> projects = ProjectUtil.getProjectTree(space.getGroupId(), projectService);
+            if (projects != null && projects.size() > 0) {
+              task.setStatus(statusService.getDefaultStatus(projects.get(0).getId()));          
+            }
           }
         }
-      }
-      taskService.createTask(task);      
+        taskService.createTask(task);      
+      }  
     }
+  }
+
+  private String getParam(String name, Map<String, List<String>> params) {
+    if (params.get(name) != null && params.get(name).size() > 0) {
+      return params.get(name).get(0);
+    }
+    return null;
   }
 
   @Override
