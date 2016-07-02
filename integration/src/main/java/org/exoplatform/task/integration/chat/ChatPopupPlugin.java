@@ -48,20 +48,26 @@ import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.service.ParserContext;
 import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.StatusService;
+import org.exoplatform.task.service.TaskParser;
 import org.exoplatform.task.service.TaskService;
+import org.exoplatform.task.service.UserService;
 import org.exoplatform.task.util.ProjectUtil;
 
 public class ChatPopupPlugin extends BaseUIPlugin {
 
-  private static Log          log        = ExoLogger.getExoLogger(ChatPopupPlugin.class);
+  private static Log          log                       =
+                                  ExoLogger.getExoLogger(ChatPopupPlugin.class);
 
-  private static final String POPUP      = "classpath:/groovy/TaskPopup.gtmpl";
+  private static final String POPUP                     = "classpath:/groovy/TaskPopup.gtmpl";
 
-  private static final String TYPE       = "type";
+  private static final String TYPE                      = "type";
 
-  private static final String CREATE_TASK_ACTION = "createTask";
+  private static final String CREATE_TASK_ACTION        = "createTask";
+
+  private static final String CREATE_TASK_INLINE_ACTION = "createTaskInline";
 
   private TemplateService     templateService;
 
@@ -73,19 +79,27 @@ public class ChatPopupPlugin extends BaseUIPlugin {
 
   private TaskService         taskService;
 
-  private String              pluginType = "chat_extension_popup";
+  private UserService         userService;
+
+  private TaskParser          taskParser;
+
+  private String              pluginType                = "chat_extension_popup";
 
   public ChatPopupPlugin(InitParams params,
-                        TemplateService templateService,
-                        ProjectService projectService,
-                        StatusService statusService,
-                        SpaceService spaceService,
-                        TaskService taskService) {
+                         TemplateService templateService,
+                         ProjectService projectService,
+                         StatusService statusService,
+                         SpaceService spaceService,
+                         TaskService taskService,
+                         UserService userService,
+                         TaskParser taskParser) {
     this.templateService = templateService;
     this.projectService = projectService;
     this.statusService = statusService;
     this.taskService = taskService;
     this.spaceService = spaceService;
+    this.userService = userService;
+    this.taskParser = taskParser;
 
     ValueParam param = params.getValueParam(TYPE);
     if (param != null) {
@@ -97,7 +111,7 @@ public class ChatPopupPlugin extends BaseUIPlugin {
   public Response render(RenderContext renderContext) {
     ResourceResolver resolver = new ClasspathResourceResolver();
     StringBuilderWriter writer = new StringBuilderWriter();
-    
+
     DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
     Date today = Calendar.getInstance().getTime();
     String todayDate = df.format(today);
@@ -120,12 +134,12 @@ public class ChatPopupPlugin extends BaseUIPlugin {
   public void processAction(ActionContext context) {
     Map<String, List<String>> params = context.getParams();
     String actionName = context.getName();
-    
+
+    String creator = ConversationState.getCurrent().getIdentity().getUserId();
     if (CREATE_TASK_ACTION.equals(actionName)) {
-      String creator = ConversationState.getCurrent().getIdentity().getUserId();
       String username = getParam("username", params);
       username = StringUtils.isEmpty(username) ? creator : username;
-      
+
       SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm");
       Date today = new Date();
       today.setHours(0);
@@ -136,30 +150,34 @@ public class ChatPopupPlugin extends BaseUIPlugin {
       } catch (Exception ex) {
         log.error(ex.getMessage(), ex);
       }
-      
+
       String taskTitle = getParam("task", params);
       String roomName = getParam("roomName", params);
       String isSpace = getParam("isSpace", params);
-      
+
       for (String name : username.split(",")) {
         Task task = new Task();
         task.setAssignee(name);
         task.setTitle(taskTitle);
         task.setDueDate(dueDate);
         task.setCreatedBy(creator);
-        
-        //find default project of space
+
+        // find default project of space
         if ("true".equals(isSpace)) {
           if (StringUtils.isNotEmpty(roomName)) {
             Space space = spaceService.getSpaceByPrettyName(roomName);
             List<Project> projects = ProjectUtil.getProjectTree(space.getGroupId(), projectService);
             if (projects != null && projects.size() > 0) {
-              task.setStatus(statusService.getDefaultStatus(projects.get(0).getId()));          
+              task.setStatus(statusService.getDefaultStatus(projects.get(0).getId()));
             }
           }
         }
-        taskService.createTask(task);      
-      }  
+        taskService.createTask(task);
+      }
+    } else if (CREATE_TASK_INLINE_ACTION.equals(actionName)) {
+      String msg = getParam("msg", params);
+      ParserContext parserCtx = new ParserContext(userService.getUserTimezone(creator));
+      taskService.createTask(taskParser.parse(msg, parserCtx));
     }
   }
 
