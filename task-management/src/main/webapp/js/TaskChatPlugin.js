@@ -9,10 +9,12 @@
 						var dueDate = $("#task-add-date").val();
 						var roomName = chatApplication.targetFullname;
 						var isSpace = false;
-						var roomId = chatApplication.targetUser;
+						var isTeam = false;
 						var targetUser = chatApplication.targetUser;
 						if (targetUser.indexOf("space-") > -1) {
 							isSpace = true;
+						} else if (targetUser.indexOf("team-") > -1) {
+							isTeam = true;
 						}
 
 						// Validate empty
@@ -76,7 +78,8 @@
 								"dueDate" : dueDate,
 								"task" : task,
 								"roomName" : roomName,
-								"isSpace" : isSpace
+								"isSpace" : isSpace,
+								"isTeam": isTeam
 							},
 							success : function(response) {
 
@@ -107,15 +110,43 @@
 	ChatApplication.prototype.sendMessage = function(msg, callback) {
 		var pattern = /\s*\+\+\S+/;
 		if (pattern.test(msg)) {
+			var roomName = chatApplication.targetFullname;
+			var isSpace = false, isTeam = false;
+			var targetUser = chatApplication.targetUser;
+			if (targetUser.indexOf("space-") > -1) {
+				isSpace = true;
+			} else if (targetUser.indexOf("team-") > -1) {
+				isTeam = true;
+			}
+			
+			var participants = [];
+			chatApplication.getUsers(targetUser, function (jsonData) {
+				participants.push(jsonData.name);
+			});
+			
 			// Call server
 			$.ajax({
 				url : createTaskUrl,
 				data : {
 					"extension_action" : "createTaskInline",
-					"msg": msg
+					"task": msg,
+					"isSpace": isSpace,
+					"isTeam": isTeam,
+					"roomName": roomName,
+					"participants": participants.join(",")
 				},
 				success : function(response) {
-					console.log("create inline task successful: " + response);
+					var options = {
+							"type" : "type-task",
+							"username" : response.assignee,
+							"dueDate" : response.dueDate,
+							"task" : response.task
+						};
+
+						chatApplication.chatRoom.sendMessage(response.task,
+								options, "true");
+						setActionButtonEnabled('.create-task-button',
+								true);
 				},
 				error : function(xhr, status, error) {
 					console.log("fail to create inline task: " + error);

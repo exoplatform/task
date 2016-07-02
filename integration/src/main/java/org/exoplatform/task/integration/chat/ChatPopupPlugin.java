@@ -24,10 +24,13 @@ import javax.ws.rs.core.MediaType;
 import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.commons.lang.StringUtils;
@@ -35,6 +38,7 @@ import org.exoplatform.commons.api.ui.ActionContext;
 import org.exoplatform.commons.api.ui.BaseUIPlugin;
 import org.exoplatform.commons.api.ui.RenderContext;
 import org.exoplatform.commons.api.ui.Response;
+import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.container.xml.ValueParam;
 import org.exoplatform.groovyscript.text.BindingContext;
@@ -46,7 +50,9 @@ import org.exoplatform.services.log.Log;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
+import org.exoplatform.task.dao.ProjectQuery;
 import org.exoplatform.task.domain.Project;
+import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.service.ParserContext;
 import org.exoplatform.task.service.ProjectService;
@@ -134,8 +140,11 @@ public class ChatPopupPlugin extends BaseUIPlugin {
   public void processAction(ActionContext context) {
     Map<String, List<String>> params = context.getParams();
     String actionName = context.getName();
-
     String creator = ConversationState.getCurrent().getIdentity().getUserId();
+    String taskInput = getParam("task", params);   
+
+    Status status = getStatus(params);
+        
     if (CREATE_TASK_ACTION.equals(actionName)) {
       String username = getParam("username", params);
       username = StringUtils.isEmpty(username) ? creator : username;
@@ -149,35 +158,80 @@ public class ChatPopupPlugin extends BaseUIPlugin {
         dueDate = sdf.parse(getParam("dueDate", params) + " 23:59");
       } catch (Exception ex) {
         log.error(ex.getMessage(), ex);
-      }
-
-      String taskTitle = getParam("task", params);
-      String roomName = getParam("roomName", params);
-      String isSpace = getParam("isSpace", params);
+      }      
 
       for (String name : username.split(",")) {
         Task task = new Task();
         task.setAssignee(name);
-        task.setTitle(taskTitle);
+        task.setTitle(taskInput);
         task.setDueDate(dueDate);
         task.setCreatedBy(creator);
-
-        // find default project of space
-        if ("true".equals(isSpace)) {
-          if (StringUtils.isNotEmpty(roomName)) {
-            Space space = spaceService.getSpaceByPrettyName(roomName);
-            List<Project> projects = ProjectUtil.getProjectTree(space.getGroupId(), projectService);
-            if (projects != null && projects.size() > 0) {
-              task.setStatus(statusService.getDefaultStatus(projects.get(0).getId()));
-            }
-          }
-        }
+        task.setCreatedTime(new Date());
+        task.setStatus(status);
         taskService.createTask(task);
       }
     } else if (CREATE_TASK_INLINE_ACTION.equals(actionName)) {
-      String msg = getParam("msg", params);
       ParserContext parserCtx = new ParserContext(userService.getUserTimezone(creator));
-      taskService.createTask(taskParser.parse(msg, parserCtx));
+      Task task = taskParser.parse(taskInput, parserCtx);
+      task.setCreatedBy(creator);
+      task.setCreatedTime(new Date());
+      task.setStatus(status);
+      taskService.createTask(task);
+    }
+  }
+
+  private Status getStatus(Map<String, List<String>> params) {
+    String creator = ConversationState.getCurrent().getIdentity().getUserId();
+    String roomName = getParam("roomName", params);
+    String isSpace = getParam("isSpace", params);
+    String isTeam = getParam("isTeam", params);
+    String participants = getParam("participants", params);
+
+    Project project = null;
+    
+    // find default project of space
+    if ("true".equals(isSpace)) {
+      log.debug("creating task in space {}", roomName);
+      
+      if (StringUtils.isNotEmpty(roomName)) {
+        Space space = spaceService.getSpaceByPrettyName(roomName);
+        if (space != null) {
+          List<Project> projects = ProjectUtil.getProjectTree(space.getGroupId(), projectService);
+          if (projects != null && projects.size() > 0) {
+            project = projects.get(0);
+          } else {
+            log.warn("no project found for space {}, task will be created as incoming", space.getId());
+          }
+        } else {
+          log.warn("space {} is null, can't add task to space's default project", roomName);
+        }
+      }
+    } else if ("true".equals(isTeam)) {
+      log.debug("creating task in team project {}", roomName);
+      
+      ProjectQuery query = new ProjectQuery();
+      query.setKeyword(roomName);
+      ListAccess<Project> projects = projectService.findProjects(query);
+      try {
+        if (projects.getSize() > 0) {
+          project = projects.load(0, 1)[0];
+        } else {
+          Set<String> mans = new HashSet<String>(Arrays.asList(creator));
+          Set<String> pars = new HashSet<String>(Arrays.asList(participants.split(",")));
+          
+          project = ProjectUtil.newProjectInstance(roomName, null, mans, pars);
+          projectService.createProject(project);
+          statusService.createInitialStatuses(project);
+        }
+      } catch (Exception ex) {
+        log.error(ex);
+      }
+    }
+
+    if (project != null) {
+      return statusService.getDefaultStatus(project.getId());      
+    } else {
+      return null;
     }
   }
 
