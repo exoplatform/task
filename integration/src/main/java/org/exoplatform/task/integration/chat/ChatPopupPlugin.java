@@ -54,6 +54,7 @@ import org.exoplatform.task.dao.ProjectQuery;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.model.User;
 import org.exoplatform.task.service.ParserContext;
 import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.StatusService;
@@ -61,6 +62,8 @@ import org.exoplatform.task.service.TaskParser;
 import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.service.UserService;
 import org.exoplatform.task.util.ProjectUtil;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 public class ChatPopupPlugin extends BaseUIPlugin {
 
@@ -90,6 +93,8 @@ public class ChatPopupPlugin extends BaseUIPlugin {
   private TaskParser          taskParser;
 
   private String              pluginType                = "chat_extension_popup";
+  
+  private SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm");
 
   public ChatPopupPlugin(InitParams params,
                          TemplateService templateService,
@@ -137,7 +142,7 @@ public class ChatPopupPlugin extends BaseUIPlugin {
   }
 
   @Override
-  public void processAction(ActionContext context) {
+  public Response processAction(ActionContext context) {
     Map<String, List<String>> params = context.getParams();
     String actionName = context.getName();
     String creator = ConversationState.getCurrent().getIdentity().getUserId();
@@ -149,7 +154,7 @@ public class ChatPopupPlugin extends BaseUIPlugin {
       String username = getParam("username", params);
       username = StringUtils.isEmpty(username) ? creator : username;
 
-      SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm");
+      sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm");
       Date today = new Date();
       today.setHours(0);
       today.setMinutes(0);
@@ -160,6 +165,7 @@ public class ChatPopupPlugin extends BaseUIPlugin {
         log.error(ex.getMessage(), ex);
       }      
 
+      JSONArray jTasks = new JSONArray();
       for (String name : username.split(",")) {
         Task task = new Task();
         task.setAssignee(name);
@@ -169,7 +175,9 @@ public class ChatPopupPlugin extends BaseUIPlugin {
         task.setCreatedTime(new Date());
         task.setStatus(status);
         taskService.createTask(task);
+        jTasks.add(buildJSON(task));
       }
+      return new Response(jTasks.toJSONString().getBytes(), MediaType.APPLICATION_JSON);
     } else if (CREATE_TASK_INLINE_ACTION.equals(actionName)) {
       ParserContext parserCtx = new ParserContext(userService.getUserTimezone(creator));
       Task task = taskParser.parse(taskInput, parserCtx);
@@ -177,7 +185,26 @@ public class ChatPopupPlugin extends BaseUIPlugin {
       task.setCreatedTime(new Date());
       task.setStatus(status);
       taskService.createTask(task);
+      return new Response(buildJSON(task).toJSONString().getBytes(), MediaType.APPLICATION_JSON);
+    } else {
+      return null;      
     }
+  }
+
+  private JSONObject buildJSON(Task task) {
+    JSONObject json = new JSONObject();
+    json.put("title", task.getTitle());
+    if (task.getAssignee() != null) {
+      User user = userService.loadUser(task.getAssignee());
+      if (user != null) {
+        json.put("assignee", user.getUsername());
+        json.put("fullName", String.format("%s %s", user.getFirstName(), user.getLastName()));        
+      }
+    }
+    if (task.getDueDate() != null) {
+      json.put("dueDate", sdf.format(task.getDueDate()));      
+    }
+    return json;
   }
 
   private Status getStatus(Map<String, List<String>> params) {

@@ -106,91 +106,99 @@
 						});
 					});
 
-	var sendMessage = ChatApplication.prototype.sendMessage; 
-	ChatApplication.prototype.sendMessage = function(msg, callback) {
-		var pattern = /\s*\+\+\S+/;
-		if (pattern.test(msg)) {
-			var roomName = chatApplication.targetFullname;
-			var isSpace = false, isTeam = false;
-			var targetUser = chatApplication.targetUser;
-			if (targetUser.indexOf("space-") > -1) {
-				isSpace = true;
-			} else if (targetUser.indexOf("team-") > -1) {
-				isTeam = true;
-			}
+	chatApplication.registerPlugin({
+		'getEvent' : function() {
+			return 'beforeSend';
+		},	
+		'onEvent' : function(context) {
+			var msg = context.msg;
 			
-			var participants = [];
-			chatApplication.getUsers(targetUser, function (jsonData) {
-				participants.push(jsonData.name);
-			});
-			
-			// Call server
-			$.ajax({
-				url : createTaskUrl,
-				data : {
-					"extension_action" : "createTaskInline",
-					"task": msg,
-					"isSpace": isSpace,
-					"isTeam": isTeam,
-					"roomName": roomName,
-					"participants": participants.join(",")
-				},
-				success : function(response) {
-					var options = {
-							"type" : "type-task",
-							"username" : response.assignee,
-							"dueDate" : response.dueDate,
-							"task" : response.task
-						};
-
-						chatApplication.chatRoom.sendMessage(response.task,
-								options, "true");
-						setActionButtonEnabled('.create-task-button',
-								true);
-				},
-				error : function(xhr, status, error) {
-					console.log("fail to create inline task: " + error);
+			var pattern = /\s*\+\+\S+/;
+			if (pattern.test(msg)) {
+				context.continueSend = false;
+				var msg = msg.replace("++", "");
+				var roomName = chatApplication.targetFullname;
+				var isSpace = false, isTeam = false;
+				var targetUser = chatApplication.targetUser;
+				if (targetUser.indexOf("space-") > -1) {
+					isSpace = true;
+				} else if (targetUser.indexOf("team-") > -1) {
+					isTeam = true;
 				}
-			});
+				
+				chatApplication.getUsers(targetUser, function (jsonData) {
+					var participants = [];
+					$.each(jsonData.users, function(idx, elem) {
+						participants.push(elem.name);					
+					});
+					
+					// Call server
+					$.ajax({
+						url : createTaskUrl,
+						data : {
+							"extension_action" : "createTaskInline",
+							"task": msg,
+							"isSpace": isSpace,
+							"isTeam": isTeam,
+							"roomName": roomName,
+							"participants": participants.join(",")
+						},
+						success : function(response) {
+							var options = {
+									"type" : "type-task",
+									"username" : response.assignee,
+									"fullname" : response.fullName,
+									"task" : response.title,
+									"dueDate" : response.dueDate
+							};
+							
+							chatApplication.chatRoom.sendMessage(response.title,
+									options, "true");
+							setActionButtonEnabled('.create-task-button',
+									true);
+						},
+						error : function(xhr, status, error) {
+							console.log("fail to create inline task: " + error);
+						}
+					});				
+				});			
+			}
 		}
-		sendMessage.apply(this, arguments);
-	}
+	});
 	
-	var getActionMeetingStyleClasses = ChatRoom.prototype.getActionMeetingStyleClasses;
-	ChatRoom.prototype.getActionMeetingStyleClasses = function(options) {
-		var actionType = options.type;
-		var out = "";
-
-		if ("type-task" === actionType) {
-			out += "                <div class='msUserAvatar'>";
-			out += "                <i class='uiIconChat32x32Task uiIconChat32x32LightGray'></i>";
-			out += "                </div>";
-		} else {
-			return getActionMeetingStyleClasses.apply(this, arguments);
-		}
-	}
-
-	var messageBeautifier = ChatRoom.prototype.messageBeautifier;
-	ChatRoom.prototype.messageBeautifier = function(objMessage, options) {
-		if (options.type === "type-task") {
+	chatApplication.chatRoom.registerPlugin({
+		"getType" : function() {
+			return "type-task";
+		},
+		"getActionMeetingStyleClasses" : function(options) {
+			var actionType = options.type;
 			var out = "";
-			out += "<b>" + options.task + "</b>";
-			out += "<div class='msTimeEvent'>";
-			out += "  <div>";
-			out += "    <i class='uiIconChatAssign uiIconChatLightGray mgR10'></i><span class='muted'>"
-					+ chatBundleData["exoplatform.chat.assign.to"]
-					+ ": </span>" + options.fullname;
-			out += "  </div>";
-			out += "  <div>";
-			out += "    <i class='uiIconChatClock uiIconChatLightGray mgR10'></i><span class='muted'>"
-					+ chatBundleData["exoplatform.chat.due.date"]
-					+ ":</span> <b>" + options.dueDate + "</b>";
-			out += "  </div>";
-			out += "</div>";
-		} else {
-			return messageBeautifier.apply(this, arguments);
+
+			if ("type-task" === actionType) {
+				out += "                <i class='uiIconChat32x32Task uiIconChat32x32LightGray'></i>";
+			}
+			return out;
+		},
+		"messageBeautifier" : function(objMessage, options) {
+			if (options.type === "type-task") {
+				var out = "";
+				out += "<b>" + options.task + "</b>";
+				out += "<div class='msTimeEvent'>";
+				out += "  <div>";
+				out += "    <i class='uiIconChatAssign uiIconChatLightGray mgR10'></i><span class='muted'>"
+						+ chatBundleData["exoplatform.chat.assign.to"]
+						+ ": </span>" + options.fullname;
+				out += "  </div>";
+				out += "  <div>";
+				out += "    <i class='uiIconChatClock uiIconChatLightGray mgR10'></i><span class='muted'>"
+						+ chatBundleData["exoplatform.chat.due.date"]
+						+ ":</span> <b>" + options.dueDate + "</b>";
+				out += "  </div>";
+				out += "</div>";
+				return out;
+			}
 		}
-	}
+	});
 
 	function hideMeetingPanel() {
 		$(".meeting-action-popup").css("display", "none");

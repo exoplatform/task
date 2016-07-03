@@ -84,8 +84,8 @@ public class ChatMenuPlugin extends BaseUIPlugin {
   }
 
   @Override
-  public void processAction(ActionContext context) {
-    
+  public Response processAction(ActionContext context) {
+    return null;
   }
 
   @Override
