@@ -105,7 +105,112 @@
 							}
 						});
 					});
-
+	
+//	var $msg = $("#msg");
+//	var $autoComplete = $('<div class="uiAutoComplete" style="display: none; top: 57px; left: 44px"></div>');
+//	$msg.after($autoComplete);
+//	
+//	var searching = false;
+//	var currMsg = '';
+//	chatApplication.registerPlugin({
+//		'getEvent' : function() {
+//			return 'keyUp';
+//		},	
+//		'onEvent' : function(context) {
+//			var event = context.event;
+//			if (searching) {
+//				if ( event.which === 13|| event.which === 27 ) {
+//					finish(event.which === 13);
+//					context.continueSend = false;
+//				} else if (event.which === 40 || event.which === 38) {
+//					var isUp = (event.which === 38);
+//					
+//					var $next = null;
+//					var $selected = $autoComplete.find('.selected');
+//					if (isUp) {
+//						$next = $selected.next('.item');
+//						if (!$next.length) {
+//							$next = $autoComplete.find('.item').first();
+//						}						
+//					} else {
+//						$next = $selected.prev('.item');
+//						if (!$next.length) {
+//							$next = $autoComplete.find('.item').last();
+//						}
+//					}
+//					
+//					$selected.removeClass('selected');
+//					$next.addClass('selected');
+//					
+//					context.continueSend = false;
+//				} else {
+//					//searching
+//					var idx = findIdx(event);
+//					if () {
+//						
+//					} else {
+//						finish(false);
+//					}
+//				}			
+//			} else {
+//				//press @ start autocomplete
+//				if (event.which === 50) {
+//					searching = true;
+//					$autoComplete.find('.item').first().addClass('selected');
+//					$autoComplete.show();
+//				} else {
+//					
+//				}
+//			}
+//			currMsg = $msg.val();
+//		}
+//	});
+//	
+//	function finish(completed) {
+//		searching = false;
+//		hideAutoComplete();
+//		if (completed) {
+//			var $selected = $autoComplete.find('.selected');
+//			applyUser($selected.html());
+//		}
+//	}
+//	
+//	function applyUser(username) {
+//		
+//	}
+//	
+//	function hideAutoComplete() {
+//		$autoComplete.hide();		
+//		var $selected = $autoComplete.find('.selected');
+//		$selected.removeClass('selected');
+//	}
+	
+//	$('#msg').exoMentions({
+//        onDataRequest : function (mode, query, callback) {
+//            var _this = this;
+//            $.ajax({
+//            	url: chatApplication.jzUsers,
+//            	data: {"filter": query,
+//        	      "user": chatApplication.username,
+//        	      "token": chatApplication.token,
+//        	      "dbName": chatApplication.dbName
+//        	    },
+//        	    dataType: "json",
+//        	    success: function(data) {
+//        	    	var users = [];
+//        	    	$.each(data.users, function(idx, user) {
+//        	    		users.push({
+//        	    			"id": user.name,
+//        	    			"name": user.fullname,
+//        	    			"type": "contact"
+//        	    		});
+//        	    	});
+//                    callback.call(_this, users);
+//                }
+//            });
+//        }
+//    });
+	
 	chatApplication.registerPlugin({
 		'getEvent' : function() {
 			return 'beforeSend';
