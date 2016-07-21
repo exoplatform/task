@@ -106,34 +106,8 @@
 						});
 					});
 	
-	var $msg = $("#msg");
+	chatApplication.initMention();
 			
-//	$('#msg').exoMentions({
-//        onDataRequest : function (mode, query, callback) {
-//            var _this = this;
-//            $.ajax({
-//            	url: chatApplication.jzUsers,
-//            	data: {"filter": query,
-//        	      "user": chatApplication.username,
-//        	      "token": chatApplication.token,
-//        	      "dbName": chatApplication.dbName
-//        	    },
-//        	    dataType: "json",
-//        	    success: function(data) {
-//        	    	var users = [];
-//        	    	$.each(data.users, function(idx, user) {
-//        	    		users.push({
-//        	    			"id": user.name,
-//        	    			"name": user.fullname,
-//        	    			"type": "contact"
-//        	    		});
-//        	    	});
-//                    callback.call(_this, users);
-//                }
-//            });
-//        }
-//    });
-	
 	chatApplication.registerPlugin({
 		'getEvent' : function() {
 			return 'beforeSend';
