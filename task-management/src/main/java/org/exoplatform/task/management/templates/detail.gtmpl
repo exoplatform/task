@@ -12,9 +12,10 @@
 	import org.exoplatform.task.domain.Priority;
 	import org.exoplatform.task.util.DateUtil;
 	import org.exoplatform.commons.utils.HTMLEntityEncoder;
+    import org.exoplatform.services.security.ConversationState;
 
-	def encoder = HTMLEntityEncoder.getInstance();
-
+    def encoder = HTMLEntityEncoder.getInstance();
+    def identity = ConversationState.getCurrent().getIdentity();
 	def task = taskModel.getTask();
 	def breadcumbs = taskModel.getBreadcumbs();
 	def assignee = taskModel.getAssignee();
@@ -23,8 +24,21 @@
 	def commentCount = taskModel.getCommentCount();
 	def comments = taskModel.getComments();
 	def currentUser = taskModel.getCurrentUser();
-   def labels = taskModel.getLabels();
-   def editableClasses = "hoverStatus editableField editable";
+    def labels = taskModel.getLabels();
+    def editableClasses = "hoverStatus editableField editable";
+    def projectEditableClasses ="";
+    def projectDataToggle="";
+    def projectInlineEditClass="";
+    if (task.status == null && task.getCreatedBy() == identity.getUserId()) {
+        projectEditableClasses = editableClasses;
+        projectDataToggle = "tooltip";
+        projectInlineEditClass = "uiEditableInline";
+    }
+    if (task.status != null && task.status.project.canEdit(identity)) {
+        projectEditableClasses = editableClasses;
+        projectDataToggle = "tooltip";
+        projectInlineEditClass = "uiEditableInline";
+    }
 %>
 <div class="addTask uiBox ${task.completed ? "task-completed" : ""}" data-taskid="${task.id}">
 <div class="uiContentBox">
@@ -54,11 +68,10 @@
         </ul>
         <a class="actionIcon close-right-panel" href="#"><i class="uiIconClose"></i></a>
     </div>
-
-    <div class="uiEditableInline clearfix ">
-        <span class="iconTaskName pull-left"><i title="&{tooltip.clickToEdit}" data-toggle="tooltip" data-placement="bottom" class="uiIconFolder"></i></span>
-        <div class="breadcrumbCont uiEditableInline" data-original-title="&{tooltip.clickToEdit}" data-toggle="tooltip" data-placement="bottom">
-            <ul class=" ${editableClasses} small"
+    <div class="${projectInlineEditClass} clearfix ">
+        <span class="iconTaskName pull-left"><i title="&{tooltip.clickToEdit}" data-toggle="${projectDataToggle}" data-placement="bottom" class="uiIconFolder"></i></span>
+        <div class="breadcrumbCont ${projectInlineEditClass}" data-original-title="&{tooltip.clickToEdit}" data-toggle="${projectDataToggle}" data-placement="bottom">
+            <ul class=" ${projectEditableClasses} small"
                 data-name="project" data-type="ParentProject" data-breadcrumb="false" data-value="${task.status == null ? 0 : task.status.project.id}">
                 ${breadcumbs}
             </ul>
