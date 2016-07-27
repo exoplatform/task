@@ -26,15 +26,10 @@
 	def currentUser = taskModel.getCurrentUser();
     def labels = taskModel.getLabels();
     def editableClasses = "hoverStatus editableField editable";
-    def projectEditableClasses ="";
+    def projectEditableClasses ="hoverStatus ";
     def projectDataToggle="";
     def projectInlineEditClass="";
-    if (task.status == null && task.getCreatedBy() == identity.getUserId()) {
-        projectEditableClasses = editableClasses;
-        projectDataToggle = "tooltip";
-        projectInlineEditClass = "uiEditableInline";
-    }
-    if (task.status != null && task.status.project.canEdit(identity)) {
+    if ((task.status == null && task.getCreatedBy() == identity.getUserId())||(task.status != null && task.status.project.canEdit(identity))) {
         projectEditableClasses = editableClasses;
         projectDataToggle = "tooltip";
         projectInlineEditClass = "uiEditableInline";
