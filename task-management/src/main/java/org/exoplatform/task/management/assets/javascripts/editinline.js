@@ -207,7 +207,15 @@ define('ta_edit_inline',
                     if (params.name == 'title') {
                         $centerPanel.find('[data-taskid="'+data.taskId+'"] .taskName').text(params.value);
                     }
-                    
+                    if (params.name =='duedate') {
+                        var tDate = new Date($("[name='toDate']").val()).getTime();
+                        var dDate = new Date(params.value).getTime();
+                        if (tDate >= (dDate + 86400000 )) {
+                            $("#due-warning").show();
+                        } else {
+                            $("#due-warning").hide();
+                        }
+                    }
                     if ($.isNumeric(response)) {
                       editInline.taApp.updateTaskNum(response);                                      
                     }
@@ -251,6 +259,7 @@ define('ta_edit_inline',
                 callback.done(function(response) {
                     $popover.html(response);
                     if (plan == null) {
+                        $("#due-warning").hide();
                         $removeWorkPlan.addClass("hide");
                     } else {
                         $removeWorkPlan.removeClass("hide");
@@ -338,11 +347,17 @@ define('ta_edit_inline',
 
                         var fDate = new Date(fromDates[0], fromDates[1] - 1, fromDates[2], fromTimes[0], fromTimes[1], 0).getTime();
                         var tDate = new Date(toDates[0], toDates[1] - 1, toDates[2], toTimes[0], toTimes[1], 0).getTime();
+                        var dDate = new Date($('[data-name="duedate"]').html()).getTime();
 
                         if (fDate >= tDate) {
                             $pop.find('.errorMessage').html(locale.taskPlan.errorMessage);
                             updatePopoverPossition();
                         } else {
+                            if (tDate >= (dDate + 86400000 )) {
+                                $("#due-warning").show();
+                            } else {
+                                $("#due-warning").hide();
+                            }
                             $pop.find('.errorMessage').html('');
                             updatePopoverPossition();
                             saveWorkPlan([fromDate + " " + fromTime, toDate + " " + toTime]);
@@ -542,6 +557,14 @@ define('ta_edit_inline',
             var $assignee = $rightPanel.find('input[name="assignee"]');
             var $coworker = $rightPanel.find('input[name="coworker"]');
             var $assignMe = $rightPanel.find('[data-action="assign"], [data-action="add-coworker"]');
+            var tDate = new Date($("[name='toDate']").val()).getTime();
+            var dDate = new Date($('[data-name="duedate"]').html()).getTime();
+
+            if (tDate >= (dDate + 86400000 )) {
+                $("#due-warning").show();
+            } else {
+                $("#due-warning").hide();
+            }
 
             if ($assignMe.length > 0) {
                 $assignMe.each(function() {

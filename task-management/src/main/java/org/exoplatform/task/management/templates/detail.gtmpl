@@ -293,6 +293,7 @@
             </div>
         </div>
     </div>
+    <div id="due-warning" style="display: none;" class="alert alert-warning dueAlertWarning"><i class="uiIconWarning"></i>&{message.dueDateBeforeEndDate}</div>
      <div class="priority pull-left">
         <div class="uiEditableInline">
             <i  class="uiIconColorPriority${task.priority != null ?  task.priority : Priority.NONE}"></i>
