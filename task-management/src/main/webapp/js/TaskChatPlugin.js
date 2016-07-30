@@ -201,6 +201,23 @@
 			}
 		}
 	});
+	
+	function setMiniCalendarToDateField(dateFieldId) {
+    var dateField = document.getElementById(dateFieldId);
+    dateField.onfocus=function(){
+      uiMiniCalendar.init(this,false,"MM/dd/yyyy","", chatBundleData["exoplatform.chat.monthNames"]);
+    };
+    dateField.onkeyup=function(){
+      uiMiniCalendar.show();
+    };
+    dateField.onkeydown=function(event){
+      uiMiniCalendar.onTabOut(event);
+    };
+    dateField.onclick=function(event){
+      event.cancelBubble = true;
+    };
+  };
+  setMiniCalendarToDateField('task-add-date');
 
 	function hideMeetingPanel() {
 		$(".meeting-action-popup").css("display", "none");
