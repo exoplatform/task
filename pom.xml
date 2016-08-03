@@ -50,7 +50,6 @@
     <org.exoplatform.platform.version>4.4.x-SNAPSHOT</org.exoplatform.platform.version>
     <juzu.version>1.1.0</juzu.version>
     <org.antlr.version>3.4</org.antlr.version>
-    <owasp.html-sanitizer.version>20151202.2</owasp.html-sanitizer.version>
     <org.webjars.jquery.version>1.11.2</org.webjars.jquery.version>
     <org.webjars.jquery-ui.version>1.11.4</org.webjars.jquery-ui.version>
     <org.webjars.x-editable-bootstrap.version>1.4.6</org.webjars.x-editable-bootstrap.version>
@@ -97,12 +96,6 @@
         <groupId>org.exoplatform.addons.task</groupId>
         <artifactId>task-management-config</artifactId>
         <version>${project.version}</version>
-      </dependency>
-      <!-- HTML Sanitizer -->
-      <dependency>
-        <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
-        <artifactId>owasp-java-html-sanitizer</artifactId>
-        <version>${owasp.html-sanitizer.version}</version>
       </dependency>
       <!--juzu-plugins-less4j:1.1.0 requires less4j:1.4.0 which is not compatible with antlr 3.5-->
       <dependency>
