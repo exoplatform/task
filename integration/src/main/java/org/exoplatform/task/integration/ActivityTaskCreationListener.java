@@ -16,6 +16,7 @@
  */
 package org.exoplatform.task.integration;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.exoplatform.social.core.activity.ActivityLifeCycleEvent;
 import org.exoplatform.social.core.activity.ActivityListenerPlugin;
 import org.exoplatform.social.core.activity.model.ActivityStream;
@@ -95,6 +96,7 @@ public class ActivityTaskCreationListener extends ActivityListenerPlugin {
       //
       if (idx >=0 && idx + 2 < comment.length() - 1) {
         comment = ActivityTaskProcessor.decode(comment);
+        comment = StringEscapeUtils.unescapeHtml(comment);
         String text = comment.substring(idx + 2);
         text = text.replaceFirst("<br(\\s*\\/?)>", "\n");
 
