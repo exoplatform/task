@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
 
+import org.exoplatform.services.security.Identity;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -38,6 +39,7 @@ import org.exoplatform.task.service.ParserContext;
 import org.exoplatform.task.service.TaskParser;
 import org.exoplatform.task.service.impl.TaskParserImpl;
 import org.exoplatform.task.AbstractTest;
+import org.exoplatform.task.util.TaskUtil;
 
 /**
  * Created by The eXo Platform SAS
@@ -125,6 +127,55 @@ public class TestPermission extends AbstractTest {
     Assert.assertEquals(2, tDAO.findByUser(user1).size());
     Assert.assertEquals(1, tDAO.findByUser(user2).size());
     Assert.assertEquals(0, tDAO.findByUser("John Doe").size());
+  }
+
+  @Test
+  public void testTaskEditPermission() {
+
+    //Users and Identities creation
+    String user1 = "user1";
+    String user2 = "user2";
+
+    Identity userId1= new Identity("user1");
+    Identity userId2= new Identity("user2");
+
+    //Project creation
+    Project project = new Project();
+    project.setName("Project of user 1");
+
+    Set<String> managers = new HashSet<String>();
+    managers.add(user1);
+    project.setManager(managers);
+    pDAO.create(project);
+
+    // Status creation
+    Status status = new Status();
+    status.setName("TODO");
+    status.setRank(1);
+    status.setProject(project);
+    daoHandler.getStatusHandler().create(status);
+
+    //Tasks Creation
+    List<Task> tasks = new ArrayList<Task>();
+    Task task1 = parser.parse("Task of User 1", context);
+    task1.setCreatedBy(user1);
+    task1.setStatus(status);
+    tasks.add(task1);
+    Task task2 = parser.parse("Task of User 2", context);
+    task2.setCreatedBy(user2);
+    task2.setStatus(status);
+    tasks.add(task2);
+
+    //Creation
+    tDAO.createAll(tasks);
+
+    //Test
+    //User1 is the manager of the project so he can edit all tasks in the project
+    Assert.assertEquals(true, TaskUtil.canEditTaskProject(task1,userId1));
+    Assert.assertEquals(true, TaskUtil.canEditTaskProject(task2,userId1));
+    //User2 is not the manager of the project so he can only edit the task that he created
+    Assert.assertEquals(false, TaskUtil.canEditTaskProject(task1,userId2));
+    Assert.assertEquals(true, TaskUtil.canEditTaskProject(task2,userId2));
   }
 
   @Test
