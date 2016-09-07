@@ -1069,7 +1069,7 @@ public final class TaskUtil {
         Status status = statusService.getStatus(statusId);
         return status.getProject().canView(identity);
       } else if ("project".equalsIgnoreCase(name)) {
-        if(!CanEditTaskProject(task,identity)){
+        if(!canEditTaskProject(task,identity)){
           return false;
         }
         Long projectId = Long.parseLong(value);
@@ -1116,7 +1116,7 @@ public final class TaskUtil {
     return getTaskService().getCoworker(taskId);
   }
 
-  public static Boolean CanEditTaskProject(Task task, Identity identity){
+  public static Boolean canEditTaskProject(Task task, Identity identity){
     return task.getCreatedBy().equals(identity.getUserId())||((task.getStatus() != null && task.getStatus().getProject().canEdit(identity)));
   }
 }

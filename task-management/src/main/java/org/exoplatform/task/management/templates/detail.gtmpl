@@ -29,7 +29,7 @@
     def projectEditableClasses ="hoverStatus ";
     def projectDataToggle="";
     def projectInlineEditClass="";
-    if (TaskUtil.CanEditTaskProject(task,identity)) {
+    if (TaskUtil.canEditTaskProject(task,identity)) {
         projectEditableClasses = editableClasses;
         projectDataToggle = "tooltip";
         projectInlineEditClass = "uiEditableInline";
