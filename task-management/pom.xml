@@ -28,7 +28,7 @@
   </parent>
   <artifactId>task-management</artifactId>
   <packaging>war</packaging>
-  <name>Task Management Application</name>
+  <name>eXo Add-on:: Task Management Application</name>
   <dependencies>
     <dependency>
       <groupId>org.exoplatform.addons.task</groupId>
@@ -46,16 +46,16 @@
       <artifactId>juzu-plugins-less4j</artifactId>
       <exclusions>
         <exclusion>
-          <groupId>commons-io</groupId>
           <artifactId>commons-io</artifactId>
+          <groupId>commons-io</groupId>
         </exclusion>
         <exclusion>
-          <groupId>commons-beanutils</groupId>
           <artifactId>commons-beanutils</artifactId>
+          <groupId>commons-beanutils</groupId>
         </exclusion>
         <exclusion>
-          <groupId>org.json</groupId>
           <artifactId>json</artifactId>
+          <groupId>org.json</groupId>
         </exclusion>
       </exclusions>
     </dependency>

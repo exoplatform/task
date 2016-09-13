@@ -28,7 +28,7 @@
   </parent>
   <artifactId>task-management-packaging</artifactId>
   <packaging>pom</packaging>
-  <name>Task management Packaging</name>
+  <name>eXo Add-on:: Task management Packaging</name>
   <description>Task management add-on packaging</description>
   <dependencies>
     <dependency>

@@ -28,15 +28,13 @@
   </parent>
   <artifactId>task-management-integration</artifactId>
   <packaging>jar</packaging>
-  <name>Task Management - Integration</name>
-
+  <name>eXo Add-on:: Task Management - Integration</name>
   <dependencies>
     <dependency>
       <groupId>org.exoplatform.addons.task</groupId>
       <artifactId>task-management-services</artifactId>
       <scope>provided</scope>
     </dependency>
-
     <dependency>
       <groupId>javax.inject</groupId>
       <artifactId>javax.inject</artifactId>
@@ -47,7 +45,6 @@
       <artifactId>javax.servlet-api</artifactId>
       <scope>provided</scope>
     </dependency>
-
     <dependency>
       <groupId>org.exoplatform.core</groupId>
       <artifactId>exo.core.component.organization.api</artifactId>
@@ -64,12 +61,12 @@
       <scope>provided</scope>
       <exclusions>
         <exclusion>
-          <groupId>org.chromattic</groupId>
           <artifactId>chromattic.apt</artifactId>
+          <groupId>org.chromattic</groupId>
         </exclusion>
         <exclusion>
-          <groupId>org.chromattic</groupId>
           <artifactId>chromattic.core</artifactId>
+          <groupId>org.chromattic</groupId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -83,7 +80,6 @@
       <artifactId>calendar-service</artifactId>
       <scope>provided</scope>
     </dependency>
-
     <!-- TEST -->
     <dependency>
       <groupId>junit</groupId>

@@ -28,7 +28,7 @@
   </parent>
   <artifactId>task-management-services</artifactId>
   <packaging>jar</packaging>
-  <name>Task Management - Services</name>
+  <name>eXo Add-on:: Task Management - Services</name>
   <!-- JPA -->
   <dependencies>
     <dependency>
@@ -61,13 +61,11 @@
       <artifactId>calendar-service</artifactId>
       <scope>provided</scope>
     </dependency>
-    
     <!-- OTHER -->
     <dependency>
-	   <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
-	   <artifactId>owasp-java-html-sanitizer</artifactId>
-	 </dependency>
-    
+      <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
+      <artifactId>owasp-java-html-sanitizer</artifactId>
+    </dependency>
     <!-- TEST -->
     <dependency>
       <groupId>junit</groupId>
