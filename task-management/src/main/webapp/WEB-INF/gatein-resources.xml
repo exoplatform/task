@@ -195,6 +195,9 @@
 		<depends>
 			<module>jquery</module>
 		</depends>
+    <depends>
+      <module>suggester</module>
+    </depends>
 	</module>
 </gatein-resources>
 
