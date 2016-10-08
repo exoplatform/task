@@ -11,7 +11,7 @@
             'exo:task-add-user': function(query, callback) {
                 $.ajax({
                     type: "GET",
-                    url: '/chatServer/users',
+                    url: chatApplication.jzUsers,
                     data: {
                         filter : query,
                         user : chatApplication.username,
@@ -32,7 +32,7 @@
       });
 
   $(".create-task-button").on("click", function() {
-    var username = $("#task-add-user").val();
+    var selectedUsers = $("#task-add-user").val();
     var task = $("#task-add-task").val();
     var dueDate = $("#task-add-date").val();
     var roomName = chatApplication.targetFullname;
@@ -63,36 +63,6 @@
       return;
     }
 
-    // Get selected users
-    var selectedUsers = "";
-    var selectedFullNames = "";
-    $(".task-user-label").each(function(index) {
-      var name = $(this).attr("data-name");
-      var fullname = $(this).attr("data-fullname");
-      if (index === 0) {
-        selectedUsers = name;
-        selectedFullNames = fullname;
-      } else {
-        selectedUsers += "," + name;
-        selectedFullNames += ", " + fullname;
-      }
-    });
-
-    if (selectedUsers === "") {
-      if (username !== "") {
-        bootbox
-            .alertError(
-                chatBundleData["exoplatform.chat.task.invalidUser.message"]
-                    .replace("{0}",
-                        username),
-                function(e) {
-                  e.stopPropagation();
-                  $("#task-add-user")
-                      .select();
-                });
-      }
-      return;
-    }
     hideMeetingPanel();
     // Disable button while server updating
     setActionButtonEnabled('.create-task-button', false);
@@ -114,7 +84,6 @@
         var options = {
           type : "type-task",
           username : selectedUsers,
-          fullname : selectedFullNames,
           dueDate : dueDate,
           task : task
         };
@@ -217,7 +186,7 @@
         out += "  <div>";
         out += "    <i class='uiIconChatAssign uiIconChatLightGray mgR10'></i><span class='muted'>"
             + chatBundleData["exoplatform.chat.assign.to"]
-            + ": </span>" + options.fullname;
+            + ": </span>" + options.username;
         out += "  </div>";
         out += "  <div>";
         out += "    <i class='uiIconChatClock uiIconChatLightGray mgR10'></i><span class='muted'>"
