@@ -6,7 +6,6 @@
 		data-value="<%=rs.getString("exoplatform.chat.task.title")%>"
 		placeholder="<%=rs.getString("exoplatform.chat.task.title")%>"
 		id="task-add-task">
-	<div class="task-users-list "></div>
 	<input type="text" class="input-with-value"
 		data-value="<%=rs.getString("exoplatform.chat.assign.to")%>"
 		placeholder="<%=rs.getString("exoplatform.chat.assign.to")%>"
