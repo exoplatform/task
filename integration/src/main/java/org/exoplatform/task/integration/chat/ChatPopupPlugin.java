@@ -155,9 +155,6 @@ public class ChatPopupPlugin extends BaseUIPlugin {
       username = StringUtils.isEmpty(username) ? creator : username;
 
       sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm");
-      Date today = new Date();
-      today.setHours(0);
-      today.setMinutes(0);
       Date dueDate = new Date();
       try {
         dueDate = sdf.parse(getParam("dueDate", params) + " 23:59");
@@ -246,7 +243,7 @@ public class ChatPopupPlugin extends BaseUIPlugin {
           Set<String> mans = new HashSet<String>(Arrays.asList(creator));
           Set<String> pars = new HashSet<String>(Arrays.asList(participants.split(",")));
           
-          project = ProjectUtil.newProjectInstance(roomName, null, mans, pars);
+          project = ProjectUtil.newProjectInstance(roomName, "", mans, pars);
           projectService.createProject(project);
           statusService.createInitialStatuses(project);
         }

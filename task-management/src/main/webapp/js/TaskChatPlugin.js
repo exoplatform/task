@@ -106,11 +106,8 @@
   chatApplication.initMention();
 
   // TODO: Need to make sure this is executed before ChatRoom is initialized.
-  chatApplication.registerPlugin({
-    'getEvent' : function() {
-      return 'beforeSend';
-    },  
-    'onEvent' : function(context) {
+  chatApplication.registerEvent({
+    'beforeSend' : function(context) {
       var msg = context.msg;
       
       var pattern = /\s*\+\+\S+/;
