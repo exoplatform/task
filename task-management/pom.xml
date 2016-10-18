@@ -158,4 +158,7 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+  <build>
+    <finalName>task-management</finalName>
+  </build>
 </project>

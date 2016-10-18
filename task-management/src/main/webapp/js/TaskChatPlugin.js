@@ -28,7 +28,12 @@
                     }
                 });
             } 
-          }
+          },
+          renderMenuItem: function(item, escape) {
+                  return '<div class="option">' +
+                  '<img onerror="this.src=\'/chat/img/Avatar.gif;\'" src="/rest/chat/api/1.0/user/getAvatarURL/'+item.name+'" width="20px" height="20px"> ' +
+                  escape(item.fullname) + ' <span style="float: right" class="chat-status-task chat-status-'+item.status+'"></span>' + '</div>';
+              }
       });
 
   $(".create-task-button").on("click", function() {
