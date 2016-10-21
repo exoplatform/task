@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.output.StringBuilderWriter;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.exoplatform.commons.api.ui.ActionContext;
 import org.exoplatform.commons.api.ui.BaseUIPlugin;
@@ -54,6 +55,7 @@ import org.exoplatform.task.dao.ProjectQuery;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.integration.ActivityTaskProcessor;
 import org.exoplatform.task.model.User;
 import org.exoplatform.task.service.ParserContext;
 import org.exoplatform.task.service.ProjectService;
@@ -62,10 +64,13 @@ import org.exoplatform.task.service.TaskParser;
 import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.service.UserService;
 import org.exoplatform.task.util.ProjectUtil;
+import org.exoplatform.task.util.StringUtil;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 public class ChatPopupPlugin extends BaseUIPlugin {
+
+  private static final String PREFIX = "++";
 
   private static Log          log                       =
                                   ExoLogger.getExoLogger(ChatPopupPlugin.class);
@@ -146,7 +151,7 @@ public class ChatPopupPlugin extends BaseUIPlugin {
     Map<String, List<String>> params = context.getParams();
     String actionName = context.getName();
     String creator = ConversationState.getCurrent().getIdentity().getUserId();
-    String taskInput = getParam("task", params);   
+    String taskInput = getParam("text", params);
 
     Status status = getStatus(params);
         
@@ -177,12 +182,16 @@ public class ChatPopupPlugin extends BaseUIPlugin {
       return new Response(jTasks.toJSONString().getBytes(), MediaType.APPLICATION_JSON);
     } else if (CREATE_TASK_INLINE_ACTION.equals(actionName)) {
       ParserContext parserCtx = new ParserContext(userService.getUserTimezone(creator));
-      Task task = taskParser.parse(taskInput, parserCtx);
-      task.setCreatedBy(creator);
-      task.setCreatedTime(new Date());
-      task.setStatus(status);
-      taskService.createTask(task);
-      return new Response(buildJSON(task).toJSONString().getBytes(), MediaType.APPLICATION_JSON);
+      Task task = parseText(taskInput, parserCtx);
+      if (task != null) {
+        task.setCreatedBy(creator);
+        task.setCreatedTime(new Date());
+        task.setStatus(status);
+        taskService.createTask(task);
+        return new Response(buildJSON(task).toJSONString().getBytes(), MediaType.APPLICATION_JSON);
+      } else {
+        return null;
+      }
     } else {
       return null;      
     }
@@ -195,7 +204,7 @@ public class ChatPopupPlugin extends BaseUIPlugin {
       User user = userService.loadUser(task.getAssignee());
       if (user != null) {
         json.put("assignee", user.getUsername());
-        json.put("fullName", String.format("%s %s", user.getFirstName(), user.getLastName()));        
+        json.put("fullName", String.format("%s %s", user.getFirstName(), user.getLastName()));
       }
     }
     if (task.getDueDate() != null) {
@@ -271,4 +280,31 @@ public class ChatPopupPlugin extends BaseUIPlugin {
     return pluginType;
   }
 
+  private Task parseText(String txt, ParserContext context) {
+    if (txt != null && !txt.isEmpty()) {
+      int idx = txt.indexOf(PREFIX);
+      //
+      if (idx >= 0 && idx + 2 < txt.length() - 1) {
+        txt = ActivityTaskProcessor.decode(txt);
+        txt = StringEscapeUtils.unescapeHtml(txt);
+        String text = txt.substring(idx + 2);
+        text = text.replaceFirst("<br(\\s*\\/?)>", "\n");
+
+        String title, description;
+        int index = text.indexOf("\n");
+        if (index > 1) {
+          title = text.substring(0, index);
+          description = text.substring(index).trim();
+        } else {
+          title = text.trim();
+          description = "";
+        }
+        Task task = taskParser.parse(title, context);
+        //we need to remove malicious code here in case user inject request using curl TA-387
+        task.setDescription(StringUtil.encodeInjectedHtmlTag(description));
+        return task;
+      }
+    }
+    return null;
+  }
 }

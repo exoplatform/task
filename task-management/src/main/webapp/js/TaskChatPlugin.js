@@ -79,7 +79,7 @@
         "extension_action" : "createTask",
         "username" : selectedUsers,
         "dueDate" : dueDate,
-        "task" : task,
+        "text" : task,
         "roomName" : roomName,
         "isSpace" : isSpace,
         "isTeam": isTeam
@@ -111,6 +111,7 @@
   chatApplication.initMention();
 
   // TODO: Need to make sure this is executed before ChatRoom is initialized.
+  // Processing the Task creation shortcut inline.
   chatApplication.registerEvent({
     'beforeSend' : function(context) {
       var msg = context.msg;
@@ -118,7 +119,6 @@
       var pattern = /\s*\+\+\S+/;
       if (pattern.test(msg)) {
         context.continueSend = false;
-        var msg = msg.replace("++", "");
         var roomName = chatApplication.targetFullname;
         var isSpace = false, isTeam = false;
         var targetUser = chatApplication.targetUser;
@@ -139,7 +139,7 @@
             url : createTaskUrl,
             data : {
               "extension_action" : "createTaskInline",
-              "task": msg,
+              "text": msg,
               "isSpace": isSpace,
               "isTeam": isTeam,
               "roomName": roomName,
@@ -149,7 +149,6 @@
               var options = {
                   "type" : "type-task",
                   "username" : response.assignee,
-                  "fullname" : response.fullName,
                   "task" : response.title,
                   "dueDate" : response.dueDate
               };
