@@ -200,6 +200,7 @@
       }
     }
   });
+  chatApplication.loadRoom();
   
   function setMiniCalendarToDateField(dateFieldId) {
     var dateField = document.getElementById(dateFieldId);
