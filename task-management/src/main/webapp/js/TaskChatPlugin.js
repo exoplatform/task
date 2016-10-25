@@ -1,40 +1,39 @@
 (function($) {
   var createTaskUrl = '';
     $('#task-add-user').suggester({
-          type : 'tag',
-          plugins: ['remove_button'],
-          valueField: 'name',
-          labelField: 'fullname',
-          searchField: ['fullname'],
-          sourceProviders: ['exo:task-add-user'],
-          providers: {
-            'exo:task-add-user': function(query, callback) {
-                $.ajax({
-                    type: "GET",
-                    url: chatApplication.jzUsers,
-                    data: {
-                        filter : query,
-                        user : chatApplication.username,
-                        token : chatApplication.token,
-                        dbName : chatApplication.dbName
-                    },
-                    complete: function(jqXHR) {
-                        if(jqXHR.readyState === 4) {
-                            var json = $.parseJSON(jqXHR.responseText)
-                            if (json.users != null) {
-                                callback(json.users);
-                            }
-                        }
-                    }
-                });
-            } 
-          },
-          renderMenuItem: function(item, escape) {
-                  return '<div class="option">' +
-                  '<img onerror="this.src=\'/chat/img/Avatar.gif;\'" src="/rest/chat/api/1.0/user/getAvatarURL/'+item.name+'" width="20px" height="20px"> ' +
-                  escape(item.fullname) + ' <span style="float: right" class="chat-status-task chat-status-'+item.status+'"></span>' + '</div>';
+      type : 'tag',
+      plugins: ['remove_button'],
+      valueField: 'name',
+      labelField: 'fullname',
+      searchField: ['fullname'],
+      sourceProviders: ['exo:task-add-user'],
+      providers: {
+        'exo:task-add-user': function(query, callback) {
+          $.ajax({
+            type: "GET",
+            url: chatApplication.jzUsers,
+            data: {
+              filter : query,
+              user : chatApplication.username,
+              token : chatApplication.token,
+              dbName : chatApplication.dbName
+            },
+            complete: function(jqXHR) {
+              if(jqXHR.readyState === 4) {
+                var json = $.parseJSON(jqXHR.responseText)
+                if (json.users != null) {
+                    callback(json.users);
+                }
               }
-      });
+            }
+          });
+        }
+      },
+      renderMenuItem: function(item, escape) {
+        return '<img onerror="this.src=\'/chat/img/Avatar.gif;\'" src="/rest/chat/api/1.0/user/getAvatarURL/'+item.name+'" width="20px" height="20px"> ' +
+        escape(item.fullname) + ' <span style="float: right" class="chat-status-task chat-status-'+item.status+'"></span>';
+      }
+    });
 
   $(".create-task-button").on("click", function() {
     var selectedUsers = $("#task-add-user").val();
@@ -51,20 +50,19 @@
     }
 
     // Validate empty
-    if (task === $("#task-add-task").attr("data-value")
-        || task === "" || dueDate === "") {
+    if (task === $("#task-add-task").attr("data-value") || task === "" || dueDate === "") {
       return;
     }
 
     // Validate datetime
     if (!uiMiniCalendar.isDate(dueDate)) {
       bootbox
-          .alertError(
-              chatBundleData["exoplatform.chat.date.invalid.message"],
-              function(e) {
-                e.stopPropagation();
-                $("#task-add-date").select();
-              });
+        .alertError(
+          chatBundleData["exoplatform.chat.date.invalid.message"],
+          function(e) {
+            e.stopPropagation();
+            $("#task-add-date").select();
+          });
       return;
     }
 
@@ -115,7 +113,7 @@
   chatApplication.registerEvent({
     'beforeSend' : function(context) {
       var msg = context.msg;
-      
+
       var pattern = /\s*\+\+\S+/;
       if (pattern.test(msg)) {
         context.continueSend = false;
