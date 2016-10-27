@@ -4,7 +4,7 @@
   <parent>
     <artifactId>task-management-parent</artifactId>
     <groupId>org.exoplatform.addons.task</groupId>
-    <version>1.2.x-SNAPSHOT</version>
+    <version>1.2.0-M07</version>
   </parent>
   <artifactId>task-management-injector</artifactId>
   <name>eXo Add-on:: Task management injector</name>
