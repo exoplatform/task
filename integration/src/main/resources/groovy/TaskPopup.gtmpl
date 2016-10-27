@@ -1,0 +1,27 @@
+<div class="meeting-action-panel meeting-action-task-panel"
+	data-height="249"
+	data-title="<%=rs.getString("exoplatform.chat.assign.task")%>">
+	<strong class="actionTitle"><%=rs.getString("exoplatform.chat.assign.task")%></strong>
+	<input type="text" class="input-with-value"
+		data-value="<%=rs.getString("exoplatform.chat.task.title")%>"
+		placeholder="<%=rs.getString("exoplatform.chat.task.title")%>"
+		id="task-add-task">
+	<input type="text" class="input-with-value"
+		data-value="<%=rs.getString("exoplatform.chat.assign.to")%>"
+		placeholder="<%=rs.getString("exoplatform.chat.assign.to")%>"
+		id="task-add-user">
+	<div class="task-users-results uiAutoComplete" style="display: none;"></div>
+	<input type="text" class="input-with-value"
+		data-value="<%=rs.getString("exoplatform.chat.due.date")%>"
+		placeholder="<%=rs.getString("exoplatform.chat.due.date")%>"
+		id="task-add-date" data-date="<%=today%>">
+	<div class="uiActionBorder">
+		<a href="#" type="button" class="btn btn-primary create-task-button"><%=rs.getString("exoplatform.chat.post")%></a>
+		<a href="#" type="button" class="btn btnClosePopup"><%=rs.getString("exoplatform.chat.cancel")%></a>
+	</div>
+</div>
+<script type="text/javascript">
+	window.require(['SHARED/taskChatPlugin'], function(plugin) {
+		plugin.setActionUrl('<%=actionUrl%>');
+	});
+</script>
