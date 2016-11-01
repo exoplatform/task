@@ -1,6 +1,6 @@
 // TODO: Move juzu-ajax, mentionsPlugin module into task management project if need
 require(['taskManagementApp', 'project-menu', 'taFilter', 'taskCenterView', 'taskListView', 'ta_edit_inline', 'SHARED/jquery', 'SHARED/taskLocale',
-        'SHARED/juzu-ajax', 'SHARED/mentionsPlugin', 'SHARED/bts_modal', 'SHARED/bts_tab', 'SHARED/commons-editor'
+        'SHARED/juzu-ajax', 'SHARED/mentionsPlugin', 'SHARED/bts_modal', 'SHARED/bts_tab', 'SHARED/suggester', 'SHARED/commons-editor'
         ], function(taApp, pMenu, taFilter, taskCenterView, taskListView, editInline, $, locale) {
   
 $(document).ready(function() {
@@ -39,6 +39,38 @@ $(document).ready(function() {
         return false;
     });
 
+    //
+    $('body').suggester('addProvider', 'task:people', function(query, callback) {
+        var _this = this;
+        $('#taskDetailContainer').jzAjax('UserController.findUsersToMention()', {
+            data: {query: query},
+            success: function(data) {
+                var result = [];
+                for (var i = 0; i < data.length; i++) {
+                    var d = data[i];
+                    var item = {
+                        uid: d.id.substr(1),
+                        name: d.name,
+                        avatar: d.avatar
+                    };
+                    result.push(item);
+                }
+                callback.call(_this, result);
+            }
+        });
+    });
+
+    CKEDITOR.plugins.addExternal('suggester','/commons-extension/eXoPlugins/suggester/','plugin.js');
+    var ckeditorOptions = {
+        customConfig: '/task-management/assets/org/exoplatform/task/management/assets/ckeditorCustom/config.js',
+        extraPlugins: 'suggester',
+        suggester: {
+            //suffix: ' ',
+            renderMenuItem: '<li data-value="${uid}"><div class="avatarSmall" style="display: inline-block;"><img src="${avatar}"></div>${name} (${uid})</li>',
+            renderItem: '<span class="exo-mention">${name}<a href="#" class="remove"><i class="uiIconClose uiIconLightGray"></i></a></span>',
+            sourceProviders: ['task:people']
+        }
+    };
     var taskLoadedCallback = function(taskId, isAjax) {
         var $li = $centerPanel.find('[data-taskid="'+taskId+'"]');
         $centerPanel.find('[data-taskid].selected').removeClass('selected');
@@ -61,7 +93,7 @@ $(document).ready(function() {
               $permalink.popover('hide');
             }
         });
-        $rightPanelContent.find('textarea').exoMentions({
+        /*$rightPanelContent.find('textarea').exoMentions({
             onDataRequest:function (mode, query, callback) {
                 var _this = this;
                 $('#taskDetailContainer').jzAjax('UserController.findUsersToMention()', {
@@ -78,7 +110,9 @@ $(document).ready(function() {
                 marginButton: '4px',
                 enableMargin: false
             }
-        });
+        });*/
+
+        $rightPanelContent.find('textarea').ckeditor(ckeditorOptions);
 
         /*if (isAjax) {
             if(window.history.pushState) {
@@ -152,7 +186,7 @@ $(document).ready(function() {
     });
 
     var initCommentEditor = function() {
-        $rightPanelContent.find('textarea').exoMentions({
+        /*$rightPanelContent.find('textarea').exoMentions({
             onDataRequest:function (mode, query, callback) {
                 var _this = this;
                 $('#taskDetailContainer').jzAjax('UserController.findUsersToMention()', {
@@ -169,7 +203,8 @@ $(document).ready(function() {
                 marginButton: '4px',
                 enableMargin: false
             }
-        });
+        });*/
+        $rightPanelContent.find('textarea').ckeditor(ckeditorOptions);
     };
     var enhanceCommentsLinks = function() {
         $rightPanelContent.find('.contentComment').each(function(index, ele) {
