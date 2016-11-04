@@ -60,10 +60,33 @@ $(document).ready(function() {
         });
     });
 
+    var windowWidth = $(window).width();
+    var windowHeight = $(window).height();
+
     CKEDITOR.plugins.addExternal('suggester','/commons-extension/eXoPlugins/suggester/','plugin.js');
     var ckeditorOptions = {
-        customConfig: '/task-management/assets/org/exoplatform/task/management/assets/ckeditorCustom/config.js',
+        customConfig: '/task-management/assets/org/exoplatform/task/management/assets/ckeditorCustom/config-comment.js',
         extraPlugins: 'suggester',
+        on: {
+            instanceReady : function ( evt ) {
+                // Hide the editor toolbar
+                $("#ShareButton").prop("disabled", true);
+                $('#' + evt.editor.id + '_bottom').addClass('cke_bottom_hidden');
+            },
+            focus : function ( evt ) {
+                // Show the editor toolbar, except for smartphones in landscape mode
+                if (windowWidth > 767 || windowWidth < windowHeight) {
+                    $('#' + evt.editor.id + '_bottom').css('display', 'block');
+                    evt.editor.execCommand('autogrow');
+                }
+            },
+            blur : function ( evt ) {
+                // Hide the editor toolbar
+                if (windowWidth > 767 || windowWidth < windowHeight) {
+                    $('#' + evt.editor.id + '_bottom').css('display', 'none');
+                }
+            }
+        },
         suggester: {
             //suffix: ' ',
             renderMenuItem: '<li data-value="${uid}"><div class="avatarSmall" style="display: inline-block;"><img src="${avatar}"></div>${name} (${uid})</li>',
