@@ -50,16 +50,12 @@ public final class CommentUtil {
         User user = userService.loadUser(username);
         if(user != null && !"guest".equals(user.getUsername())) {
           next = "<a href=\"" + user.getUrl() + "\">" + encoder.encodeHTML(user.getDisplayName()) + "</a>";
-        } else {
-          next = encoder.encodeHTML(next);
         }
-      } else {
-        next = encoder.encodeHTML(next);
       }
       sb.append(next);
       sb.append(' ');
     }
 
-    return sb.toString();
+    return StringUtil.encodeInjectedHtmlTag(sb.toString());
   }
 }
