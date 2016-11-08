@@ -63,26 +63,49 @@ $(document).ready(function() {
     var windowWidth = $(window).width();
     var windowHeight = $(window).height();
 
-    CKEDITOR.plugins.addExternal('suggester','/commons-extension/eXoPlugins/suggester/','plugin.js');
+    var extraPlugins = 'simpleLink,simpleImage,suggester';
+    if (windowWidth > windowHeight && windowWidth < 768) {
+        // Disable suggester on smart-phone landscape
+        extraPlugins = 'simpleLink,simpleImage';
+    }
+
+    // TODO this line is mandatory when a custom skin is defined, it should not be mandatory
+    CKEDITOR.basePath = '/commons-extension/ckeditor/';
     var ckeditorOptions = {
-        customConfig: '/task-management/assets/org/exoplatform/task/management/assets/ckeditorCustom/config-comment.js',
-        on: {
-            instanceReady : function ( evt ) {
+        customConfig: '/commons-extension/ckeditorCustom/config.js',
+        extraPlugins: extraPlugins,
+        on : {
+            instanceReady: function (evt) {
                 // Hide the editor toolbar
                 $("#ShareButton").prop("disabled", true);
-                $('#' + evt.editor.id + '_bottom').addClass('cke_bottom_hidden');
+                $('#' + evt.editor.id + '_bottom').removeClass('cke_bottom_visible');
             },
-            focus : function ( evt ) {
+            focus: function (evt) {
                 // Show the editor toolbar, except for smartphones in landscape mode
                 if (windowWidth > 767 || windowWidth < windowHeight) {
-                    $('#' + evt.editor.id + '_bottom').css('display', 'block');
+                    //$('#' + evt.editor.id + '_bottom').css('display', 'block');
                     evt.editor.execCommand('autogrow');
+                    var $content = $('#' + evt.editor.id + '_contents');
+                    var contentHeight = $content.height();
+                    var $ckeBottom = $('#' + evt.editor.id + '_bottom');
+                    $ckeBottom.animate({
+                        height: "39"
+                    }, {
+                        step: function (number, tween) {
+                            $content.height(contentHeight - number);
+                            if (number >= 9) {
+                                $ckeBottom.addClass('cke_bottom_visible');
+                            }
+                        }
+                    });
                 }
             },
-            blur : function ( evt ) {
+            blur: function (evt) {
                 // Hide the editor toolbar
                 if (windowWidth > 767 || windowWidth < windowHeight) {
-                    $('#' + evt.editor.id + '_bottom').css('display', 'none');
+                    $('#' + evt.editor.id + '_contents').css('height', $('#' + evt.editor.id + '_contents').height() + 39);
+                    $('#' + evt.editor.id + '_bottom').css('height', '0px');
+                    $('#' + evt.editor.id + '_bottom').removeClass('cke_bottom_visible');
                 }
             }
         },
