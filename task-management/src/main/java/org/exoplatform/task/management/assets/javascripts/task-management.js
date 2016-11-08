@@ -66,7 +66,6 @@ $(document).ready(function() {
     CKEDITOR.plugins.addExternal('suggester','/commons-extension/eXoPlugins/suggester/','plugin.js');
     var ckeditorOptions = {
         customConfig: '/task-management/assets/org/exoplatform/task/management/assets/ckeditorCustom/config-comment.js',
-        extraPlugins: 'suggester',
         on: {
             instanceReady : function ( evt ) {
                 // Hide the editor toolbar
