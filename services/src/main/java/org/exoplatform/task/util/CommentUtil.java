@@ -19,11 +19,11 @@
 
 package org.exoplatform.task.util;
 
-import java.util.StringTokenizer;
-
 import org.exoplatform.commons.utils.HTMLEntityEncoder;
 import org.exoplatform.task.model.User;
 import org.exoplatform.task.service.UserService;
+
+import java.util.StringTokenizer;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
@@ -50,6 +50,18 @@ public final class CommentUtil {
         User user = userService.loadUser(username);
         if(user != null && !"guest".equals(user.getUsername())) {
           next = "<a href=\"" + user.getUrl() + "\">" + encoder.encodeHTML(user.getDisplayName()) + "</a>";
+        }
+      } else if (next.startsWith("<p>@")) {
+        String username = next.substring(4);
+        User user = userService.loadUser(username);
+        if(user != null && !"guest".equals(user.getUsername())) {
+          next = "<p><a href=\"" + user.getUrl() + "\">" + encoder.encodeHTML(user.getDisplayName()) + "</a>";
+        }
+      } else if (next.contains("@")) {
+        String username = next.split("@")[1];
+        User user = userService.loadUser(username);
+        if (user != null && !"guest".equals(user.getUsername())) {
+          next = next.split("@")[0] + "<a href=\"" + user.getUrl() + "\">" + encoder.encodeHTML(user.getDisplayName()) + "</a>";
         }
       }
       sb.append(next);

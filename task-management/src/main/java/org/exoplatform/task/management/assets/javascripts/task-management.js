@@ -59,63 +59,6 @@ $(document).ready(function() {
             }
         });
     });
-
-    var windowWidth = $(window).width();
-    var windowHeight = $(window).height();
-
-    var extraPlugins = 'simpleLink,simpleImage,suggester';
-    if (windowWidth > windowHeight && windowWidth < 768) {
-        // Disable suggester on smart-phone landscape
-        extraPlugins = 'simpleLink,simpleImage';
-    }
-
-    // TODO this line is mandatory when a custom skin is defined, it should not be mandatory
-    CKEDITOR.basePath = '/commons-extension/ckeditor/';
-    var ckeditorOptions = {
-        customConfig: '/commons-extension/ckeditorCustom/config.js',
-        extraPlugins: extraPlugins,
-        on : {
-            instanceReady: function (evt) {
-                // Hide the editor toolbar
-                $("#ShareButton").prop("disabled", true);
-                $('#' + evt.editor.id + '_bottom').removeClass('cke_bottom_visible');
-            },
-            focus: function (evt) {
-                // Show the editor toolbar, except for smartphones in landscape mode
-                if (windowWidth > 767 || windowWidth < windowHeight) {
-                    //$('#' + evt.editor.id + '_bottom').css('display', 'block');
-                    evt.editor.execCommand('autogrow');
-                    var $content = $('#' + evt.editor.id + '_contents');
-                    var contentHeight = $content.height();
-                    var $ckeBottom = $('#' + evt.editor.id + '_bottom');
-                    $ckeBottom.animate({
-                        height: "39"
-                    }, {
-                        step: function (number, tween) {
-                            $content.height(contentHeight - number);
-                            if (number >= 9) {
-                                $ckeBottom.addClass('cke_bottom_visible');
-                            }
-                        }
-                    });
-                }
-            },
-            blur: function (evt) {
-                // Hide the editor toolbar
-                if (windowWidth > 767 || windowWidth < windowHeight) {
-                    $('#' + evt.editor.id + '_contents').css('height', $('#' + evt.editor.id + '_contents').height() + 39);
-                    $('#' + evt.editor.id + '_bottom').css('height', '0px');
-                    $('#' + evt.editor.id + '_bottom').removeClass('cke_bottom_visible');
-                }
-            }
-        },
-        suggester: {
-            //suffix: ' ',
-            renderMenuItem: '<li data-value="${uid}"><div class="avatarSmall" style="display: inline-block;"><img src="${avatar}"></div>${name} (${uid})</li>',
-            renderItem: '<span class="exo-mention">${name}<a href="#" class="remove"><i class="uiIconClose uiIconLightGray"></i></a></span>',
-            sourceProviders: ['task:people']
-        }
-    };
     var taskLoadedCallback = function(taskId, isAjax) {
         var $li = $centerPanel.find('[data-taskid="'+taskId+'"]');
         $centerPanel.find('[data-taskid].selected').removeClass('selected');
@@ -138,34 +81,96 @@ $(document).ready(function() {
               $permalink.popover('hide');
             }
         });
-        /*$rightPanelContent.find('textarea').exoMentions({
-            onDataRequest:function (mode, query, callback) {
-                var _this = this;
-                $('#taskDetailContainer').jzAjax('UserController.findUsersToMention()', {
-                    data: {query: query},
-                    success: function(data) {
-                        callback.call(_this, data);
-                    }
-                });
-            },
-            idAction : 'taskCommentButton',
-            elasticStyle : {
-                maxHeight : '52px',
-                minHeight : '22px',
-                marginButton: '4px',
-                enableMargin: false
-            }
-        });*/
 
-        $rightPanelContent.find('textarea').ckeditor(ckeditorOptions);
-
-        /*if (isAjax) {
-            if(window.history.pushState) {
-                window.history.pushState('', '', link);
-            }
-        }*/
+        initCKEditor($rightPanelContent.find('textarea'));
 
         return false;
+    };
+
+    var initCKEditor = function(element) {
+        var windowWidth = $(window).width();
+        var windowHeight = $(window).height();
+
+        var extraPlugins = 'simpleLink,simpleImage,suggester';
+
+        var MAX_LENGTH = 2000;
+
+        // TODO this line is mandatory when a custom skin is defined, it should not be mandatory
+        CKEDITOR.basePath = '/commons-extension/ckeditor/';
+        element.ckeditor ({
+            customConfig: '/commons-extension/ckeditorCustom/config.js',
+            extraPlugins: extraPlugins,
+            placeholder: element[0].title,
+            on : {
+                instanceReady: function (evt) {
+                    // Hide the editor toolbar
+                    $("#taskCommentButton").prop("disabled", true);
+                    $('#' + evt.editor.id + '_bottom').removeClass('cke_bottom_visible');
+                },
+                focus: function (evt) {
+                    // Show the editor toolbar, except for smartphones in landscape mode
+                    if ($(window).width() > 767 || $(window).width() < $(window).height()) {
+                        //$('#' + evt.editor.id + '_bottom').css('display', 'block');
+                        evt.editor.execCommand('autogrow');
+                        var $content = $('#' + evt.editor.id + '_contents');
+                        var contentHeight = $content.height();
+                        var $ckeBottom = $('#' + evt.editor.id + '_bottom');
+                        $ckeBottom[0].style.display = "block";
+                        $ckeBottom.animate({
+                            height: "39"
+                        }, {
+                            step: function (number, tween) {
+                                $content.height(contentHeight - number);
+                                if (number >= 9) {
+                                    $ckeBottom.addClass('cke_bottom_visible');
+                                }
+                            }
+                        });
+                    } else {
+                        $('#' + evt.editor.id + '_bottom').removeClass('cke_bottom_visible');
+                        $('#' + evt.editor.id + '_bottom')[0].style.display = "none";
+                    }
+                },
+                blur: function (evt) {
+                    // Hide the editor toolbar
+                    if (windowWidth > 767 || windowWidth < windowHeight) {
+                        $('#' + evt.editor.id + '_contents').css('height', $('#' + evt.editor.id + '_contents').height() + 39);
+                        $('#' + evt.editor.id + '_bottom').css('height', '0px');
+                        $('#' + evt.editor.id + '_bottom').removeClass('cke_bottom_visible');
+                    }
+                },
+                change: function( evt) {
+                    var newData = evt.editor.getData();
+                    var pureText = newData? newData.replace(/<[^>]*>/g, "").replace(/&nbsp;/g,"").trim() : "";
+
+                    if (pureText.length > 0 && pureText.length <= MAX_LENGTH) {
+                        $("#taskCommentButton").removeAttr("disabled");
+                    } else {
+                        $("#taskCommentButton").prop("disabled", true);
+                    }
+                    if (pureText.length <= MAX_LENGTH) {
+                        evt.editor.getCommand('simpleImage').enable();
+                    } else {
+                        evt.editor.getCommand('simpleImage').disable();
+                    }
+                },
+                key: function( evt) {
+                    var newData = evt.editor.getData();
+                    var pureText = newData? newData.replace(/<[^>]*>/g, "").replace(/&nbsp;/g,"").trim() : "";
+                    if (pureText.length > MAX_LENGTH) {
+                        if ([8, 46, 33, 34, 35, 36, 37,38,39,40].indexOf(evt.data.keyCode) < 0) {
+                            evt.cancel();
+                        }
+                    }
+                }
+            },
+            suggester: {
+                //suffix: ' ',
+                renderMenuItem: '<li data-value="${uid}"><div class="avatarSmall" style="display: inline-block;"><img src="${avatar}"></div>${name} (${uid})</li>',
+                renderItem: '<span class="exo-mention">${name}<a href="#" class="remove"><i class="uiIconClose uiIconLightGray"></i></a></span>',
+                sourceProviders: ['task:people']
+            }
+        });
     };
     function loadTaskDetail(taskId) {
         var currentTask = $rightPanelContent.find('[data-taskid]').data('taskid');
@@ -231,25 +236,7 @@ $(document).ready(function() {
     });
 
     var initCommentEditor = function() {
-        /*$rightPanelContent.find('textarea').exoMentions({
-            onDataRequest:function (mode, query, callback) {
-                var _this = this;
-                $('#taskDetailContainer').jzAjax('UserController.findUsersToMention()', {
-                    data: {query: query},
-                    success: function(data) {
-                        callback.call(_this, data);
-                    }
-                });
-            },
-            idAction : 'taskCommentButton',
-            elasticStyle : {
-                maxHeight : '52px',
-                minHeight : '22px',
-                marginButton: '4px',
-                enableMargin: false
-            }
-        });*/
-        $rightPanelContent.find('textarea').ckeditor(ckeditorOptions);
+        initCKEditor($rightPanelContent.find('textarea'));
     };
     var enhanceCommentsLinks = function() {
         $rightPanelContent.find('.contentComment').each(function(index, ele) {
@@ -370,14 +357,6 @@ $(document).ready(function() {
       $a.closest('.leftPanel > ul').find('li.active').removeClass('active');
       $a.closest('li').addClass('active');
 
-      //We move project detail to popup instead of right panel: TA-254
-//      $rightPanelContent.jzLoad('ProjectController.projectDetail()', {id: id}, function () {
-//        taApp.showRightPanel($centerPanel, $rightPanel);
-//        //TODO: check can edit to init editInline
-//        if($rightPanelContent.find('[data-projectid]').data('canedit')) {
-//            editInline.initEditInlineForProject(id);
-//        }
-//      });
       taApp.hideRightPanel($centerPanel, $rightPanel, $rightPanelContent);
     }
 
