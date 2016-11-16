@@ -70,48 +70,117 @@
     // Disable button while server updating
     setActionButtonEnabled('.create-task-button', false);
 
-    // Call server
-    $.ajax({
-      url : createTaskUrl,
-      data : {
-        "extension_action" : "createTask",
-        "username" : selectedUsers,
-        "dueDate" : dueDate,
-        "text" : task,
-        "roomName" : roomName,
-        "isSpace" : isSpace,
-        "isTeam": isTeam
-      },
-      success : function(response) {
+    chatApplication.getUsers(targetUser, function (jsonData) {
+      var participants = [];
+      $.each(jsonData.users, function(idx, elem) {
+        participants.push(elem.name);
+      });
 
-        var options = {
-          type : "type-task",
-          username : selectedUsers,
-          dueDate : dueDate,
-          task : task
-        };
-        var msg = task;
+      // Call server
+      $.ajax({
+        url : createTaskUrl,
+        data : {
+          "extension_action" : "createTask",
+          "username" : selectedUsers,
+          "dueDate" : dueDate,
+          "text" : task,
+          "roomName" : roomName,
+          "isSpace" : isSpace,
+          "isTeam": isTeam,
+          "participants": participants.join(",")
+        },
+        success : function(response) {
 
-        chatApplication.chatRoom.sendMessage(msg,
+          var options = {
+            type : "type-task",
+            username : selectedUsers,
+            dueDate : dueDate,
+            task : task
+          };
+          var msg = task;
+
+          chatApplication.chatRoom.sendMessage(msg,
             options, "true");
-        setActionButtonEnabled('.create-task-button',
+          setActionButtonEnabled('.create-task-button',
             true);
 
-      },
-      error : function(xhr, status, error) {
-        console.log("error");
-        setActionButtonEnabled('.create-task-button',
+        },
+        error : function(xhr, status, error) {
+          console.log("error");
+          setActionButtonEnabled('.create-task-button',
             true);
-      }
+        }
+      });
     });
   });
-  
-  chatApplication.initMention();
+
+  // Initialize suggester component.
+  (function() {
+    var $msg = $('#msg');
+    $msg.suggester({
+      type : "mix",
+      sourceProviders : ['exo:chat'],
+      showAtCaret: true,
+      renderMenuItem: function(item) {
+        return '<img onerror="this.src=\'/chat/img/Avatar.gif;\'" src="/rest/chat/api/1.0/user/getAvatarURL/'+item.uid+'" width="20px" height="20px"> ' +
+          item.value + ' <span style="float: right" class="chat-status-task chat-status-'+item.status+'"></span>';
+      },
+      renderItem: '@${uid}',
+      callbacks: {
+        matcher: function(flag, subtext) {
+          var pattern = /\s*\+\+\S+/;
+          if (pattern.test(subtext)) {
+            var pos = subtext.lastIndexOf(flag);
+            if (pos > -1) {
+              return subtext.substr(pos + 1);
+            }
+          }
+          return null;
+        }
+      }
+    });
+    $msg.suggester('addProvider', 'exo:chat', function(query, callback) {
+      var _this = this;
+      $.ajax({
+        url: chatApplication.jzUsers,
+        data: {"filter": query,
+          "user": chatApplication.username,
+          "token": chatApplication.token,
+          "dbName": chatApplication.dbName
+        },
+        dataType: "json",
+        success: function(data) {
+          var users = [];
+          $.each(data.users, function(idx, user) {
+            users.push({
+              "uid": user.name,
+              "value": user.fullname,
+              "status": user.status
+            });
+          });
+          callback.call(_this, users);
+        }
+      });
+    });
+
+    $msg.on('shown.atwho', function(event, data) {
+      chatApplication.isMentioning = true;
+    });
+    $msg.on('hidden.atwho', function(event, data) {
+      setTimeout(function() {
+        chatApplication.isMentioning = false;
+      }, 100);
+    });
+  })();
 
   // TODO: Need to make sure this is executed before ChatRoom is initialized.
   // Processing the Task creation shortcut inline.
   chatApplication.registerEvent({
     'beforeSend' : function(context) {
+      if (chatApplication.isMentioning) {
+        context.continueSend = false;
+        return;
+      }
       var msg = context.msg;
 
       var pattern = /\s*\+\+\S+/;
@@ -125,7 +194,8 @@
         } else if (targetUser.indexOf("team-") > -1) {
           isTeam = true;
         }
-        
+
+        $("#msg").val('');
         chatApplication.getUsers(targetUser, function (jsonData) {
           var participants = [];
           $.each(jsonData.users, function(idx, elem) {
@@ -160,7 +230,7 @@
               console.log("fail to create inline task: " + error);
             }
           });       
-        });     
+        });
       }
     }
   });

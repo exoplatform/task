@@ -257,7 +257,7 @@ public class ChatPopupPlugin extends BaseUIPlugin {
           statusService.createInitialStatuses(project);
         }
       } catch (Exception ex) {
-        log.error(ex);
+        log.error(ex.getMessage(), ex);
       }
     }
 
