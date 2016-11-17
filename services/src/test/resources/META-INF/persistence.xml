@@ -14,6 +14,7 @@
     <class>org.exoplatform.task.domain.ChangeLog</class>
     <class>org.exoplatform.task.domain.Label</class>
     <class>org.exoplatform.task.domain.LabelTaskMapping</class>
+    <class>org.exoplatform.task.domain.UserSetting</class>
 
     <properties>
 
