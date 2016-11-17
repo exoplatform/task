@@ -68,13 +68,9 @@
                             <div class="commentInput">
                                 <textarea title="&{comment.message.addYourComment}" name="comment" cols="30" rows="10" class="textarea"></textarea>
                             </div>
+                            <button id="taskCommentButton" type="submit" class="btn btn-primary">&{comment.label.comment}</button>
                         </div>
                     </div><!--end commentRight-->
-                </div>
-                <div class="clearfix">
-                    <div class="pull-right">
-                        <button id="taskCommentButton" type="submit" class="btn pull-right btn-primary">&{comment.label.comment}</button>
-                    </div>
                 </div>
             </form>
         </div> <!--end commentItem-->

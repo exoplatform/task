@@ -401,11 +401,11 @@ define('ta_edit_inline',
             closeAfterSelect: true,
             maxOptions: 10,
             plugins: {
-                task_remove_button: {
-                    label: '<i class="uiIconClose uiIconLightGray"></i>',
-                    className : 'removeValue'
-                },
-                no_results: {}
+                // task_remove_button: {
+                //     label: '<i class="uiIconClose uiIconLightGray"></i>',
+                //     className : 'removeValue'
+                // },
+                // no_results: {}
             },
             render: {
                 option: function(item, escape) {

@@ -328,7 +328,7 @@ li[data-hiddenlabel="false"] {
         .accordion-heading {
             .item {
                 .dropdown-menu {
-                    left: 88.5%!important;   
+                    left: 88.5%!important;
                 }
             }
         }
@@ -346,7 +346,7 @@ li[data-hiddenlabel="false"] {
         .accordion-heading {
             .item {
                 .dropdown-menu {
-                    left: 90.5%!important;   
+                    left: 90.5%!important;
                 }
             }
         }
@@ -813,16 +813,31 @@ li[data-hiddenlabel="false"] {
 
 //comment section
 .commentList {
+
+  .commmentLeft + .commentRight {
+    margin-left: 50px;
+  }
+  .commentRight {
+    .author .date{
+      margin-left: 10px;
+      font-size: 12px;
+      padding-right: 16px;
+    }
+  }
+
+  form {
+    .commmentLeft {
+      display: none;
+    }
     .commmentLeft + .commentRight {
-        margin-left: 50px;
+      margin-left: 0px;
     }
-    .commentRight {
-         .author .date{
-            margin-left: 10px;
-            font-size: 12px;
-            padding-right: 16px;
-        }
+  }
+
+    .commentInputBox .btn {
+      margin-top: 10px;
     }
+
     .commentItem {
         position: relative;
         margin: 10px 0 0;
@@ -1486,5 +1501,18 @@ li[data-hiddenlabel="false"] {
 .inputUser {
   &.disabled [data-action="assign"] {
     display: none;
+  }
+}
+
+@media(min-width: 480px) {
+  .commentList {
+    form {
+      .commmentLeft {
+        display: block;
+      }
+      .commmentLeft + .commentRight {
+        margin-left: 50px;
+      }
+    }
   }
 }
