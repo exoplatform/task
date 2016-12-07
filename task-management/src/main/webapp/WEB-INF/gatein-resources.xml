@@ -139,27 +139,6 @@
     </depends>
   </module>
   <module>
-    <name>selectize</name>
-    <script>
-      <adapter>
-        (function() {
-          var oldJQuery = this.jQuery;
-          this.jQuery = jquery;
-
-          <include>/WEB-INF/classes/org/exoplatform/task/management/assets/selectize.js/0.12.1/js/standalone/selectize.js</include>
-
-          var selectize = this.Selectize;
-          this.jQuery = oldJQuery;
-          return selectize;
-        })();
-      </adapter>
-    </script>
-    <depends>
-      <module>jquery</module>
-      <as>jquery</as>
-    </depends>
-  </module>
-  <module>
     <name>edit_inline_js</name>
     <script>
       <adapter>
@@ -186,6 +165,9 @@
     </depends>
     <depends>
       <module>select2</module>
+    </depends>
+    <depends>
+      <module>suggester</module>
     </depends>
   </module>
   <module>

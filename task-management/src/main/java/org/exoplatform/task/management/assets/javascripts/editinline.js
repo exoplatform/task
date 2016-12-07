@@ -1,6 +1,6 @@
 define('ta_edit_inline',
-    ['SHARED/jquery', 'task_ui_calendar', 'taFilter', 'SHARED/edit_inline_js', 'SHARED/selectize','SHARED/taskLocale',
-        'x_editable_select3', 'x_editable_selectize', 'x_editable_calendar', 'x_editable_ckeditor'],
+    ['SHARED/jquery', 'task_ui_calendar', 'taFilter', 'SHARED/edit_inline_js', 'SHARED/selectize2','SHARED/taskLocale',
+        'x_editable_select3', 'x_editable_selectize', 'x_editable_calendar', 'x_editable_ckeditor', 'SHARED/suggester'],
     function($, uiCalendar, taFilter, editinline, selectize, locale) {
 
         /**
@@ -28,58 +28,6 @@ define('ta_edit_inline',
             }
           });
         }
-        
-        selectize.define('task_remove_button', function(options) {
-            options = $.extend({
-                label     : '&times;',
-                title     : locale.remove,
-                className : 'remove',
-                append    : true
-            }, options);
-
-            var self = this;
-            var html = '<span class="' + options.className + '" tabindex="-1" title="' + escape_html(options.title) + '">' + options.label + '</span>';
-
-            /**
-             * Appends an element as a child (with raw HTML).
-             *
-             * @param {string} html_container
-             * @param {string} html_element
-             * @return {string}
-             */
-            var append = function(html_container, html_element) {
-                var pos = html_container.search(/(<\/[^>]+>\s*)$/);
-                return html_container.substring(0, pos) + html_element + html_container.substring(pos);
-            };
-
-            this.setup = (function() {
-                var original = self.setup;
-                return function() {
-                    // override the item rendering method to add the button to each
-                    if (options.append) {
-                        var render_item = self.settings.render.item;
-                        self.settings.render.item = function(data) {
-                            return append(render_item.apply(this, arguments), html);
-                        };
-                    }
-
-                    original.apply(this, arguments);
-
-                    // add event listener
-                    this.$control.on('click', '.' + options.className, function(e) {
-                        e.preventDefault();
-                        //if (self.isLocked) return;
-                        var $item = $(e.currentTarget).parent();
-                        self.setActiveItem($item);
-                        if (self.deleteSelection()) {
-                            self.setCaret(self.items.length);
-                        }
-                    });
-
-                };
-            })();
-
-        });
 
         selectize.define('no_results', function( options ) {
             var self = this;
@@ -172,6 +120,7 @@ define('ta_edit_inline',
         var $rightPanelContent;
         var $cloneProject;
         var $modalPlace;
+        var defaultOptionValues;
 
         editInline.init = function(taApp) {
             editInline.taApp = taApp;
@@ -192,13 +141,13 @@ define('ta_edit_inline',
             var d = new $.Deferred;
             //if left empty, task title will be set to Untitled Task
             if (params.name == 'title' && !params.value) {
-            	var $title = $rightPanel.find('[data-name="title"]');
-            	params.value = $title.data('emptytext');
+              var $title = $rightPanel.find('[data-name="title"]');
+              params.value = $title.data('emptytext');
             }
             var data = params;
             params.pk = currentTaskId;
             data.taskId = currentTaskId;
-            $('[data-taskid]').jzAjax('TaskController.saveTaskInfo()',{
+            $('#taskDetailContainer').jzAjax('TaskController.saveTaskInfo()',{
                 data: data,
                 method: 'POST',
                 traditional: true,
@@ -393,63 +342,48 @@ define('ta_edit_inline',
             labelField: 'text',
             searchField: ['text'],
             openOnFocus: false,
-            wrapperClass: 'exo-mentions dropdown',
-            dropdownClass: 'dropdown-menu uiDropdownMenu autocomplete-menu',
-            inputClass: 'selectize-input replaceTextArea',
             create: false,
             hideSelected: true,
             closeAfterSelect: true,
             maxOptions: 10,
-            plugins: {
-                remove_button: {
-                   label: '<i class="uiIconClose uiIconLightGray"></i>',
-                   className : 'removeValue'
+            highlight: false,
+            sourceProviders: ['exo:taskuser'],
+            plugins: ['remove_button', 'no_results'],
+            renderMenuItem: function(item, escape) {
+              if(!item.avatar) {
+                for (index = 0; index < defaultOptionValues.length; ++index) {
+                  if(defaultOptionValues[index].id == item.id) {
+                    item = defaultOptionValues[index];
+                    break;
+                  }
                 }
-                // , no_results: {}
+              }
+              if (item.deleted === true || item.enable === false) {
+                return '';
+              }
+              return '<div class="avatarMini">' +
+                '   <img src="'+item.avatar+'">' +
+                '</div>' +
+                '<div class="text">' + editInline.taApp.escape(item.text) + ' (' + item.id +')' + '</div>' +
+                '<div class="user-status"><i class="uiIconColorCircleGray"></i></div>';
             },
-            render: {
-                option: function(item, escape) {
-                    if (item.deleted === true || item.enable === false) {
-                        return '';
-                    }
-                    return '<li class="data">' +
-                        '<span class="avatarMini">' +
-                        '   <img src="'+item.avatar+'">' +
-                        '</span>' +
-                        '<span class="text">' + editInline.taApp.escape(item.text) + ' (' + item.id +')' + '</span>' +
-                        '<span class="user-status"><i class="uiIconColorCircleGray"></i></span>' +
-                        '</li>';
-                },
-                item: function(item, escape) {
-                    var text = editInline.taApp.escape(item.text);
-                    var cssClass = '';
-                    if (item.deleted === true) {
-                        cssClass = 'muted';
-                    } else if (item.enable === false) {
-                        text += '&nbsp;<span class="muted" style="font-style: italic">(' + locale.inactive + ')</span>';
-                    }
-                    return '<span class="'+cssClass+'">' + text +'</span>';
+            renderItem: function(item, escape) {
+              if(!item.avatar) {
+                for (index = 0; index < defaultOptionValues.length; ++index) {
+                  if(defaultOptionValues[index].id == item.id) {
+                    item = defaultOptionValues[index];
+                    break;
+                  }
                 }
-            },
-            onInitialize: function() {
-                var self      = this;
-                var settings  = self.settings;
-                var $dropdown         = self.$dropdown;
-                var $wrapper = self.$wrapper;
-                var $dropdown_content = self.$dropdown_content;
-                $dropdown_content.remove();
-                $dropdown_content = $('<ul>').addClass(settings.dropdownContentClass).appendTo($dropdown);
-                var $standaloneLoading = $('<div class="autocomplete-menu loading">' +
-                    '<div class="loading center muted">' +
-                    '<i class="uiLoadingIconMini"></i>' +
-                    '<div class="loadingText">Loading...</div>' +
-                    '</div>' +
-                    '</div>').appendTo($wrapper);
-
-                $('<div class="dropdown-loading center">' +
-                '<i class="uiLoadingIconMini"></i>' +
-                '</div>').appendTo($dropdown);
-                self.$dropdown_content = $dropdown_content;
+              }
+              var text = editInline.taApp.escape(item.text);
+              var cssClass = '';
+              if (item.deleted === true) {
+                cssClass = 'muted';
+              } else if (item.enable === false) {
+                text += '&nbsp;<span class="muted" style="font-style: italic">(' + locale.inactive + ')</span>';
+              }
+              return '<div class="item">' + text +'</div>';
             },
             onDropdownOpen: function($dropdown) {
                 $dropdown.closest('.exo-mentions').addClass('dropdown-opened');
@@ -457,29 +391,31 @@ define('ta_edit_inline',
             onDropdownClose: function($dropdown) {
                 $dropdown.closest('.exo-mentions').removeClass('dropdown-opened');
             },
-            load: function(query, callback) {
-                if (!query.length) return callback();
+            providers: {
+              'exo:taskuser': function(query, callback) {
+                if (!query || !query.length) return callback(defaultOptionValues);
                 $.ajax({
-                    url: $rightPanel.jzURL('UserController.findUser'),
-                    data: {query: query},
-                    type: 'GET',
-                    error: function() {
-                        callback();
-                    },
-                    success: function(res) {
-                        callback(res);
-                    }
+                  url: $rightPanel.jzURL('UserController.findUser'),
+                  data: {query: query},
+                  type: 'GET',
+                  error: function() {
+                    callback();
+                  },
+                  success: function(res) {
+                    callback(res);
+                  }
                 });
+              }
             },
             score: function(search) {
-                var score = this.getScoreFunction(search);
-                return function(item) {
-                    if (item.deleted === true || item.enable === false) {
-                        return 0;
-                    } else {
-                        return score(item);
-                    }
-                };
+              var score = this.getScoreFunction(search);
+              return function(item) {
+                  if (item.deleted === true || item.enable === false) {
+                      return 0;
+                  } else {
+                      return score(item);
+                  }
+              };
             }
         };
         var saveAssignee = function(taskId, name, value, selectize) {
@@ -552,7 +488,6 @@ define('ta_edit_inline',
         }
         editInline.initAssignment = function(taskId) {
             var getDisplayNameURL = $rightPanel.jzURL('UserController.getDisplayNameOfUser');
-            var options = [];
             var val = [];
             var $assignee = $rightPanel.find('input[name="assignee"]');
             var $coworker = $rightPanel.find('input[name="coworker"]');
@@ -597,18 +532,21 @@ define('ta_edit_inline',
                     async: false,
                     data: {usernames: val},
                     success: function(res) {
-                        options = res;
+                        defaultOptionValues = res;
                     }
                 });
             }
 
             var onInit = selectizeOptions.onInitialize;
             var opts = $.extend({}, selectizeOptions, {
-                options: options,
+                type: "tag",
+                preload: true,
                 onInitialize: function() {
-                    onInit.apply(this, arguments);
+                    if(onInit) {
+            onInit.apply(this, arguments);
+          }
                     if (assignee != '') {
-                        this.$input.closest('.inputUser').find('.selectize-input input').attr('disabled', 'disabled');
+                      this.$input.closest('.inputUser').find('.selectize-input input').attr('disabled', 'disabled');
                     }
                 },
                 onItemAdd: function(value, $item) {
@@ -618,36 +556,34 @@ define('ta_edit_inline',
                     this.enable();
                     this.$input.closest('.inputUser').find('.selectize-input input').removeAttr('disabled');
                     var _this = this;
-                    setTimeout(function() {
-                        _this.close();
-                    }, 1);
-                    this.close();
                 },
                 onChange: function(value) {
                     saveAssignee(taskId,'assignee', value, this);
                 }
             });
-            $assignee.selectize(opts);
+            $assignee.suggester(opts);
+
             opts = $.extend({}, selectizeOptions, {
-                options: options,
-                onChange: function(value) {
-                    saveAssignee(taskId,'coworker', value, this);
-                }
+              type: "tag",
+              preload: true,
+              onChange: function(value) {
+                  saveAssignee(taskId,'coworker', value, this);
+              }
             });
-            $coworker.selectize(opts)
+            $coworker.suggester(opts);
 
             $assignMe.click(function(e) {
-                var $action = $(e.target).closest('[data-action]');
-                var action = $action.data('action');
-                var value = $action.data('value');
+              var $action = $(e.target).closest('[data-action]');
+              var action = $action.data('action');
+              var value = $action.data('value');
 
-                if (action == 'assign') {
-                    $assignee[0].selectize.setValue(value, false);
-                } else {
-                    $coworker[0].selectize.addItem(value, false);
-                }
+              if (action == 'assign') {
+                $assignee[0].selectize.setValue(value, false);
+              } else {
+                $coworker[0].selectize.addItem(value, false);
+              }
             });
-        };
+          };
 
         editInline.initEditInline = function(taskId) {
             editInline.initWorkPlan(taskId);
@@ -695,7 +631,7 @@ define('ta_edit_inline',
                 });
             });
 
-            var $taskDetailContainer = $('[data-taskid]');
+            var $taskDetailContainer = $('#taskDetailContainer, [data-taskid]');
             $taskDetailContainer.find('.editable').each(function() {
                 var $this = $(this);
                 var dataType = $this.attr('data-type');
@@ -725,7 +661,7 @@ define('ta_edit_inline',
                     }
                 }
                 if (fieldName == 'title') {
-                	editOptions.emptyclass = '';
+                  editOptions.emptyclass = '';
                 }
                 if (fieldName == 'description') {
                     editOptions.emptytext = locale.taskDescriptionEmpty;
@@ -894,7 +830,7 @@ define('ta_edit_inline',
 //                    url: editInline.saveProjectDetailFunction
                 });
                 if (fieldName == 'name') {
-                	editOptions.emptyclass = '';
+                  editOptions.emptyclass = '';
                 }
                 if (fieldName == 'description') {
                     editOptions.emptytext = locale.projectDescriptionEmpty;

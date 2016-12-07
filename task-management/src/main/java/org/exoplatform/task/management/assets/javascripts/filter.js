@@ -1,4 +1,4 @@
-define('taFilter', ['SHARED/jquery', 'SHARED/selectize'], function($) {
+define('taFilter', ['SHARED/jquery', 'SHARED/selectize2'], function($) {
   var taApp = null;
 
   var taFilter = {
@@ -65,15 +65,11 @@ define('taFilter', ['SHARED/jquery', 'SHARED/selectize'], function($) {
         //selectize: labels, assignee
         var defOpts = {
             create: true,
+            type : 'tag',
             wrapperClass: 'exo-mentions dropdown',
             dropdownClass: 'dropdown-menu uiDropdownMenu',
             inputClass: 'selectize-input replaceTextArea ',
-            plugins: {
-                remove_button: {
-                    label: '&#120;',
-                    className : 'removeValue'
-                }
-            },
+            plugins: ['remove_button'],
             hideSelected: true,
             closeAfterSelect: true,
             onItemAdd: function() {
@@ -196,117 +192,136 @@ define('taFilter', ['SHARED/jquery', 'SHARED/selectize'], function($) {
     var isLoaded = false;
     var allLabels = {};
     //
-    $lblFilter.selectize($.extend({}, defOpts, {
+    $lblFilter.suggester($.extend({}, defOpts, {
       options: $lblFilter.data('options'),
       create: false,
       searchField: ['name'],
       items: $lblFilter.data('items'),
       labelField: 'name',
       valueField: 'id',
-      render: {
-        option: function(item, escape) {
-            return '<li class="data">' +
-                '<a href="" class="text">' + escape(item.name) + '</a>'
-            '</li>';
-        },
-        item: function(item, escape) {
-            return '<div class="label '+item.color+'">' + escape(item.name) +'</div>';
-        }        
+      sourceProviders: ['exo:taskfilterlabel'],
+      renderMenuItem: function(item, escape) {
+        return '<li class="data">' +
+          '<a href="" class="text">' + escape(item.name) + '</a>'
+        '</li>';
       },
-      load: function(query, callback) {
-        if (isLoaded) {
+      renderItem: function(item, escape) {
+        return '<div class="label '+item.color+'">' + escape(item.name) +'</div>';
+      },
+      providers: {
+        'exo:taskfilterlabel': function(query, callback) {
+          if (isLoaded) {
             callback(allLabels);
-        }
-        //. Load all label of user
-        $.ajax({
+          }
+          //. Load all label of user
+          $.ajax({
             url: $filter.jzURL('UserController.findLabel'),
             data: {},
             type: 'GET',
             error: function() {
-                callback();
+              callback();
             },
             success: function(res) {
-                callback(res);
-                isLoaded = true;
-                $.each(res, function(index, val) {
-                    allLabels[val.id] = val;
-                });
+              callback(res);
+              isLoaded = true;
+              $.each(res, function(index, val) {
+                allLabels[val.id] = val;
+              });
             }
-        });
+          });
+        }
       }
     }));
   }
   
   function initAssignee($filter, defOpts) {    
     var $asFilter = $filter.find('[name="assignee"]');
-    var selectizeOptions = $.extend({}, defOpts, {
-        valueField: 'id',
-        labelField: 'text',
-        searchField: ['text', 'id'],
-        options: $asFilter.data('options'),
-        items: $asFilter.data('items'),
-        openOnFocus: false,
-        wrapperClass: 'exo-mentions dropdown',
-        dropdownClass: 'dropdown-menu uiDropdownMenu autocomplete-menu',
-        inputClass: 'selectize-input replaceTextArea',
-        hideSelected: true,
-        closeAfterSelect: true,
-        create: false,
-        plugins: {
-            task_remove_button: {
-                label: '<i class="uiIconClose uiIconLightGray"></i>',
-                className : 'removeValue'
-            },
-            no_results: {}
-        },
-        render: {
-            option: function(item, escape) {
-                return '<li class="data">' +
-                    '<div class="avatarSmall">' +
-                    '   <img src="'+item.avatar+'">' +
-                    '</div>' +
-                    '<span class="text">' + escape(item.text) + ' (' + item.id +')' + '</span>' +
-                    '<span class="user-status"><i class="uiIconColorCircleGray"></i></span>' +
-                    '</li>';
-            },
-            item: function(item, escape) {
-                return '<span class="" href="#">' + escape(item.text) +'</span>';
-            }
-        },
-        onInitialize: function() {
-            var self      = this;
-            var settings  = self.settings;
-            var $dropdown         = self.$dropdown;
-            var $wrapper = self.$wrapper;
-            var $dropdown_content = self.$dropdown_content;
-            $dropdown_content.remove();
-            $dropdown_content = $('<ul>').addClass(settings.dropdownContentClass).appendTo($dropdown);
-            $('<div class="autocomplete-menu loading">' +
-                '<div class="loading center muted">' +
-                '<i class="uiLoadingIconMini"></i>' +
-                '<div class="loadingText">Loading...</div>' +
-                '</div>' +
-                '</div>').appendTo($wrapper);
-            self.$dropdown_content = $dropdown_content;
-        },
-        load: function(query, callback) {
-            if (!query.length) return callback();
-            $.ajax({
-                url: $filter.jzURL('UserController.findUser'),
-                data: {query: query},
-                type: 'GET',
-                error: function() {
-                    callback();
-                },
-                success: function(res) {
-                    callback(res);
-                }
-            });
+    var defaultOptionValues = $asFilter.data('options');
+    $asFilter.suggester({
+      type : 'tag',
+      plugins: ['remove_button'],
+      preload: false,
+      persist: false,
+      createOnBlur: true,
+      highlight: false,
+      hideSelected: true,
+      openOnFocus: true,
+      sourceProviders: ['exo:taskfilteruser'],
+      valueField: 'id',
+      labelField: 'text',
+      searchField: ['text', 'id'],
+      loadThrottle: null,
+      hideSelected: true,
+      closeAfterSelect: true,
+      onItemAdd: function(value, $item) {
+        this.$input.parent().find('.selectize-input input').attr('disabled', 'disabled');
+        taFilter.submitFilter();
+      },
+      onItemRemove: function(value, $item) {
+        this.$input.parent().find('.selectize-input input').removeAttr('disabled');
+        taFilter.submitFilter();
+      },
+      onInitialize: function() {
+        for (index = 0; index < defaultOptionValues.length; ++index) {
+            $asFilter[0].selectize.addOption(defaultOptionValues[index]);
         }
+        var items = $asFilter.data('items');
+        if(items && items.length) {
+          $asFilter[0].selectize.addItem(items[0], false);
+          this.$input.parent().find('.selectize-input input').attr('disabled', 'disabled');
+        }
+      },
+      renderItem: function(item, escape) {
+        if(!item.avatarUrl) {
+          for (index = 0; index < defaultOptionValues.length; ++index) {
+            if(defaultOptionValues[index].id == item.id) {
+              item = defaultOptionValues[index];
+              break;
+            }
+          }
+        }
+        return '<div class="item">' + escape(item.text) +'</div>';
+      },
+      renderMenuItem: function(item, escape) {
+        if(!item.avatarUrl) {
+          for (index = 0; index < defaultOptionValues.length; ++index) {
+            if(defaultOptionValues[index].id == item.id) {
+              item = defaultOptionValues[index];
+              break;
+            }
+          }
+        }
+        var avatar = item.avatarUrl;
+        if (avatar == null) {
+          avatar = '/eXoSkin/skin/images/system/SpaceAvtDefault.png';
+        }
+        if(!item.text) {
+            item.text = item.value;
+        }
+        return '<div class="avatarMini">' +
+          '   <img src="'+item.avatar+'">' +
+          '</div>' +
+          '<div class="text">' + escape(item.text) + ' (' + item.id +')' + '</div>' +
+          '<div class="user-status"><i class="uiIconColorCircleGray"></i></div>';
+      },
+      sortField: [{field: 'order'}, {field: '$score'}],
+      providers: {
+        'exo:taskfilteruser': function(query, callback) {
+          if (!query.length) return callback();
+          $.ajax({
+              url: $filter.jzURL('UserController.findUser'),
+              data: {query: query},
+              type: 'GET',
+              error: function() {
+                  callback();
+              },
+              success: function(res) {
+                  callback(res);
+              }
+          });
+        }
+      }
     });
-        
-    $asFilter.selectize(selectizeOptions);
   }
-  
   return taFilter;
 });

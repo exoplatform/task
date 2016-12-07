@@ -1,4 +1,4 @@
-define('x_editable_selectize', ['SHARED/jquery', 'SHARED/edit_inline_js', 'SHARED/selectize', 'SHARED/taskLocale'], function(jquery, editinline, selectize, locale) {
+define('x_editable_selectize', ['SHARED/jquery', 'SHARED/edit_inline_js', 'SHARED/selectize2', 'SHARED/taskLocale'], function(jquery, editinline, selectize, locale) {
     (function ($) {
         "use strict";
 

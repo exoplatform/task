@@ -35,7 +35,6 @@
 @WebJars({
     @WebJar("x-editable-bootstrap"),
     @WebJar("bootstrap-datepicker"),
-    @WebJar("selectize.js"),
     @WebJar("select2"),
     @WebJar("jquery-ui")
 })
@@ -65,7 +64,6 @@
 @Stylesheets({
     @Stylesheet(id = "style.css", value = "less/style.css"),
     @Stylesheet(id = "bootstrap-datepicker.css", value = "bootstrap-datepicker/1.4.0/css/bootstrap-datepicker.css"),
-    @Stylesheet(id = "selectize-css", value = "selectize.js/0.12.1/css/selectize.css"),
     @Stylesheet(id = "select2-css", value = "select2/3.5.2/select2.css"),
     @Stylesheet(id = "edit-inline-css", value = "x-editable-bootstrap/1.4.6/css/bootstrap-editable.css")
 })
