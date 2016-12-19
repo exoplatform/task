@@ -6,3 +6,6 @@ pom.xml.next
 release.properties
 *.iml
 .idea
+.classpath
+.project
+rebel.xml
