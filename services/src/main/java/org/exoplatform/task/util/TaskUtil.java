@@ -134,7 +134,14 @@ public final class TaskUtil {
       if (k.isEmpty()) {
         k = NONE;
       }
-      labels.put(k, bundle.getString("label." + k));
+      String label;
+      try {
+        label = bundle.getString("label." + k);
+      } catch (Exception e) {
+        LOG.warn("Error while resolving label 'label." + k + "' with locale " + bundle.getLocale(), e);
+        label = k;
+      }
+      labels.put(k, label);
     }
     return labels;
   }
