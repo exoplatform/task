@@ -705,21 +705,21 @@ public final class TaskUtil {
     if("project".equalsIgnoreCase(groupBy)) {
       Status s = task.getStatus();
       if(s == null) {
-        return new GroupKey[] {new GroupKey("No Project", null, Integer.MAX_VALUE)};
+        return new GroupKey[] {new GroupKey(bundle.getString("label.noProject"), null, Integer.MAX_VALUE)};
       } else {
         return new GroupKey[] {new GroupKey(s.getProject().getName(), s.getProject(), (int)s.getProject().getId())};
       }
     } else if("status".equalsIgnoreCase(groupBy)) {
       Status s = task.getStatus();
       if(s == null) {
-        return new GroupKey[] {new GroupKey("TODO", null, Integer.MIN_VALUE)};
+        return new GroupKey[] {new GroupKey(bundle.getString("label.todo"), null, Integer.MIN_VALUE)};
       } else {
         return new GroupKey[] {new GroupKey(ResourceUtil.resolveStatus(bundle, s.getName()), s, s.getRank())};
       }
     } else if ("assignee".equalsIgnoreCase(groupBy)) {
       String assignee = task.getAssignee();
       User user = userService.loadUser(assignee);
-      return (assignee != null && user.getUsername() != "guest" && user.getUsername() != null) ? new GroupKey[]{new GroupKey(assignee, user, assignee.hashCode())} : new GroupKey[]{new GroupKey("Unassigned", null, Integer.MAX_VALUE)};
+      return (assignee != null && user.getUsername() != "guest" && user.getUsername() != null) ? new GroupKey[]{new GroupKey(assignee, user, assignee.hashCode())} : new GroupKey[]{new GroupKey(bundle.getString("label.unassigned"), null, Integer.MAX_VALUE)};
 
     } else if ("dueDate".equalsIgnoreCase(groupBy)) {
       Date dueDate = task.getDueDate();
@@ -749,7 +749,7 @@ public final class TaskUtil {
       ListAccess<Label> tmp = taskService.findLabelsByTask(task.getId(), username);
       List<Label> labels = Arrays.asList(ListUtil.load(tmp, 0, -1));
       if (labels.isEmpty()) {
-        return new GroupKey[] {new GroupKey("No label", null, Integer.MAX_VALUE)};
+        return new GroupKey[] {new GroupKey(bundle.getString("label.noLabel"), null, Integer.MAX_VALUE)};
       } else {
         GroupKey[] keys = new GroupKey[labels.size()];
         for (int i = 0; i < keys.length; i++) {
