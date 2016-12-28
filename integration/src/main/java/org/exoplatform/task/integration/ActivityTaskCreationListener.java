@@ -86,37 +86,29 @@ public class ActivityTaskCreationListener extends ActivityListenerPlugin {
 
   private void createTask(ActivityLifeCycleEvent event, boolean isComment) {
     ExoSocialActivity activity = event.getActivity();
-    ExoSocialActivity rootActivity = isComment ? activityManager.getActivity(activity.getParentId()) : activity;
-    Identity identity = identityManager.getIdentity(activity.getPosterId(), false);    
-    ParserContext context = new ParserContext(userService.getUserTimezone(identity.getRemoteId()));
     String comment = activity.getTitle();
+
     //
     if (comment != null && !comment.isEmpty()) {
+
       int idx = comment.indexOf(PREFIX);
+
       //
       if (idx >=0 && idx + 2 < comment.length() - 1) {
+        ExoSocialActivity rootActivity = isComment ? activityManager.getActivity(activity.getParentId()) : activity;
+        Identity identity = identityManager.getIdentity(activity.getPosterId(), false);
+        ParserContext context = new ParserContext(userService.getUserTimezone(identity.getRemoteId()));
+
         comment = ActivityTaskProcessor.decode(comment);
         comment = StringEscapeUtils.unescapeHtml(comment);
-        String text = comment.substring(idx + 2);
-        text = text.replaceFirst("<br(\\s*\\/?)>", "\n");
 
-        String title, description;
-        int index = text.indexOf("\n");
-        if (index > 1) {
-          title = text.substring(0, index);
-          description = text.substring(index).trim();
-        } else {
-          title = text.trim();
-          description = "";
-        }
-        Task task = parser.parse(title, context);
+        Task taskInfo = extractTaskInfo(comment);
+
+        Task task = parser.parse(taskInfo.getTitle(), context);
         //we need to remove malicious code here in case user inject request using curl TA-387
-        task.setDescription(StringUtil.encodeInjectedHtmlTag(description));
+        task.setDescription(StringUtil.encodeInjectedHtmlTag(taskInfo.getDescription()));
         task.setContext(LinkProvider.getSingleActivityUrl(activity.getId()));
-
-        
         task.setCreatedBy(identity.getRemoteId());
-
         task.setActivityId(activity.getId());
 
         // If task is created in space, it will belong to the top project
@@ -136,5 +128,36 @@ public class ActivityTaskCreationListener extends ActivityListenerPlugin {
         activityManager.updateActivity(activity);
       }
     }
+  }
+
+  // Extract task [title,description] from a string without any HTML formatting tag
+  Task extractTaskInfo(String html) {
+    int idx = html.indexOf(PREFIX);
+    String text = html.substring(idx + 2);
+    text = text.replaceFirst("<br(\\s*\\/?)>", "\n");
+
+    StringBuilder taskTitle = new StringBuilder();
+    String  description = "";
+    boolean ignore = false;
+    for (int i = 0; i < text.length(); i++) {
+      char c = text.charAt(i);
+      if (ignore == true) {
+        if (c == '>') {
+          ignore = false;
+        }
+      } else if (c == '<') {
+        ignore = true;
+      } else if (c == '\n') {
+        description = text.substring(i).trim();
+        break;
+      } else {
+        taskTitle.append(c);
+      }
+    }
+
+    Task task = new Task();
+    task.setTitle(taskTitle.toString());
+    task.setDescription(description);
+    return task;
   }
 }

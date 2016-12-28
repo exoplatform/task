@@ -22,7 +22,7 @@
         <value-param>
           <name>priority</name>
           <description>priority of this processor (lower are executed first)</description>
-          <value>4</value>
+          <value>2</value> <!-- Ensure this processor executed before OSHtmlSanitizerProcessor from Social -->
         </value-param>
       </init-params>
     </component-plugin>
