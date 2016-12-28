@@ -22,6 +22,7 @@ import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.component.RequestLifeCycle;
 import org.exoplatform.container.xml.InitParams;
+import org.exoplatform.portal.application.PortalRequestContext;
 import org.exoplatform.portal.mop.SiteKey;
 import org.exoplatform.social.core.BaseActivityProcessorPlugin;
 import org.exoplatform.social.core.activity.model.ExoSocialActivity;
@@ -30,7 +31,7 @@ import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.util.ResourceUtil;
 import org.exoplatform.task.util.TaskUtil;
 import org.exoplatform.web.WebAppController;
-import org.exoplatform.web.controller.router.Router;
+import org.exoplatform.web.application.RequestContext;
 
 public class ActivityTaskProcessor extends BaseActivityProcessorPlugin {
 
@@ -62,7 +63,14 @@ public class ActivityTaskProcessor extends BaseActivityProcessorPlugin {
         RequestLifeCycle.begin(entityManagerService);
         Task task = taskService.findTaskByActivityId(activity.getId());
         if (task != null) {
-          return substituteTask(task, message, webAppController.getRouter());
+          RequestContext request = RequestContext.getCurrentInstance();
+          String portalName = "intranet";
+          if (request != null) {
+            PortalRequestContext pContext = (PortalRequestContext) RequestContext.getCurrentInstance().getParentAppRequestContext();
+            portalName = pContext.getPortalOwner();
+          }
+          String taskURL = TaskUtil.buildTaskURL(task, SiteKey.portal(portalName), ExoContainerContext.getCurrentContainer(), webAppController.getRouter());
+          return substituteTask(taskURL, message);
         } else {
           //encode to disable MentionsProcessor
           return encode(message);
@@ -88,21 +96,17 @@ public class ActivityTaskProcessor extends BaseActivityProcessorPlugin {
     return message;
   }
 
-  static String substituteTask(Task task, final String title, Router router) {
-    if (task == null || title == null) {
-      return title;
-    }
-
-    int idx = title.indexOf(ActivityTaskCreationListener.PREFIX);
+  String substituteTask(String taskURL, final String html) {
+    int idx = html.indexOf(ActivityTaskCreationListener.PREFIX);
     if (idx == -1) {
-      return title;
+      return html;
     }
-    int breakIdx = title.indexOf("<br", idx);
 
-    StringBuilder builder = new StringBuilder(title);
-    String taskURL = TaskUtil.buildTaskURL(task, CommonsUtils.getCurrentSite(), ExoContainerContext.getCurrentContainer(), router);
-    String url = " <a href='"+taskURL+"'>";
+    StringBuilder builder = new StringBuilder(html);
+    String url = "<a href=\""+taskURL+"\">";
     builder.insert(idx, url);
+
+    int breakIdx = html.indexOf("<", idx);
     if (breakIdx > 0) {
       breakIdx = breakIdx + url.length();
       builder.insert(breakIdx, "</a>");
