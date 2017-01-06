@@ -198,7 +198,7 @@ define('ta_edit_inline',
             var data = params;
             params.pk = currentTaskId;
             data.taskId = currentTaskId;
-            $('#taskDetailContainer').jzAjax('TaskController.saveTaskInfo()',{
+            $('[data-taskid]').jzAjax('TaskController.saveTaskInfo()',{
                 data: data,
                 method: 'POST',
                 traditional: true,
@@ -695,7 +695,7 @@ define('ta_edit_inline',
                 });
             });
 
-            var $taskDetailContainer = $('#taskDetailContainer, [data-taskid]');
+            var $taskDetailContainer = $('[data-taskid]');
             $taskDetailContainer.find('.editable').each(function() {
                 var $this = $(this);
                 var dataType = $this.attr('data-type');

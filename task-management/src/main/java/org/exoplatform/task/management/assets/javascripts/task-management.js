@@ -42,7 +42,7 @@ $(document).ready(function() {
     //
     $('body').suggester('addProvider', 'task:people', function(query, callback) {
         var _this = this;
-        $('#taskDetailContainer').jzAjax('UserController.findUsersToMention()', {
+        $('[data-taskid]').jzAjax('UserController.findUsersToMention()', {
             data: {query: query},
             success: function(data) {
                 var result = [];
