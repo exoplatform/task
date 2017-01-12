@@ -85,6 +85,11 @@ public class TaskBuilder {
     return this;
   }
 
+  public TaskBuilder withCoworker(Set<String> coworker) {
+    this.coworker = coworker;
+    return this;
+  }
+
   public TaskBuilder addCoworker(String coworker) {
     if (this.coworker == null) {
       this.coworker = new HashSet<String>();

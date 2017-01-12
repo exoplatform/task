@@ -76,7 +76,9 @@ import org.exoplatform.task.util.TaskUtil;
     @NamedQuery(name = "Task.getCoworker",
         query = "SELECT c FROM TaskTask t inner join t.coworker c WHERE t.id = :taskid"),
     @NamedQuery(name = "Task.updateStatus",
-        query = "UPDATE TaskTask t SET t.status = :status_new WHERE t.status = :status_old")
+        query = "UPDATE TaskTask t SET t.status = :status_new WHERE t.status = :status_old"),
+    @NamedQuery(name = "Task.getTaskWithCoworkers",
+        query = "SELECT t FROM TaskTask t LEFT JOIN FETCH t.coworker c WHERE t.id = :taskid")
 })
 public class Task {
 
@@ -110,7 +112,7 @@ public class Task {
   @Column(name = "CALENDAR_INTEGRATED")
   private boolean calendarIntegrated = false;
 
-  @ElementCollection
+  @ElementCollection(fetch = FetchType.LAZY)
   @CollectionTable(name = "TASK_TASK_COWORKERS",
       joinColumns = @JoinColumn(name = "TASK_ID"))
   private Set<String> coworker = new HashSet<String>();
@@ -272,11 +274,7 @@ public class Task {
     this.dueDate = dueDate;
   }
 
-  @Deprecated
   public Set<String> getCoworker() {
-    if (coworker == null) {
-      coworker = TaskUtil.getCoworker(getId());
-    }
     return coworker;
   }
 
@@ -293,8 +291,15 @@ public class Task {
   }
 
   public Task clone() {
+    Set<String> coworkerClone;
+    if (getCoworker() != null) {
+      coworkerClone = new HashSet<String>(getCoworker());
+    } else {
+      coworkerClone = new HashSet<String>();
+    }
     Task newTask = new TaskBuilder().withTitle(this.getTitle())
         .withAssignee(this.getAssignee())
+        .withCoworker(coworkerClone)
         .withContext(this.getContext())
         .withCreatedBy(this.getCreatedBy())
         .withDescription(this.getDescription())

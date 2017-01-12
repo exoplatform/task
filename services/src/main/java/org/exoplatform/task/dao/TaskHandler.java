@@ -16,13 +16,13 @@
 */
 package org.exoplatform.task.dao;
 
-import java.util.List;
-import java.util.Set;
-
 import org.exoplatform.commons.api.persistence.GenericDAO;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
+
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author <a href="trongtt@exoplatform.com">Trong Tran</a>
@@ -45,5 +45,7 @@ public interface TaskHandler extends GenericDAO<Task, Long> {
   void updateTaskOrder(long currentTaskId, Status newStatus, long[] orders);
   
   Set<String> getCoworker(long taskid);
+
+  Task getTaskWithCoworkers(long id);
 }
 

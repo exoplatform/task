@@ -16,35 +16,25 @@
 */
 package org.exoplatform.task.dao;
 
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.TimeZone;
-
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.container.PortalContainer;
+import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.task.AbstractTest;
 import org.exoplatform.task.dao.condition.Conditions;
-import org.exoplatform.task.domain.Label;
-import org.exoplatform.task.domain.LabelTaskMapping;
-import org.exoplatform.task.domain.Priority;
-import org.exoplatform.task.domain.Project;
-import org.exoplatform.task.domain.Status;
-import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.domain.ChangeLog;
+import org.exoplatform.task.domain.*;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.service.ParserContext;
 import org.exoplatform.task.service.TaskParser;
 import org.exoplatform.task.service.impl.TaskParserImpl;
 import org.exoplatform.task.util.ListUtil;
+import org.exoplatform.task.util.TaskUtil;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.*;
 
 /**
  * @author <a href="trongtt@exoplatform.com">Trong Tran</a>
@@ -494,6 +484,62 @@ public class TestTaskDAO extends AbstractTest {
     tDAO.create(task);
 
     Assert.assertEquals(1, tDAO.getCoworker(task.getId()).size());    
+  }
+
+  @Test
+  public void testGetTaskWithCoworkers() throws Exception {
+    Task task = newTaskInstance("Task 1", "", null);
+
+    Set<String> coworkers = new HashSet<String>();
+    coworkers.add("worker1");
+    task.setCoworker(coworkers);
+    tDAO.create(task);
+    Assert.assertEquals(1, tDAO.getTaskWithCoworkers(task.getId()).getCoworker().size());
+
+    coworkers.add("worker2");
+    coworkers.add("worker3");
+    task.setCoworker(coworkers);
+    Assert.assertEquals(3, tDAO.getTaskWithCoworkers(task.getId()).getCoworker().size());
+
+    coworkers.remove("worker3");
+    task.setCoworker(coworkers);
+    Assert.assertEquals(2, tDAO.getTaskWithCoworkers(task.getId()).getCoworker().size());
+  }
+
+  @Test
+  public void testTaskPermission() throws Exception {
+    Task task = newTaskInstance("Task 1", "", "worker");
+    Identity worker = new Identity("worker");
+    Identity worker1 = new Identity("worker1");
+    Identity worker2 = new Identity("worker2");
+    Identity worker3 = new Identity("worker3");
+
+    Set<String> coworkers = new HashSet<String>();
+    coworkers.add("worker1");
+    task.setCoworker(coworkers);
+    task.setCreatedBy("worker3");
+    tDAO.create(task);
+    //worker1 is a coworker, so he has permission
+    ConversationState.setCurrent(new ConversationState(worker1));
+    Assert.assertEquals(true, TaskUtil.hasPermission(task));
+
+    //worker is the assignee, so he has permission
+    ConversationState.setCurrent(new ConversationState(worker));
+    Assert.assertEquals(true, TaskUtil.hasPermission(task));
+
+    //worker2 is not the assignee, neither coworker nor the creator, so he has not permission
+    ConversationState.setCurrent(new ConversationState(worker2));
+    Assert.assertEquals(false, TaskUtil.hasPermission(task));
+
+    //worker3 is the creator, so he has permission
+    ConversationState.setCurrent(new ConversationState(worker3));
+    Assert.assertEquals(true, TaskUtil.hasPermission(task));
+
+    coworkers.add("worker2");
+    task.setCoworker(coworkers);
+    //worker2 is now a coworker, so he has permission
+    ConversationState.setCurrent(new ConversationState(worker2));
+    Assert.assertEquals(true, TaskUtil.hasPermission(task));
   }
 
   @Test

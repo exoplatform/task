@@ -19,30 +19,9 @@
 
 package org.exoplatform.task.management.controller;
 
-import javax.inject.Inject;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.TimeZone;
-
-import juzu.HttpMethod;
-import juzu.MimeType;
-import juzu.Path;
-import juzu.Resource;
-import juzu.Response;
+import juzu.*;
 import juzu.impl.common.Tools;
 import juzu.request.SecurityContext;
-
 import org.exoplatform.commons.juzu.ajax.Ajax;
 import org.exoplatform.commons.utils.HTMLEntityEncoder;
 import org.exoplatform.commons.utils.ListAccess;
@@ -51,12 +30,7 @@ import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.dao.TaskQuery;
-import org.exoplatform.task.domain.ChangeLog;
-import org.exoplatform.task.domain.Comment;
-import org.exoplatform.task.domain.Label;
-import org.exoplatform.task.domain.Project;
-import org.exoplatform.task.domain.Status;
-import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.domain.*;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.exception.NotAllowedOperationOnEntityException;
 import org.exoplatform.task.exception.ParameterEntityException;
@@ -72,22 +46,18 @@ import org.exoplatform.task.model.CommentModel;
 import org.exoplatform.task.model.GroupKey;
 import org.exoplatform.task.model.TaskModel;
 import org.exoplatform.task.model.User;
-import org.exoplatform.task.service.ParserContext;
-import org.exoplatform.task.service.ProjectService;
-import org.exoplatform.task.service.StatusService;
-import org.exoplatform.task.service.TaskParser;
-import org.exoplatform.task.service.TaskService;
-import org.exoplatform.task.service.UserService;
-import org.exoplatform.task.util.CommentUtil;
-import org.exoplatform.task.util.DateUtil;
-import org.exoplatform.task.util.ListUtil;
-import org.exoplatform.task.util.ProjectUtil;
-import org.exoplatform.task.util.TaskUtil;
+import org.exoplatform.task.service.*;
+import org.exoplatform.task.util.*;
 import org.exoplatform.task.util.TaskUtil.DUE;
 import org.gatein.common.text.EntityEncoder;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import javax.inject.Inject;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.

@@ -86,7 +86,7 @@ public class TaskServiceImpl implements TaskService {
       throw new IllegalArgumentException("Task must not be NULL");
     }
 
-    Task oldTask = daoHandler.getTaskHandler().find(task.getId());
+    Task oldTask = daoHandler.getTaskHandler().getTaskWithCoworkers(task.getId());
     Task newTask = daoHandler.getTaskHandler().update(task);
     TaskPayload event = new TaskPayload(oldTask, newTask);
     try {
