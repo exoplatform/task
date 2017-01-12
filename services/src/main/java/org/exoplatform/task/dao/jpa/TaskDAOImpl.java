@@ -42,6 +42,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.exoplatform.commons.utils.ListAccess;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.dao.TaskHandler;
 import org.exoplatform.task.dao.TaskQuery;
@@ -56,6 +58,8 @@ import org.exoplatform.task.domain.Task;
  * 4/8/15
  */
 public class TaskDAOImpl extends CommonJPADAO<Task, Long> implements TaskHandler {
+
+  private static final Log log = ExoLogger.getExoLogger(TaskDAOImpl.class);
 
   public TaskDAOImpl() {
   }
@@ -305,6 +309,18 @@ public class TaskDAOImpl extends CommonJPADAO<Task, Long> implements TaskHandler
     query.setParameter("taskid", taskid);
     List<String> tags = query.getResultList();
     return new HashSet<String>(tags);
+  }
+
+  @Override
+  public Task getTaskWithCoworkers(long id) {
+    TypedQuery<Task> query = getEntityManager().createNamedQuery("Task.getTaskWithCoworkers", Task.class);
+    query.setParameter("taskid", id);
+    try {
+      return cloneEntity((Task)query.getSingleResult());
+    } catch (PersistenceException e) {
+      log.error("Error when fetching task " + id + " with coworkers", e);
+      return null;
+    }
   }
 
   protected Path buildPath(SingleCondition condition, Root<Task> root) {

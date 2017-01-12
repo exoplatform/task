@@ -17,26 +17,6 @@
 package org.exoplatform.task.util;
 
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.Set;
-import java.util.TimeZone;
-import java.util.TreeMap;
-
 import org.exoplatform.calendar.model.Event;
 import org.exoplatform.calendar.service.impl.NewUserListener;
 import org.exoplatform.commons.utils.HTMLEntityEncoder;
@@ -52,12 +32,7 @@ import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.task.dao.TaskQuery;
-import org.exoplatform.task.domain.Comment;
-import org.exoplatform.task.domain.Label;
-import org.exoplatform.task.domain.Priority;
-import org.exoplatform.task.domain.Project;
-import org.exoplatform.task.domain.Status;
-import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.domain.*;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.exception.ParameterEntityException;
 import org.exoplatform.task.model.CommentModel;
@@ -70,6 +45,11 @@ import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.service.UserService;
 import org.exoplatform.web.controller.router.Router;
 import org.gatein.common.text.EntityEncoder;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * Created by The eXo Platform SAS
@@ -220,6 +200,7 @@ public final class TaskUtil {
     
     Task task = taskService.getTask(id); //Can throw TaskNotFoundException    
     Set<String> coworker = getCoworker(id);
+    task.setCoworker(coworker);
     taskModel.setTask(task);
 
     org.exoplatform.task.model.User assignee = null;
@@ -1053,7 +1034,8 @@ public final class TaskUtil {
     String userId = identity.getUserId();
 
     if ((task.getAssignee() != null && task.getAssignee().equals(identity.getUserId())) ||
-            task.getCoworker().contains(userId) || (task.getCreatedBy() != null && task.getCreatedBy().equals(userId))) {
+        getCoworker(task.getId()).contains(userId) ||
+        (task.getCreatedBy() != null && task.getCreatedBy().equals(userId))) {
       return true;
     }
 

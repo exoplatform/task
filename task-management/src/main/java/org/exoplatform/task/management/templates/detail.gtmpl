@@ -3,126 +3,124 @@
 #{param name=bundle/}
 
 <%
-    import java.text.SimpleDateFormat;
-	import java.util.Date;
-	import org.exoplatform.task.util.TaskUtil;
-	import org.apache.commons.lang.StringUtils;
-    import org.apache.commons.lang.ArrayUtils;
-    import org.exoplatform.task.util.ResourceUtil;
-	import org.exoplatform.task.domain.Priority;
-	import org.exoplatform.task.util.DateUtil;
-	import org.exoplatform.commons.utils.HTMLEntityEncoder;
-	import org.exoplatform.commons.utils.HTMLSanitizer;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import org.exoplatform.task.util.TaskUtil;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.ArrayUtils;
+import org.exoplatform.task.util.ResourceUtil;
+import org.exoplatform.task.domain.Priority;
+import org.exoplatform.task.util.DateUtil;
+import org.exoplatform.commons.utils.HTMLEntityEncoder;
 
-	def encoder = HTMLEntityEncoder.getInstance();
+def encoder = HTMLEntityEncoder.getInstance();
 
-	def task = taskModel.getTask();
-	def taskDescription =  HTMLSanitizer.sanitize(task.description);
-	def breadcumbs = taskModel.getBreadcumbs();
-	def assignee = taskModel.getAssignee();
-    def hasAssignee = (assignee != null && assignee.getUsername() != "guest" && assignee.getUsername() != null);
-	def countCoWorker = taskModel.getNumberCoworkers();
-	def commentCount = taskModel.getCommentCount();
-	def comments = taskModel.getComments();
-	def currentUser = taskModel.getCurrentUser();
-   def labels = taskModel.getLabels();
-   def editableClasses = "hoverStatus editableField editable";
+def task = taskModel.getTask();
+def breadcumbs = taskModel.getBreadcumbs();
+def assignee = taskModel.getAssignee();
+def hasAssignee = (assignee != null && assignee.getUsername() != "guest" && assignee.getUsername() != null);
+def countCoWorker = taskModel.getNumberCoworkers();
+def commentCount = taskModel.getCommentCount();
+def comments = taskModel.getComments();
+def currentUser = taskModel.getCurrentUser();
+def labels = taskModel.getLabels();
+def editableClasses = "hoverStatus editableField editable";
 %>
 <div class="addTask uiBox ${task.completed ? "task-completed" : ""}" data-taskid="${task.id}">
 <div class="uiContentBox">
 <div class="clearfix">
-    <div class="pull-right action-buttons dropdown">
-        <span class="taskPermalinkContainer" title="&{label.permalink}" data-toggle="tooltip" data-placement="bottom">
-            <a href="${TaskUtil.buildTaskURL(task)}" data-toggle="popover" data-placement="left"
-            class="permalink actionIcon taskPermalink" style="position: relative;">
-                <i class="uiIconPermalink"></i>           
+<div class="pull-right action-buttons dropdown">
+<span class="taskPermalinkContainer" title="&{label.permalink}" data-toggle="tooltip" data-placement="bottom">
+<a href="${TaskUtil.buildTaskURL(task)}" data-toggle="popover" data-placement="left"
+class="permalink actionIcon taskPermalink" style="position: relative;">
+<i class="uiIconPermalink"></i>
             </a>
-        </span>
+</span>
         <div class="taskPermalinkPopoverContent" style="display:none">
             <div>
                 <i class="uiIconPermalink"></i>
-                &{popover.title.linkToShare}
-            </div>
+        &{popover.title.linkToShare}
+</div>
             <div class="input-field input-xlarge">
                 <form method="GET" action="#">
                     <input readonly type="text" name="" value="">
                 </form>
-            </div>
+</div>
         </div>
-        <a data-toggle="dropdown" class="dropdown-toggle actionIcon" href="#"><i class="uiIconArrowDown"></i></a>
-        <ul class="dropdown-menu">
-            <li><a class="action-clone-task" href="#"><i class="uiIconCloneNode"></i> &{label.clone}</a></li>
+<a data-toggle="dropdown" class="dropdown-toggle actionIcon" href="#"><i class="uiIconArrowDown"></i></a>
+<ul class="dropdown-menu">
+<li><a class="action-clone-task" href="#"><i class="uiIconCloneNode"></i> &{label.clone}</a></li>
             <li><a class="action-delete-task" href="#"><i class="uiIconDelete"></i> &{label.delete}</a></li>
-        </ul>
+</ul>
         <a class="actionIcon close-right-panel" href="#"><i class="uiIconClose"></i></a>
     </div>
 
-    <div class="uiEditableInline clearfix ">
-        <span class="iconTaskName pull-left"><i title="&{tooltip.clickToEdit}" data-toggle="tooltip" data-placement="bottom" class="uiIconFolder"></i></span>
-        <div class="breadcrumbCont uiEditableInline" data-original-title="&{tooltip.clickToEdit}" data-toggle="tooltip" data-placement="bottom">
-            <ul class=" ${editableClasses} small"
-                data-name="project" data-type="ParentProject" data-breadcrumb="false" data-value="${task.status == null ? 0 : task.status.project.id}">
-                ${breadcumbs}
-            </ul>
+<div class="uiEditableInline clearfix ">
+<span class="iconTaskName pull-left"><i title="&{tooltip.clickToEdit}" data-toggle="tooltip" data-placement="bottom" class="uiIconFolder"></i></span>
+<div class="breadcrumbCont uiEditableInline" data-original-title="&{tooltip.clickToEdit}" data-toggle="tooltip" data-placement="bottom">
+<ul class=" ${editableClasses} small"
+data-name="project" data-type="ParentProject" data-breadcrumb="false" data-value="${task.status == null ? 0 : task.status.project.id}">
+        ${breadcumbs}
+</ul>
         </div>
-    </div>
+</div>
 </div>
 <div class="tags uiEditableInline clearfix">
-    <%
-        def labelHtml = bundle.getString("label.labels");
-        def labelIds = '';
-        def labelOptions = '';
-        if (labels != null && !labels.isEmpty()) {
-            labelHtml = "";
-            for (def label in labels) {
-            	 def labelName = encoder.encode(label.name);
-                labelHtml += '<span class="'+ label.color+' label">' + labelName +'</span>';
-                if (labelIds.length() > 0) {
-                    labelIds += ',';
-                }
-                labelIds += label.id;
-                if (labelOptions.length() > 0) {
-                    labelOptions += ',';
-                }
-                labelOptions += '{"id": "'+label.id+'", "text":"' + labelName + '","color":"' + label.color + '"}';
-            };
+<%
+def labelHtml = bundle.getString("label.labels");
+def labelIds = '';
+def labelOptions = '';
+if (labels != null && !labels.isEmpty()) {
+    labelHtml = "";
+    for (def label in labels) {
+        def labelName = encoder.encode(label.name);
+        labelHtml += '<span class="'+ label.color+' label">' + labelName +'</span>';
+        if (labelIds.length() > 0) {
+            labelIds += ',';
         }
+        labelIds += label.id;
+        if (labelOptions.length() > 0) {
+            labelOptions += ',';
+        }
+        labelOptions += '{"id": "'+label.id+'", "text":"' + labelName + '","color":"' + label.color + '"}';
+    };
+}
 
-    %>
-    <span class="pull-left icon-hash ${labelIds == "" ? "" : "hide"}"><i class="uiIconTag"></i></span>
-    <div class="${editableClasses} small pull-left" data-original-title="&{tooltip.clickToEdit}" rel="tooltip" data-name="labels" data-type="selectize" data-inputclass="input-large" data-selectizie-opts='[${labelOptions}]' data-value="${labelIds}">
+%>
+<span class="pull-left icon-hash ${labelIds == "" ? "" : "hide"}"><i class="uiIconTag"></i></span>
+<div class="${editableClasses} small pull-left" data-original-title="&{tooltip.clickToEdit}" rel="tooltip" data-name="labels" data-type="selectize" data-inputclass="input-large" data-selectizie-opts='[${labelOptions}]' data-value="${labelIds}">
         ${labelHtml}
-    </div>
+</div>
 </div>
 <div class="taskName uiEditableInline clearfix taskPermalinkContainer">
-    <div class="title-container clearfix">
-      <a href="javascript:void(0);" data-taskcompleted="${task.completed}" class="pull-left validate-action"
-         rel="tooltip" data-placement="top" data-original-title="<% if (task.completed) {%> &{message.markAsUnCompleted} <%} else {%> &{message.markAsCompleted} <%}%>">
-          <%
-              def uiIconClass = task.completed ? 'uiIconBlue' : 'uiIconLightGray';
-          %>
-          <i class="uiIconValidate ${uiIconClass}"></i>
+<div class="title-container clearfix">
+<a href="javascript:void(0);" data-taskcompleted="${task.completed}" class="pull-left validate-action"
+rel="tooltip" data-placement="top" data-original-title="<% if (task.completed) {%> &{message.markAsUnCompleted} <%} else {%> &{message.markAsCompleted} <%}%>">
+<%
+def uiIconClass = task.completed ? 'uiIconBlue' : 'uiIconLightGray';
+%>
+<i class="uiIconValidate ${uiIconClass}"></i>
       </a>
-      <span class="projectName ${editableClasses} small "
-             data-original-title="&{tooltip.clickToEdit}" rel="tooltip" data-placement="bottom"
-        data-name="title" data-type="text" data-emptytext="&{label.untitledTask}">
-          ${encoder.encode(task.title)}
-      </span>
+<span class="projectName ${editableClasses} small "
+data-original-title="&{tooltip.clickToEdit}" rel="tooltip" data-placement="bottom"
+data-name="title" data-type="text" data-emptytext="&{label.untitledTask}">
+        ${encoder.encode(task.title)}
+</span>
     </div>
 </div>
 <div class="inforBar1 clearfix">
     <div class="pull-left">
         <div class="uiEditableInline">
             <i class="uiIconClock"></i>
-            <span class="${editableClasses} small dueDateField"
-                  data-original-title="&{tooltip.clickToEdit}" rel="tooltip" data-placement="top"
-                  data-type="calendar" data-name="duedate"
-                  data-value="${task.dueDate != null ? task.dueDate.format('yyyy-MM-dd', userTimezone) : ''}"
-                  data-format="yyyy-MM-dd" data-viewformat="dd M yyyy">
-                ${task.dueDate != null ? task.dueDate.format('dd MMM yyyy', userTimezone) : ''}
-            </span>
+<span class="${editableClasses} small dueDateField"
+data-original-title="&{tooltip.clickToEdit}" rel="tooltip" data-placement="top"
+data-type="calendar" data-name="duedate"
+data-value="${task.dueDate != null ? task.dueDate.format('yyyy-MM-dd', userTimezone) : ''}"
+data-format="yyyy-MM-dd" data-viewformat="dd M yyyy">
+        ${task.dueDate != null ? task.dueDate.format('dd MMM yyyy', userTimezone) : ''}
+</span>
         </div>
-    </div>
+</div>
     <div class="pull-left">
         <div class="uiEditableInline inactive">
             <span>
@@ -130,25 +128,25 @@
                 <a class="avatarMini pull-left assigned ${!hasAssignee ? "hide" : ""}" href="#">
                     <img alt="avatar" src="${hasAssignee ? assignee.avatar : ""}">
                 </a>
-                <a title="&{tooltip.clickToEdit}" data-toggle="tooltip" data-placement="bottom" class="hoverStatus small editableField editAssignee ${hasAssignee && countCoWorker == 0 && assignee.deleted ? "muted" : ""}">
-                    <% if (countCoWorker > 0) {%>
-                        +${countCoWorker} ${bundle.getString(countCoWorker > 1 ? "label.coworkers" : "label.coworker").toLowerCase()}
-                    <%} else if (hasAssignee) {%>
-                        ${encoder.encode(assignee.displayName)} <% if (!assignee.enable) {%> <span class = "muted"><i>(&{label.inactive})</i></span> <%}%>
-                    <%} else {%>
-                        &{label.unassigned}
-                    <%}%>
-                </a>
+<a title="&{tooltip.clickToEdit}" data-toggle="tooltip" data-placement="bottom" class="hoverStatus small editableField editAssignee ${hasAssignee && countCoWorker == 0 && assignee.deleted ? "muted" : ""}">
+<% if (countCoWorker > 0) {%>
+    +${countCoWorker} ${bundle.getString(countCoWorker > 1 ? "label.coworkers" : "label.coworker").toLowerCase()}
+    <%} else if (hasAssignee) {%>
+    ${encoder.encode(assignee.displayName)} <% if (!assignee.enable) {%> <span class = "muted"><i>(&{label.inactive})</i></span> <%}%>
+    <%} else {%>
+    &{label.unassigned}
+    <%}%>
+</a>
             </span>
-            <div class="uiBox assignmentPopup" style="display: none; position: absolute; left: auto; right: 0; top: 30px; width: 300px; z-index: 9">
-                <div class="uiContentBox">
-                    <div class="contBlock">
-                        <div class="mgB10 mgT5">&{label.assignTo}:</div>
+<div class="uiBox assignmentPopup" style="display: none; position: absolute; left: auto; right: 0; top: 30px; width: 300px; z-index: 9">
+<div class="uiContentBox">
+<div class="contBlock">
+<div class="mgB10 mgT5">&{label.assignTo}:</div>
                         <div class="inputUser">
                             <input type = "text" name="assignee" value="${hasAssignee ? encoder.encode(task.assignee) : ""}"/>
-                            <a href="javascript:void(0);" data-action="assign" data-value="${currentUser.username}">&{label.assignToMe}</a>
+<a href="javascript:void(0);" data-action="assign" data-value="${currentUser.username}">&{label.assignToMe}</a>
                         </div>
-                    </div>
+</div>
                     <div class="contBlock tags">
                         <%
                             def coWorkers = "";
@@ -157,82 +155,82 @@
                             }
                         %>
                         <div class="mgB10 mgT5">&{label.coworkers}:</div>
-                        <input type="text" name="coworker" value="${encoder.encode(coWorkers)}"/>
-                        <a href="javascript:void(0);" data-action="add-coworker" data-value="${currentUser.username}">&{label.addMeAsCoworker}</a>
+<input type="text" name="coworker" value="${encoder.encode(coWorkers)}"/>
+<a href="javascript:void(0);" data-action="add-coworker" data-value="${currentUser.username}">&{label.addMeAsCoworker}</a>
                     </div>
-                </div>
+</div>
             </div>
-        </div>
+</div>
 
     </div>
-    <div class="pull-left">
-        <div class="toDo">
-            <div class="uiEditableInline">
-                <% if (task.status != null) { %>
-                    <i class="uiIconTime"></i>
+<div class="pull-left">
+<div class="toDo">
+<div class="uiEditableInline">
+<% if (task.status != null) { %>
+    <i class="uiIconTime"></i>
                     <span  class="${editableClasses} small" href="javascript:void(0)"
                        data-original-title="&{tooltip.clickToEdit}" rel="tooltip"
                        data-source="@{StatusController.getAllStatus(projectId=task.status.project.id)}"
                        data-inputclass="selectboxMini" data-name="status" data-type="select"
                        data-title="Select status" data-val="${task.status != null ?  task.status.id: '0'}"></span>
-                <%}  %>                    
-            </div>
+    <%}  %>
+</div>
         </div>
-    </div>
+</div>
 </div>
 <div class="taskDescription">
-    <div data-type="ckeditor" data-name="description" class="${editableClasses}"
-         data-original-title="&{tooltip.clickToEdit}" rel="tooltip">
-        ${task.description == null ? "" : taskDescription}
-    </div>
+<div data-type="ckeditor" data-name="description" class="${editableClasses}"
+data-original-title="&{tooltip.clickToEdit}" rel="tooltip">
+        ${task.description == null ? "" : task.description}
 </div>
-<div class="inforBar2 clearfix">   
-    <div class="pull-left">
-        <%
-            def startDate = task.getStartDate();
-            def endDate = task.getEndDate();
+</div>
+<div class="inforBar2 clearfix">
+<div class="pull-left">
+<%
+def startDate = task.getStartDate();
+def endDate = task.getEndDate();
 
-            def workplan = bundle.getString("label.noWorkPlan");
-            def duration = 0;
-            if (startDate != null) {
-                def start = DateUtil.newCalendarInstance(userTimezone);
-                start.setTime(task.getStartDate());
-                def end = DateUtil.newCalendarInstance(userTimezone);
-                end.setTime(task.getEndDate());
-                    workplan = TaskUtil.getWorkPlan(start, end, bundle);
-                duration = endDate.getTime() - startDate.getTime();
-            }
+def workplan = bundle.getString("label.noWorkPlan");
+def duration = 0;
+if (startDate != null) {
+    def start = DateUtil.newCalendarInstance(userTimezone);
+    start.setTime(task.getStartDate());
+    def end = DateUtil.newCalendarInstance(userTimezone);
+    end.setTime(task.getEndDate());
+    workplan = TaskUtil.getWorkPlan(start, end, bundle);
+    duration = endDate.getTime() - startDate.getTime();
+}
 
-            def hasPlan = true;
-            if(startDate == null) {
-                hasPlan = false;
-                def startTmp = DateUtil.newCalendarInstance(userTimezone);
-                startTmp.set(Calendar.MINUTE, 0);
-                startDate = startTmp.getTime();
-                duration = 30 * 60 * 1000;
-            }
-            def endTmp = DateUtil.newCalendarInstance(userTimezone);
-            endTmp.setTimeInMillis(startDate.getTime() + duration);
-            endDate = endTmp.getTime();
+def hasPlan = true;
+if(startDate == null) {
+    hasPlan = false;
+    def startTmp = DateUtil.newCalendarInstance(userTimezone);
+    startTmp.set(Calendar.MINUTE, 0);
+    startDate = startTmp.getTime();
+    duration = 30 * 60 * 1000;
+}
+def endTmp = DateUtil.newCalendarInstance(userTimezone);
+endTmp.setTimeInMillis(startDate.getTime() + duration);
+endDate = endTmp.getTime();
 
-            def df = new SimpleDateFormat("YYYY-MM-dd-HH-mm");
-            df.setTimeZone(userTimezone);
+def df = new SimpleDateFormat("YYYY-MM-dd-HH-mm");
+df.setTimeZone(userTimezone);
 
-            def dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            dateFormat.setTimeZone(userTimezone);
+def dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+dateFormat.setTimeZone(userTimezone);
 
-            def timeFormat = new SimpleDateFormat("HH:mm");
-        	timeFormat.setTimeZone(userTimezone);
-            
-            int halfHour = 30 * 60 * 1000;
-            def isAllday = false;
-            if (duration > halfHour * 47 && duration <= halfHour * 48) {
-                isAllday = true;
-            }
-        %>
-        <div class="uiEditableInline clearfix fieldWorkPlan inactive"            
-             data-startdate="<%=df.format(startDate)%>" data-duration="${duration}">
-            <div class="pull-right"><span title="&{label.remove}" data-placement="bottom" data-toggle="tooltip"  class="actionIcon inline-hide removeWorkPlan ${hasPlan ? "" : "hide"}"><i class="uiIcon uiIconTrashMini"></i></span></div>
+def timeFormat = new SimpleDateFormat("HH:mm");
+timeFormat.setTimeZone(userTimezone);
+
+int halfHour = 30 * 60 * 1000;
+def isAllday = false;
+if (duration > halfHour * 47 && duration <= halfHour * 48) {
+    isAllday = true;
+}
+%>
+<div class="uiEditableInline clearfix fieldWorkPlan inactive"
+data-startdate="<%=df.format(startDate)%>" data-duration="${duration}">
+<div class="pull-right"><span title="&{label.remove}" data-placement="bottom" data-toggle="tooltip"  class="actionIcon inline-hide removeWorkPlan ${hasPlan ? "" : "hide"}"><i class="uiIcon uiIconTrashMini"></i></span></div>
             <div class="date-work-plan">
             <%
             	def inCal = task.isCalendarIntegrated();
@@ -240,22 +238,22 @@
             	def title = inCal ? bundle.getString("tooltip.removeFromCalendar") : bundle.getString("tooltip.addToCalendar");
             %>
             <i class="uiIconPLFCalendar pull-left ${iconIntegCal}" rel="tooltip" title="${title}" data-integrated="${inCal}" data-title-add="&{tooltip.addToCalendar}" data-title-remove="&{tooltip.removeFromCalendar}"></i>
-            <span data-original-title="&{tooltip.clickToEdit}" rel="tooltip" data-placement="bottom" class="hoverStatus hoverStatusBlock small editableField">${workplan}</span></div>
-            <div class = "rangeCalendar" style = "display: none">
-                <div class="rangeCalendar-container">
-                    <div class="row-fluid">
-                        <div class="span6"><strong style="text-transform: capitalize;">&{label.from}</strong></div>
-                        <div class="span6"><strong style="text-transform: capitalize;">&{label.to}</strong></div>
-                    </div>
+<span data-original-title="&{tooltip.clickToEdit}" rel="tooltip" data-placement="bottom" class="hoverStatus hoverStatusBlock small editableField">${workplan}</span></div>
+<div class = "rangeCalendar" style = "display: none">
+<div class="rangeCalendar-container">
+<div class="row-fluid">
+<div class="span6"><strong style="text-transform: capitalize;">&{label.from}</strong></div>
+<div class="span6"><strong style="text-transform: capitalize;">&{label.to}</strong></div>
+</div>
                     <div class="clearfix">
                         <div class="uiCalendarComponent pull-left" id="BlockCalendar1">
                             <input name="fromDate" type="hidden" value="${hasPlan ? dateFormat.format(startDate) : ""}" />
-                        </div>
+</div>
                         <div class="uiCalendarComponent pull-left" id="BlockCalendar2">
                             <input name="toDate" type="hidden" value="${hasPlan ? dateFormat.format(endDate) : ""}" />
-                        </div>
+</div>
                     </div>
-                    <!-- /.clearfix -->
+<!-- /.clearfix -->
                     <div class="row-fluid choose-time ${isAllday} ${isAllday || !hasPlan ? "all-day" : ""}">
                         <div class="span5 center timeSelector">
                             <div class="form-dropdown">
@@ -268,14 +266,14 @@
                                         <li><a href="javascript:void(0)" data-time="${hour}:30">${hour}:30</a></li>
                                     <%}%>
                                 </ul>
-                            </div>
+</div>
                         </div>
-                        <div class="span2 center">
-                            <label class="uiCheckbox">
-                                <input type="checkbox" name="allday" class="checkbox" ${isAllday || !hasPlan ? 'checked="true"' : ''}>
-                                <span>&{label.allday}</span>
+<div class="span2 center">
+<label class="uiCheckbox">
+<input type="checkbox" name="allday" class="checkbox" ${isAllday || !hasPlan ? 'checked="true"' : ''}>
+<span>&{label.allday}</span>
                             </label>
-                        </div>
+</div>
                         <div class="span5 center timeSelector">
                             <div class="form-dropdown">
                                 <input data-toggle="dropdown" class="input-size-mini" type="text" name="toTime" maxlength="5" value="${isAllday ? '23:59' : timeFormat.format(endDate)}">
@@ -287,18 +285,18 @@
                                         <li><a href="javascript:void(0)" data-time="${hour}:30">${hour}:30</a></li>
                                     <%}%>
                                 </ul>
-                            </div>
+</div>
                         </div>
-                    </div>
+</div>
                     <div class="row-fluid center error errorMessage"></div>
-                </div>
+</div>
             </div>
-        </div>
+</div>
     </div>
-    <div id="due-warning" style="display: none;" class="alert alert-warning dueAlertWarning"><i class="uiIconWarning"></i>&{message.dueDateBeforeEndDate}</div>
-     <div class="priority pull-left">
-        <div class="uiEditableInline">
-            <i  class="uiIconColorPriority${task.priority != null ?  task.priority : Priority.NONE}"></i>
+<div id="due-warning" style="display: none;" class="alert alert-warning dueAlertWarning"><i class="uiIconWarning"></i>&{message.dueDateBeforeEndDate}</div>
+<div class="priority pull-left">
+<div class="uiEditableInline">
+<i  class="uiIconColorPriority${task.priority != null ?  task.priority : Priority.NONE}"></i>
             <%
                 Priority[] ps = Priority.values();
                 String[] arrays = new String[ps.length];
@@ -314,7 +312,7 @@
                   data-inputclass="selectboxMini"
                data-name="priority" data-source='${priorities}' data-type="select" data-emptytext="&{label.noPriority}"
                data-value="${task.priority != null ?  task.priority : Priority.NONE}"></span>
-        </div>
+</div>
     </div>
 
 </div>
@@ -322,25 +320,166 @@
     <ul id="myTab" class="nav nav-tabs">
         <li class="active">
             <a href="#tab-comments" data-toggle="tab">&{label.comments}</a>
-        </li>
+</li>
         <li class="taskTabs">
             <a href="#tab-changes" data-toggle="tab">&{label.changes}</a>
-        </li>
+</li>
     </ul>
-    <div id="myTabContent" class="tab-content">
-        <div id="tab-comments" class="tab-pane fade in active ">
-            #{include path=taskComments.gtmpl /}
-        </div>
+<div id="myTabContent" class="tab-content">
+<div id="tab-comments" class="tab-pane fade in active ">
+#{include path=taskComments.gtmpl /}
+</div>
         <div id="tab-changes" class="tab-pane fade taskLogs">
 
         </div>
-    </div>
+</div>
 </div>
 </div>
 </div>
 
-<script type="text/javascript">
-    require(['taskDetailView'], function(detail) {
-        detail.init();
-    })
-</script>
+<!-- TODO: remove this block, it's old template for task detail? -->
+<div id="taskDetailContainer" class="task-detail" task-id="${task.id}" style="display:none">
+<div class="row-fluid task-info-row">
+<a href="#" class="icon task-completed-field status-icon ${task.completed ? "icon-completed" : ""}">&nbsp;</a>
+        <a class="editable" href="#" data-name="title" data-type="text">${encoder.encode(task.title)}</a>
+
+<div class="btn-group task-action-buttons">
+<button class="btn dropdown-toggle" data-toggle="dropdown"><i class="uiIconMiniArrowDown uiIconLightGray"></i></button>
+<ul class="dropdown-menu">
+<li><a href="#" class="action-clone-task">Clone</a></li>
+<li><a href="#">Watch</a></li>
+<li><a href="#" class="action-delete-task">Delete</a></li>
+</ul>
+        </div><!-- /btn-group -->
+    </div>
+<div class="row-fluid task-info-row">
+<div class="span6">
+<a href="javascript:void(0)"><i class="uiIconClock"></i></a>
+<a class="editable" href="#" data-name="dueDate" data-type="date" data-format="yyyy-mm-dd" data-viewformat="M dd, yyyy">${task.dueDate != null ? dateFormat.format(task.dueDate) : ''}</a>
+            <div class="dueDateControl" style="display: none">
+            	<a href="#" class="none calControl">None</a>
+<a href="#" class="today calControl">Today</a>
+            	<a href="#" class="tomorrow calControl">Tomorrow</a>
+<a href="#" class="nextWeek calControl">Next Week</a>
+            </div>
+</div>
+        <div class="span6">
+            <% if (task.status != null) { %>
+                <a class="editable task-status" href="#" data-source="@{StatusController.getAllStatus(projectId=task.status.project.id)}" data-inputclass="input-small" data-name="status" data-type="select" data-title="Select status" data-val="${task.status != null ?  task.status.id: '1'}"></a>
+<%} else { %>
+    <a href="#" title="You need add task to one project before can change status">No Status</a>
+            <% }%>
+        </div>
+    </div>
+    <div class="row-fluid task-assign">
+        <div class="span6">
+        </div>
+    <div class="span6">
+    </div>
+    </div>
+    <div class="row-fluid task-info-row task-description">
+    <a class="editable" href="#" data-name="description" data-type="textarea">
+            ${task.description != null ? task.description : ''}
+    </a>
+    </div>
+    <ul class="nav nav-tabs taskTabs" role="tablist">
+    <li role="presentation" class="active">
+    <a href="#task-comment" aria-controls="comment" role="tab" data-toggle="tab">Comment</a>
+    	</li>
+    <li role="presentation">
+    <a href=".taskLogs" aria-controls="changes" role="tab" data-toggle="tab">Changes</a>
+    	</li>
+    </ul>
+    <%
+    	def commentDF = new SimpleDateFormat("MMM dd, yyyy HH:mm");
+    	commentDF.setTimeZone(userTimezone);
+    %>
+    <div class="tab-content">
+	    <div class="row-fluid task-comment-row tab-pane active" id="task-comment">
+	        <div class="comment-area">
+	            <% if(commentCount > 2) {%>
+	            <div class="text-right">
+	                <a href="#" class="load-all-comments"><%=ResourceUtil.resolveMessage(bundle, "comment.message.showAll", commentCount);%></a>
+    </div>
+	            <%}%>
+	            <ul class="list-comments media-list">
+	                <%if(commentCount == 0) {%>
+	                    <li class="no-comment">&{comment.message.noComment}</li>
+    <%} else { for (def comment in comments) { %>
+    <li class="comment media">
+    <a class="pull-left avatarXSmall" href="#">
+    <img class="media-object" src="${comment.author.avatar}" alt="${encoder.encode(comment.author.displayName)}">
+    </a>
+	                        <div class="media-body">
+	                            <div class="pull-right">
+	                                <span class="muted">${commentDF.format(comment.createdTime)}</span>
+    <span class="comment-action">
+    <%if(comment.author.username == currentUser.username && currentUser.username != "guest") {%>
+        <a href="#" class="action-link delete-comment" commen-id="${comment.id}"><i class="uiIconLightGray uiIconTrashMini"></i></a>
+        <%}%>
+    </span>
+	                            </div>
+    <h6 class="media-heading"><a href="#">${encoder.encode(comment.author.displayName)}</a></h6>
+    <div>
+            ${comment.formattedComment}
+    </div>
+	                        </div>
+    </li>
+	                <%}
+	                }%>
+	            </ul>
+    <div class="comment-form">
+    <form action="#" method="POST">
+    <div class="media" style="overflow: visible">
+    <a class="pull-left avatarXSmall" href="#">
+    <img class="media-object" src="${currentUser.avatar}" alt="${encoder.encode(currentUser.displayName)}">
+    </a>
+	                        <div class="media-body" style="overflow: visible; margin-left: 48px;">
+	                            <textarea name="comment"></textarea>
+    </div>
+	                    </div>
+    <div  class="text-right">
+    <input id="taskCommentButton" type="submit" value="Comment"  class="btn btn-default"/>
+    </div>
+	                </form>
+    </div>
+	        </div>
+    </div>
+
+	    <div class="taskLogs tab-pane">
+	    </div>
+    </div>
+    <div class="row-fluid task-workplan-row">
+      <div class="span6">
+	      <a href="javascript:void(0)"><i class="uiIconClock"></i></a>
+	      <div class="workPlan" data-startdate="<%=df.format(startDate)%>" data-duration="${duration}">
+	      	<a class="duration" href="#">${workplan}</a>
+    <%if (hasPlan) {%>
+        <a href="#"><i class="uiIconTrash removeWorkPlan"></i></a>
+        <%} %>
+    <div class="rangeCalendar" style="display:none">
+            From:
+    <div class="fromCalendar calendar"></div>
+					To:
+					<div class="toCalendar calendar"></div>
+    <input type="checkbox" name="allDay"/>All day<br/>
+    <a class="timeSelector" data-name="timeFrom" href="#" data-type="select"></a>
+					<a class="timeSelector" data-name="timeTo" href="#" data-type="select"></a>
+    </div>
+			</div>
+    </div>
+      <div class="span6">
+     	<%
+     		//def priorities = StringUtils.join(Priority.values(), ",");
+    %>
+    <a class="editable task-priority" href="#" data-priority="${priorities}" data-inputclass="input-small"
+    data-name="priority" data-type="select" data-emptytext="&{label.noPriority}"
+    data-value="${task.priority != null ?  task.priority : Priority.UNDEFINED}"></a>
+      </div>
+    </div>
+</div>
+    <script type="text/javascript">
+            require(['taskDetailView'], function(detail) {
+                detail.init();
+            })
+    </script>
