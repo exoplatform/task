@@ -18,19 +18,22 @@
  */
 package org.exoplatform.task.integration;
 
+import java.util.Map;
+
+import javax.xml.namespace.QName;
+
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.portal.application.PortalRequestContext;
 import org.exoplatform.portal.application.RequestNavigationData;
 import org.exoplatform.portal.application.state.AbstractContextualPropertyProviderPlugin;
+import org.exoplatform.portal.mop.SiteType;
 import org.exoplatform.portal.webui.application.UIPortlet;
 import org.exoplatform.portal.webui.util.Util;
 import org.exoplatform.social.common.router.ExoRouter;
+import org.exoplatform.social.core.space.SpaceUtils;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
-
-import javax.xml.namespace.QName;
-import java.util.Map;
 
 public class SpacePropertiesPlugin extends AbstractContextualPropertyProviderPlugin {
 
@@ -60,7 +63,13 @@ public class SpacePropertiesPlugin extends AbstractContextualPropertyProviderPlu
 
     private Space getSpace() {
       PortalRequestContext pContext = Util.getPortalRequestContext();
+      if (!pContext.getSiteType().equals(SiteType.GROUP) ||
+          !pContext.getSiteName().startsWith(SpaceUtils.SPACE_GROUP)) {
+        return null;
+      }
+
       String requestPath = pContext.getControllerContext().getParameter(RequestNavigationData.REQUEST_PATH);
+
       ExoRouter.Route er = ExoRouter.route(requestPath);
 
       if (er != null && er.localArgs != null) {
