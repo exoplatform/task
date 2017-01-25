@@ -44,6 +44,7 @@ import org.exoplatform.portal.mop.navigation.NodeModel;
 import org.exoplatform.portal.mop.navigation.Scope;
 import org.exoplatform.portal.webui.util.Util;
 import org.exoplatform.social.common.router.ExoRouter;
+import org.exoplatform.social.core.space.SpaceUtils;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
 import org.exoplatform.web.WebAppController;
@@ -129,14 +130,16 @@ public class ResourceUtil {
     if (pContext != null) {
       siteKey = pContext.getSiteKey();
 
-      String requestPath = pContext.getControllerContext().getParameter(RequestNavigationData.REQUEST_PATH);
-      ExoRouter.Route er = ExoRouter.route(requestPath);
-      if (er != null && er.localArgs != null) {
-        String spacePrettyName = er.localArgs.get("spacePrettyName");
-        SpaceService sService = container.getComponentInstanceOfType(SpaceService.class);
-
-        if (spacePrettyName != null && !spacePrettyName.isEmpty()) {
-          space = sService.getSpaceByPrettyName(spacePrettyName);
+      if (pContext.getSiteType().equals(SiteType.GROUP)  && pContext.getSiteName().startsWith(SpaceUtils.SPACE_GROUP)) {
+        String requestPath = pContext.getControllerContext().getParameter(RequestNavigationData.REQUEST_PATH);
+        ExoRouter.Route er = ExoRouter.route(requestPath);
+        if (er != null && er.localArgs != null) {
+          String spacePrettyName = er.localArgs.get("spacePrettyName");
+          SpaceService sService = container.getComponentInstanceOfType(SpaceService.class);
+  
+          if (spacePrettyName != null && !spacePrettyName.isEmpty()) {
+            space = sService.getSpaceByPrettyName(spacePrettyName);
+          }
         }
       }
     } else {
