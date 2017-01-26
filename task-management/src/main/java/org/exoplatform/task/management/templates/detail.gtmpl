@@ -25,6 +25,8 @@ def comments = taskModel.getComments();
 def currentUser = taskModel.getCurrentUser();
 def labels = taskModel.getLabels();
 def editableClasses = "hoverStatus editableField editable";
+def locale = bundle != null ? bundle.getLocale() : Locale.getDefault(Locale.Category.FORMAT);
+
 %>
 <div class="addTask uiBox ${task.completed ? "task-completed" : ""}" data-taskid="${task.id}">
 <div class="uiContentBox">
@@ -108,6 +110,11 @@ data-name="title" data-type="text" data-emptytext="&{label.untitledTask}">
 </span>
     </div>
 </div>
+
+<%
+ SimpleDateFormat dueDateFormat = new SimpleDateFormat('dd MMM yyyy',locale);
+ dueDateFormat.setTimeZone(userTimezone);
+%>
 <div class="inforBar1 clearfix">
     <div class="pull-left">
         <div class="uiEditableInline">
@@ -117,7 +124,7 @@ data-original-title="&{tooltip.clickToEdit}" rel="tooltip" data-placement="top"
 data-type="calendar" data-name="duedate"
 data-value="${task.dueDate != null ? task.dueDate.format('yyyy-MM-dd', userTimezone) : ''}"
 data-format="yyyy-MM-dd" data-viewformat="dd M yyyy">
-        ${task.dueDate != null ? task.dueDate.format('dd MMM yyyy', userTimezone) : ''}
+        ${task.dueDate != null ? dueDateFormat.format(task.dueDate) : ''}
 </span>
         </div>
 </div>
