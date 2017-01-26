@@ -1,5 +1,5 @@
-define('x_editable_calendar', ['SHARED/jquery', 'SHARED/edit_inline_js', 'task_ui_calendar', 'SHARED/bootstrap_datepicker'],
-    function(jquery, editinline, uiCalendar) {
+define('x_editable_calendar', ['SHARED/jquery', 'SHARED/edit_inline_js', 'task_ui_calendar', 'SHARED/taskLocale','SHARED/bootstrap_datepicker','SHARED/bootstrap_datepicker_locale'],
+    function(jquery, editinline, uiCalendar,locale) {
         (function ($) {
             "use strict";
 
@@ -88,18 +88,40 @@ define('x_editable_calendar', ['SHARED/jquery', 'SHARED/edit_inline_js', 'task_u
                  @method value2html(value, element)
                  **/
                 value2html: function(value, element) {
-                    //TODO: check if current date is today, tomorrow or next week
-                    var date = DPG.parseDate(value, this.options.format, 'en');
-                    var dateString = DPG.formatDate(date, this.options.viewformat, 'en');
-                    $(element).html(dateString);
+
+                    try {
+                        //TODO: check if current date is today, tomorrow or next week
+                        var date = DPG.parseDate(value, this.options.format, eXo.env.portal.language);
+                        var dateString = DPG.formatDate(date, this.options.viewformat, eXo.env.portal.language);
+                        $(element).html(dateString);
+
+                    }
+                    catch (e) {
+                        //user locale not founded
+                        // use english
+                        var date = DPG.parseDate(value, this.options.format, 'en');
+                        var dateString = DPG.formatDate(date, this.options.viewformat, 'en');
+                        $(element).html(dateString);
+                    }
                 },
 
                 html2value: function(html) {
-                    var date = DPG.parseDate(html, this.options.viewformat, 'en');
-                    var format = this.options.format;
-                    format = format.toLowerCase();
-                    var val = DPG.formatDate(date, format, 'en');
-                    return val;
+                    try {
+                        var date = DPG.parseDate(html, this.options.viewformat, eXo.env.portal.language);
+                        var format = this.options.format;
+                        format = format.toLowerCase();
+                        var val = DPG.formatDate(date, format, eXo.env.portal.language);
+                        return val;
+                    }
+                    catch (e) {
+                        //user locale not founded
+                        // use english
+                        var date = DPG.parseDate(html, this.options.viewformat, 'en');
+                        var format = this.options.format;
+                        format = format.toLowerCase();
+                        var val = DPG.formatDate(date, format, 'en');
+                        return val;
+                    }
                 },
 
                 /**
@@ -183,10 +205,10 @@ define('x_editable_calendar', ['SHARED/jquery', 'SHARED/edit_inline_js', 'task_u
             Calendar.defaults = $.extend({}, $.fn.editabletypes.abstractinput.defaults, {
                 tpl: '' +
                     '   <div class="header  nav-inline">'+
-                    '       <a class="" data-date="none" href="javascript:void(0)">None</a>' +
-                    '       <a class="" data-date="today" href="javascript:void(0)">Today</a>' +
-                    '       <a class="" data-date="tomorrow" href="javascript:void(0)">Tomorrow</a>' +
-                    '       <a class="" data-date="nextweek" href="javascript:void(0)">Next week</a>' +
+                    '       <a class="" data-date="none" href="javascript:void(0)">'+locale.resolve("none")+'</a>' +
+                    '       <a class="" data-date="today" href="javascript:void(0)">'+locale.resolve("today")+'</a>' +
+                    '       <a class="" data-date="tomorrow" href="javascript:void(0)">'+locale.resolve("tomorrow")+'</a>' +
+                    '       <a class="" data-date="nextweek" href="javascript:void(0)">'+locale.resolve("nextweek")+'</a>' +
                     '   </div>' +
                     '   <div>' +
                     '       <input type="hidden" name="calendar" value=""/>' +

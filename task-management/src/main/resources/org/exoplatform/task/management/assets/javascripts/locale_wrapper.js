@@ -22,7 +22,12 @@
         projectDescriptionEmpty: '${editinline.projectDescription.empty}',
         taskPlan: {
             errorMessage: '${editinline.taskPlan.errorMessage}'
-        }
+        },
+        today: '${label.today}',
+        tomorrow: '${label.tomorrow}',
+        nextweek: '${label.nextweek}',
+        none: '${label.none}'
+
     };
 
     locale.resolve = function(key, params) {

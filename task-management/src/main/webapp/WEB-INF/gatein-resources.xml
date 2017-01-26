@@ -122,6 +122,7 @@
       <module>jquery</module>
     </depends>
   </module>
+
   <module>
     <name>select2</name>
     <script>
@@ -199,5 +200,26 @@
       <module>suggester</module>
     </depends>
 	</module>
+
+
+  <module>
+    <name>bootstrap_datepicker_locale</name>
+    <script>
+      <adapter>
+        (function() {
+        <include>/js/bootstrap-datepicker.locales.min.js</include>
+        return jQuery;
+        })();
+      </adapter>
+    </script>
+    <depends>
+      <module>bootstrap_datepicker</module>
+    </depends>
+    <depends>
+      <module>jquery</module>
+      <as>jQuery</as>
+    </depends>
+  </module>
+
 </gatein-resources>
 

@@ -22,6 +22,7 @@ package org.exoplatform.task.util;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.TimeZone;
 
@@ -30,8 +31,6 @@ import java.util.TimeZone;
  */
 public class DateUtil {
 
-  public static final String DUE_DATE_FORMAT = "MMM dd";
-  public static final String DUE_DATE_FORMAT_WITH_YEAR = "MMM dd, yyyy";
 
   public static boolean isOverdue(Calendar calendar) {
     TimeZone tz = calendar.getTimeZone();
@@ -107,10 +106,18 @@ public class DateUtil {
     }
     Calendar current = Calendar.getInstance(calendar.getTimeZone());
     boolean isSameYear = current.get(Calendar.YEAR) == calendar.get(Calendar.YEAR);
-    DateFormat df = new SimpleDateFormat(isSameYear ? DUE_DATE_FORMAT : DUE_DATE_FORMAT_WITH_YEAR);
-    df.setCalendar(calendar);
 
-    return df.format(calendar.getTime());
+    SimpleDateFormat df = (SimpleDateFormat) DateFormat.getDateInstance(DateFormat.MEDIUM, bundle.getLocale());
+    if (isSameYear) {
+      //remove year from display
+      String pattern = df.toPattern().replaceAll(
+              "([^\\p{Alpha}']|('[\\p{Alpha}]+'))*y+([^\\p{Alpha}']|('[\\p{Alpha}]+'))*",
+              "");
+      df.applyPattern(pattern);
+    }
+    df.setCalendar(calendar);
+    String result = df.format(calendar.getTime());
+    return result;
   }
 
   public static Calendar newCalendarInstance(TimeZone timeZone) {
