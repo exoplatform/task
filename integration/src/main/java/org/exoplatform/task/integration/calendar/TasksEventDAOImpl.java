@@ -36,6 +36,7 @@ import org.exoplatform.task.util.ProjectUtil;
 import org.exoplatform.task.util.TaskUtil;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -78,6 +79,9 @@ public class TasksEventDAOImpl implements EventDAO {
            ids.add(id);
          } catch (Exception ex) {
          }
+       }
+       if(ids.isEmpty() && query.getCalendarIds().length > 0) {
+         return null;
        }
      }
      
