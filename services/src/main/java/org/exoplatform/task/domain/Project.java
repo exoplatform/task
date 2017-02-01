@@ -34,6 +34,52 @@ import java.util.*;
 @Entity(name = "TaskProject")
 @ExoEntity
 @Table(name = "TASK_PROJECTS")
+@NamedQueries({
+  @NamedQuery(
+          name = "TaskProject.findAllProjects",
+          query = "SELECT DISTINCT p FROM TaskProject p"
+  ),
+  @NamedQuery(
+              name = "TaskProject.countAllProjects",
+              query = "SELECT count(p) FROM TaskProject p"
+  ),
+  @NamedQuery(
+              name = "TaskProject.findProjectsByKeyword",
+              query = "SELECT DISTINCT p FROM TaskProject p WHERE p.name LIKE :name"
+  ),
+  @NamedQuery(
+              name = "TaskProject.countProjectsByKeyword",
+              query = "SELECT count(p) FROM TaskProject p WHERE p.name LIKE :name"
+  ),
+  @NamedQuery(
+              name = "TaskProject.findProjectsByMemberships",
+              query = "SELECT DISTINCT p FROM TaskProject p"
+                  + " LEFT JOIN p.manager manager "
+                  + " LEFT JOIN p.participator participator "
+                  + " WHERE manager IN (:memberships) OR participator IN (:memberships)"
+  ),
+  @NamedQuery(
+              name = "TaskProject.countProjectsByMemberships",
+              query = "SELECT count(p) FROM TaskProject p"
+                  + " LEFT JOIN p.manager manager "
+                  + " LEFT JOIN p.participator participator "
+                  + " WHERE manager IN (:memberships) OR participator IN (:memberships)"
+  ),
+  @NamedQuery(
+              name = "TaskProject.findProjectsByMembershipsByKeyword",
+              query = "SELECT DISTINCT p FROM TaskProject p "
+                  + " LEFT JOIN p.manager manager "
+                  + " LEFT JOIN p.participator participator "
+                  + " WHERE (manager IN :memberships OR participator IN :memberships) AND p.name LIKE :name"
+  ),
+  @NamedQuery(
+              name = "TaskProject.countProjectsByMembershipsByKeyword",
+              query = "SELECT count(p) FROM TaskProject p "
+                  + " LEFT JOIN p.manager manager "
+                  + " LEFT JOIN p.participator participator "
+                  + " WHERE (manager IN :memberships OR participator IN :memberships) AND p.name LIKE :name"
+  )
+})
 public class Project {
 
   public static final String PREFIX_CLONE = "Copy of ";

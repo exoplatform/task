@@ -16,20 +16,21 @@
 */
 package org.exoplatform.task.dao.jpa;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.logging.Logger;
+
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.logging.Logger;
+import org.apache.commons.lang.StringUtils;
 
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.task.dao.OrderBy;
@@ -38,7 +39,6 @@ import org.exoplatform.task.dao.ProjectQuery;
 import org.exoplatform.task.dao.condition.Conditions;
 import org.exoplatform.task.dao.condition.SingleCondition;
 import org.exoplatform.task.domain.Project;
-import org.exoplatform.task.domain.Task;
 
 /**
  * Created by The eXo Platform SAS
@@ -97,6 +97,45 @@ public class ProjectDAOImpl extends CommonJPADAO<Project, Long> implements Proje
 
   @Override
   public ListAccess<Project> findAllByMembershipsAndKeyword(List<String> memberships, String keyword, OrderBy order) {
+    if(order == null && (StringUtils.isBlank(keyword) || !keyword.trim().contains(" "))) {
+        // order == null && keyword is Empty
+        TypedQuery<Project> selectQuery = null;
+        TypedQuery<Long> countQuery = null;
+        if((memberships == null || memberships.isEmpty()) && StringUtils.isBlank(keyword)) {
+          // memberships == null, keywork == null, order == null
+          // => return all projects
+          selectQuery = getEntityManager().createNamedQuery("TaskProject.findAllProjects", Project.class);
+          countQuery = getEntityManager().createNamedQuery("TaskProject.countAllProjects", Long.class);
+        } else if(memberships == null || memberships.isEmpty()) {
+          // memberships == null, keywork != null, order == null
+          // => search projects by keyword
+          selectQuery = getEntityManager().createNamedQuery("TaskProject.findProjectsByKeyword", Project.class);
+          selectQuery.setParameter("name", keyword);
+
+          countQuery = getEntityManager().createNamedQuery("TaskProject.countProjectsByKeyword", Long.class);
+          countQuery.setParameter("name", keyword);
+        } else if(StringUtils.isBlank(keyword)) {
+          HashSet<String> membershipsSet = new HashSet<String>(memberships);
+
+          selectQuery = getEntityManager().createNamedQuery("TaskProject.findProjectsByMemberships", Project.class);
+          selectQuery.setParameter("memberships", membershipsSet);
+
+          countQuery = getEntityManager().createNamedQuery("TaskProject.countProjectsByMemberships", Long.class);
+          countQuery.setParameter("memberships", membershipsSet);
+        } else {
+          HashSet<String> membershipsSet = new HashSet<String>(memberships);
+
+          selectQuery = getEntityManager().createNamedQuery("TaskProject.findProjectsByMembershipsByKeyword", Project.class);
+          selectQuery.setParameter("memberships", membershipsSet);
+          selectQuery.setParameter("name", keyword);
+
+          countQuery = getEntityManager().createNamedQuery("TaskProject.countProjectsByMembershipsByKeyword", Long.class);
+          countQuery.setParameter("memberships", membershipsSet);
+          countQuery.setParameter("name", keyword);
+        }
+
+        return new JPAQueryListAccess<Project>(Project.class, countQuery, selectQuery);
+    }
     ProjectQuery query = new ProjectQuery();
     query.setMembership(memberships);
     query.setKeyword(keyword);
@@ -110,7 +149,7 @@ public class ProjectDAOImpl extends CommonJPADAO<Project, Long> implements Proje
   public ListAccess<Project> findProjects(ProjectQuery query) {
     return findEntities(query, Project.class);
   }
-  
+
   protected Path buildPath(SingleCondition condition, Root<Project> root) {
     String field = condition.getField();
     
