@@ -18,17 +18,7 @@
  */
 package org.exoplatform.task.domain;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -48,7 +38,8 @@ import org.exoplatform.commons.api.persistence.ExoEntity;
 })
 public class Label {
   @Id
-  @GeneratedValue
+  @SequenceGenerator(name="SEQ_TASK_LABELS_LABEL_ID", sequenceName="SEQ_TASK_LABELS_LABEL_ID")
+  @GeneratedValue(strategy=GenerationType.AUTO, generator="SEQ_TASK_LABELS_LABEL_ID")
   @Column(name = "LABEL_ID")
   private long      id;
 
