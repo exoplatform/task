@@ -404,5 +404,12 @@
             tableName="TASK_LABEL_TASK"/>
   </changeSet>
 
+  <!-- Definition of sequence for TASK_LABEL -->
+  <changeSet author="task" id="1.0.0-26" dbms="oracle,postgresql">
+    <createSequence sequenceName="SEQ_TASK_LABELS_LABEL_ID" startValue="1"/>
+    <sql dbms="postgresql">select setval('SEQ_TASK_LABELS_LABEL_ID', max(LABEL_ID)+1) from TASK_LABELS</sql>
+    <sql dbms="oracle">alter sequence SEQ_TASK_LABELS_LABEL_ID restart with (select max(LABEL_ID)+1 from TASK_LABELS)</sql>
+  </changeSet>
+
 
 </databaseChangeLog>
