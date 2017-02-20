@@ -86,7 +86,7 @@ public abstract class AbstractNotificationPlugin extends BaseNotificationPlugin 
   }
 
   private String buildProjectUrl(Project project, ExoContainer container, WebAppController controller) {
-    return CommonsUtils.getCurrentDomain() + ProjectUtil.buildProjectURL(project, SiteKey.portal("intranet"), container, controller.getRouter());
+    return CommonsUtils.getCurrentDomain() + ProjectUtil.buildProjectURL(project, CommonsUtils.getCurrentSite(), container, controller.getRouter());
   }
 
   protected Set<String> getReceiver(Task task, NotificationContext ctx) {
@@ -104,6 +104,6 @@ public abstract class AbstractNotificationPlugin extends BaseNotificationPlugin 
   }
   
   private String buildTaskUrl(Task t, ExoContainer container, WebAppController controller) {
-    return CommonsUtils.getCurrentDomain() + TaskUtil.buildTaskURL(t, SiteKey.portal("intranet"), container, controller.getRouter());
+    return CommonsUtils.getCurrentDomain() + TaskUtil.buildTaskURL(t, CommonsUtils.getCurrentSite(), container, controller.getRouter());
   }
 }

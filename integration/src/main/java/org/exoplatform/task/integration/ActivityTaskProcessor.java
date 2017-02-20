@@ -18,6 +18,7 @@
 package org.exoplatform.task.integration;
 
 import org.exoplatform.commons.persistence.impl.EntityManagerService;
+import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.component.RequestLifeCycle;
 import org.exoplatform.container.xml.InitParams;
@@ -26,6 +27,7 @@ import org.exoplatform.social.core.BaseActivityProcessorPlugin;
 import org.exoplatform.social.core.activity.model.ExoSocialActivity;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.service.TaskService;
+import org.exoplatform.task.util.ResourceUtil;
 import org.exoplatform.task.util.TaskUtil;
 import org.exoplatform.web.WebAppController;
 import org.exoplatform.web.controller.router.Router;
@@ -98,7 +100,7 @@ public class ActivityTaskProcessor extends BaseActivityProcessorPlugin {
     int breakIdx = title.indexOf("<br", idx);
 
     StringBuilder builder = new StringBuilder(title);
-    String taskURL = TaskUtil.buildTaskURL(task, SiteKey.portal("intranet"), ExoContainerContext.getCurrentContainer(), router);
+    String taskURL = TaskUtil.buildTaskURL(task, CommonsUtils.getCurrentSite(), ExoContainerContext.getCurrentContainer(), router);
     String url = " <a href='"+taskURL+"'>";
     builder.insert(idx, url);
     if (breakIdx > 0) {

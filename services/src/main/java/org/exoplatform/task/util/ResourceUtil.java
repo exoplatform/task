@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
+import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.PortalContainer;
@@ -111,7 +112,6 @@ public class ResourceUtil {
     return (limit == it.size() && offset == 0) ? it : it.subList(offset, offset + limit);    
   }
 
-
   public static String buildBaseURL() {
     PortalContainer container = PortalContainer.getInstance();
     WebAppController webAppController = container.getComponentInstanceOfType(WebAppController.class);
@@ -126,10 +126,8 @@ public class ResourceUtil {
     }
 
     Space space = null;
-    SiteKey siteKey;
+    SiteKey siteKey = CommonsUtils.getCurrentSite();
     if (pContext != null) {
-      siteKey = pContext.getSiteKey();
-
       if (pContext.getSiteType().equals(SiteType.GROUP)  && pContext.getSiteName().startsWith(SpaceUtils.SPACE_GROUP)) {
         String requestPath = pContext.getControllerContext().getParameter(RequestNavigationData.REQUEST_PATH);
         ExoRouter.Route er = ExoRouter.route(requestPath);
@@ -142,8 +140,6 @@ public class ResourceUtil {
           }
         }
       }
-    } else {
-      siteKey = SiteKey.portal("intranet");
     }
 
     return baseURL(siteKey, container, router, space);

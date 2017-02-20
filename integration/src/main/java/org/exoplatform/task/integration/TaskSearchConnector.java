@@ -95,14 +95,14 @@ public class TaskSearchConnector extends SearchServiceConnector {
     df.setTimeZone(userService.getUserTimezone(currentUser.getUserId()));
     Task[] tasks = ListUtil.load(taskService.findTasks(taskQuery), 0, -1);
     for (Task t : tasks) {
-      result.add(buildResult(t, df));
+      result.add(buildResult(t, context, df));
     }
 
     return ResourceUtil.subList(result, offset, limit);
   }
 
-  private SearchResult buildResult(Task t, SimpleDateFormat df) {    
-    String url = buildUrl(t);
+  private SearchResult buildResult(Task t, SearchContext ctx, SimpleDateFormat df) {
+    String url = buildUrl(t, ctx);
     String imageUrl = buildImageUrl(t);
     String excerpt = buildExcerpt(t);
     String projectName = t.getStatus() != null ? t.getStatus().getProject().getName() : null;
@@ -128,9 +128,9 @@ public class TaskSearchConnector extends SearchServiceConnector {
     return null;
   }
 
-  private String buildUrl(Task t) {
+  private String buildUrl(Task t, SearchContext context) {
     ExoContainer container = ExoContainerContext.getCurrentContainer();
-    return TaskUtil.buildTaskURL(t, SiteKey.portal("intranet"), container, controller.getRouter());
+    return TaskUtil.buildTaskURL(t, SiteKey.portal(context.getSiteName()), container, controller.getRouter());
   }
 
   private OrderBy buildOrderBy(String sort, String order) {
