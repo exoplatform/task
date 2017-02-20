@@ -88,15 +88,15 @@ public class ProjectSearchConnector extends SearchServiceConnector {
     }
     
     for (Project p : projects) {
-      result.add(buildResult(p));
+      result.add(buildResult(p, context));
     }
     
     return ResourceUtil.subList(result, offset, limit);
   }
 
-  private SearchResult buildResult(Project p) {
+  private SearchResult buildResult(Project p, SearchContext ctx) {
     String detail = p.getDescription();
-    String url = buildUrl(p);
+    String url = buildUrl(p, ctx);
     String imageUrl = buildImageUrl(p);
     return new SearchResult(url, p.getName(), "", detail, imageUrl, p.getDueDate().getTime(), 0);
   }
@@ -105,9 +105,9 @@ public class ProjectSearchConnector extends SearchServiceConnector {
     return null;
   }
 
-  private String buildUrl(Project p) {
+  private String buildUrl(Project p, SearchContext context) {
     ExoContainer container = ExoContainerContext.getCurrentContainer();
-    return ProjectUtil.buildProjectURL(p, SiteKey.portal("intranet"), container, controller.getRouter());
+    return ProjectUtil.buildProjectURL(p, SiteKey.portal(context.getSiteName()), container, controller.getRouter());
   }
 
   private OrderBy buildOrderBy(String sort, String order) {

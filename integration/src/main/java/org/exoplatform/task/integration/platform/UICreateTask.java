@@ -20,6 +20,7 @@
 package org.exoplatform.task.integration.platform;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.portal.mop.SiteKey;
 import org.exoplatform.services.log.ExoLogger;
@@ -29,6 +30,7 @@ import org.exoplatform.task.service.ParserContext;
 import org.exoplatform.task.service.TaskParser;
 import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.service.UserService;
+import org.exoplatform.task.util.ResourceUtil;
 import org.exoplatform.task.util.TaskUtil;
 import org.exoplatform.web.WebAppController;
 import org.exoplatform.webui.application.WebuiRequestContext;
@@ -132,7 +134,7 @@ public class UICreateTask extends UIForm {
       }
 
       event.getRequestContext().getUserPortal();
-      String taskURL = TaskUtil.buildTaskURL(task, SiteKey.portal("intranet"), ExoContainerContext.getCurrentContainer(), ui.webAppController.getRouter());
+      String taskURL = TaskUtil.buildTaskURL(task, CommonsUtils.getCurrentSite(), ExoContainerContext.getCurrentContainer(), ui.webAppController.getRouter());
 
       String defaultMsg = "The task has been added";
       String message =  UICreateTask.getResourceBundle(ui.getId()+".msg.add-successfully", defaultMsg);
