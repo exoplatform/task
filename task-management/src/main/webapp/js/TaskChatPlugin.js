@@ -173,9 +173,7 @@
     });
   })();
 
-  // TODO: Need to make sure this is executed before ChatRoom is initialized.
-  // Processing the Task creation shortcut inline.
-  chatApplication.registerEvent({
+  var chatEvent = {
     'beforeSend' : function(context) {
       if (chatApplication.isMentioning) {
         context.continueSend = false;
@@ -199,9 +197,9 @@
         chatApplication.getUsers(targetUser, function (jsonData) {
           var participants = [];
           $.each(jsonData.users, function(idx, elem) {
-            participants.push(elem.name);         
+            participants.push(elem.name);
           });
-          
+
           // Call server
           $.ajax({
             url : createTaskUrl,
@@ -215,27 +213,27 @@
             },
             success : function(response) {
               var options = {
-                  "type" : "type-task",
-                  "username" : response.assignee,
-                  "task" : response.title,
-                  "dueDate" : response.dueDate
+                "type" : "type-task",
+                "username" : response.assignee,
+                "task" : response.title,
+                "dueDate" : response.dueDate
               };
-              
+
               chatApplication.chatRoom.sendMessage(response.title,
-                  options, "true");
+                options, "true");
               setActionButtonEnabled('.create-task-button',
-                  true);
+                true);
             },
             error : function(xhr, status, error) {
               console.log("fail to create inline task: " + error);
             }
-          });       
+          });
         });
       }
     }
-  });
-  
-  chatApplication.chatRoom.registerPlugin({
+  };
+
+  var chatPlugin = {
     "getType" : function() {
       return "type-task";
     },
@@ -255,21 +253,39 @@
         out += "<div class='msTimeEvent'>";
         out += "  <div>";
         out += "    <i class='uiIconChatAssign uiIconChatLightGray mgR10'></i><span class='muted'>"
-            + chatBundleData["exoplatform.chat.assign.to"]
-            + ": </span>" + options.username;
+          + chatBundleData["exoplatform.chat.assign.to"]
+          + ": </span>" + options.username;
         out += "  </div>";
         out += "  <div>";
         out += "    <i class='uiIconChatClock uiIconChatLightGray mgR10'></i><span class='muted'>"
-            + chatBundleData["exoplatform.chat.due.date"]
-            + ":</span> <b>" + options.dueDate + "</b>";
+          + chatBundleData["exoplatform.chat.due.date"]
+          + ":</span> <b>" + options.dueDate + "</b>";
         out += "  </div>";
         out += "</div>";
         return out;
       }
     }
-  });
-  chatApplication.loadRoom();
-  
+  };
+
+  // This takes care of Chat application loaded before/after the others.
+  if (typeof chatApplication === 'object') {
+    chatApplication.registerEvent(chatEvent);
+  } else {
+    if (typeof chatEvents === 'undefined') {
+      chatEvents = [];
+    }
+    chatEvents.push(chatEvent);
+  }
+
+  if (typeof chatApplication === 'object' && chatApplication.chatRoom) {
+    chatApplication.chatRoom.registerPlugin(chatPlugin);
+  } else {
+    if (typeof chatPlugins === 'undefined') {
+      chatPlugins = [];
+    }
+    chatPlugins.push(chatPlugin);
+  }
+
   function setMiniCalendarToDateField(dateFieldId) {
     var dateField = document.getElementById(dateFieldId);
     dateField.onfocus=function(){
