@@ -47,7 +47,7 @@
   </scm>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <org.exoplatform.platform.version>4.4.x-SNAPSHOT</org.exoplatform.platform.version>
+    <org.exoplatform.platform.version>4.4.1-RC11</org.exoplatform.platform.version>
     <juzu.version>1.1.0</juzu.version>
     <org.antlr.version>3.4</org.antlr.version>
     <org.webjars.jquery.version>1.11.2</org.webjars.jquery.version>
