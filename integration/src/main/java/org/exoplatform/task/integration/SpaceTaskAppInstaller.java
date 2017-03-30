@@ -64,6 +64,7 @@ public class SpaceTaskAppInstaller implements Startable {
       taskApp.setPortletName(taskPortletName);
       taskApp.setAppTitle("abcd");
       taskApp.setUri(taskUri);
+      taskApp.isRemovable(true);
       //
       apps.add(idx, taskApp);
       plugin.setSpaceApplicationList(apps);
