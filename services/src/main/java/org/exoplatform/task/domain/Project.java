@@ -125,7 +125,7 @@ public class Project {
   private List<Project> children = new LinkedList<Project>();
 
   // This field is used for remove cascade
-  @ManyToMany(mappedBy = "hiddenProjects", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+  @ManyToMany(mappedBy = "hiddenProjects", fetch = FetchType.LAZY)
   private Set<UserSetting> hiddenOn = new HashSet<UserSetting>();
 
   public Project() {
@@ -301,6 +301,10 @@ public class Project {
     }
 
     return false;
+  }
+
+  public Set<UserSetting> getHiddenOn() {
+    return hiddenOn;
   }
 
   @Override

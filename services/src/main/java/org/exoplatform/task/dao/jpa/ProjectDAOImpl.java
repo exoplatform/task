@@ -39,6 +39,7 @@ import org.exoplatform.task.dao.ProjectQuery;
 import org.exoplatform.task.dao.condition.Conditions;
 import org.exoplatform.task.dao.condition.SingleCondition;
 import org.exoplatform.task.domain.Project;
+import org.exoplatform.task.domain.UserSetting;
 
 /**
  * Created by The eXo Platform SAS
@@ -78,6 +79,13 @@ public class ProjectDAOImpl extends CommonJPADAO<Project, Long> implements Proje
         getEntityManager().persist(pj);
       }
       p.getChildren().clear();
+    }
+
+    if (p.getHiddenOn() != null) {
+      for(UserSetting u : p.getHiddenOn()) {
+        u.getHiddenProjects().remove(p);
+        getEntityManager().persist(u);
+      }
     }
 
     super.delete(p);
