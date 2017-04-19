@@ -42,7 +42,7 @@ public class UserSetting {
   @Column(name = "SHOW_HIDDEN_LABEL")
   private boolean showHiddenLabel = false;
 
-  @ManyToMany(cascade = CascadeType.REMOVE)
+  @ManyToMany
   @JoinTable(
           name = "TASK_HIDDEN_PROJECTS",
           joinColumns = {@JoinColumn(name = "USERNAME", referencedColumnName = "USERNAME")},
