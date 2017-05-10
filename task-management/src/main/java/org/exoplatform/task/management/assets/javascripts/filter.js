@@ -210,25 +210,25 @@ define('taFilter', ['SHARED/jquery', 'SHARED/suggester'], function($) {
       },
       providers: {
         'exo:taskfilterlabel': function(query, callback) {
-          if (isLoaded) {
-            callback(allLabels);
-          }
-          //. Load all label of user
-          $.ajax({
+        if (isLoaded) {
+          callback(allLabels);
+        }
+        //. Load all label of user
+        $.ajax({
             url: $filter.jzURL('UserController.findLabel'),
             data: {},
             type: 'GET',
             error: function() {
-              callback();
+                callback();
             },
             success: function(res) {
-              callback(res);
-              isLoaded = true;
-              $.each(res, function(index, val) {
-                allLabels[val.id] = val;
-              });
+                callback(res);
+                isLoaded = true;
+                $.each(res, function(index, val) {
+                    allLabels[val.id] = val;
+                });
             }
-          });
+            });
         }
       }
     }));
@@ -238,90 +238,90 @@ define('taFilter', ['SHARED/jquery', 'SHARED/suggester'], function($) {
     var $asFilter = $filter.find('[name="assignee"]');
     var defaultOptionValues = $asFilter.data('options');
     $asFilter.suggester({
-      type : 'tag',
-      plugins: ['remove_button'],
-      preload: false,
-      persist: false,
-      createOnBlur: false,
-      highlight: false,
-      hideSelected: true,
-      openOnFocus: false,
-      sourceProviders: ['exo:taskfilteruser'],
-      valueField: 'id',
-      labelField: 'text',
-      searchField: ['text', 'id'],
-      loadThrottle: null,
-      hideSelected: true,
-      closeAfterSelect: true,
-      onItemAdd: function(value, $item) {
-        this.$input.parent().find('.selectize-input input').attr('disabled', 'disabled');
-        taFilter.submitFilter();
-      },
-      onItemRemove: function(value, $item) {
-        this.$input.parent().find('.selectize-input input').removeAttr('disabled');
-        taFilter.submitFilter();
-      },
-      onInitialize: function() {
-        for (index = 0; index < defaultOptionValues.length; ++index) {
-            $asFilter[0].selectize.addOption(defaultOptionValues[index]);
-        }
-        var items = $asFilter.data('items');
-        if(items && items.length) {
-          $asFilter[0].selectize.addItem(items[0], false);
+        type : 'tag',
+        plugins: ['remove_button'],
+        preload: false,
+        persist: false,
+        createOnBlur: false,
+        highlight: false,
+        hideSelected: true,
+        openOnFocus: false,
+        sourceProviders: ['exo:taskfilteruser'],
+        valueField: 'id',
+        labelField: 'text',
+        searchField: ['text', 'id'],
+        loadThrottle: null,
+        hideSelected: true,
+        closeAfterSelect: true,
+        onItemAdd: function(value, $item) {
           this.$input.parent().find('.selectize-input input').attr('disabled', 'disabled');
-        }
-      },
-      renderItem: function(item, escape) {
-        if(!item.avatarUrl) {
-          for (index = 0; index < defaultOptionValues.length; ++index) {
-            if(defaultOptionValues[index].id == item.id) {
-              item = defaultOptionValues[index];
-              break;
-            }
-          }
-        }
-        return '<div class="item">' + escape(item.text) +'</div>';
-      },
-      renderMenuItem: function(item, escape) {
-        if(!item.avatarUrl) {
-          for (index = 0; index < defaultOptionValues.length; ++index) {
-            if(defaultOptionValues[index].id == item.id) {
-              item = defaultOptionValues[index];
-              break;
-            }
-          }
-        }
-        var avatar = item.avatarUrl;
-        if (avatar == null) {
-          avatar = '/eXoSkin/skin/images/system/SpaceAvtDefault.png';
-        }
-        if(!item.text) {
-            item.text = item.value;
-        }
-        return '<div class="avatarMini">' +
-          '   <img src="'+item.avatar+'">' +
-          '</div>' +
-          '<div class="text">' + escape(item.text) + ' (' + item.id +')' + '</div>' +
-          '<div class="user-status"><i class="uiIconColorCircleGray"></i></div>';
-      },
-      sortField: [{field: 'order'}, {field: '$score'}],
-      providers: {
-        'exo:taskfilteruser': function(query, callback) {
-          if (!query.length) return callback();
-          $.ajax({
-              url: $filter.jzURL('UserController.findUser'),
-              data: {query: query},
-              type: 'GET',
-              error: function() {
-                  callback();
-              },
-              success: function(res) {
-                  callback(res);
-              }
-          });
-        }
-      }
-    });
+          taFilter.submitFilter();
+        },
+        onItemRemove: function(value, $item) {
+          this.$input.parent().find('.selectize-input input').removeAttr('disabled');
+          taFilter.submitFilter();
+        },
+  		  onInitialize: function() {
+  		    for (index = 0; index < defaultOptionValues.length; ++index) {
+  		        $asFilter[0].selectize.addOption(defaultOptionValues[index]);
+  		    }
+  		    var items = $asFilter.data('items');
+      		if(items && items.length) {
+      		  $asFilter[0].selectize.addItem(items[0], false);
+      		  this.$input.parent().find('.selectize-input input').attr('disabled', 'disabled');
+      		    }
+      		  },
+      		  renderItem: function(item, escape) {
+      		    if(!item.avatarUrl) {
+      		      for (index = 0; index < defaultOptionValues.length; ++index) {
+      		        if(defaultOptionValues[index].id == item.id) {
+      		          item = defaultOptionValues[index];
+      		          break;
+      		        }
+      		      }
+      		    }
+      		    return '<div class="item">' + escape(item.text) +'</div>';
+      		  },
+      		  renderMenuItem: function(item, escape) {
+      		    if(!item.avatarUrl) {
+      		      for (index = 0; index < defaultOptionValues.length; ++index) {
+      		        if(defaultOptionValues[index].id == item.id) {
+      		          item = defaultOptionValues[index];
+      		          break;
+      		        }
+      		      }
+      		    }
+      		    var avatar = item.avatarUrl;
+      		    if (avatar == null) {
+      		      avatar = '/eXoSkin/skin/images/system/SpaceAvtDefault.png';
+      		}
+      		if(!item.text) {
+      		    item.text = item.value;
+      		}
+      		return '<div class="avatarMini">' +
+      		  '   <img src="'+item.avatar+'">' +
+      		  '</div>' +
+      		  '<div class="text">' + escape(item.text) + ' (' + item.id +')' + '</div>' +
+      		  '<div class="user-status"><i class="uiIconColorCircleGray"></i></div>';
+      		  },
+    		  sortField: [{field: 'order'}, {field: '$score'}],
+    		  providers: {
+    		    'exo:taskfilteruser': function(query, callback) {
+    		  if (!query.length) return callback();
+    		  $.ajax({
+    		      url: $filter.jzURL('UserController.findUser'),
+    		  data: {query: query},
+    		  type: 'GET',
+    		          error: function() {
+    		              callback();
+    		          },
+    		          success: function(res) {
+    		              callback(res);
+    		          }
+    		      });
+    		    }
+    		  }
+      });
   }
   return taFilter;
 });

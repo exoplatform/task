@@ -141,8 +141,8 @@ define('ta_edit_inline',
             var d = new $.Deferred;
             //if left empty, task title will be set to Untitled Task
             if (params.name == 'title' && !params.value) {
-              var $title = $rightPanel.find('[data-name="title"]');
-              params.value = $title.data('emptytext');
+               var $title = $rightPanel.find('[data-name="title"]');
+               params.value = $title.data('emptytext');
             }
             var data = params;
             params.pk = currentTaskId;
@@ -395,27 +395,27 @@ define('ta_edit_inline',
               'exo:taskuser': function(query, callback) {
                 if (!query || !query.length) return callback(defaultOptionValues);
                 $.ajax({
-                  url: $rightPanel.jzURL('UserController.findUser'),
-                  data: {query: query},
-                  type: 'GET',
-                  error: function() {
-                    callback();
-                  },
-                  success: function(res) {
-                    callback(res);
-                  }
+                    url: $rightPanel.jzURL('UserController.findUser'),
+                    data: {query: query},
+                    type: 'GET',
+                    error: function() {
+                        callback();
+                    },
+                    success: function(res) {
+                        callback(res);
+                    }
                 });
               }
             },
             score: function(search) {
-              var score = this.getScoreFunction(search);
-              return function(item) {
-                  if (item.deleted === true || item.enable === false) {
-                      return 0;
-                  } else {
-                      return score(item);
-                  }
-              };
+                var score = this.getScoreFunction(search);
+                return function(item) {
+                    if (item.deleted === true || item.enable === false) {
+                        return 0;
+                    } else {
+                        return score(item);
+                    }
+                };
             }
         };
         var saveAssignee = function(taskId, name, value, selectize) {
@@ -543,10 +543,10 @@ define('ta_edit_inline',
                 preload: true,
                 onInitialize: function() {
                     if(onInit) {
-            onInit.apply(this, arguments);
-          }
+                        onInit.apply(this, arguments);
+                    }
                     if (assignee != '') {
-                      this.$input.closest('.inputUser').find('.selectize-input input').attr('disabled', 'disabled');
+                        this.$input.closest('.inputUser').find('.selectize-input input').attr('disabled', 'disabled');
                     }
                 },
                 onItemAdd: function(value, $item) {
@@ -573,17 +573,17 @@ define('ta_edit_inline',
             $coworker.suggester(opts);
 
             $assignMe.click(function(e) {
-              var $action = $(e.target).closest('[data-action]');
-              var action = $action.data('action');
-              var value = $action.data('value');
+                var $action = $(e.target).closest('[data-action]');
+                var action = $action.data('action');
+                var value = $action.data('value');
 
-              if (action == 'assign') {
-                $assignee[0].selectize.setValue(value, false);
-              } else {
-                $coworker[0].selectize.addItem(value, false);
-              }
+                if (action == 'assign') {
+                    $assignee[0].selectize.setValue(value, false);
+                } else {
+                    $coworker[0].selectize.addItem(value, false);
+                }
             });
-          };
+        };
 
         editInline.initEditInline = function(taskId) {
             editInline.initWorkPlan(taskId);
@@ -661,7 +661,7 @@ define('ta_edit_inline',
                     }
                 }
                 if (fieldName == 'title') {
-                  editOptions.emptyclass = '';
+                	editOptions.emptyclass = '';
                 }
                 if (fieldName == 'description') {
                     editOptions.emptytext = locale.taskDescriptionEmpty;
@@ -830,7 +830,7 @@ define('ta_edit_inline',
 //                    url: editInline.saveProjectDetailFunction
                 });
                 if (fieldName == 'name') {
-                  editOptions.emptyclass = '';
+                	editOptions.emptyclass = '';
                 }
                 if (fieldName == 'description') {
                     editOptions.emptytext = locale.projectDescriptionEmpty;
