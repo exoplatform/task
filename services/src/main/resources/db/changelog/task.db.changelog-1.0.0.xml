@@ -406,9 +406,19 @@
 
   <!-- Definition of sequence for TASK_LABEL -->
   <changeSet author="task" id="1.0.0-26" dbms="oracle,postgresql">
+    <validCheckSum>7:51f423674365954ba3407c9aeeefe68a</validCheckSum>
+    <validCheckSum>7:a8c836136681a4810483a120395d458d</validCheckSum>
+    <preConditions onFail="MARK_RAN">
+      <not>
+        <sequenceExists sequenceName="SEQ_TASK_LABELS_LABEL_ID"/>
+      </not>
+    </preConditions>
     <createSequence sequenceName="SEQ_TASK_LABELS_LABEL_ID" startValue="1"/>
+  </changeSet>
+
+  <changeSet author="task" id="1.0.0-27" dbms="oracle,postgresql">
     <sql dbms="postgresql">select setval('SEQ_TASK_LABELS_LABEL_ID', max(LABEL_ID)+1) from TASK_LABELS</sql>
-    <sql dbms="oracle">alter sequence SEQ_TASK_LABELS_LABEL_ID restart with (select max(LABEL_ID)+1 from TASK_LABELS)</sql>
+    <sqlFile dbms="oracle" encoding="utf8" endDelimiter="/" relativeToChangelogFile="true" path="ORACLE_SEQ_TASK_LABELS_LABEL_ID.sql" />
   </changeSet>
 
 
