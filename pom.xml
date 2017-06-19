@@ -36,7 +36,6 @@
     <module>services</module>
     <module>task-management</module>
     <module>packaging</module>
-    <module>injector</module>
     <module>integration</module>
   </modules>
   <scm>
