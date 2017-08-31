@@ -84,6 +84,10 @@ public class ActivityTaskCreationListener extends ActivityListenerPlugin {
   public void likeActivity(ActivityLifeCycleEvent event) {
   }
 
+  @Override
+  public void likeComment(ActivityLifeCycleEvent activityLifeCycleEvent) {
+  }
+
   private void createTask(ActivityLifeCycleEvent event, boolean isComment) {
     ExoSocialActivity activity = event.getActivity();
     String comment = activity.getTitle();
