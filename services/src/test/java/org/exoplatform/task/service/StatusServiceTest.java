@@ -23,6 +23,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.exoplatform.commons.utils.ListAccessImpl;
+import org.exoplatform.container.PortalContainer;
 import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.exception.EntityNotFoundException;
 
@@ -75,7 +76,9 @@ public class StatusServiceTest {
   
   @Before
   public void setUp() {
-    MockitoAnnotations.initMocks(this);
+    // Make sure the container is started to prevent the ExoTransactional annotation to fail
+    PortalContainer.getInstance();
+
     statusService = new StatusServiceImpl(daoHandler);
     
     //Mock DAO handler to return Mocked DAO
@@ -83,7 +86,6 @@ public class StatusServiceTest {
     when(daoHandler.getStatusHandler()).thenReturn(statusHandler);
 
     //Mock some DAO methods
-    //Mock taskHandler.find(id) to return default task for id = TestUtils.EXISTING_TASK_ID (find(id) return null otherwise)
     when(taskHandler.find(TestUtils.EXISTING_TASK_ID)).thenReturn(TestUtils.getDefaultTask());
     when(statusHandler.find(TestUtils.EXISTING_STATUS_ID)).thenReturn(TestUtils.getDefaultStatus());
 
