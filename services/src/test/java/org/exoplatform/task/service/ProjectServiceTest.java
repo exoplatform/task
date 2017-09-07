@@ -37,6 +37,7 @@ import java.util.TreeSet;
 
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.commons.utils.ListAccessImpl;
+import org.exoplatform.container.PortalContainer;
 import org.exoplatform.task.TestUtils;
 import org.exoplatform.task.dao.ProjectHandler;
 import org.exoplatform.task.dao.StatusHandler;
@@ -98,19 +99,17 @@ public class ProjectServiceTest {
 
   @Before
   public void setUp() {
-    MockitoAnnotations.initMocks(this);
+    // Make sure the container is started to prevent the ExoTransactional annotation to fail
+    PortalContainer.getInstance();
+
     projectService = new ProjectServiceImpl(statusService, taskService, daoHandler);
     
     //Mock DAO handler to return Mocked DAO
-
     when(daoHandler.getTaskHandler()).thenReturn(taskHandler);
     when(daoHandler.getProjectHandler()).thenReturn(projectHandler);
     when(daoHandler.getStatusHandler()).thenReturn(statusHandler);
 
     //Mock some DAO methods
-
-    //when(taskHandler.create(any(Task.class))).thenReturn(defaultTask);
-    //when(taskHandler.update(any(Task.class))).thenReturn(defaultTask);
     when(projectHandler.create(any(Project.class))).thenReturn(TestUtils.getDefaultProject());
     when(projectHandler.update(any(Project.class))).thenReturn(TestUtils.getDefaultProject());
     //Mock taskHandler.find(id) to return default task for id = TestUtils.EXISTING_TASK_ID (find(id) return null otherwise)

@@ -29,6 +29,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.exoplatform.container.PortalContainer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -92,20 +93,18 @@ public class TaskServiceTest {
 
   @Before
   public void setUp() throws Exception {
-    MockitoAnnotations.initMocks(this);
+    // Make sure the container is started to prevent the ExoTransactional annotation to fail
+    PortalContainer.getInstance();
+
     listenerService = new ListenerService(new ExoContainerContext(container));
-    //listenerService.addListener(TaskService.TASK_CREATION, listener);
-    //listenerService.addListener(TaskService.TASK_UPDATE, listener);
     taskService = new TaskServiceImpl(daoHandler, listenerService);
 
     //Mock DAO handler to return Mocked DAO
-
     when(daoHandler.getTaskHandler()).thenReturn(taskHandler);
     when(daoHandler.getCommentHandler()).thenReturn(commentHandler);
     when(daoHandler.getStatusHandler()).thenReturn(statusHandler);
 
     //Mock some DAO methods
-
     when(taskHandler.create(any(Task.class))).thenReturn(TestUtils.getDefaultTask());
     when(taskHandler.update(any(Task.class))).thenReturn(TestUtils.getDefaultTask());
     //Mock taskHandler.find(id) to return default task for id = TestUtils.EXISTING_TASK_ID (find(id) return null otherwise)
