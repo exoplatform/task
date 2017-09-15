@@ -69,9 +69,12 @@ public class AbstractTest {
 
     //
     EntityManagerService entityMgrService = (EntityManagerService) container.getComponentInstanceOfType(EntityManagerService.class);
-    entityMgrService.getEntityManager().getTransaction().commit();
+    if (entityMgrService.getEntityManager() != null && entityMgrService.getEntityManager().getTransaction() != null
+        && entityMgrService.getEntityManager().getTransaction().isActive()) {
+      entityMgrService.getEntityManager().getTransaction().commit();
+      //
+      RequestLifeCycle.end();
+    }
 
-    //
-    RequestLifeCycle.end();
   }
 }

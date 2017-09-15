@@ -19,10 +19,28 @@
 
 package org.exoplatform.task.domain;
 
-import org.exoplatform.commons.api.persistence.ExoEntity;
-
-import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import org.exoplatform.commons.api.persistence.ExoEntity;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
@@ -32,9 +50,11 @@ import java.util.Date;
 @Table(name = "TASK_COMMENTS")
 @NamedQueries({
     @NamedQuery(name = "Comment.countCommentOfTask",
-        query = "SELECT count(c) FROM TaskComment c WHERE c.task.id = :taskId"),
+        query = "SELECT count(c) FROM TaskComment c WHERE c.task.id = :taskId AND c.parentComment IS NULL"),
     @NamedQuery(name = "Comment.findCommentsOfTask",
-        query = "SELECT c FROM TaskComment c WHERE c.task.id = :taskId ORDER BY c.createdTime DESC"),
+        query = "SELECT c FROM TaskComment c WHERE c.task.id = :taskId AND c.parentComment IS NULL ORDER BY c.createdTime DESC"),
+    @NamedQuery(name = "Comment.findSubCommentsOfComments",
+      query = "SELECT c FROM TaskComment c WHERE c.parentComment IN (:comments) ORDER BY c.createdTime ASC"),
     @NamedQuery(name = "Comment.deleteCommentOfTask",
         query = "DELETE FROM TaskComment c WHERE c.task.id = :taskId")
 })
@@ -45,6 +65,7 @@ public class Comment {
   @Column(name = "COMMENT_ID")
   private long id;
 
+  @Column(name = "AUTHOR")
   private String author;
 
   @Column(name = "CMT")
@@ -58,7 +79,12 @@ public class Comment {
   @JoinColumn(name = "TASK_ID")
   private Task task;
 
-  public Comment() {}
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "PARENT_COMMENT_ID")
+  private Comment       parentComment;
+
+  @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "parentComment", fetch = FetchType.LAZY)
+  private List<Comment> subComments = new ArrayList<Comment>();
 
   public long getId() {
     return id;
@@ -98,6 +124,27 @@ public class Comment {
 
   public void setTask(Task task) {
     this.task = task;
+  }
+
+  public Comment getParentComment() {
+    return parentComment;
+  }
+
+  public void setParentComment(Comment parentComment) {
+    this.parentComment = parentComment;
+    this.parentComment.addSubComment(this);
+  }
+
+  public List<Comment> getSubComments() {
+    return subComments;
+  }
+
+  public void setSubComments(List<Comment> subComments) {
+    this.subComments = subComments;
+  }
+
+  public void addSubComment(Comment subComment) {
+    this.subComments.add(subComment);
   }
 
   @Override

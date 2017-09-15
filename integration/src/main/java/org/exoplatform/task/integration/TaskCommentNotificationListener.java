@@ -89,6 +89,12 @@ public class TaskCommentNotificationListener extends Listener<TaskService, Comme
     if (comments != null && ListUtil.getSize(comments) > 0) {
       for (Comment c : ListUtil.load(comments, 0, -1)) {
         receiver.add(c.getAuthor());
+        List<Comment> subComments = c.getSubComments();
+        if (subComments != null) {
+          for (Comment subComment : subComments) {
+            receiver.add(subComment.getAuthor());
+          }
+        }
       }
     }
 

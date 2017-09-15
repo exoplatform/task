@@ -17,21 +17,22 @@
 
 package org.exoplatform.task.dao;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-
-import org.exoplatform.commons.utils.ListAccess;
-import org.exoplatform.task.util.ListUtil;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import org.exoplatform.commons.utils.ListAccess;
+import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.PortalContainer;
+import org.exoplatform.task.AbstractTest;
 import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.AbstractTest;
+import org.exoplatform.task.util.ListUtil;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
@@ -47,6 +48,7 @@ public class TestCommentDAO extends AbstractTest {
   @Before
   public void initDAOs() {
     PortalContainer container = PortalContainer.getInstance();
+    ExoContainerContext.setCurrentContainer(container);
     
     daoHandler = (DAOHandler) container.getComponentInstanceOfType(DAOHandler.class);
     taskDAO = daoHandler.getTaskHandler();
@@ -55,6 +57,7 @@ public class TestCommentDAO extends AbstractTest {
 
   @After
   public void cleanData() {
+    endRequestLifecycle();
     commentDAO.deleteAll();
     taskDAO.deleteAll();
   }
@@ -77,6 +80,72 @@ public class TestCommentDAO extends AbstractTest {
     Assert.assertEquals(username, comment.getAuthor());
 
     //Assert.assertEquals(task.getId(), comment.getTask().getId());
+  }
+
+  @Test
+  public void testCreateSubComment() {
+    Task task = newDefaultSimpleTask();
+    task = taskDAO.create(task);
+
+    Comment comment = newDefaultSimpleComment(task);
+    comment = commentDAO.create(comment);
+
+    Comment subComment = newDefaultSimpleComment(task);
+    subComment.setParentComment(comment);
+    subComment = commentDAO.create(subComment);
+
+    ListAccess<Comment> listComments = commentDAO.findComments(task.getId());
+    Comment[] comments = ListUtil.load(listComments, 0, -1);
+    Assert.assertEquals(1, comments.length);
+
+    List<Comment> subComments = commentDAO.getSubComments(Arrays.asList(comments));
+
+    Assert.assertEquals(1, subComments.size());
+    subComment = subComments.get(0);
+    Assert.assertEquals(username, comment.getAuthor());
+  }
+
+  @Test
+  public void testDeleteSubComment() {
+    Task task = newDefaultSimpleTask();
+    taskDAO.create(task);
+
+    List<Task> tasks = taskDAO.findAll();
+    task = tasks.get(0);
+
+    Comment comment = newDefaultSimpleComment(task);
+    comment = commentDAO.create(comment);
+
+    Comment subComment1 = newDefaultSimpleComment(task);
+    subComment1.setParentComment(comment);
+    subComment1 = commentDAO.create(subComment1);
+
+    Comment subComment2 = newDefaultSimpleComment(task);
+    subComment2.setParentComment(comment);
+    subComment2 = commentDAO.create(subComment2);
+
+    ListAccess<Comment> listComments = commentDAO.findComments(task.getId());
+    Comment[] comments = ListUtil.load(listComments, 0, -1);
+    List<Comment> subComments = commentDAO.getSubComments(Arrays.asList(comments));
+
+    Assert.assertEquals(2, subComments.size());
+    subComment2 = subComments.get(0);
+    commentDAO.delete(subComment2);
+
+    Assert.assertEquals(2, commentDAO.findAll().size());
+    Assert.assertNotNull(subComments.get(0).getParentComment());
+    Assert.assertNotNull(subComments.get(1).getParentComment());
+
+    subComments = commentDAO.getSubComments(Arrays.asList(comments));
+    Assert.assertEquals(1, subComments.size());
+
+    Assert.assertNotNull(subComments.get(0).getParentComment());
+
+    comment = commentDAO.find(comment.getId());
+    Assert.assertNotNull(comment);
+
+    commentDAO.delete(comment);
+    Assert.assertEquals(0, commentDAO.findAll().size());
   }
 
   @Test

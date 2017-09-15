@@ -22,9 +22,11 @@
 
 package org.exoplatform.task.dao.jpa;
 
+import java.util.List;
+
 import javax.persistence.TypedQuery;
 
-import org.exoplatform.commons.persistence.impl.GenericDAOJPAImpl;
+import org.exoplatform.commons.api.persistence.ExoTransactional;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.task.dao.CommentHandler;
 import org.exoplatform.task.domain.Comment;
@@ -35,6 +37,7 @@ import org.exoplatform.task.domain.Comment;
 public class CommentDAOImpl extends CommonJPADAO<Comment, Long> implements CommentHandler {
 
   @Override
+  @ExoTransactional
   public ListAccess<Comment> findComments(long taskId) {
     TypedQuery<Comment> query = getEntityManager().createNamedQuery("Comment.findCommentsOfTask", Comment.class);
     TypedQuery<Long> count = getEntityManager().createNamedQuery("Comment.countCommentOfTask", Long.class);
@@ -43,5 +46,13 @@ public class CommentDAOImpl extends CommonJPADAO<Comment, Long> implements Comme
     count.setParameter("taskId", taskId);
 
     return new JPAQueryListAccess<Comment>(Comment.class, count, query);
+  }
+
+  @Override
+  @ExoTransactional
+  public List<Comment> getSubComments(List<Comment> comments) {
+    TypedQuery<Comment> query = getEntityManager().createNamedQuery("Comment.findSubCommentsOfComments", Comment.class);
+    query.setParameter("comments", comments);
+    return query.getResultList();
   }
 }

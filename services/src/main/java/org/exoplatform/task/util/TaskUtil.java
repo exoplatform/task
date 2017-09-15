@@ -17,6 +17,28 @@
 package org.exoplatform.task.util;
 
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.Set;
+import java.util.TimeZone;
+import java.util.TreeMap;
+
+import org.gatein.common.text.EntityEncoder;
+
 import org.exoplatform.calendar.model.Event;
 import org.exoplatform.calendar.service.impl.NewUserListener;
 import org.exoplatform.commons.utils.HTMLEntityEncoder;
@@ -32,7 +54,12 @@ import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.task.dao.TaskQuery;
-import org.exoplatform.task.domain.*;
+import org.exoplatform.task.domain.Comment;
+import org.exoplatform.task.domain.Label;
+import org.exoplatform.task.domain.Priority;
+import org.exoplatform.task.domain.Project;
+import org.exoplatform.task.domain.Status;
+import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.exception.ParameterEntityException;
 import org.exoplatform.task.model.CommentModel;
@@ -44,12 +71,6 @@ import org.exoplatform.task.service.StatusService;
 import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.service.UserService;
 import org.exoplatform.web.controller.router.Router;
-import org.gatein.common.text.EntityEncoder;
-
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 /**
  * Created by The eXo Platform SAS
@@ -218,10 +239,20 @@ public final class TaskUtil {
     int limitComment = loadAllComment ? -1 : 2;
     List<Comment> cmts = Arrays.asList(ListUtil.load(listComments, 0, limitComment));
     Collections.reverse(cmts);
-    List<CommentModel> comments = new ArrayList<CommentModel>(cmts.size());
-    for(Comment c : cmts) {
+    List<CommentModel> comments = new ArrayList<CommentModel>();
+    taskService.loadSubComments(cmts);
+    for (Comment c : cmts) {
       org.exoplatform.task.model.User u = userService.loadUser(c.getAuthor());
-      comments.add(new CommentModel(c, u, CommentUtil.formatMention(c.getComment(), userService)));
+      CommentModel commentModel = new CommentModel(c, u, CommentUtil.formatMention(c.getComment(), userService));
+      comments.add(commentModel);
+      if (c.getSubComments() != null && !c.getSubComments().isEmpty()) {
+        List<CommentModel> subComments = new ArrayList<>();
+        for (Comment comment : c.getSubComments()) {
+          org.exoplatform.task.model.User user = userService.loadUser(c.getAuthor());
+          subComments.add(new CommentModel(comment, user, CommentUtil.formatMention(comment.getComment(), userService)));
+        }
+        commentModel.setSubComments(subComments);
+      }
     }
     taskModel.setComments(comments);
 

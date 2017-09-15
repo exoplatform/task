@@ -20,6 +20,7 @@
 package org.exoplatform.task.model;
 
 import java.util.Date;
+import java.util.List;
 
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.task.domain.Comment;
@@ -33,6 +34,7 @@ public class CommentModel {
   private final Comment comment;
   private final User author;
   private final String formattedComment;
+  private List<CommentModel> subComments;
 
   public CommentModel(Comment cmt, User author, String formattedComment) {
     this.comment = cmt;
@@ -46,6 +48,10 @@ public class CommentModel {
 
   public Date getCreatedTime() {
     return comment.getCreatedTime();
+  }
+
+  public Long getParentCommentId() {
+    return comment.getParentComment() == null ? null : comment.getParentComment().getId();
   }
 
   public String getComment() {
@@ -67,4 +73,13 @@ public class CommentModel {
   public boolean canEdit(Identity identity) {
     return TaskUtil.canDeleteComment(identity, comment);
   }
+
+  public void setSubComments(List<CommentModel> subComments) {
+    this.subComments = subComments;
+  }
+
+  public List<CommentModel> getSubComments() {
+    return subComments;
+  }
+
 }

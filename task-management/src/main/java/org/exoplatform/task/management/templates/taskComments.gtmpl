@@ -7,7 +7,7 @@
     import org.exoplatform.services.security.ConversationState;
   	 import org.exoplatform.commons.utils.HTMLEntityEncoder;
 
-  	 def encoder = HTMLEntityEncoder.getInstance();
+     def encoder = HTMLEntityEncoder.getInstance();
 
     def commentCount = taskModel.getCommentCount();
     def comments = taskModel.getComments();
@@ -15,7 +15,51 @@
     def allCommentsLoaded = commentCount == comments.size();
 
     def identity = ConversationState.getCurrent().getIdentity();
-%>
+
+    public void displayComment(def comment, def identity, def hide, def collapseBlock, def parentSubCommentsSize) {
+        def encoder = HTMLEntityEncoder.getInstance();
+
+        def subCommentClass = comment.parentCommentId == null ? "" : "subCommentBlock";
+        if(hide) {
+            subCommentClass += " hidden";
+        }
+        def parentCommentId = comment.parentCommentId != null ? comment.parentCommentId : "";
+        %>
+        <div class="commentItem ${subCommentClass}" data-commentid="${comment.id}" data-parent-comment="${parentCommentId}" <%= collapseBlock ? "id='SubCommentShowAll_" + parentCommentId + "'" : "" %>>
+            <% if(collapseBlock) { %>
+            <div class="commentRight">
+                <a href="javascript:void(0)" class="subCommentShowAllLink"  data-parent-comment="${comment.parentCommentId}">
+                    <%= ResourceUtil.resolveMessage(bundle, "comment.message.ViewAllReplies", parentSubCommentsSize); %>
+                </a>
+            <% } else { %>
+            <div class="commmentLeft pull-left">
+                <a class="avatarXSmall" href="${comment.author.url}">
+                    <img src="${comment.author.avatar}" alt="${encoder.encode(comment.author.displayName)}">
+                </a>
+            </div><!--end commentLeft-->
+            <div class="commentRight">
+               <div class="author">
+                    <a href="${comment.author.url}">${encoder.encode(comment.author.displayName)}</a>
+                    <span class="date">
+                        <%= TaskUtil.getPeriod(comment.getCreatedTime().getTime(), bundle)%>
+                     </span>
+                </div>
+                <p class="contentComment">
+                    ${comment.formattedComment}
+                </p>
+                <p>
+                    <a href="javascript:void(0)" class="replyCommentLink">&{comment.message.Reply}</a>
+                </p>
+            <% } %>
+            </div><!--end commentRight-->
+
+            <% if (!collapseBlock && comment.canEdit(identity)) {%>
+                <a href="javascript:void(0)" class="actionIcon controllDelete" data-toggle="tooltip" data-placement="left" title="&{label.remove}">
+                    <i class="uiIconTrashMini uiIconLightGray "></i>
+                </a>
+            <%}%>
+        </div>
+        <%}%>
 <div class="commentBox" data-allcomment="${allCommentsLoaded}">
     <% if (commentCount > 2) {%>
     <div class="commentListInfo ">
@@ -26,32 +70,21 @@
     <div class="empty center">&{comment.message.noComment}</div>
     <%} else {%>
     <div class="commentList">
-        <% for (def comment in comments) {%>
-        <div class="commentItem" data-commentid="${comment.id}">
-            <div class="commmentLeft pull-left">
-                <a class="avatarXSmall" href="${comment.author.url}">
-                    <img src="${comment.author.avatar}" alt="${encoder.encode(comment.author.displayName)}">
-                </a>
-            </div><!--end commentLeft-->
-            <div class="commentRight">
-                <div class="author">
-                    <a href="${comment.author.url}">${encoder.encode(comment.author.displayName)}</a>
-                                    <span class="date">
-                                        <%= TaskUtil.getPeriod(comment.getCreatedTime().getTime(), bundle)%>
-                                     </span>
-                </div>
-                <p class="contentComment">
-                    ${comment.formattedComment}
-                </p>
-            </div><!--end commentRight-->
-
-            <% if (comment.canEdit(identity)) {%>
-                <a href="javascript:void(0)" class="actionIcon controllDelete" data-toggle="tooltip" data-placement="left" title="&{label.remove}">
-                    <i class="uiIconTrashMini uiIconLightGray "></i>
-                </a>
-            <%}%>
-        </div>
-        <%}%>
+        <% for (def comment in comments) {
+            displayComment(comment, identity, false, false, 0);
+            def subComments = comment.subComments;
+            if(subComments != null) {
+	            def hide = subComments.size() > 2;
+	            def lastComment = null;
+	            for (def subComment in subComments) {
+	                displayComment(subComment, identity, hide, false, 0);
+	                lastComment = subComment;
+	            }
+                if(hide && lastComment!= null) {
+                    displayComment(lastComment, identity, false, true, subComments.size());
+                }
+            }
+        } %>
     </div>
     <%}%>
     <div  class="commentList inputContainer">
@@ -75,4 +108,7 @@
             </form>
         </div> <!--end commentItem-->
     </div><!--end commentlist-->
+    <div  class="commentList hidden parentCommentBlock">
+       <a href="javascript:void(0)" class="parentCommentLink">&{comment.label.comment}</a>
+    </div>
 </div>

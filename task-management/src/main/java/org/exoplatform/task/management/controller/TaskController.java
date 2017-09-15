@@ -399,13 +399,17 @@ public class TaskController extends AbstractController {
   @Resource
   @Ajax
   @MimeType.JSON
-  public Response comment(Long taskId, String comment, SecurityContext securityContext) throws EntityNotFoundException, JSONException, UnAuthorizedOperationException {
+  public Response comment(Long taskId, String comment, Long parentCommentId, SecurityContext securityContext) throws EntityNotFoundException, JSONException, UnAuthorizedOperationException {
     Task task = taskService.getTask(taskId);
+
     String currentUser = securityContext.getRemoteUser();
     if (!TaskUtil.hasPermission(task)) {
       throw new UnAuthorizedOperationException(taskId, Task.class, getNoPermissionMsg());
     }
-    Comment cmt = taskService.addComment(taskId, currentUser, comment); //Can throw TaskNotFoundException
+    if(parentCommentId == null) {
+      parentCommentId = 0L;
+    }
+    Comment cmt = taskService.addComment(taskId, parentCommentId, currentUser, comment); //Can throw TaskNotFoundException
 
     //TODO:
     CommentModel model = new CommentModel(cmt, userService.loadUser(cmt.getAuthor()), CommentUtil.formatMention(cmt.getComment(), userService));
@@ -441,11 +445,18 @@ public class TaskController extends AbstractController {
 
       ListAccess<Comment> cmtAccessList = taskService.getComments(task.getId());
       Comment[] cmts = ListUtil.load(cmtAccessList, 0, -1); //Can throw TaskNotFoundException
+      taskService.loadSubComments(Arrays.asList(cmts));
 
       List<CommentModel> listComments = new ArrayList<CommentModel>(cmts.length);
-      for(Comment cmt : cmts) {
-        org.exoplatform.task.model.User u = userService.loadUser(cmt.getAuthor());
-        listComments.add(new CommentModel(cmt, u, CommentUtil.formatMention(cmt.getComment(), userService)));
+      for (Comment cmt : cmts) {
+        CommentModel commentModel = addCommentModel(cmt, listComments);
+        if (cmt.getSubComments() != null) {
+          List<CommentModel> subComments = new ArrayList<>();
+          for (Comment comment : cmt.getSubComments()) {
+            addCommentModel(comment, subComments);
+          }
+          commentModel.setSubComments(subComments);
+        }
       }
 
       org.exoplatform.task.model.User currentUser = userService.loadUser(securityContext.getRemoteUser());
@@ -954,5 +965,12 @@ public class TaskController extends AbstractController {
     taskQuery.setCompleted(false);
     ListAccess<Task> taskListAccess = taskService.findTasks(taskQuery);
     return ListUtil.getSize(taskListAccess);
+  }
+
+  private CommentModel addCommentModel(Comment cmt, List<CommentModel> listComments) {
+    org.exoplatform.task.model.User u = userService.loadUser(cmt.getAuthor());
+    CommentModel commentModel = new CommentModel(cmt, u, CommentUtil.formatMention(cmt.getComment(), userService));
+    listComments.add(commentModel);
+    return commentModel;
   }
 }
