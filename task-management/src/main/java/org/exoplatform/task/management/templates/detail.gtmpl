@@ -49,7 +49,7 @@ class="permalink actionIcon taskPermalink" style="position: relative;">
                 </form>
 </div>
         </div>
-<a data-toggle="dropdown" class="dropdown-toggle actionIcon" href="#"><i class="uiIconArrowDown"></i></a>
+<a data-toggle="dropdown" class="dropdown-toggle actionIcon"><i class="uiIconArrowDown"></i></a>
 <ul class="dropdown-menu">
 <li><a class="action-clone-task" href="#"><i class="uiIconCloneNode"></i> &{label.clone}</a></li>
             <li><a class="action-delete-task" href="#"><i class="uiIconDelete"></i> &{label.delete}</a></li>

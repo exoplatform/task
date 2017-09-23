@@ -76,10 +76,6 @@
     <!-- JS libraries -->
     <dependency>
       <groupId>org.webjars</groupId>
-      <artifactId>jquery</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.webjars</groupId>
       <artifactId>x-editable-bootstrap</artifactId>
     </dependency>
     <dependency>

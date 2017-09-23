@@ -17,7 +17,7 @@
   	<a href="#" title="Close Window" data-dismiss="modal" aria-hidden="true" class="uiIconClose pull-right"></a>
   	<div class="PopupTitle popupTitle">
   		<div class="pull-right action-buttons dropdown">
-         <a href="#" class="dropdown-toggle actionIconSmall" data-toggle="dropdown"><i class="uiIconArrowDown uiIconLightGray"></i></a>
+         <a class="dropdown-toggle actionIconSmall" data-toggle="dropdown"><i class="uiIconArrowDown uiIconLightGray"></i></a>
          <ul class="dropdown-menu">
              <li><a href="#" class="action-clone-project">
                  <i class="uiIconCloneNode uiIconLightGray"></i> &{popup.clone}</a></li>
