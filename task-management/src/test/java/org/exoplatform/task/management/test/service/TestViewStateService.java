@@ -29,7 +29,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.junit.Assert.*;
 
@@ -83,6 +85,34 @@ public class TestViewStateService {
     @Override
     public SettingValue<?> get(Context context, Scope scope, String key) {
       return values.get(key);
+    }
+
+    @Override
+    public Map<Scope, Map<String, SettingValue<String>>> getSettingsByContext(Context context) {
+      return null;
+    }
+
+    @Override
+    public List<Context> getContextsByTypeAndScopeAndSettingName(String contextType,
+                                                                 String scopeType,
+                                                                 String scopeName,
+                                                                 String settingName,
+                                                                 int offset,
+                                                                 int limit) {
+      return null;
+    }
+
+    @Override
+    public Set<String> getEmptyContextsByScopeAndContextType(String contextType,
+                                                             String scopeType,
+                                                             String scopeName,
+                                                             int offset,
+                                                             int limit) {
+      return null;
+    }
+
+    @Override
+    public void save(Context context) {
     }
   }
 }
