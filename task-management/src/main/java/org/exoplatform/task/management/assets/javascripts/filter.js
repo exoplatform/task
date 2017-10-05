@@ -176,7 +176,7 @@ define('taFilter', ['SHARED/jquery', 'SHARED/selectize'], function($) {
             
             var showCompleted = $taskFilter.find('[name="showCompleted"]');
             if (showCompleted.length) {
-              data.showCompleted = showCompleted.is(':checked');
+              data.showCompleted = showCompleted["0"].checked;
             }
           }          
         }
