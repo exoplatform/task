@@ -24,8 +24,7 @@ def displayListLabelItem(lbl, level, encoder, identity, colors) {
     				data-hiddenlabel="${isHidden}">
         <div class="sub-item" style="padding-left: <%=indent%>px">
                 <a class="dropdown-toggle pull-right"
-                   data-toggle="dropdown"
-                   href="#">
+                   data-toggle="dropdown">
                     <i class="uiIconRightMenu uiIconLightGray"></i>
                 </a>
                 <div class="dropdown-menu uiDropdownWithIcon" style="left: 100%;top: -10px;">
