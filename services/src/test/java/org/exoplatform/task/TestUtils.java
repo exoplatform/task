@@ -22,7 +22,6 @@ import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
-import liquibase.resource.FileSystemResourceAccessor;
 import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
@@ -83,6 +82,8 @@ public class TestUtils {
     liquibase = new Liquibase("db/changelog/task.db.changelog-1.0.0.xml", new ClassLoaderResourceAccessor(), database);
     liquibase.update((String)null);
     liquibase = new Liquibase("db/changelog/task.db.changelog-1.1.0.xml", new ClassLoaderResourceAccessor(), database);
+    liquibase.update((String)null);
+    liquibase = new Liquibase("db/changelog/task.db.changelog-1.3.0.xml", new ClassLoaderResourceAccessor(), database);
     liquibase.update((String)null);
   }
 

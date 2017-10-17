@@ -6,11 +6,11 @@ import java.util.Set;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.dao.TaskQuery;
+import org.exoplatform.task.domain.ChangeLog;
 import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Label;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.domain.ChangeLog;
 import org.exoplatform.task.exception.EntityNotFoundException;
 
 /**
@@ -70,6 +70,8 @@ public interface TaskService {
 
   Comment addComment(long taskId, String username, String commentText) throws EntityNotFoundException;
 
+  Comment addComment(long id, long parentCommentId, String username, String comment) throws EntityNotFoundException;
+
   void removeComment(long commentId) throws EntityNotFoundException;
 
   ListAccess<Task> findTasks(TaskQuery query);
@@ -112,4 +114,12 @@ public interface TaskService {
   Task findTaskByActivityId(String activityId);
 
   Set<String> getCoworker(long taskId);
+
+  /**
+   * Fetch sub comments of designed comments
+   * 
+   * @param listComments
+   */
+  void loadSubComments(List<Comment> listComments);
+
 }

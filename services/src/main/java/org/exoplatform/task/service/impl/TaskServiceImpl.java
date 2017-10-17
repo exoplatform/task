@@ -16,14 +16,13 @@
 */
 package org.exoplatform.task.service.impl;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.persistence.TypedQuery;
-
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.exoplatform.commons.api.persistence.ExoTransactional;
 import org.exoplatform.commons.utils.ListAccess;
@@ -33,12 +32,12 @@ import org.exoplatform.services.log.Log;
 import org.exoplatform.task.dao.DAOHandler;
 import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.dao.TaskQuery;
+import org.exoplatform.task.domain.ChangeLog;
 import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Label;
 import org.exoplatform.task.domain.LabelTaskMapping;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.domain.ChangeLog;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.service.TaskPayload;
 import org.exoplatform.task.service.TaskService;
@@ -147,8 +146,21 @@ public class TaskServiceImpl implements TaskService {
   }
 
   @Override
+  public void loadSubComments(List<Comment> listComments) {
+    if(listComments == null || listComments.isEmpty()) {
+      return;
+    }
+    List<Comment> subComments = daoHandler.getCommentHandler().getSubComments(listComments);
+    for (Comment comment : listComments) {
+      comment.setSubComments(subComments.stream()
+                                        .filter(subComment -> subComment.getParentComment().getId() == comment.getId())
+                                        .collect(Collectors.toList()));
+    }
+  }
+
+  @Override
   @ExoTransactional
-  public Comment addComment(long id, String username, String comment) throws EntityNotFoundException {
+  public Comment addComment(long id, long parentCommentId, String username, String comment) throws EntityNotFoundException {
 
     Task task = getTask(id); //Can throws TaskNotFoundException
 
@@ -157,6 +169,14 @@ public class TaskServiceImpl implements TaskService {
     newComment.setAuthor(username);
     newComment.setComment(comment);
     newComment.setCreatedTime(new Date());
+    if(parentCommentId > 0) {
+      List<Comment> findAll = daoHandler.getCommentHandler().findAll();
+      Comment parentComment = daoHandler.getCommentHandler().find(parentCommentId);
+      if(parentComment.getParentComment() != null) {
+        parentComment = parentComment.getParentComment();
+      }
+      newComment.setParentComment(parentComment);
+    }
     Comment obj = daoHandler.getCommentHandler().create(newComment);
 
     try {
@@ -166,6 +186,12 @@ public class TaskServiceImpl implements TaskService {
     }
 
     return obj;
+  }
+
+  @Override
+  @ExoTransactional
+  public Comment addComment(long id, String username, String comment) throws EntityNotFoundException {
+    return addComment(id, 0, username, comment);
   }
   
   @Override
