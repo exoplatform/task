@@ -220,7 +220,7 @@ public final class TaskUtil {
     TaskModel taskModel = new TaskModel();
     
     Task task = taskService.getTask(id); //Can throw TaskNotFoundException    
-    Set<String> coworker = getCoworker(id);
+    Set<String> coworker = getCoworker(taskService, id);
     task.setCoworker(coworker);
     taskModel.setTask(task);
 
@@ -248,7 +248,7 @@ public final class TaskUtil {
       if (c.getSubComments() != null && !c.getSubComments().isEmpty()) {
         List<CommentModel> subComments = new ArrayList<>();
         for (Comment comment : c.getSubComments()) {
-          org.exoplatform.task.model.User user = userService.loadUser(c.getAuthor());
+          org.exoplatform.task.model.User user = userService.loadUser(comment.getAuthor());
           subComments.add(new CommentModel(comment, user, CommentUtil.formatMention(comment.getComment(), userService)));
         }
         commentModel.setSubComments(subComments);
@@ -905,7 +905,7 @@ public final class TaskUtil {
     // Load coworker to avoid they will be deleted when save task
     //This issue caused because we alway clone entity from DAO, but Coworker are loaded lazily
     //This is need for TA-421
-    task.setCoworker(TaskUtil.getCoworker(task.getId()));
+    task.setCoworker(TaskUtil.getCoworker(taskService, task.getId()));
 
     //
     if ("workPlan".equalsIgnoreCase(param)) {
@@ -1127,6 +1127,18 @@ public final class TaskUtil {
       container = ((RootContainer)container).getPortalContainer(PortalContainer.getCurrentPortalContainerName());
     }
     return container.getComponentInstanceOfType(TaskService.class);
+  }
+
+  /**
+   * 
+   * Added for tests using a specific instance of taskService
+   * 
+   * @param taskService
+   * @param taskId
+   * @return
+   */
+  public static Set<String> getCoworker(TaskService taskService, long taskId) {
+    return taskService.getCoworker(taskId);
   }
 
   public static Set<String> getCoworker(long taskId) {

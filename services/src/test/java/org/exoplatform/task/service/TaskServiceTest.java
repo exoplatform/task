@@ -19,6 +19,7 @@ package org.exoplatform.task.service;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -29,7 +30,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.exoplatform.container.PortalContainer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,15 +37,15 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
-import org.exoplatform.services.listener.Event;
+import org.exoplatform.container.PortalContainer;
 import org.exoplatform.services.listener.ListenerService;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
+import org.exoplatform.task.TestUtils;
 import org.exoplatform.task.dao.CommentHandler;
 import org.exoplatform.task.dao.DAOHandler;
 import org.exoplatform.task.dao.StatusHandler;
@@ -54,8 +54,8 @@ import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.exception.ParameterEntityException;
+import org.exoplatform.task.model.User;
 import org.exoplatform.task.service.impl.TaskServiceImpl;
-import org.exoplatform.task.TestUtils;
 
 /**
  * Created by The eXo Platform SAS
@@ -80,6 +80,8 @@ public class TaskServiceTest {
   StatusHandler statusHandler;
   @Mock
   DAOHandler daoHandler;
+  @Mock
+  UserService userService;
   
   //ArgumentCaptors are how you can retrieve objects that were passed into a method call
   @Captor
@@ -280,12 +282,40 @@ public class TaskServiceTest {
   }
 
   @Test
+  public void testAddSubComments() throws EntityNotFoundException {
+    String username = "Tib";
+    String comment = "Bla bla bla bla bla";
+    String authorSubComment = "Tib2";
+    String subCommentContent = "Bla bla bla bla bla sub comment";
+
+    when(userService.loadUser(eq(username))).thenReturn(new User(username, null, null, null, null, null, null));
+    when(userService.loadUser(eq(authorSubComment))).thenReturn(new User(authorSubComment, null, null, null, null, null, null));
+
+    taskService.addComment(TestUtils.EXISTING_TASK_ID, username, comment);
+    verify(commentHandler, times(1)).create(commentCaptor.capture());
+
+    Comment parentComment = commentCaptor.getValue();
+    assertEquals(TestUtils.EXISTING_TASK_ID, parentComment.getTask().getId());
+    assertEquals(username, parentComment.getAuthor());
+    assertEquals(comment, parentComment.getComment());
+
+    long parentCommentId = parentComment.getId();
+    taskService.addComment(TestUtils.EXISTING_TASK_ID, parentCommentId ,authorSubComment, subCommentContent);
+    verify(commentHandler, times(2)).create(commentCaptor.capture());
+
+    Comment subComment = commentCaptor.getValue();
+    assertEquals(TestUtils.EXISTING_TASK_ID, subComment.getTask().getId());
+    assertEquals(authorSubComment, subComment.getAuthor());
+    assertEquals(subCommentContent, subComment.getComment());
+  }
+
+  @Test
   public void testAddCommentsByTaskId() throws EntityNotFoundException {
     String username = "Tib";
     String comment = "Bla bla bla bla bla";
     taskService.addComment(TestUtils.EXISTING_TASK_ID, username, comment);
     verify(commentHandler, times(1)).create(commentCaptor.capture());
-
+    
     assertEquals(TestUtils.EXISTING_TASK_ID, commentCaptor.getValue().getTask().getId());
     assertEquals(username, commentCaptor.getValue().getAuthor());
     assertEquals(comment, commentCaptor.getValue().getComment());

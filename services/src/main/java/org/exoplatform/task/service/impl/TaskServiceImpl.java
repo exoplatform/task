@@ -170,7 +170,6 @@ public class TaskServiceImpl implements TaskService {
     newComment.setComment(comment);
     newComment.setCreatedTime(new Date());
     if(parentCommentId > 0) {
-      List<Comment> findAll = daoHandler.getCommentHandler().findAll();
       Comment parentComment = daoHandler.getCommentHandler().find(parentCommentId);
       if(parentComment.getParentComment() != null) {
         parentComment = parentComment.getParentComment();
