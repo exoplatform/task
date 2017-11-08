@@ -21,7 +21,6 @@
 @Portlet
 @Bindings({
     @Binding(value = NavigationState.class),
-    @Binding(value = TaskFilterData.class),
     @Binding(value = TaskParser.class),
     @Binding(value = DAOHandler.class),
     @Binding(value = TaskService.class),
@@ -57,7 +56,7 @@
     @Script(id = "taskCenterView", value = "javascripts/taskCenterView.js", depends = {"taskManagementCommon"}),
     @Script(id = "taskDetailView", value = "javascripts/taskDetailView.js", depends = {"taskManagementCommon", "taskCenterView"}),
 
-    @Script(id = "task-management-js", value = "javascripts/task-management.js",
+    @Script(id = "app-js", value = "javascripts/app.js",
             depends = {"taskManagementCommon", "project-menu-js", "filter_js", "task-edit-inline", "taskListView", "taskCenterView"})
 })
 @Less({
@@ -98,5 +97,3 @@ import org.exoplatform.task.service.StatusService;
 import org.exoplatform.task.service.TaskParser;
 import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.service.UserService;
-import org.exoplatform.task.management.model.TaskFilterData;
-

@@ -88,7 +88,7 @@
 		  		<label class="control-label" for="assignee">&{label.assignee}</label>
 		  		<div class="controls">
 		  		<%		  		
-		  			def selectedAssignees = filterData.getAssignee();
+		  			def selectedAssignees = filterData.getAssignees();
 	  		      def userArr = new JSONArray();
 		  		   for (def userId : selectedAssignees) {
 		  		     def user = userService.loadUser(userId);

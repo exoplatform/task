@@ -141,7 +141,7 @@ define('taskManagementApp', ['SHARED/jquery', 'SHARED/taskLocale', 'SHARED/juzu-
             if (typeof filter !== 'string') {
                 filter = '';
             }
-            var data = {projectId: projectId, labelId: labelId, filter: filter};
+            var data = {projectId: projectId, labelId: labelId, dueCategory: filter};
             $centerPanelContent.jzLoad('TaskController.listTasks()', data, function(html, status, xhr) {
               if (xhr.status >= 400) {
                 taApp.showWarningDialog(xhr.responseText);

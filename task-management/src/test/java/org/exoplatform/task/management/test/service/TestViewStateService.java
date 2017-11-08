@@ -23,6 +23,7 @@ import org.exoplatform.commons.api.settings.SettingService;
 import org.exoplatform.commons.api.settings.SettingValue;
 import org.exoplatform.commons.api.settings.data.Context;
 import org.exoplatform.commons.api.settings.data.Scope;
+import org.exoplatform.task.management.model.ViewState;
 import org.exoplatform.task.management.model.ViewType;
 import org.exoplatform.task.management.service.ViewStateService;
 import org.junit.Before;
@@ -43,19 +44,19 @@ public class TestViewStateService {
 
   @Test
   public void testGetDefaultViewType() {
-    ViewType vType = viewStateService.getViewType("root", -1L);
-    assertEquals(vType, ViewType.LIST);
-
-    vType = viewStateService.getViewType("root", 1L);
+    ViewState viewState = viewStateService.getViewState("list@-1@1");
+    ViewType vType = viewState.getViewType();
     assertEquals(vType, ViewType.LIST);
   }
 
   @Test
   public void testSaveAndGetViewType() {
-    viewStateService.saveViewType("root", 1L, ViewType.BOARD);
+    ViewState viewState = viewStateService.getViewState("list@-1@1");
+    viewState.setViewType(ViewType.BOARD);
+    viewStateService.saveViewState(viewState);
 
-    ViewType vType = viewStateService.getViewType("root", 1L);
-    assertEquals(vType, ViewType.BOARD);
+    viewState = viewStateService.getViewState("list@-1@1");
+    assertEquals(ViewType.BOARD, viewState.getViewType());
   }
 
   private class MockSettingService implements SettingService {

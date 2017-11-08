@@ -135,7 +135,7 @@ define('taFilter', ['SHARED/jquery', 'SHARED/selectize'], function($) {
           'labelId': labelId,
           'groupBy': groupBy,
           'orderBy': orderBy,
-          'filter': filter,
+          'dueCategory': filter,
           'viewType': viewType
         };
          

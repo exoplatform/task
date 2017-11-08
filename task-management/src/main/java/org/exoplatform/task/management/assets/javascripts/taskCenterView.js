@@ -107,7 +107,7 @@ define('taskCenterView', ['SHARED/jquery', 'taskManagementApp', 'taFilter', 'SHA
                 keyword: keyword,
                 groupBy: groupBy,
                 orderBy: orderBy,
-                filter: filter,
+                dueCategory: filter,
                 viewType: viewType,
                 page: page
             },
