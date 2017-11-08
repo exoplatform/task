@@ -56,9 +56,7 @@ import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.domain.UserSetting;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.management.model.Paging;
-import org.exoplatform.task.management.model.TaskFilterData;
-import org.exoplatform.task.management.model.TaskFilterData.Filter;
-import org.exoplatform.task.management.model.TaskFilterData.FilterKey;
+import org.exoplatform.task.management.model.ViewState;
 import org.exoplatform.task.management.model.ViewType;
 import org.exoplatform.task.management.service.ViewStateService;
 import org.exoplatform.task.model.GroupKey;
@@ -72,15 +70,16 @@ import org.exoplatform.task.service.UserService;
 import org.exoplatform.task.util.ListUtil;
 import org.exoplatform.task.util.ProjectUtil;
 import org.exoplatform.task.util.TaskUtil;
-import org.exoplatform.task.util.TaskUtil.DUE;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
 public class TaskManagement {
 
+  public static final int MIN_NUMBER_TASK_GROUPABLE = 2;
+
   private static final Log LOG = ExoLogger.getExoLogger(TaskManagement.class);
-  
+
   @Inject
   TaskService taskService;
 
@@ -113,9 +112,6 @@ public class TaskManagement {
   NavigationState navState;
   
   @Inject
-  TaskFilterData filterData;
-
-  @Inject
   ViewStateService viewStateService;
 
   @View
@@ -139,7 +135,6 @@ public class TaskManagement {
     String errorMessage = "";
 
     TaskModel taskModel = null;
-    List<Task> tasks = null;
     Project project = null;
 
     long currProject;
@@ -179,7 +174,7 @@ public class TaskManagement {
       errorMessage = bundle.getString("popup.msg.noPermissionToViewProject");
     }
     
-    //
+    // A permalink of a task
     if (taskId != -1) {
       try {
         taskModel = TaskUtil.getTaskModel(taskId, false, bundle, username, taskService,
@@ -228,11 +223,20 @@ public class TaskManagement {
       }
     }
 
-    FilterKey filterKey = FilterKey.withProject(currProject, null);
-    Filter fd = filterData.getFilter(filterKey);
-    ViewType viewType = viewStateService.getViewType(username, currProject);
+    String listId = ViewState.buildId(currProject, (long) -1, "incoming");
+    ViewState viewState = viewStateService.getViewState(listId);
+    String orderBy = viewState.getOrderBy();
+    if (orderBy == null) {
+      orderBy = TaskUtil.CREATED_TIME;
+    }
+    taskQuery.setOrderBy(Arrays.asList(new OrderBy.DESC(orderBy)));
 
+    String groupBy =  viewState.getGroupBy();
+    if (groupBy == null) {
+      groupBy = TaskUtil.NONE;
+    }
     //
+    ViewState.Filter fd = viewStateService.getFilter(listId);
     if (taskId > 0 && taskModel.getTask().isCompleted()) {
       fd.setEnabled(true);
       fd.setShowCompleted(true);
@@ -241,21 +245,22 @@ public class TaskManagement {
     boolean advanceSearch = fd.isEnabled();
     boolean showCompleted = false;
     String keyword = "";
-    
+
+
     ListAccess<Task> listTasks = null;
     //there are cases that we return empty list of tasks with-out querying to DB
     //1. In spaces, and no space project
+    String currentUser = securityContext.getRemoteUser();
+    TimeZone timezone = userService.getUserTimezone(currentUser);
     if ((spaceProjectIds != null  && spaceProjectIds.isEmpty())) {
       listTasks = TaskUtil.EMPTY_TASK_LIST;
     } else {
       if (advanceSearch) {
         keyword = fd.getKeyword();
         showCompleted = fd.isShowCompleted();
-        String currentUser = securityContext.getRemoteUser();
-        TimeZone timezone = userService.getUserTimezone(currentUser);
         Status status = fd.getStatus() != null ? statusService.getStatus(fd.getStatus()) : null;
         //
-        TaskUtil.buildTaskQuery(taskQuery, fd.getKeyword(), fd.getLabel(), status, fd.getDue(), fd.getPriority(), fd.getAssignee(), fd.isShowCompleted(), timezone);
+        TaskUtil.buildTaskQuery(taskQuery, fd.getKeyword(), fd.getLabel(), status, fd.getDue(), fd.getPriority(), fd.getAssignees(), fd.isShowCompleted(), timezone);
       } else {
         taskQuery.setCompleted(false);
       }
@@ -291,8 +296,18 @@ public class TaskManagement {
     }
     paging.setTotal(ListUtil.getSize(listTasks));
 
+    long countTasks = paging.getTotal();
+    if (countTasks < MIN_NUMBER_TASK_GROUPABLE) {
+      groupBy = TaskUtil.NONE;
+    }
+
     Map<GroupKey, List<Task>> groupTasks = new HashMap<GroupKey, List<Task>>();
-    groupTasks.put(new GroupKey("", null, 0), Arrays.asList(ListUtil.load(listTasks, paging.getStart(), paging.getNumberItemPerPage())));
+    if (countTasks >= MIN_NUMBER_TASK_GROUPABLE && groupBy != null && !groupBy.isEmpty() && !TaskUtil.NONE.equalsIgnoreCase(groupBy)) {
+      groupTasks = TaskUtil.groupTasks(Arrays.asList(ListUtil.load(listTasks, paging.getStart(), paging.getNumberItemPerPage())), groupBy, currentUser, timezone, bundle, taskService, userService);
+    }
+    if (groupTasks.isEmpty()) {
+      groupTasks.put(new GroupKey("", null, 0), Arrays.asList(ListUtil.load(listTasks, paging.getStart(), paging.getNumberItemPerPage())));
+    }
 
     UserSetting setting = userService.getUserSetting(username);
 
@@ -314,6 +329,7 @@ public class TaskManagement {
 
     List<Status> projectStatus = new ArrayList<Status>();
     Map<Long, Integer> numberTasks = new HashMap<Long, Integer>();
+    ViewType viewType = viewState.getViewType();
     if (ViewType.BOARD == viewType && currProject > 0) {
       projectStatus = statusService.getStatuses(currProject);
       for(List<Task> list : groupTasks.values()) {
@@ -337,15 +353,15 @@ public class TaskManagement {
         .groups(defGroupBys)
         .project(project)
         .projectStatuses(projectStatus)
-        .tasks(tasks)
+        .tasks(null)
         .taskNum(taskNum)
         .incomNum(incomNum)
         .groupTasks(groupTasks)
         .keyword(keyword)
         .showCompleted(advanceSearch && showCompleted)
         .advanceSearch(advanceSearch)
-        .groupBy(TaskUtil.NONE)
-        .orderBy("createdTime")
+        .groupBy(groupBy)
+        .orderBy(orderBy)
         .filter("")
         .projects(projects)
         .labels(labels)
@@ -493,11 +509,8 @@ public class TaskManagement {
       taskQuery.setOrderBy(Arrays.asList(order));
     }
 
-    FilterKey filterKey = FilterKey.withProject(projectId, filter == null || filter.isEmpty() ? null : DUE.valueOf(filter.toUpperCase()));
-    if (labelId != null && labelId != -1L) {
-      filterKey = FilterKey.withLabel(labelId);
-    }
-    Filter fd = filterData.getFilter(filterKey);
+    String listId = ViewState.buildId(projectId, labelId, filter == null || filter.isEmpty() ? null : filter.toUpperCase());
+    ViewState.Filter fd = viewStateService.getFilter(listId);
     boolean advanceSearch = fd.isEnabled();
     boolean showCompleted = false;
     String keyword = "";
@@ -508,7 +521,7 @@ public class TaskManagement {
       TimeZone timezone = userService.getUserTimezone(currentUser);
       Status status = fd.getStatus() != null ? statusService.getStatus(fd.getStatus()) : null;
 
-      TaskUtil.buildTaskQuery(taskQuery, fd.getKeyword(), fd.getLabel(), status, fd.getDue(), fd.getPriority(), fd.getAssignee(), fd.isShowCompleted(), timezone);
+      TaskUtil.buildTaskQuery(taskQuery, fd.getKeyword(), fd.getLabel(), status, fd.getDue(), fd.getPriority(), fd.getAssignees(), fd.isShowCompleted(), timezone);
     } else {
       taskQuery.setCompleted(false);
     }

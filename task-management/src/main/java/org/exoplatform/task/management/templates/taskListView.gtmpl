@@ -9,7 +9,7 @@
     import org.exoplatform.task.util.TaskUtil;
     import org.exoplatform.task.util.DateUtil;
     import org.exoplatform.task.util.ListUtil;
-    import org.exoplatform.task.management.controller.TaskController;
+    import org.exoplatform.task.management.controller.TaskManagement;
     import org.exoplatform.task.util.ProjectUtil;
     import org.exoplatform.commons.utils.HTMLEntityEncoder;
     
@@ -25,7 +25,7 @@
             <%}%>
             <% 
             def groupByClass="display:none";
-            if (taskNum >= TaskController.MIN_NUMBER_TASK_GROUPABLE) {
+            if (taskNum >= TaskManagement.MIN_NUMBER_TASK_GROUPABLE) {
               groupByClass = "";
             }%>
             <div class="header-right pull-right groupByOptions" style="${groupByClass}">            

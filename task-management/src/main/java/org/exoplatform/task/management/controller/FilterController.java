@@ -39,15 +39,13 @@ import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.exception.EntityNotFoundException;
-import org.exoplatform.task.management.model.TaskFilterData;
-import org.exoplatform.task.management.model.TaskFilterData.Filter;
-import org.exoplatform.task.management.model.TaskFilterData.FilterKey;
+import org.exoplatform.task.management.model.ViewState;
+import org.exoplatform.task.management.service.ViewStateService;
 import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.StatusService;
 import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.service.UserService;
 import org.exoplatform.task.util.ProjectUtil;
-import org.exoplatform.task.util.TaskUtil.DUE;
 import org.json.JSONException;
 
 public class FilterController {
@@ -70,8 +68,8 @@ public class FilterController {
   ResourceBundle bundle;
   
   @Inject
-  TaskFilterData filterData;
-  
+  ViewStateService viewStateService;
+
   @Inject
   @Path("taskFilter.gtmpl")
   org.exoplatform.task.management.templates.taskFilter taskFilter;
@@ -79,20 +77,17 @@ public class FilterController {
   @Resource
   @Ajax
   @MimeType.HTML
-  public Response toggleFilter(Long projectId, Long labelId, String filter, SecurityContext securityContext) throws JSONException, EntityNotFoundException {
+  public Response toggleFilter(Long projectId, Long labelId, String dueCategory, SecurityContext securityContext) throws JSONException, EntityNotFoundException {
 
-    FilterKey filterKey = FilterKey.withProject(projectId, filter == null || filter.isEmpty() ? null : DUE.valueOf(filter.toUpperCase()));
-    if (labelId != null && labelId != -1L) {
-      filterKey = FilterKey.withLabel(labelId);
-    }
-    Filter fd = filterData.getFilter(filterKey);
+    String listId = ViewState.buildId(projectId, labelId, dueCategory);
+    ViewState.Filter fd = viewStateService.getFilter(listId);
 
     //
     fd.setEnabled(!fd.isEnabled());
+    viewStateService.saveFilter(fd);
 
     //
     if (fd.isEnabled()) {
-      
       //don't allow to filter label when user already select specific label
       boolean filterLabel = labelId == null || labelId <= 0;
       
@@ -102,7 +97,7 @@ public class FilterController {
       if (project != null && !project.canView(ConversationState.getCurrent().getIdentity())) {
         project = null;
       }
-      
+
       List<Status> status = Collections.emptyList();
       if (filterStatus && project != null) {      
         status = statusService.getStatuses(project.getId());
@@ -110,7 +105,7 @@ public class FilterController {
       
       boolean filterAssignee = projectId == null || projectId != ProjectUtil.INCOMING_PROJECT_ID;
       //user already filter by dueDate, we don't need to show the dueDate field anymore
-      boolean filterDueDate = filter == null || filter.isEmpty();
+      boolean filterDueDate = dueCategory == null || dueCategory.isEmpty();
       
       return taskFilter.with().filterData(fd).taskService(taskService).userService(userService).filterLabel(filterLabel).status(status).bundle(bundle)
           .filterStatus(filterStatus).filterAssignee(filterAssignee).filterDueDate(filterDueDate).ok().withCharset(Tools.UTF_8);      
