@@ -31,14 +31,14 @@ import juzu.impl.common.Tools;
 import juzu.request.SecurityContext;
 
 import org.exoplatform.commons.juzu.ajax.Ajax;
+import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.commons.utils.HTMLEntityEncoder;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.organization.OrganizationService;
-import org.exoplatform.services.organization.Query;
-import org.exoplatform.services.organization.User;
-import org.exoplatform.services.organization.UserHandler;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
+import org.exoplatform.social.core.space.model.Space;
+import org.exoplatform.social.core.space.spi.SpaceService;
 import org.exoplatform.task.domain.Label;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.exception.EntityNotFoundException;
@@ -69,15 +69,28 @@ public class UserController extends AbstractController {
     @Resource
     @Ajax
     @MimeType.JSON
-    public Response findUser(String query) throws Exception { // NOSONAR
+    public Response findUser(String query, String projectName) throws Exception { // NOSONAR
       ListAccess<org.exoplatform.task.model.User> list = userService.findUserByName(query);
       JSONArray array = new JSONArray();
       for(org.exoplatform.task.model.User u : list.load(0, UserUtil.SEARCH_LIMIT)) {
-        JSONObject json = new JSONObject();
-        json.put("id", u.getUsername());
-        json.put("text", u.getDisplayName());
-        json.put("avatar", u.getAvatar());
-        array.put(json);
+          JSONObject json = new JSONObject();
+          String username = u.getUsername();
+          SpaceService sService =  CommonsUtils.getService(SpaceService.class);
+          Space space = sService.getSpaceByPrettyName(projectName);
+          if (space != null) {
+              String[] spaceMembers = space.getMembers();
+              if (Arrays.asList(spaceMembers).contains(username) || username == "") {
+                  json.put("id", u.getUsername());
+                  json.put("text", u.getDisplayName());
+                  json.put("avatar", u.getAvatar());
+                  array.put(json);
+              }
+              continue;
+          }
+          json.put("id", u.getUsername());
+          json.put("text", u.getDisplayName());
+          json.put("avatar", u.getAvatar());
+          array.put(json);
       }
       return Response.ok(array.toString());
     }

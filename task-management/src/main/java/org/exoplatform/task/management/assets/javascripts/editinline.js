@@ -393,10 +393,11 @@ define('ta_edit_inline',
             },
             providers: {
               'exo:taskuser': function(query, callback) {
+                var $projectName = $rightPanel.find('.project-name').html();
                 if (!query || !query.length) return callback(defaultOptionValues);
                 $.ajax({
                     url: $rightPanel.jzURL('UserController.findUser'),
-                    data: {query: query},
+                    data: {query: query, projectName: $projectName},
                     type: 'GET',
                     error: function() {
                         callback();
