@@ -66,6 +66,9 @@ public class UserController extends AbstractController {
     @Inject
     private TaskService taskService;
 
+    @Inject
+    private SpaceService sService;
+
     @Resource
     @Ajax
     @MimeType.JSON
@@ -74,12 +77,9 @@ public class UserController extends AbstractController {
       JSONArray array = new JSONArray();
       for(org.exoplatform.task.model.User u : list.load(0, UserUtil.SEARCH_LIMIT)) {
           JSONObject json = new JSONObject();
-          String username = u.getUsername();
-          SpaceService sService =  CommonsUtils.getService(SpaceService.class);
           Space space = sService.getSpaceByPrettyName(projectName);
           if (space != null) {
-              String[] spaceMembers = space.getMembers();
-              if (Arrays.asList(spaceMembers).contains(username) || username == "") {
+              if(sService.isMember(space, u.getUsername())) {
                   json.put("id", u.getUsername());
                   json.put("text", u.getDisplayName());
                   json.put("avatar", u.getAvatar());
