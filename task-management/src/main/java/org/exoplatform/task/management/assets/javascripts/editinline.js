@@ -458,10 +458,12 @@ define('ta_edit_inline',
                 $dropdown.closest('.exo-mentions').removeClass('dropdown-opened');
             },
             load: function(query, callback) {
+
+                var $projectName = $rightPanel.find('.project-name').html();
                 if (!query.length) return callback();
                 $.ajax({
                     url: $rightPanel.jzURL('UserController.findUser'),
-                    data: {query: query},
+                    data: {query: query, projectName: $projectName},
                     type: 'GET',
                     error: function() {
                         callback();
