@@ -22,6 +22,7 @@ package org.exoplatform.task.management.controller;
 import juzu.*;
 import juzu.impl.common.Tools;
 import juzu.request.SecurityContext;
+import org.apache.commons.lang.StringUtils;
 import org.exoplatform.commons.api.settings.SettingService;
 import org.exoplatform.commons.juzu.ajax.Ajax;
 import org.exoplatform.commons.utils.HTMLEntityEncoder;
@@ -512,6 +513,8 @@ public class TaskController extends AbstractController {
     boolean advanceSearch = filter.isEnabled();
     if (advanceSearch) {
       filter.updateFilterData(filterLabelIds, statusId, dueDate, priority, assignee, showCompleted, keyword);
+    } else if (StringUtils.isNotEmpty(keyword)) {
+      filter.setKeyword(keyword);
     }
     viewStateService.saveFilter(filter);
 
@@ -599,6 +602,7 @@ public class TaskController extends AbstractController {
       Status status = filter.getStatus() != null ? statusService.getStatus(filter.getStatus()) : null;
       TaskUtil.buildTaskQuery(taskQuery, filter.getKeyword(), filter.getLabel(), status, filter.getDue(), filter.getPriority(), filter.getAssignees(), filter.isShowCompleted(), userTimezone);
     } else {
+      taskQuery.setKeyword(keyword);
       taskQuery.setCompleted(false);
     }
 
@@ -659,9 +663,6 @@ public class TaskController extends AbstractController {
       taskQuery.setOrderBy(Arrays.asList(order));
 
     } else if (projectId >= 0) {
-      if (!advanceSearch) {
-        taskQuery.setKeyword(keyword);        
-      }
       if (projectId == 0) {
         defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.ASSIGNEE, TaskUtil.PROJECT, TaskUtil.LABEL, TaskUtil.DUEDATE, TaskUtil.STATUS), bundle);
 
