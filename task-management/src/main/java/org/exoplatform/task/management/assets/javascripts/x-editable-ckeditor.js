@@ -17,15 +17,19 @@ define('x_editable_ckeditor', ['SHARED/jquery', 'SHARED/edit_inline_js', 'SHARED
              @method render()
              **/
             render: function() {
-
-                this.$input.ckeditor({
-                    customConfig: '/task-management/assets/org/exoplatform/task/management/assets/ckeditorCustom/config.js'
+                this.$input.first().attr('name', 'TaskDescription');
+                var editor = this.$input.first().ckeditor({
+                  customConfig: '/commons-extension/ckeditorCustom/config.js',
+                  toolbarLocation: 'top',
+                  removePlugins: 'suggester,simpleLink,confighelper',
+                  toolbar: [
+                    ['Styles'],
+                    ['Bold','Italic','Underline'],
+                    ['TextColor'],
+                    ['NumberedList','BulletedList']
+                  ]
                 });
-                var _this = this;
-                CKEDITOR.on('instanceReady', function(e) {
-                    _this.$input.parent().find('> .cke').removeClass('cke');
-                    e.editor.focus();
-                });
+                editor.editor.setData(this.options.scope.innerHTML);
             },
             value2html: function(value, element) {
                 /*var html = '', lines;

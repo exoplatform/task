@@ -13,7 +13,7 @@ $(document).ready(function() {
     var $centerPanelContent = ui.$centerPanelContent;
 
     var initCommentEditor = function() {
-        initCKEditor($rightPanelContent.find('textarea'));
+        initCKEditor($rightPanelContent.find('.commentBox .commentInput textarea'));
     };
 
     var addSubCommentsActions  = function(selectedParentCommentId) {
@@ -40,7 +40,7 @@ $(document).ready(function() {
         $inputContainer.addClass("subCommentBlock");
         $inputContainer.insertAfter($(".commentItem[data-commentid=" + parentCommentId + "], .commentItem[data-parent-comment=" + parentCommentId + "]").last());
         $inputContainer.find(".commentInput").html($('<div>').append($inputContainer.find('textarea').clone()).html());
-        initCKEditor($rightPanelContent.find('textarea'));
+        initCKEditor($rightPanelContent.find('.commentBox .commentInput textarea'));
       });
       $rightPanelContent.find(".subCommentShowAllLink").on("click", function() {
         var parentCommentId = $(this).attr('data-parent-comment');
@@ -59,7 +59,7 @@ $(document).ready(function() {
         $inputContainer.removeClass("subCommentBlock");
         $inputContainer.insertAfter($(".commentItem[data-commentid]").last());
         $inputContainer.find(".commentInput").html($('<div>').append($inputContainer.find('textarea').clone()).html());
-        initCKEditor($rightPanelContent.find('textarea'));
+        initCKEditor($rightPanelContent.find('.commentBox .commentInput textarea'));
         $rightPanelContent.find("form").attr('data-commentid', null);
         $rightPanelContent.find(".parentCommentBlock").addClass("hidden");
       });
@@ -143,7 +143,7 @@ $(document).ready(function() {
             }
         });
 
-        initCKEditor($rightPanelContent.find('textarea'));
+        initCKEditor($rightPanelContent.find('.commentBox .commentInput textarea'));
 
         addSubCommentsActions();
         return false;
@@ -153,7 +153,7 @@ $(document).ready(function() {
         var windowWidth = $(window).width();
         var windowHeight = $(window).height();
 
-        var extraPlugins = 'simpleLink,simpleImage,suggester';
+        var extraPlugins = 'simpleLink,selectImage,suggester';
 
         var MAX_LENGTH = 2000;
 
@@ -211,9 +211,9 @@ $(document).ready(function() {
                         $("#taskCommentButton").prop("disabled", true);
                     }
                     if (pureText.length <= MAX_LENGTH) {
-                        evt.editor.getCommand('simpleImage').enable();
+                        evt.editor.getCommand('selectImage').enable();
                     } else {
-                        evt.editor.getCommand('simpleImage').disable();
+                        evt.editor.getCommand('selectImage').disable();
                     }
                 },
                 key: function( evt) {
@@ -307,7 +307,7 @@ $(document).ready(function() {
         var loadAllComment = $allComments.data('allcomment');
         var taskId = $taskDetail.data('taskid');
         var parentCommentId = $form.attr('data-commentid');
-        var comment = $.trim($form.find('textarea').val());
+        var comment = $.trim($form.find('.commentInput textarea').val());
         if (comment == '') {
             alert('Please fill your comment!');
             return false;

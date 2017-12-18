@@ -90,9 +90,17 @@ define('project-menu', ['SHARED/jquery', 'SHARED/taskLocale', 'ta_edit_inline', 
           });
           
           
-          //CKEDITOR.basePath = '/commons-extension/ckeditor/';
+          CKEDITOR.basePath = '/commons-extension/ckeditor/';
           $dialog.find('textarea').ckeditor({
-            customConfig: '/task-management/assets/org/exoplatform/task/management/assets/ckeditorCustom/config.js'
+            customConfig: '/commons-extension/ckeditorCustom/config.js',
+            removePlugins: 'selectImage,simpleLink,hideBottomToolbar',
+            toolbarLocation: 'top',
+            toolbar: [
+              ['Styles'],
+              ['Bold','Italic','Underline'],
+              ['TextColor'],
+              ['NumberedList','BulletedList']
+            ]
           });
           CKEDITOR.on('instanceReady', function(e) {
             $dialog.find('.cke').removeClass('cke');
