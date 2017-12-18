@@ -11,7 +11,68 @@ $(document).ready(function() {
     var $rightPanel = ui.$rightPanel;
     var $rightPanelContent = ui.$rightPanelContent;
     var $centerPanelContent = ui.$centerPanelContent;
-    
+
+    var initCommentEditor = function() {
+        initCKEditor($rightPanelContent.find('textarea'));
+    };
+
+    var addSubCommentsActions  = function(selectedParentCommentId) {
+      if(selectedParentCommentId) {
+        $('#SubCommentShowAll_' + selectedParentCommentId).hide();
+        $rightPanelContent.find('[data-parent-comment=' + selectedParentCommentId + ']').removeClass('hidden');
+      }
+      $rightPanelContent.find('.replyCommentLink').on("click", function() {
+        var parentCommentId = $(this).closest('.commentItem').attr('data-parent-comment');
+        if(!parentCommentId) {
+          parentCommentId = $(this).closest('.commentItem').attr('data-commentid');
+        }
+        if(!parentCommentId) parentCommentId = "";
+        $(this).closest('#tab-comments').find("form").attr('data-commentid', parentCommentId);
+        $rightPanelContent.find(".parentCommentBlock").removeClass("hidden");
+
+        try {
+          CKEDITOR.instances.comment.destroy();
+        } catch(e) {
+          console.log(e);
+        }
+
+        var $inputContainer = $(".commentList.inputContainer");
+        $inputContainer.addClass("subCommentBlock");
+        $inputContainer.insertAfter($(".commentItem[data-commentid=" + parentCommentId + "], .commentItem[data-parent-comment=" + parentCommentId + "]").last());
+        $inputContainer.find(".commentInput").html($('<div>').append($inputContainer.find('textarea').clone()).html());
+        initCKEditor($rightPanelContent.find('textarea'));
+      });
+      $rightPanelContent.find(".subCommentShowAllLink").on("click", function() {
+        var parentCommentId = $(this).attr('data-parent-comment');
+  
+        $('#SubCommentShowAll_' + parentCommentId).hide();
+        $rightPanelContent.find('[data-parent-comment=' + parentCommentId + ']').removeClass('hidden');
+      });
+
+      $rightPanelContent.find(".parentCommentLink").on("click", function() {
+        try {
+          CKEDITOR.instances.comment.destroy();
+        } catch(e) {
+          console.log(e);
+        }
+        var $inputContainer = $(".commentList.inputContainer");
+        $inputContainer.removeClass("subCommentBlock");
+        $inputContainer.insertAfter($(".commentItem[data-commentid]").last());
+        $inputContainer.find(".commentInput").html($('<div>').append($inputContainer.find('textarea').clone()).html());
+        initCKEditor($rightPanelContent.find('textarea'));
+        $rightPanelContent.find("form").attr('data-commentid', null);
+        $rightPanelContent.find(".parentCommentBlock").addClass("hidden");
+      });
+    };
+
+    var enhanceCommentsLinks = function(commentId) {
+        addSubCommentsActions(commentId);
+        $rightPanelContent.find('.contentComment').each(function(index, ele) {
+            var commentContainer = $(ele);
+            commentContainer.html(taApp.convertURLsAsLinks(commentContainer.html()));
+        });
+    };
+
     pMenu.init(taApp);
     editInline.init(taApp);
     taFilter.init(taApp);
@@ -235,67 +296,6 @@ $(document).ready(function() {
             $edit.addClass('inactive').removeClass('active');
         });
     });
-
-    var initCommentEditor = function() {
-        initCKEditor($rightPanelContent.find('textarea'));
-    };
-
-    var addSubCommentsActions  = function(selectedParentCommentId) {
-      if(selectedParentCommentId) {
-        $('#SubCommentShowAll_' + selectedParentCommentId).hide();
-        $rightPanelContent.find('[data-parent-comment=' + selectedParentCommentId + ']').removeClass('hidden');
-      }
-      $rightPanelContent.find('.replyCommentLink').on("click", function() {
-        var parentCommentId = $(this).closest('.commentItem').attr('data-parent-comment');
-        if(!parentCommentId) {
-          parentCommentId = $(this).closest('.commentItem').attr('data-commentid');
-        }
-        if(!parentCommentId) parentCommentId = "";
-        $(this).closest('#tab-comments').find("form").attr('data-commentid', parentCommentId);
-        $rightPanelContent.find(".parentCommentBlock").removeClass("hidden");
-
-        try {
-          CKEDITOR.instances.comment.destroy();
-        } catch(e) {
-          console.log(e);
-        }
-
-        var $inputContainer = $(".commentList.inputContainer");
-        $inputContainer.addClass("subCommentBlock");
-        $inputContainer.insertAfter($(".commentItem[data-commentid=" + parentCommentId + "], .commentItem[data-parent-comment=" + parentCommentId + "]").last());
-        $inputContainer.find(".commentInput").html($('<div>').append($inputContainer.find('textarea').clone()).html());
-        initCKEditor($rightPanelContent.find('textarea'));
-      });
-      $rightPanelContent.find(".subCommentShowAllLink").on("click", function() {
-        var parentCommentId = $(this).attr('data-parent-comment');
-  
-        $('#SubCommentShowAll_' + parentCommentId).hide();
-        $rightPanelContent.find('[data-parent-comment=' + parentCommentId + ']').removeClass('hidden');
-      });
-
-      $rightPanelContent.find(".parentCommentLink").on("click", function() {
-        try {
-          CKEDITOR.instances.comment.destroy();
-        } catch(e) {
-          console.log(e);
-        }
-        var $inputContainer = $(".commentList.inputContainer");
-        $inputContainer.removeClass("subCommentBlock");
-        $inputContainer.insertAfter($(".commentItem[data-commentid]").last());
-        $inputContainer.find(".commentInput").html($('<div>').append($inputContainer.find('textarea').clone()).html());
-        initCKEditor($rightPanelContent.find('textarea'));
-        $rightPanelContent.find("form").attr('data-commentid', null);
-        $rightPanelContent.find(".parentCommentBlock").addClass("hidden");
-      });
-    };
-
-    var enhanceCommentsLinks = function(commentId) {
-        addSubCommentsActions(commentId);
-        $rightPanelContent.find('.contentComment').each(function(index, ele) {
-            var commentContainer = $(ele);
-            commentContainer.html(taApp.convertURLsAsLinks(commentContainer.html()));
-        });
-    };
 
     $rightPanel.on('submit', '.commentFormBox form', function(e) {
         e.preventDefault();
