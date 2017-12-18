@@ -70,14 +70,14 @@ import java.util.*;
               query = "SELECT DISTINCT p FROM TaskProject p "
                   + " LEFT JOIN p.manager manager "
                   + " LEFT JOIN p.participator participator "
-                  + " WHERE (manager IN :memberships OR participator IN :memberships) AND p.name LIKE :name"
+                  + " WHERE (manager IN (:memberships) OR participator IN (:memberships)) AND p.name LIKE :name"
   ),
   @NamedQuery(
               name = "TaskProject.countProjectsByMembershipsByKeyword",
               query = "SELECT count(p) FROM TaskProject p "
                   + " LEFT JOIN p.manager manager "
                   + " LEFT JOIN p.participator participator "
-                  + " WHERE (manager IN :memberships OR participator IN :memberships) AND p.name LIKE :name"
+                  + " WHERE (manager IN (:memberships) OR participator IN :memberships) AND p.name LIKE :name"
   )
 })
 public class Project {
