@@ -6,10 +6,22 @@
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
 
   <changeSet author="task" id="1.3.0-1">
+    <validCheckSum>7:4c348e911e6945cbcaddc49d8528ff8e</validCheckSum>
     <addColumn tableName="TASK_COMMENTS">
         <column name="PARENT_COMMENT_ID" type="BIGINT" />
     </addColumn>
-    <addForeignKeyConstraint baseColumnNames="PARENT_COMMENT_ID" baseTableName="TASK_COMMENTS" constraintName="FK_TASK_COMMENT_PARENT_COMMENT_ID" deferrable="false" initiallyDeferred="false" deleteCascade="true" onDelete="CASCADE" onUpdate="NO ACTION"  referencedColumnNames="COMMENT_ID" referencedTableName="TASK_COMMENTS" />
+  </changeSet>
+
+  <changeSet author="task" id="1.3.0-2" dbms="mssql">
+    <addForeignKeyConstraint baseColumnNames="PARENT_COMMENT_ID" baseTableName="TASK_COMMENTS" constraintName="FK_TASK_COMMENT_PARENT_CMT_ID" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"  referencedColumnNames="COMMENT_ID" referencedTableName="TASK_COMMENTS" />
+  </changeSet>
+
+  <changeSet author="task" id="1.3.0-3" dbms="mysql,h2,sybase,db2,hsqldb,postgresql" failOnError="false">
+    <dropForeignKeyConstraint baseTableName="TASK_COMMENTS" constraintName="FK_TASK_COMMENT_PARENT_COMMENT_ID" />
+  </changeSet>
+
+  <changeSet author="task" id="1.3.0-4" dbms="mysql,h2,sybase,db2,hsqldb,oracle,postgresql" failOnError="false">
+    <addForeignKeyConstraint baseColumnNames="PARENT_COMMENT_ID" baseTableName="TASK_COMMENTS" constraintName="FK_TASK_COMMENT_PARENT_CMT_ID" deferrable="false" initiallyDeferred="false" deleteCascade="true" onDelete="CASCADE" onUpdate="NO ACTION"  referencedColumnNames="COMMENT_ID" referencedTableName="TASK_COMMENTS" />
   </changeSet>
 
 </databaseChangeLog>
