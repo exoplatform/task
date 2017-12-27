@@ -182,6 +182,9 @@
     <depends>
       <module>suggester</module>
     </depends>
+    <depends>
+      <module>uiMiniCalendar</module>
+    </depends>
 	</module>
 
 
