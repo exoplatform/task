@@ -1,4 +1,4 @@
-(function($) {
+(function($, uiMiniCalendar) {
   var createTaskUrl = '';
     $('#task-add-user').suggester({
       type : 'tag',
@@ -287,19 +287,7 @@
   }
 
   function setMiniCalendarToDateField(dateFieldId) {
-    var dateField = document.getElementById(dateFieldId);
-    dateField.onfocus=function(){
-      uiMiniCalendar.init(this,false,"MM/dd/yyyy","", chatBundleData["exoplatform.chat.monthNames"]);
-    };
-    dateField.onkeyup=function(){
-      uiMiniCalendar.show();
-    };
-    dateField.onkeydown=function(event){
-      uiMiniCalendar.onTabOut(event);
-    };
-    dateField.onclick=function(event){
-      event.cancelBubble = true;
-    };
+      uiMiniCalendar.init(dateFieldId);
   };
   setMiniCalendarToDateField('task-add-date');
 
@@ -323,4 +311,4 @@ return {
     createTaskUrl = url;
   }
 }
-})($);
+})($, uiMiniCalendar);
