@@ -764,6 +764,9 @@ define('ta_edit_inline',
                 $this.on('shown', function (e, editable) {
                     if (editable != undefined) {
                         $this.parent().removeClass('inactive').addClass('active');
+                        $this.data('editable').input.$input.on('blur', function() {
+                            $(document.body).trigger('click');
+                        });
                     }
                 }).on('hidden', function (e, editable) {
                     if (editable != undefined) {
