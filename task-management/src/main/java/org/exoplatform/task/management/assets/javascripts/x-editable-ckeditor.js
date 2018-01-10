@@ -27,7 +27,12 @@ define('x_editable_ckeditor', ['SHARED/jquery', 'SHARED/edit_inline_js', 'SHARED
                     ['Bold','Italic','Underline'],
                     ['TextColor'],
                     ['NumberedList','BulletedList']
-                  ]
+                  ],
+                  on: {
+                      blur: function () {
+                          $(document.body).trigger('click');
+                      }
+                  }
                 });
                 editor.editor.setData(this.options.scope.innerHTML);
             },
