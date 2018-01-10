@@ -104,16 +104,17 @@ public class TestViewStateService {
     }
 
     @Override
-    public Set<String> getEmptyContextsByScopeAndContextType(String contextType,
-                                                             String scopeType,
-                                                             String scopeName,
-                                                             int offset,
-                                                             int limit) {
-      return null;
+    public void save(Context context) {
     }
 
     @Override
-    public void save(Context context) {
+    public Set<String> getEmptyContextsByTypeAndScopeAndSettingName(String contextType,
+                                                                    String scopeType,
+                                                                    String scopeName,
+                                                                    String settingName,
+                                                                    int offset,
+                                                                    int limit) {
+      return null;
     }
   }
 }
