@@ -764,7 +764,7 @@ li[data-hiddenlabel="false"] {
 //share project
 
 
-.sharePrjDialog ,.modal8{
+.modal8{
     width: 800px;
     margin-left: -400px;
     .exo-mentions .autocomplete-menu {
@@ -773,6 +773,11 @@ li[data-hiddenlabel="false"] {
 }
 
 .sharePrjDialog {
+    width: 950px;
+    margin-left: -425px;
+    .savePermission {
+      margin-left: 5px;
+    }
     .table td {
         padding-top: 12px;
         padding-bottom: 12px;
@@ -785,16 +790,24 @@ li[data-hiddenlabel="false"] {
     }
 }
 .permission-owner {
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
     .replaceTextArea {
+        flex-grow: 1;
         float: left;
         height: auto;
         vertical-align: top;
-        width: 60%;
+        width: 0;
         padding:5px;
-         margin-right: 5px;
-         min-height: 26px;
+        margin-right: 5px;
+        min-height: 26px;
         &.open {
             overflow: visible;
+        }
+        @media(max-width: 1024px) {
+            width: 100%;
+            margin-bottom: 5px;
         }
     }
 }
