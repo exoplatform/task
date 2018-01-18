@@ -44,9 +44,9 @@
                         <%= TaskUtil.getPeriod(comment.getCreatedTime().getTime(), bundle)%>
                      </span>
                 </div>
-                <p class="contentComment">
+                <span class="contentComment">
                     ${comment.formattedComment}
-                </p>
+                </span>
                 <p>
                     <a href="javascript:void(0)" class="replyCommentLink">&{comment.message.Reply}</a>
                 </p>
