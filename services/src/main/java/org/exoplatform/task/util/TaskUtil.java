@@ -776,7 +776,7 @@ public final class TaskUtil {
           event.setPriority(Event.PRIORITY_NONE);
       }   
     }    
-    event.setSummary(encodeCalendarString(task.getTitle()));
+    event.setSummary(task.getTitle());
     String assignee = task.getAssignee();
     if (assignee != null) {
       assignee = encoder.encode(assignee);
@@ -785,29 +785,6 @@ public final class TaskUtil {
     return event;
   }
 
-  public static String encodeCalendarString(String s) {
-    StringBuffer buffer = new StringBuffer();
-    if(s != null) {
-      s = s.replaceAll("(<p>((\\&nbsp;)*)(\\s*)?</p>)|(<p>((\\&nbsp;)*)?(\\s*)</p>)", "<br/>").trim();
-      s = s.replaceFirst("(<br/>)*", "");
-      s = s.replaceAll("(\\w|\\$)(>?,?\\.?\\*?\\!?\\&?\\%?\\]?\\)?\\}?)(<br/><br/>)*", "$1$2");
-      s.replaceAll("&", "&amp;").replaceAll("'", "&apos;");
-      for (int j = 0; j < s.trim().length(); j++) {
-        char c = s.charAt(j);
-        if(c == 60){
-          buffer.append("&lt;") ;
-        } else if(c == 62){
-          buffer.append("&gt;") ;
-        } else if(c == '\''){
-          buffer.append("&#39") ;
-        } else {
-          buffer.append(c) ;
-        }
-      }
-    }
-    return buffer.toString();
-  }
-  
   public static List<Label> buildRootLabels(List<Label> labels) {
     if (labels == null) return labels;
 
