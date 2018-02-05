@@ -27,12 +27,17 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.mock;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
+import java.util.*;
 
+import org.exoplatform.calendar.model.Event;
+import org.exoplatform.calendar.storage.EventDAO;
+import org.exoplatform.services.idgenerator.IDGeneratorService;
+import org.exoplatform.services.jcr.util.IdGenerator;
+import org.exoplatform.task.domain.Project;
+import org.exoplatform.task.domain.Status;
+import org.exoplatform.task.util.ProjectUtil;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -88,6 +93,10 @@ public class TaskUtilsTest {
   private DAOHandler daoHandler;
   @Mock
   private UserService userService;
+  @Mock
+  IdGenerator idGenerator;
+  @Mock
+  private IDGeneratorService idGeneratorService;
 
   //ArgumentCaptors are how you can retrieve objects that were passed into a method call
   @Captor
@@ -117,13 +126,14 @@ public class TaskUtilsTest {
     when(labelHandler.findLabelsByTask(anyLong(), any())).thenReturn(null);
     when(statusHandler.find(TestUtils.EXISTING_STATUS_ID)).thenReturn(TestUtils.getDefaultStatus());
     when(commentHandler.find(TestUtils.EXISTING_COMMENT_ID)).thenReturn(TestUtils.getDefaultComment());
-
-    when(userService.loadUser(any())).thenAnswer(new Answer<User>() {
-      @Override
-      public User answer(InvocationOnMock invocation) throws Throwable {
-        return new User(invocation.getArguments()[0].toString(), null, null, null, null, null, null);
-      }
-    });
+    IdGenerator idGenerator = new IdGenerator(idGeneratorService);
+    when(idGeneratorService.generateStringID(any(String.class))).thenReturn(Long.toString(System.currentTimeMillis()));
+            when(userService.loadUser(any())).thenAnswer(new Answer<User>() {
+              @Override
+              public User answer(InvocationOnMock invocation) throws Throwable {
+                return new User(invocation.getArguments()[0].toString(), null, null, null, null, null, null);
+              }
+            });
 
     Identity root = new Identity("root");
     ConversationState.setCurrent(new ConversationState(root));
@@ -190,6 +200,28 @@ public class TaskUtilsTest {
     assertEquals(subComment.getId(), subCommentModel.getId());
     assertEquals(authorSubComment, subCommentModel.getAuthor().getUsername());
     assertEquals(subCommentContent, subCommentModel.getComment());
+  }
+
+  @Test
+  public void testTaskEvent() throws Exception {
+
+    Task task = TestUtils.getDefaultTask();
+    task.setStartDate(new Date());
+    task.setEndDate(new Date());
+    Status status = TestUtils.getDefaultStatus();
+    Project project = TestUtils.getDefaultProject();
+    Event event = new Event();
+    TaskUtil.buildEvent(event,task);
+
+    Assert.assertEquals(String.valueOf(ProjectUtil.TODO_PROJECT_ID), event.getCalendarId());
+
+    status.setProject(project);
+    task.setStatus(status);
+    TaskUtil.buildEvent(event,task);
+    Assert.assertEquals(task.getStatus().getProject().getId(),Long.parseLong(event.getCalendarId()));
+    Assert.assertEquals(task.getTitle(), event.getSummary());
+    Assert.assertEquals(task.getDescription(), event.getDescription());
+    status.setProject(project);
   }
 
 }
