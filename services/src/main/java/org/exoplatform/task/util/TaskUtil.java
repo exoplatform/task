@@ -807,7 +807,7 @@ public final class TaskUtil {
           event.setPriority(Event.PRIORITY_NONE);
       }   
     }    
-    event.setSummary(encoder.encode(task.getTitle()));
+    event.setSummary(task.getTitle());
     String assignee = task.getAssignee();
     if (assignee != null) {
       assignee = encoder.encode(assignee);
