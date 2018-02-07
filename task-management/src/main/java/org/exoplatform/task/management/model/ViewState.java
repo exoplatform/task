@@ -23,7 +23,7 @@ public class ViewState {
   public static String buildId(Long projectId, Long labelId, String filter) {
     StringBuilder sBuilder = new StringBuilder();
 
-    if (labelId > 0) {
+    if (labelId != null && labelId > 0) {
       sBuilder.append("label@").append(labelId);
     } else if (projectId > 0) {
       sBuilder.append("project@").append(projectId);
