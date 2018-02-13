@@ -660,6 +660,41 @@ li[data-hiddenlabel="false"] {
                 }
             }
         }
+        @media(max-width: 767px) {
+            .inforBar1, .inforBar2 {
+                .popover {
+                    left: 0!important;
+                    .arrow {
+                        display: none;
+                    }
+                }
+            }
+            .inforBar1 .popover-content .header {
+                display: none;
+            }
+            .inforBar2 {
+                .rangeCalendar-container {
+                    min-width: auto;
+                    .choose-time {
+                        display: flex;
+                        flex-direction: column;
+                        > div {
+                            width: 100%;
+                            margin-top: 10px;
+                            &:nth-child(2) {
+                                order: -1;
+                            }
+                        }
+                        .form-dropdown {
+                            margin: 0;
+                        }
+                        &.all-day .timeSelector {
+                            display: none;
+                        }
+                    }
+                }
+            }
+        }
     } 
     .taskAssignment .contBlock .exo-mentions .replaceTextArea {
         span {
@@ -1110,8 +1145,13 @@ li[data-hiddenlabel="false"] {
     }
 }
 
-.rangeCalendar-container{
+.rangeCalendar-container {
     min-width: 470px;
+    strong {
+        text-transform: capitalize;
+        display: block;
+        margin-bottom: 5px;
+    }
 }
 
 .title-container{
