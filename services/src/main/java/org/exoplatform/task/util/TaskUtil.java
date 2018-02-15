@@ -923,7 +923,7 @@ public final class TaskUtil {
         }
 
         try {
-          SimpleDateFormat wpf = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+          SimpleDateFormat wpf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
           wpf.setTimeZone(timezone);
           Date startDate = wpf.parse(values[0]);
           Date endDate = wpf.parse(values[1]);
