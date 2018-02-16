@@ -95,7 +95,8 @@
             type : "type-task",
             username : selectedUsers,
             dueDate : dueDate,
-            task : task
+            task : task,
+            url : response.url
           };
           var msg = task;
 
@@ -216,6 +217,7 @@
                 "type" : "type-task",
                 "username" : response.assignee,
                 "task" : response.title,
+                "url" : response.url,
                 "dueDate" : response.dueDate
               };
 
@@ -249,7 +251,11 @@
     "messageBeautifier" : function(objMessage, options) {
       if (options.type === "type-task") {
         var out = "";
-        out += "<b>" + options.task + "</b>";
+        if (options.url) {
+          out += "<b><a href='" + options.url + "' target='_blank'>" + options.task + "</a></b>";
+        } else {
+          out += "<b>" + options.task + "</b>";
+        }
         out += "<div class='msTimeEvent'>";
         out += "  <div>";
         out += "    <i class='uiIconChatAssign uiIconChatLightGray mgR10'></i><span class='muted'>"
