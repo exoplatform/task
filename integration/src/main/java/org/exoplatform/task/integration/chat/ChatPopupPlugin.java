@@ -65,6 +65,8 @@ import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.service.UserService;
 import org.exoplatform.task.util.ProjectUtil;
 import org.exoplatform.task.util.StringUtil;
+import org.exoplatform.task.util.TaskUtil;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -176,7 +178,7 @@ public class ChatPopupPlugin extends BaseUIPlugin {
         task.setCreatedBy(creator);
         task.setCreatedTime(new Date());
         task.setStatus(status);
-        taskService.createTask(task);
+        task = taskService.createTask(task);
         jTasks.add(buildJSON(task));
       }
       return new Response(jTasks.toJSONString().getBytes(), MediaType.APPLICATION_JSON);
@@ -200,6 +202,7 @@ public class ChatPopupPlugin extends BaseUIPlugin {
   private JSONObject buildJSON(Task task) {
     JSONObject json = new JSONObject();
     json.put("title", task.getTitle());
+    json.put("url", TaskUtil.buildTaskURL(task));
     if (task.getAssignee() != null) {
       User user = userService.loadUser(task.getAssignee());
       if (user != null) {
