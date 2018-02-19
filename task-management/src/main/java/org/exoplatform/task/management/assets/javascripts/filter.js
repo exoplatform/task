@@ -8,7 +8,7 @@ define('taFilter', ['SHARED/jquery', 'SHARED/selectize'], function($) {
         var $centerContent = ui.$centerPanelContent;
 
         $centerContent.off('click.toggleFilter').on('click.toggleFilter', '.toggleFilter', function(e) {
-          var $icon = $(e.target).find('.uiIconFilter');
+          var $icon = $(this).find('.uiIconFilter');
           var $rightContent = ui.$rightPanelContent; 
 
           $rightContent.jzAjax('FilterController.toggleFilter()', {
@@ -18,7 +18,7 @@ define('taFilter', ['SHARED/jquery', 'SHARED/selectize'], function($) {
               $rightContent.html(response);
 
               if ($rightContent.find('.taskFilter').length) {
-                $icon.addClass('uiIconBlue');                
+                $icon.addClass('uiIconBlue');
                 taApp.showRightPanel(ui.$centerPanel, ui.$rightPanel);
                 taFilter.initSearchForm();
                 taFilter.submitFilter();
