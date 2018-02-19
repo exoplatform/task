@@ -199,6 +199,9 @@
     <depends>
       <module>suggester</module>
     </depends>
+    <depends>
+      <module>bootbox</module>
+    </depends>
 	</module>
 
 

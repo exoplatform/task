@@ -50,12 +50,12 @@
     }
 
     // Validate empty
-    if (task === $("#task-add-task").attr("data-value") || task === "" || dueDate === "") {
+    if (task === $("#task-add-task").attr("data-value") || task === "") {
       return;
     }
 
     // Validate datetime
-    if (!uiMiniCalendar.isDate(dueDate)) {
+    if (dueDate && !uiMiniCalendar.isDate(dueDate)) {
       bootbox
         .alertError(
           chatBundleData["exoplatform.chat.date.invalid.message"],
@@ -248,18 +248,26 @@
     },
     "messageBeautifier" : function(objMessage, options) {
       if (options.type === "type-task") {
+        var assignee = options.username;
+        if(!assignee) {
+          assignee = chatBundleData["exoplatform.chat.assign.to.none"];
+        }
+        var dueDate = options.dueDate;
+        if(!dueDate) {
+          dueDate = chatBundleData["exoplatform.chat.due.date.none"];
+        }
         var out = "";
         out += "<b>" + options.task + "</b>";
         out += "<div class='msTimeEvent'>";
         out += "  <div>";
         out += "    <i class='uiIconChatAssign uiIconChatLightGray mgR10'></i><span class='muted'>"
           + chatBundleData["exoplatform.chat.assign.to"]
-          + ": </span>" + options.username;
+          + ": </span><b>" + assignee + "</b>";
         out += "  </div>";
         out += "  <div>";
         out += "    <i class='uiIconChatClock uiIconChatLightGray mgR10'></i><span class='muted'>"
           + chatBundleData["exoplatform.chat.due.date"]
-          + ":</span> <b>" + options.dueDate + "</b>";
+          + ": </span><b>" + dueDate + "</b>";
         out += "  </div>";
         out += "</div>";
         return out;
