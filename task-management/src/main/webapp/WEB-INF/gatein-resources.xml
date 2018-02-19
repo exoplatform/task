@@ -187,6 +187,9 @@
     <depends>
       <module>uiMiniCalendar</module>
     </depends>
+    <depends>
+      <module>bootbox</module>
+    </depends>
 	</module>
 
 
