@@ -18,6 +18,7 @@ define('x_editable_ckeditor', ['SHARED/jquery', 'SHARED/edit_inline_js', 'SHARED
              **/
             render: function() {
                 this.$input.first().attr('name', 'TaskDescription');
+                var element = this.options.scope; 
                 var editor = this.$input.first().ckeditor({
                   customConfig: '/commons-extension/ckeditorCustom/config.js',
                   toolbarLocation: 'top',
@@ -31,10 +32,15 @@ define('x_editable_ckeditor', ['SHARED/jquery', 'SHARED/edit_inline_js', 'SHARED
                   on: {
                       blur: function () {
                           $(document.body).trigger('click');
+                      },
+                      instanceReady: function (evt) {
+                        if (!$(element).hasClass('muted')) {
+                            editor.editor.setData(element.innerHTML);
+                        }
+                        
                       }
                   }
                 });
-                editor.editor.setData(this.options.scope.innerHTML);
             },
             value2html: function(value, element) {
                 /*var html = '', lines;
