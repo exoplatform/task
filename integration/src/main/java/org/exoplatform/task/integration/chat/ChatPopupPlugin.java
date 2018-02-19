@@ -154,6 +154,7 @@ public class ChatPopupPlugin extends BaseUIPlugin {
     String actionName = context.getName();
     String creator = ConversationState.getCurrent().getIdentity().getUserId();
     String taskInput = getParam("text", params);
+    String dueDateInput = getParam("dueDate", params);
 
     Status status = getStatus(params);
         
@@ -162,12 +163,14 @@ public class ChatPopupPlugin extends BaseUIPlugin {
       username = StringUtils.isEmpty(username) ? creator : username;
 
       sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm");
-      Date dueDate = new Date();
-      try {
-        dueDate = sdf.parse(getParam("dueDate", params) + " 23:59");
-      } catch (Exception ex) {
-        log.error(ex.getMessage(), ex);
-      }      
+      Date dueDate = null;
+      if(StringUtils.isNotBlank(dueDateInput)) {
+        try {
+          dueDate = sdf.parse(dueDateInput + " 23:59");
+        } catch (Exception ex) {
+          log.error("Cannot parse due date " + dueDateInput + " : " + ex.getMessage(), ex);
+        }
+      }
 
       JSONArray jTasks = new JSONArray();
       for (String name : username.split(",")) {
