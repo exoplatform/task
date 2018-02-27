@@ -91,12 +91,13 @@
         },
         success : function(response) {
 
+          var url = response.url ? response.url : ((response.length && response.length == 1 && response[0].url) ? response[0].url : null);
           var options = {
             type : "type-task",
             username : selectedUsers,
             dueDate : dueDate,
             task : task,
-            url : response.url
+            url : url
           };
           var msg = task;
 
