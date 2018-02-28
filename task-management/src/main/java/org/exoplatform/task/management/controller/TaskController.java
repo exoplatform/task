@@ -843,8 +843,7 @@ public class TaskController extends AbstractController {
         throw new EntityNotFoundException(projectId, Project.class);
       }
       task.setStatus(status);
-      //taskService.createTask(task);
-      //projectService.createTaskToProjectId(projectId, task);
+      task.setCalendarIntegrated(project.isCalendarIntegrated());
     } else if (labelId == null || labelId < 0) {
       task.setAssignee(currentUser);
       
