@@ -204,12 +204,10 @@ $(document).ready(function() {
                 change: function( evt) {
                     var newData = evt.editor.getData();
                     var pureText = newData? newData.replace(/<[^>]*>/g, "").replace(/&nbsp;/g,"").trim() : "";
+                    var disabledBtn = ( pureText.length == 0 && newData.indexOf("data-plugin-name=\"selectImage\"") < 0 ) || pureText.length > MAX_LENGTH;
 
-                    if (pureText.length > 0 && pureText.length <= MAX_LENGTH) {
-                        $("#taskCommentButton").removeAttr("disabled");
-                    } else {
-                        $("#taskCommentButton").prop("disabled", true);
-                    }
+                    $("#taskCommentButton").prop("disabled", disabledBtn);
+                  
                     if (pureText.length <= MAX_LENGTH) {
                         evt.editor.getCommand('selectImage').enable();
                     } else {
