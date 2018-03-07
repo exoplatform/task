@@ -1,5 +1,6 @@
 @import "_mixins.less";
-@sansFontFamily:        "Helvetica Neue", Helvetica, Arial, sans-serif;
+@sansFontFamily: "Helvetica Neue", Helvetica, Arial, sans-serif;
+@images-path: "/eXoSkin/skin/images/themes/default";
 
 /* Reset*/
 body {
@@ -1610,4 +1611,260 @@ li[data-hiddenlabel="false"] {
       }
     }
   }
+}
+
+// Select image from existing sources PopUP
+#UIPopupComposer {
+    .PopupContent {
+        padding: 0;
+        .uiActionBorder {
+            margin: 0;
+            padding: 15px;
+        }
+
+        .uiAction {
+            padding-top: 5px;
+            margin: 0;
+        }
+
+        .limitMessage {
+            text-align: left;
+            line-height: 30px;
+            color: #555;
+        }
+    }
+
+    .popupHeader {
+        padding: 12px 10px 12px 15px;
+        .uiIconClose {
+            top: 12px;
+        }
+    }
+}
+
+#UIDocumentSelectorTab {
+    .breadcrumbContainer {
+        display: inline-block;
+        padding: 5px 20px;
+        border-bottom: 1px #ccc solid;
+        box-sizing: border-box;
+        line-height: 33px;
+        width: 100%;
+        .breadcrumb {
+            margin: 6px 0;
+            display: flex;
+            .backBTN {
+                display: none;
+            }
+
+            > li {
+                height: 21px;
+                max-width: 100px;
+                display: flex;
+                a {
+                    float: initial;
+                }
+            }
+
+            .uiIconMiniArrowRight {
+                margin: 7px 5px 5px 5px;
+            }
+
+            .active {
+                color: #2f5e92;
+                max-width: 100px;
+            }
+        }
+
+        .searchBox {
+            width: 150px;
+            position: relative;
+            > input {
+                width: 100%;
+                margin: 0;
+                padding: 0 0 0 6px;
+            }
+
+            > a {
+                position: absolute;
+                right: 5px;
+                top: 4px;
+            }
+        }
+    }
+
+    .selectionBox {
+        height: 350px;
+        max-height: 350px;
+        overflow: auto;
+        padding: 5px;
+        background-position-y: -50px;
+        background-size: 100%;
+        background-repeat: no-repeat;
+
+        h4 {
+            margin-left: 20px;
+        }
+
+        .driveData , .folderSelection , .fileSelection {
+            display: inline-table;
+            text-align: center;
+            border: 1px transparent solid;
+        }
+
+        .folderSelection , .fileSelection {
+            margin: 5px;
+            width: 95px;
+            padding: 0;
+        }
+
+        .driveData {
+            margin: 0 5px;
+            width: 114px;
+            padding: 20px;
+        }
+
+        .center {
+            margin: auto;
+            padding: 2px;
+            text-align: center;
+            word-break: normal;
+        }
+
+        .selectionLabel {
+            padding-top: 2px;
+            display: block;
+            padding: 0;
+            color: #000;
+        }
+
+        .folderSelection .selectionIcon {
+            padding-bottom: 2px;
+            font-size: 55px;
+        }
+
+        .driveData .selectionIcon {
+            padding-bottom: 2px;
+            font-size: 55px;
+        }
+
+        .fileSelection .selectionIcon {
+            display: inline-block;
+            height: 55px;
+            width: 55px;
+            margin-top: 2px;
+            background-size: 100%;
+            background-repeat: no-repeat;
+        }
+
+        .fileSelection.selected {
+            border: 1px #2f5e92 solid;
+            background-repeat: no-repeat;
+            background-position-x: 102%;
+            background-position-y: -2px;
+            background-image: url("@{images-path}/social/skin/Activity/selectedDocument.gif");
+        }
+
+        .truncate {
+            max-width: 90px;
+            width: 90px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    }
+    .emptyFolder, .emptyResults {
+        margin: auto 0;
+        line-height: 50px;
+        display: block;
+        text-align: center;
+        vertical-align: middle;
+        font-size: 1.5em;
+        color: black;
+        white-space: pre-line;
+        display: none;
+        background-position-x: 50%;
+        background-repeat: no-repeat;
+        margin-top: 15%;
+        padding-top: 45px;
+    }
+
+    .emptyFolder {
+        background-image: url("@{images-path}/social/skin/Activity/emptyfolder.png");
+    }
+
+    .emptyResults {
+        background-image: url("@{images-path}/social/skin/Activity/noresult.png");
+    }
+
+    .fileAlreadySelected {
+        position: absolute;
+        width: 75%;
+        opacity: 0.9;
+    }
+}
+
+.uiBgd64x64FileDefault {
+    background-image: url("@{images-path}/Icons/TypeIcons/EmailNotificationIcons/uiIcon64x64FileDefault.png");
+}
+.uiBgd64x64imagepng {
+    background-image: url("@{images-path}/Icons/TypeIcons/EmailNotificationIcons/uiIcon64x64FilePng.png");
+}
+.uiBgd64x64imagejpeg {
+    background-image: url("@{images-path}/Icons/TypeIcons/EmailNotificationIcons/uiIcon64x64FileJpg.png");
+}
+.uiBgd64x64imagegif {
+    background-image: url("@{images-path}/Icons/TypeIcons/EmailNotificationIcons/uiIcon64x64FileGif.png");
+}
+
+@media (max-width: 480px) {
+    #UIPopupComposer .PopupContent {
+        .uiAction {
+            clear: both;
+            width: 100%;
+        }
+
+        .limitMessage {
+            display: none;
+        }
+    }
+
+    #UIPopupComposer .PopupContent .uiAction button {
+        display: block;
+    }
+
+    #UIDocumentSelectorTab .selectionBox {
+        height: 50vh;
+        max-height: 50vh;
+        .driveData {
+            width: 90px;
+        }
+    }
+
+    #UIDocumentSelectorTab .breadcrumbContainer {
+        .breadcrumb {
+            .normal {
+                display: none;
+            }
+
+            .backBTN {
+                display: inline-block;
+                padding-top: 2px;
+                padding-right: 5px;
+            }
+
+            .uiIconMiniArrowRight {
+                display: none;
+            }
+        }
+
+        .searchBox {
+            clear: both;
+            width: 100%;
+            text-align: center;
+            > input {
+                width: 98%;
+            }
+        }
+    }
 }
