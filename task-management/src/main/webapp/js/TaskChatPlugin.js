@@ -103,9 +103,10 @@
 
           chatApplication.chatRoom.sendMessage(msg,
             options, "true");
+
+          $('#task-add-user').suggester('setValue', '');
           setActionButtonEnabled('.create-task-button',
             true);
-
         },
         error : function(xhr, status, error) {
           console.log("error");
