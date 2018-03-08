@@ -50,7 +50,7 @@ public class SpacePropertiesPlugin extends AbstractContextualPropertyProviderPlu
     @Override
     public void getProperties(UIPortlet portletWindow, Map<QName, String[]> properties) {
         try {
-            Space space = getSpace();
+            Space space = SpaceUtils.getSpaceByContext();
 
             if (space != null) {
               addProperty(properties, spaceIdQName, space.getId());
@@ -59,29 +59,5 @@ public class SpacePropertiesPlugin extends AbstractContextualPropertyProviderPlu
         } catch (Exception ex) {
             log.error("Could not obtain contextual properties for portlet " + portletWindow, ex);
         }
-    }
-
-    private Space getSpace() {
-      PortalRequestContext pContext = Util.getPortalRequestContext();
-      if (!pContext.getSiteType().equals(SiteType.GROUP) ||
-          !pContext.getSiteName().startsWith(SpaceUtils.SPACE_GROUP)) {
-        return null;
-      }
-
-      String requestPath = pContext.getControllerContext().getParameter(RequestNavigationData.REQUEST_PATH);
-
-      ExoRouter.Route er = ExoRouter.route(requestPath);
-
-      if (er != null && er.localArgs != null) {
-        String spacePrettyName = er.localArgs.get("spacePrettyName");
-        SpaceService sService = (SpaceService) PortalContainer.getInstance().getComponentInstanceOfType(SpaceService.class);
-
-        if (spacePrettyName != null && !spacePrettyName.isEmpty()) {
-          Space space = sService.getSpaceByPrettyName(spacePrettyName);
-          return space;
-        }
-      }
-
-      return null;
     }
 }
