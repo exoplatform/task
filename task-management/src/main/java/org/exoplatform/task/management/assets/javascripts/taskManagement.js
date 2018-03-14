@@ -285,7 +285,7 @@ define('taskManagementApp', ['SHARED/jquery', 'SHARED/taskLocale', 'SHARED/juzu-
          * @returns {string}
          */
         taApp.convertURLsAsLinks = function(text) {
-            return text.replace(/((((https?|ftp|file):\/\/)|www\.)[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])/ig,
+            return text.replace(/(?<!(href|src)=\")((((https?|ftp|file):\/\/)|www\.)[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])/ig,
               function(url){
                   var value = url;
                   if(url.indexOf('www.') == 0) {
