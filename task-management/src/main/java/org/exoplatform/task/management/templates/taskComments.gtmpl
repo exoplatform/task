@@ -44,7 +44,7 @@
                         <%= TaskUtil.getPeriod(comment.getCreatedTime().getTime(), bundle)%>
                      </span>
                 </div>
-                <span class="contentComment">
+                <span class="contentComment clearfix">
                     ${comment.formattedComment}
                 </span>
                 <p>

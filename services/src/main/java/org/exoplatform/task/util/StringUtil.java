@@ -40,7 +40,7 @@ public class StringUtil {
   public static final  Pattern FUZZY = Pattern.compile(".[~][0]([\\.][0-9])");
   
   private static final PolicyFactory htmlPolicy = new HtmlPolicyBuilder().allowCommonInlineFormattingElements()
-      .allowElements("cite", "q", "pre").allowWithoutAttributes("span").allowAttributes("class").onElements("div", "p", "span", "a", "pre").toFactory()
+      .allowElements("cite", "q", "pre", "img", "p").allowWithoutAttributes("span").allowAttributes("class").onElements("div", "p", "span", "a", "pre", "img").toFactory()
       .and(Sanitizers.LINKS).and(Sanitizers.BLOCKS).and(Sanitizers.IMAGES).and(Sanitizers.STYLES).and(Sanitizers.TABLES);
   
   public static String highlight(String text, String keyword, String before, String after) {
