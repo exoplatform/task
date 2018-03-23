@@ -285,14 +285,19 @@ define('taskManagementApp', ['SHARED/jquery', 'SHARED/taskLocale', 'SHARED/juzu-
          * @returns {string}
          */
         taApp.convertURLsAsLinks = function(text) {
-            return text.replace(/(?<!(href|src)=\")((((https?|ftp|file):\/\/)|www\.)[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])/ig,
-              function(url){
-                  var value = url;
-                  if(url.indexOf('www.') == 0) {
-                      url = 'http://' + url;
-                  }
-                  return '<a href="' + url + '" target="_blank">' + value + '</a>';
-              });
+            return text.replace(/((?:href|src)=\")?((((https?|ftp|file):\/\/)|www\.)[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])/ig,
+                function(matchedText, hrefOrSrc){
+                    // the second group of the regex captures the html attribute 'html' or 'src',
+                    // so if it exists it means that it is already an html link or an image and it should not be converted
+                    if(hrefOrSrc) {
+                        return matchedText;
+                    }
+                    var url = matchedText;
+                    if(url.indexOf('www.') == 0) {
+                        url = 'http://' + url;
+                    }
+                    return '<a href="' + url + '" target="_blank">' + matchedText + '</a>';
+                });
         };
 
         return taApp;
