@@ -24,7 +24,7 @@
   <parent>
     <artifactId>addons-parent-pom</artifactId>
     <groupId>org.exoplatform.addons</groupId>
-    <version>8-RC01</version>
+    <version>9-SNAPSHOT</version>
   </parent>
   <groupId>org.exoplatform.addons.task</groupId>
   <artifactId>task-management-parent</artifactId>
