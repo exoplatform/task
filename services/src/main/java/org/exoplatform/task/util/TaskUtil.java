@@ -749,6 +749,9 @@ public final class TaskUtil {
       event.setCalendarId(String.valueOf(task.getStatus().getProject().getId()));
       //TODO: how to process localization for status name when build calendar event
       event.setEventState(encoder.encode(task.getStatus().getName()));
+    } else {
+      //usage of default task calendar when no status is set
+      event.setCalendarId(String.valueOf(ProjectUtil.TODO_PROJECT_ID));
     }
     event.setDescription(task.getDescription());
     event.setEventCategoryId(NewUserListener.DEFAULT_EVENTCATEGORY_ID_ALL);
