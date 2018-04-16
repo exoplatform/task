@@ -18,6 +18,7 @@ package org.exoplatform.task.dao;
 
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.container.PortalContainer;
+import org.exoplatform.portal.config.UserACL;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.task.AbstractTest;
@@ -43,6 +44,7 @@ import java.util.*;
 public class TestTaskDAO extends AbstractTest {
 
   private TaskHandler tDAO;
+  private CommentHandler cDAO;
   private DAOHandler daoHandler;
   private TaskParser parser = new TaskParserImpl();
   private ParserContext context = new ParserContext(TimeZone.getDefault());
@@ -56,6 +58,7 @@ public class TestTaskDAO extends AbstractTest {
     
     daoHandler = (DAOHandler) container.getComponentInstanceOfType(DAOHandler.class);
     tDAO = daoHandler.getTaskHandler();
+    cDAO = daoHandler.getCommentHandler();
     labelHandler = daoHandler.getLabelHandler(); 
   }
 
@@ -67,6 +70,7 @@ public class TestTaskDAO extends AbstractTest {
     tDAO.updateAll(tDAO.findAll());
     daoHandler.getLabelTaskMappingHandler().deleteAll();
     daoHandler.getTaskLogHandler().deleteAll();
+    cDAO.deleteAll();
     tDAO.deleteAll();
     labelHandler.deleteAll();
   }
@@ -281,7 +285,50 @@ public class TestTaskDAO extends AbstractTest {
     tasks = tDAO.findTasks(query);
     Assert.assertEquals(1, tasks.getSize());    
   }
-  
+
+  @Test
+  public void testFindTaskByMentionedUser() throws Exception {
+    Task task = newTaskInstance("testTask", "task with label", username);
+    tDAO.create(task);
+
+    Comment comment = new Comment();
+    comment.setAuthor(username);
+    comment.setComment("test comment @mary test");
+    comment.setCreatedTime(new Date());
+    comment.setTask(task);
+    cDAO.create(comment);
+
+    TaskQuery query = new TaskQuery();
+    query.setIsTodoOf("mary");
+    ListAccess<Task> tasks = tDAO.findTasks(query);
+    Assert.assertEquals(1, tasks.getSize());
+    //
+    query = new TaskQuery();
+    query.setIsIncomingOf("mary");
+    tasks = tDAO.findTasks(query);
+    Assert.assertEquals(1, tasks.getSize());
+
+    Task task2 = newTaskInstance("testTask2", "task with label", "mary");
+    tDAO.create(task2);
+    //
+    query = new TaskQuery();
+    query.setIsTodoOf("mary");
+    tasks = tDAO.findTasks(query);
+    Assert.assertEquals(2, tasks.getSize());
+    //
+    query = new TaskQuery();
+    query.setIsIncomingOf("mary");
+    tasks = tDAO.findTasks(query);
+    Assert.assertEquals(2, tasks.getSize());
+
+    query = new TaskQuery();
+    query.setIsTodoOf(username);
+    tasks = tDAO.findTasks(query);
+    Assert.assertEquals(1, tasks.getSize());
+
+
+  }
+
   @Test
   public void testFindTaskByMembership() {
     Project project = new Project();
@@ -521,25 +568,25 @@ public class TestTaskDAO extends AbstractTest {
     tDAO.create(task);
     //worker1 is a coworker, so he has permission
     ConversationState.setCurrent(new ConversationState(worker1));
-    Assert.assertEquals(true, TaskUtil.hasPermission(task));
+    Assert.assertEquals(true, TaskUtil.hasEditPermission(task));
 
     //worker is the assignee, so he has permission
     ConversationState.setCurrent(new ConversationState(worker));
-    Assert.assertEquals(true, TaskUtil.hasPermission(task));
+    Assert.assertEquals(true, TaskUtil.hasEditPermission(task));
 
     //worker2 is not the assignee, neither coworker nor the creator, so he has not permission
     ConversationState.setCurrent(new ConversationState(worker2));
-    Assert.assertEquals(false, TaskUtil.hasPermission(task));
+    Assert.assertEquals(false, TaskUtil.hasEditPermission(task));
 
     //worker3 is the creator, so he has permission
     ConversationState.setCurrent(new ConversationState(worker3));
-    Assert.assertEquals(true, TaskUtil.hasPermission(task));
+    Assert.assertEquals(true, TaskUtil.hasEditPermission(task));
 
     coworkers.add("worker2");
     task.setCoworker(coworkers);
     //worker2 is now a coworker, so he has permission
     ConversationState.setCurrent(new ConversationState(worker2));
-    Assert.assertEquals(true, TaskUtil.hasPermission(task));
+    Assert.assertEquals(true, TaskUtil.hasEditPermission(task));
   }
 
   @Test

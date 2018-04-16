@@ -27,39 +27,9 @@ import org.exoplatform.task.domain.Priority;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.util.UserUtil;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
-import static org.exoplatform.task.dao.condition.Conditions.TASK_ASSIGNEE;
-import static org.exoplatform.task.dao.condition.Conditions.TASK_CALENDAR_INTEGRATED;
-import static org.exoplatform.task.dao.condition.Conditions.TASK_COMPLETED;
-import static org.exoplatform.task.dao.condition.Conditions.TASK_COWORKER;
-import static org.exoplatform.task.dao.condition.Conditions.TASK_CREATOR;
-import static org.exoplatform.task.dao.condition.Conditions.TASK_DES;
-import static org.exoplatform.task.dao.condition.Conditions.TASK_DUEDATE;
-import static org.exoplatform.task.dao.condition.Conditions.TASK_END_DATE;
-import static org.exoplatform.task.dao.condition.Conditions.TASK_LABEL_ID;
-import static org.exoplatform.task.dao.condition.Conditions.TASK_LABEL_USERNAME;
-import static org.exoplatform.task.dao.condition.Conditions.TASK_MANAGER;
-import static org.exoplatform.task.dao.condition.Conditions.TASK_PARTICIPATOR;
-import static org.exoplatform.task.dao.condition.Conditions.TASK_PRIORITY;
-import static org.exoplatform.task.dao.condition.Conditions.TASK_PROJECT;
-import static org.exoplatform.task.dao.condition.Conditions.TASK_START_DATE;
-import static org.exoplatform.task.dao.condition.Conditions.TASK_STATUS;
-import static org.exoplatform.task.dao.condition.Conditions.TASK_TITLE;
-import static org.exoplatform.task.dao.condition.Conditions.and;
-import static org.exoplatform.task.dao.condition.Conditions.eq;
-import static org.exoplatform.task.dao.condition.Conditions.gte;
-import static org.exoplatform.task.dao.condition.Conditions.in;
-import static org.exoplatform.task.dao.condition.Conditions.isEmpty;
-import static org.exoplatform.task.dao.condition.Conditions.isFalse;
-import static org.exoplatform.task.dao.condition.Conditions.isNull;
-import static org.exoplatform.task.dao.condition.Conditions.isTrue;
-import static org.exoplatform.task.dao.condition.Conditions.like;
-import static org.exoplatform.task.dao.condition.Conditions.lte;
+import static org.exoplatform.task.dao.condition.Conditions.*;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
@@ -185,7 +155,8 @@ public class TaskQuery extends Query implements Cloneable {
     this.assignee = Arrays.asList(user.getUserId());
     List<String> memberships = UserUtil.getMemberships(user);
     this.add(Conditions.or(eq(TASK_ASSIGNEE, assignee), eq(TASK_COWORKER, assignee), eq(TASK_CREATOR, assignee),
-                           in(TASK_MANAGER, memberships), in(TASK_PARTICIPATOR, memberships)));
+                           in(TASK_MANAGER, memberships), in(TASK_PARTICIPATOR, memberships),
+                           in(TASK_MENTIONED_USERS, Arrays.asList(user.getUserId()))));
   }
 
   public void setAssigneeOrCoworkerOrInProject(String username, List<Long> projectIds) {
@@ -211,13 +182,13 @@ public class TaskQuery extends Query implements Cloneable {
   }
 
   public void setIsIncomingOf(String username) {
-    add(and(Conditions.or(eq(TASK_ASSIGNEE, username), eq(TASK_COWORKER, username), eq(TASK_CREATOR, username)), isNull(TASK_STATUS)));
+    add(and(Conditions.or(eq(TASK_ASSIGNEE, username), eq(TASK_COWORKER, username), eq(TASK_CREATOR, username), in(TASK_MENTIONED_USERS, Arrays.asList(username))), isNull(TASK_STATUS)));
   }
 
   public void setIsTodoOf(String username) {
     //setAssignee(Arrays.asList(username));
     //add(eq(TASK_ASSIGNEE, username));
-    this.add(Conditions.or(eq(TASK_ASSIGNEE, username), eq(TASK_COWORKER, username)));
+    this.add(Conditions.or(eq(TASK_ASSIGNEE, username), eq(TASK_COWORKER, username), in(TASK_MENTIONED_USERS, Arrays.asList(username))));
     this.assignee = Arrays.asList(username);
   }
 

@@ -20,6 +20,7 @@ package org.exoplatform.task.dao;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -258,6 +259,42 @@ public class TestCommentDAO extends AbstractTest {
 
     comments = ListUtil.load(listComments, 8, 5); //commentDAO.findCommentsOfTask(task, 8, 5);
     Assert.assertEquals(2, comments.length);
+  }
+
+  @Test
+  public void testMentionedUsers() {
+    Task task = newDefaultSimpleTask();
+    taskDAO.create(task);
+
+    List<Task> tasks = taskDAO.findAll();
+    task = tasks.get(0);
+
+    Comment comment1 = newDefaultSimpleComment(task);
+    comment1.setComment("test1 @userA test2 @userB test3 @ test4");
+    commentDAO.create(comment1);
+
+    Set<String> mentionedUsers = commentDAO.findMentionedUsersOfTask(task.getId());
+    Assert.assertEquals(2, mentionedUsers.size());
+    Assert.assertTrue(mentionedUsers.contains("userA"));
+    Assert.assertTrue(mentionedUsers.contains("userB"));
+
+    Comment comment2 = newDefaultSimpleComment(task);
+    comment2.setComment("@userA @userC ");
+    commentDAO.create(comment2);
+    //
+    mentionedUsers = commentDAO.findMentionedUsersOfTask(task.getId());
+    Assert.assertEquals(3, mentionedUsers.size());
+
+    commentDAO.delete(comment2);
+    //
+    mentionedUsers = commentDAO.findMentionedUsersOfTask(task.getId());
+    Assert.assertEquals(2, mentionedUsers.size());
+
+    comment1.setComment("@userD");
+    commentDAO.update(comment1);
+    //
+    mentionedUsers = commentDAO.findMentionedUsersOfTask(task.getId());
+    Assert.assertEquals(1, mentionedUsers.size());
   }
 
   private Task newDefaultSimpleTask() {

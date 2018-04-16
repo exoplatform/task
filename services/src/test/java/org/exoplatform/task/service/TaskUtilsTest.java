@@ -19,9 +19,7 @@ package org.exoplatform.task.service;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -30,7 +28,6 @@ import static org.mockito.Mockito.mock;
 import java.util.*;
 
 import org.exoplatform.calendar.model.Event;
-import org.exoplatform.calendar.storage.EventDAO;
 import org.exoplatform.services.idgenerator.IDGeneratorService;
 import org.exoplatform.services.jcr.util.IdGenerator;
 import org.exoplatform.task.domain.Project;
@@ -75,6 +72,8 @@ public class TaskUtilsTest {
 
   private TaskService taskService;
 
+  private TaskService originTaskService;
+
   private ListenerService listenerService;
 
   private ResourceBundle rb_en;
@@ -105,7 +104,7 @@ public class TaskUtilsTest {
   @Before
   public void setUp() throws Exception {
     // Make sure the container is started to prevent the ExoTransactional annotation to fail
-    PortalContainer.getInstance();
+    PortalContainer container = PortalContainer.getInstance();
 
     listenerService = new ListenerService(new ExoContainerContext(container));
 
@@ -117,6 +116,10 @@ public class TaskUtilsTest {
 
     taskService = new TaskServiceImpl(daoHandler, listenerService);
 
+    originTaskService = container.getComponentInstanceOfType(TaskService.class);
+    container.unregisterComponent(TaskService.class);
+    container.registerComponentInstance(TaskService.class, taskService);
+
     //Mock some DAO methods
     when(taskHandler.create(any(Task.class))).thenReturn(TestUtils.getDefaultTask());
     when(taskHandler.update(any(Task.class))).thenReturn(TestUtils.getDefaultTask());
@@ -126,6 +129,7 @@ public class TaskUtilsTest {
     when(labelHandler.findLabelsByTask(anyLong(), any())).thenReturn(null);
     when(statusHandler.find(TestUtils.EXISTING_STATUS_ID)).thenReturn(TestUtils.getDefaultStatus());
     when(commentHandler.find(TestUtils.EXISTING_COMMENT_ID)).thenReturn(TestUtils.getDefaultComment());
+    when(commentHandler.findMentionedUsersOfTask(anyLong())).thenReturn(Collections.emptySet());
     IdGenerator idGenerator = new IdGenerator(idGeneratorService);
     when(idGeneratorService.generateStringID(any(String.class))).thenReturn(Long.toString(System.currentTimeMillis()));
             when(userService.loadUser(any())).thenAnswer(new Answer<User>() {
@@ -142,6 +146,9 @@ public class TaskUtilsTest {
 
   @After
   public void tearDown() {
+    PortalContainer container = PortalContainer.getInstance();
+    container.unregisterComponent(TaskService.class);
+    container.registerComponentInstance(TaskService.class, originTaskService);
     taskService = null;
     ConversationState.setCurrent(null);
   }

@@ -122,4 +122,5 @@ public interface TaskService {
    */
   void loadSubComments(List<Comment> listComments);
 
+  Set<String> getMentionedUsers(long taskId);
 }

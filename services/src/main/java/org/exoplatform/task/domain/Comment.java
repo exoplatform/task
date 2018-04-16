@@ -19,26 +19,12 @@
 
 package org.exoplatform.task.domain;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 
 import org.exoplatform.commons.api.persistence.ExoEntity;
 
@@ -56,9 +42,14 @@ import org.exoplatform.commons.api.persistence.ExoEntity;
     @NamedQuery(name = "Comment.findSubCommentsOfComments",
       query = "SELECT c FROM TaskComment c WHERE c.parentComment IN (:comments) ORDER BY c.createdTime ASC"),
     @NamedQuery(name = "Comment.deleteCommentOfTask",
-        query = "DELETE FROM TaskComment c WHERE c.task.id = :taskId")
+        query = "DELETE FROM TaskComment c WHERE c.task.id = :taskId"),
+    @NamedQuery(name = "Comment.findMentionedUsersOfTask",
+                query = "SELECT m FROM TaskComment c INNER JOIN c.mentionedUsers m WHERE c.task.id = :taskId")
 })
 public class Comment {
+
+  private static final Pattern pattern = Pattern.compile("@([^\\s]+)|@([^\\s]+)$");
+
   @Id
   @SequenceGenerator(name="SEQ_TASK_COMMENTS_COMMENT_ID", sequenceName="SEQ_TASK_COMMENTS_COMMENT_ID")
   @GeneratedValue(strategy=GenerationType.AUTO, generator="SEQ_TASK_COMMENTS_COMMENT_ID")
@@ -86,6 +77,12 @@ public class Comment {
   @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "parentComment", fetch = FetchType.LAZY)
   private List<Comment> subComments = new ArrayList<Comment>();
 
+  @ElementCollection(fetch = FetchType.LAZY)
+  @CollectionTable(name = "TASK_COMMENT_MENTIONED_USERS",
+          joinColumns = @JoinColumn(name = "COMMENT_ID"))
+  @Column(name = "MENTIONED_USERS")
+  private Set<String> mentionedUsers = new HashSet<>();
+
   public long getId() {
     return id;
   }
@@ -108,6 +105,33 @@ public class Comment {
 
   public void setComment(String comment) {
     this.comment = comment;
+    
+    this.parseMentionedUsers(comment);
+  }
+
+  public Set<String> getMentionedUsers() {
+    return mentionedUsers.stream().collect(Collectors.toSet());
+  }
+
+  private void parseMentionedUsers(String comment) {
+    Set<String> ment = new HashSet<>();
+
+    if (comment != null && !comment.isEmpty()) {
+      Matcher matcher = pattern.matcher(comment);
+
+      // Replace all occurrences of pattern in input
+      StringBuffer buf = new StringBuffer();
+      while (matcher.find()) {
+        // Get the match result
+        String username = matcher.group().substring(1);
+        if (username == null || username.isEmpty()) {
+          continue;
+        }
+        ment.add(username.trim());
+      }
+    }
+
+    this.mentionedUsers = ment;
   }
 
   public Date getCreatedTime() {

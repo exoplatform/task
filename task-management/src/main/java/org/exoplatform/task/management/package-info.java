@@ -30,6 +30,7 @@
     @Binding(value = UserService.class),
     @Binding(value = SettingService.class),
     @Binding(value = ViewStateService.class),
+    @Binding(value = UserACL.class),
     @Binding(value = SpaceService.class)
 })
 @WebJars({
@@ -84,6 +85,7 @@ import juzu.plugin.webjars.WebJar;
 import juzu.plugin.webjars.WebJars;
 
 import org.exoplatform.commons.api.settings.SettingService;
+import org.exoplatform.portal.config.UserACL;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.task.dao.DAOHandler;
 import org.exoplatform.social.core.space.spi.SpaceService;

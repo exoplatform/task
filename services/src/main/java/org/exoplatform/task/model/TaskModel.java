@@ -25,6 +25,7 @@ import org.exoplatform.task.domain.Task;
 
 public class TaskModel {
   private Task task;
+  private boolean readOnly;
   private String breadcumbs;
   private User assignee;
   private int numberCoworkers;
@@ -84,5 +85,13 @@ public class TaskModel {
 
   public void setLabels(List<Label> labels) {
     this.labels = labels;
+  }
+
+  public boolean isReadOnly() {
+    return readOnly;
+  }
+
+  public void setReadOnly(boolean readOnly) {
+    this.readOnly = readOnly;
   }
 }

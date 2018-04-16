@@ -18,6 +18,7 @@ package org.exoplatform.task.dao.jpa;
 
 import static org.exoplatform.task.dao.condition.Conditions.TASK_COWORKER;
 import static org.exoplatform.task.dao.condition.Conditions.TASK_MANAGER;
+import static org.exoplatform.task.dao.condition.Conditions.TASK_MENTIONED_USERS;
 import static org.exoplatform.task.dao.condition.Conditions.TASK_PARTICIPATOR;
 import static org.exoplatform.task.dao.condition.Conditions.TASK_PROJECT;
 
@@ -334,6 +335,8 @@ public class TaskDAOImpl extends CommonJPADAO<Task, Long> implements TaskHandler
         path = root.join("status", JoinType.LEFT).join("project", JoinType.LEFT).join("manager", JoinType.LEFT);
     } else if (TASK_PARTICIPATOR.equals(condition.getField())) {
         path = root.join("status", JoinType.LEFT).join("project", JoinType.LEFT).join("participator", JoinType.LEFT);
+    } else if (TASK_MENTIONED_USERS.equals(condition.getField())) {
+        path = root.join("comments", JoinType.LEFT).join("mentionedUsers", JoinType.LEFT);
     } else {
       if (field.indexOf('.') > 0) {
         String[] arr = field.split("\\.");

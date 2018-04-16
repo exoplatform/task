@@ -22,14 +22,15 @@
 
 package org.exoplatform.task.dao.jpa;
 
-import java.util.List;
-
-import javax.persistence.TypedQuery;
-
 import org.exoplatform.commons.api.persistence.ExoTransactional;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.task.dao.CommentHandler;
 import org.exoplatform.task.domain.Comment;
+
+import javax.persistence.TypedQuery;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
@@ -54,5 +55,13 @@ public class CommentDAOImpl extends CommonJPADAO<Comment, Long> implements Comme
     TypedQuery<Comment> query = getEntityManager().createNamedQuery("Comment.findSubCommentsOfComments", Comment.class);
     query.setParameter("comments", comments);
     return query.getResultList();
+  }
+
+  @Override
+  public Set<String> findMentionedUsersOfTask(long taskId) {
+    TypedQuery<String> query = getEntityManager().createNamedQuery("Comment.findMentionedUsersOfTask", String.class);
+    query.setParameter("taskId", taskId);
+    List<String> tags = query.getResultList();
+    return new HashSet<>(tags);
   }
 }

@@ -20,6 +20,7 @@
 package org.exoplatform.task.dao;
 
 import java.util.List;
+import java.util.Set;
 
 import org.exoplatform.commons.api.persistence.GenericDAO;
 import org.exoplatform.commons.utils.ListAccess;
@@ -31,5 +32,7 @@ import org.exoplatform.task.domain.Comment;
 public interface CommentHandler extends GenericDAO<Comment, Long> {
   ListAccess<Comment> findComments(long taskId);
 
-  public List<Comment> getSubComments(List<Comment> listComments);
+  List<Comment> getSubComments(List<Comment> listComments);
+
+  Set<String> findMentionedUsersOfTask(long taskId);
 }

@@ -39,15 +39,11 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
 public class TaskCommentNotificationListener extends Listener<TaskService, Comment> {
-
-  private Pattern MENTION_REGEX = Pattern.compile("(\\s|^)(@)([\\S]+)");
 
   @Override
   public void onEvent(Event<TaskService, Comment> event) throws Exception {
@@ -102,7 +98,8 @@ public class TaskCommentNotificationListener extends Listener<TaskService, Comme
     receiver.remove(creator);
 
     // Get all mentioned
-    Set<String> mentioned = getMentioned(comment.getComment());
+    Set<String> mentioned = comment.getMentionedUsers();
+
     mentioned.remove(creator);
 
     ctx.append(NotificationUtils.RECEIVERS, receiver);
@@ -120,18 +117,4 @@ public class TaskCommentNotificationListener extends Listener<TaskService, Comme
     ctx.getNotificationExecutor().with(commands).execute(ctx);
   }
 
-  private Set<String> getMentioned(String text) {
-    Set<String> set = new HashSet<String>();
-
-    if (text == null || text.isEmpty()) {
-      return set;
-    }
-
-    Matcher m = MENTION_REGEX.matcher(text);
-    while (m.find()) {
-      set.add(m.group(3));
-    }
-
-    return set;
-  }
 }

@@ -120,7 +120,7 @@ public class TaskController extends AbstractController {
   @MimeType.HTML
   public Response detail(Long id, SecurityContext securityContext) throws EntityNotFoundException, UnAuthorizedOperationException {
     Task task = taskService.getTask(id);
-    if (!TaskUtil.hasPermission(task)) {
+    if (!TaskUtil.hasViewPermission(task)) {
       throw new UnAuthorizedOperationException(id, Task.class, getNoPermissionMsg());
     }
     TaskModel model = TaskUtil.getTaskModel(id, false, bundle, securityContext.getRemoteUser(), taskService, orgService, userService, projectService);
@@ -161,7 +161,7 @@ public class TaskController extends AbstractController {
   @MimeType.HTML
   public Response renderTaskLogs(Long taskId, SecurityContext securityContext) throws EntityNotFoundException, UnAuthorizedOperationException {
     Task task = taskService.getTask(taskId);
-    if (!TaskUtil.hasPermission(task)) {
+    if (!TaskUtil.hasViewPermission(task)) {
       throw new UnAuthorizedOperationException(taskId, Task.class, getNoPermissionMsg());
     }
     ChangeLog[] arr = ListUtil.load(taskService.getTaskLogs(taskId), 0, -1);
@@ -197,7 +197,7 @@ public class TaskController extends AbstractController {
   @MimeType.HTML
   public Response renderTaskComments(Long id, Boolean loadAllComment, SecurityContext securityContext) throws EntityNotFoundException, UnAuthorizedOperationException {
       Task task = taskService.getTask(id);
-      if (!TaskUtil.hasPermission(task)) {
+      if (!TaskUtil.hasViewPermission(task)) {
         throw new UnAuthorizedOperationException(id, Task.class, getNoPermissionMsg());
       }
       if (loadAllComment == null) {
@@ -216,7 +216,7 @@ public class TaskController extends AbstractController {
   @MimeType.JSON
   public Response clone(Long id) throws EntityNotFoundException, JSONException, UnAuthorizedOperationException {
       Task task = taskService.getTask(id);
-      if (!TaskUtil.hasPermission(task)) {
+      if (!TaskUtil.hasEditPermission(task)) {
         throw new UnAuthorizedOperationException(id, Task.class, getNoPermissionMsg());
       }
       Task newTask = taskService.cloneTask(id); //Can throw TaskNotFoundException
@@ -231,7 +231,7 @@ public class TaskController extends AbstractController {
   @MimeType.HTML
   public Response openConfirmDeleteTask(Long id) throws EntityNotFoundException, UnAuthorizedOperationException {
     Task task = taskService.getTask(id);
-    if (!TaskUtil.hasPermission(task)) {
+    if (!TaskUtil.hasDeletePermission(task)) {
       throw new UnAuthorizedOperationException(id, Task.class, getNoPermissionMsg());
     }
 
@@ -250,7 +250,7 @@ public class TaskController extends AbstractController {
   @MimeType.JSON
   public Response delete(Long id, SecurityContext context) throws EntityNotFoundException, JSONException, UnAuthorizedOperationException {
     Task task = taskService.getTask(id);
-    if (!TaskUtil.hasPermission(task)) {
+    if (!TaskUtil.hasDeletePermission(task)) {
       throw new UnAuthorizedOperationException(id, Task.class, getNoPermissionMsg());
     }
     taskService.removeTask(id);//Can throw TaskNotFoundException
@@ -270,7 +270,7 @@ public class TaskController extends AbstractController {
   public Response saveTaskInfo(Long taskId, String name, String[] value, SecurityContext context) throws EntityNotFoundException, ParameterEntityException, UnAuthorizedOperationException {
     TimeZone timezone = userService.getUserTimezone(context.getRemoteUser());
     Task task = taskService.getTask(taskId);
-    if (!TaskUtil.hasPermission(task) || 
+    if (!TaskUtil.hasEditPermission(task) ||
         !TaskUtil.hasPermissionOnField(task, name, value, statusService, taskService, projectService)) {
       throw new UnAuthorizedOperationException(taskId, Task.class, getNoPermissionMsg());
     }    
@@ -312,7 +312,7 @@ public class TaskController extends AbstractController {
     }
 
     Task task = taskService.getTask(taskId);
-    if (!TaskUtil.hasPermission(task)) {
+    if (!TaskUtil.hasEditPermission(task)) {
       throw new UnAuthorizedOperationException(taskId, Task.class, getNoPermissionMsg());
     }
 
@@ -382,7 +382,7 @@ public class TaskController extends AbstractController {
   @MimeType("text/plain")
   public Response updateCompleted(Long taskId, Boolean completed, SecurityContext securityContext) throws EntityNotFoundException, ParameterEntityException, UnAuthorizedOperationException {
     Task task = taskService.getTask(taskId);
-    if (!TaskUtil.hasPermission(task)) {
+    if (!TaskUtil.hasEditPermission(task)) {
       throw new UnAuthorizedOperationException(taskId, Task.class, getNoPermissionMsg());
     }
     task.setCompleted(completed);
@@ -400,7 +400,7 @@ public class TaskController extends AbstractController {
     Task task = taskService.getTask(taskId);
 
     String currentUser = securityContext.getRemoteUser();
-    if (!TaskUtil.hasPermission(task)) {
+    if (!TaskUtil.hasViewPermission(task)) {
       throw new UnAuthorizedOperationException(taskId, Task.class, getNoPermissionMsg());
     }
     if(parentCommentId == null) {
@@ -436,7 +436,7 @@ public class TaskController extends AbstractController {
   public Response loadAllComments(Long taskId, SecurityContext securityContext) throws EntityNotFoundException, UnAuthorizedOperationException {
       // Verify task exists
       Task task = taskService.getTask(taskId);
-      if (!TaskUtil.hasPermission(task)) {
+      if (!TaskUtil.hasViewPermission(task)) {
         throw new UnAuthorizedOperationException(taskId, Task.class, getNoPermissionMsg());
       }
 

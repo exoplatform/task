@@ -29,6 +29,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.exoplatform.commons.utils.CommonsUtils;
+import org.exoplatform.portal.config.UserACL;
 import org.exoplatform.services.organization.Group;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.services.security.Identity;
@@ -125,5 +127,18 @@ public final class UserUtil {
     }
 
     return userGroups;
+  }
+
+  public static boolean isPlatformAdmin(Identity identity) {
+    UserACL userACL = CommonsUtils.getService(UserACL.class);
+    String adminGroup = userACL.getAdminGroups();
+    //
+    for (MembershipEntry m : identity.getMemberships()) {
+      String group = m.getGroup();
+      if (group.equals(adminGroup)) {
+        return true;
+      }
+    }
+    return false;
   }
 }

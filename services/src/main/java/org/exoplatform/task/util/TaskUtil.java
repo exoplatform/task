@@ -224,6 +224,8 @@ public final class TaskUtil {
     task.setCoworker(coworker);
     taskModel.setTask(task);
 
+    taskModel.setReadOnly(hasViewOnlyPermission(task));
+
     org.exoplatform.task.model.User assignee = null;
     int numberCoworkers = coworker != null ? coworker.size() : 0;
     if (task.getAssignee() != null && !task.getAssignee().isEmpty()) {
@@ -1064,7 +1066,7 @@ public final class TaskUtil {
     return taskService.updateTask(task);
   }
   
-  public static boolean hasPermission(Task task) {
+  public static boolean hasEditPermission(Task task) {
     Identity identity = ConversationState.getCurrent().getIdentity();
     String userId = identity.getUserId();
 
@@ -1076,10 +1078,47 @@ public final class TaskUtil {
 
     if (task.getStatus() != null) {
       Project project = task.getStatus().getProject();
-      return project.canView(identity);
+      if (project.canView(identity)) {
+        return true;
+      }
     }
 
-    return false;
+    return UserUtil.isPlatformAdmin(identity);
+  }
+
+  public static boolean hasViewPermission(Task task) {
+    Identity identity = ConversationState.getCurrent().getIdentity();
+    String userId = identity.getUserId();
+
+    return hasMentionedUser(task, userId) || hasEditPermission(task);
+  }
+
+  private static boolean hasMentionedUser(Task task, String userId) {
+    TaskService taskService = getTaskService();
+    Set<String> mentionedUsers = taskService.getMentionedUsers(task.getId());
+    return mentionedUsers.contains(userId);
+  }
+
+  public static boolean hasViewOnlyPermission(Task task) {
+    return hasViewPermission(task) && !hasEditPermission(task);
+  }
+
+  public static boolean hasDeletePermission(Task task) {
+    Identity identity = ConversationState.getCurrent().getIdentity();
+    String userId = identity.getUserId();
+
+    if (task.getCreatedBy() != null && task.getCreatedBy().equals(userId)) {
+      return true;
+    }
+
+    if (task.getStatus() != null) {
+      Project project = task.getStatus().getProject();
+      if (project.canEdit(identity)) {
+        return true;
+      }
+    }
+
+    return UserUtil.isPlatformAdmin(identity);
   }
 
   public static boolean hasPermissionOnField(Task task, String name, String[] values, StatusService statusService, 
@@ -1148,5 +1187,6 @@ public final class TaskUtil {
   public static Set<String> getCoworker(long taskId) {
     return getTaskService().getCoworker(taskId);
   }
+
 }
 

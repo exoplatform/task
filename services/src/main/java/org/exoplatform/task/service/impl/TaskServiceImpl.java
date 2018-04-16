@@ -159,6 +159,11 @@ public class TaskServiceImpl implements TaskService {
   }
 
   @Override
+  public Set<String> getMentionedUsers(long taskId) {
+    return daoHandler.getCommentHandler().findMentionedUsersOfTask(taskId);
+  }
+
+  @Override
   @ExoTransactional
   public Comment addComment(long id, long parentCommentId, String username, String comment) throws EntityNotFoundException {
 

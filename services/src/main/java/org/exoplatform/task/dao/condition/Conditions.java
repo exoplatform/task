@@ -45,6 +45,7 @@ public class Conditions {
   public static String TASK_CALENDAR_INTEGRATED = "calendarIntegrated";
   public static String TASK_MANAGER = "status.project.manager";
   public static String TASK_PARTICIPATOR = "status.project.participator";
+  public static String TASK_MENTIONED_USERS = "mentionedUsers";
 
   public static final String MANAGER = "manager";
   public static final String PARTICIPATOR = "participator";

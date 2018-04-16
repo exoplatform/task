@@ -150,6 +150,10 @@ $(document).ready(function() {
     };
 
     var initCKEditor = function(element) {
+        if (!element || !element.length) {
+            return;
+        }
+
         var windowWidth = $(window).width();
         var windowHeight = $(window).height();
 
