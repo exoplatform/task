@@ -182,7 +182,10 @@ public class TaskQuery extends Query implements Cloneable {
   }
 
   public void setIsIncomingOf(String username) {
-    add(and(Conditions.or(eq(TASK_ASSIGNEE, username), eq(TASK_COWORKER, username), eq(TASK_CREATOR, username), in(TASK_MENTIONED_USERS, Arrays.asList(username))), isNull(TASK_STATUS)));
+    add(and(Conditions.or(
+            eq(TASK_ASSIGNEE, username), eq(TASK_COWORKER, username), eq(TASK_CREATOR, username),
+            in(TASK_MENTIONED_USERS, Arrays.asList(username))),
+            isNull(TASK_STATUS)));
   }
 
   public void setIsTodoOf(String username) {

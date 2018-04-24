@@ -22,10 +22,7 @@ package org.exoplatform.task.domain;
 import org.exoplatform.commons.api.persistence.ExoEntity;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -149,6 +146,11 @@ public class Status implements Comparable<Status>{
     if (rank != null ? !rank.equals(status.rank) : status.rank != null) return false;
 
     return true;
+  }
+
+  @Override
+  public int hashCode() {
+      return Objects.hash(id, name, rank, project);
   }
 
   @Override

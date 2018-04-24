@@ -93,8 +93,12 @@ public class TestUtils {
   }
 
   public static Task getDefaultTask() {
+    return getDefaultTaskWithId(EXISTING_TASK_ID);
+  }
+
+  public static Task getDefaultTaskWithId(long id) {
     Task task = new Task();
-    task.setId(EXISTING_TASK_ID);
+    task.setId(id);
     task.setTitle("Default task");
     task.setAssignee("root");
     task.setCreatedBy("root");

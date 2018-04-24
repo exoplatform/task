@@ -368,13 +368,13 @@ public class ProjectServiceTest {
     project.setId(3L);
 
     Set<Task> tasks1 = new HashSet<Task>();
-    tasks1.add(TestUtils.getDefaultTask());
-    tasks1.add(TestUtils.getDefaultTask());
+    tasks1.add(TestUtils.getDefaultTaskWithId(1));
+    tasks1.add(TestUtils.getDefaultTaskWithId(2));
 
     Set<Task> tasks2 = new HashSet<Task>();
-    tasks2.add(TestUtils.getDefaultTask());
-    tasks2.add(TestUtils.getDefaultTask());
-    tasks2.add(TestUtils.getDefaultTask());
+    tasks2.add(TestUtils.getDefaultTaskWithId(3));
+    tasks2.add(TestUtils.getDefaultTaskWithId(4));
+    tasks2.add(TestUtils.getDefaultTaskWithId(5));
 
     Status status1 = new Status(3, "ToDo", 1, project);
     Status status2 = new Status(4, "On Progress", 2, project);

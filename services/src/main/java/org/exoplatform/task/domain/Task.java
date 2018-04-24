@@ -19,11 +19,7 @@
 
 package org.exoplatform.task.domain;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
@@ -350,5 +346,11 @@ public class Task {
     if (title != null ? !title.equals(task.title) : task.title != null) return false;
 
     return true;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, title, description, priority, context, assignee, status, completed, coworker,
+            createdBy, createdTime, startDate, endDate, dueDate);
   }
 }
