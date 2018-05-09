@@ -36,6 +36,7 @@
         <include>org.exoplatform.addons.task:task-management-integration</include>
         <include>org.exoplatform.addons.task:task-management</include>
       </includes>
+      <scope>provided</scope>
     </dependencySet>
   </dependencySets>
 </assembly>
