@@ -222,15 +222,18 @@ data-format="yyyy-MM-dd" data-viewformat="dd M yyyy">
 <div class="pull-left">
 <div class="toDo">
 <div class="uiEditableInline">
-<% if (task.status != null) { %>
+<% if (task.status != null) {
+    def currentLabel = ResourceUtil.resolveStatus(bundle, task.status.name);
+    %>
     <i class="uiIconTime"></i>
-                    <span  class="${editableClasses} small" href="javascript:void(0)"
+                    <span  class="${readOnlyClass} hoverStatus editableField editable small" href="javascript:void(0)"
                        <% if (!readOnly) {%>
-                       data-original-title="&{tooltip.clickToEdit}" rel="tooltip" data-name="status"
+                       data-original-title="&{tooltip.clickToEdit}" rel="tooltip"
                        <% }%>
-                       data-source="@{StatusController.getAllStatus(projectId=task.status.project.id)}"
+                       data-name="status" data-source="@{StatusController.getAllStatus(projectId=task.status.project.id)}"
                        data-inputclass="selectboxMini" data-type="select"
-                       data-title="Select status" data-val="${task.status != null ?  task.status.id: '0'}"></span>
+                       data-title="Select status" data-val="${task.status != null ?  task.status.id: '0'}" 
+                       data-label="${currentLabel}"></span>
     <%}  %>
 </div>
         </div>
@@ -383,7 +386,7 @@ data-startdate="<%=df.format(startDate)%>" data-duration="${duration}">
 
                 def priorities = "[" + StringUtils.join(arrays, ",") + "]";
             %>
-            <span class="task-priority ${editableClasses} small"
+            <span class="task-priority ${readOnlyClass} hoverStatus editableField editable small"
                   <% if (!readOnly) {%>
                   data-original-title="&{tooltip.clickToEdit}" rel="tooltip"
                   <% }%>

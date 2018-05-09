@@ -654,6 +654,8 @@ define('ta_edit_inline',
                 if (fieldName == 'status') {
                     var currentStatus = $this.attr('data-val');
                     editOptions.value = currentStatus;
+                    var currStatusLabel = $this.attr('data-label');
+                    $this.html(currStatusLabel);
                 }
                 if (fieldName == 'priority') {
                     /*var priority = [];
@@ -822,6 +824,9 @@ define('ta_edit_inline',
                         }
                         disableEditProject($this);
                     }
+                }
+                if ($this.hasClass('readOnly')) {
+                    $this.off();
                 }
             });
             editInline.initAssignment(taskId);
