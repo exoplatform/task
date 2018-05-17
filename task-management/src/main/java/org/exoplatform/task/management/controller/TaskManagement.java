@@ -179,20 +179,27 @@ public class TaskManagement {
       try {
         taskModel = TaskUtil.getTaskModel(taskId, false, bundle, username, taskService,
                                                     orgService, userService, projectService);
-        if (taskModel.getTask().getStatus() != null) {
-          project = taskModel.getTask().getStatus().getProject();
-          if (project.canView(identity)) {
-            currProject = project.getId();
-            taskQuery.setProjectIds(Arrays.asList(currProject));
+        if (!TaskUtil.hasViewPermission(taskModel.getTask())) {
+          taskModel = null;
+          taskId = -1;
+          errorMessage = bundle.getString("popup.msg.noPermissionToViewTask");
+        } else {
+          if (taskModel.getTask().getStatus() != null) {
+            project = taskModel.getTask().getStatus().getProject();
+            if (project.canView(identity)) {
+              currProject = project.getId();
+              taskQuery.setProjectIds(Arrays.asList(currProject));
+            }
           }
-        }
-        if (currProject <= 0) {
-          if (isAssignedTo(taskModel, username)) {
-            currProject = ProjectUtil.TODO_PROJECT_ID;
-            taskQuery.setIsTodoOf(username);
-          } else {
-            currProject = ProjectUtil.INCOMING_PROJECT_ID;
-            taskQuery.setIsIncomingOf(username);
+          if (currProject <= 0) {
+            if (isAssignedTo(taskModel, username) ||
+                    (project != null && TaskUtil.hasViewOnlyPermission(taskModel.getTask()))) {
+              currProject = ProjectUtil.TODO_PROJECT_ID;
+              taskQuery.setIsTodoOf(username);
+            } else {
+              currProject = ProjectUtil.INCOMING_PROJECT_ID;
+              taskQuery.setIsIncomingOf(username);
+            }
           }
         }
       } catch (EntityNotFoundException e) {
