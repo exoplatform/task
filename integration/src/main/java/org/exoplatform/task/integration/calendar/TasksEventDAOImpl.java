@@ -19,10 +19,12 @@
 
 package org.exoplatform.task.integration.calendar;
 
+import java.util.*;
+
 import org.exoplatform.calendar.model.Event;
 import org.exoplatform.calendar.model.query.EventQuery;
+import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.Utils;
-import org.exoplatform.calendar.service.impl.NewUserListener;
 import org.exoplatform.calendar.storage.EventDAO;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.log.ExoLogger;
@@ -31,15 +33,7 @@ import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.service.TaskService;
-import org.exoplatform.task.util.ListUtil;
-import org.exoplatform.task.util.ProjectUtil;
-import org.exoplatform.task.util.TaskUtil;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
+import org.exoplatform.task.util.*;
 
 public class TasksEventDAOImpl implements EventDAO {
   
@@ -121,7 +115,7 @@ public class TasksEventDAOImpl implements EventDAO {
 
      Task[] tasks = new Task[0];
      if ((query.getCalendarIds() == null || ids.size() > 0) && (query.getCategoryIds() == null || (query.getCategoryIds().length == 1 && 
-         query.getCategoryIds()[0].equals(NewUserListener.DEFAULT_EVENTCATEGORY_ID_ALL))) &&  
+         query.getCategoryIds()[0].equals(CalendarService.DEFAULT_EVENTCATEGORY_ID_ALL))) &&  
          (query.getEventType() == null || query.getEventType().equals(Event.TYPE_TASK))) {
        //
        if (ids.size() > 0) {

@@ -17,36 +17,16 @@
 package org.exoplatform.task.util;
 
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.Set;
-import java.util.TimeZone;
-import java.util.TreeMap;
+import java.text.*;
+import java.util.*;
 
 import org.gatein.common.text.EntityEncoder;
 
 import org.exoplatform.calendar.model.Event;
-import org.exoplatform.calendar.service.impl.NewUserListener;
+import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.commons.utils.HTMLEntityEncoder;
 import org.exoplatform.commons.utils.ListAccess;
-import org.exoplatform.container.ExoContainer;
-import org.exoplatform.container.ExoContainerContext;
-import org.exoplatform.container.PortalContainer;
-import org.exoplatform.container.RootContainer;
+import org.exoplatform.container.*;
 import org.exoplatform.portal.mop.SiteKey;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -54,22 +34,11 @@ import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.task.dao.TaskQuery;
-import org.exoplatform.task.domain.Comment;
-import org.exoplatform.task.domain.Label;
-import org.exoplatform.task.domain.Priority;
-import org.exoplatform.task.domain.Project;
-import org.exoplatform.task.domain.Status;
-import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.domain.*;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.exception.ParameterEntityException;
-import org.exoplatform.task.model.CommentModel;
-import org.exoplatform.task.model.GroupKey;
-import org.exoplatform.task.model.TaskModel;
-import org.exoplatform.task.model.User;
-import org.exoplatform.task.service.ProjectService;
-import org.exoplatform.task.service.StatusService;
-import org.exoplatform.task.service.TaskService;
-import org.exoplatform.task.service.UserService;
+import org.exoplatform.task.model.*;
+import org.exoplatform.task.service.*;
 import org.exoplatform.web.controller.router.Router;
 
 /**
@@ -788,8 +757,8 @@ public final class TaskUtil {
       event.setCalendarId(String.valueOf(ProjectUtil.TODO_PROJECT_ID));
     }
     event.setDescription(task.getDescription());
-    event.setEventCategoryId(NewUserListener.DEFAULT_EVENTCATEGORY_ID_ALL);
-    event.setEventCategoryName(NewUserListener.DEFAULT_EVENTCATEGORY_NAME_ALL);
+    event.setEventCategoryId(CalendarService.DEFAULT_EVENTCATEGORY_ID_ALL);
+    event.setEventCategoryName(CalendarService.DEFAULT_EVENTCATEGORY_NAME_ALL);
     event.setEventType(Event.TYPE_TASK);
     if (task.getStartDate() != null) {
       event.setFromDateTime(task.getStartDate());
