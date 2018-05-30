@@ -36,6 +36,7 @@ import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.portal.application.PortalRequestContext;
 import org.exoplatform.portal.application.RequestNavigationData;
+import org.exoplatform.portal.config.UserPortalConfigService;
 import org.exoplatform.portal.mop.SiteKey;
 import org.exoplatform.portal.mop.SiteType;
 import org.exoplatform.portal.mop.navigation.NavigationContext;
@@ -51,6 +52,7 @@ import org.exoplatform.social.core.space.spi.SpaceService;
 import org.exoplatform.web.WebAppController;
 import org.exoplatform.web.controller.QualifiedName;
 import org.exoplatform.web.controller.router.Router;
+import org.exoplatform.webui.application.WebuiRequestContext;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
@@ -115,31 +117,17 @@ public class ResourceUtil {
   public static String buildBaseURL() {
     PortalContainer container = PortalContainer.getInstance();
     WebAppController webAppController = container.getComponentInstanceOfType(WebAppController.class);
+    UserPortalConfigService portalConfigService = container.getComponentInstanceOfType(UserPortalConfigService.class);
     Router router = webAppController.getRouter();
 
-
-    PortalRequestContext pContext = null;
-    try {
-      pContext = Util.getPortalRequestContext();
-    } catch (NullPointerException e) {
-      pContext = null;
-    }
-
+    SiteKey siteKey = null;
     Space space = null;
-    SiteKey siteKey = CommonsUtils.getCurrentSite();
-    if (pContext != null) {
-      if (pContext.getSiteType().equals(SiteType.GROUP)  && pContext.getSiteName().startsWith(SpaceUtils.SPACE_GROUP)) {
-        String requestPath = pContext.getControllerContext().getParameter(RequestNavigationData.REQUEST_PATH);
-        ExoRouter.Route er = ExoRouter.route(requestPath);
-        if (er != null && er.localArgs != null) {
-          String spacePrettyName = er.localArgs.get("spacePrettyName");
-          SpaceService sService = container.getComponentInstanceOfType(SpaceService.class);
-  
-          if (spacePrettyName != null && !spacePrettyName.isEmpty()) {
-            space = sService.getSpaceByPrettyName(spacePrettyName);
-          }
-        }
-      }
+    WebuiRequestContext context = WebuiRequestContext.getCurrentInstance();
+    if (context == null) {
+      siteKey = SiteKey.portal(portalConfigService.getDefaultPortal());
+    } else {
+      siteKey = CommonsUtils.getCurrentSite();
+      space = SpaceUtils.getSpaceByContext();
     }
 
     return baseURL(siteKey, container, router, space);
