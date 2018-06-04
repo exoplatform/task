@@ -1,0 +1,23 @@
+<%
+    String msg = "";
+    if (COUNT != null && Integer.parseInt(COUNT) > 1) {
+        if (TOTAL_USER <= 1) {
+            msg = _ctx.appRes("Notification.message.more.TaskCommentPlugin", USER, COUNT);
+        } else {
+            msg = _ctx.appRes("Notification.message.morePeople.more.TaskCommentPlugin", USER, COUNT);
+        }
+    } else {
+        if (TOTAL_USER <= 1) {
+            msg = _ctx.appRes("Notification.message.TaskCommentPlugin", USER);
+        } else {
+            msg = _ctx.appRes("Notification.message.morePeople.TaskCommentPlugin", USER);
+        }
+    }
+    if (PROJECT_NAME != null && !PROJECT_NAME.isEmpty()) {
+      msg += " " + _ctx.appRes("Notification.message.inProject", "<b>" + PROJECT_NAME + "</b>");
+    }
+%>
+$msg
+<%if (TASK_TITLE != null && !TASK_TITLE.isEmpty()) {%>
+    $TASK_TITLE
+<%} %>
