@@ -4,6 +4,13 @@
 	xsi:schemaLocation="http://www.exoplatform.org/xml/ns/gatein_resources_1_4 http://www.exoplatform.org/xml/ns/gatein_resources_1_4"
 	xmlns="http://www.exoplatform.org/xml/ns/gatein_resources_1_4">
 
+  <javascript>
+    <param>
+      <js-module>taskChatPlugin</js-module>
+      <js-path>/js/TaskChatPlugin.js</js-path>
+    </param>
+  </javascript>
+
   <module>
     <name>taskLocale</name>
     <supported-locale>ar</supported-locale>
@@ -173,25 +180,6 @@
       <module>suggester</module>
     </depends>
   </module>
-  <module>
-		<name>taskChatPlugin</name>
-		<script>
-			<path>/js/TaskChatPlugin.js</path>
-		</script>
-		<depends>
-			<module>jquery</module>
-		</depends>
-    <depends>
-      <module>suggester</module>
-    </depends>
-    <depends>
-      <module>uiMiniCalendar</module>
-    </depends>
-    <depends>
-      <module>bootbox</module>
-    </depends>
-	</module>
-
 
   <module>
     <name>bootstrap_datepicker_locale</name>

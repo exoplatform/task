@@ -19,57 +19,33 @@
 
 package org.exoplatform.task.integration.chat;
 
+import java.text.SimpleDateFormat;
+import java.util.*;
+
 import javax.ws.rs.core.MediaType;
 
-import java.nio.charset.Charset;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
-import org.exoplatform.commons.api.ui.ActionContext;
-import org.exoplatform.commons.api.ui.BaseUIPlugin;
-import org.exoplatform.commons.api.ui.RenderContext;
-import org.exoplatform.commons.api.ui.Response;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import org.exoplatform.commons.api.ui.*;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.container.xml.ValueParam;
-import org.exoplatform.groovyscript.text.BindingContext;
-import org.exoplatform.groovyscript.text.TemplateService;
-import org.exoplatform.resolver.ClasspathResourceResolver;
-import org.exoplatform.resolver.ResourceResolver;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
 import org.exoplatform.task.dao.ProjectQuery;
-import org.exoplatform.task.domain.Project;
-import org.exoplatform.task.domain.Status;
-import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.domain.*;
 import org.exoplatform.task.integration.ActivityTaskProcessor;
 import org.exoplatform.task.model.User;
-import org.exoplatform.task.service.ParserContext;
-import org.exoplatform.task.service.ProjectService;
-import org.exoplatform.task.service.StatusService;
-import org.exoplatform.task.service.TaskParser;
-import org.exoplatform.task.service.TaskService;
-import org.exoplatform.task.service.UserService;
-import org.exoplatform.task.util.ProjectUtil;
-import org.exoplatform.task.util.StringUtil;
-import org.exoplatform.task.util.TaskUtil;
+import org.exoplatform.task.service.*;
+import org.exoplatform.task.util.*;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
+@SuppressWarnings("unchecked")
 public class ChatPopupPlugin extends BaseUIPlugin {
 
   private static final String PREFIX = "++";
@@ -77,15 +53,11 @@ public class ChatPopupPlugin extends BaseUIPlugin {
   private static Log          log                       =
                                   ExoLogger.getExoLogger(ChatPopupPlugin.class);
 
-  private static final String POPUP                     = "classpath:/groovy/TaskPopup.gtmpl";
-
   private static final String TYPE                      = "type";
 
   private static final String CREATE_TASK_ACTION        = "createTask";
 
   private static final String CREATE_TASK_INLINE_ACTION = "createTaskInline";
-
-  private TemplateService     templateService;
 
   private ProjectService      projectService;
 
@@ -104,14 +76,12 @@ public class ChatPopupPlugin extends BaseUIPlugin {
   private SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm");
 
   public ChatPopupPlugin(InitParams params,
-                         TemplateService templateService,
                          ProjectService projectService,
                          StatusService statusService,
                          SpaceService spaceService,
                          TaskService taskService,
                          UserService userService,
                          TaskParser taskParser) {
-    this.templateService = templateService;
     this.projectService = projectService;
     this.statusService = statusService;
     this.taskService = taskService;
@@ -127,25 +97,7 @@ public class ChatPopupPlugin extends BaseUIPlugin {
 
   @Override
   public Response render(RenderContext renderContext) {
-    ResourceResolver resolver = new ClasspathResourceResolver();
-    StringBuilderWriter writer = new StringBuilderWriter();
-
-    DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
-    Date today = Calendar.getInstance().getTime();
-    String todayDate = df.format(today);
-
-    BindingContext bindingContext = new BindingContext(resolver, writer);
-    bindingContext.put("rs", renderContext.getRsBundle());
-
-    try {
-      bindingContext.put("today", todayDate);
-      bindingContext.put("actionUrl", renderContext.getActionUrl());
-      templateService.merge(POPUP, bindingContext);
-    } catch (Exception ex) {
-      log.error(ex.getMessage(), ex);
-    }
-    String result = writer.getBuilder().toString();
-    return new Response(result.getBytes(Charset.forName("UTF-8")), MediaType.TEXT_HTML);
+    return new Response(new byte[0], MediaType.TEXT_PLAIN);
   }
 
   @Override
