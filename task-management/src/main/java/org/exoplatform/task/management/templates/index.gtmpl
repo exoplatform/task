@@ -100,12 +100,12 @@
 		                <a class="dropdownIcon pull-right collapseTree" href="javascript:void(0)">
                             <i class="uiIconLightGray uiIconArrowDownMini" ></i>
                         </a>
-                        <a class="dropdown-toggle actionIconSmall dropdownIcon add-new-project pull-right"
+                        <a class="dropdown-toggle actionIconSmall dropdownIcon add-new-project pull-right" 
 		                   data-toggle="dropdown" data-content="&{label.welcome.firstProject}" data-placement="bottom"
 		                   href="javascript:void(0)">
 		                    <i class="uiIconLightGray uiIconSimplePlusMini addProject" ></i>
                         </a>
-		                <div class="dropdown-menu uiDropdownWithIcon" style="left: 88%; top: -22px">
+		                <div class="dropdown-menu uiDropdownWithIcon">
 		                	<span class="arrowLeft"></span>
 		                	<ul class="uiDropdownMenu">
 			                    <li>
@@ -133,7 +133,7 @@
                       <a href="javascript:void(0)" data-placement="bottom" data-content="&{label.welcome.firstLabel}" data-toggle="dropdown" class="dropdown-toggle actionIconSmall dropdownIcon add-new-label pull-right">
                         <i class="uiIconLightGray uiIconSimplePlusMini addLabel"></i>
                       </a>
-                      <div class="dropdown-menu uiDropdownWithIcon" style="left: 88%; top: -22px">
+                      <div class="dropdown-menu uiDropdownWithIcon">
                         <span class="arrowLeft"></span>
                         <ul class="uiDropdownMenu">
                             <li>

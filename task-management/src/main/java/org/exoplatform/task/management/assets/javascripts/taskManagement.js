@@ -73,7 +73,7 @@ define('taskManagementApp', ['SHARED/jquery', 'SHARED/taskLocale', 'SHARED/juzu-
                 });
             }
         }
-        
+            
         var centerPanelWidth = function(expand) {
         	var ui = taApp.getUI();
         	var $center = ui.$centerPanel;
