@@ -1,0 +1,15 @@
+<%
+    String msg = "";
+    if (COUNT != null && Integer.parseInt(COUNT) > 1) {
+     msg = _ctx.appRes("Notification.message.more.TaskMentionPlugin", USER, COUNT);
+    } else {
+     msg = _ctx.appRes("Notification.message.TaskMentionPlugin", USER);
+    }
+    if (PROJECT_NAME != null && !PROJECT_NAME.isEmpty()) {
+      msg += " " + _ctx.appRes("Notification.message.inProject", "<b>" + PROJECT_NAME + "</b>");
+    }
+%>
+$msg
+<%if (TASK_TITLE != null && !TASK_TITLE.isEmpty()) {%>
+    $TASK_TITLE
+<%} %>

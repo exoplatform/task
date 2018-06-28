@@ -1,0 +1,18 @@
+<%
+    String msg = "";
+    if (COUNT != null && Integer.parseInt(COUNT) > 1) {
+     msg = _ctx.appRes("Notification.message.more.TaskDueDatePlugin", USER, COUNT);
+    } else {
+     msg = _ctx.appRes("Notification.message.TaskDueDatePlugin", USER);
+    }
+    if (PROJECT_NAME != null && !PROJECT_NAME.isEmpty()) {
+      msg += " " + _ctx.appRes("Notification.message.inProject", "<b>" + PROJECT_NAME + "</b>");
+    }
+%>
+$msg
+<%if (TASK_TITLE != null && !TASK_TITLE.isEmpty()) {%>
+    $TASK_TITLE
+<%} %>
+<%if (DUE_DATE != null && !DUE_DATE.isEmpty()) {%>
+    <%=_ctx.appRes("Notification.label.dueOn")%> $DUE_DATE
+<%} %>
