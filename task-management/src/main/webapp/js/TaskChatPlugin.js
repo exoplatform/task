@@ -41,12 +41,21 @@ window.eXo.chat.message.types['type-task'] = {
 window.eXo.chat.room.extraApplications.push({
   key: 'task',
   type: 'type-task',
+  notificationContent: function(msg) {
+    return msg.options.task;
+  },
   shortcutMatches: function(msg) {
     return /\s*\+\+\S+/.test(msg);
   },
   shortcutCallback: function(chatServices, $, msg, contact) {
     this.$ = $;
     var thiss = this;
+    var username = null;
+    if (msg.indexOf(' @') > -1) {
+      var messages = msg.split(' @');
+      msg = messages[0];
+      username = messages[1];
+    }
     var message = {
       msg : '',
       room : contact.room,
@@ -54,6 +63,7 @@ window.eXo.chat.room.extraApplications.push({
       user: eXo.chat.userSettings.username,
       isSystem: true,
       options: {
+        username: username,
         fromUser: eXo.chat.userSettings.username,
         fromFullname: eXo.chat.userSettings.fullName
       }
@@ -63,6 +73,7 @@ window.eXo.chat.room.extraApplications.push({
     var isTeam = contact.user.indexOf('team-') === 0;
     var data = {
       'extension_action' : 'createTaskInline',
+      'username' : username,
       'text' : msg,
       'roomName' : contact.fullName,
       'isSpace' : isSpace,
@@ -73,7 +84,7 @@ window.eXo.chat.room.extraApplications.push({
       data = JSON.parse(data);
       thiss.processData(data, message);
 
-      document.dispatchEvent(new CustomEvent('exo-chat-message-tosend', {'detail' : message}));
+      document.dispatchEvent(new CustomEvent(eXo.chat.constants.ACTION_MESSAGE_SEND, {'detail' : message}));
     });
   },
   nameKey: 'exoplatform.chat.task',
@@ -83,6 +94,51 @@ window.eXo.chat.room.extraApplications.push({
     return '<input id="taskTitle" name="text" class="large" type="text" placeholder="' + i18NConverter('exoplatform.chat.task.title') + '" required> \
             <input id="taskAssignee" name="username" class="large" type="text" placeholder="' + i18NConverter('exoplatform.chat.assignee') + '"> \
             <input id="taskDueDate" name="dueDate" format="MM/dd/yyyy" placeholder="' + i18NConverter('exoplatform.chat.due.date') + '" class="large" type="text" onfocus="require([\'SHARED/CalDateTimePicker\'], (CalDateTimePicker) => CalDateTimePicker.init(event.target, false));">';
+  },
+  mount: function($, chatServices) {
+    var $msg = $('#messageComposerArea');
+    if(!$msg.length) {
+      return;
+    }
+    $msg.suggester({
+      type : "mix",
+      sourceProviders: ['exo:task-add-user-inline'],
+      showAtCaret: true,
+      valueField: 'name',
+      labelField: 'fullname',
+      searchField: ['fullname'],
+      providers: {
+        'exo:task-add-user-inline': function(query, callback) {
+          if (!query || !query.trim().length) {
+            return callback();
+          }
+          chatServices.getChatUsers(eXo.chat.userSettings, query.trim()).then(function(data) {
+            if(data && data.users) {
+              callback(data.users);
+            }
+          });
+        }
+      },
+      renderMenuItem: function(item) {
+        var avatar = chatServices.getUserAvatar(item.name);
+        var defaultAvatar = '/chat/img/room-default.jpg';
+        return '<img src="' + avatar + '" onerror="this.src=\'' + defaultAvatar + '\'" width="20px" height="20px"> ' +
+        chatServices.escapeHtml(item.fullname) + ' <span style="float: right" class="chat-status-task chat-status-'+item.status+'"></span>';
+      },
+      renderItem: '@${name}',
+      callbacks: {
+        matcher: function(flag, subtext) {
+          var pattern = /\s*\+\+\S+/;
+          if (pattern.test(subtext)) {
+            var pos = subtext.lastIndexOf(flag);
+            if (pos > -1) {
+              return subtext.substr(pos + 1);
+            }
+          }
+          return null;
+        }
+      }
+    });
   },
   htmlAdded: function($, chatServices) {
     this.$ = $;
@@ -144,7 +200,7 @@ window.eXo.chat.room.extraApplications.push({
             }
             chatServices.getChatUsers(eXo.chat.userSettings, query.trim()).then(function(data) {
               if(data && data.users) {
-                callback(data.users.filter(function(user) {return user.name !== eXo.chat.userSettings.username}));
+                callback(data.users);
               }
             });
           }
