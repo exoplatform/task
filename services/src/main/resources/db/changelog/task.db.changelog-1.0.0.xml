@@ -421,23 +421,4 @@
     <sqlFile dbms="oracle" encoding="utf8" endDelimiter="/" relativeToChangelogFile="true" path="ORACLE_SEQ_TASK_LABELS_LABEL_ID.sql" />
   </changeSet>
 
-  <!-- Definition of TASK_COMMENT_MENTIONED_USERS table -->
-  <changeSet author="task" id="1.0.0-28">
-    <createTable tableName="TASK_COMMENT_MENTIONED_USERS">
-      <column name="COMMENT_ID" type="BIGINT">
-        <constraints foreignKeyName="FK_TK_CM_MENT_TK_CM_01" references="TASK_COMMENTS(COMMENT_ID)" nullable="false"/>
-      </column>
-      <column name="MENTIONED_USERS" type="NVARCHAR(50)">
-        <constraints nullable="false"/>
-      </column>
-    </createTable>
-    <createIndex indexName="IDX_TASK_COMMENT_MENTIONED_USERS_01"
-                 tableName="TASK_COMMENT_MENTIONED_USERS">
-      <column name="MENTIONED_USERS" type="NVARCHAR(50)"/>
-    </createIndex>
-    <modifySql dbms="mysql">
-      <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
-    </modifySql>
-  </changeSet>
-
 </databaseChangeLog>

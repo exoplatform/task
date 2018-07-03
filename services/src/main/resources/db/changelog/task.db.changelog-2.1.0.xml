@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+  <!-- Definition of TASK_COMMENT_MENTIONED_USERS table -->
+  <changeSet author="task" id="2.1.0-01">
+    <preConditions onFail="MARK_RAN">
+      <not><tableExists tableName="TASK_COMMENT_MENTIONED_USERS"/></not>
+    </preConditions>
+    <createTable tableName="TASK_COMMENT_MENTIONED_USERS">
+      <column name="COMMENT_ID" type="BIGINT">
+        <constraints foreignKeyName="FK_TK_CM_MENT_TK_CM_01" references="TASK_COMMENTS(COMMENT_ID)" nullable="false"/>
+      </column>
+      <column name="MENTIONED_USERS" type="NVARCHAR(50)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <modifySql dbms="mysql">
+      <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
+    </modifySql>
+  </changeSet>
+
+  <changeSet author="task" id="2.1.0-02">
+    <preConditions onFail="MARK_RAN">
+      <not><indexExists indexName="IDX_TASK_COMMENT_MENTIONED_USERS_01" tableName="TASK_COMMENT_MENTIONED_USERS"/></not>
+    </preConditions>
+    <createIndex indexName="IDX_TASK_COMMENT_MENTIONED_USERS_01"
+                 tableName="TASK_COMMENT_MENTIONED_USERS">
+      <column name="MENTIONED_USERS" type="NVARCHAR(50)"/>
+    </createIndex>
+  </changeSet>
+
+</databaseChangeLog>
