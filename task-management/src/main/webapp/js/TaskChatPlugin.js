@@ -1,134 +1,131 @@
-(function($, uiMiniCalendar) {
-  var createTaskUrl = '';
-    $('#task-add-user').suggester({
-      type : 'tag',
-      plugins: ['remove_button'],
+window.eXo.chat = window.eXo.chat ? window.eXo.chat : {};
+window.eXo.chat.room = window.eXo.chat.room ? window.eXo.chat.room : {};
+window.eXo.chat.room.extraApplications = window.eXo.chat.room.extraApplications ? window.eXo.chat.room.extraApplications : [];
+
+window.eXo.chat.message = window.eXo.chat.message ? window.eXo.chat.message : {};
+window.eXo.chat.message.types = window.eXo.chat.message.types ? window.eXo.chat.message.types : {};
+window.eXo.chat.message.notifs = window.eXo.chat.message.notifs ? window.eXo.chat.message.notifs : {};
+
+window.eXo.chat.message.notifs['type-task'] = {
+  iconClass: 'uiIconChatCreateTask uiIconChatLightGray pull-left',
+  html: function(notif, i18N) {
+    return notif.options ? notif.options.task : '';
+  }
+}
+
+window.eXo.chat.message.types['type-task'] = {
+  iconClass: 'uiIconChatCreateTask',
+  html: function(message, i18N) {
+    if (!message || !message.options || !i18N) {
+      return '';
+    }
+    return '<b><a href="' + message.options.url + '" target="_blank">' + message.options.task + '</a></b> \
+    <div class="custom-message-item"> \
+      <span><i class="uiIconChatAssign"></i> \
+        ' + i18N('exoplatform.chat.assign.to') + ': \
+      </span> \
+      <b>' + (message.options.username || i18N('exoplatform.chat.assign.to.none')) + ' </b> \
+    </div> \
+    <div class="custom-message-item"> \
+      <span> \
+        <i class="uiIconChatClock"></i> \
+        ' + i18N('exoplatform.chat.due.date') + ':  \
+      </span> \
+      <b> \
+      ' + (message.options.dueDate || i18N('exoplatform.chat.due.date.none')) + ' \
+      </b> \
+    </div>';
+  }
+};
+
+window.eXo.chat.room.extraApplications.push({
+  key: 'task',
+  type: 'type-task',
+  notificationContent: function(msg) {
+    return msg.options.task;
+  },
+  shortcutMatches: function(msg) {
+    return /\s*\+\+\S+/.test(msg);
+  },
+  shortcutCallback: function(chatServices, $, msg, contact) {
+    this.$ = $;
+    var thiss = this;
+    var username = null;
+    if (msg.indexOf(' @') > -1) {
+      var messages = msg.split(' @');
+      msg = messages[0];
+      username = messages[1];
+    }
+    var message = {
+      msg : '',
+      room : contact.room,
+      clientId: new Date().getTime().toString(),
+      user: eXo.chat.userSettings.username,
+      isSystem: true,
+      options: {
+        username: username,
+        fromUser: eXo.chat.userSettings.username,
+        fromFullname: eXo.chat.userSettings.fullName
+      }
+    };
+    message.options.type = 'type-task';
+    var isSpace = contact.user.indexOf('space-') === 0;
+    var isTeam = contact.user.indexOf('team-') === 0;
+    var data = {
+      'extension_action' : 'createTaskInline',
+      'username' : username,
+      'text' : msg,
+      'roomName' : contact.fullName,
+      'isSpace' : isSpace,
+      'isTeam': isTeam,
+      'participants': isSpace || isTeam ? contact.participants.join(',') : contact.user
+    };
+    this.saveTask(eXo.chat.userSettings, data).then(function(response) {return response.text()}).then(function(data) {
+      data = JSON.parse(data);
+      thiss.processData(data, message);
+
+      document.dispatchEvent(new CustomEvent(eXo.chat.constants.ACTION_MESSAGE_SEND, {'detail' : message}));
+    });
+  },
+  nameKey: 'exoplatform.chat.task',
+  labelKey: 'exoplatform.chat.assign.task',
+  iconClass: 'uiIconChatCreateTask',
+  html: function(i18NConverter) {
+    return '<input id="taskTitle" name="text" class="large" type="text" placeholder="' + i18NConverter('exoplatform.chat.task.title') + '" required> \
+            <input id="taskAssignee" name="username" class="large" type="text" placeholder="' + i18NConverter('exoplatform.chat.assignee') + '"> \
+            <input id="taskDueDate" name="dueDate" format="MM/dd/yyyy" placeholder="' + i18NConverter('exoplatform.chat.due.date') + '" class="large" type="text" onfocus="require([\'SHARED/CalDateTimePicker\'], (CalDateTimePicker) => CalDateTimePicker.init(event.target, false));">';
+  },
+  mount: function($, chatServices) {
+    var $msg = $('#messageComposerArea');
+    if(!$msg.length) {
+      return;
+    }
+    $msg.suggester({
+      type : "mix",
+      sourceProviders: ['exo:task-add-user-inline'],
+      showAtCaret: true,
       valueField: 'name',
       labelField: 'fullname',
       searchField: ['fullname'],
-      sourceProviders: ['exo:task-add-user'],
       providers: {
-        'exo:task-add-user': function(query, callback) {
-          $.ajax({
-            type: "GET",
-            url: chatApplication.jzUsers,
-            data: {
-              filter : query,
-              user : chatApplication.username,
-              token : chatApplication.token,
-              dbName : chatApplication.dbName
-            },
-            complete: function(jqXHR) {
-              if(jqXHR.readyState === 4) {
-                var json = $.parseJSON(jqXHR.responseText)
-                if (json.users != null) {
-                    callback(json.users);
-                }
-              }
+        'exo:task-add-user-inline': function(query, callback) {
+          if (!query || !query.trim().length) {
+            return callback();
+          }
+          chatServices.getChatUsers(eXo.chat.userSettings, query.trim()).then(function(data) {
+            if(data && data.users) {
+              callback(data.users);
             }
           });
         }
       },
-      renderMenuItem: function(item, escape) {
-        return '<img onerror="this.src=\'/chat/img/Avatar.gif;\'" src="/rest/chat/api/1.0/user/getAvatarURL/'+item.name+'" width="20px" height="20px"> ' +
-        escape(item.fullname) + ' <span style="float: right" class="chat-status-task chat-status-'+item.status+'"></span>';
-      }
-    });
-
-  $(".create-task-button").on("click", function() {
-    var selectedUsers = $("#task-add-user").val();
-    var task = $("#task-add-task").val();
-    var dueDate = $("#task-add-date").val();
-    var roomName = chatApplication.targetFullname;
-    var isSpace = false;
-    var isTeam = false;
-    var targetUser = chatApplication.targetUser;
-    if (targetUser.indexOf("space-") > -1) {
-      isSpace = true;
-    } else if (targetUser.indexOf("team-") > -1) {
-      isTeam = true;
-    }
-
-    // Validate empty
-    if (task === $("#task-add-task").attr("data-value") || task === "") {
-      return;
-    }
-
-    // Validate datetime
-    if (dueDate && !uiMiniCalendar.isDate(dueDate)) {
-      bootbox
-        .alertError(
-          chatBundleData["exoplatform.chat.date.invalid.message"],
-          function(e) {
-            e.stopPropagation();
-            $("#task-add-date").select();
-          });
-      return;
-    }
-
-    hideMeetingPanel();
-    // Disable button while server updating
-    setActionButtonEnabled('.create-task-button', false);
-
-    chatApplication.getUsers(targetUser, function (jsonData) {
-      var participants = [];
-      $.each(jsonData.users, function(idx, elem) {
-        participants.push(elem.name);
-      });
-
-      // Call server
-      $.ajax({
-        url : createTaskUrl,
-        data : {
-          "extension_action" : "createTask",
-          "username" : selectedUsers,
-          "dueDate" : dueDate,
-          "text" : task,
-          "roomName" : roomName,
-          "isSpace" : isSpace,
-          "isTeam": isTeam,
-          "participants": participants.join(",")
-        },
-        success : function(response) {
-
-          var url = response.url ? response.url : ((response.length && response.length == 1 && response[0].url) ? response[0].url : null);
-          var options = {
-            type : "type-task",
-            username : selectedUsers,
-            dueDate : dueDate,
-            task : task,
-            url : url
-          };
-          var msg = task;
-
-          chatApplication.chatRoom.sendMessage(msg,
-            options, "true");
-
-          $('#task-add-user').suggester('setValue', '');
-          setActionButtonEnabled('.create-task-button',
-            true);
-        },
-        error : function(xhr, status, error) {
-          console.log("error");
-          setActionButtonEnabled('.create-task-button',
-            true);
-        }
-      });
-    });
-  });
-
-  // Initialize suggester component.
-  (function() {
-    var $msg = $('#msg');
-    $msg.suggester({
-      type : "mix",
-      sourceProviders : ['exo:chat'],
-      showAtCaret: true,
       renderMenuItem: function(item) {
-        return '<img onerror="this.src=\'/chat/img/Avatar.gif;\'" src="/rest/chat/api/1.0/user/getAvatarURL/'+item.uid+'" width="20px" height="20px"> ' +
-          item.value + ' <span style="float: right" class="chat-status-task chat-status-'+item.status+'"></span>';
+        var avatar = chatServices.getUserAvatar(item.name);
+        var defaultAvatar = '/chat/img/room-default.jpg';
+        return '<img src="' + avatar + '" onerror="this.src=\'' + defaultAvatar + '\'" width="20px" height="20px"> ' +
+        chatServices.escapeHtml(item.fullname) + ' <span style="float: right" class="chat-status-task chat-status-'+item.status+'"></span>';
       },
-      renderItem: '@${uid}',
+      renderItem: '@${name}',
       callbacks: {
         matcher: function(flag, subtext) {
           var pattern = /\s*\+\+\S+/;
@@ -142,189 +139,98 @@
         }
       }
     });
-    $msg.suggester('addProvider', 'exo:chat', function(query, callback) {
-      var _this = this;
-      $.ajax({
-        url: chatApplication.jzUsers,
-        data: {"filter": query,
-          "user": chatApplication.username,
-          "token": chatApplication.token,
-          "dbName": chatApplication.dbName
-        },
-        dataType: "json",
-        success: function(data) {
-          var users = [];
-          $.each(data.users, function(idx, user) {
-            users.push({
-              "uid": user.name,
-              "value": user.fullname,
-              "status": user.status
+  },
+  htmlAdded: function($, chatServices) {
+    this.$ = $;
+    this.initSuggester($, chatServices);
+  },
+  submit: function(chatServices, message, formData, contact) {
+    var thiss = this;
+    var isSpace = contact.user.indexOf('space-') === 0;
+    var isTeam = contact.user.indexOf('team-') === 0;
+    var $taskAssignee = this.$('#taskAssignee');
+    var $taskDueDate = this.$('#taskDueDate');
+    var $taskTitle = this.$('#taskTitle');
+    var data = {
+      'extension_action' : 'createTask',
+      'username' : $taskAssignee.suggester('getValue'),
+      'dueDate' : $taskDueDate.val(),
+      'text' : $taskTitle.val(),
+      'roomName' : contact.fullName,
+      'isSpace' : isSpace,
+      'isTeam': isTeam,
+      'participants': isSpace || isTeam ? contact.participants.join(',') : contact.user
+    };
+    return this.saveTask(eXo.chat.userSettings, data).then(function(response) {
+      if (!response.ok) {
+        return {errorCode : 'ErrorSaveTask'};
+      }
+      return response.json();
+    }).then(function(data) {
+      thiss.processData(data, message);
+      return {ok : true};
+    }).catch(function(e) {
+      return {errorCode : 'ErrorSaveTask'};
+    });
+  },
+  processData: function(data, message) {
+    var url = data.url ? data.url : data.length && data.length === 1 && data[0].url ? data[0].url : '';
+    var title = data.title ? data.title : data.length && data.length === 1 && data[0].title ? data[0].title : '';
+    message.options.url = url;
+    message.options.task = decodeURI(title);
+  },
+  initSuggester: function($, chatServices) {
+    var $taskAssigneeSuggestor = $('#taskAssignee');
+    if (!$taskAssigneeSuggestor.length) {
+      return;
+    }
+    if(!$taskAssigneeSuggestor[0].selectize) {
+      //init suggester
+      $taskAssigneeSuggestor.suggester({
+        type : 'tag',
+        plugins: ['remove_button'],
+        valueField: 'name',
+        labelField: 'fullname',
+        searchField: ['fullname'],
+        sourceProviders: ['exo:task-add-user'],
+        providers: {
+          'exo:task-add-user': function(query, callback) {
+            if (!query || !query.trim().length) {
+              return callback();
+            }
+            chatServices.getChatUsers(eXo.chat.userSettings, query.trim()).then(function(data) {
+              if(data && data.users) {
+                callback(data.users);
+              }
             });
-          });
-          callback.call(_this, users);
+          }
+        },
+        renderMenuItem: function(item, escape) {
+          var avatar = chatServices.getUserAvatar(item.name);
+          var defaultAvatar = '/chat/img/room-default.jpg';
+          return '<div class="avatarMini"> \
+              <img src="' + avatar + '" onerror="this.src=\'' + defaultAvatar + '\'"> \
+            </div> \
+            <div class="user-name">' + escape(item.fullname)+ ' (' + item.name + ')</div> \
+            <div class="user-status"><i class="chat-status-' + item.status + '"></i></div>';
         }
       });
-    });
-
-    $msg.on('shown.atwho', function(event, data) {
-      chatApplication.isMentioning = true;
-    });
-    $msg.on('hidden.atwho', function(event, data) {
-      setTimeout(function() {
-        chatApplication.isMentioning = false;
-      }, 100);
-    });
-  })();
-
-  var chatEvent = {
-    'beforeSend' : function(context) {
-      if (chatApplication.isMentioning) {
-        context.continueSend = false;
-        return;
-      }
-      var msg = context.msg;
-
-      var pattern = /\s*\+\+\S+/;
-      if (pattern.test(msg)) {
-        context.continueSend = false;
-        var roomName = chatApplication.targetFullname;
-        var isSpace = false, isTeam = false;
-        var targetUser = chatApplication.targetUser;
-        if (targetUser.indexOf("space-") > -1) {
-          isSpace = true;
-        } else if (targetUser.indexOf("team-") > -1) {
-          isTeam = true;
-        }
-
-        $("#msg").val('');
-        chatApplication.getUsers(targetUser, function (jsonData) {
-          var participants = [];
-          $.each(jsonData.users, function(idx, elem) {
-            participants.push(elem.name);
-          });
-
-          // Call server
-          $.ajax({
-            url : createTaskUrl,
-            data : {
-              "extension_action" : "createTaskInline",
-              "text": msg,
-              "isSpace": isSpace,
-              "isTeam": isTeam,
-              "roomName": roomName,
-              "participants": participants.join(",")
-            },
-            success : function(response) {
-              var options = {
-                "type" : "type-task",
-                "username" : response.assignee,
-                "task" : response.title,
-                "url" : response.url,
-                "dueDate" : response.dueDate
-              };
-
-              chatApplication.chatRoom.sendMessage(response.title,
-                options, "true");
-              setActionButtonEnabled('.create-task-button',
-                true);
-            },
-            error : function(xhr, status, error) {
-              console.log("fail to create inline task: " + error);
-            }
-          });
-        });
-      }
-    }
-  };
-
-  var chatPlugin = {
-    "getType" : function() {
-      return "type-task";
-    },
-    "getActionMeetingStyleClasses" : function(options) {
-      var actionType = options.type;
-      var out = "";
-
-      if ("type-task" === actionType) {
-        out += "                <i class='uiIconChat32x32Task uiIconChat32x32LightGray'></i>";
-      }
-      return out;
-    },
-    "messageBeautifier" : function(objMessage, options) {
-      if (options.type === "type-task") {
-        var assignee = options.username;
-        if(!assignee) {
-          assignee = chatBundleData["exoplatform.chat.assign.to.none"];
-        }
-        var dueDate = options.dueDate;
-        if(!dueDate) {
-          dueDate = chatBundleData["exoplatform.chat.due.date.none"];
-        }
-        var out = "";
-        if (options.url) {
-          out += "<b><a href='" + options.url + "' target='_blank'>" + options.task + "</a></b>";
-        } else {
-          out += "<b>" + options.task + "</b>";
-        }
-        out += "<div class='msTimeEvent'>";
-        out += "  <div>";
-        out += "    <i class='uiIconChatAssign uiIconChatLightGray mgR10'></i><span class='muted'>"
-          + chatBundleData["exoplatform.chat.assign.to"]
-          + ": </span><b>" + assignee + "</b>";
-        out += "  </div>";
-        out += "  <div>";
-        out += "    <i class='uiIconChatClock uiIconChatLightGray mgR10'></i><span class='muted'>"
-          + chatBundleData["exoplatform.chat.due.date"]
-          + ": </span><b>" + dueDate + "</b>";
-        out += "  </div>";
-        out += "</div>";
-        return out;
-      }
-    }
-  };
-
-  // This takes care of Chat application loaded before/after the others.
-  if (typeof chatApplication === 'object') {
-    chatApplication.registerEvent(chatEvent);
-  } else {
-    if (typeof chatEvents === 'undefined') {
-      chatEvents = [];
-    }
-    chatEvents.push(chatEvent);
-  }
-
-  if (typeof chatApplication === 'object' && chatApplication.chatRoom) {
-    chatApplication.chatRoom.registerPlugin(chatPlugin);
-  } else {
-    if (typeof chatPlugins === 'undefined') {
-      chatPlugins = [];
-    }
-    chatPlugins.push(chatPlugin);
-  }
-
-  function setMiniCalendarToDateField(dateFieldId) {
-      uiMiniCalendar.init(dateFieldId);
-  };
-  setMiniCalendarToDateField('task-add-date');
-
-  function hideMeetingPanel() {
-    $(".meeting-action-popup").css("display", "none");
-    $(".meeting-action-toggle").removeClass("active");
-  }
-
-  function setActionButtonEnabled(btnClass, isEnabled) {
-    if (isEnabled) {
-      $(btnClass).css('cursor', "default");
-      $(btnClass).removeAttr('disabled');
     } else {
-      $(btnClass).css('cursor', "progress");
-      $(btnClass).attr('disabled', 'disabled');
+      //clear suggester
+      $taskAssigneeSuggestor.suggester('setValue', '');
+      $taskAssigneeSuggestor[0].selectize.clear(true);
+      $taskAssigneeSuggestor[0].selectize.renderCache['item'] = {};
     }
+  },
+  saveTask: function(userSettings, data) {
+    return fetch('/chat/api/1.0/plugin/action', {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+      },
+      credentials: 'include',
+      method: 'post',
+      body: decodeURI(this.$.param(data))
+    });
   }
 
-return {
-  setActionUrl : function(url) {
-    createTaskUrl = url;
-  }
-}
-})($, uiMiniCalendar);
+});
