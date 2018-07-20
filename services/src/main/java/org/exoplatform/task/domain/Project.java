@@ -45,11 +45,11 @@ import java.util.*;
   ),
   @NamedQuery(
               name = "TaskProject.findProjectsByKeyword",
-              query = "SELECT DISTINCT p FROM TaskProject p WHERE p.name LIKE :name"
+              query = "SELECT DISTINCT p FROM TaskProject p WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :name, '%'))"
   ),
   @NamedQuery(
               name = "TaskProject.countProjectsByKeyword",
-              query = "SELECT count(p) FROM TaskProject p WHERE p.name LIKE :name"
+              query = "SELECT count(p) FROM TaskProject p WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :name, '%'))"
   ),
   @NamedQuery(
               name = "TaskProject.findProjectsByMemberships",
@@ -70,14 +70,14 @@ import java.util.*;
               query = "SELECT DISTINCT p FROM TaskProject p "
                   + " LEFT JOIN p.manager manager "
                   + " LEFT JOIN p.participator participator "
-                  + " WHERE (manager IN (:memberships) OR participator IN (:memberships)) AND p.name LIKE :name"
+                  + " WHERE (manager IN (:memberships) OR participator IN (:memberships)) AND LOWER(p.name) LIKE LOWER(CONCAT('%', :name, '%'))"
   ),
   @NamedQuery(
               name = "TaskProject.countProjectsByMembershipsByKeyword",
               query = "SELECT count(p) FROM TaskProject p "
                   + " LEFT JOIN p.manager manager "
                   + " LEFT JOIN p.participator participator "
-                  + " WHERE (manager IN (:memberships) OR participator IN :memberships) AND p.name LIKE :name"
+                  + " WHERE (manager IN (:memberships) OR participator IN :memberships) AND LOWER(p.name) LIKE LOWER(CONCAT('%', :name, '%'))"
   )
 })
 public class Project {

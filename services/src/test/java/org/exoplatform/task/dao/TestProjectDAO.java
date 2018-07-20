@@ -90,13 +90,30 @@ public class TestProjectDAO extends AbstractTest {
   }
   
   @Test
-  public void testFindProjectByKeyword() throws Exception {
+  public void testFindProjectByKeywordWithDifferentCase() throws Exception {
     Set<String> manager = new HashSet<String>();
     manager.add("root");
     Project parent = new Project("Parent project", null, null, manager, null);
     pDAO.create(parent);
 
     ListAccess<Project> projects = pDAO.findAllByMembershipsAndKeyword(Arrays.asList("root"), "parenT ProJecT", null);
+    Assert.assertEquals(1, projects.getSize());
+  }
+
+  @Test
+  public void testFindProjectByKeywordPartiallyMatching() throws Exception {
+    Set<String> manager = new HashSet<String>();
+    manager.add("root");
+    Project parent = new Project("Marketing", null, null, manager, null);
+    pDAO.create(parent);
+
+    ListAccess<Project> projects = pDAO.findAllByMembershipsAndKeyword(Arrays.asList("root"), "Mark", null);
+    Assert.assertEquals(1, projects.getSize());
+
+    projects = pDAO.findAllByMembershipsAndKeyword(Arrays.asList("root"), "arKet", null);
+    Assert.assertEquals(1, projects.getSize());
+
+    projects = pDAO.findAllByMembershipsAndKeyword(Arrays.asList("root"), "keTING", null);
     Assert.assertEquals(1, projects.getSize());
   }
 }
