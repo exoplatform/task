@@ -93,11 +93,15 @@ public class TestProjectDAO extends AbstractTest {
   public void testFindProjectByKeywordWithDifferentCase() throws Exception {
     Set<String> manager = new HashSet<String>();
     manager.add("root");
-    Project parent = new Project("Parent project", null, null, manager, null);
+
+    ListAccess<Project> projects = pDAO.findAllByMembershipsAndKeyword(Arrays.asList("root"), "test parenT ProJecT", null);
+    int initialSize = projects.getSize();
+
+    Project parent = new Project("Test Parent project", null, null, manager, null);
     pDAO.create(parent);
 
-    ListAccess<Project> projects = pDAO.findAllByMembershipsAndKeyword(Arrays.asList("root"), "parenT ProJecT", null);
-    Assert.assertEquals(1, projects.getSize());
+    projects = pDAO.findAllByMembershipsAndKeyword(Arrays.asList("root"), "test parenT ProJecT", null);
+    Assert.assertEquals(initialSize + 1, projects.getSize());
   }
 
   @Test
