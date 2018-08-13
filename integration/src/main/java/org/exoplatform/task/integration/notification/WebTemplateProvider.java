@@ -95,7 +95,6 @@ public class WebTemplateProvider extends TemplateProvider {
           }
           prevNotif.setUpdate(true);
           prevNotif.setLastModifiedDate(System.currentTimeMillis());
-          prevNotif.setDateCreated(Calendar.getInstance());
           ctx.setNotificationInfo(prevNotif);
           notification = prevNotif;
         }
