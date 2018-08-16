@@ -266,23 +266,6 @@ $(document).ready(function() {
         var taskId = $a.closest('.uiBox').data('taskid');
         taApp.setTaskComplete(taskId, !$a.data('taskcompleted'), taFilter.isShowCompletedTask());
     });
-    $rightPanel.on('click', 'a.action-clone-task', function(e){
-        var $a = $(e.target).closest('a');
-        var taskId = $a.closest('[data-taskid]').data('taskid');
-        $a.jzAjax('TaskController.clone()', {
-            data: {id: taskId},
-            success: function(response) {
-              var id = response.id; 
-              var projectId = $leftPanel.find('.active .project-name').data('id');
-              taApp.reloadTaskList(projectId, -1, function() {
-                $centerPanel.find('.taskItem[data-taskid="' + id + '"]').click();
-              });
-            },
-            error: function(xhr) {
-              taApp.showWarningDialog(xhr.responseText);
-            }
-        });
-    });
 
     $rightPanel.on('click', '.editAssignee', function(e) {
         e.stopPropagation();

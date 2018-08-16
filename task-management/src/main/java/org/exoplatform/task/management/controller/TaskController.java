@@ -111,6 +111,10 @@ public class TaskController extends AbstractController {
   @Inject
   @Path("confirmDeleteTask.gtmpl")
   org.exoplatform.task.management.templates.confirmDeleteTask confirmDeleteTask;
+
+  @Inject
+  @Path("confirmCloneTask.gtmpl")
+  org.exoplatform.task.management.templates.confirmCloneTask confirmCloneTask;
   
   @Inject
   ViewStateService viewStateService;
@@ -239,6 +243,25 @@ public class TaskController extends AbstractController {
     msg = msg.replace("{}", task.getTitle());
 
     return confirmDeleteTask
+            .with()
+            .taskId(task.getId())
+            .msg(msg)
+            .ok().withCharset(Tools.UTF_8);
+  }
+
+  @Resource
+  @Ajax
+  @MimeType.HTML
+  public Response openConfirmCloneTask(Long id) throws EntityNotFoundException, UnAuthorizedOperationException {
+    Task task = taskService.getTask(id);
+    if (!TaskUtil.hasEditPermission(task)) {
+      throw new UnAuthorizedOperationException(id, Task.class, getNoPermissionMsg());
+    }
+
+    String msg = bundle.getString("popup.msg.cloneTask");
+    msg = msg.replace("{}", task.getTitle());
+
+    return confirmCloneTask
             .with()
             .taskId(task.getId())
             .msg(msg)

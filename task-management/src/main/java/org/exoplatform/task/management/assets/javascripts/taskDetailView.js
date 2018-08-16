@@ -16,7 +16,13 @@ define('taskDetailView', ['SHARED/jquery', 'taskManagementApp', 'taskCenterView'
             var taskId = $a.closest('[data-taskid]').data('taskid');
             taApp.showDialog('TaskController.openConfirmDeleteTask()', {id : taskId});
         });
-    }
+
+        $rightPanel.on('click', 'a.action-clone-task', function(e){
+            var $a = $(e.target).closest('a');
+            var taskId = $a.closest('[data-taskid]').data('taskid');
+            taApp.showDialog('TaskController.openConfirmCloneTask()', {id : taskId});
+        });
+    };
 
     detailView.initDeleteTaskDialog = function() {
         $('.confirmDeleteTask')
@@ -35,6 +41,32 @@ define('taskDetailView', ['SHARED/jquery', 'taskManagementApp', 'taskCenterView'
                         if (xhr.status >= 400) {
                             taApp.showWarningDialog(xhr.responseText);
                         }
+                    }
+                });
+            });
+    };
+
+    detailView.initCloneTaskDialog = function() {
+        var ui = taApp.getUI();
+        var $leftPanel = ui.$leftPanel;
+        var $centerPanel = ui.$centerPanel;
+
+        $('.confirmCloneTask')
+            .off('click', '.confirmClone')
+            .on('click', '.confirmClone', function(e) {
+                var $target = $(e.target);
+                var taskid = $target.closest('[data-taskid]').data('taskid');
+                $target.jzAjax('TaskController.clone()', {
+                    data: {id: taskid},
+                    success: function(response) {
+                        var id = response.id;
+                        var projectId = $leftPanel.find('.active .project-name').data('id');
+                        taApp.reloadTaskList(projectId, -1, function() {
+                            $centerPanel.find('.taskItem[data-taskid="' + id + '"]').click();
+                        });
+                    },
+                    error: function(xhr) {
+                        taApp.showWarningDialog(xhr.responseText);
                     }
                 });
             });
