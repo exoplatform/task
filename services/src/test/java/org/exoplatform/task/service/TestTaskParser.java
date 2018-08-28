@@ -101,6 +101,58 @@ public class TestTaskParser {
   }
 
   @Test
+  public void testParserAssigneeAndCoworkerWhenInMiddleOfTheMessage() {
+    // Given
+    String message = "Test task @john @mary tomorrow";
+
+    // When
+    Task task = creator.parse(message, context);
+
+    // Then
+    Assert.assertNotNull(task);
+    Assert.assertEquals("", "Test task tomorrow", task.getTitle());
+    Assert.assertEquals("Assignee must be john", "john", task.getAssignee());
+    Assert.assertNotNull(task.getCoworker());
+    Assert.assertEquals("There must be 1 coworker", 1, task.getCoworker().size());
+    Assert.assertEquals("Coworker must be mary", "mary", task.getCoworker().iterator().next());
+  }
+
+  @Test
+  public void testParserAssigneeAndCoworkerWhenAtTheEndOfTheMessage() {
+    // Given
+    String message = "Test task tomorrow @john @mary";
+
+    // When
+    Task task = creator.parse(message, context);
+
+    // Then
+    Assert.assertNotNull(task);
+    Assert.assertEquals("", "Test task tomorrow", task.getTitle());
+    Assert.assertEquals("Assignee must be john", "john", task.getAssignee());
+    Assert.assertNotNull(task.getCoworker());
+    Assert.assertEquals("There must be 1 coworker", 1, task.getCoworker().size());
+    Assert.assertEquals("Coworker must be mary", "mary", task.getCoworker().iterator().next());
+  }
+
+  @Test
+  public void testParserAssigneeAndMultipleCoworkerWhenAtTheEndOfTheMessage() {
+    // Given
+    String message = "Test task tomorrow @john @mary @james";
+
+    // When
+    Task task = creator.parse(message, context);
+
+    // Then
+    Assert.assertNotNull(task);
+    Assert.assertEquals("", "Test task tomorrow", task.getTitle());
+    Assert.assertEquals("Assignee must be john", "john", task.getAssignee());
+    Assert.assertNotNull(task.getCoworker());
+    Assert.assertEquals("There must be 2 coworkers", 2, task.getCoworker().size());
+    Assert.assertTrue("mary must be part of the coworkers", task.getCoworker().contains("mary"));
+    Assert.assertTrue("james must be part of the coworkers", task.getCoworker().contains("james"));
+  }
+
+  @Test
   public void testParserDueDate() {
     Calendar current = Calendar.getInstance();
     Task task = creator.parse("Test task ^today tomorrow", context);

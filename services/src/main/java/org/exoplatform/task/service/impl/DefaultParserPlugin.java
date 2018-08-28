@@ -19,12 +19,7 @@
 
 package org.exoplatform.task.service.impl;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.StringTokenizer;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -122,9 +117,15 @@ public class DefaultParserPlugin implements TaskParserPlugin {
   //
   private String parseAssignee(String input, TaskBuilder builder) {
     Matcher m = ASSIGNEE_REGEX.matcher(input);
-    while (m.find()) {
+    if (m.find()) {
       String assignee = m.group(3);
       builder.withAssignee(assignee.trim());
+
+      Set<String> coworkers = new HashSet<>();
+      while(m.find()) {
+        coworkers.add(m.group(3));
+      }
+      builder.withCoworker(coworkers);
     }
 
     String in = m.replaceAll(" ").trim();

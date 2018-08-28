@@ -53,7 +53,6 @@ window.eXo.chat.room.extraApplications.push({
     var username = null;
     if (msg.indexOf(' @') > -1) {
       var messages = msg.split(' @');
-      msg = messages[0];
       username = messages[1];
     }
     var message = {
@@ -63,17 +62,16 @@ window.eXo.chat.room.extraApplications.push({
       user: eXo.chat.userSettings.username,
       isSystem: true,
       options: {
+        type: 'type-task',
         username: username,
         fromUser: eXo.chat.userSettings.username,
         fromFullname: eXo.chat.userSettings.fullName
       }
     };
-    message.options.type = 'type-task';
     var isSpace = contact.user.indexOf('space-') === 0;
     var isTeam = contact.user.indexOf('team-') === 0;
     var data = {
       'extension_action' : 'createTaskInline',
-      'username' : username,
       'text' : msg,
       'roomName' : contact.fullName,
       'isSpace' : isSpace,
