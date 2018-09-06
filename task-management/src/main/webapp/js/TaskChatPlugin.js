@@ -70,10 +70,15 @@ window.eXo.chat.room.extraApplications.push({
     };
     var isSpace = contact.user.indexOf('space-') === 0;
     var isTeam = contact.user.indexOf('team-') === 0;
+    var roomName = contact.fullName;
+    if(isSpace) {
+      // FIXME very ugly, the technical ID should be used here instead
+      roomName = roomName.toLowerCase().split(' ').join('_');
+    }
     var data = {
       'extension_action' : 'createTaskInline',
       'text' : msg,
-      'roomName' : contact.fullName,
+      'roomName' : roomName,
       'isSpace' : isSpace,
       'isTeam': isTeam,
       'participants': isSpace || isTeam ? contact.participants.join(',') : contact.user
