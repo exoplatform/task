@@ -162,7 +162,8 @@ window.eXo.chat.room.extraApplications.push({
       'roomName' : contact.fullName,
       'isSpace' : isSpace,
       'isTeam': isTeam,
-      'participants': isSpace || isTeam ? contact.participants.join(',') : contact.user
+      'participants': isSpace || isTeam ?
+        contact.participants.map(function(participant) { return participant.name; }).join(',') : contact.user
     };
     return this.saveTask(eXo.chat.userSettings, data).then(function(response) {
       if (!response.ok) {
