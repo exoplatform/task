@@ -376,7 +376,7 @@ $(document).ready(function() {
     
     var projectLoaded = function(id, $a) {
       if (!$a) {        
-        $a = $leftPanel.find('.project-item[data-projectid=' + id + '] .project-name');      
+        $a = $leftPanel.find('.project-item[data-projectid=' + id + '] .project-name').first();
       }
       $a.closest('.leftPanel > ul').find('li.active').removeClass('active');
       $a.closest('li').addClass('active');
@@ -392,7 +392,7 @@ $(document).ready(function() {
     }
     
     var loadProjectDetail = function(id) {
-      var $a = $leftPanel.find('.project-item[data-projectid=' + id + '] .project-name');      
+      var $a = $leftPanel.find('.project-item[data-projectid=' + id + '] .project-name').first();
       $a.closest('.leftPanel > ul').find('li.active').removeClass('active');
       $a.closest('li').addClass('active');
 

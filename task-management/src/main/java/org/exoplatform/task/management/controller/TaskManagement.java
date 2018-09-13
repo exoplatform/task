@@ -21,15 +21,7 @@ package org.exoplatform.task.management.controller;
 
 import javax.inject.Inject;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.TimeZone;
+import java.util.*;
 
 import juzu.Action;
 import juzu.Path;
@@ -402,10 +394,7 @@ public class TaskManagement {
     List<Long> spaceProjectIds = null;
     List<Project> projects = ProjectUtil.getProjectTree(space_group_id, projectService);
     if (space_group_id != null) {
-      spaceProjectIds = new LinkedList<Long>();
-      for (Project p : projects) {
-        spaceProjectIds.add(p.getId());
-      }
+      spaceProjectIds = recursiveGetId(projects);
       if (projectId > 0 && !spaceProjectIds.contains(projectId)) {
         errorMessage = bundle.getString("popup.msg.projectNotExist");
         projectId = DEFAULT_PROJECT_ID;
@@ -594,6 +583,21 @@ public class TaskManagement {
             .paging(paging)
             .errorMessage(errorMessage)
             .ok().withCharset(Tools.UTF_8);
+  }
+
+  private List<Long> recursiveGetId(List<Project> projects) {
+    List<Long> results = new ArrayList<>();
+    if (projects != null) {
+      for (Project p : projects) {
+        results.add(p.getId());
+
+        if (p.getChildren() != null) {
+          results.addAll(recursiveGetId(p.getChildren()));
+        }
+      }
+    }
+
+    return results;
   }
 
   @Action
