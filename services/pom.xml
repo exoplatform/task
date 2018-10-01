@@ -29,6 +29,9 @@
   <artifactId>task-management-services</artifactId>
   <packaging>jar</packaging>
   <name>eXo Add-on:: Task Management - Services</name>
+  <properties>
+    <exo.test.coverage.ratio>0.44</exo.test.coverage.ratio>
+  </properties>
   <!-- JPA -->
   <dependencies>
     <dependency>

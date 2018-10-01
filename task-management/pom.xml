@@ -29,6 +29,9 @@
   <artifactId>task-management</artifactId>
   <packaging>war</packaging>
   <name>eXo Add-on:: Task Management Application</name>
+  <properties>
+    <exo.test.coverage.ratio>0.01</exo.test.coverage.ratio>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>org.exoplatform.addons.task</groupId>
