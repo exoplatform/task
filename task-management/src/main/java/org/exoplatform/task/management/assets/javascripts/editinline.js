@@ -782,47 +782,31 @@ define('ta_edit_inline',
                 });
                 $this.editable(editOptions);
                 if (fieldName == 'project') {
-                    var enableEditProject = function($editable) {
-                        $editable.editable('enable');
-                    };
-                    var disableEditProject = function($editable) {
-                        $editable.editable('disable');
-
-                        $editable.off('click', 'a.removeProject').on('click', 'a.removeProject', function(e) {
-                            $editable.jzAjax('TaskController.saveTaskInfo()', {
-                                data: {taskId: taskId, name: 'project', value: 0},
-                                method: 'POST',
-                                success: function(e) {
-                                    $editable.find('li').html('No Project').removeClass('active').addClass('muted');
-                                    $editable.editable('setValue', 0);
-                                    enableEditProject($editable);
-                                    if ($.isNumeric(e)) {
-                                      editInline.taApp.updateTaskNum(e);                                      
-                                    }
-                                    
-                                    reloadTaskList(editInline.taApp);
-                                }, 
-                                error: function(xhr) {
-                                  editInline.taApp.showWarningDialog(xhr.responseText);
-                                }
-                            });
-                        });
-                    };
-                    $this.on('save', function(e, params) {
-                        if (params.newValue > 0) {
-                            disableEditProject($this);
-                        } else {
-                            enableEditProject($this);
-                        }
-                    });
-
                     var val = $this.editable('getValue', true);
                     if (val > 0) {
                         if ($this.find('a.removeProject').length == 0) {
                             var $close = $('<a class="removeProject" href="javascript:void(0)"><i class="uiIconClose"></i></a>');
                             $this.find('li').addClass('active').append($close);
                         }
-                        disableEditProject($this);
+                        $this.off('click', 'a.removeProject').on('click', 'a.removeProject', function(e) {
+                          e.stopPropagation();
+                          $this.jzAjax('TaskController.saveTaskInfo()', {
+                            data: {taskId: taskId, name: 'project', value: 0},
+                            method: 'POST',
+                            success: function(e) {
+                              $this.find('li').html('No Project').removeClass('active').addClass('muted');
+                              $this.editable('setValue', 0);
+                              if ($.isNumeric(e)) {
+                                editInline.taApp.updateTaskNum(e);
+                              }
+
+                              reloadTaskList(editInline.taApp);
+                            },
+                            error: function(xhr) {
+                              editInline.taApp.showWarningDialog(xhr.responseText);
+                            }
+                          });
+                        });
                     }
                 }
                 if ($this.hasClass('readOnly')) {
