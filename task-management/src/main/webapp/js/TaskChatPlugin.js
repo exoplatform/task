@@ -1,19 +1,21 @@
-window.eXo.chat = window.eXo.chat ? window.eXo.chat : {};
-window.eXo.chat.room = window.eXo.chat.room ? window.eXo.chat.room : {};
-window.eXo.chat.room.extraApplications = window.eXo.chat.room.extraApplications ? window.eXo.chat.room.extraApplications : [];
+require(['SHARED/extensionRegistry'], function(extensionRegistry) {
+  extensionRegistry.registerExtension('chat', 'composer-application', chatTaskComposerAppPlugin);
+  extensionRegistry.registerExtension('chat', 'message-type', chatTaskMessageType);
+  extensionRegistry.registerExtension('chat', 'message-notif', chatTaskNotification);
+});
 
-window.eXo.chat.message = window.eXo.chat.message ? window.eXo.chat.message : {};
-window.eXo.chat.message.types = window.eXo.chat.message.types ? window.eXo.chat.message.types : {};
-window.eXo.chat.message.notifs = window.eXo.chat.message.notifs ? window.eXo.chat.message.notifs : {};
-
-window.eXo.chat.message.notifs['type-task'] = {
+var chatTaskNotification = {
+  key: 'task-notif',
+  type: 'type-task',
   iconClass: 'uiIconChatCreateTask uiIconChatLightGray pull-left',
   html: function(notif, i18N) {
     return notif.options ? notif.options.task : '';
   }
-}
+};
 
-window.eXo.chat.message.types['type-task'] = {
+var chatTaskMessageType = {
+  key: 'task-message',
+  type: 'type-task',
   iconClass: 'uiIconChatCreateTask',
   html: function(message, i18N) {
     if (!message || !message.options || !i18N) {
@@ -38,8 +40,9 @@ window.eXo.chat.message.types['type-task'] = {
   }
 };
 
-window.eXo.chat.room.extraApplications.push({
+var chatTaskComposerAppPlugin = {
   key: 'task',
+  rank: 60,
   type: 'type-task',
   notificationContent: function(msg) {
     return msg.options.task;
@@ -236,5 +239,4 @@ window.eXo.chat.room.extraApplications.push({
       body: decodeURI(this.$.param(data))
     });
   }
-
-});
+};
