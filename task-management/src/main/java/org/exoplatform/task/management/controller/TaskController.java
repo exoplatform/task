@@ -365,7 +365,7 @@ public class TaskController extends AbstractController {
     if (groupBy != null &&
             !TaskUtil.NONE.equalsIgnoreCase(groupBy)
             && !groupBy.trim().isEmpty()
-            && !oldGroup.equalsIgnoreCase(newGroup)) {
+            && !StringUtils.equals(oldGroup, newGroup)) {
       if (TaskUtil.ASSIGNEE.equalsIgnoreCase(groupBy)) {
         TaskUtil.saveTaskField(task, username, TaskUtil.ASSIGNEE, new String[]{newGroup}, tz, taskService, statusService);
 
