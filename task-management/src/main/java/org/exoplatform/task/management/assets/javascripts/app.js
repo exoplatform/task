@@ -503,18 +503,16 @@ $(document).ready(function() {
         submitFilter(e);
         return false;
     });
-    $centerPanel.on('click', '[data-groupby]', function(e) {
-        var $searchForm = $centerPanel.find('form.form-search');
+    $centerPanel.on('click', '.action-bar [data-groupby]', function(e) {
         var $a = $(e.target || e.srcElement).closest('[data-groupby]');
-        var $input = $('[name="groupBy"]').val($a.data('groupby'));
+        $('[name="groupBy"]').val($a.data('groupby'));
         if (taFilter.isEnable()) {
           taFilter.submitFilter();
         } else {
-          submitFilter(e);          
+          submitFilter(e);
         }
     });
-    $centerPanel.on('click', '[data-orderby]', function(e) {
-        var $searchForm = $centerPanel.find('form.form-search');
+    $centerPanel.on('click', '.action-bar [data-orderby]', function(e) {
         var $a = $(e.target || e.srcElement).closest('[data-orderby]');
         $('[name="orderBy"]').val($a.data('orderby'));
         if (taFilter.isEnable()) {

@@ -164,7 +164,7 @@
                                     def st = status.get(index);
                                     def key = new GroupKey(ResourceUtil.resolveStatus(bundle, st.name), st, st.getRank());
                                 %>
-                                <div class="col col${index + 1} taskBoardContainer taskContainer${groupKey} taskContainer${groupKey}${st.id}" data-connected=".taskContainer${groupKey}" data-statusid="${st.id}">
+                                <div class="col col${index + 1} taskBoardContainer taskContainer${groupKey} taskContainer${groupKey}${st.id}" data-connected=".taskContainer${groupKey}" data-statusid="${st.id}" data-groupby="${groupBy}" data-groupby-value="${groupValueId}" data-groupkey="${groupKey}">
                                     <% for (def task in subGroups[key]) {%>
                                         <!-- user name  task-done for check task.completed -->
                                         <div class="box-small has-background hover-action-reveal ${task.completed ? "task-completed": ""} taskItem" data-taskid="${task.id}">
