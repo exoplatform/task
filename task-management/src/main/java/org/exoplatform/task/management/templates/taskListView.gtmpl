@@ -144,7 +144,7 @@
                             <% }%>
                             <% if (!TaskUtil.hasViewOnlyPermission(task)) {%>
                             <a class="actionIcon inline-block-hide"
-                               data-placement="left"
+                               data-placement="top"
                                data-original-title="<% if (task.completed) {%> &{message.markAsUnCompleted} <%} else {%> &{message.markAsCompleted} <%}%>"
                                rel="tooltip"
                                data-taskcompleted="${task.completed}"
@@ -262,7 +262,7 @@
                 <span class="text-time inline-block-show">{{taskDueDate}}</span>
                 <span class="labels">
                 </span>
-                <a class="actionIcon inline-block-hide" data-placement="left" data-original-title="&{message.markAsCompleted}" rel="tooltip" data-taskcompleted="{{taskCompleted}}" href="javascript:void(0)">
+                <a class="actionIcon inline-block-hide" data-placement="top" data-original-title="&{message.markAsCompleted}" rel="tooltip" data-taskcompleted="{{taskCompleted}}" href="javascript:void(0)">
                     <i class="uiIconValidate uiIconLightGray"></i>
                 </a>
             </div>
