@@ -12,7 +12,8 @@
     import org.exoplatform.task.management.controller.TaskManagement;
     import org.exoplatform.task.util.ProjectUtil;
     import org.exoplatform.commons.utils.HTMLEntityEncoder;
-    
+    import org.apache.commons.lang3.StringEscapeUtils;
+
     def encoder = HTMLEntityEncoder.getInstance();
 %>
 <div class="taskList">
@@ -30,7 +31,7 @@
             }%>
             <div class="header-right pull-right groupByOptions" style="${groupByClass}">            
                 <!-- this is filter action-->
-                             <div class="action-bar dropdown pull-right" data-currentorderby="${orderBy}">
+                             <div class="action-bar dropdown pull-right" data-currentorderby="${StringEscapeUtils.escapeHtml3(orderBy)}">
                                 <a href="" class="actionIcon dropdown-toggle" data-original-title="&{label.orderBy}" data-toggle="dropdown"  rel="tooltip" data-placement="bottom">
                                     <i class="uiIconSortDown uiIconLightGray"></i>
                                     <span>${orderBy != null && orderBy != "" ? orders[orderBy] : orders["dueDate"]}</span>
@@ -44,7 +45,7 @@
                                     }%>
                                 </ul>
                              </div>
-                             <div class="action-bar dropdown pull-right" data-currentgroupby="${groupBy}">
+                             <div class="action-bar dropdown pull-right" data-currentgroupby="${StringEscapeUtils.escapeHtml3(groupBy)}">
                                 <a href="" class="actionIcon dropdown-toggle"  data-original-title="&{label.groupBy}" data-toggle="dropdown"  rel="tooltip" data-placement="bottom">
                                     <i class="uiIconViewList uiIconLightGray"></i>
                                     <span>${groups[groupBy]}</span>
