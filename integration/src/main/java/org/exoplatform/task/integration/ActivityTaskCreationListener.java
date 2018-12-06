@@ -81,6 +81,11 @@ public class ActivityTaskCreationListener extends ActivityListenerPlugin {
   }
 
   @Override
+  public void updateComment(ActivityLifeCycleEvent event) {
+
+  }
+
+  @Override
   public void likeActivity(ActivityLifeCycleEvent event) {
   }
 
