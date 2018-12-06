@@ -28,6 +28,7 @@
 	import org.exoplatform.commons.utils.HTMLEntityEncoder;
     import org.exoplatform.task.management.model.ViewType;
     import org.exoplatform.task.util.ProjectUtil;
+    import org.apache.commons.lang3.StringEscapeUtils;
 
     def isBoardView = (ViewType.BOARD == viewType)
 	def encoder = HTMLEntityEncoder.getInstance();
@@ -66,10 +67,10 @@
                 <form class="UIForm taskSearchForm" action="#" onsubmit="javascript:void(0)">
                     <div class="uiSearchForm uiSearchInput searchWithIcon">
                          <a title="" class="advancedSearch" rel="tooltip" data-placement="bottom" href="javascript:void(0)" data-original-title="&{label.search}"><i class="uiIconSearch uiIconLightGray"></i></a>
-                         <input type="text"  name="keyword" value="${keyword}" placeholder="&{label.search}" >
-                         <input type="hidden" name="groupBy" value="${groupBy}"/>
-                         <input type="hidden" name="orderBy" value="${orderBy}"/>
-                         <input type="hidden" name="filter" value="${filter}"/>
+                         <input type="text"  name="keyword" value="${StringEscapeUtils.escapeHtml3(keyword)}" placeholder="&{label.search}" >
+                         <input type="hidden" name="groupBy" value="${StringEscapeUtils.escapeHtml3(groupBy)}"/>
+                         <input type="hidden" name="orderBy" value="${StringEscapeUtils.escapeHtml3(orderBy)}"/>
+                         <input type="hidden" name="filter" value="${StringEscapeUtils.escapeHtml3(filter)}"/>
                          <input type="hidden" name="viewType" value="${viewType.name()}"/>
                          <input type="hidden" name="page" value="${paging.currentPage}"/>
                          <input type="hidden" name="showCompleted" value="${showCompleted}"/>
