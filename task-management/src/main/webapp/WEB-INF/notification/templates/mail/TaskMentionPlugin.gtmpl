@@ -1,3 +1,10 @@
+<style>
+  a{
+    color: #2f5e92;
+    text-decoration: none;
+    font-family: 'HelveticaNeue Bold', Helvetica, Arial, HelveticaNeue, sans-serif, serif, tahoma;
+  }
+</style>
 <table border="0" cellpadding="0" cellspacing="0" width="600" bgcolor="#ffffff" align="center"
        style="background-color: #ffffff; font-size: 13px;color:#333333;line-height: 18px;font-family: HelveticaNeue, Helvetica, Arial, sans-serif;">
     <tr>
@@ -8,7 +15,7 @@
                     <td height="45" valign="middle"
                         style="margin:0;height:45px;font-weight:bold;vertical-align:middle;;background-color: #efefef;font-family: 'HelveticaNeue Bold', Helvetica, Arial, sans-serif;color:#2f5e92;font-size:18px;text-align:center">
                         <a href="#"
-                           style="text-decoration: none; color: #2f5e92; font-family: 'HelveticaNeue Bold', Helvetica, Arial, sans-serif; font-size: 18px;">
+                           style="font-size: 18px;">
                             <%=_ctx.appRes("Notification.title.TaskMentionPlugin")%>
                         </a>
                     </td>
@@ -51,21 +58,19 @@
                                                             style="width: 90%; background-color: #ffffff; padding: 0 0; vertical-align: top;">
                                                             <p style="margin: 0 0 10px; color: #333333; font-size: 13px; line-height: 18px;">
                                                                 <%
-                                                                    String profileUrl = "<a style=\"text-decoration: none; color: #2f5e92; font-family: 'HelveticaNeue Bold', Helvetica, Arial, sans-serif\" href=\"" + PROFILE_URL + "\"><strong>" + USER + "</strong></a>";
+                                                                    String profileUrl = "<a href=\"" + PROFILE_URL + "\"><strong>" + USER + "</strong></a>";
                                                                     def msg = _ctx.appRes("Notification.message.TaskMentionPlugin", profileUrl);
                                                                     if (PROJECT_NAME != null && !PROJECT_NAME.isEmpty()) {
                                                                         msg += " " + _ctx.appRes("Notification.message.inProject",
-                                                                                " <a href=\"" + PROJECT_URL + "\" style=\"text-decoration: none; color: #2f5e92; font-family: 'HelveticaNeue Bold', Helvetica, Arial, sans-serif\"><strong>" + PROJECT_NAME + "</strong></a>");
+                                                                                " <a href=\"" + PROJECT_URL + "\" ><strong>" + PROJECT_NAME + "</strong></a>");
                                                                     }
 
                                                                 %>
                                                                 <%=msg%>:
-                                                                <a href="$TASK_URL"
-                                                                   style="text-decoration: none; color: #2f5e92; font-family: 'HelveticaNeue Bold', Helvetica, Arial, sans-serif">
+                                                                <a href="$TASK_URL">
                                                                     <span><strong>$TASK_TITLE</strong></span>
                                                                 </a>
                                                             </p>
-
                                                             <table border="0" cellpadding="0" cellspacing="0"
                                                                    width="100%" bgcolor="#f9f9f9" align="center"
                                                                    style="margin:0 0 10px; width: 100%; background-color: #f9f9f9; font-size: 13px; color:#333333;line-height: 18px;">
@@ -111,9 +116,7 @@
 
                                                                             <a target="_blank" style="
 																					display: inline-block;
-																					text-decoration: none;
 																					font-size: 11px;
-																					font-family: HelveticaNeue, Helvetica, Arial, sans-serif,serif;
 																					color: #333333;
 																					background-color: #f1f1f1;
 																					background-image: -moz-linear-gradient(top, #ffffff, #f1f1f1);
@@ -169,7 +172,7 @@
                         style="font-family: HelveticaNeue, Helvetica, Arial, sans-serif,serif;color:#ffffff;font-size:13px;">
                         <h3 style="text-align: center; margin: 0; padding: 10px 0;">
                             <a target="_blank"
-                               style="color: #ffffff; font-size: 13px;font-family:'HelveticaNeue Bold',arial,tahoma,serif; font-weight: bold; text-decoration: none;"
+                               style="color: #ffffff; font-size: 13px;font-weight: bold;"
                                href="http://www.exoplatform.com/company/en/home"
                                title="<%=_ctx.appRes("Notification.label.CompanyName")%>">
                                 <%=_ctx.appRes("Notification.label.CompanyName")%>
@@ -181,4 +184,3 @@
         </td>
     </tr><!--end footer area-->
 </table>
-

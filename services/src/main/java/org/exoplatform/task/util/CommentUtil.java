@@ -19,6 +19,7 @@
 
 package org.exoplatform.task.util;
 
+import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.commons.utils.HTMLEntityEncoder;
 import org.exoplatform.task.model.User;
 import org.exoplatform.task.service.UserService;
@@ -34,34 +35,37 @@ public final class CommentUtil {
   }
 
   public static String formatMention(String text, UserService userService) {
-    if(text == null || text.isEmpty()) {
+    if (text == null || text.isEmpty()) {
       return text;
     }
     HTMLEntityEncoder encoder = HTMLEntityEncoder.getInstance();
     StringBuilder sb = new StringBuilder();
 
     StringTokenizer tokenizer = new StringTokenizer(text);
-    while(tokenizer.hasMoreElements()) {
-      String next = (String)tokenizer.nextElement();
-      if(next.length() == 0) {
+    while (tokenizer.hasMoreElements()) {
+      String next = (String) tokenizer.nextElement();
+      if (next.length() == 0) {
         continue;
-      } else if(next.charAt(0) == '@') {
+      } else if (next.charAt(0) == '@') {
         String username = next.substring(1);
         User user = userService.loadUser(username);
-        if(user != null && !"guest".equals(user.getUsername())) {
-          next = "<a href=\"" + user.getUrl() + "\">" + encoder.encodeHTML(user.getDisplayName()) + "</a>";
+        if (user != null && !"guest".equals(user.getUsername())) {
+          next = "<a href=\"" + CommonsUtils.getCurrentDomain() + user.getUrl() + "\">"
+              + encoder.encodeHTML(user.getDisplayName()) + "</a>";
         }
       } else if (next.startsWith("<p>@")) {
         String username = next.substring(4);
         User user = userService.loadUser(username);
-        if(user != null && !"guest".equals(user.getUsername())) {
-          next = "<p><a href=\"" + user.getUrl() + "\">" + encoder.encodeHTML(user.getDisplayName()) + "</a>";
+        if (user != null && !"guest".equals(user.getUsername())) {
+          next = "<p><a href=\"" + CommonsUtils.getCurrentDomain() + user.getUrl() + "\">"
+              + encoder.encodeHTML(user.getDisplayName()) + "</a>";
         }
       } else if (next.contains("@")) {
         String username = next.split("@")[1];
         User user = userService.loadUser(username);
         if (user != null && !"guest".equals(user.getUsername())) {
-          next = next.split("@")[0] + "<a href=\"" + user.getUrl() + "\">" + encoder.encodeHTML(user.getDisplayName()) + "</a>";
+          next = next.split("@")[0] + "<a href=\"" + CommonsUtils.getCurrentDomain() + user.getUrl() + "\">"
+              + encoder.encodeHTML(user.getDisplayName()) + "</a>";
         }
       }
       sb.append(next);
