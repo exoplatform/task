@@ -90,7 +90,7 @@ var chatTaskComposerAppPlugin = {
       data = JSON.parse(data);
       thiss.processData(data, message);
 
-      document.dispatchEvent(new CustomEvent(eXo.chat.constants.ACTION_MESSAGE_SEND, {'detail' : message}));
+      document.dispatchEvent(new CustomEvent('exo-chat-message-tosend-requested', {'detail' : message}));
     });
   },
   nameKey: 'exoplatform.chat.task',
