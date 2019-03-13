@@ -23,6 +23,7 @@ import juzu.*;
 import juzu.impl.common.Tools;
 import juzu.request.SecurityContext;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.exoplatform.commons.api.settings.SettingService;
 import org.exoplatform.commons.juzu.ajax.Ajax;
 import org.exoplatform.commons.utils.HTMLEntityEncoder;
@@ -240,7 +241,7 @@ public class TaskController extends AbstractController {
     }
 
     String msg = bundle.getString("popup.msg.deleteTask");
-    msg = msg.replace("{}", task.getTitle());
+    msg = msg.replace("{}", StringEscapeUtils.escapeHtml4(task.getTitle()));
 
     return confirmDeleteTask
             .with()
@@ -259,7 +260,7 @@ public class TaskController extends AbstractController {
     }
 
     String msg = bundle.getString("popup.msg.cloneTask");
-    msg = msg.replace("{}", task.getTitle());
+    msg = msg.replace("{}", StringEscapeUtils.escapeHtml4(task.getTitle()));
 
     return confirmCloneTask
             .with()
