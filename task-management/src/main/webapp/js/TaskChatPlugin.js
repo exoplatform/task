@@ -183,8 +183,10 @@ var chatTaskComposerAppPlugin = {
   processData: function(data, message) {
     var url = data.url ? data.url : data.length && data.length === 1 && data[0].url ? data[0].url : '';
     var title = data.title ? data.title : data.length && data.length === 1 && data[0].title ? data[0].title : '';
+    var dueDate = data.dueDate ? data.dueDate.split(" ")[0] : '';
     message.options.url = url;
     message.options.task = decodeURI(title);
+    message.options.dueDate = dueDate;
   },
   initSuggester: function($, chatServices) {
     var $taskAssigneeSuggestor = $('#taskAssignee');
