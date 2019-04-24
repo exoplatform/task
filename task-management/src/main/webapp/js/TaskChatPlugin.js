@@ -21,22 +21,22 @@ var chatTaskMessageType = {
     if (!message || !message.options || !i18N) {
       return '';
     }
-    return '<b><a href="' + message.options.url + '" target="_blank">' + message.options.task + '</a></b> \
-    <div class="custom-message-item"> \
-      <span><i class="uiIconChatAssign"></i> \
-        ' + i18N('exoplatform.chat.assign.to') + ': \
-      </span> \
-      <b>' + (message.options.username || i18N('exoplatform.chat.assign.to.none')) + ' </b> \
-    </div> \
-    <div class="custom-message-item"> \
-      <span> \
-        <i class="uiIconChatClock"></i> \
-        ' + i18N('exoplatform.chat.due.date') + ':  \
-      </span> \
-      <b> \
-      ' + (message.options.dueDate || i18N('exoplatform.chat.due.date.none')) + ' \
-      </b> \
-    </div>';
+    return '<b><a href="' + message.options.url + '" target="_blank">' + message.options.task + '</a></b>' +
+    '<div class="custom-message-item">' +
+      '<span><i class="uiIconChatAssign"></i>' +
+        i18N('exoplatform.chat.assign.to') + ':' +
+      '</span>' +
+      '<b>' + (message.options.username || i18N('exoplatform.chat.assign.to.none')) + ' </b>' +
+    '</div>' +
+    '<div class="custom-message-item">' +
+      '<span>' +
+        '<i class="uiIconChatClock"></i>' +
+           i18N('exoplatform.chat.due.date') + ':' +
+        ' +</span>' +
+        '<b>' +
+            (message.options.dueDate || i18N('exoplatform.chat.due.date.none')) +
+      '</b>' +
+    '</div>';
   }
 };
 
@@ -97,9 +97,9 @@ var chatTaskComposerAppPlugin = {
   labelKey: 'exoplatform.chat.assign.task',
   iconClass: 'uiIconChatCreateTask',
   html: function(i18NConverter) {
-    return '<input id="taskTitle" name="text" class="large" type="text" placeholder="' + i18NConverter('exoplatform.chat.task.title') + '" required> \
-            <input id="taskAssignee" name="username" class="large" type="text" placeholder="' + i18NConverter('exoplatform.chat.assignee') + '"> \
-            <input id="taskDueDate" name="dueDate" format="MM/dd/yyyy" placeholder="' + i18NConverter('exoplatform.chat.due.date') + '" class="large" type="text" onfocus="require([\'SHARED/CalDateTimePicker\'], (CalDateTimePicker) => CalDateTimePicker.init(event.target, false));">';
+    return '<input id="taskTitle" name="text" class="large" type="text" placeholder="' + i18NConverter('exoplatform.chat.task.title') + '" required>' +
+            '<input id="taskAssignee" name="username" class="large" type="text" placeholder="' + i18NConverter('exoplatform.chat.assignee') + '">' +
+            '<input id="taskDueDate" name="dueDate" format="MM/dd/yyyy" placeholder="' + i18NConverter('exoplatform.chat.due.date') + '" class="large" type="text" onfocus="require([\'SHARED/CalDateTimePicker\'], (CalDateTimePicker) => CalDateTimePicker.init(event.target, false));">';
   },
   mount: function($, chatServices) {
     var $msg = $('#messageComposerArea');
@@ -217,11 +217,11 @@ var chatTaskComposerAppPlugin = {
         renderMenuItem: function(item, escape) {
           var avatar = chatServices.getUserAvatar(item.name);
           var defaultAvatar = '/chat/img/room-default.jpg';
-          return '<div class="avatarMini"> \
-              <img src="' + avatar + '" onerror="this.src=\'' + defaultAvatar + '\'"> \
-            </div> \
-            <div class="user-name">' + escape(item.fullname)+ ' (' + item.name + ')</div> \
-            <div class="user-status"><i class="chat-status-' + item.status + '"></i></div>';
+          return '<div class="avatarMini">' +
+              '<img src="' + avatar + '" onerror="this.src=\'' + defaultAvatar + '\'">' +
+            '</div>' +
+            '<div class="user-name">' + escape(item.fullname)+ ' (' + item.name + ')</div>' +
+            '<div class="user-status"><i class="chat-status-' + item.status + '"></i></div>';
         }
       });
     } else {
