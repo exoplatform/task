@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.exoplatform.org/xml/ns/kernel_1_2.xsd http://www.exoplatform.org/xml/ns/kernel_1_2.xsd"
+               xmlns="http://www.exoplatform.org/xml/ns/kernel_1_2.xsd">
+
+  <external-component-plugins>
+    <target-component>org.exoplatform.social.core.manager.ActivityManager</target-component>
+    <component-plugin>
+      <name>ActivityTaskCreationListener</name>
+      <set-method>addActivityEventListener</set-method>
+      <type>org.exoplatform.task.integration.ActivityTaskCreationListener</type>
+    </component-plugin>
+    <component-plugin>
+      <name>TaskProcessor</name>
+      <set-method>addProcessorPlugin</set-method>
+      <type>org.exoplatform.task.integration.ActivityTaskProcessor</type>
+      <init-params>
+        <value-param>
+          <name>priority</name>
+          <description>priority of this processor (lower are executed first)</description>
+          <value>3</value> <!-- Ensure this processor executed before OSHtmlSanitizerProcessor from Social -->
+        </value-param>
+      </init-params>
+    </component-plugin>
+  </external-component-plugins>
+  
+  <external-component-plugins>
+    <target-component>org.exoplatform.portal.application.state.ContextualPropertyManager</target-component>
+    <component-plugin>
+      <name>SpacePropertiesPlugin</name>
+      <set-method>addPlugin</set-method>
+      <type>org.exoplatform.task.integration.SpacePropertiesPlugin</type>
+      <init-params>
+        <value-param>
+          <name>namespaceURI</name>
+          <description>Namespace URI</description>
+          <value>http://www.exoplatform.org/xml/ns/prp_1_0</value>
+        </value-param>
+      </init-params>
+    </component-plugin>
+  </external-component-plugins>
+  
+  <external-component-plugins>
+    <target-component>org.exoplatform.social.core.space.spi.SpaceService</target-component>
+    <component-plugin>
+      <name>SpaceTaskDataInitializer</name>
+      <set-method>registerSpaceListenerPlugin</set-method>
+      <type>org.exoplatform.task.integration.SpaceTaskDataInitializer</type>
+    </component-plugin>
+  </external-component-plugins>
+  
+  <external-component-plugins>
+    <target-component>org.exoplatform.calendar.service.ExtendedCalendarService</target-component>
+    <component-plugin>
+      <name>addTasksStorage</name>
+      <set-method>addDataStore</set-method>
+      <type>org.exoplatform.task.integration.calendar.TasksStorage</type>
+    </component-plugin>
+  </external-component-plugins>
+  
+  <external-component-plugins>
+    <target-component>org.exoplatform.commons.api.search.SearchService</target-component>
+    <!-- Task -->
+    <component-plugin profiles="all">
+      <name>TaskInTasksSearchConnector</name>
+      <set-method>addConnector</set-method>
+      <type>org.exoplatform.task.integration.TaskSearchConnector</type>
+      <description>eXo Tasks tasks</description>
+      <init-params>
+        <properties-param>
+           <name>constructor.params</name>
+           <property name="searchType" value="tasksInTasks"/>
+           <property name="displayName" value="TasksAddon"/>
+           <property name="enable" value="${exo.unified-search.connector.tasksInTasks.enable:true}"/>
+        </properties-param>
+      </init-params>      
+    </component-plugin>
+  </external-component-plugins>
+
+  <external-component-plugins>
+    <target-component>org.exoplatform.services.listener.ListenerService</target-component>
+    <component-plugin>
+      <name>exo.task.taskCreation</name>
+      <set-method>addListener</set-method>
+      <type>org.exoplatform.task.integration.TaskLoggingListener</type>
+    </component-plugin>
+    <component-plugin>
+      <name>exo.task.taskUpdate</name>
+      <set-method>addListener</set-method>
+      <type>org.exoplatform.task.integration.TaskLoggingListener</type>
+    </component-plugin>
+    <component-plugin>
+      <name>exo.task.taskCommentCreation</name>
+      <set-method>addListener</set-method>
+      <type>org.exoplatform.task.integration.TaskCommentNotificationListener</type>
+    </component-plugin>
+  </external-component-plugins>
+
+  <external-component-plugins>
+    <target-component>org.exoplatform.webui.ext.UIExtensionManager</target-component>
+    <component-plugin>
+      <name>addTaskCreation</name>
+      <!-- The method to call to register a new UI Extension -->
+      <set-method>registerUIExtensionPlugin</set-method>
+      <type>org.exoplatform.webui.ext.UIExtensionPlugin</type>
+      <init-params>
+        <object-param>
+          <name>PLFQuickAddTask</name>
+          <object type="org.exoplatform.webui.ext.UIExtension">
+            <!-- The type of extension, here it is the type related to the Action Bar in the File Explorer -->
+            <field name="type"><string>org.exoplatform.platform.component.UICreateList</string></field>
+
+            <field name="rank"><int>9</int></field>
+            <!-- The name of your action -->
+            <field name="name"><string>quickCreateTask</string></field>
+            <field name="category"><string>uiIconExt-tasks</string></field>
+
+            <!-- The full qualified name of your webui component -->
+            <field name="component"><string>org.exoplatform.task.integration.platform.UICreateTask</string></field>
+          </object>
+        </object-param>
+      </init-params>
+    </component-plugin>
+  </external-component-plugins>
+  
+  <external-component-plugins>
+    <target-component>org.exoplatform.commons.api.ui.PlugableUIService</target-component>
+    <component-plugin>
+      <name>taskPopup</name>
+      <set-method>addPlugin</set-method>
+      <type>org.exoplatform.task.integration.chat.ChatPopupPlugin</type>
+      <init-params>
+        <value-param>
+          <name>type</name>
+          <value>chat_extension_popup</value>
+        </value-param>
+      </init-params>
+    </component-plugin>
+  </external-component-plugins>
+
+  <external-component-plugins>
+    <target-component>org.exoplatform.social.core.space.spi.SpaceTemplateService</target-component>
+    <!-- Community space template -->
+    <component-plugin>
+      <name>Space Template Extension</name>
+      <set-method>extendSpaceTemplatePlugin</set-method>
+      <type>org.exoplatform.social.core.space.SpaceTemplateConfigPlugin</type>
+      <init-params>
+        <object-param>
+          <name>template</name>
+          <description>Space Template</description>
+          <object type="org.exoplatform.social.core.space.SpaceTemplate">
+            <field name="name"><string>community</string></field>
+            <field name="applications">
+              <collection type="java.util.ArrayList">
+                <value>
+                  <object type="org.exoplatform.social.core.space.SpaceApplication">
+                    <field name="portletApp">
+                      <string>task-management</string>
+                    </field>
+                    <field name="portletName">
+                      <string>TaskManagementApplication</string>
+                    </field>
+                    <field name="appTitle">
+                      <string>abcd</string>
+                    </field>
+                    <field name="removable">
+                      <boolean>true</boolean>
+                    </field>
+                    <field name="order">
+                      <int>3</int>
+                    </field>
+                    <field name="uri">
+                      <string>tasks</string>
+                    </field>
+                  </object>
+                </value>
+              </collection>
+            </field>
+          </object>
+        </object-param>
+      </init-params>
+    </component-plugin>
+    <!-- end Community space template -->
+    <!-- Communication space template -->
+    <component-plugin>
+      <name>Space Template Configuration</name>
+      <set-method>extendSpaceTemplatePlugin</set-method>
+      <type>org.exoplatform.social.core.space.SpaceTemplateConfigPlugin</type>
+      <init-params>
+        <object-param>
+          <name>template</name>
+          <description>Space Template</description>
+          <object type="org.exoplatform.social.core.space.SpaceTemplate">
+            <field name="name"><string>communication</string></field>
+            <field name="applications">
+              <collection type="java.util.ArrayList">
+                <value>
+                  <object type="org.exoplatform.social.core.space.SpaceApplication">
+                    <field name="portletApp">
+                      <string>task-management</string>
+                    </field>
+                    <field name="portletName">
+                      <string>TaskManagementApplication</string>
+                    </field>
+                    <field name="appTitle">
+                      <string>abcd</string>
+                    </field>
+                    <field name="removable">
+                      <boolean>true</boolean>
+                    </field>
+                    <field name="order">
+                      <int>3</int>
+                    </field>
+                    <field name="uri">
+                      <string>tasks</string>
+                    </field>
+                  </object>
+                </value>
+              </collection>
+            </field>
+          </object>
+        </object-param>
+      </init-params>
+    </component-plugin>
+    <!-- end Communication space template -->
+    <!-- Project space template -->
+    <component-plugin>
+      <name>Space Template Configuration</name>
+      <set-method>extendSpaceTemplatePlugin</set-method>
+      <type>org.exoplatform.social.core.space.SpaceTemplateConfigPlugin</type>
+      <init-params>
+        <object-param>
+          <name>template</name>
+          <description>Space Template</description>
+          <object type="org.exoplatform.social.core.space.SpaceTemplate">
+            <field name="name"><string>project</string></field>
+            <field name="applications">
+              <collection type="java.util.ArrayList">
+                <value>
+                  <object type="org.exoplatform.social.core.space.SpaceApplication">
+                    <field name="portletApp">
+                      <string>task-management</string>
+                    </field>
+                    <field name="portletName">
+                      <string>TaskManagementApplication</string>
+                    </field>
+                    <field name="appTitle">
+                      <string>abcd</string>
+                    </field>
+                    <field name="removable">
+                      <boolean>true</boolean>
+                    </field>
+                    <field name="order">
+                      <int>2</int>
+                    </field>
+                    <field name="uri">
+                      <string>tasks</string>
+                    </field>
+                  </object>
+                </value>
+              </collection>
+            </field>
+          </object>
+        </object-param>
+      </init-params>
+    </component-plugin>
+    <!-- end Project space template -->
+    <!-- Team space template -->
+    <component-plugin>
+      <name>Space Template Configuration</name>
+      <set-method>extendSpaceTemplatePlugin</set-method>
+      <type>org.exoplatform.social.core.space.SpaceTemplateConfigPlugin</type>
+      <init-params>
+        <object-param>
+          <name>template</name>
+          <description>Space Template</description>
+          <object type="org.exoplatform.social.core.space.SpaceTemplate">
+            <field name="name"><string>team</string></field>
+            <field name="applications">
+              <collection type="java.util.ArrayList">
+                <value>
+                  <object type="org.exoplatform.social.core.space.SpaceApplication">
+                    <field name="portletApp">
+                      <string>task-management</string>
+                    </field>
+                    <field name="portletName">
+                      <string>TaskManagementApplication</string>
+                    </field>
+                    <field name="appTitle">
+                      <string>abcd</string>
+                    </field>
+                    <field name="removable">
+                      <boolean>true</boolean>
+                    </field>
+                    <field name="order">
+                      <int>5</int>
+                    </field>
+                    <field name="uri">
+                      <string>tasks</string>
+                    </field>
+                  </object>
+                </value>
+              </collection>
+            </field>
+          </object>
+        </object-param>
+      </init-params>
+    </component-plugin>
+    <!-- end Team space template -->
+  </external-component-plugins>
+
+</configuration>
