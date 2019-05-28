@@ -21,17 +21,9 @@ package org.exoplatform.task.management.controller;
 
 import javax.inject.Inject;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 import juzu.MimeType;
 import juzu.Path;
@@ -44,6 +36,7 @@ import org.exoplatform.common.http.HTTPStatus;
 import org.exoplatform.commons.juzu.ajax.Ajax;
 import org.exoplatform.commons.utils.HTMLEntityEncoder;
 import org.exoplatform.commons.utils.ListAccess;
+import org.exoplatform.portal.config.UserACL;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.Group;
@@ -55,6 +48,7 @@ import org.exoplatform.services.organization.Query;
 import org.exoplatform.services.organization.UserHandler;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
+import org.exoplatform.services.security.MembershipEntry;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.UserSetting;
 import org.exoplatform.task.exception.EntityNotFoundException;
@@ -94,6 +88,9 @@ public class ProjectController extends AbstractController {
 
   @Inject
   OrganizationService orgService;
+
+  @Inject
+  UserACL userACL;
 
   @Inject
   @Path("projectForm.gtmpl")
@@ -351,7 +348,15 @@ public class ProjectController extends AbstractController {
 
     Collection groups, msTypes;
     try {
-      groups = orgService.getGroupHandler().getAllGroups();
+      ConversationState conversationState = ConversationState.getCurrent();
+      if(conversationState != null && conversationState.getIdentity() != null) {
+        groups = orgService.getGroupHandler().getAllGroups()
+                .stream()
+                .filter(group -> userACL.hasPermission(conversationState.getIdentity(), group, "tasks_projects_permissions"))
+                .collect(Collectors.toList());
+      } else {
+        groups = Collections.EMPTY_LIST;
+      }
       msTypes = orgService.getMembershipTypeHandler().findMembershipTypes();
     } catch (Exception e) {// NOSONAR
       return Response.status(503).body(e.getMessage());
