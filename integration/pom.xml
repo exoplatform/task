@@ -29,6 +29,9 @@
   <artifactId>task-management-integration</artifactId>
   <packaging>jar</packaging>
   <name>eXo Add-on:: Task Management - Integration</name>
+  <properties>
+    <exo.test.coverage.ratio>0.14</exo.test.coverage.ratio>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>org.exoplatform.addons.task</groupId>
