@@ -24,7 +24,7 @@
   <parent>
     <artifactId>task-management-parent</artifactId>
     <groupId>org.exoplatform.addons.task</groupId>
-    <version>2.2.x-acc222-SNAPSHOT</version>
+    <version>2.2.1-acc222-01</version>
   </parent>
   <artifactId>task-management-packaging</artifactId>
   <packaging>pom</packaging>
