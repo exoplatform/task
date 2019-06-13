@@ -932,7 +932,8 @@ public class TaskController extends AbstractController {
       if (status != null) {
         task.setStatus(status);
       }
-    } else if (projectId != null) {
+    }
+    if (projectId != null) {
       Project project = projectService.getProject(projectId);
       if (!project.canView(identity)) {
         throw new UnAuthorizedOperationException(projectId, Project.class, getNoPermissionMsg());
@@ -941,6 +942,7 @@ public class TaskController extends AbstractController {
       if (status != null) {
         task.setStatus(status);
       }
+      task.setCalendarIntegrated(project.isCalendarIntegrated());
     }
 
     taskService.createTask(task);
@@ -951,6 +953,7 @@ public class TaskController extends AbstractController {
     //spaceGrpId, projectId, currentLabelId, labelIds, statusId, dueDate, priority, assignee, completed, keyword, advanceSearch, groupby, orderBy, filter, viewType, securityContext
     //return listTasks(space_group_id, projectId, null, null, null, null, null, null, null, null, null, groupBy, orderBy, null, viewType, 1, securityContext);
   }
+
 
   @Resource(method = HttpMethod.POST)
   @Ajax
