@@ -64,20 +64,24 @@ public class ViewStateService {
   }
 
   public void saveViewState(ViewState viewState) {
-    String prefixId = viewState.getId();
-    if (viewState.getOrderBy() != null) {
-      settingService.set(Context.USER, TASK_APP_SCOPE, prefixId + ".orderBy", SettingValue.create(viewState.getOrderBy()));
-    } else {
-      settingService.remove(Context.USER, TASK_APP_SCOPE, prefixId + ".orderBy");
-    }
+    ViewState oldViewState = getViewState(viewState.getId());
+    if (!viewState.isEmpty() && !viewState.equals(oldViewState)) {
+      String prefixId = viewState.getId();
+      if (viewState.getOrderBy() != null) {
+        settingService.set(Context.USER, TASK_APP_SCOPE, prefixId + ".orderBy", SettingValue.create(viewState.getOrderBy()));
+      } else {
+        settingService.remove(Context.USER, TASK_APP_SCOPE, prefixId + ".orderBy");
+      }
 
-    if (viewState.getGroupBy() != null) {
-      settingService.set(Context.USER, TASK_APP_SCOPE, prefixId + ".groupBy", SettingValue.create(viewState.getGroupBy()));
-    } else {
-      settingService.remove(Context.USER, TASK_APP_SCOPE, prefixId + ".groupBy");
-    }
+      if (viewState.getGroupBy() != null) {
+        settingService.set(Context.USER, TASK_APP_SCOPE, prefixId + ".groupBy", SettingValue.create(viewState.getGroupBy()));
+      } else {
+        settingService.remove(Context.USER, TASK_APP_SCOPE, prefixId + ".groupBy");
+      }
 
-    settingService.set(Context.USER, TASK_APP_SCOPE, prefixId + ".viewType", SettingValue.create(viewState.getViewType().toString()));
+      settingService.set(Context.USER, TASK_APP_SCOPE, prefixId + ".viewType", SettingValue.create(viewState.getViewType().toString()));
+
+    }
   }
 
   public ViewState.Filter getFilter(String listId) {
@@ -127,30 +131,33 @@ public class ViewStateService {
   }
 
   public void saveFilter(ViewState.Filter filter) {
-    String prefixId = filter.getId();
-    settingService.set(Context.USER, TASK_APP_SCOPE, prefixId + ".filter.enabled", SettingValue.create(String.valueOf(filter.isEnabled())));
-    settingService.set(Context.USER, TASK_APP_SCOPE, prefixId + ".filter.keyword", SettingValue.create(filter.getKeyword()));
+    ViewState.Filter originalFilter = getFilter(filter.getId());
+    if (!filter.equals(originalFilter)) {
+      String prefixId = filter.getId();
+      settingService.set(Context.USER, TASK_APP_SCOPE, prefixId + ".filter.enabled", SettingValue.create(String.valueOf(filter.isEnabled())));
+      settingService.set(Context.USER, TASK_APP_SCOPE, prefixId + ".filter.keyword", SettingValue.create(filter.getKeyword()));
 
-    if (filter.getStatus() != null) {
-      settingService.set(Context.USER, TASK_APP_SCOPE, prefixId + ".filter.status", SettingValue.create(String.valueOf(filter.getStatus())));
-    } else {
-      settingService.remove(Context.USER, TASK_APP_SCOPE, prefixId + ".filter.status");
+      if (filter.getStatus() != null) {
+        settingService.set(Context.USER, TASK_APP_SCOPE, prefixId + ".filter.status", SettingValue.create(String.valueOf(filter.getStatus())));
+      } else {
+        settingService.remove(Context.USER, TASK_APP_SCOPE, prefixId + ".filter.status");
+      }
+
+      if (filter.getDue() != null) {
+        settingService.set(Context.USER, TASK_APP_SCOPE, prefixId + ".filter.due", SettingValue.create(filter.getDue().toString()));
+      } else {
+        settingService.remove(Context.USER, TASK_APP_SCOPE, prefixId + ".filter.due");
+      }
+
+      if (filter.getPriority() != null) {
+        settingService.set(Context.USER, TASK_APP_SCOPE, prefixId + ".filter.priority", SettingValue.create(filter.getPriority().toString()));
+      } else {
+        settingService.remove(Context.USER, TASK_APP_SCOPE, prefixId + ".filter.priority");
+      }
+
+      settingService.set(Context.USER, TASK_APP_SCOPE, prefixId + ".filter.labels", SettingValue.create(filter.getLabelsInString()));
+      settingService.set(Context.USER, TASK_APP_SCOPE, prefixId + ".filter.assignees", SettingValue.create(filter.getAssigneesInString()));
+      settingService.set(Context.USER, TASK_APP_SCOPE, prefixId + ".filter.showCompleted", SettingValue.create(String.valueOf(filter.isShowCompleted())));
     }
-
-    if (filter.getDue() != null) {
-      settingService.set(Context.USER, TASK_APP_SCOPE, prefixId + ".filter.due", SettingValue.create(filter.getDue().toString()));
-    } else {
-      settingService.remove(Context.USER, TASK_APP_SCOPE, prefixId + ".filter.due");
-    }
-
-    if (filter.getPriority() != null) {
-      settingService.set(Context.USER, TASK_APP_SCOPE, prefixId + ".filter.priority", SettingValue.create(filter.getPriority().toString()));
-    } else {
-      settingService.remove(Context.USER, TASK_APP_SCOPE, prefixId + ".filter.priority");
-    }
-
-    settingService.set(Context.USER, TASK_APP_SCOPE, prefixId + ".filter.labels", SettingValue.create(filter.getLabelsInString()));
-    settingService.set(Context.USER, TASK_APP_SCOPE, prefixId + ".filter.assignees", SettingValue.create(filter.getAssigneesInString()));
-    settingService.set(Context.USER, TASK_APP_SCOPE, prefixId + ".filter.showCompleted", SettingValue.create(String.valueOf(filter.isShowCompleted())));
   }
 }

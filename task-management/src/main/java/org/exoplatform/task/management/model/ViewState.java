@@ -16,6 +16,13 @@ public class ViewState {
     this.id = id;
   }
 
+  public ViewState(ViewState viewState) {
+    this.id = viewState.id;
+    this.orderBy = viewState.orderBy;
+    this.groupBy = viewState.groupBy;
+    this.viewType = viewState.viewType;
+  }
+
   public String getId() {
     return this.id;
   }
@@ -58,6 +65,26 @@ public class ViewState {
     return viewType;
   }
 
+  public boolean isEmpty() {
+    return this.groupBy == null && this.orderBy == null && this.viewType == null;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    ViewState viewState = (ViewState) o;
+    return Objects.equals(id, viewState.id) &&
+            Objects.equals(orderBy, viewState.orderBy) &&
+            Objects.equals(groupBy, viewState.groupBy) &&
+            viewType == viewState.viewType;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, orderBy, groupBy, viewType);
+  }
+
   public static class Filter {
     private final String id;
     private boolean enabled;
@@ -71,6 +98,75 @@ public class ViewState {
 
     public Filter(String id) {
       this.id = id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (o == this)
+        return true;
+      if (!(o instanceof Filter))
+        return false;
+      final Filter other = (Filter) o;
+      if (!other.canEqual((Object) this))
+        return false;
+      String thisId = this.getId();
+      String otherId = other.getId();
+      if (thisId == null ? otherId != null : !thisId.equals(otherId))
+        return false;
+      if (this.isEnabled() != other.isEnabled())
+        return false;
+      String thisKeyword = this.getKeyword();
+      String otherKeyword = other.getKeyword();
+      if (thisKeyword == null ? otherKeyword != null : !thisKeyword.equals(otherKeyword))
+        return false;
+      Long thisStatus = this.getStatus();
+      Long otherStatus = other.getStatus();
+      if (thisStatus == null ? otherStatus != null : !thisStatus.equals(otherStatus))
+        return false;
+      if (this.isShowCompleted() != other.isShowCompleted())
+        return false;
+      String thisLabels = this.getLabelsInString();
+      String otherLabels = other.getLabelsInString();
+      if (thisLabels == null ? otherLabels != null : !thisLabels.equals(otherLabels))
+        return false;
+      List<String> thisAssignees = this.getAssignees();
+      List<String> otherAssignees = other.getAssignees();
+      if (thisAssignees == null ? otherAssignees != null : !thisAssignees.equals(otherAssignees))
+        return false;
+      TaskUtil.DUE thisDue = this.getDue();
+      TaskUtil.DUE otherDue = other.getDue();
+      if (thisDue == null ? otherDue != null : !thisDue.equals(otherDue))
+        return false;
+      Priority thisPriority = this.getPriority();
+      Priority otherOriority = other.getPriority();
+      return thisPriority == null ? otherOriority == null : thisPriority.equals(otherOriority);
+    }
+
+    protected boolean canEqual(final Object other) {
+      return other instanceof Filter;
+    }
+
+    @Override
+    public int hashCode() {
+      final int PRIME = 59;
+      int result = 1;
+      String thisId = this.getId();
+      result = result * PRIME + (thisId == null ? 43 : thisId.hashCode());
+      result = result * PRIME + (this.isEnabled() ? 79 : 97);
+      String thisKeyword = this.getKeyword();
+      result = result * PRIME + (thisKeyword == null ? 43 : thisKeyword.hashCode());
+      Long thisStatus = this.getStatus();
+      result = result * PRIME + (thisStatus == null ? 43 : thisStatus.hashCode());
+      result = result * PRIME + (this.isShowCompleted() ? 79 : 97);
+      String thisLabels = this.getLabelsInString();
+      result = result * PRIME + (thisLabels == null ? 43 : thisLabels.hashCode());
+      List<String> thisAssignees = this.getAssignees();
+      result = result * PRIME + (thisAssignees == null ? 43 : thisAssignees.hashCode());
+      TaskUtil.DUE thisDue = this.getDue();
+      result = result * PRIME + (thisDue == null ? 43 : thisDue.hashCode());
+      Priority thisPriority = this.getPriority();
+      result = result * PRIME + (thisPriority == null ? 43 : thisPriority.hashCode());
+      return result;
     }
 
     public String getId() {
