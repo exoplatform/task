@@ -112,16 +112,19 @@ public class TaskManagement {
     PortalRequestContext prc = Util.getPortalRequestContext();
     String requestPath = prc.getControllerContext().getParameter(RequestNavigationData.REQUEST_PATH);
 
+    Long currProject = ProjectUtil.INCOMING_PROJECT_ID;
+    String filter = null;
+    Long labelId = null;
+
     Object[] params = ProjectUtil.parsePermalinkURL(requestPath);
     if (params != null) {
-      Long pId = (Long)params[0];
-      String f = (String) params[1];
-      Long lId = (Long)params[2];
+      currProject = (Long) params[0];
+      filter = (String) params[1];
+      labelId = (Long) params[2];
 
-      if (lId != null) {
-        pId = new Long(ProjectUtil.LABEL_PROJECT_ID);
+      if (labelId != null) {
+        currProject = ProjectUtil.LABEL_PROJECT_ID;
       }
-      return projectPermalink(space_group_id, pId, f, lId, securityContext);
     }
 
     String errorMessage = "";
@@ -129,25 +132,23 @@ public class TaskManagement {
     TaskModel taskModel = null;
     Project project = null;
 
-    long currProject;
     if (space_group_id == null) {
-      //. Load project ID from URL
-      long id = ProjectUtil.getProjectIdFromURI(requestPath);
-      if (id > -100 && prc.getControllerContext().getRequest().getQueryString() == null) {
-        currProject = id;
-        if (id > 0) {
-          try {
-            project = projectService.getProject(currProject);
-          } catch (EntityNotFoundException ex) {
-            errorMessage = bundle.getString("popup.msg.projectNotExist");
-          }
-        }
-      } else {
-        currProject = ProjectUtil.INCOMING_PROJECT_ID;
+      // Load project ID from URL
+      long projectId = ProjectUtil.getProjectIdFromURI(requestPath);
+      if (projectId > -100 && prc.getControllerContext().getRequest().getQueryString() == null) {
+        currProject = projectId;
       }
     } else {
       currProject = 0L;
-    }        
+    }
+
+    if (currProject > 0) {
+      try {
+        project = projectService.getProject(currProject);
+      } catch (EntityNotFoundException ex) {
+        errorMessage = bundle.getString("popup.msg.projectNotExist");
+      }
+    }
 
     long taskId = navState.getTaskId();
     if (taskId <= 0) {
@@ -167,7 +168,7 @@ public class TaskManagement {
     }
     
     // A permalink of a task
-    if (taskId != -1) {
+    if (taskId > 0) {
       try {
         taskModel = TaskUtil.getTaskModel(taskId, false, bundle, username, taskService,
                                                     orgService, userService, projectService);
@@ -203,24 +204,14 @@ public class TaskManagement {
     List<Long> spaceProjectIds = null;
     List<Project> projects = ProjectUtil.getProjectTree(space_group_id, projectService);
     if (space_group_id != null) {
-      spaceProjectIds = new LinkedList<Long>();
+      spaceProjectIds = new LinkedList<>();
       for (Project p : projects) {
         spaceProjectIds.add(p.getId());
       }            
     }
-    
-    //if (tasks == null) {
-    if (taskId <= 0) {
-      if (space_group_id != null) {
-        taskQuery.setProjectIds(spaceProjectIds);
-      } else if (currProject > 0) {
-        taskQuery.setProjectIds(Arrays.asList(currProject));
-      } else if (currProject == ProjectUtil.TODO_PROJECT_ID) {
-        taskQuery.setIsTodoOf(username);
-      } else {
-        taskQuery.setIsIncomingOf(username);
-      }
-    }
+
+    Map<String, String> defOrders = TaskUtil.getDefOrders(bundle);
+    Map<String, String> defGroupBys = TaskUtil.getDefGroupBys(currProject, bundle);
 
     String listId = ViewState.buildId(currProject, (long) -1, "incoming");
     ViewState viewState = viewStateService.getViewState(listId);
@@ -234,9 +225,62 @@ public class TaskManagement {
     if (groupBy == null) {
       groupBy = TaskUtil.NONE;
     }
+
+    String currentUser = securityContext.getRemoteUser();
+    TimeZone userTimezone = userService.getUserTimezone(currentUser);
+
+    Label label = null;
+
+    if (taskId <= 0) {
+      if (space_group_id != null) {
+        taskQuery.setProjectIds(spaceProjectIds);
+      } else if (currProject > 0) {
+        taskQuery.setProjectIds(Arrays.asList(currProject));
+      } else if (currProject == ProjectUtil.TODO_PROJECT_ID) {
+        taskQuery.setIsTodoOf(username);
+        if (spaceProjectIds != null) {
+          taskQuery.setProjectIds(spaceProjectIds);
+        }
+
+        if (filter != null && !filter.isEmpty()) {
+          if ("overDue".equalsIgnoreCase(filter)) {
+            defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT, TaskUtil.LABEL), bundle);
+            defOrders = TaskUtil.resolve(Arrays.asList(TaskUtil.TITLE, TaskUtil.PRIORITY, TaskUtil.DUEDATE), bundle);
+            groupBy = TaskUtil.PROJECT;
+          } else if ("today".equalsIgnoreCase(filter) || "tomorrow".equalsIgnoreCase(filter)) {
+            defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT, TaskUtil.LABEL), bundle);
+            defOrders = TaskUtil.resolve(Arrays.asList(TaskUtil.TITLE, TaskUtil.PRIORITY, TaskUtil.RANK), bundle);
+          } else if ("upcoming".equalsIgnoreCase(filter)) {
+            defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT, TaskUtil.LABEL), bundle);
+            defOrders = TaskUtil.resolve(Arrays.asList(TaskUtil.TITLE, TaskUtil.PRIORITY, TaskUtil.DUEDATE, TaskUtil.RANK), bundle);
+          }
+
+          Date[] filterDate = TaskUtil.convertDueDate(filter, userTimezone);
+          taskQuery.setDueDateFrom(filterDate[0]);
+          taskQuery.setDueDateTo(filterDate[1]);
+        }
+      } else if (currProject == ProjectUtil.LABEL_PROJECT_ID && labelId != null) {
+        if (labelId > 0) {
+          label = taskService.getLabel(labelId);
+          if (label != null && label.getUsername().equals(username)) {
+            taskQuery.setLabelIds(Arrays.asList(labelId));
+          } else {
+            // Rollback to incoming if this label is not belong to current user
+            taskQuery.setIsIncomingOf(username);
+            orderBy = TaskUtil.CREATED_BY;
+          }
+        } else {
+          taskQuery.setIsLabelOf(username);
+          groupBy = TaskUtil.LABEL;
+        }
+      } else {
+        taskQuery.setIsIncomingOf(username);
+      }
+    }
+
     //
     ViewState.Filter fd = viewStateService.getFilter(listId);
-    if (taskId > 0 && taskModel.getTask().isCompleted()) {
+    if (taskId > 0 && taskModel != null && taskModel.getTask() != null && taskModel.getTask().isCompleted()) {
       fd.setEnabled(true);
       fd.setShowCompleted(true);
     }
@@ -249,8 +293,6 @@ public class TaskManagement {
     ListAccess<Task> listTasks = null;
     //there are cases that we return empty list of tasks with-out querying to DB
     //1. In spaces, and no space project
-    String currentUser = securityContext.getRemoteUser();
-    TimeZone timezone = userService.getUserTimezone(currentUser);
     if ((spaceProjectIds != null  && spaceProjectIds.isEmpty())) {
       listTasks = TaskUtil.EMPTY_TASK_LIST;
     } else {
@@ -259,7 +301,7 @@ public class TaskManagement {
         showCompleted = fd.isShowCompleted();
         Status status = fd.getStatus() != null ? statusService.getStatus(fd.getStatus()) : null;
         //
-        TaskUtil.buildTaskQuery(taskQuery, fd.getKeyword(), fd.getLabel(), status, fd.getDue(), fd.getPriority(), fd.getAssignees(), fd.isShowCompleted(), timezone);
+        TaskUtil.buildTaskQuery(taskQuery, fd.getKeyword(), fd.getLabel(), status, fd.getDue(), fd.getPriority(), fd.getAssignees(), fd.isShowCompleted(), userTimezone);
       } else {
         taskQuery.setCompleted(false);
       }
@@ -273,7 +315,7 @@ public class TaskManagement {
     if (taskModel != null) {
       page = 0;
       boolean containTask = false;
-      Task[] arr = new Task[0];
+      Task[] arr = null;
       do {
         page++;
         paging = new Paging(page);
@@ -302,7 +344,7 @@ public class TaskManagement {
 
     Map<GroupKey, List<Task>> groupTasks = new HashMap<GroupKey, List<Task>>();
     if (countTasks >= MIN_NUMBER_TASK_GROUPABLE && groupBy != null && !groupBy.isEmpty() && !TaskUtil.NONE.equalsIgnoreCase(groupBy)) {
-      groupTasks = TaskUtil.groupTasks(Arrays.asList(ListUtil.load(listTasks, paging.getStart(), paging.getNumberItemPerPage())), groupBy, currentUser, timezone, bundle, taskService, userService);
+      groupTasks = TaskUtil.groupTasks(Arrays.asList(ListUtil.load(listTasks, paging.getStart(), paging.getNumberItemPerPage())), groupBy, currentUser, userTimezone, bundle, taskService, userService);
     }
     if (groupTasks.isEmpty()) {
       groupTasks.put(new GroupKey("", null, 0), Arrays.asList(ListUtil.load(listTasks, paging.getStart(), paging.getNumberItemPerPage())));
@@ -320,9 +362,6 @@ public class TaskManagement {
       incomNum = ListUtil.getSize(taskService.findTasks(q));
     }
 
-    Map<String, String> defOrders = TaskUtil.getDefOrders(bundle);
-    Map<String, String> defGroupBys = TaskUtil.getDefGroupBys(currProject, bundle);
-    
     ListAccess<Label> tmp = taskService.findLabelsByUser(username);
     List<Label> labels = TaskUtil.buildRootLabels(Arrays.asList(ListUtil.load(tmp, 0, -1)));
 
@@ -369,220 +408,14 @@ public class TaskManagement {
         .bundle(bundle)
         .isInSpace(space_group_id != null)
         .viewType(viewType)
-        .currentLabelId(-1)
-        .currentLabelName("")
+        .currentLabelId(labelId == null ? -1 : labelId)
+        .currentLabelName(label != null ? label.getName() : "")
         .taskService(taskService)
         .currentUser(username)
         .paging(paging)
         .errorMessage(errorMessage)
         .numberTasksByStatus(numberTasks)
         .ok().withCharset(Tools.UTF_8);
-  }
-
-  @View
-  public Response projectPermalink(String space_group_id, Long projectId, String filter, Long labelId, SecurityContext securityContext) throws EntityNotFoundException {
-    final long DEFAULT_PROJECT_ID = space_group_id == null ? ProjectUtil.INCOMING_PROJECT_ID : ProjectUtil.TODO_PROJECT_ID;
-    if (projectId == null) {
-      projectId = DEFAULT_PROJECT_ID;
-    }
-
-    String username = securityContext.getRemoteUser();
-    Identity identity = ConversationState.getCurrent().getIdentity();
-    String errorMessage = "";
-    TimeZone userTimezone = userService.getUserTimezone(username);
-
-    List<Long> spaceProjectIds = null;
-    List<Project> projects = ProjectUtil.getProjectTree(space_group_id, projectService);
-    if (space_group_id != null) {
-      spaceProjectIds = recursiveGetId(projects);
-      if (projectId > 0 && !spaceProjectIds.contains(projectId)) {
-        errorMessage = bundle.getString("popup.msg.projectNotExist");
-        projectId = DEFAULT_PROJECT_ID;
-      }
-    }
-
-    Project project = null;
-    Label label = null;
-    if (projectId > 0) {
-      project = projectService.getProject(projectId);
-      if (project == null) {
-        errorMessage = bundle.getString("popup.msg.projectNotExist");
-        projectId = DEFAULT_PROJECT_ID;
-      } else if (!project.canView(identity)) {
-        errorMessage = bundle.getString("popup.msg.noPermissionToViewProject");
-        projectId = DEFAULT_PROJECT_ID;
-      }
-    }
-
-    Map<String, String> defOrders = TaskUtil.getDefOrders(bundle);
-    Map<String, String> defGroupBys = TaskUtil.getDefGroupBys(projectId, bundle);
-    String groupBy = TaskUtil.NONE;
-    String orderBy = TaskUtil.CREATED_BY;
-
-    TaskModel taskModel = null;
-    
-    TaskQuery taskQuery = new TaskQuery();    
-    if (projectId > 0) {
-      taskQuery.setProjectIds(Arrays.asList(projectId));
-      orderBy = TaskUtil.DUEDATE;
-
-    } else if (projectId == 0) {
-      // Find in all project
-      List<Long> projectIds = new ArrayList<>();
-      for (Project p : projects) {
-        projectIds.add(p.getId());
-      }
-      taskQuery.setProjectIds(projectIds);
-
-    } else if (projectId == ProjectUtil.INCOMING_PROJECT_ID) {
-      taskQuery.setIsIncomingOf(username);
-      orderBy = TaskUtil.CREATED_BY;
-
-    } else if (projectId == ProjectUtil.TODO_PROJECT_ID) {
-      taskQuery.setIsTodoOf(username);
-      if (spaceProjectIds != null) {
-        taskQuery.setProjectIds(spaceProjectIds);
-      }
-
-      orderBy = TaskUtil.DUEDATE;
-      if (filter != null && !filter.isEmpty()) {
-
-        if ("overDue".equalsIgnoreCase(filter)) {
-          defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT, TaskUtil.LABEL), bundle);
-          defOrders = TaskUtil.resolve(Arrays.asList(TaskUtil.TITLE, TaskUtil.PRIORITY, TaskUtil.DUEDATE), bundle);
-          groupBy = TaskUtil.PROJECT;
-        } else if ("today".equalsIgnoreCase(filter)) {
-          defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT, TaskUtil.LABEL), bundle);
-          defOrders = TaskUtil.resolve(Arrays.asList(TaskUtil.TITLE, TaskUtil.PRIORITY, TaskUtil.RANK), bundle);
-          if (orderBy == null || !defOrders.containsKey(orderBy)) {
-            orderBy = TaskUtil.PRIORITY;
-          }
-          groupBy = TaskUtil.NONE;
-        } else if ("tomorrow".equalsIgnoreCase(filter)) {
-          defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT, TaskUtil.LABEL), bundle);
-          defOrders = TaskUtil.resolve(Arrays.asList(TaskUtil.TITLE, TaskUtil.PRIORITY, TaskUtil.RANK), bundle);
-          if (orderBy == null || !defOrders.containsKey(orderBy)) {
-            orderBy = TaskUtil.PRIORITY;
-          }
-          groupBy = TaskUtil.NONE;
-        } else if ("upcoming".equalsIgnoreCase(filter)) {
-          defGroupBys = TaskUtil.resolve(Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT, TaskUtil.LABEL), bundle);
-          defOrders = TaskUtil.resolve(Arrays.asList(TaskUtil.TITLE, TaskUtil.PRIORITY, TaskUtil.DUEDATE, TaskUtil.RANK), bundle);
-          groupBy = TaskUtil.NONE;
-        }
-
-        if (orderBy == null || !defOrders.containsKey(orderBy)) {
-          orderBy = TaskUtil.DUEDATE;
-        }
-        if (groupBy == null || !defGroupBys.containsKey(groupBy)) {
-          groupBy = TaskUtil.DUEDATE;
-        }
-
-        Date[] filterDate = TaskUtil.convertDueDate(filter, userTimezone);
-        taskQuery.setDueDateFrom(filterDate[0]);
-        taskQuery.setDueDateTo(filterDate[1]);
-      }
-    } else if (projectId == ProjectUtil.LABEL_PROJECT_ID && labelId != null) {
-      if (labelId > 0) {
-        label = taskService.getLabel(labelId);
-        if (label != null && label.getUsername().equals(username)) {
-          taskQuery.setLabelIds(Arrays.asList(labelId));
-        } else {
-          // Rollback to incoming if this label is not belong to current user
-          taskQuery.setIsIncomingOf(username);
-          orderBy = TaskUtil.CREATED_BY;
-        }
-      } else {
-        taskQuery.setIsLabelOf(username);
-        groupBy = TaskUtil.LABEL;
-        orderBy = TaskUtil.DUEDATE;
-      }
-    }
-
-    OrderBy order = null;
-    if(orderBy != null && !orderBy.trim().isEmpty()) {
-      order = TaskUtil.TITLE.equals(orderBy) || TaskUtil.DUEDATE.equals(orderBy) ? new OrderBy.ASC(orderBy) : new OrderBy.DESC(orderBy);
-      taskQuery.setOrderBy(Arrays.asList(order));
-    }
-
-    String listId = ViewState.buildId(projectId, labelId, filter == null || filter.isEmpty() ? null : filter.toUpperCase());
-    ViewState.Filter fd = viewStateService.getFilter(listId);
-    boolean advanceSearch = fd.isEnabled();
-    boolean showCompleted = false;
-    String keyword = "";
-    if (advanceSearch) {
-      keyword = fd.getKeyword();
-      showCompleted = fd.isShowCompleted();
-      String currentUser = securityContext.getRemoteUser();
-      TimeZone timezone = userService.getUserTimezone(currentUser);
-      Status status = fd.getStatus() != null ? statusService.getStatus(fd.getStatus()) : null;
-
-      TaskUtil.buildTaskQuery(taskQuery, fd.getKeyword(), fd.getLabel(), status, fd.getDue(), fd.getPriority(), fd.getAssignees(), fd.isShowCompleted(), timezone);
-    } else {
-      taskQuery.setCompleted(false);
-    }
-    
-    ListAccess<Task> listTasks = taskService.findTasks(taskQuery);
-
-    int page = 1;
-    Paging paging = new Paging(page);
-    paging.setTotal(ListUtil.getSize(listTasks));
-    long taskNum = paging.getTotal();
-
-    Map<GroupKey, List<Task>> groupTasks = new HashMap<GroupKey, List<Task>>();
-    List<Task> tasks = Arrays.asList(ListUtil.load(listTasks, paging.getStart(), paging.getNumberItemPerPage()));
-    if (groupBy != null && !groupBy.isEmpty() && !TaskUtil.NONE.equalsIgnoreCase(groupBy)) {
-      groupTasks = TaskUtil.groupTasks(tasks, groupBy, username, userTimezone, bundle, taskService, userService);
-    }
-    if (groupTasks.isEmpty()) {
-      groupTasks.put(new GroupKey("", null, 0), tasks);
-    }
-
-    UserSetting setting = userService.getUserSetting(username);
-
-    // Count all incoming task
-    long incomNum = taskNum;
-    if (advanceSearch || projectId != ProjectUtil.INCOMING_PROJECT_ID) {
-      TaskQuery q = new TaskQuery();
-      q.setIsIncomingOf(username);
-      q.setCompleted(false);
-      incomNum = ListUtil.getSize(taskService.findTasks(q));
-    }
-
-    ListAccess<Label> tmp = taskService.findLabelsByUser(username);
-    List<Label> labels = TaskUtil.buildRootLabels(Arrays.asList(ListUtil.load(tmp, 0, -1)));
-
-    return index.with()
-            .currentProjectId(projectId)
-            .taskId(-1)
-            .taskModel(taskModel)
-            .orders(defOrders)
-            .groups(defGroupBys)
-            .project(project)
-            .tasks(tasks)
-            .taskNum(taskNum)
-            .incomNum(incomNum)
-            .groupTasks(groupTasks)
-            .keyword(keyword)
-            .showCompleted(advanceSearch && showCompleted)
-            .advanceSearch(advanceSearch)
-            .groupBy(groupBy)
-            .orderBy(orderBy)
-            .filter(filter == null ? "" : filter)
-            .projects(projects)
-            .labels(labels)
-            .userSetting(setting)
-            .userTimezone(userTimezone)
-            .bundle(bundle)
-            .isInSpace(space_group_id != null)
-            .viewType(ViewType.LIST)
-            .currentLabelId(labelId == null ? -1 : labelId)
-            .currentLabelName(label != null ? label.getName() : "")
-            .taskService(taskService)
-            .currentUser(username)
-            .paging(paging)
-            .errorMessage(errorMessage)
-            .ok().withCharset(Tools.UTF_8);
   }
 
   private List<Long> recursiveGetId(List<Project> projects) {

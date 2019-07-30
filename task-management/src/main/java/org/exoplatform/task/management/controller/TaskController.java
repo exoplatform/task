@@ -39,6 +39,7 @@ import org.exoplatform.task.exception.ParameterEntityException;
 import org.exoplatform.task.exception.UnAuthorizedOperationException;
 import org.exoplatform.task.management.model.Paging;
 import org.exoplatform.task.management.model.ViewState;
+import org.exoplatform.task.management.model.ViewState.Filter;
 import org.exoplatform.task.management.model.ViewType;
 import org.exoplatform.task.management.service.ViewStateService;
 import org.exoplatform.task.management.util.JsonUtil;
@@ -529,20 +530,25 @@ public class TaskController extends AbstractController {
       vType = ViewType.getViewType(viewType);
       viewState.setViewType(vType);
     }
+
+    Long statusIdLong = null;
+    if (StringUtils.isNotBlank(statusId)) {
+      Status status = statusService.getStatus(Long.parseLong(statusId));
+      if (status == null || !status.getProject().canView(currIdentity)) {
+        throw new UnAuthorizedOperationException(statusIdLong, Status.class, getNoPermissionMsg());
+      }
+    }
+
     viewStateService.saveViewState(viewState);
     boolean isBoardView = (ViewType.BOARD == vType);
 
     ViewState.Filter filter = viewStateService.getFilter(listId);
-    boolean advanceSearch = filter.isEnabled();
-    if (advanceSearch) {
-      filter.updateFilterData(filterLabelIds, statusId, dueDate, priority, assignee, showCompleted, keyword);
-    } else if (StringUtils.isNotEmpty(keyword)) {
-      filter.setKeyword(keyword);
-    }
+    filter.updateFilterData(filterLabelIds, statusId, dueDate, priority, assignee, showCompleted, keyword);
     viewStateService.saveFilter(filter);
 
     Project project = null;
     boolean noProjPermission = false;
+    boolean advanceSearch = filter.isEnabled();
     List<Status> projectStatuses = Collections.emptyList();
     if (projectId != null && projectId > 0) {
       project = projectService.getProject(projectId);

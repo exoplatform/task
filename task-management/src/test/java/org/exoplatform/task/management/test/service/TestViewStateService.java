@@ -28,20 +28,26 @@ import org.exoplatform.task.management.model.ViewType;
 import org.exoplatform.task.management.service.ViewStateService;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.exoplatform.task.management.service.ViewStateService.TASK_APP_SCOPE;
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.*;
 
 public class TestViewStateService {
   private ViewStateService viewStateService;
-
+  private ViewStateService mockedViewStateService;
+  private SettingService settingService;
   @Before
   public void setUp() throws Exception {
+    settingService = Mockito.spy(SettingService.class);
     viewStateService = new ViewStateService(new MockSettingService());
+    mockedViewStateService = Mockito.spy(new ViewStateService(settingService));
   }
 
   @Test
@@ -52,15 +58,48 @@ public class TestViewStateService {
   }
 
   @Test
+  public void testIsNotNewViewState() {
+    ViewState viewState = viewStateService.getViewState("list@-1@1");
+    ViewState originalViewState = new ViewState(viewState);
+    mockedViewStateService.saveViewState(viewState);
+    Mockito.verify(settingService, Mockito.never()).set(eq(Context.USER), eq(TASK_APP_SCOPE), eq(viewState.getId() + ".viewType"), any(SettingValue.class));
+  }
+
+  @Test
+  public void testIsNewViewState() {
+    ViewState viewState = viewStateService.getViewState("list@-1@1");
+    ViewState originalViewState = new ViewState(viewState);
+    viewState.setViewType(ViewType.BOARD);
+    mockedViewStateService.saveViewState(viewState);
+    Mockito.verify(settingService, Mockito.times(1)).set(eq(Context.USER), eq(TASK_APP_SCOPE), eq(viewState.getId() + ".viewType"), any(SettingValue.class));
+  }
+
+  @Test
   public void testSaveAndGetViewType() {
     ViewState viewState = viewStateService.getViewState("list@-1@1");
+    ViewState oldViewState = new ViewState(viewState);
     viewState.setViewType(ViewType.BOARD);
     viewStateService.saveViewState(viewState);
-
     viewState = viewStateService.getViewState("list@-1@1");
     assertEquals(ViewType.BOARD, viewState.getViewType());
   }
 
+  @Test
+  public void testIsNotNewFilter() {
+    ViewState.Filter filter = viewStateService.getFilter("list@-1@1");
+    mockedViewStateService.saveFilter(filter);
+    Mockito.verify(settingService, Mockito.never()).set(eq(Context.USER), eq(TASK_APP_SCOPE), eq(filter.getId() + ".filter.assignees"), any(SettingValue.class));
+  }
+
+  @Test
+  public void testIsNewFilter() {
+    ViewState.Filter filter = viewStateService.getFilter("list@-1@1");
+    String userID = "root";
+    filter.setAssignees(userID);
+    mockedViewStateService.saveFilter(filter);
+    Mockito.verify(settingService, Mockito.times(1)).set(eq(Context.USER), eq(TASK_APP_SCOPE), eq(filter.getId() + ".filter.assignees"), any(SettingValue.class));
+  }
+  
   private class MockSettingService implements SettingService {
     private Map<String, SettingValue<?>> values = new HashMap<>();
     @Override
