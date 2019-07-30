@@ -65,9 +65,9 @@ public final class ProjectUtil {
   public static final String URL_PROJECT_MY_TASK = "/my-task";
   public static final String URL_LABEL_ALL = "/labels";
   public static final String URL_LABEL_DETAIL = "/label/";
-  public static final int INCOMING_PROJECT_ID = -1;
-  public static final int TODO_PROJECT_ID = -2;
-  public static final int LABEL_PROJECT_ID = -5;
+  public static final long INCOMING_PROJECT_ID = -1;
+  public static final long TODO_PROJECT_ID = -2;
+  public static final long LABEL_PROJECT_ID = -5;
 
   public static final String NAME = "name";
 
