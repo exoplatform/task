@@ -421,4 +421,18 @@
     <sqlFile dbms="oracle" encoding="utf8" endDelimiter="/" relativeToChangelogFile="true" path="ORACLE_SEQ_TASK_LABELS_LABEL_ID.sql" />
   </changeSet>
 
+  <changeSet author="task" id="1.0.0-28" dbms="mysql">
+    <sql>
+      ALTER TABLE TASK_COMMENTS MODIFY COLUMN CMT varchar(2000) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT
+      NULL;
+      ALTER TABLE TASK_PROJECTS MODIFY COLUMN DESCRIPTION varchar(2000) CHARACTER SET utf8mb4 COLLATE
+      utf8mb4_unicode_ci;
+      ALTER TABLE TASK_TASKS MODIFY COLUMN DESCRIPTION varchar(2000) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+      ALTER TABLE TASK_LABELS MODIFY COLUMN NAME varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;
+      ALTER TABLE TASK_PROJECTS MODIFY COLUMN DESCRIPTION varchar(2000) CHARACTER SET utf8mb4 COLLATE
+      utf8mb4_unicode_ci;
+      ALTER TABLE TASK_TASKS MODIFY COLUMN TITLE varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;
+      ALTER TABLE TASK_TASKS MODIFY COLUMN DESCRIPTION varchar(2000) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+    </sql>
+  </changeSet>
 </databaseChangeLog>
