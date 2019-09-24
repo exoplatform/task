@@ -435,4 +435,16 @@
       ALTER TABLE TASK_TASKS MODIFY COLUMN DESCRIPTION varchar(2000) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
     </sql>
   </changeSet>
+
+  <changeSet author="task" id="1.0.0-29">
+    <modifyDataType columnName="NAME"
+                    newDataType="NVARCHAR(200)"
+                    tableName="TASK_PROJECTS"/>
+    <modifyDataType columnName="MANAGER"
+                    newDataType="NVARCHAR(250)"
+                    tableName="TASK_PROJECT_MANAGERS"/>
+    <modifyDataType columnName="PARTICIPATOR"
+                    newDataType="NVARCHAR(250)"
+                    tableName="TASK_PROJECT_PARTICIPATORS"/>
+  </changeSet>
 </databaseChangeLog>
