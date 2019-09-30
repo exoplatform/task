@@ -288,6 +288,9 @@ li[data-hiddenlabel="false"] {
     .tooltip {
         white-space: nowrap;
     }
+    .table-project .row-item {
+      min-height: 38px;
+    }
     .centerPanel.uiBox .projectListView {
         .title {
             padding:4px 5px;
@@ -1504,7 +1507,8 @@ li[data-hiddenlabel="false"] {
 }
 
 .table-project .column-time {
-    width: 27px;
+    width: auto;
+    max-width: 50%;
 }
 
 .breadcrumb .removeProject {
