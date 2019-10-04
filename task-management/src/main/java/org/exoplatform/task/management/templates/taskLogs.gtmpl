@@ -3,9 +3,9 @@
 #{param name=bundle/}
 
 <%
-import org.exoplatform.task.util.TaskUtil;
 import org.exoplatform.task.util.ResourceUtil;
 import org.exoplatform.commons.utils.HTMLEntityEncoder;
+import org.exoplatform.commons.utils.DateUtils;
 
 def encoder = HTMLEntityEncoder.getInstance();
 %>
@@ -39,7 +39,7 @@ def encoder = HTMLEntityEncoder.getInstance();
 					${ResourceUtil.resolveMessage(bundle, key, author, target)}.
         </div>        
         <span class="date pull-right">
-            <%= TaskUtil.getPeriod(log.getCreatedTime(), bundle)%>
+            <%= DateUtils.getRelativeTimeLabel(bundle.getLocale(), log.getCreatedTime())%>
         </span>
     </li>
 <%} %>
