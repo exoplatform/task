@@ -2,10 +2,10 @@
 #{param name=bundle/}
 
 <%
-    import org.exoplatform.task.util.TaskUtil;
     import org.exoplatform.task.util.ResourceUtil;
     import org.exoplatform.services.security.ConversationState;
-  	 import org.exoplatform.commons.utils.HTMLEntityEncoder;
+    import org.exoplatform.commons.utils.HTMLEntityEncoder;
+    import org.exoplatform.commons.utils.DateUtils;
 
      def encoder = HTMLEntityEncoder.getInstance();
 
@@ -41,7 +41,7 @@
                <div class="author">
                     <a href="${comment.author.url}">${encoder.encode(comment.author.displayName)}</a>
                     <span class="date">
-                        <%= TaskUtil.getPeriod(comment.getCreatedTime().getTime(), bundle)%>
+                        <%= DateUtils.getRelativeTimeLabel(bundle.getLocale(), comment.getCreatedTime().getTime())%>
                      </span>
                 </div>
                 <span class="contentComment clearfix">
