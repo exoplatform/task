@@ -288,9 +288,6 @@ li[data-hiddenlabel="false"] {
     .tooltip {
         white-space: nowrap;
     }
-    .table-project .row-item {
-      min-height: 38px;
-    }
     .centerPanel.uiBox .projectListView {
         .title {
             padding:4px 5px;
@@ -328,6 +325,17 @@ li[data-hiddenlabel="false"] {
                     box-shadow: 0 1px 2px 0 rgba(255, 255, 255, 0);
                     color: #333333;
                 }
+            }
+        }
+        .taskList {
+            .table-project {
+              .row-item {
+                min-height: 38px;
+              }
+              .column-time {
+                  width: auto;
+                  max-width: 50%;
+              }
             }
         }
     }
@@ -1507,8 +1515,7 @@ li[data-hiddenlabel="false"] {
 }
 
 .table-project .column-time {
-    width: auto;
-    max-width: 50%;
+    width: 27px;
 }
 
 .breadcrumb .removeProject {
