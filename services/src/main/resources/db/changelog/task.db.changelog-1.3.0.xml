@@ -17,6 +17,10 @@
   </changeSet>
 
   <changeSet author="task" id="1.3.0-3" dbms="mysql,h2,sybase,db2,hsqldb,postgresql" failOnError="false">
+      <validCheckSum>7:03a7ef811cee34357cc041b4fadc0acb</validCheckSum>
+      <preConditions onFail="MARK_RAN">
+          <foreignKeyConstraintExists foreignKeyName="FK_TASK_COMMENT_PARENT_COMMENT_ID"/>
+      </preConditions>
     <dropForeignKeyConstraint baseTableName="TASK_COMMENTS" constraintName="FK_TASK_COMMENT_PARENT_COMMENT_ID" />
   </changeSet>
 
