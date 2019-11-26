@@ -27,7 +27,7 @@
 
   <component>
      <key>CalendarTaskConnector</key>
-     <type>org.exoplatform.platform.common.container.ExtendedPropertyConfigurator</type>
+     <type>org.exoplatform.container.ExtendedPropertyConfigurator</type>
      <init-params>
        <properties-param>
          <name>properties</name>
