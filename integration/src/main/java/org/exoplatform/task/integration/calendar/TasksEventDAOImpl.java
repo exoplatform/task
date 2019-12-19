@@ -26,6 +26,7 @@ import org.exoplatform.calendar.model.query.EventQuery;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.storage.EventDAO;
+import org.exoplatform.commons.utils.HTMLEntityEncoder;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -52,7 +53,7 @@ public class TasksEventDAOImpl implements EventDAO {
       if (task.getStartDate() != null) {
         if (task.isCalendarIntegrated()) {
           Event event = newInstance();
-          return TaskUtil.buildEvent(event, task);
+          return CalendarIntegrationUtil.buildEvent(event, task);
         }
       } else {
         LOG.warn("Can't map task: {} to event due to no workplan", id);
@@ -136,7 +137,7 @@ public class TasksEventDAOImpl implements EventDAO {
      final List<Event> events = new LinkedList<Event>();
      for (Task t : tasks) {
        Event event = newInstance();
-       events.add(TaskUtil.buildEvent(event, t));       
+       events.add(CalendarIntegrationUtil.buildEvent(event, t));
        if (event.getCalendarId() == null || !ids.contains(Long.valueOf(event.getCalendarId()))) {
          event.setCalendarId(String.valueOf(ProjectUtil.TODO_PROJECT_ID));
        }
@@ -174,4 +175,5 @@ public class TasksEventDAOImpl implements EventDAO {
     Event event = new Event();
     return event;
   }
+
 }

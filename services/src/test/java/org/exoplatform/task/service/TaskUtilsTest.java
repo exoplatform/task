@@ -27,14 +27,9 @@ import static org.mockito.Mockito.mock;
 
 import java.util.*;
 
-import org.exoplatform.calendar.model.Event;
 import org.exoplatform.services.idgenerator.IDGeneratorService;
 import org.exoplatform.services.jcr.util.IdGenerator;
-import org.exoplatform.task.domain.Project;
-import org.exoplatform.task.domain.Status;
-import org.exoplatform.task.util.ProjectUtil;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -207,28 +202,6 @@ public class TaskUtilsTest {
     assertEquals(subComment.getId(), subCommentModel.getId());
     assertEquals(authorSubComment, subCommentModel.getAuthor().getUsername());
     assertEquals(subCommentContent, subCommentModel.getComment());
-  }
-
-  @Test
-  public void testTaskEvent() throws Exception {
-
-    Task task = TestUtils.getDefaultTask();
-    task.setStartDate(new Date());
-    task.setEndDate(new Date());
-    Status status = TestUtils.getDefaultStatus();
-    Project project = TestUtils.getDefaultProject();
-    Event event = new Event();
-    TaskUtil.buildEvent(event,task);
-
-    Assert.assertEquals(String.valueOf(ProjectUtil.TODO_PROJECT_ID), event.getCalendarId());
-
-    status.setProject(project);
-    task.setStatus(status);
-    TaskUtil.buildEvent(event,task);
-    Assert.assertEquals(task.getStatus().getProject().getId(),Long.parseLong(event.getCalendarId()));
-    Assert.assertEquals(task.getTitle(), event.getSummary());
-    Assert.assertEquals(task.getDescription(), event.getDescription());
-    status.setProject(project);
   }
 
 }

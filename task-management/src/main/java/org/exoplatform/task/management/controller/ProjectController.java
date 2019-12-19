@@ -36,6 +36,7 @@ import org.exoplatform.common.http.HTTPStatus;
 import org.exoplatform.commons.juzu.ajax.Ajax;
 import org.exoplatform.commons.utils.HTMLEntityEncoder;
 import org.exoplatform.commons.utils.ListAccess;
+import org.exoplatform.container.ExoContainer;
 import org.exoplatform.portal.config.UserACL;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -60,10 +61,8 @@ import org.exoplatform.task.model.UserGroup;
 import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.StatusService;
 import org.exoplatform.task.service.UserService;
-import org.exoplatform.task.util.ListUtil;
-import org.exoplatform.task.util.ProjectUtil;
-import org.exoplatform.task.util.StringUtil;
-import org.exoplatform.task.util.UserUtil;
+import org.exoplatform.task.util.*;
+
 import org.gatein.common.text.EntityEncoder;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -150,6 +149,7 @@ public class ProjectController extends AbstractController {
     return form
         .with()
         .breadcumbs(ProjectUtil.buildBreadcumbs(parent.getId(), projectService, bundle))
+        .useCalendar(TaskUtil.isCalendarEnabled())
         .parent(parent)        
         .user(user)
         .ok().withCharset(Tools.UTF_8);
@@ -564,6 +564,7 @@ public class ProjectController extends AbstractController {
     return detail
         .with()
         .breadcumbs(ProjectUtil.buildBreadcumbs(parent.getId(), projectService, bundle))
+        .useCalendar(TaskUtil.isCalendarEnabled())
         .parent(parent)
         .project(project)
         .userMap(users)
