@@ -48,20 +48,11 @@
       <type>org.exoplatform.task.integration.SpaceTaskDataInitializer</type>
     </component-plugin>
   </external-component-plugins>
-  
-  <external-component-plugins>
-    <target-component>org.exoplatform.calendar.service.ExtendedCalendarService</target-component>
-    <component-plugin profiles="calendar">
-      <name>addTasksStorage</name>
-      <set-method>addDataStore</set-method>
-      <type>org.exoplatform.task.integration.calendar.TasksStorage</type>
-    </component-plugin>
-  </external-component-plugins>
-  
+
   <external-component-plugins>
     <target-component>org.exoplatform.commons.api.search.SearchService</target-component>
     <!-- Task -->
-    <component-plugin profiles="calendar">
+    <component-plugin>
       <name>TaskInTasksSearchConnector</name>
       <set-method>addConnector</set-method>
       <type>org.exoplatform.task.integration.TaskSearchConnector</type>
