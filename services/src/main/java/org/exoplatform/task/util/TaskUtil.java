@@ -699,7 +699,7 @@ public final class TaskUtil {
   }
 
   public static boolean isCalendarEnabled() {
-    return ExoContainer.getCurrentProfiles().contains("calendar");
+    return ExoContainer.hasProfile("calendar");
   }
 
   public static TimeZone getUserTimezone(String username) {
