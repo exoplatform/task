@@ -46,7 +46,8 @@ public abstract class AbstractNotificationPlugin extends BaseNotificationPlugin 
   public NotificationInfo makeNotification(NotificationContext ctx) {
     Task task = ctx.value(NotificationUtils.TASK);
     String creator = ctx.value(NotificationUtils.CREATOR);
-    
+    Set coworker = ctx.value(NotificationUtils.COWORKER);
+    Set mentioned = ctx.value(NotificationUtils.MENTIONED);
     //
     String projectName = "";
     String projectId = "";
@@ -64,7 +65,9 @@ public abstract class AbstractNotificationPlugin extends BaseNotificationPlugin 
     RequestLifeCycle.begin(container);
     String taskUrl = buildTaskUrl(task, container, controller);
     String projectUrl = buildProjectUrl(project, container, controller);
-    Set<String> receivers = getReceiver(task, ctx);    
+    String assignee = task.getAssignee();
+    Set<String> listOfCoworker = task.getCoworker();
+    Set<String> receivers = getReceiver(task, ctx);
     RequestLifeCycle.end();
     
     return NotificationInfo.instance()
@@ -76,6 +79,10 @@ public abstract class AbstractNotificationPlugin extends BaseNotificationPlugin 
                                .with(NotificationUtils.ACTIVITY_ID, activityId.toString())
                                .with(NotificationUtils.TASK_URL, taskUrl)
                                .with(NotificationUtils.PROJECT_URL, projectUrl)
+                               .with(NotificationUtils.TASK_ASSIGNEE, assignee)
+                               .with(NotificationUtils.TASK_COWORKERS, String.valueOf(listOfCoworker))
+                               .with(NotificationUtils.ADDED_COWORKER, String.valueOf(coworker))
+                               .with(NotificationUtils.MENTIONED_USERS, String.valueOf(mentioned))
                                .key(getKey()).end();
   }
 
