@@ -58,4 +58,19 @@ public class TaskCoworkerPluginTest {
     assertEquals(1, receivers.size());
     assertTrue(receivers.contains("user2"));
   }
+
+  @Test
+  public void testisValid() {
+    AbstractNotificationPlugin notificationPlugin = new TaskCoworkerPlugin(new InitParams());
+    NotificationContext ctx = NotificationContextImpl.cloneInstance();
+    Task task = new Task();
+    task.setCoworker(new HashSet<>(Arrays.asList("user2", "user3")));
+    task.setAssignee("user0");
+    task.setTitle("task1");
+    task.setDescription("Description");
+    task.setCreatedBy("user25");
+    ctx.append(NotificationUtils.TASK, task);
+    ctx.append(NotificationUtils.COWORKER, task.getCoworker());
+    assertTrue(notificationPlugin.isValid(ctx));
+  }
 }

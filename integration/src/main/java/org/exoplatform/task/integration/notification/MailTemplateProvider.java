@@ -88,8 +88,11 @@ public class MailTemplateProvider extends TemplateProvider {
       String commentText = notification.getValueOwnerParameter(NotificationUtils.COMMENT_TEXT);
       String taskUrl = notification.getValueOwnerParameter(NotificationUtils.TASK_URL);
       String projectUrl = notification.getValueOwnerParameter(NotificationUtils.PROJECT_URL);
-
+      String assignee = notification.getValueOwnerParameter(NotificationUtils.TASK_ASSIGNEE);
+      String listOfCoworker = notification.getValueOwnerParameter(NotificationUtils.TASK_COWORKERS);
       commentText = CommentUtil.formatMention(getExcerpt(commentText, 130), userService);
+      String coworker = notification.getValueOwnerParameter(NotificationUtils.ADDED_COWORKER);
+      String usersMentioned = notification.getValueOwnerParameter(NotificationUtils.MENTIONED_USERS);
 
       TemplateContext templateContext = new TemplateContext(notification.getKey().getId(), language);
       Identity author = CommonsUtils.getService(IdentityManager.class)
@@ -111,6 +114,10 @@ public class MailTemplateProvider extends TemplateProvider {
       templateContext.put("DUE_DATE", getDueDate(notification));
       templateContext.put("TASK_URL", taskUrl);
       templateContext.put("PROJECT_URL", projectUrl);
+      templateContext.put("AssignTask", assignee);
+      templateContext.put("listOfCoworker", listOfCoworker);
+      templateContext.put("coworkerTask", coworker);
+      templateContext.put("usersMentioned", usersMentioned);
       //
       templateContext.put("FOOTER_LINK", LinkProviderUtils.getRedirectUrl("notification_settings", receiver.getRemoteId()));
       String subject = TemplateUtils.processSubject(templateContext);
@@ -125,9 +132,24 @@ public class MailTemplateProvider extends TemplateProvider {
     @Override
     protected boolean makeDigest(NotificationContext ctx, Writer writer) {
       EntityEncoder encoder = HTMLEntityEncoder.getInstance();
-
       List<NotificationInfo> notifications = ctx.getNotificationInfos();
       NotificationInfo first = notifications.get(0);
+      String keyId = first.getKey().getId();
+      String creator = first.getOwnerParameter().get(NotificationUtils.CREATOR.getKey());
+      String assignee = first.getOwnerParameter().get(NotificationUtils.TASK_ASSIGNEE);
+      String coworker = first.getOwnerParameter().get(NotificationUtils.ADDED_COWORKER);
+      if (TaskAssignPlugin.ID.equals(keyId) && !first.getTo().equals(assignee) && !creator.equals(assignee)) {
+        return false;
+      }
+      if (TaskCoworkerPlugin.ID.equals(keyId) && !coworker.contains(first.getTo()) && !coworker.contains(creator)) {
+        return false;
+      }
+      if ((TaskCommentPlugin.ID.equals(keyId) || TaskCompletedPlugin.ID.equals(keyId) || TaskDueDatePlugin.ID.equals(keyId)) && !first.getOwnerParameter().get(NotificationUtils.TASK_COWORKERS).contains(first.getTo()) && !first.getTo().equals(assignee) && !first.getTo().equals(creator)) {
+        return false;
+      }
+      if (TaskMentionPlugin.ID.equals(keyId) && !first.getOwnerParameter().get(NotificationUtils.MENTIONED_USERS).contains(first.getTo())) {
+        return false;
+      }
 
       String language = getLanguage(first);
       TemplateContext templateContext = new TemplateContext(first.getKey().getId(), language);
