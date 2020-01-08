@@ -42,5 +42,9 @@ public class NotificationUtils {
   public final static String ACTIVITY_ID = "activityId";
   public static final String TASK_URL = "taskUrl";
   public static final String PROJECT_URL = "projectUrl";
+  public static final String TASK_ASSIGNEE = "taskAssignee";
+  public static final String ADDED_COWORKER = "addedCoworker";
+  public static final String TASK_COWORKERS = "taskCoworkers";
+  public static final String MENTIONED_USERS = "mentionedUsers";
   
 }
