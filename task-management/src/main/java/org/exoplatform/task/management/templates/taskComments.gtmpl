@@ -54,7 +54,7 @@
             </div><!--end commentRight-->
 
             <% if (!collapseBlock && comment.canEdit(identity)) {%>
-                <a href="javascript:void(0)" class="actionIcon controllDelete" data-toggle="tooltip" data-placement="left" title="&{label.remove}">
+                <a href="javascript:void(0)" class="actionIcon controllDelete action-delete-comment" data-toggle="tooltip" data-placement="left" title="&{label.remove}">
                     <i class="uiIconTrashMini uiIconLightGray "></i>
                 </a>
             <%}%>

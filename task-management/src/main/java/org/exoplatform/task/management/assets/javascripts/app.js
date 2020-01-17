@@ -44,7 +44,6 @@ $(document).ready(function() {
       });
       $rightPanelContent.find(".subCommentShowAllLink").on("click", function() {
         var parentCommentId = $(this).attr('data-parent-comment');
-  
         $('#SubCommentShowAll_' + parentCommentId).hide();
         $rightPanelContent.find('[data-parent-comment=' + parentCommentId + ']').removeClass('hidden');
       });
@@ -298,6 +297,7 @@ $(document).ready(function() {
             return false;
         }
         var postCommentURL = $form.jzURL('TaskController.comment');
+        initCommentEditor();
         var xhr = $.post(postCommentURL, { "taskId": taskId, "comment": comment, "parentCommentId" : parentCommentId}, function(data) {
             $commentContainer.jzLoad('TaskController.renderTaskComments()', {id: taskId, loadAllComment: loadAllComment}, function() {
                 enhanceCommentsLinks(parentCommentId);
@@ -309,34 +309,6 @@ $(document).ready(function() {
         });
 
         return false;
-    });
-
-    $rightPanel.on('click', '[data-commentid] a.controllDelete', function(e) {
-        var $a = $(e.target).closest('a');
-        var $allComments = $a.closest('[data-allcomment]');
-        var $comment = $a.closest('[data-commentid]');
-        var $commentContainer = $a.closest('#tab-comments');
-        var $task = $a.closest('[data-taskid]');
-
-        var taskId = $task.data('taskid');
-        var commentId = $comment.data('commentid');
-        var parentCommentId = $comment.data('parent-comment');
-        var loadAllComment = $allComments.data('allcomment');
-        var deleteURL = $a.jzURL('TaskController.deleteComment');
-        $.ajax({
-            url: deleteURL,
-            data: {commentId: commentId},
-            type: 'POST',
-            success: function(data) {
-                $commentContainer.jzLoad('TaskController.renderTaskComments()', {id: taskId, loadAllComment: loadAllComment}, function() {
-                  enhanceCommentsLinks(parentCommentId);
-                  initCommentEditor();
-                });
-            },
-            error: function(xhr, textStatus, errorThrown) {
-                alert(xhr.responseText);
-            }
-        });
     });
 
     $rightPanel.on('click', 'a.load-all-comments', function(e) {

@@ -24,6 +24,7 @@ import juzu.impl.common.Tools;
 import juzu.request.SecurityContext;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.exoplatform.common.http.HTTPStatus;
 import org.exoplatform.commons.api.settings.SettingService;
 import org.exoplatform.commons.juzu.ajax.Ajax;
 import org.exoplatform.commons.utils.HTMLEntityEncoder;
@@ -92,7 +93,7 @@ public class TaskController extends AbstractController {
   @Inject
   @Path("detail.gtmpl")
   org.exoplatform.task.management.templates.detail detail;
-  
+
   @Inject
   @Path("taskLogs.gtmpl")
   org.exoplatform.task.management.templates.taskLogs taskLogs;
@@ -117,7 +118,11 @@ public class TaskController extends AbstractController {
   @Inject
   @Path("confirmCloneTask.gtmpl")
   org.exoplatform.task.management.templates.confirmCloneTask confirmCloneTask;
-  
+
+  @Inject
+  @Path("confirmDeleteComment.gtmpl")
+  org.exoplatform.task.management.templates.confirmDeleteComment confirmDeleteComment;
+
   @Inject
   ViewStateService viewStateService;
 
@@ -131,14 +136,14 @@ public class TaskController extends AbstractController {
     }
     TaskModel model = TaskUtil.getTaskModel(id, false, bundle, securityContext.getRemoteUser(), taskService, orgService, userService, projectService);
     TimeZone userTimezone = userService.getUserTimezone(securityContext.getRemoteUser());
-  
+
   return detail.with()
       .taskModel(model)
       .userTimezone(userTimezone)
       .bundle(bundle)
       .ok().withCharset(Tools.UTF_8);
   }
-  
+
   @Resource
   @Ajax
   @MimeType.JSON
@@ -157,7 +162,7 @@ public class TaskController extends AbstractController {
         json.put("name", lbl.getName());
         json.put("color", lbl.getColor());
         arr.put(json);
-      }      
+      }
     }
     return Response.ok(arr.toString()).withCharset(Tools.UTF_8);
   }
@@ -254,6 +259,33 @@ public class TaskController extends AbstractController {
   @Resource
   @Ajax
   @MimeType.HTML
+  public Response openConfirmDeleteComment(Long id) throws EntityNotFoundException, UnAuthorizedOperationException {
+    Comment comment = taskService.getComment(id);
+    if (comment != null) {
+      Long taskId = comment.getTask().getId();
+      Identity currIdentity = ConversationState.getCurrent().getIdentity();
+      if (!TaskUtil.canDeleteComment(currIdentity, comment)) {
+        throw new UnAuthorizedOperationException(id, Task.class, getNoPermissionMsg());
+      }
+
+      String msg = bundle.getString("popup.msg.deleteComment");
+
+      return confirmDeleteComment
+              .with()
+              .commentId(comment.getId())
+              .taskId(taskId)
+              .msg(msg)
+              .ok().withCharset(Tools.UTF_8);
+    } else {
+      LOG.error("Error deleting comment {} ", comment);
+      String msgError = bundle.getString("popup.msg.deleteCommentError");
+      return buildMSGDialog(msgError, MSG_TYPE.ERROR);
+    }
+  }
+
+  @Resource
+  @Ajax
+  @MimeType.HTML
   public Response openConfirmCloneTask(Long id) throws EntityNotFoundException, UnAuthorizedOperationException {
     Task task = taskService.getTask(id);
     if (!TaskUtil.hasEditPermission(task)) {
@@ -281,8 +313,8 @@ public class TaskController extends AbstractController {
     taskService.removeTask(id);//Can throw TaskNotFoundException
 
     String username = context.getRemoteUser();
-    long taskNum = getIncomingNum(username);    
-    
+    long taskNum = getIncomingNum(username);
+
     JSONObject json = new JSONObject();
     json.put("id", id); //Can throw JSONException
     json.put("incomNum", taskNum);
@@ -298,7 +330,7 @@ public class TaskController extends AbstractController {
     if (!TaskUtil.hasEditPermission(task) ||
         !TaskUtil.hasPermissionOnField(task, name, value, statusService, taskService, projectService)) {
       throw new UnAuthorizedOperationException(taskId, Task.class, getNoPermissionMsg());
-    }    
+    }
     task = TaskUtil.saveTaskField(task, context.getRemoteUser(), name, value, timezone, taskService, statusService);
 
     String response = "Update successfully";
@@ -311,13 +343,13 @@ public class TaskController extends AbstractController {
         end = DateUtil.newCalendarInstance(timezone);
         end.setTime(task.getEndDate());
       }
-      
+
       response = TaskUtil.getWorkPlan(start, end, bundle);
       if (response == null) {
         response = bundle.getString("label.noWorkPlan");
       }
     }
-    
+
     //update project or assignee, or coworker, need to update Incomming task number
     if ("project".equalsIgnoreCase(name) || "assignee".equalsIgnoreCase(name) || "coworker".equalsIgnoreCase(name)) {
       String username = context.getRemoteUser();
@@ -412,9 +444,9 @@ public class TaskController extends AbstractController {
     }
     task.setCompleted(completed);
     taskService.updateTask(task);
-    
+
     String username = securityContext.getRemoteUser();
-    long taskNum = getIncomingNum(username);    
+    long taskNum = getIncomingNum(username);
     return Response.ok(String.valueOf(taskNum));
   }
 
@@ -494,12 +526,19 @@ public class TaskController extends AbstractController {
   @Resource
   @Ajax
   @MimeType("text/plain")
-  public Response deleteComment(Long commentId) throws EntityNotFoundException {
+  public Response deleteComment(Long commentId) {
     Comment comment = taskService.getComment(commentId);
     Identity currIdentity = ConversationState.getCurrent().getIdentity();
-    if (TaskUtil.canDeleteComment(currIdentity, comment)) {
-      taskService.removeComment(commentId);
-      return Response.ok("Delete comment successfully!");
+    if (TaskUtil.canDeleteComment(currIdentity, comment) && (comment != null)) {
+      try {
+        taskService.removeComment(commentId);
+        JSONObject json = new JSONObject();
+        json.put("id", commentId); //Can throw JSONException
+        return Response.ok(json.toString());
+      } catch (Exception e) {
+        LOG.error("Error deleting comment {} ", commentId, e);
+        return Response.error("Error deleting comment {}");
+      }
     } else {
       return Response.status(401).body("Only owner or project manager can delete the comment");
     }
