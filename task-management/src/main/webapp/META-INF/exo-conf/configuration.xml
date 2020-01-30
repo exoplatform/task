@@ -8,11 +8,16 @@
       <name>Change PortalContainer Definitions</name>
       <set-method>registerChangePlugin</set-method>
       <type>org.exoplatform.container.definition.PortalContainerDefinitionChangePlugin</type>
+      <priority>110</priority>
       <init-params>
         <value-param>
           <name>apply.default</name>
           <value>true</value>
         </value-param>
+        <values-param>
+          <name>add.profiles</name>
+          <value>task</value>
+        </values-param>
         <object-param>
           <name>change</name>
           <object type="org.exoplatform.container.definition.PortalContainerDefinitionChange$AddDependencies">

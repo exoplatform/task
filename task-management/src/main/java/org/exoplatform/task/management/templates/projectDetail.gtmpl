@@ -3,6 +3,7 @@
 #{param name=userMap/}
 #{param name=groups/}
 #{param name=breadcumbs/}
+#{param name=useCalendar/}
 <%
     import org.exoplatform.services.security.ConversationState;
 	 import org.exoplatform.commons.utils.HTMLEntityEncoder;
@@ -70,10 +71,12 @@
       <input type="checkbox" title="&{message.enableCalendarIntegration}" name="calendarIntegrated" class="checkbox calInteg" <%=project.isCalendarIntegrated() ? "checked" : "" %>>
       <span>&{message.enableCalendarIntegration}</span></label>
      </div>
-     <div class="viewInCal" style="display: none">
-         <i class="uiIconPLFCalendar"></i>
-         <a data-placement="bottom" data-toggle="tooltip" href="#" data-original-title="View in Calendar">Sub Project 1</a>
-     </div>
+     <% if(useCalendar) { %>
+       <div class="viewInCal" style="display: none">
+           <i class="uiIconPLFCalendar"></i>
+           <a data-placement="bottom" data-toggle="tooltip" href="#" data-original-title="View in Calendar">Sub Project 1</a>
+       </div>
+     <% } %>
   	<!-- project detail -->
 
    <div class="uiAction uiActionBorder">

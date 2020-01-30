@@ -22,7 +22,6 @@ import java.util.*;
 
 import org.gatein.common.text.EntityEncoder;
 
-import org.exoplatform.calendar.model.Event;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.commons.utils.HTMLEntityEncoder;
 import org.exoplatform.commons.utils.ListAccess;
@@ -699,52 +698,21 @@ public final class TaskUtil {
     return new GroupKey[0];
   }
 
-  public static Event buildEvent(Event event, Task task) {
-    HTMLEntityEncoder encoder = HTMLEntityEncoder.getInstance();
-    if (task.getStatus() != null) {
-      event.setCalendarId(String.valueOf(task.getStatus().getProject().getId()));
-      //TODO: how to process localization for status name when build calendar event
-      event.setEventState(encoder.encode(task.getStatus().getName()));
-    }
-    else {
-      //usage of default task calendar when no status is set
-      event.setCalendarId(String.valueOf(ProjectUtil.TODO_PROJECT_ID));
-    }
-    event.setDescription(task.getDescription());
-    event.setEventCategoryId(CalendarService.DEFAULT_EVENTCATEGORY_ID_ALL);
-    event.setEventCategoryName(CalendarService.DEFAULT_EVENTCATEGORY_NAME_ALL);
-    event.setEventType(Event.TYPE_TASK);
-    if (task.getStartDate() != null) {
-      event.setFromDateTime(task.getStartDate());
-      event.setToDateTime(task.getEndDate());
-    } else {
-      throw new IllegalStateException("Can't build event with a task that doesn't have workplan");
-    }
-    event.setId(String.valueOf(task.getId()));
-    if (task.getPriority() != null) {      
-      switch (task.getPriority()) {
-        case HIGH :
-          event.setPriority(Event.PRIORITY_HIGH);
-          break;
-        case NORMAL:
-          event.setPriority(Event.PRIORITY_NORMAL);
-          break;
-        case LOW:
-          event.setPriority(Event.PRIORITY_LOW);
-          break;
-        default:
-          event.setPriority(Event.PRIORITY_NONE);
-      }   
-    }    
-    event.setSummary(task.getTitle());
-    String assignee = task.getAssignee();
-    if (assignee != null) {
-      assignee = encoder.encode(assignee);
-    }
-    event.setTaskDelegator(assignee);    
-    return event;
+  public static boolean isCalendarEnabled() {
+    return ExoContainer.hasProfile("calendar");
   }
-  
+
+  public static TimeZone getUserTimezone(String username) {
+    try {
+      CalendarService calendarService = ExoContainerContext.getService(CalendarService.class);
+      org.exoplatform.calendar.service.CalendarSetting setting = calendarService.getCalendarSetting(username);
+      return TimeZone.getTimeZone(setting.getTimeZone());
+    } catch (Exception e) {
+      LOG.error("Can't retrieve timezone", e);
+    }
+    return null;
+  }
+
   public static List<Label> buildRootLabels(List<Label> labels) {
     if (labels == null) return labels;
 

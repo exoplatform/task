@@ -22,8 +22,6 @@ package org.exoplatform.task.service.impl;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.exoplatform.calendar.service.CalendarService;
-import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.commons.api.persistence.ExoTransactional;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.log.ExoLogger;
@@ -42,6 +40,7 @@ import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.exception.NotAllowedOperationOnEntityException;
 import org.exoplatform.task.model.User;
 import org.exoplatform.task.service.UserService;
+import org.exoplatform.task.util.TaskUtil;
 
 import java.util.ArrayList;
 import java.util.TimeZone;
@@ -65,13 +64,10 @@ public class UserServiceImpl implements UserService {
   @Inject
   private DAOHandler daoHandler;
   
-  private CalendarService calService;
-
-  public UserServiceImpl(OrganizationService orgService, CalendarService calService, IdentityManager idMgr, DAOHandler handler) {
+  public UserServiceImpl(OrganizationService orgService, IdentityManager idMgr, DAOHandler handler) {
     this.orgService = orgService;
     this.identityManager = idMgr;
     this.daoHandler = handler;
-    this.calService = calService;
   }
 
   @Override
@@ -185,12 +181,9 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public TimeZone getUserTimezone(String username) {
-    try {
-      CalendarSetting setting = calService.getCalendarSetting(username);
-      return TimeZone.getTimeZone(setting.getTimeZone());
-    } catch (Exception e) {
-      LOG.error("Can't retrieve timezone", e);
+    if (TaskUtil.isCalendarEnabled()) {
+      return TaskUtil.getUserTimezone(username);
     }
-    return null;
+    return TimeZone.getDefault();
   }
 }

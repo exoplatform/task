@@ -29,6 +29,8 @@ import org.exoplatform.commons.api.settings.SettingService;
 import org.exoplatform.commons.juzu.ajax.Ajax;
 import org.exoplatform.commons.utils.HTMLEntityEncoder;
 import org.exoplatform.commons.utils.ListAccess;
+import org.exoplatform.container.ExoContainer;
+import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
@@ -140,6 +142,7 @@ public class TaskController extends AbstractController {
   return detail.with()
       .taskModel(model)
       .userTimezone(userTimezone)
+      .useCalendar(TaskUtil.isCalendarEnabled())
       .bundle(bundle)
       .ok().withCharset(Tools.UTF_8);
   }
