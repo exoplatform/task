@@ -45,7 +45,7 @@ public abstract class AbstractNotificationPlugin extends BaseNotificationPlugin 
   @Override
   public NotificationInfo makeNotification(NotificationContext ctx) {
     Task task = ctx.value(NotificationUtils.TASK);
-    String creator = ctx.value(NotificationUtils.CREATOR);
+    String notificationCreator = ctx.value(NotificationUtils.CREATOR);
     Set coworker = ctx.value(NotificationUtils.COWORKER);
     Set mentioned = ctx.value(NotificationUtils.MENTIONED);
     //
@@ -58,7 +58,7 @@ public abstract class AbstractNotificationPlugin extends BaseNotificationPlugin 
       projectId = String.valueOf(project.getId());
     }
     StringBuilder activityId = new StringBuilder(projectId);
-    activityId.append("-").append(creator);
+    activityId.append("-").append(notificationCreator);
     
     ExoContainer container = getContainer();
     WebAppController controller = container.getComponentInstanceOfType(WebAppController.class);
@@ -67,6 +67,7 @@ public abstract class AbstractNotificationPlugin extends BaseNotificationPlugin 
     String projectUrl = buildProjectUrl(project, container, controller);
     String assignee = task.getAssignee();
     Set<String> listOfCoworker = task.getCoworker();
+    String taskCreator= task.getCreatedBy();
     Set<String> receivers = getReceiver(task, ctx);
     RequestLifeCycle.end();
     
@@ -74,7 +75,7 @@ public abstract class AbstractNotificationPlugin extends BaseNotificationPlugin 
                                .to(new LinkedList<String>(receivers))
                                .with(NotificationUtils.TASK_TITLE, task.getTitle())
                                .with(NotificationUtils.TASK_DESCRIPTION, task.getDescription())
-                               .with(NotificationUtils.CREATOR.getKey(), creator)
+                               .with(NotificationUtils.CREATOR.getKey(), notificationCreator)
                                .with(NotificationUtils.PROJECT_NAME, projectName)
                                .with(NotificationUtils.ACTIVITY_ID, activityId.toString())
                                .with(NotificationUtils.TASK_URL, taskUrl)
@@ -83,6 +84,7 @@ public abstract class AbstractNotificationPlugin extends BaseNotificationPlugin 
                                .with(NotificationUtils.TASK_COWORKERS, String.valueOf(listOfCoworker))
                                .with(NotificationUtils.ADDED_COWORKER, String.valueOf(coworker))
                                .with(NotificationUtils.MENTIONED_USERS, String.valueOf(mentioned))
+                               .with(NotificationUtils.TASK_CREATOR, taskCreator)
                                .key(getKey()).end();
   }
 
