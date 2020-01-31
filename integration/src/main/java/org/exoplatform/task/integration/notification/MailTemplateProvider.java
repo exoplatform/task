@@ -37,6 +37,9 @@ import org.exoplatform.social.core.identity.model.Profile;
 import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
 import org.exoplatform.social.core.manager.IdentityManager;
 import org.exoplatform.social.notification.LinkProviderUtils;
+import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.exception.EntityNotFoundException;
+import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.service.UserService;
 import org.exoplatform.task.util.CommentUtil;
 import org.gatein.common.text.EntityEncoder;
@@ -81,7 +84,7 @@ public class MailTemplateProvider extends TemplateProvider {
 
       NotificationInfo notification = ctx.getNotificationInfo();
       String language = getLanguage(notification);
-      String creator = notification.getValueOwnerParameter(NotificationUtils.CREATOR.getKey());
+      String notificationCreator = notification.getValueOwnerParameter(NotificationUtils.CREATOR.getKey());
       String projectName = notification.getValueOwnerParameter(NotificationUtils.PROJECT_NAME);
       String taskTitle = notification.getValueOwnerParameter(NotificationUtils.TASK_TITLE);
       String taskDesc = notification.getValueOwnerParameter(NotificationUtils.TASK_DESCRIPTION);
@@ -96,7 +99,7 @@ public class MailTemplateProvider extends TemplateProvider {
 
       TemplateContext templateContext = new TemplateContext(notification.getKey().getId(), language);
       Identity author = CommonsUtils.getService(IdentityManager.class)
-                                    .getOrCreateIdentity(OrganizationIdentityProvider.NAME, creator, true);
+                                    .getOrCreateIdentity(OrganizationIdentityProvider.NAME, notificationCreator, true);
       Profile profile = author.getProfile();
       // creator
       templateContext.put("USER", encoder.encode(profile.getFullName()));
@@ -135,37 +138,61 @@ public class MailTemplateProvider extends TemplateProvider {
       List<NotificationInfo> notifications = ctx.getNotificationInfos();
       NotificationInfo first = notifications.get(0);
       String keyId = first.getKey().getId();
-      String creator = first.getOwnerParameter().get(NotificationUtils.CREATOR.getKey());
+      String taskCreator = first.getOwnerParameter().get(NotificationUtils.TASK_CREATOR);
+      String notificationCreator = first.getOwnerParameter().get(NotificationUtils.CREATOR.getKey());
       String assignee = first.getOwnerParameter().get(NotificationUtils.TASK_ASSIGNEE);
       String coworker = first.getOwnerParameter().get(NotificationUtils.ADDED_COWORKER);
-      if (TaskAssignPlugin.ID.equals(keyId) && !first.getTo().equals(assignee) && !creator.equals(assignee)) {
-        return false;
-      }
-      if (TaskCoworkerPlugin.ID.equals(keyId) && !coworker.contains(first.getTo()) && !coworker.contains(creator)) {
-        return false;
-      }
-      if ((TaskCommentPlugin.ID.equals(keyId) || TaskCompletedPlugin.ID.equals(keyId) || TaskDueDatePlugin.ID.equals(keyId)) && !first.getOwnerParameter().get(NotificationUtils.TASK_COWORKERS).contains(first.getTo()) && !first.getTo().equals(assignee) && !first.getTo().equals(creator)) {
-        return false;
-      }
-      if (TaskMentionPlugin.ID.equals(keyId) && !first.getOwnerParameter().get(NotificationUtils.MENTIONED_USERS).contains(first.getTo())) {
-        return false;
+      String mentionedUsers = first.getOwnerParameter().get(NotificationUtils.MENTIONED_USERS);
+      String taskCoworkers = first.getOwnerParameter().get(NotificationUtils.TASK_COWORKERS);
+      String sendTo = first.getTo();
+      boolean shouldSend = false;
+
+      switch (keyId) {
+        case TaskAssignPlugin.ID:
+          if (sendTo.equals(assignee) && !notificationCreator.equals(assignee)) {
+            shouldSend = true;
+          }
+          break;
+        case TaskCoworkerPlugin.ID:
+          if (coworker.contains(sendTo) && !coworker.contains(notificationCreator)) {
+            shouldSend = true;
+          }
+          break;
+        case TaskMentionPlugin.ID:
+          if (mentionedUsers.contains(sendTo)) {
+            shouldSend = true;
+          }
+          break;
+        case TaskCompletedPlugin.ID:
+        case TaskDueDatePlugin.ID:
+        case TaskCommentPlugin.ID:
+          if (!sendTo.equals(notificationCreator) && (sendTo.equals(taskCreator) || sendTo.equals(assignee) || taskCoworkers.contains(sendTo))) {
+            shouldSend = true;
+          }
+          break;
+        default:
+          return false;
       }
 
-      String language = getLanguage(first);
-      TemplateContext templateContext = new TemplateContext(first.getKey().getId(), language);
-      //
-      Identity receiver = CommonsUtils.getService(IdentityManager.class)
-                                      .getOrCreateIdentity(OrganizationIdentityProvider.NAME, first.getTo(), true);
-      templateContext.put("FIRST_NAME", encoder.encode(receiver.getProfile().getProperty(Profile.FIRST_NAME).toString()));
-      templateContext.put("FOOTER_LINK", LinkProviderUtils.getRedirectUrl("notification_settings", receiver.getRemoteId()));
+      if (shouldSend) {
+        String language = getLanguage(first);
+        TemplateContext templateContext = new TemplateContext(first.getKey().getId(), language);
+        //
+        Identity receiver = CommonsUtils.getService(IdentityManager.class)
+                .getOrCreateIdentity(OrganizationIdentityProvider.NAME, first.getTo(), true);
+        templateContext.put("FIRST_NAME", encoder.encode(receiver.getProfile().getProperty(Profile.FIRST_NAME).toString()));
+        templateContext.put("FOOTER_LINK", LinkProviderUtils.getRedirectUrl("notification_settings", receiver.getRemoteId()));
 
-      try {
-        writer.append(buildDigestMsg(notifications, templateContext));
-      } catch (IOException e) {
-        ctx.setException(e);
+        try {
+          writer.append(buildDigestMsg(notifications, templateContext));
+        } catch (IOException e) {
+          ctx.setException(e);
+          return false;
+        }
+        return true;
+      } else {
         return false;
       }
-      return true;
     }
 
     protected String buildDigestMsg(List<NotificationInfo> notifications, TemplateContext templateContext) {
@@ -275,9 +302,9 @@ public class MailTemplateProvider extends TemplateProvider {
         // . Count user
         List<String> creators = new ArrayList<>();
         for (NotificationInfo n : notifs) {
-          String creator = n.getValueOwnerParameter(NotificationUtils.CREATOR.getKey());
-          creators.remove(creator);
-          creators.add(creator);
+          String notificationCreator = n.getValueOwnerParameter(NotificationUtils.CREATOR.getKey());
+          creators.remove(notificationCreator);
+          creators.add(notificationCreator);
         }
         Collections.reverse(creators);
 

@@ -41,7 +41,7 @@ public class MailTemplateProviderTest extends TestCase {
     notificationInfo1.setTo("root");
     notificationInfo1.setId(TaskCoworkerPlugin.ID);
     notificationInfo1.key(TaskCoworkerPlugin.ID);
-    ownerParameter.put(NotificationUtils.CREATOR.getKey(), "user1");
+    ownerParameter.put(NotificationUtils.TASK_CREATOR, "user1");
     ownerParameter.put(NotificationUtils.TASK_ASSIGNEE, "user2");
     ownerParameter.put(NotificationUtils.ADDED_COWORKER, "user3");
     notificationInfo1.setOwnerParameter(ownerParameter);
@@ -52,7 +52,7 @@ public class MailTemplateProviderTest extends TestCase {
     notificationInfo2.setTo("root");
     notificationInfo2.setId(TaskAssignPlugin.ID);
     notificationInfo2.key(TaskAssignPlugin.ID);
-    ownerParameter.put(NotificationUtils.CREATOR.getKey(), "user1");
+    ownerParameter.put(NotificationUtils.TASK_CREATOR, "user1");
     ownerParameter.put(NotificationUtils.TASK_ASSIGNEE, "user2");
     ownerParameter.put(NotificationUtils.ADDED_COWORKER, "user3");
     notificationInfo2.setOwnerParameter(ownerParameter);
@@ -63,7 +63,7 @@ public class MailTemplateProviderTest extends TestCase {
     notificationInfo3.setTo("root");
     notificationInfo3.setId(TaskCompletedPlugin.ID);
     notificationInfo3.key(TaskCompletedPlugin.ID);
-    ownerParameter.put(NotificationUtils.CREATOR.getKey(), "user1");
+    ownerParameter.put(NotificationUtils.TASK_CREATOR, "user1");
     ownerParameter.put(NotificationUtils.TASK_COWORKERS, "user2");
     ownerParameter.put(NotificationUtils.TASK_ASSIGNEE, "user3");
     ownerParameter.put(NotificationUtils.ADDED_COWORKER, "user4");
