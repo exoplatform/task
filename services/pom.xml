@@ -30,7 +30,7 @@
   <packaging>jar</packaging>
   <name>eXo Add-on:: Task Management - Services</name>
   <properties>
-    <exo.test.coverage.ratio>0.44</exo.test.coverage.ratio>
+    <exo.test.coverage.ratio>0.43</exo.test.coverage.ratio>
   </properties>
   <!-- JPA -->
   <dependencies>
