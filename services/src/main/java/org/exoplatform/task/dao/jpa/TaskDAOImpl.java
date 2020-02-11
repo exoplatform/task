@@ -110,6 +110,20 @@ public class TaskDAOImpl extends CommonJPADAO<Task, Long> implements TaskHandler
   }
 
   @Override
+  public List<Task> findByAssigned(String user) {
+      
+    return  findTaskByAssignment(user);
+  }
+    
+  public List<Task> findTaskByAssignment(String user) {
+
+     Query query = getEntityManager().createNamedQuery("Task.findTaskByAssignment", Task.class);
+     query.setParameter("userName", user);
+
+     return cloneEntities(query.getResultList());
+  }
+
+  @Override
   public ListAccess<Task> findTasks(TaskQuery query) {
     return findEntities(query, Task.class);
   }
@@ -323,6 +337,15 @@ public class TaskDAOImpl extends CommonJPADAO<Task, Long> implements TaskHandler
       return null;
     }
   }
+
+    @Override
+    public Long countTaskByStatus(String status,String user) {
+        TypedQuery<Long> query = getEntityManager().createNamedQuery("Task.countTasksByStatus", Long.class);
+        query.setParameter("status", status);
+        query.setParameter("userName", user);
+        Long result = query.getSingleResult();
+        return result == null ? 0 : result;
+    }
 
   protected Path buildPath(SingleCondition condition, Root<Task> root) {
     String field = condition.getField();

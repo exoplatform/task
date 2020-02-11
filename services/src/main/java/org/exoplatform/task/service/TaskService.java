@@ -76,6 +76,8 @@ public interface TaskService {
 
   ListAccess<Task> findTasks(TaskQuery query);
 
+  List<Task> findByAssigned(String user);
+  
   public <T> List<T> selectTaskField(TaskQuery query, String fieldName);
 
   ListAccess<Task> findTasksByLabel(long labelId, List<Long> projectIds, String username, OrderBy orderBy) throws EntityNotFoundException;  
@@ -123,4 +125,6 @@ public interface TaskService {
   void loadSubComments(List<Comment> listComments);
 
   Set<String> getMentionedUsers(long taskId);
+  
+  Long countTaskByStatus(String status, String user);
 }

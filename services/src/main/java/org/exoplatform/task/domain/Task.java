@@ -64,6 +64,8 @@ import org.exoplatform.task.service.TaskBuilder;
             "(SELECT pr2.id FROM TaskProject pr2 LEFT JOIN pr2.participator participators " +
             "WHERE participators IN :memberships) " +
             ") "),
+    @NamedQuery(name = "Task.findTaskByAssignment",
+        query = "SELECT t FROM TaskTask t WHERE t.assignee = :userName"),
     @NamedQuery(name = "Task.findTaskByProject",
         query = "SELECT t FROM TaskTask t WHERE t.status.project.id = :projectId"),
     @NamedQuery(name = "Task.findTaskByActivityId",
@@ -73,7 +75,10 @@ import org.exoplatform.task.service.TaskBuilder;
     @NamedQuery(name = "Task.updateStatus",
         query = "UPDATE TaskTask t SET t.status = :status_new WHERE t.status = :status_old"),
     @NamedQuery(name = "Task.getTaskWithCoworkers",
-        query = "SELECT t FROM TaskTask t LEFT JOIN FETCH t.coworker c WHERE t.id = :taskid")
+        query = "SELECT t FROM TaskTask t LEFT JOIN FETCH t.coworker c WHERE t.id = :taskid"),
+    @NamedQuery(name = "Task.countTasksByStatus",
+        query = "SELECT COUNT(t) FROM TaskTask t WHERE t.status.name = :status AND t.assignee = :userName" )
+        
 })
 public class Task {
 

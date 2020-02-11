@@ -234,6 +234,11 @@ public class TaskServiceImpl implements TaskService {
   }
 
   @Override
+  public List<Task> findByAssigned(String user) {
+    return daoHandler.getTaskHandler().findByAssigned(user);
+  }
+
+  @Override
   public <T> List<T> selectTaskField(TaskQuery query, String fieldName) {
     return daoHandler.getTaskHandler().selectTaskField(query, fieldName);
   }
@@ -328,5 +333,10 @@ public class TaskServiceImpl implements TaskService {
   @Override
   public Set<String> getCoworker(long taskId) { 
     return daoHandler.getTaskHandler().getCoworker(taskId);
+  }
+
+  @Override
+  public Long countTaskByStatus(String status, String user) {
+    return daoHandler.getTaskHandler().countTaskByStatus(status, user);
   }
 }

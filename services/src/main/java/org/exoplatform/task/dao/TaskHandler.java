@@ -34,6 +34,8 @@ public interface TaskHandler extends GenericDAO<Task, Long> {
  
   List<Task> findByUser(String user);
 
+  List<Task> findByAssigned(String user);
+
   ListAccess<Task> findTasks(TaskQuery query);
 
   public <T> List<T> selectTaskField(TaskQuery query, String fieldName);
@@ -47,5 +49,7 @@ public interface TaskHandler extends GenericDAO<Task, Long> {
   Set<String> getCoworker(long taskid);
 
   Task getTaskWithCoworkers(long id);
+  
+  Long countTaskByStatus(String status, String user);
 }
 
