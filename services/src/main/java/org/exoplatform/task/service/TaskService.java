@@ -123,4 +123,14 @@ public interface TaskService {
   void loadSubComments(List<Comment> listComments);
 
   Set<String> getMentionedUsers(long taskId);
+
+  List<Task> getUncompletedTasks(String user);
+
+  Long countUncompletedTasks(String user);
+  
+  ListAccess<Task> getIncomingTasks(String user);
+  
+  List<Task> getOverdueTasks(String user);
+  
+  Long countOverdueTasks(String user);
 }

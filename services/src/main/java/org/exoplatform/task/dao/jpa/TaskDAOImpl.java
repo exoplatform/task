@@ -22,6 +22,12 @@ import static org.exoplatform.task.dao.condition.Conditions.TASK_MENTIONED_USERS
 import static org.exoplatform.task.dao.condition.Conditions.TASK_PARTICIPATOR;
 import static org.exoplatform.task.dao.condition.Conditions.TASK_PROJECT;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceException;
@@ -35,12 +41,6 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.log.ExoLogger;
@@ -372,5 +372,44 @@ public class TaskDAOImpl extends CommonJPADAO<Task, Long> implements TaskHandler
       return 0;
     }
   };
+  
+    @Override
+    public List<Task> getUncompletedTasks(String user) {
+        Query query = getEntityManager().createNamedQuery("Task.getUncompletedTasks", Task.class);
+        query.setParameter("userName", user);
+        return cloneEntities(query.getResultList());
+    }
+
+    @Override
+    public Long countUncompletedTasks(String user) {
+        TypedQuery<Long> query = getEntityManager().createNamedQuery("Task.countUncompletedTasks", Long.class);
+        query.setParameter("userName", user);
+        Long result = query.getSingleResult();
+        return result == null ? 0 : result;
+    }
+    
+    @Override
+    public ListAccess<Task> getIncomingTasks(String user) {
+        TaskQuery q = new TaskQuery();
+        q.setIsIncomingOf(user);
+        q.setCompleted(false);
+        return findTasks(q);
+    }
+
+    @Override
+    public List<Task> getOverdueTasks(String user) {
+        Query query = getEntityManager().createNamedQuery("Task.getOverdueTasks", Task.class);
+        query.setParameter("userName", user);
+
+        return cloneEntities(query.getResultList());    
+    }
+
+    @Override
+    public Long countOverdueTasks(String user) {
+        TypedQuery<Long> query = getEntityManager().createNamedQuery("Task.countOverdueTasks", Long.class);
+        query.setParameter("userName", user);
+        Long result = query.getSingleResult();
+        return result == null ? 0 : result;    
+    }
 }
 

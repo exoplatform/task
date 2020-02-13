@@ -73,7 +73,33 @@ import org.exoplatform.task.service.TaskBuilder;
     @NamedQuery(name = "Task.updateStatus",
         query = "UPDATE TaskTask t SET t.status = :status_new WHERE t.status = :status_old"),
     @NamedQuery(name = "Task.getTaskWithCoworkers",
-        query = "SELECT t FROM TaskTask t LEFT JOIN FETCH t.coworker c WHERE t.id = :taskid")
+        query = "SELECT t FROM TaskTask t LEFT JOIN FETCH t.coworker c WHERE t.id = :taskid"),
+    @NamedQuery(name = "Task.getUncompletedTasks",
+        query = "SELECT ta FROM TaskTask ta LEFT JOIN ta.coworker coworkers " +
+                "WHERE ta.completed = false " +
+                "AND (ta.assignee = :userName " +
+                "OR coworkers = :userName " +
+                ") "),
+    @NamedQuery(name = "Task.countUncompletedTasks",
+        query = "SELECT COUNT(ta) FROM TaskTask ta LEFT JOIN ta.coworker coworkers " +
+                "WHERE ta.completed = false " +
+                "AND (ta.assignee = :userName " +
+                "OR coworkers = :userName " +
+                ") "),
+    @NamedQuery(name = "Task.getOverdueTasks",
+        query = "SELECT ta FROM TaskTask ta LEFT JOIN ta.coworker coworkers " +
+                "WHERE ta.completed = false " +
+                "AND ta.dueDate < CURDATE() " +
+                "AND (ta.assignee = :userName " +
+                "OR coworkers = :userName " +
+                ") "),
+    @NamedQuery(name = "Task.countOverdueTasks",
+        query = "SELECT COUNT(ta) FROM TaskTask ta LEFT JOIN ta.coworker coworkers " +
+                "WHERE ta.completed = false " +
+                "AND ta.dueDate < CURDATE() " +
+                "AND (ta.assignee = :userName " +
+                "OR coworkers = :userName " +
+                ") "),        
 })
 public class Task {
 

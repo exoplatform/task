@@ -34,6 +34,8 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import static org.junit.Assert.*;
+
 
 import java.util.*;
 
@@ -641,6 +643,67 @@ public class TestTaskDAO extends AbstractTest {
 //    Assert.assertEquals(1, projects.size());
   }
 
+  @Test
+  public void testGetUncomletedTasks() {
+    Task task1 = newTaskInstance("Task 1", "", username);
+    task1.setCompleted(false);
+    tDAO.create(task1);
+
+    Task task2 = newTaskInstance("Task 2", "", username);
+    task2.setCompleted(false);
+    tDAO.create(task2);
+
+    Task task3 = newTaskInstance("Task 3", "", null);
+    Set<String> coworker = new HashSet<>();
+    coworker.add(username);
+    task3.setCoworker(coworker);
+    task3.setCompleted(false);
+    tDAO.create(task3);
+
+    Task task4 = newTaskInstance("Task 4", "", username);
+    task4.setCompleted(true);
+    tDAO.create(task4);
+
+    Task task5 = newTaskInstance("Task 5", "", username);
+    task5.setCompleted(true);
+    tDAO.create(task5);
+
+    assertNotNull(tDAO.getUncompletedTasks(username));
+    // test countUncompletedTasks
+    assertEquals("should be 3 uncompleted tasks", Long.valueOf(3L), tDAO.countUncompletedTasks(username));
+  }
+
+  @Test
+  public void testGetOverdueTasks() {
+
+    Calendar calendar = Calendar.getInstance();
+
+    Task task1 = newTaskInstance("task 1", "description of task 1", username);
+    calendar = Calendar.getInstance();
+    calendar.add(Calendar.DAY_OF_MONTH, -5);
+    task1.setDueDate(calendar.getTime());
+    tDAO.create(task1);
+
+    Task task2 = newTaskInstance("task 2", "description of task 2", username);
+    calendar = Calendar.getInstance();
+    calendar.add(Calendar.DAY_OF_MONTH, +2);
+    task2.setDueDate(calendar.getTime());
+    tDAO.create(task2);
+
+    Task task5 = newTaskInstance("task 5", "description of task 5", null);
+    Set<String> coworker = new HashSet<>();
+    coworker.add(username);
+    task5.setCoworker(coworker);
+    calendar = Calendar.getInstance();
+    calendar.add(Calendar.DAY_OF_MONTH, -2);
+    task5.setDueDate(calendar.getTime());
+    tDAO.create(task5);
+
+    assertNotNull(tDAO.getOverdueTasks(username));
+    // test countOverdueTasks
+    assertEquals("should be 2 overdue tasks", Long.valueOf(2L), tDAO.countOverdueTasks(username));
+  }
+  
   private Task newTaskInstance(String taskTitle, String description, String assignee) {
     Task task = new Task();
     task.setTitle(taskTitle);

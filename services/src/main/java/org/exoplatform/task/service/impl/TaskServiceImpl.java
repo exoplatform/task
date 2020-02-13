@@ -329,4 +329,29 @@ public class TaskServiceImpl implements TaskService {
   public Set<String> getCoworker(long taskId) { 
     return daoHandler.getTaskHandler().getCoworker(taskId);
   }
+
+  @Override
+  public List<Task> getUncompletedTasks(String user) {
+    return daoHandler.getTaskHandler().getUncompletedTasks(user);
+  }
+
+  @Override
+  public Long countUncompletedTasks(String user) {
+    return daoHandler.getTaskHandler().countUncompletedTasks(user);
+  }
+
+  @Override
+  public ListAccess<Task> getIncomingTasks(String user) {
+    return daoHandler.getTaskHandler().getIncomingTasks(user);
+  }
+
+  @Override
+  public List<Task> getOverdueTasks(String user) {
+    return daoHandler.getTaskHandler().getOverdueTasks(user);
+  }
+
+  @Override
+  public Long countOverdueTasks(String user) {
+    return daoHandler.getTaskHandler().countOverdueTasks(user);
+  }
 }

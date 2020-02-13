@@ -36,6 +36,11 @@
     <key>org.exoplatform.task.service.TaskParser</key>
     <type>org.exoplatform.task.service.impl.TaskParserImpl</type>
   </component>
+
+  <component>
+    <key>org.exoplatform.task.rest.TaskRestService</key>
+    <type>org.exoplatform.task.rest.TaskRestService</type>
+  </component>
   
   <external-component-plugins>
     <target-component>org.exoplatform.commons.api.persistence.DataInitializer</target-component>
