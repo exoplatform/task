@@ -113,13 +113,15 @@ public class TaskManagement {
     String requestPath = prc.getControllerContext().getParameter(RequestNavigationData.REQUEST_PATH);
 
     Long currProject = ProjectUtil.INCOMING_PROJECT_ID;
-    String filter = null;
+    String filter = "";
     Long labelId = null;
 
     Object[] params = ProjectUtil.parsePermalinkURL(requestPath);
     if (params != null) {
       currProject = (Long) params[0];
-      filter = (String) params[1];
+      if (params[1] != null) {
+        filter = (String) params[1];
+      }
       labelId = (Long) params[2];
 
       if (labelId != null) {
@@ -135,7 +137,7 @@ public class TaskManagement {
     if (space_group_id == null) {
       // Load project ID from URL
       long projectId = ProjectUtil.getProjectIdFromURI(requestPath);
-      if (projectId > -100 && prc.getControllerContext().getRequest().getQueryString() == null) {
+      if (projectId > 0 && prc.getControllerContext().getRequest().getQueryString() == null) {
         currProject = projectId;
       }
     } else {
@@ -401,7 +403,7 @@ public class TaskManagement {
         .advanceSearch(advanceSearch)
         .groupBy(groupBy)
         .orderBy(orderBy)
-        .filter("")
+        .filter(filter)
         .projects(projects)
         .labels(labels)
         .userSetting(setting)
