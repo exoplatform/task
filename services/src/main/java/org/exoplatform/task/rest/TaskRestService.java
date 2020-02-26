@@ -12,7 +12,9 @@ import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
@@ -20,13 +22,12 @@ import javax.ws.rs.core.Response;
 
 import org.json.JSONObject;
 
-import com.google.gson.JsonArray;
-
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.rest.resource.ResourceContainer;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.service.TaskService;
+import org.exoplatform.task.util.TaskUtil;
 
 @Path("/tasks")
 @Api(value = "/tasks", description = "Managing tasks")
@@ -85,7 +86,7 @@ public class TaskRestService implements ResourceContainer {
       tasksSize = taskService.countUncompletedTasks(currentUser);
     }
     }
-    //TODO Need to return always tasks and size  
+    // TODO Need to return always tasks and size
     if (returnSize) {
       JSONObject tasksSizeJsonObject = new JSONObject();
       tasksSizeJsonObject.put("size", tasksSize);
@@ -93,5 +94,35 @@ public class TaskRestService implements ResourceContainer {
     } else {
       return Response.ok(tasks).build();
     }
+  }
+
+  @PUT
+  @Path("{id}")
+  @Produces(MediaType.APPLICATION_JSON)
+  @RolesAllowed("users")
+  @ApiOperation(value = "Updates a specific task by id",
+      httpMethod = "PUT",
+      response = Response.class,
+      notes = "This updates the task if the authenticated user has permissions to view the objects linked to this task.")
+  @ApiResponses(value = {
+      @ApiResponse(code = 200, message = "Request fulfilled"),
+      @ApiResponse(code = 403, message = "Unauthorized operation"),
+      @ApiResponse(code = 500, message = "Internal server error"),
+      @ApiResponse(code = 400, message = "Invalid query input"),
+      @ApiResponse(code = 404, message = "Resource not found") })
+  public Response updateTaskById(@ApiParam(value = "Task id", required = true) @PathParam("id") long id,
+                                 @ApiParam(value = "task object to be updated", required = true) Task updatedTask) throws Exception {
+    if (updatedTask == null) {
+      return Response.status(Response.Status.BAD_REQUEST).build();
+    }
+    Task task = taskService.getTask(id);
+    if (task == null) {
+      return Response.status(Response.Status.NOT_FOUND).build();
+    }
+    if (!TaskUtil.hasEditPermission(task)) {
+      return Response.status(Response.Status.FORBIDDEN).build();
+    }
+    task = taskService.updateTask(updatedTask);
+    return Response.ok(task).build();
   }
 }
