@@ -9,6 +9,7 @@ import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.StatusService;
 import org.exoplatform.task.service.TaskService;
+import org.exoplatform.task.service.UserService;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -36,6 +37,8 @@ public class TaskRestServiceTest {
     ProjectService projectService;
     @Mock
     StatusService statusService;
+    @Mock
+    UserService userService;
 
 
     @Before
@@ -46,7 +49,7 @@ public class TaskRestServiceTest {
     @Test
     public void testGetTasks() throws Exception {
         // Given
-        TaskRestService taskRestService = new TaskRestService(taskService, projectService, statusService);
+        TaskRestService taskRestService = new TaskRestService(taskService, projectService, statusService, userService);
         Identity root = new Identity("root");
         ConversationState.setCurrent(new ConversationState(root));
         Task task1 = new Task();
@@ -87,7 +90,7 @@ public class TaskRestServiceTest {
     @Test
     public void testUpdateTaskById() throws Exception {
         // Given
-        TaskRestService taskRestService = new TaskRestService(taskService, projectService, statusService);
+        TaskRestService taskRestService = new TaskRestService(taskService, projectService, statusService, userService);
         Identity john = new Identity("john");
         ConversationState.setCurrent(new ConversationState(john));
         Task task1 = new Task();
@@ -119,7 +122,7 @@ public class TaskRestServiceTest {
     @Test
     public void testGetDefaultStatusByProjectId() throws Exception {
         // Given
-        TaskRestService taskRestService = new TaskRestService(taskService, projectService, statusService);
+        TaskRestService taskRestService = new TaskRestService(taskService, projectService, statusService, userService);
         Identity john = new Identity("john");
         ConversationState.setCurrent(new ConversationState(john));
         Project project = new Project();

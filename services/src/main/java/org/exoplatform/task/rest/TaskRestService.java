@@ -6,9 +6,8 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.DELETE;
@@ -22,8 +21,11 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.exoplatform.task.domain.Status;
+import org.exoplatform.task.domain.*;
+import org.exoplatform.task.dto.ChangeLogEntry;
 import org.exoplatform.task.service.StatusService;
+import org.exoplatform.task.service.UserService;
+import org.exoplatform.task.util.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,15 +34,9 @@ import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.rest.resource.ResourceContainer;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
-import org.exoplatform.task.domain.Label;
-import org.exoplatform.task.domain.Project;
-import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.TaskService;
-import org.exoplatform.task.util.ListUtil;
-import org.exoplatform.task.util.ProjectUtil;
-import org.exoplatform.task.util.TaskUtil;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 
@@ -57,11 +53,14 @@ public class TaskRestService implements ResourceContainer {
   private ProjectService projectService;
   
   private StatusService statusService;
+  
+  private UserService userService;
 
-  public TaskRestService(TaskService taskService, ProjectService projectService, StatusService statusService) {
+  public TaskRestService(TaskService taskService, ProjectService projectService, StatusService statusService,UserService userService) {
     this.taskService = taskService;
     this.projectService = projectService;
     this.statusService = statusService;
+    this.userService = userService;
   }
 
   private enum TaskType {
@@ -299,6 +298,44 @@ public class TaskRestService implements ResourceContainer {
     return Response.ok(label).build();
   }
 
+  @GET
+  @Path("logs/{id}")
+  @RolesAllowed("users")
+  @Produces(MediaType.APPLICATION_JSON)
+  @ApiOperation(value = "This returns a logs for a specific task",
+          httpMethod = "GET",
+          response = Response.class,
+          notes = "This returns a logs for a specific task")
+  @ApiResponses(value = {
+          @ApiResponse(code = 200, message = "Request fulfilled"),
+          @ApiResponse(code = 403, message = "Unauthorized operation"),
+          @ApiResponse(code = 404, message = "Resource not found")})
+  public Response getTaskLogs(@ApiParam(value = "Task id", required = true) @PathParam("id") long id,
+                              @ApiParam(value = "Offset", required = false, defaultValue = "0") @QueryParam("offset") int offset,
+                              @ApiParam(value = "Limit", required = false, defaultValue = "-1") @QueryParam("limit") int limit) throws Exception {
+    Task task = taskService.getTask(id);
+    if (task == null) {
+      return Response.status(Response.Status.NOT_FOUND).build();
+    }
+    if (!TaskUtil.hasViewPermission(task)) {
+      return Response.status(Response.Status.UNAUTHORIZED).build();
+    }
+    if (limit == 0) {
+      limit = -1;
+    }
+    ChangeLog[] arr = ListUtil.load(taskService.getTaskLogs(id), offset, limit);
+    if (arr == null) {
+      return Response.ok(Collections.emptyList()).build();
+    }
+    List<ChangeLog> logs = new LinkedList<ChangeLog>(Arrays.asList(arr));
+
+    Collections.sort(logs);
+
+    List<ChangeLogEntry> changeLogEntries = changeLogsToChangeLogEntries(logs);
+    
+    return Response.ok(changeLogEntries).build();
+  }
+
   private JSONArray buildJSON(JSONArray projectsJsonArray, List<Project> projects) throws JSONException {
     Identity currentUser = ConversationState.getCurrent().getIdentity();
     for (Project project : projects) {
@@ -324,5 +361,15 @@ public class TaskRestService implements ResourceContainer {
       }
     }
     return projectsJsonArray;
+  }
+  private ChangeLogEntry changeLogToChangeLogEntry(ChangeLog changeLog) {
+    return new ChangeLogEntry(changeLog,userService);
+  }
+
+  private List<ChangeLogEntry> changeLogsToChangeLogEntries(List<ChangeLog> ChangeLogs) {
+    return ChangeLogs.stream()
+                     .filter(Objects::nonNull)
+                     .map(this::changeLogToChangeLogEntry)
+                     .collect(Collectors.toList());
   }
 }
