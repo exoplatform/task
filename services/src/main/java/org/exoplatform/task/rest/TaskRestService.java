@@ -23,6 +23,9 @@ import javax.ws.rs.core.Response;
 
 import org.exoplatform.task.domain.*;
 import org.exoplatform.task.dto.ChangeLogEntry;
+import org.exoplatform.task.model.CommentModel;
+import org.exoplatform.task.model.User;
+import org.exoplatform.task.util.CommentUtil;
 import org.exoplatform.task.service.StatusService;
 import org.exoplatform.task.service.UserService;
 import org.exoplatform.task.util.*;
@@ -302,13 +305,13 @@ public class TaskRestService implements ResourceContainer {
   @Path("logs/{id}")
   @RolesAllowed("users")
   @Produces(MediaType.APPLICATION_JSON)
-  @ApiOperation(value = "This returns a logs for a specific task",
+  @ApiOperation(value = "Gets a logs of a specific task",
           httpMethod = "GET",
           response = Response.class,
-          notes = "This returns a logs for a specific task")
+          notes = "This returns a logs of a specific task")
   @ApiResponses(value = {
           @ApiResponse(code = 200, message = "Request fulfilled"),
-          @ApiResponse(code = 403, message = "Unauthorized operation"),
+          @ApiResponse(code = 401, message = "Unauthorized operation"),
           @ApiResponse(code = 404, message = "Resource not found")})
   public Response getTaskLogs(@ApiParam(value = "Task id", required = true) @PathParam("id") long id,
                               @ApiParam(value = "Offset", required = false, defaultValue = "0") @QueryParam("offset") int offset,
@@ -334,6 +337,144 @@ public class TaskRestService implements ResourceContainer {
     List<ChangeLogEntry> changeLogEntries = changeLogsToChangeLogEntries(logs);
     
     return Response.ok(changeLogEntries).build();
+  }
+
+  @GET
+  @Path("comments/{id}")
+  @RolesAllowed("users")
+  @Produces(MediaType.APPLICATION_JSON)
+  @ApiOperation(value = "Gets a comment list of a specific task",
+          httpMethod = "GET",
+          response = Response.class,
+          notes = "This returns a comment list of a specific task")
+  @ApiResponses(value = {
+          @ApiResponse(code = 200, message = "Request fulfilled"),
+          @ApiResponse(code = 403, message = "Unauthorized operation"),
+          @ApiResponse(code = 404, message = "Resource not found")})
+  public Response getTaskComments(@ApiParam(value = "Task id", required = true) @PathParam("id") long id,
+                                  @ApiParam(value = "Offset", required = false, defaultValue = "0") @QueryParam("offset") int offset,
+                                  @ApiParam(value = "Limit", required = false, defaultValue = "-1") @QueryParam("limit") int limit) throws Exception {
+    Task task = taskService.getTask(id);
+    if (task == null) {
+      return Response.status(Response.Status.NOT_FOUND).build();
+    }
+    if (!TaskUtil.hasViewPermission(task)) {
+      return Response.status(Response.Status.UNAUTHORIZED).build();
+    }
+    ListAccess<Comment> commentsListAccess = taskService.getComments(id);
+    if (limit == 0) {
+      limit = -1;
+    }
+//    Comment[] comments = ListUtil.load(commentsListAccess, offset, limit); To be replaced for other methods
+    List<Comment> comments = Arrays.asList(commentsListAccess.load(offset, limit));
+    taskService.loadSubComments(comments);
+
+    List<CommentModel> commentModelsList = new ArrayList<CommentModel>();
+    for (Comment comment : comments) {
+      CommentModel commentModel = addCommentModel(comment, commentModelsList);
+      if (!comment.getSubComments().isEmpty()) {
+        List<CommentModel> subCommentsModelsList = new ArrayList<>();
+        for (Comment subComment : comment.getSubComments()) {
+          addCommentModel(subComment, subCommentsModelsList);
+        }
+        commentModel.setSubComments(subCommentsModelsList);
+      }
+    }
+    Collections.reverse(commentModelsList);
+    return Response.ok(commentModelsList).build();
+  }
+
+  @POST
+  @Path("comments/{id}")
+  @RolesAllowed("users")
+  @ApiOperation(value = "Adds comment to a specific task by id",
+          httpMethod = "POST",
+          response = Response.class,
+          notes = "This Adds comment to a specific task by id")
+  @ApiResponses(value = {
+          @ApiResponse(code = 200, message = "Request fulfilled"),
+          @ApiResponse(code = 400, message = "Invalid query input"),
+          @ApiResponse(code = 403, message = "Unauthorized operation"),
+          @ApiResponse(code = 404, message = "Resource not found") })
+  public Response addTaskComment(@ApiParam(value = "Comment text", required = true) String commentText,
+                                 @ApiParam(value = "Task id", required = true) @PathParam("id") long id) throws Exception {
+    String currentUser = ConversationState.getCurrent().getIdentity().getUserId();
+    Task task = taskService.getTask(id);
+    if (task == null) {
+      return Response.status(Response.Status.NOT_FOUND).build();
+    }
+    if (!TaskUtil.hasEditPermission(task)) {
+      return Response.status(Response.Status.FORBIDDEN).build();
+    }
+    commentText = commentText.substring(1, commentText.length() - 1);
+    Comment addedComment = taskService.addComment(id, currentUser, commentText);
+    CommentModel commentModel = new CommentModel(addedComment, userService.loadUser(currentUser), commentText);
+    return Response.ok(commentModel).build();
+  }
+
+  @POST
+  @Path("comments/{commentId}/{id}")
+  @RolesAllowed("users")
+  @ApiOperation(value = "Adds a sub comment to a specific parent comment by id and a specific task by id",
+          httpMethod = "POST",
+          response = Response.class,
+          notes = "This Adds sub comment to a parent comment in specific task by id")
+  @ApiResponses(value = {
+          @ApiResponse(code = 200, message = "Request fulfilled"),
+          @ApiResponse(code = 400, message = "Invalid query input"),
+          @ApiResponse(code = 403, message = "Unauthorized operation"),
+          @ApiResponse(code = 404, message = "Resource not found")})
+  public Response addTaskSubComment(@ApiParam(value = "Comment text", required = true) String commentText,
+                                    @ApiParam(value = "Comment id", required = true) @PathParam("commentId") long commentId,
+                                    @ApiParam(value = "Task id", required = true) @PathParam("id") long id) throws Exception {
+
+    String currentUser = ConversationState.getCurrent().getIdentity().getUserId();
+    Task task = taskService.getTask(id);
+    if (task == null) {
+      return Response.status(Response.Status.NOT_FOUND).build();
+    }
+    if (!TaskUtil.hasEditPermission(task)) {
+      return Response.status(Response.Status.FORBIDDEN).build();
+    }
+    commentText = commentText.substring(1, commentText.length() - 1);
+    Comment addedComment = taskService.addComment(id, commentId, currentUser, commentText);
+    CommentModel commentModel = new CommentModel(addedComment, userService.loadUser(currentUser), commentText);
+    return Response.ok(commentModel).build();
+  }
+
+  @DELETE
+  @Path("comments/{commentId}")
+  @RolesAllowed("users")
+  @ApiOperation(value = "Deletes a specific task comment by id",
+          httpMethod = "DELETE",
+          response = Response.class,
+          notes = "This deletes a specific task comment by id")
+  @ApiResponses(value = {
+          @ApiResponse(code = 200, message = "Request fulfilled"),
+          @ApiResponse(code = 403, message = "Unauthorized operation"),
+          @ApiResponse(code = 404, message = "Resource not found")})
+  public Response deleteComment(@ApiParam(value = "Comment id", required = true) @PathParam("commentId") long commentId) throws Exception {
+    Comment comment = taskService.getComment(commentId);
+    if (comment == null) {
+      return Response.status(Response.Status.NOT_FOUND).build();
+    }
+    Identity currentIdentity = ConversationState.getCurrent().getIdentity();
+    if (!TaskUtil.canDeleteComment(currentIdentity, comment)) {
+      return Response.status(Response.Status.FORBIDDEN).build();
+    }
+    taskService.removeComment(commentId);
+    return Response.ok(comment).build();
+  }
+
+  private CommentModel addCommentModel(Comment comment, List<CommentModel> commentModelsList) {
+    User user = userService.loadUser(comment.getAuthor());
+    comment.getTask().setStatus(comment.getTask().getStatus().clone());// To be checked
+    CommentModel commentModel = new CommentModel(comment, user, CommentUtil.formatMention(comment.getComment(), userService));
+    if (commentModel.getSubComments() == null) {
+      commentModel.setSubComments(new ArrayList<>());
+    }
+    commentModelsList.add(commentModel);
+    return commentModel;
   }
 
   private JSONArray buildJSON(JSONArray projectsJsonArray, List<Project> projects) throws JSONException {
