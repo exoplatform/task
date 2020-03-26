@@ -39,23 +39,24 @@ public interface TaskHandler extends GenericDAO<Task, Long> {
   public <T> List<T> selectTaskField(TaskQuery query, String fieldName);
 
   Task findTaskByActivityId(String activityId);
-  
+
   void updateStatus(Status stOld, Status stNew);
 
   void updateTaskOrder(long currentTaskId, Status newStatus, long[] orders);
-  
+
   Set<String> getCoworker(long taskid);
 
   Task getTaskWithCoworkers(long id);
 
-  List<Task> getUncompletedTasks(String user);
+  List<Task> getUncompletedTasks(String user, int limit);
 
   Long countUncompletedTasks(String user);
 
   ListAccess<Task> getIncomingTasks(String user);
 
-  List<Task> getOverdueTasks(String user);
+  List<Task> getOverdueTasks(String user, int limit);
 
   Long countOverdueTasks(String user);
+
 }
 

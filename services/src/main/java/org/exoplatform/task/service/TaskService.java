@@ -124,13 +124,13 @@ public interface TaskService {
 
   Set<String> getMentionedUsers(long taskId);
 
-  List<Task> getUncompletedTasks(String user);
+  List<Task> getUncompletedTasks(String user, int limit);
 
   Long countUncompletedTasks(String user);
   
   ListAccess<Task> getIncomingTasks(String user);
   
-  List<Task> getOverdueTasks(String user);
+  List<Task> getOverdueTasks(String user, int limit);
   
   Long countOverdueTasks(String user);
 }

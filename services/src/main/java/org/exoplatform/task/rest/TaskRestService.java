@@ -49,6 +49,8 @@ import org.exoplatform.services.log.Log;
 public class TaskRestService implements ResourceContainer {
 
 
+  private static final int DEFAULT_LIMIT = 20;
+
   private static final Log LOG = ExoLogger.getLogger(TaskRestService.class);
 
   private TaskService    taskService;
@@ -94,6 +96,9 @@ public class TaskRestService implements ResourceContainer {
     } catch (Exception e) {
       taskType = TaskType.ALL;
     }
+    if (limit <= 0) {
+      limit = DEFAULT_LIMIT;
+    }
     switch (taskType) {
     case INCOMING: {
       ListAccess<Task> tasksListAccess = taskService.getIncomingTasks(currentUser);
@@ -102,12 +107,12 @@ public class TaskRestService implements ResourceContainer {
       break;
     }
     case OVERDUE: {
-      tasks = taskService.getOverdueTasks(currentUser);
+      tasks = taskService.getOverdueTasks(currentUser, limit);
       tasksSize = taskService.countOverdueTasks(currentUser);
       break;
     }
     default: {
-      tasks = taskService.getUncompletedTasks(currentUser);
+      tasks = taskService.getUncompletedTasks(currentUser, limit);
       tasksSize = taskService.countUncompletedTasks(currentUser);
     }
     }

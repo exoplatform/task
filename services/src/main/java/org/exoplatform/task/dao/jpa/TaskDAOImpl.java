@@ -374,9 +374,12 @@ public class TaskDAOImpl extends CommonJPADAO<Task, Long> implements TaskHandler
   };
   
     @Override
-    public List<Task> getUncompletedTasks(String user) {
+    public List<Task> getUncompletedTasks(String user, int limit) {
         Query query = getEntityManager().createNamedQuery("Task.getUncompletedTasks", Task.class);
         query.setParameter("userName", user);
+        if (limit > 0) {
+          query.setMaxResults(limit);
+        }
         return cloneEntities(query.getResultList());
     }
 
@@ -397,10 +400,12 @@ public class TaskDAOImpl extends CommonJPADAO<Task, Long> implements TaskHandler
     }
 
     @Override
-    public List<Task> getOverdueTasks(String user) {
+    public List<Task> getOverdueTasks(String user, int limit) {
         Query query = getEntityManager().createNamedQuery("Task.getOverdueTasks", Task.class);
         query.setParameter("userName", user);
-
+        if (limit > 0) {
+          query.setMaxResults(limit);
+        }
         return cloneEntities(query.getResultList());    
     }
 

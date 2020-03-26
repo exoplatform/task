@@ -12,7 +12,6 @@ import java.util.Set;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.RuntimeDelegate;
 
-import org.json.JSONArray;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,7 +32,6 @@ import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.StatusService;
 import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.service.UserService;
-import org.exoplatform.task.util.ProjectUtil;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TestTaskRestService {
@@ -88,9 +86,9 @@ public class TestTaskRestService {
       }
     };
 
-    when(taskService.getUncompletedTasks("root")).thenReturn(uncompletedTasks);
+    when(taskService.getUncompletedTasks("root", 20)).thenReturn(uncompletedTasks);
     when(taskService.countUncompletedTasks("root")).thenReturn(Long.valueOf(uncompletedTasks.size()));
-    when(taskService.getOverdueTasks("root")).thenReturn(overdueTasks);
+    when(taskService.getOverdueTasks("root", 20)).thenReturn(overdueTasks);
     when(taskService.countOverdueTasks("root")).thenReturn(Long.valueOf(overdueTasks.size()));
     when(taskService.getIncomingTasks("root")).thenReturn(incomingTasksListAccess);
     when(taskService.countOverdueTasks("root")).thenReturn(Long.valueOf(incomingTasksListAccess.getSize()));

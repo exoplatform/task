@@ -18,7 +18,6 @@ package org.exoplatform.task.dao;
 
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.container.PortalContainer;
-import org.exoplatform.portal.config.UserACL;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.task.AbstractTest;
@@ -668,7 +667,7 @@ public class TestTaskDAO extends AbstractTest {
     task5.setCompleted(true);
     tDAO.create(task5);
 
-    assertNotNull(tDAO.getUncompletedTasks(username));
+    assertNotNull(tDAO.getUncompletedTasks(username, -1));
     // test countUncompletedTasks
     assertEquals("should be 3 uncompleted tasks", Long.valueOf(3L), tDAO.countUncompletedTasks(username));
   }
@@ -699,7 +698,7 @@ public class TestTaskDAO extends AbstractTest {
     task5.setDueDate(calendar.getTime());
     tDAO.create(task5);
 
-    assertNotNull(tDAO.getOverdueTasks(username));
+    assertNotNull(tDAO.getOverdueTasks(username, -1));
     // test countOverdueTasks
     assertEquals("should be 2 overdue tasks", Long.valueOf(2L), tDAO.countOverdueTasks(username));
   }

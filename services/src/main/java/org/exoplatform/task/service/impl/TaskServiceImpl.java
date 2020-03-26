@@ -331,8 +331,8 @@ public class TaskServiceImpl implements TaskService {
   }
 
   @Override
-  public List<Task> getUncompletedTasks(String user) {
-    return daoHandler.getTaskHandler().getUncompletedTasks(user);
+  public List<Task> getUncompletedTasks(String user, int limit) {
+    return daoHandler.getTaskHandler().getUncompletedTasks(user, limit);
   }
 
   @Override
@@ -346,8 +346,8 @@ public class TaskServiceImpl implements TaskService {
   }
 
   @Override
-  public List<Task> getOverdueTasks(String user) {
-    return daoHandler.getTaskHandler().getOverdueTasks(user);
+  public List<Task> getOverdueTasks(String user, int limit) {
+    return daoHandler.getTaskHandler().getOverdueTasks(user, limit);
   }
 
   @Override
