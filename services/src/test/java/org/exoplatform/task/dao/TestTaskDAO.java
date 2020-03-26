@@ -644,7 +644,7 @@ public class TestTaskDAO extends AbstractTest {
   }
 
   @Test
-  public void testGetUncomletedTasks() {
+  public void testGetUncompletedTasks() {
     Task task1 = newTaskInstance("Task 1", "", username);
     task1.setCompleted(false);
     tDAO.create(task1);
