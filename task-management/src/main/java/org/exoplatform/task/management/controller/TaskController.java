@@ -986,7 +986,7 @@ public class TaskController extends AbstractController {
       if (!project.canView(identity)) {
         throw new UnAuthorizedOperationException(projectId, Project.class, getNoPermissionMsg());
       }
-      Status status = statusService.getDefaultStatus(projectId);
+      Status status = statusService.getStatus(statusId);
       if (status != null) {
         task.setStatus(status);
       }
