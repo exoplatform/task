@@ -75,35 +75,30 @@ import org.exoplatform.task.service.TaskBuilder;
     @NamedQuery(name = "Task.getTaskWithCoworkers",
         query = "SELECT t FROM TaskTask t LEFT JOIN FETCH t.coworker c WHERE t.id = :taskid"),
     @NamedQuery(name = "Task.getUncompletedTasks",
-        query = "SELECT ta FROM TaskTask ta LEFT JOIN ta.coworker coworkers " +
+        query = "SELECT ta FROM TaskTask ta " +
                 "WHERE ta.completed = false " +
                 "AND (ta.assignee = :userName " +
-                "OR coworkers = :userName " +
-                ") group by ta.id "),
+                "OR :userName in (select co FROM ta.coworker co) " +
+                ")"),
     @NamedQuery(name = "Task.countUncompletedTasks",
         query = "SELECT COUNT(ta) FROM TaskTask ta " +
-                "WHERE ta in (SELECT ta FROM TaskTask ta LEFT JOIN ta.coworker coworkers " +
                 "WHERE ta.completed = false " +
                 "AND (ta.assignee = :userName " +
-                "OR coworkers = :userName " +
-                ") group by ta.id "+
+                "OR :userName in (select co FROM ta.coworker co) " +
                 ")"), 
     @NamedQuery(name = "Task.getOverdueTasks",
-        query = "SELECT ta FROM TaskTask ta LEFT JOIN ta.coworker coworkers " +
+        query = "SELECT ta FROM TaskTask ta " +
                 "WHERE ta.completed = false " +
                 "AND ta.dueDate < CURDATE() " +
                 "AND (ta.assignee = :userName " +
-                "OR coworkers = :userName " +
-                ") group by ta.id"),
+                "OR :userName in (select co FROM ta.coworker co) " +
+                ")"),
     @NamedQuery(name = "Task.countOverdueTasks",
         query = "SELECT COUNT(ta) FROM TaskTask ta " +
-                "WHERE ta in (SELECT ta FROM TaskTask ta " +
-                "LEFT JOIN ta.coworker coworkers " +
                 "WHERE ta.completed = false " +
                 "AND ta.dueDate < CURDATE() " +
                 "AND (ta.assignee = :userName " +
-                "OR coworkers = :userName " +
-                ") group by ta.id "+
+                "OR :userName in (select co FROM ta.coworker co) " +
                 ")"),
 })
 public class Task {
