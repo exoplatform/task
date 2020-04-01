@@ -165,13 +165,18 @@ public class ResourceUtil {
       }
     }
 
-    // Task page does not exist
-    if (page == null) {
-      return "#";
-    }
-
     String portalName = container.getComponentInstanceOfType(ExoContainerContext.class).getPortalContainerName();
 
+    if (page == null) {
+      // Redirect to page tasks
+      return new StringBuilder("/")
+              .append(portalName)
+              .append("/")
+              .append(siteKey.getName())
+              .append("/")
+              .append(TASK_PAGE_NAME)
+              .toString();
+    }
     String path;
     if (space == null) {
       path = page.getName();

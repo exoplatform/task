@@ -473,7 +473,10 @@ public class TaskRestService implements ResourceContainer {
 
   private CommentModel addCommentModel(Comment comment, List<CommentModel> commentModelsList) {
     User user = userService.loadUser(comment.getAuthor());
-    comment.getTask().setStatus(comment.getTask().getStatus().clone());// To be checked
+    Status taskStatus = comment.getTask().getStatus();
+    if (taskStatus != null) {
+      comment.getTask().setStatus(taskStatus.clone());// To be checked
+    }
     CommentModel commentModel = new CommentModel(comment, user, CommentUtil.formatMention(comment.getComment(), userService));
     if (commentModel.getSubComments() == null) {
       commentModel.setSubComments(new ArrayList<>());
