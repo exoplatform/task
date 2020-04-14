@@ -3,7 +3,14 @@
 <gatein-resources xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.exoplatform.org/xml/ns/gatein_resources_1_4 http://www.exoplatform.org/xml/ns/gatein_resources_1_4"
 	xmlns="http://www.exoplatform.org/xml/ns/gatein_resources_1_4">
-
+  
+  <portal-skin>
+    <skin-name>Enterprise</skin-name>
+    <skin-module>customModuleTasks</skin-module>
+    <css-path>/skin/css/tasks.css</css-path>
+    <css-priority>11</css-priority>
+  </portal-skin>
+  
   <javascript>
     <param>
       <js-module>taskChatPlugin</js-module>
@@ -198,6 +205,57 @@
     <depends>
       <module>jquery</module>
       <as>jQuery</as>
+    </depends>
+  </module>
+
+  <portlet>
+    <name>tasks</name>
+    <module>
+      <depends>
+        <module>tasksBundle</module>
+      </depends>
+    </module>
+  </portlet>
+
+  <module>
+    <name>tasksBundle</name>
+    <script>
+      <minify>false</minify>
+      <path>/js/tasks.bundle.js</path>
+    </script>
+    <depends>
+      <module>taskDrawer</module>
+    </depends>
+    <depends>
+      <module>eXoVueI18n</module>
+    </depends>
+  </module>
+
+  <module>
+    <name>taskDrawer</name>
+    <script>
+      <minify>false</minify>
+      <path>/js/taskDrawer.bundle.js</path>
+    </script>
+    <depends>
+      <module>vue</module>
+    </depends>
+    <depends>
+      <module>vuetify</module>
+    </depends>
+    <depends>
+      <module>eXoVueI18n</module>
+    </depends>
+    <depends>
+      <module>commons-editor</module>
+      <as>editor</as>
+    </depends>
+    <depends>
+      <module>jquery</module>
+      <as>$</as>
+    </depends>
+    <depends>
+      <module>extensionRegistry</module>
     </depends>
   </module>
 

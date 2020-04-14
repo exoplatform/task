@@ -1,0 +1,540 @@
+// Variables
+@primaryColor: #578DC9;
+@greyColor: #a8b3c5;
+@greyBackground: #e1e8ee;
+@btnPrimaryDisableBackground: #afc9e5;
+
+/*--------------------------Tasks ---------------------------*/
+
+#tasks {
+  .flexCard {
+    flex: 1 1 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .projectCard {
+    border-radius: 5px 0px 0px 5px;
+  }
+
+  .flagCard {
+    border-radius: 0px 5px 5px 0px;
+  }
+
+  .taskTitle {
+    color: black;
+    flex: 1 1 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .noTasks {
+    display: flex;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    margin-top: -1px;
+    .noTasksContent {
+      text-align: center;
+      margin-top: 6%;
+      .uiNoTaskIcon {
+        color: #6d7d9821;
+        font-size: 10rem;
+        font-style: normal;
+        font-weight: normal;
+        &:before {
+          font-family: 'PLF-FONT-ICONS';
+          content: "\e690" !important;
+        }
+      }
+      .noTasksTitle {
+        color: black;
+        font-weight: normal;
+        font-size: 15px;
+        margin-top: -50px;
+      }
+      p {
+        font-weight: normal;
+        font-size: 15px;
+        color: #a8b3c5;
+        margin-top: -50px;
+      }
+    }
+  }
+}
+/*----------- Task Drawer CSS ---------------*/
+#task-Drawer {
+  .uiIconBlue {
+    color: @primaryColor!important;
+  }
+  .v-select__selection {
+    max-width: 100% !important;
+  }
+  .v-menu__content {
+    max-width: 100% !important;
+    background-color: white!important;
+  }
+  .v-select.v-text-field {
+    input {
+      display: none;
+    }
+  }
+  .centered-input {
+    input {
+      text-align: center;
+    }
+  }
+  .taskTitle {
+    input[type="text"] {
+      font-size: 15px;
+      color: #8EB0EA;
+    }
+  }
+  .dateFont {
+    input[type="text"] {
+      font-size: 15px!important;
+      cursor: pointer!important;
+      color: @greyColor !important;
+      width: 84px;
+    }
+    input[type="text"]::placeholder {
+      color: @greyColor !important;
+      padding-left: 8px;
+    }
+    .v-icon.v-icon.v-icon--link {
+      color: @greyColor;
+      padding-top: 8px;
+      font-size: 20px;
+    }
+  }
+  .assignTo {
+    .v-select__slot {
+      border: 1px solid #a8b3c5;
+      border-radius: 5px;
+    }
+  }
+  .v-date-picker-table--date {
+    td {
+      width: 38px;
+    }
+  }
+
+  .v-date-picker-table {
+    height: 190px;
+  }
+  .selectFont {
+    .v-select__selection--comma {
+      font-size: 15px;
+      color: @greyColor !important;
+      min-width: max-content!important;
+    }
+    .v-menu__content {
+      top: 48px!important;
+      left: 4px!important;
+      max-width: fit-content!important;
+    }
+    .v-list-item__title {
+      font-size: 14px;
+    }
+  }
+  .user-name {
+    font-size: 15px;
+    color: @primaryColor !important;
+  }
+  .v-autocomplete {
+    &:not(.v-input--is-disabled).v-select.v-text-field {
+      input {
+        display: block !important;
+      }
+    }
+  }
+  .v-text-field.v-text-field--solo {
+    .v-label {
+      top: 10px;
+      font-size: 15px!important;
+      color: #a8b3c5 !important;
+      margin-left: 6px;
+    }
+  }
+  .mx-icon-calendar {
+    display: none;
+  }
+  .mx-datepicker {
+    width: 82%;
+  }
+  .mx-input {
+    width: 92% !important;
+    color: @greyColor;
+    cursor: pointer;
+    &:focus {
+      border: none;
+      box-shadow: none;
+    }
+  }
+  #Task-title {
+    color: @primaryColor;
+  }
+  .projectName {
+    .v-input__control {
+      min-height: 0px;
+      height: 40px;
+      padding-top: 6px;
+      >.v-input__slot {
+        width: fit-content;
+      }
+    }
+  }
+  .v-navigation-drawer .v-list {
+    background-color: white;
+  }
+  .mdi-menu-down {
+    &::before {
+      display: none;
+    }
+  }
+  .v-overlay__scrim {
+    position: fixed !important;
+  }
+  .theme--light.v-navigation-drawer {
+    position: fixed;
+    z-index: 9999;
+  }
+
+  @media (max-width: 1200px) {
+    .theme--light.v-navigation-drawer {
+      width: 60% !important;
+    }
+  }
+  @media (max-width: 599px) {
+    .theme--light.v-navigation-drawer {
+      width: 100% !important;
+    }
+  }
+  .v-text-field.v-text-field--solo {
+    &:not(.v-text-field--solo-flat) {
+      >.v-input__control {
+        >.v-input__slot {
+          box-shadow: none;
+          padding-left: 0px;
+        }
+      }
+    }
+  }
+  .styleIcon {
+    padding-top: 10px
+  }
+  .v-input--selection-controls {
+    margin-top: 0px !important;
+  }
+  .v-text-field.v-text-field--enclosed {
+    >.v-input__control {
+      >.v-input__slot {
+        padding: 0px;
+        margin-bottom: 0px;
+      }
+    }
+  }
+  .editorContent {
+    .subComment {
+      max-width: 228px
+    }
+    .comment {
+      max-width: 290px
+    }
+  }
+  .hiddenEditor {
+    visibility: hidden !important;
+    display: none !important;
+  }
+
+  .taskDescription {
+    border: 1px solid @greyBackground;
+    border-radius: 5px;
+    padding-top: 8px;
+    padding-bottom: 8px
+  }
+  [contenteditable=true] {
+    &:empty {
+      &:before {
+        content: attr(placeholder);
+        pointer-events: none;
+        display: block;
+        color: @greyColor!important;
+      }
+    }
+  }
+
+  .uiIconAndroidOpen:before {
+    font-family: 'PLF-FONT-ICONS';
+    font-style: normal;
+    font-size: 20px;
+    content: "\e966"
+  }
+  .drawer-title {
+    font-size: 20px;
+    font-weight: bold;
+  }
+  .drawer-header {
+    border-bottom: 1px solid rgba(13, 13, 13, 0.05);
+  }
+  .drawer-content {
+    position: absolute;
+    top: 55px;
+    bottom: 0px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    right: 0;
+    left: 0;
+  }
+  .v-text-field input {
+    padding: 0px;
+  }
+  input[type="text"] {
+    margin-bottom: 0px;
+    width: auto;
+  }
+  .v-tab {
+    box-sizing: border-box;
+    margin: 0px!important;
+  }
+  .v-tabs-slider-wrapper {
+    height: 3px !important;
+  }
+  .uiIconClock:before {
+    font-size: 15px;
+    color: @primaryColor;
+  }
+  .custom-placeholer-color {
+    input {
+      &::placeholder {
+        color: @greyColor !important;
+        opacity: 1;
+      }
+    }
+  }
+  .theme--light.v-tabs {
+    >.v-tabs-bar {
+      .v-tab {
+        &:not(.v-tab--active) {
+          color: @greyColor;
+        }
+      }
+    }
+  }
+  .ck.ck-content {
+    ul {
+      list-style-type: inherit;
+      li {
+        list-style-type: inherit;
+      }
+    }
+  }
+
+  .v-avatar {
+    align-self: flex-start!important;
+  }
+  .v-btn:not(.v-btn--round).v-size--small {
+    flex: none;
+  }
+  #reply_btn {
+    padding: 0px !important;
+    margin-bottom: 8px !important;
+    display: -webkit-box;
+  }
+
+  .commentBtn {
+    color: @primaryColor !important;
+    background-color: @primaryColor !important;
+
+    .v-btn__content {
+      color: white;
+    }
+  }
+  #check_btn {
+    color: @primaryColor!important;
+  }
+  .v-input {
+    display: inline-flex;
+  }
+  .task-name {
+    width: 90%;
+    input[type="text"] {
+      color: @primaryColor !important;
+    }
+    input[type="text"]::placeholder {
+      color: @greyColor !important;
+    }
+  }
+  .theme--light.v-text-field {
+    >.v-input__control {
+      >.v-input__slot {
+        &:before {
+          display: none;
+        }
+      }
+    }
+  }
+  .theme--dark.v-btn.v-btn--disabled {
+    &:not(.v-btn--flat) {
+      &:not(.v-btn--text) {
+        &:not(.v-btn--outlined) {
+          background-color: @btnPrimaryDisableBackground !important;
+          border-color: @btnPrimaryDisableBackground !important;
+        }
+      }
+    }
+  }
+
+  .taskContentComment {
+    line-height: 20px;
+    word-break: break-word;
+    max-width: 300px;
+
+    p {
+      margin: 0px;
+    }
+  }
+  .dateTime {
+    color: #999;
+  }
+  .deleteComment {
+    height: 19px;
+    width: 19px;
+  }
+
+  .projectName {
+    height: 26px;
+    display: inline-table;
+    max-width: 220px;
+  }
+  .uiIconBlue {
+    font-size: 14px;
+    margin-top: 4px;
+  }
+}
+
+/*--------------Task Project Colors ------------------*/
+
+.asparagus {
+  background: #909958 !important;
+  &:hover {
+    background: #909958 !important;
+  }
+}
+.laurel_green {
+  background: #BED67E !important;
+  &:hover {
+    background: #BED67E !important;
+  }
+}
+.moss_green {
+  background: #98CC81 !important;
+  &:hover {
+    background: #98CC81 !important;
+  }
+}
+.munsell_blue {
+  background: #319AB3 !important;
+  &:hover {
+    background: #319AB3 !important;
+  }
+}
+.sky_blue {
+  background: #4DBED9 !important;
+  &:hover {
+    background: #4DBED9 !important;
+  }
+}
+.powder_blue {
+  background: #9EE4F5 !important;
+  &:hover {
+    background: #9EE4F5 !important;
+  }
+}
+.baby_blue {
+  background: #B2E2FF !important;
+  &:hover {
+    background: #B2E2FF !important;
+  }
+}
+.navy_blue {
+  background: #4273C8 !important;
+  &:hover {
+    background: #4273C8 !important;
+  }
+}
+.blue_gray {
+  background: #8EB0EA !important;
+  &:hover {
+    background: #8EB0EA !important;
+  }
+}
+.light_blue {
+  background: #B3CFFF !important;
+  &:hover {
+    background: #B3CFFF !important;
+  }
+}
+.light_gray {
+  background: #CDCDCD !important;
+  &:hover {
+    background: #CDCDCD !important;
+  }
+}
+.purple {
+  background: #774EA9 !important;
+  &:hover {
+    background: #774EA9 !important;
+  }
+}
+.light_purple {
+  background: #BC99E7 !important;
+  &:hover {
+    background: #BC99E7 !important;
+  }
+}
+.pink {
+  background: #FFC8F0 !important;
+  &:hover {
+    background: #FFC8F0 !important;
+  }
+}
+.beige {
+  background: #FFE1BE !important;
+  &:hover {
+    background: #FFE1BE !important;
+  }
+}
+.hot_pink {
+  background: #F97575 !important;
+  &:hover {
+    background: #F97575 !important;
+  }
+}
+.Orange {
+  background-color: #FFA500 !important;
+}
+.CalendarTableColor {
+  .Orange {
+    background-color: #FFA500 !important;
+  }
+}
+.light_brown {
+  background: #C5B294 !important;
+  &:hover {
+    background: #C5B294 !important;
+  }
+}
+.gray {
+  background: #A39594 !important;
+  &:hover {
+    background: #A39594 !important;
+  }
+}
+.plum {
+  background: #CEA6AC !important;
+  &:hover {
+    background: #CEA6AC !important;
+  }
+}
