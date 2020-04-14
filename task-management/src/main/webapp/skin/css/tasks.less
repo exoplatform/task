@@ -62,6 +62,17 @@
       }
     }
   }
+
+  @media (max-width: 1200px) {
+    .theme--light.v-navigation-drawer {
+      width: 60% !important;
+    }
+  }
+  @media (max-width: 599px) {
+    .theme--light.v-navigation-drawer {
+      width: 100% !important;
+    }
+  }
 }
 
 /*----------- Task App skeleton CSS ---------------*/
@@ -237,17 +248,6 @@
   .theme--light.v-navigation-drawer {
     position: fixed;
     z-index: 9999;
-  }
-
-  @media (max-width: 1200px) {
-    .theme--light.v-navigation-drawer {
-      width: 60% !important;
-    }
-  }
-  @media (max-width: 599px) {
-    .theme--light.v-navigation-drawer {
-      width: 100% !important;
-    }
   }
   .v-text-field.v-text-field--solo {
     &:not(.v-text-field--solo-flat) {
