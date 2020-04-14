@@ -155,7 +155,7 @@
             mx-0>
             <v-flex
               xs12>
-              <v-list v-if="tasks.length > 0">
+              <v-list>
                 <v-list-item
                   v-for="task in tasks"
                   :key="task.id"
@@ -163,7 +163,7 @@
                   <task-details :task="task"/>
                 </v-list-item>
               </v-list>
-              <div v-else class="noTasks">
+              <div v-if="!loadingTasks && tasks.length === 0" class="noTasks">
                 <div class="noTasksContent">
                   <i class="uiNoTaskIcon"></i>
                   <p class="pt-4 noTasksTitle">{{ $t('label.noTask') }}</p>
@@ -183,9 +183,9 @@
 
     data() {
       return {
-        drawer: false,
         placeholder: '',
         tasks: [],
+        loadingTasks: true,
         incomingTasksSize:'',
         overdueTasksSize:''
       }
@@ -212,6 +212,7 @@
             tasksWithDuedate = tasksWithDuedate.sort((a, b) => ((a.dueDate.time - b.dueDate.time)));
             tasksWithoutDuedate = tasksWithoutDuedate.sort((a, b) => ((a.createdTime - b.createdTime)));
             this.tasks = tasksWithDuedate.concat(tasksWithoutDuedate);
+            this.loadingTasks = false
           }
         )
       },

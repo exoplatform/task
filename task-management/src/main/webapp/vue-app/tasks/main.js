@@ -1,10 +1,8 @@
 import tasksApp from './components/TasksApp.vue';
 import TaskDetails from './components/TaskDetails.vue';
-import TaskDrawer from "../taskDrawer/components/TaskDrawer.vue";
 
 Vue.use(Vuetify);
 Vue.component('task-details', TaskDetails);
-Vue.component('task-drawer', TaskDrawer);
 
 const vuetify = new Vuetify({
     dark: true,
