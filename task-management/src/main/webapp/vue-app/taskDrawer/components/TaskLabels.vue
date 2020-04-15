@@ -2,6 +2,7 @@
   <div @click.stop>
     <v-combobox
       v-custom-click-outside="closeDropDownList"
+      id="labelInput"
       ref="selectLabel"
       v-model="model"
       :filter="filter"
@@ -149,6 +150,7 @@
             addTaskToLabel(label) {
                 addTaskToLabel(this.task.id, label)
                 this.model.push(label)
+                document.getElementById('labelInput').focus()
             },
             removeTaskFromLabel(item) {
                 removeTaskFromLabel(this.task.id, item.id)

@@ -27,11 +27,10 @@
             :title="$t('tooltip.clickToEdit')"
             label
             class="projectName"
-            small
-            @click="updateTaskProject(item)">
+            small>
             <span 
               class="px-4 body-2" 
-              @click="parent.selectItem(item);deleteProject()">
+              @click="parent.selectItem(item)">
               {{ item.name }}
             </span>
           </v-chip>
@@ -109,6 +108,7 @@
             },
             deleteProject() {
                 this.task.status = null;
+                this.projectModel = null
                 this.updateTask();
             },
             closeDropDownList() {
