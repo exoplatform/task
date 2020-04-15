@@ -146,16 +146,15 @@
           </v-flex></v-layout>
         </v-flex>
         <v-flex
+          :class="tasks.length > 0 && 'pl-2 pt-4'"
           d-flex
-          xs12
-          pl-2
-          pt-4>
+          xs12>
           <v-layout
             row
             mx-0>
             <v-flex
               xs12>
-              <v-list>
+              <v-list :class="tasks.length === 0 && 'd-none'">
                 <v-list-item
                   v-for="task in tasks"
                   :key="task.id"
@@ -166,8 +165,8 @@
               <div v-if="!loadingTasks && tasks.length === 0" class="noTasks">
                 <div class="noTasksContent">
                   <i class="uiNoTaskIcon"></i>
-                  <p class="pt-4 noTasksTitle">{{ $t('label.noTask') }}</p>
-                  <p class="pt-10">{{ $t('label.thereIsNoTasks') }}</p>
+                  <div class="noTasksTitle">{{ $t('label.noTask') }}</div>
+                  <p>{{ $t('label.thereIsNoTasks') }}</p>
                 </div>
               </div>
         </v-flex></v-layout></v-flex>
