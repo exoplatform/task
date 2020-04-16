@@ -28,7 +28,8 @@
             <task-drawer 
               v-if="drawer"
               :drawer="drawer"
-              :task="task" 
+              :task="task"
+              @updateTaskList="updateTaskList()"
               @closeDrawer="onCloseDrawer"/>
           </v-list-item-content>
         </v-flex>
@@ -115,6 +116,13 @@
                 this.drawer = drawer;
                 document.body.style.overflow = 'auto';
             },
+            updateTaskList() {
+              this.drawer = false;
+              setTimeout(this.removeTask, 100)
+            },
+            removeTask() {
+              this.$emit('removeTask',this.task.id)
+            }
         }
     }
 </script>

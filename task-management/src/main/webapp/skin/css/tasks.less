@@ -31,16 +31,15 @@
   }
   .noTasks {
     display: flex;
-    height: 100%;
+    height: 370px;
     align-items: center;
     justify-content: center;
-    margin-top: -1px;
     .noTasksContent {
       text-align: center;
-      margin-top: 6%;
+      margin: auto;
       .uiNoTaskIcon {
         color: #6d7d9821;
-        font-size: 10rem;
+        font-size: 60px;
         font-style: normal;
         font-weight: normal;
         &:before {
@@ -49,18 +48,41 @@
         }
       }
       .noTasksTitle {
-        color: black;
+        color: #4d5466;
         font-weight: normal;
-        font-size: 15px;
-        margin-top: -50px;
+        font-size: 22px;
       }
       p {
         font-weight: normal;
         font-size: 15px;
         color: #a8b3c5;
-        margin-top: -50px;
       }
     }
+  }
+
+  @media (max-width: 1200px) {
+    .theme--light.v-navigation-drawer {
+      width: 60% !important;
+    }
+  }
+  @media (max-width: 599px) {
+    .theme--light.v-navigation-drawer {
+      width: 100% !important;
+    }
+  }
+
+  .list-item {
+    display: flex;
+    width: 100%;
+    margin-right: 10px;
+    min-height: 48px!important;
+  }
+  .list-leave-active {
+    transition: all 1s;
+  }
+  .list-leave-to {
+    opacity: 0;
+    transform: translateY(30px);
   }
 }
 
@@ -237,17 +259,6 @@
   .theme--light.v-navigation-drawer {
     position: fixed;
     z-index: 9999;
-  }
-
-  @media (max-width: 1200px) {
-    .theme--light.v-navigation-drawer {
-      width: 60% !important;
-    }
-  }
-  @media (max-width: 599px) {
-    .theme--light.v-navigation-drawer {
-      width: 100% !important;
-    }
   }
   .v-text-field.v-text-field--solo {
     &:not(.v-text-field--solo-flat) {

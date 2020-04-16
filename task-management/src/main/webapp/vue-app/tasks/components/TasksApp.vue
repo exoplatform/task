@@ -146,28 +146,28 @@
           </v-flex></v-layout>
         </v-flex>
         <v-flex
+          :class="tasks.length > 0 && 'pl-2 pt-4'"
           d-flex
-          xs12
-          pl-2
-          pt-4>
+          xs12>
           <v-layout
             row
             mx-0>
             <v-flex
-              xs12>
-              <v-list>
-                <v-list-item
+              xs12
+              class="pt-2">
+              <transition-group name="list">
+                <span
                   v-for="task in tasks"
                   :key="task.id"
-                  class="px-0">
-                  <task-details :task="task"/>
-                </v-list-item>
-              </v-list>
+                  class="list-item">
+                  <task-details :task="task" @removeTask="removeTask"/>
+                </span>
+              </transition-group>
               <div v-if="!loadingTasks && tasks.length === 0" class="noTasks">
                 <div class="noTasksContent">
                   <i class="uiNoTaskIcon"></i>
-                  <p class="pt-4 noTasksTitle">{{ $t('label.noTask') }}</p>
-                  <p class="pt-10">{{ $t('label.thereIsNoTasks') }}</p>
+                  <div class="noTasksTitle">{{ $t('label.noTask') }}</div>
+                  <p>{{ $t('label.thereIsNoTasks') }}</p>
                 </div>
               </div>
         </v-flex></v-layout></v-flex>
@@ -229,6 +229,12 @@
             this.overdueTasksSize = data.size;
           }
         )
+      },
+      removeTask(value) {
+        this.tasks.splice(this.tasks.findIndex(function(i){
+          return i.id === value;
+        }), 1);
+        document.body.style.overflow = 'auto';
       },
       navigateTo(pagelink) {
         location.href=`${ eXo.env.portal.context }/${ eXo.env.portal.portalName }/${ pagelink }` ;
