@@ -153,15 +153,16 @@
             row
             mx-0>
             <v-flex
-              xs12>
-              <v-list :class="tasks.length === 0 && 'd-none'">
-                <v-list-item
+              xs12
+              class="pt-2">
+              <transition-group name="list">
+                <span
                   v-for="task in tasks"
                   :key="task.id"
-                  class="px-0">
-                  <task-details :task="task"/>
-                </v-list-item>
-              </v-list>
+                  class="list-item">
+                  <task-details :task="task" @removeTask="removeTask"/>
+                </span>
+              </transition-group>
               <div v-if="!loadingTasks && tasks.length === 0" class="noTasks">
                 <div class="noTasksContent">
                   <i class="uiNoTaskIcon"></i>
@@ -228,6 +229,12 @@
             this.overdueTasksSize = data.size;
           }
         )
+      },
+      removeTask(value) {
+        this.tasks.splice(this.tasks.findIndex(function(i){
+          return i.id === value;
+        }), 1);
+        document.body.style.overflow = 'auto';
       },
       navigateTo(pagelink) {
         location.href=`${ eXo.env.portal.context }/${ eXo.env.portal.portalName }/${ pagelink }` ;

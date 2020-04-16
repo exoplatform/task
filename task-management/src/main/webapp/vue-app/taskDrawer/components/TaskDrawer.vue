@@ -126,9 +126,10 @@
                 </v-flex>
                 <v-flex 
                   xs5>
-                  <task-assignment :task="task"
-                                   :global-menu="assigneeMenu"
-                                   @menuIsOpen="openAssigneeMenu()"/>
+                  <task-assignment 
+                    :task="task"
+                    :global-menu="assigneeMenu"
+                    @menuIsOpen="openAssigneeMenu()"/>
                 </v-flex>
                 <v-flex 
                   xs3>
@@ -356,6 +357,7 @@
       },
       markAsCompleted(){
         this.task.completed = !this.task.completed;
+        this.$emit('updateTaskList');
         this.updateTask()
       },
       addDueDate() {
