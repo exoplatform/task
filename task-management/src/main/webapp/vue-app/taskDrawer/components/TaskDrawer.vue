@@ -619,9 +619,9 @@
       },
       escapeKeyListener: function(evt) {
         if (evt.keyCode === 27) {
-          this.$refs.selectPriority.isMenuActive = false;
-          this.$refs.selectStatus.isMenuActive = false;
-          this.datePickerMenu = false;
+          this.drawer = false;
+          $('body').removeClass('hide-scroll');
+          this.$emit('closeDrawer', this.drawer);
         }
       }
     }
