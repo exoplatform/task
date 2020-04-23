@@ -17,7 +17,7 @@
           })"></span>
         </v-flex>
         <v-flex xs4>
-          <span class="dateTime caption">{{ relativeTime }}</span>
+          <span :title="absoluteTime" class="dateTime caption">{{ relativeTime }}</span>
         </v-flex>
       </v-layout>
     </v-flex>
@@ -40,6 +40,9 @@
       },
       relativeTime() {
         return this.getRelativeTime(this.changeLog.createdTime)
+      },
+      absoluteTime() {
+        return this.getAbsoluteTime(this.changeLog.createdTime)
       }
     },
     methods : {
@@ -74,6 +77,9 @@
           return this.$t('task.timeConvert.About_?_Months').replace('{0}', Math.round(elapsed / msPerMonth));
         }
       },
+      getAbsoluteTime(timestamp) {
+        return new Date(timestamp).toLocaleString();
+      }
     }
   }
 </script>

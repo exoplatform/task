@@ -13,7 +13,7 @@
             <a
               class="primary-color--text font-weight-bold subtitle-2"
               v-html="comment.author.displayName"></a>
-            <span class="dateTime caption pl-4">{{ relativeTime }}</span>
+            <span :title="absoluteTime" class="dateTime caption pl-4">{{ relativeTime }}</span>
           </div>
           <v-flex class="d-flex flex-row-reverse">
             <v-dialog
@@ -185,6 +185,9 @@
             },
             showDeleteButtom() {
                 return this.hover && eXo.env.portal.userName === this.comment.author.username;
+            },
+            absoluteTime() {
+              return this.getAbsoluteTime(this.comment.createdTime.time)
             }
         },
         watch: {
@@ -262,6 +265,9 @@
                 } else {
                     return this.$t('task.timeConvert.About_?_Months').replace('{0}', Math.round(elapsed / msPerMonth));
                 }
+            },
+            getAbsoluteTime(timestamp) {
+              return new Date(timestamp).toLocaleString();
             }
         }
     }
