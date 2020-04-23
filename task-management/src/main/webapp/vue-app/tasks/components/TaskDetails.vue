@@ -51,7 +51,7 @@
             <span>{{ task.status.project.name }}</span>
           </v-card>
           <v-card
-            :style="{ borderColor: task.status.project.color }"
+            :class="projectBorder"
             width="18"
             height="21"
             class="pa-2 my-3 flagCard"
@@ -83,6 +83,11 @@
                 drawer: false,
             }
         },
+        computed : {
+          projectBorder() {
+            return this.task.status.project.color + "_border"
+          }
+        },
         methods: {
             dateFormatter(dueDate) {
                 if (dueDate) {
@@ -110,14 +115,13 @@
             },
             openTaskDrawer() {
                 this.drawer = true;
-                document.body.style.overflow = this.drawer ? 'hidden' : 'auto';
             },
             onCloseDrawer: function(drawer){
                 this.drawer = drawer;
-                document.body.style.overflow = 'auto';
             },
             updateTaskList() {
               this.drawer = false;
+              $('body').removeClass('hide-scroll');
               setTimeout(this.removeTask, 100)
             },
             removeTask() {

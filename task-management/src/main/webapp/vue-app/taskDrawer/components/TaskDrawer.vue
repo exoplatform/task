@@ -48,21 +48,17 @@
               @click="markAsCompleted()">
               <v-icon dark size="18">mdi-checkbox-marked-circle</v-icon>
             </v-btn>
-            <v-text-field
+            <v-textarea
               v-if="!task.completed"
+              id="task-name"
               v-model="task.title"
               :placeholder="$t('label.title')"
+              rows="1"
+              auto-grow
               class="pl-0 pt-0 task-name"
               type="text"
               color="#578DC9"
               @change="updateTask"/>
-            <v-text-field
-              v-else
-              v-model="task.title"
-              :placeholder="$t('label.title')"
-              class="pl-0 pt-0 task-name"
-              style="text-decoration: line-through"
-              type="text"/>
           </v-col>
           <v-container py-0>
             <v-flex xs12>
@@ -163,32 +159,107 @@
               </div>
             </div>
           </v-flex>
-          <v-flex xs12 pl-3>
-            <v-layout row ml-4>
-              <v-flex 
-                xs4
-                row>
-                <div style="white-space: nowrap">
-                  <v-select
-                    v-custom-click-outside="closePrioritiesList"
-                    ref="selectPriority"
-                    v-model="task.priority"
-                    :items="priorities"
-                    item-value="key"
-                    item-text="value"
+          <v-container py-0>
+            <v-flex xs12>
+              <v-layout>
+                <v-flex
+                  xs7
+                  class="pl-1"
+                  @mouseover="showDeleteDateBtn = true"
+                  @mouseleave="showDeleteDateBtn = false">
+                  <v-menu
+                    v-custom-click-outside="closeDateRangeMenu"
+                    v-model="rangeDateMenu"
+                    :close-on-content-click="false"
                     attach
-                    solo
-                    class="pt-0 selectFont"
-                    @change="updateTask(task.id)">
-                    <template v-slot:prepend>
-                      <v-icon :color="getTaskPriorityColor(task.priority)" size="20">mdi-flag-variant</v-icon>
+                    transition="scale-transition"
+                    offset-y
+                    min-width="290px">
+                    <template v-slot:activator="{ on }">
+                      <v-text-field
+                        v-model="dateRangeText"
+                        :placeholder="$t('label.noWorkPlan')"
+                        class="pt-0 pl-1 mt-0 dateFont"
+                        prepend-icon
+                        append-icon
+                        readonly
+                        style="width: 100%"
+                        solo
+                        @click="openDateRangeMenu()"
+                        v-on="on">
+                        model: {{ dates }}
+                        <template v-slot:prepend class="mr-4">
+                          <i class="uiIconPLFCalendar uiIconBlue"></i>
+                        </template>
+                        <template v-slot:append class="mr-4">
+                          <v-btn 
+                            v-show="dateRangeDeleteBtn"
+                            :title="$t('label.remove')"
+                            icon
+                            @click="removeScheduledDate()">
+                            <i style="font-size: 10px" class="uiIconTrashMini uiIconBlue "></i>
+                          </v-btn>
+                        </template>
+                      </v-text-field>
                     </template>
-                  </v-select>
-                </div>
-              </v-flex>
-            </v-layout>
-          </v-flex>
-
+                    <v-date-picker 
+                      v-model="dates" 
+                      range>
+                      <v-spacer/>
+                      <v-alert 
+                        v-show="dateRangeError" 
+                        width="240" 
+                        class="mb-0 dueDateError" 
+                        type="error">
+                        {{ $t('editinline.taskPlan.errorMessage') }}
+                      </v-alert>
+                    </v-date-picker>
+                  </v-menu>
+                </v-flex>
+                <v-flex xs5 pl-3>
+                  <v-layout row ml-4>
+                    <v-flex
+                      xs4
+                      row>
+                      <div style="white-space: nowrap">
+                        <v-select
+                          v-custom-click-outside="closePrioritiesList"
+                          ref="selectPriority"
+                          v-model="task.priority"
+                          :items="priorities"
+                          item-value="key"
+                          item-text="value"
+                          attach
+                          solo
+                          class="pt-0 selectFont"
+                          @change="updateTask(task.id)">
+                          <template v-slot:prepend>
+                            <v-icon :color="getTaskPriorityColor(task.priority)" size="20">mdi-flag-variant</v-icon>
+                          </template>
+                          <template slot="item" slot-scope="data">
+                            <v-list-avatar class="mr-2">
+                              <v-icon :color="getTaskPriorityColor(data.item.key)" size="20">mdi-flag-variant</v-icon>
+                            </v-list-avatar>
+                            <v-list-tile-content>
+                              <v-list-tile-title class="body-2"> {{ data.item.value }}
+                              </v-list-tile-title>
+                            </v-list-tile-content>
+                          </template>
+                        </v-select>
+                      </div>
+                    </v-flex>
+                  </v-layout>
+                </v-flex>
+              </v-layout>
+            </v-flex>
+          </v-container>        
+          <v-container v-show="dateRangeAlerte" py-0>
+            <v-flex xs12>
+              <v-alert type="warning" class="mb-0 pa-2 dueDateAlert">
+                {{ $t('message.dueDateBeforeEndDate') }}
+              </v-alert>
+            </v-flex>
+          </v-container>
           <v-flex xs12 class="pt-2 px-4">
             <v-tabs color="#578DC9">
               <v-tab class="text-capitalize">{{ $t('label.comments') }}</v-tab>
@@ -203,9 +274,12 @@
                       :task="task"
                       :comment="item" 
                       :comments="comments"
-                      @showSubEditor="showEditor = !showEditor"/>
+                      :is-open="!showEditor"
+                      :close-editor="SubEditorIsOpen"
+                      @isOpen="OnCloseAllEditor()"
+                      @showSubEditor="OnUpdateEditorStatus"/>
                   </v-list-item>
-                  <v-list-item v-if="showEditor">
+                  <v-list-item v-if="showEditor" class="comment">
                     <v-list-item-avatar 
                       class="mt-0" 
                       size="30" 
@@ -286,8 +360,12 @@
         
         date: null,
         datePickerMenu: false,
+        dates: [],
+        showDeleteDateBtn : false,
+        rangeDateMenu : false,
         assigneeMenu : false,
         showEditor : true,
+        showSubEditor : false,
         commentPlaceholder : this.$t('comment.message.addYourComment'),
         descriptionPlaceholder : this.$t('editinline.taskDescription.empty'),
         chips: [],
@@ -295,11 +373,24 @@
         saveDescription: '',
         logs:[],
         comments:[],
+        SubEditorIsOpen : false
       }
     },
     computed: {
       currentUserAvatar() {
         return `/rest/v1/social/users/${eXo.env.portal.userName}/avatar`;
+      },
+      dateRangeText () {
+        return this.dates.join('~')
+      },
+      dateRangeAlerte () {
+          return this.dates[1] > this.date
+      } ,
+      dateRangeError() {
+        return this.dates[1] < this.dates[0]
+      },
+      dateRangeDeleteBtn() {
+        return this.showDeleteDateBtn && this.dates.length !== 0
       }
     },
     watch: {
@@ -310,13 +401,46 @@
       },
       editorData(val) {
         this.disabledComment = val === '';
-      } 
+      },
+      showEditor() {
+        this.showSubEditor = !this.showEditor;
+      },
+      dates(val) {
+          if(val[1] && val[1] > val[0]) {
+              const startDate = {};
+              const endDate = {};
+              this.dateFormat(new Date(val[0]), startDate);
+              this.dateFormat(new Date(val[1]), endDate);
+              this.task.startDate = startDate;
+              this.task.endDate = endDate;
+              this.updateTask();
+          }
+      },
+      drawer: {
+        immediate: true,
+        handler() {
+          if (this.drawer) {
+            $('body').addClass('hide-scroll');
+          }
+          this.$nextTick().then(() => {
+            $('.v-overlay').click(() => {
+              this.drawer = false;
+              $('body').removeClass('hide-scroll');
+              this.$emit('closeDrawer',this.drawer);
+            });
+          });
+        }
+      }
     },
     created() {
       this.retrieveTaskLogs();
       this.getTaskComments();
       if (this.task.dueDate != null) {
-        this.date = new Date(this.task.dueDate.time).toISOString().substr(0, 10);
+          this.date = new Date(this.task.dueDate.time).toISOString().substr(0, 10);
+      }
+      if (this.task.startDate != null) {
+          this.dates[0] = new Date(this.task.startDate.time).toISOString().substr(0, 10);
+          this.dates[1] = new Date(this.task.endDate.time).toISOString().substr(0, 10);
       }
       document.addEventListener('keyup', this.escapeKeyListener);
     },
@@ -326,11 +450,23 @@
     methods: {
       closeDrawer() {
         this.drawer = false;
+        $('body').removeClass('hide-scroll');
         this.$emit('closeDrawer',this.drawer);
         this.showEditor=false;
       },
       openEditor() {
           this.showEditor = true;
+          this.SubEditorIsOpen = true;
+          this.editorData = null;
+      },
+      OnUpdateEditorStatus : function(val){
+        this.showEditor = !val;
+        if (val === false) {
+          this.SubEditorIsOpen = false;
+        }
+      },
+      OnCloseAllEditor() {
+        this.SubEditorIsOpen = true;
       },
       addTaskComment() {
         this.editorData=this.editorData.replace(/\n|\r/g,'');
@@ -366,15 +502,7 @@
         } else {
           const dueDate = {};
           const date = new Date(this.date);
-          dueDate.time = date.getTime();
-          dueDate.year = date.getUTCFullYear() - 1900;
-          dueDate.month = date.getMonth();
-          dueDate.day = date.getDay();
-          dueDate.hours = date.getHours();
-          dueDate.minutes = date.getMinutes();
-          dueDate.seconds = date.getSeconds();
-          dueDate.timezoneOffset = date.getTimezoneOffset();
-          dueDate.date = date.getDate();
+          this.dateFormat(date, dueDate);
           this.task.dueDate = dueDate;
         }
         this.updateTask();
@@ -384,17 +512,26 @@
           this.task.dueDate = null;
         } else {
           const date = new Date(this.date);
-          this.task.dueDate.time = date.getTime();
-          this.task.dueDate.year = date.getUTCFullYear() - 1900;
-          this.task.dueDate.month = date.getMonth();
-          this.task.dueDate.day = date.getDay();
-          this.task.dueDate.hours = date.getHours();
-          this.task.dueDate.minutes = date.getMinutes();
-          this.task.dueDate.seconds = date.getSeconds();
-          this.task.dueDate.timezoneOffset = date.getTimezoneOffset();
-          this.task.dueDate.date = date.getDate();
+          this.dateFormat(date, this.task.dueDate);
         }
         this.updateTask()
+      }, 
+      removeScheduledDate() {
+        this.dates = []
+        this.task.startDate = null;
+        this.task.endDate = null;
+        this.updateTask()
+      },
+      dateFormat(date, newDate) {
+        newDate.time = date.getTime();
+        newDate.year = date.getUTCFullYear() - 1900;
+        newDate.month = date.getMonth();
+        newDate.day = date.getDay();
+        newDate.hours = date.getHours();
+        newDate.minutes = date.getMinutes();
+        newDate.seconds = date.getSeconds();
+        newDate.timezoneOffset = date.getTimezoneOffset();
+        newDate.date = date.getDate();
       },
       updateTaskStatus() {
         let statusId = 0;
@@ -459,9 +596,18 @@
           this.$refs.selectPriority.isMenuActive = false;
         }
       },
+      closeDateRangeMenu() {
+        this.rangeDateMenu = false
+      },
+      openDateRangeMenu() {
+        this.closePrioritiesList();
+        this.closeStatusList();
+        this.assigneeMenu = false;
+      },
       openDatePickerMenu() {
         this.closePrioritiesList();
         this.closeStatusList();
+        this.rangeDateMenu = false;
         this.assigneeMenu = false;
 
       },
@@ -469,6 +615,7 @@
         this.closePrioritiesList();
         this.closeStatusList();
         this.datePickerMenu = false;
+        this.rangeDateMenu = false;
       },
       escapeKeyListener: function(evt) {
         if (evt.keyCode === 27) {

@@ -40,7 +40,11 @@
               d-flex
               xs12>
               <v-layout mx-0>
-                <v-flex v-if="tasks.length > 0" xs12>
+                <v-flex 
+                  v-if="tasks.length > 0" 
+                  xs12 
+                  style="cursor: pointer" 
+                  @click="navigateTo('tasks')">
                   <v-card
                     class="mx-auto"
                     flat
@@ -77,8 +81,7 @@
                                 <v-card
                                   class="py-1"
                                   flat
-                                  color="#F7FAFD"
-                                  @click="navigateTo('tasks')">
+                                  color="#F7FAFD">
                                   <div class="title">{{ incomingTasksSize }} {{ $t('label.tasks.tasks') }}</div>
                                   <div class="caption color-title">{{ $t('label.incoming') }}</div>
                                 </v-card>
@@ -90,7 +93,15 @@
                     </v-layout>
                   </v-card>
                 </v-flex>
-                <v-flex v-if="tasks.length > 0" xs12>
+                <v-divider 
+                  vertical 
+                  inset 
+                  class="mt-2"/>
+                <v-flex 
+                  v-if="tasks.length > 0" 
+                  xs12 
+                  style="cursor: pointer" 
+                  @click="navigateTo('tasks/my-task/overdue')">
                   <v-card
                     class="mx-auto"
                     flat
@@ -129,8 +140,7 @@
                                 <v-card
                                   class="py-1"
                                   flat
-                                  color="#F7FAFD"
-                                  @click="navigateTo('tasks/my-task/overdue')">
+                                  color="#F7FAFD">
                                   <div class="title">{{ overdueTasksSize }} {{ $t('label.tasks.tasks') }}</div>
                                   <div class="caption color-title">{{ $t('label.overdue') }}</div>
                                 </v-card>

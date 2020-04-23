@@ -65,17 +65,22 @@
           </v-flex>
         </v-layout>
       </v-flex>
-      <span 
-        class="taskContentComment" 
-        v-html="comment.comment"></span>
-      <v-btn
-        id="reply_btn"
-        depressed
-        text
-        small
-        color="primary"
-        @click="openEditor()">{{ $t('comment.message.Reply') }}
-      </v-btn>
+      <v-layout>
+        <v-col class="py-0">
+          <v-row>   
+            <span
+              class="taskContentComment"
+              v-html="comment.comment"></span></v-row>
+          <v-row><v-btn
+            id="reply_btn"
+            depressed
+            text
+            small
+            color="primary"
+            @click="openEditor()">{{ $t('comment.message.Reply') }}
+          </v-btn></v-row>
+        </v-col>
+      </v-layout>
       <v-list class="py-0">
         <v-list-item
           v-for="(item, i) in comment.subComments"
@@ -88,7 +93,10 @@
             :comments="comment.subComments"
             @openSubEditor="openEditor()"/>
         </v-list-item>
-        <v-list-item v-focus v-if="showEditor && !sub">
+        <v-list-item 
+          v-focus 
+          v-if="showEditor && !sub" 
+          class="subComment">
           <v-list-item-avatar
             class="mt-0"
             size="30"
@@ -99,7 +107,6 @@
             <task-comment-editor
               v-model="editorData"
               :placeholder="commentPlaceholder"
-              :reset="reset"
               class="mr-4 subComment"
               @subShowEditor="openEditor"/>
             <v-btn
@@ -130,35 +137,43 @@
           }
         },
         props: {
-            comment: {
-                type: Object,
-                default: () => {
-                    return {};
-                }
-            },
-            comments: {
-                type: Object,
-                default: () => {
-                    return {};
-                }
-            },
-            task: {
-                type: Boolean,
-                default: false
-            },
-            sub: {
-              type: Boolean,
-              default: false
-            },
+          comment: {
+            type: Object,
+            default: () => {
+              return {};
+            }
+          },
+          comments: {
+            type: Object,
+            default: () => {
+              return {};
+            }
+          },
+          task: {
+            type: Boolean,
+            default: false
+          },
+          sub: {
+            type: Boolean,
+            default: false
+          },
+          closeEditor: {
+            type: Boolean,
+            default: false
+          },
+          isOpen:{
+            type: Boolean,
+            default: false
+          }
         },
         data() {
             return {
                 hover: false,
-                showEditor: false,
                 editorData: '',
                 disabledComment: '',
                 confirmDeleteComment: false,
                 commentPlaceholder: this.$t('comment.message.addYourComment'),
+                showEditor : false,
             }
         },
         computed: {
@@ -178,13 +193,26 @@
             },
             showEditor(val) {
               this.$emit('showSubEditor', val);
-            }
+            },
+            closeEditor(val) {
+              if (val === true) {
+                this.showEditor = false
+              }
+            },
         },
         methods: {
             getUserAvatar(username) {
                 return `/rest/v1/social/users/${username}/avatar`;
             },
             openEditor() {
+              if (this.isOpen) {
+                this.$emit('isOpen')
+                setTimeout(this.openSubEditor, 100)
+              } else {
+                this.openSubEditor()
+              }
+            },
+            openSubEditor() {
               this.showEditor = true;
               this.editorData = '';
               if (this.sub) {

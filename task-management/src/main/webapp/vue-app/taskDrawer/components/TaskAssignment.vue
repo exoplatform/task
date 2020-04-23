@@ -2,6 +2,7 @@
   <div>
     <v-menu
       v-custom-click-outside="closeMenu"
+      id="assigneeMenu"
       v-model="globalMenu"
       :close-on-content-click="false"
       :nudge-left="40"
@@ -11,30 +12,43 @@
       bottom>
       <template v-slot:activator="{ on }">
         <v-list-item :title="$t('tooltip.clickToEdit')" style="cursor: pointer;">
-          <v-list-item-avatar size="22" class="mr-2 ml-0 pt-1">
-            <v-img :src="getUserAvatar(task.assignee)"/>
+          <v-list-item-avatar
+            v-if="(typeof taskAssignee !== 'undefined')"
+            size="22" 
+            class="mr-2 ml-0 pt-1">
+            <v-img v-if="(typeof taskAssignee.username !== 'undefined')" :src="getUserAvatar(taskAssignee.username)"/>
+          </v-list-item-avatar>
+          <v-list-item-avatar 
+            v-else 
+            size="22" 
+            class="mr-2 ml-0 pt-1">
+            <i class="uiIconUser"></i>
           </v-list-item-avatar>
           <span
-            v-if="task.coworker.length > 0"
+            v-if="taskCoworkers.length > 0"
             class="user-name"
-            v-on="on"> + {{ task.coworker.length }} {{ $t('label.coworker') }}</span>
+            v-on="on"> + {{ taskCoworkers.length }} {{ $t('label.coworker') }}</span>
+          <span
+            v-else-if="taskCoworkers.length === 0 && (typeof taskAssignee === 'undefined')"
+            class="user-name"
+            v-on="on"> {{ $t('label.unassigned') }} </span>
           <span
             v-else
             class="user-name"
             v-on="on"
-            v-html="getUserFullName(task.assignee)"></span>
+            v-html="taskAssignee.fullname"></span>
         </v-list-item>
       </template>
       <v-card class="pb-4">
         <v-card-text class="pb-0">
-          Assigned to :
+          {{ $t('label.assignTo') }} :
         </v-card-text>
         <v-autocomplete
           v-custom-click-outside="closeAssigneeMenu"
           ref="assigneeMenu"
-          v-model="task.assignee"
+          v-model="taskAssignee"
           :items="users"
-          hide-selected
+          :filter="filterUsers"  
           flat
           solo
           style="width: 90%"
@@ -46,14 +60,19 @@
               v-bind="attrs"
               label
               dark
+              class="pr-1"
               color="#578DC9"
               small>
               <v-avatar left>
-                <v-img :src="getUserAvatar(item)"/>
+                <v-img :src="getUserAvatar(item.username)"/>
               </v-avatar>
-              <span class="pr-2">
-                {{ task.assignee }}
+              <span class="pr-2 assignee-name">
+                {{ item.fullname }}
               </span>
+              <v-icon
+                x-small
+                class="pa-0"
+                @click="unassign()">close</v-icon>
             </v-chip>
           </template>
           <template v-slot:item="{ index, item }">
@@ -62,27 +81,27 @@
               color="white"
               small>
               <v-avatar left>
-                <v-img :src="getUserAvatar(item)"/>
+                <v-img :src="getUserAvatar(item.username)"/>
               </v-avatar>
-              {{ item }}
+              {{ item.fullname }}
             </v-chip>
           </template>
         </v-autocomplete>
-        <a class="ml-4" @click="assignToMe()">{{ $t('label.assignTo') }}</a>
+        <a class="ml-4" @click="assignToMe()">{{ $t('label.assignToMe') }}</a>
         <v-divider class="mt-2"/>
         <v-card-text class="pb-0">
-          Coworkers :
+          {{ $t('label.coworkers') }} :
         </v-card-text>
         <v-autocomplete
           v-custom-click-outside="closeCoworkerMenu"
           id="coworkerInput"
           ref="coworkerMenu"
-          v-model="task.coworker"
+          v-model="taskCoworkers"
           :items="users"
+          :filter="filterUsers"
           deletable-chips
           flat
           autofocus
-          hide-selected
           multiple
           solo
           style="width: 90%"
@@ -98,10 +117,10 @@
               color="#578DC9"
               small>
               <v-avatar left>
-                <v-img :src="getUserAvatar(item)"/>
+                <v-img :src="getUserAvatar(item.username)"/>
               </v-avatar>
-              <span class="pr-2">
-                {{ item }}
+              <span class="assignee-name pr-2">
+                {{ item.fullname }}
               </span>
               <v-icon
                 x-small
@@ -115,9 +134,9 @@
               color="white"
               small>
               <v-avatar left>
-                <v-img :src="getUserAvatar(item)"/>
+                <v-img :src="getUserAvatar(item.username)"/>
               </v-avatar>
-              {{ item }}
+              {{ item.fullname }}
             </v-chip>
           </template>
         </v-autocomplete>
@@ -128,7 +147,7 @@
 </template>
 
 <script>
-  import {getAllUsers, getUserInformations, updateTask} from '../taskDrawerApi'
+  import {getAllUsers, updateTask} from '../taskDrawerApi'
 
   export default {
     props: {
@@ -148,6 +167,9 @@
     data() {
       return {
         users: [],
+        taskAssignee: '',
+        taskCoworkers: [],
+        currentUser: '',
         userFullName: '',
         menu: false,
       }
@@ -164,32 +186,48 @@
       getUsers() {
         getAllUsers().then((users) => {
           this.users = users.users;
-          for (let i = 0; i < this.users.length; i++) {
-            this.users[i] = this.users[i].username;
+          this.taskAssignee = this.users.find(user => user.username === this.task.assignee);
+          for (let i = 0; i < this.task.coworker.length; i++) {
+            this.taskCoworkers.push(this.users.find(user => user.username === this.task.coworker[i]))
           }
+          this.currentUser = this.users.find(user => user.username === eXo.env.portal.userName);
         })
-      },
-      getUserFullName(useName) {
-        getUserInformations(useName).then((userInfo) => {
-          this.userFullName = userInfo.fullname;
-        });
-        return this.userFullName;
       },
       getUserAvatar(username) {
         return `/rest/v1/social/users/${username}/avatar`;
       },
+      filterUsers(item, queryText) {
+        return (
+                item.fullname.toLocaleLowerCase().indexOf(queryText.toLocaleLowerCase()) >
+                -1 ||
+                item.fullname.toLocaleLowerCase().indexOf(queryText.toLocaleLowerCase()) > -1
+        );
+      },
       updateTask() {
+        this.task.coworker = [];
+        if (typeof this.taskAssignee !== 'undefined') {
+          this.task.assignee = this.taskAssignee.username;
+        } else {
+          this.task.assignee = '';
+        }
+        for (let i = 0; i < this.taskCoworkers.length; i++) {
+          this.task.coworker.push(this.taskCoworkers[i].username)
+        }
         updateTask(this.task.id, this.task);
       },
       assignToMe() {
-        this.task.assignee = eXo.env.portal.userName;
+        this.taskAssignee = this.currentUser;
         this.updateTask()
       },
       setMeAsCoworker() {
-        if (!this.task.coworker.includes(eXo.env.portal.userName)) {
-          this.task.coworker.push(eXo.env.portal.userName);
+        if (!this.taskCoworkers.includes(this.currentUser)) {
+          this.taskCoworkers.push(this.currentUser);
           this.updateTask()
         }
+      },
+      unassign() {
+        this.taskAssignee = undefined;
+        this.updateTask();
       },
       closeCoworkerMenu() {
         if (typeof this.$refs.coworkerMenu !== 'undefined') {
