@@ -17,7 +17,7 @@
           })"></span>
         </v-flex>
         <v-flex xs4>
-          <span :title="absoluteTime" class="dateTime caption">{{ relativeTime }}</span>
+          <span :title="absoluteTime()" class="dateTime caption">{{ relativeTime }}</span>
         </v-flex>
       </v-layout>
     </v-flex>
@@ -41,9 +41,6 @@
       relativeTime() {
         return this.getRelativeTime(this.changeLog.createdTime)
       },
-      absoluteTime() {
-        return this.getAbsoluteTime(this.changeLog.createdTime)
-      }
     },
     methods : {
       getLogMsg(item) {
@@ -54,7 +51,7 @@
         const msPerMinute = 60 * 1000;
         const msPerHour = msPerMinute * 60;
         const msPerDay = msPerHour * 24;
-        const msPerMonth = msPerDay * 30;
+        const msPerMaxDays = msPerDay * 2;
         const elapsed = new Date().getTime() - previous;
 
         if (elapsed < msPerMinute) {
@@ -69,16 +66,15 @@
           return this.$t('task.timeConvert.About_?_Hours').replace('{0}', Math.round(elapsed / msPerHour));
         } else if (elapsed === msPerDay) {
           return this.$t('task.timeConvert.About_A_Day');
-        } else if (elapsed < msPerMonth) {
+        } else if (elapsed < msPerMaxDays) {
           return this.$t('task.timeConvert.About_?_Days').replace('{0}', Math.round(elapsed / msPerDay));
-        } else if (elapsed === msPerMonth) {
-          return this.$t('task.timeConvert.About_A_Month');
         } else {
-          return this.$t('task.timeConvert.About_?_Months').replace('{0}', Math.round(elapsed / msPerMonth));
+          return this.absoluteTime({dateStyle: "short"});
         }
       },
-      getAbsoluteTime(timestamp) {
-        return new Date(timestamp).toLocaleString();
+      absoluteTime(options) {
+        const lang = eXo && eXo.env && eXo.env.portal && eXo.env.portal.language || 'en';
+        return new Date(this.changeLog.createdTime).toLocaleString(lang, options).split("/").join("-");
       }
     }
   }
