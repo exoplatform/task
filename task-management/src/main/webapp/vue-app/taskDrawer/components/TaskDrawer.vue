@@ -38,8 +38,14 @@
       <v-container pt-0>
         <v-layout row>
           <v-col class="pb-0">
-            <task-projects :task="task"/>
-            <task-labels :task="task"/>
+            <task-projects 
+              :task="task" 
+              :projects-list="projectsList" 
+              @openProjectsList="openProjectsList()"/>
+            <task-labels 
+              :task="task" 
+              :labels-list="labelsList" 
+              @openLabelsList="openLabelsList()"/>
             <v-btn
               id="check_btn"
               class="ml-n2"
@@ -53,11 +59,9 @@
               id="task-name"
               v-model="task.title"
               :placeholder="$t('label.title')"
-              rows="1"
               auto-grow
+              rows="1"
               class="pl-0 pt-0 task-name"
-              type="text"
-              color="#578DC9"
               @change="updateTask"/>
           </v-col>
           <v-container py-0>
@@ -71,7 +75,6 @@
                     ref="menu"
                     v-model="datePickerMenu"
                     :close-on-content-click="false"
-                    :return-value.sync="date"
                     attach
                     transition="scale-transition"
                     offset-y
@@ -85,7 +88,6 @@
                         readonly
                         solo
                         @click="openDatePickerMenu()"
-                        @change="updateDueDate"
                         v-on="on">
                         <template v-slot:prepend class="mr-4">
                           <i class="uiIconClock uiIconBlue"></i>
@@ -94,30 +96,38 @@
                     </template>
                     <v-date-picker
                       v-model="date" 
-                      no-title 
-                      scrollable>
+                      no-title
+                      scrollable
+                      @input="datePickerMenu = false;addDueDate()">
                       <v-spacer/>
                       <v-btn
                         small
                         min-width="40"
                         text
                         color="primary"
-                        @click="date=null;$refs.menu.save(date);updateDueDate()">{{ $t('popup.clear') }}</v-btn>
+                        @click="date=null;$refs.menu.save(date);addDueDate()">{{ $t('label.none') }}</v-btn>
+                      <v-divider vertical/>
                       <v-btn
-                        v-if="task.dueDate != null"
                         min-width="40"
                         small
-                        text 
-                        color="primary" 
-                        @click="$refs.menu.save(date);updateDueDate()">OK</v-btn>
+                        text
+                        color="primary"
+                        @click="$refs.menu.save(date);addDays()">{{ $t('label.today') }}</v-btn>
+                      <v-divider vertical />
                       <v-btn
-                        v-else
                         min-width="40"
                         small
-                        text 
-                        color="primary" 
-                        @click="$refs.menu.save(date);addDueDate()">OK</v-btn>
-                    </v-date-picker>
+                        text
+                        color="primary"
+                        @click="$refs.menu.save(date);addDays(1)">{{ $t('label.tomorrow') }}</v-btn>
+                      <v-divider vertical />
+                      <v-btn
+                        min-width="40"
+                        small
+                        text
+                        color="primary"
+                        @click="$refs.menu.save(date);addDays(7)">{{ $t('label.nextweek') }}</v-btn>
+                    </v-date-picker>                    
                   </v-menu>
                 </v-flex>
                 <v-flex 
@@ -134,7 +144,7 @@
                       v-custom-click-outside="closeStatusList"
                       ref="selectStatus"
                       v-model="task.status.name"
-                      :items="taskStatus"
+                      :items="projectStatuses"
                       item-value="key"
                       item-text="value"
                       attach
@@ -203,7 +213,8 @@
                       </v-text-field>
                     </template>
                     <v-date-picker 
-                      v-model="dates" 
+                      v-model="dates"
+                      no-title 
                       range>
                       <v-spacer/>
                       <v-alert 
@@ -275,7 +286,7 @@
                       :comment="item" 
                       :comments="comments"
                       :is-open="!showEditor"
-                      :close-editor="SubEditorIsOpen"
+                      :close-editor="subEditorIsOpen"
                       @isOpen="OnCloseAllEditor()"
                       @showSubEditor="OnUpdateEditorStatus"/>
                   </v-list-item>
@@ -327,7 +338,7 @@
 
 <script>
 
-  import {updateTask, getTaskLogs, getTaskComments, addTaskComments} from '../taskDrawerApi';
+  import {updateTask, getTaskLogs, getTaskComments, addTaskComments, getStatusesByProjectId} from '../taskDrawerApi';
 
   export default {
     props: {
@@ -352,12 +363,8 @@
           {key:'NORMAL',value:this.$t('label.priority.normal')},
           {key:'LOW',value:this.$t('label.priority.low')},
           {key:'NONE',value:this.$t('label.priority.none')}],
-
-        taskStatus: [{key:'ToDo',value:this.$t('exo.tasks.status.todo')},
-          {key:'InProgress',value:this.$t('exo.tasks.status.inprogress')},
-          {key:'WaitingOn',value:this.$t('exo.tasks.status.waitingon')},
-          {key:'Done',value:this.$t('exo.tasks.status.done')}],
-        
+        labelsList: false,
+        projectsList: false,
         date: null,
         datePickerMenu: false,
         dates: [],
@@ -373,7 +380,8 @@
         saveDescription: '',
         logs:[],
         comments:[],
-        SubEditorIsOpen : false
+        subEditorIsOpen : false,
+        projectStatuses : [],
       }
     },
     computed: {
@@ -435,6 +443,7 @@
     created() {
       this.retrieveTaskLogs();
       this.getTaskComments();
+      this.getStatusesByProjectId();
       if (this.task.dueDate != null) {
           this.date = new Date(this.task.dueDate.time).toISOString().substr(0, 10);
       }
@@ -456,17 +465,17 @@
       },
       openEditor() {
           this.showEditor = true;
-          this.SubEditorIsOpen = true;
+          this.subEditorIsOpen = true;
           this.editorData = null;
       },
       OnUpdateEditorStatus : function(val){
         this.showEditor = !val;
         if (val === false) {
-          this.SubEditorIsOpen = false;
+          this.subEditorIsOpen = false;
         }
       },
       OnCloseAllEditor() {
-        this.SubEditorIsOpen = true;
+        this.subEditorIsOpen = true;
       },
       addTaskComment() {
         this.editorData=this.editorData.replace(/\n|\r/g,'');
@@ -507,15 +516,17 @@
         }
         this.updateTask();
       },
-      updateDueDate() {
-        if (this.date === null) {
-          this.task.dueDate = null;
+      addDays(days) {
+        if (days) {
+          const date = new Date();
+          date.setDate(date.getDate() + days);
+          this.date =  date.toISOString().substr(0, 10);
+          this.addDueDate();
         } else {
-          const date = new Date(this.date);
-          this.dateFormat(date, this.task.dueDate);
+          this.date =  new Date().toISOString().substr(0, 10);
+          this.addDueDate();
         }
-        this.updateTask()
-      }, 
+      },
       removeScheduledDate() {
         this.dates = []
         this.task.startDate = null;
@@ -579,7 +590,32 @@
                 });
         return this.comments
       },
-     
+      getStatusesByProjectId() {
+        if (this.task.status != null) {
+          getStatusesByProjectId(this.task.status.project.id).then(
+                  (data) => {
+                    this.projectStatuses = data;
+                    for (let i = 0; i < data.length; i++) {
+                      switch (data[i].name) {
+                        case 'ToDo':
+                          this.projectStatuses[i] = {key: 'ToDo', value: this.$t('exo.tasks.status.todo')}
+                          break;
+                        case 'InProgress':
+                          this.projectStatuses[i] = {key: 'InProgress', value: this.$t('exo.tasks.status.inprogress')}
+                          break;
+                        case 'WaitingOn':
+                          this.projectStatuses[i] = {key: 'WaitingOn', value: this.$t('exo.tasks.status.waitingon')}
+                          break;
+                        case 'Done':
+                          this.projectStatuses[i] = {key: 'Done', value: this.$t('exo.tasks.status.done')}
+                          break;
+                        default:
+                          this.projectStatuses[i] = {key: data[i].name, value: data[i].name}
+                      }
+                    }
+                  });
+        }
+      },
       navigateTo(pagelink) {
         window.open(`${ eXo.env.portal.context }/${ eXo.env.portal.portalName }/${ pagelink }`, '_blank');
       },
@@ -603,19 +639,42 @@
         this.closePrioritiesList();
         this.closeStatusList();
         this.assigneeMenu = false;
+        this.labelsList = false;
+        this.projectsList = false;
       },
       openDatePickerMenu() {
         this.closePrioritiesList();
         this.closeStatusList();
         this.rangeDateMenu = false;
         this.assigneeMenu = false;
-
+        this.labelsList = false;
+        this.projectsList = false;
       },
       openAssigneeMenu() {
         this.closePrioritiesList();
         this.closeStatusList();
         this.datePickerMenu = false;
         this.rangeDateMenu = false;
+        this.labelsList = false;
+        this.projectsList = false;
+      },
+      openLabelsList() {
+        this.labelsList = true;
+        this.closePrioritiesList();
+        this.closeStatusList();
+        this.datePickerMenu = false;
+        this.rangeDateMenu = false;
+        this.assigneeMenu = false;
+        this.projectsList = false;
+      },
+      openProjectsList() {
+        this.projectsList = true;
+        this.closePrioritiesList();
+        this.closeStatusList();
+        this.datePickerMenu = false;
+        this.rangeDateMenu = false;
+        this.assigneeMenu = false;
+        this.labelsList = false;
       },
       escapeKeyListener: function(evt) {
         if (evt.keyCode === 27) {

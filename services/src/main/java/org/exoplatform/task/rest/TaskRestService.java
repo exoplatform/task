@@ -204,6 +204,31 @@ public class TaskRestService implements ResourceContainer {
   }
 
   @GET
+  @Path("projects/statuses/{id}")
+  @RolesAllowed("users")
+  @Produces(MediaType.APPLICATION_JSON)
+  @ApiOperation(value = "Gets the statuses by project id",
+          httpMethod = "GET",
+          response = Response.class,
+          notes = "This returns the statuses by project id")
+  @ApiResponses(value = {
+          @ApiResponse(code = 200, message = "Request fulfilled"),
+          @ApiResponse(code = 403, message = "Unauthorized operation"),
+          @ApiResponse(code = 404, message = "Resource not found")})
+  public Response getStatusesByProjectId(@ApiParam(value = "Project id", required = true) @PathParam("id") long id) throws EntityNotFoundException {
+    Identity currentUser = ConversationState.getCurrent().getIdentity();
+    Project project = projectService.getProject(id);
+    if (project == null) {
+      return Response.status(Response.Status.NOT_FOUND).build();
+    }
+    if (!project.canView(currentUser)) {
+      return Response.status(Response.Status.UNAUTHORIZED).build();
+    }
+    List<Status> projectStatuses = statusService.getStatuses(id);
+    return Response.ok(projectStatuses).build();
+  }
+
+  @GET
   @Path("labels")
   @RolesAllowed("users")
   @Produces(MediaType.APPLICATION_JSON)
@@ -411,6 +436,7 @@ public class TaskRestService implements ResourceContainer {
     if (!TaskUtil.hasEditPermission(task)) {
       return Response.status(Response.Status.FORBIDDEN).build();
     }
+    commentText = commentText.replace("\\", "");
     commentText = commentText.substring(1, commentText.length() - 1);
     Comment addedComment = taskService.addComment(id, currentUser, commentText);
     CommentModel commentModel = new CommentModel(addedComment, userService.loadUser(currentUser), commentText);

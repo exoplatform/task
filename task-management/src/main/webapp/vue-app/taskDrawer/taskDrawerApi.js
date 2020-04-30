@@ -115,6 +115,19 @@ else {
 })
 }
 
+export function getStatusesByProjectId(projectId) {
+    return fetch(`/portal/rest/tasks/projects/statuses/${projectId}`, {
+        method: 'GET',
+    }).then((resp) => {
+        if(resp && resp.ok) {
+          return resp.json();
+        } 
+        else {
+          throw new Error ('Error when getting project statuses');
+        }
+    })
+}
+
 export function getAllUsers() {
     return fetch('/portal/rest/v1/social/users', {
         method: 'GET',

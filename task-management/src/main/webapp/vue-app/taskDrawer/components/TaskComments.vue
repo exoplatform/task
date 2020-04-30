@@ -70,7 +70,7 @@
           <v-row>   
             <span
               class="taskContentComment"
-              v-html="comment.comment"></span></v-row>
+              v-html="urlVerify(comment.comment)"></span></v-row>
           <v-row><v-btn
             id="reply_btn"
             depressed
@@ -264,7 +264,13 @@
             absoluteTime(options) {
               const lang = eXo && eXo.env && eXo.env.portal && eXo.env.portal.language || 'en';
               return new Date(this.comment.createdTime.time).toLocaleString(lang, options).split("/").join("-");
-            }
+            },
+            urlVerify(text) {
+              const urlRegex = /(https?:\/\/[^\s]+)/g;
+              return text.replace(urlRegex, function (url) {
+                return `<a href="${  url  }" target="_blank">${  url  }</a>`;
+              })
+            },
         }
     }
 </script>

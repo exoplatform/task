@@ -51,10 +51,7 @@
         const self = this;
         $(this.$refs.editor).ckeditor({
           customConfig: '/commons-extension/ckeditorCustom/config.js',
-          removePlugins: 'image,confirmBeforeReload,maximize,resize',
-          toolbar: [
-            ['Bold','Italic','BulletedList', 'NumberedList', 'Blockquote'],
-          ],
+          removePlugins: 'confirmBeforeReload,maximize,resize',
           autoGrow_onStartup: false,
           autoGrow_maxHeight: 300,
           on: {
@@ -68,6 +65,10 @@
             },
             destroy: function () {
               self.inputVal = '';
+            },
+            focus:function () {
+              const el = $('.cke_toolbar_last');
+              $(el[0]).remove();
             }
           },
         });

@@ -17,6 +17,7 @@
       small-chips
       prepend-icon
       solo
+      @click="openLabelsList()"
       @change="search = ''">
       <template v-slot:prepend class="mr-4">
         <i class="uiIconTag uiIconBlue"></i>
@@ -75,6 +76,10 @@
                     return {};
                 }
             },
+            labelsList: {
+                  type: Boolean,
+                  default: false
+            },
         },
         data() {
             return {
@@ -107,6 +112,10 @@
                     return v
                 })
             },
+            labelsList() { 
+                  this.closeDropDownList()
+              
+            }
         },
         created() {
             this.getMyAllLabels();
@@ -159,7 +168,10 @@
               if (typeof this.$refs.selectLabel !== 'undefined') {
                 this.$refs.selectLabel.isMenuActive = false;
               }
-            }
+            },
+            openLabelsList() {
+                this.$emit('openLabelsList')
+            }  
         }
     }
 </script>

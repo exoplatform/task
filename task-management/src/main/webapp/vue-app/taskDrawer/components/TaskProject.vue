@@ -14,6 +14,7 @@
         class="pt-0 mb-0"
         solo
         prepend-icon
+        @click="openProjectsList()"
         @change="deleteProject()">
         <template v-slot:prepend>
           <i class="uiIconFolder uiIconBlue mr-1"></i>
@@ -62,6 +63,10 @@
                     return {};
                 }
             },
+            projectsList: {
+              type: Boolean,
+              default: false
+            },
         },
         data() {
             return {
@@ -75,6 +80,9 @@
             setTimeout(() => {
               this.$refs.select.isMenuActive = false;
             }, 50)
+          },
+          projectsList() {
+            this.closeDropDownList()
           }
         },
         created() {
@@ -115,6 +123,9 @@
               if (typeof this.$refs.select !== 'undefined') {
                 this.$refs.select.isMenuActive = false;
               }
+            },
+            openProjectsList() {
+              this.$emit('openProjectsList')
             }
         }
     }
