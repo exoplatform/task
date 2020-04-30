@@ -545,27 +545,13 @@
         newDate.date = date.getDate();
       },
       updateTaskStatus() {
-        let statusId = 0;
-        switch (this.task.status.name) {
-          case "ToDo":
-            statusId = 1;
-            break;
-          case "InProgress":
-            statusId = 2;
-            break;
-          case "WaitingOn":
-            statusId = 3;
-            break;
-          case "Done":
-            statusId = 4;
-            break;
-        }
-        if (this.task.status.project.id > 1) {
-          this.task.status.id = 4 * (this.task.status.project.id -1 ) + statusId;
-        } else {
-          this.task.status.id = statusId;
-        }
-        this.updateTask()
+        getStatusesByProjectId(this.task.status.project.id).then(
+                (projectStatuses) => {
+                  const status = projectStatuses.find(s => s.name === this.task.status.name);
+                  this.task.status.id = status.id;
+                  this.task.status.rank = status.rank;
+                  this.updateTask()
+                });
       },
       updateTask() {
         updateTask(this.task.id,this.task);
