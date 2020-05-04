@@ -1,5 +1,12 @@
-<%
+<%@ page import="java.util.ResourceBundle" %>
+<%@ page import="org.exoplatform.services.resources.ResourceBundleService" %>
+<%@ page import="org.exoplatform.container.PortalContainer" %><%
+    
     String itemsLimit = System.getProperty("exo.dw.page.snapshot.itemsLimit", "10");
+    
+    PortalContainer portalContainer = PortalContainer.getCurrentInstance(session.getServletContext());
+    ResourceBundleService resourceBundleService = portalContainer.getComponentInstanceOfType(ResourceBundleService.class);
+    ResourceBundle resourceBundle = resourceBundleService.getResourceBundle("locale.portlet.taskManagement", request.getLocale());
 %>
 
 <div class="VuetifyApp">
@@ -20,7 +27,7 @@
                                 <div class="v-card v-card--flat v-sheet theme--light transparent">
                                     <a>
                                         <div class="v-card__text body-1 text-uppercase color-title px-0">
-                                            Tasks
+                                            <%=resourceBundle.getString("label.tasks.header")%>
                                         </div>
                                     </a></div>
                             </div>
