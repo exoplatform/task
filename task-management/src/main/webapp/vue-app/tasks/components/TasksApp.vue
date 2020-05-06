@@ -177,7 +177,6 @@
                 <div class="noTasksContent">
                   <i class="uiNoTaskIcon"></i>
                   <div class="noTasksTitle">{{ $t('label.noTask') }}</div>
-                  <p>{{ $t('label.thereIsNoTasks') }}</p>
                 </div>
               </div>
         </v-flex></v-layout></v-flex>
