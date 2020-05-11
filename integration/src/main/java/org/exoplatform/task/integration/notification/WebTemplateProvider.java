@@ -58,7 +58,8 @@ import java.util.Set;
        @TemplateConfig( pluginId=TaskDueDatePlugin.ID, template="war:/notification/templates/web/TaskDueDatePlugin.gtmpl"),
        @TemplateConfig( pluginId=TaskCompletedPlugin.ID, template="war:/notification/templates/web/TaskCompletedPlugin.gtmpl"),
        @TemplateConfig( pluginId=TaskCommentPlugin.ID, template="war:/notification/templates/web/TaskCommentPlugin.gtmpl"),
-       @TemplateConfig( pluginId=TaskMentionPlugin.ID, template="war:/notification/templates/web/TaskMentionPlugin.gtmpl")
+       @TemplateConfig( pluginId=TaskMentionPlugin.ID, template="war:/notification/templates/web/TaskMentionPlugin.gtmpl"),
+       @TemplateConfig( pluginId=TaskEditionPlugin.ID, template="war:/notification/templates/web/TaskEditionPlugin.gtmpl")
    }
 )
 public class WebTemplateProvider extends TemplateProvider { 
@@ -71,6 +72,7 @@ public class WebTemplateProvider extends TemplateProvider {
     this.templateBuilders.put(PluginKey.key(TaskCompletedPlugin.ID), new TemplateBuilder());
     this.templateBuilders.put(PluginKey.key(TaskCommentPlugin.ID), new CommentTemplateBuilder());
     this.templateBuilders.put(PluginKey.key(TaskMentionPlugin.ID), new TemplateBuilder());
+    this.templateBuilders.put(PluginKey.key(TaskEditionPlugin.ID), new TemplateBuilder());
   }
 
   private class TemplateBuilder extends AbstractTemplateBuilder {
@@ -105,10 +107,12 @@ public class WebTemplateProvider extends TemplateProvider {
       
       String creator = notification.getValueOwnerParameter(NotificationUtils.CREATOR.getKey());
       String projectName = notification.getValueOwnerParameter(NotificationUtils.PROJECT_NAME);
+      String actionName = notification.getValueOwnerParameter(NotificationUtils.ACTION_NAME.getKey());
+
       String taskTitle = notification.getValueOwnerParameter(NotificationUtils.TASK_TITLE);
       String taskUrl = notification.getValueOwnerParameter(NotificationUtils.TASK_URL);
       String projectUrl = notification.getValueOwnerParameter(NotificationUtils.PROJECT_URL);
-      
+
       Date dueDate = null;
       String tmpD = notification.getValueOwnerParameter(NotificationUtils.DUE_DATE);
       if (tmpD != null) {
@@ -134,9 +138,10 @@ public class WebTemplateProvider extends TemplateProvider {
       templateContext.put("NOTIFICATION_ID", notification.getId());      
       Calendar lastModified = Calendar.getInstance();
       lastModified.setTimeInMillis(notification.getLastModifiedDate());
-      templateContext.put("LAST_UPDATED_TIME", TimeConvertUtils.convertXTimeAgoByTimeServer(lastModified.getTime(), 
+      templateContext.put("LAST_UPDATED_TIME", TimeConvertUtils.convertXTimeAgoByTimeServer(lastModified.getTime(),
                                                                                             "EE, dd yyyy", new Locale(language), TimeConvertUtils.YEAR));
 
+      templateContext.put("ACTION_NAME", encoder.encode(actionName.toString()));
       //
       String body = TemplateUtils.processGroovy(templateContext);
       //binding the exception throws by processing template

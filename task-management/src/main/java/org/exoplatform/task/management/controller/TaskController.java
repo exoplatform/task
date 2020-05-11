@@ -126,6 +126,10 @@ public class TaskController extends AbstractController {
   org.exoplatform.task.management.templates.confirmDeleteComment confirmDeleteComment;
 
   @Inject
+  @Path("watchComponent.gtmpl")
+  org.exoplatform.task.management.templates.watchComponent confirmwatchTask;
+
+  @Inject
   ViewStateService viewStateService;
 
   @Resource
@@ -239,7 +243,33 @@ public class TaskController extends AbstractController {
       json.put("id", newTask.getId()); //Can throw JSONException
       return Response.ok(json.toString());
   }
+  @Resource
+  @Ajax
+  @MimeType.HTML
+  public Response watchUnwatch(Long id, Boolean isWatched, SecurityContext context) throws Exception, EntityNotFoundException {
+    Task task = taskService.getTask(id);
+    String username=context.getRemoteUser();
+     if (!isWatched) {
+     taskService.addWatcherToTask(username, task);
+      String msg= bundle.getString("popup.watch.task");
+      msg = msg.replace("{}", StringEscapeUtils.escapeHtml4(task.getTitle()));
 
+       return confirmwatchTask
+              .with()
+              .taskId(id)
+              .msg(msg)
+              .ok().withCharset(Tools.UTF_8);
+      } else {
+       taskService.deleteWatcherOfTask(username,task);
+      String msg=bundle.getString("popup.unwatch.task");
+      msg = msg.replace("{}", StringEscapeUtils.escapeHtml4(task.getTitle()));
+       return confirmwatchTask
+                .with()
+                .taskId(id)
+                .msg(msg)
+                .ok().withCharset(Tools.UTF_8);
+    }
+    }
   @Resource
   @Ajax
   @MimeType.HTML
@@ -1050,4 +1080,5 @@ public class TaskController extends AbstractController {
     listComments.add(commentModel);
     return commentModel;
   }
+
 }

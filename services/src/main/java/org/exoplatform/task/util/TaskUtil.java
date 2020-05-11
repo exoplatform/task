@@ -194,6 +194,10 @@ public final class TaskUtil {
 
     taskModel.setReadOnly(hasViewOnlyPermission(task));
 
+    //Verify if a task is watched
+    Set<String> watchers = task.getWatcher();
+    taskModel.setWatched(watchers.contains(username));
+
     org.exoplatform.task.model.User assignee = null;
     int numberCoworkers = coworker != null ? coworker.size() : 0;
     if (task.getAssignee() != null && !task.getAssignee().isEmpty()) {
@@ -803,6 +807,7 @@ public final class TaskUtil {
     //This issue caused because we alway clone entity from DAO, but Coworker are loaded lazily
     //This is need for TA-421
     task.setCoworker(TaskUtil.getCoworker(taskService, task.getId()));
+    task.setWatcher(TaskUtil.getWatcher(taskService, task));
 
     //
     if ("workPlan".equalsIgnoreCase(param)) {
@@ -882,6 +887,16 @@ public final class TaskUtil {
           }
         }
         task.setCoworker(coworker);
+      } else if("watcher".equalsIgnoreCase(param)) {
+        Set<String> watcher = new HashSet<String>();
+        if (values != null) {
+          for (String v : values) {
+            if (v != null && !v.isEmpty()) {
+              watcher.add(v);
+            }
+          }
+        }
+        task.setWatcher(watcher);
       } else if ("priority".equalsIgnoreCase(param)) {
         Priority priority = Priority.valueOf(value);
         task.setPriority(priority);
@@ -1079,5 +1094,15 @@ public final class TaskUtil {
     return getTaskService().getCoworker(taskId);
   }
 
+  public static Set<String> getWatcher(TaskService taskService, Task task) {
+    return taskService.getWatchersOfTask(task);
+  }
+  public static boolean isEligibleWatcher(Task task,String username){
+    if(!task.getCoworker().contains(username)&& !username.equals(task.getAssignee())&& !username.equals(task.getCreatedBy())) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
 

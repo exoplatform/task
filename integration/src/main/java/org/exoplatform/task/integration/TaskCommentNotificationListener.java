@@ -71,13 +71,17 @@ public class TaskCommentNotificationListener extends Listener<TaskService, Comme
     // Task creator
     receiver.add(task.getCreatedBy());
 
-    // Assignee and Coworker
+    // Assignee , Coworker , and watcher
     if (task.getAssignee() != null && !task.getAssignee().isEmpty()) {
       receiver.add(task.getAssignee());
     }
     Set<String> coworker = taskService.getCoworker(task.getId());
     if (coworker != null && coworker.size() > 0) {
       receiver.addAll(coworker);
+    }
+    Set<String> watcher = taskService.getWatchersOfTask(task) ;
+    if (watcher != null && watcher.size() > 0) {
+      receiver.addAll(watcher);
     }
 
     // All user who commented on this task

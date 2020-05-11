@@ -78,11 +78,11 @@ public interface TaskService {
 
   public <T> List<T> selectTaskField(TaskQuery query, String fieldName);
 
-  ListAccess<Task> findTasksByLabel(long labelId, List<Long> projectIds, String username, OrderBy orderBy) throws EntityNotFoundException;  
+  ListAccess<Task> findTasksByLabel(long labelId, List<Long> projectIds, String username, OrderBy orderBy) throws EntityNotFoundException;
 
   /**
    * Create a log associated with a task with given <code>taskId</code>.
-   * 
+   *
    * @param taskId
    * @param username
    * @param actionName
@@ -91,19 +91,19 @@ public interface TaskService {
    * @throws EntityNotFoundException
    */
   ChangeLog addTaskLog(long taskId, String username, String actionName, String target) throws EntityNotFoundException;
-  
+
   void addTaskToLabel(Long taskId, Long labelId) throws EntityNotFoundException;
-  
+
   void removeTaskFromLabel(Long taskId, Long labelId) throws EntityNotFoundException;
-  
+
   ListAccess<Label> findLabelsByUser(String username);
-  
+
   ListAccess<Label> findLabelsByTask(long taskId, String username) throws EntityNotFoundException;
-  
+
   Label getLabel(long labelId);
-  
+
   Label createLabel(Label label);
-  
+
   Label updateLabel(Label label, List<Label.FIELDS> fields) throws EntityNotFoundException;
 
   void removeLabel(long labelId);
@@ -133,4 +133,10 @@ public interface TaskService {
   List<Task> getOverdueTasks(String user, int limit);
   
   Long countOverdueTasks(String user);
-}
+
+  Set<String> getWatchersOfTask(Task task) ;
+
+  void addWatcherToTask(String username, Task task) throws Exception;
+
+  void deleteWatcherOfTask(String username, Task task) throws Exception;
+  }

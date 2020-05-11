@@ -447,4 +447,26 @@
                     newDataType="NVARCHAR(250)"
                     tableName="TASK_PROJECT_PARTICIPATORS"/>
   </changeSet>
+
+  <!-- Definition of TASK_TASK_WATCHERS table -->
+  <changeSet author="task" id="1.0.0-30">
+    <createTable tableName="TASK_TASK_WATCHERS">
+      <column name="TASK_ID" type="BIGINT">
+        <constraints foreignKeyName="FK_TK_TK_WATCHERS_TK_TK_01" references="TASK_TASKS(TASK_ID)" nullable="false"/>
+      </column>
+      <column name="WATCHER" type="NVARCHAR(50)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <modifySql dbms="mysql">
+      <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
+    </modifySql>
+  </changeSet>
+
+  <changeSet author="task" id="1.0.0-31">
+    <createIndex indexName="IDX_TASK_TASK_WATCHERS_01"
+                 tableName="TASK_TASK_WATCHERS">
+      <column name="WATCHER" type="NVARCHAR(50)"/>
+    </createIndex>
+  </changeSet>
 </databaseChangeLog>

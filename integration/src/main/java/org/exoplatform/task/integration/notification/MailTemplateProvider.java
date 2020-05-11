@@ -61,7 +61,8 @@ import java.util.Map;
     @TemplateConfig(pluginId = TaskDueDatePlugin.ID, template = "war:/notification/templates/mail/TaskDueDatePlugin.gtmpl"),
     @TemplateConfig(pluginId = TaskCompletedPlugin.ID, template = "war:/notification/templates/mail/TaskCompletedPlugin.gtmpl"),
     @TemplateConfig(pluginId = TaskCommentPlugin.ID, template = "war:/notification/templates/mail/TaskCommentPlugin.gtmpl"),
-    @TemplateConfig(pluginId = TaskMentionPlugin.ID, template = "war:/notification/templates/mail/TaskMentionPlugin.gtmpl") })
+    @TemplateConfig(pluginId = TaskMentionPlugin.ID, template = "war:/notification/templates/mail/TaskMentionPlugin.gtmpl"),
+    @TemplateConfig(pluginId = TaskEditionPlugin.ID, template = "war:/notification/templates/mail/TaskEditionPlugin.gtmpl") })
 public class MailTemplateProvider extends TemplateProvider {
 
   private UserService          userService;
@@ -74,6 +75,7 @@ public class MailTemplateProvider extends TemplateProvider {
     this.templateBuilders.put(PluginKey.key(TaskCompletedPlugin.ID), new TemplateBuilder());
     this.templateBuilders.put(PluginKey.key(TaskCommentPlugin.ID), new CommentTemplateBuilder());
     this.templateBuilders.put(PluginKey.key(TaskMentionPlugin.ID), new TemplateBuilder());
+    this.templateBuilders.put(PluginKey.key(TaskEditionPlugin.ID), new TemplateBuilder());
     this.userService = userService;
   }
 
@@ -96,6 +98,7 @@ public class MailTemplateProvider extends TemplateProvider {
       commentText = CommentUtil.formatMention(getExcerpt(commentText, 130), userService);
       String coworker = notification.getValueOwnerParameter(NotificationUtils.ADDED_COWORKER);
       String usersMentioned = notification.getValueOwnerParameter(NotificationUtils.MENTIONED_USERS);
+      String actionName = notification.getValueOwnerParameter(NotificationUtils.ACTION_NAME.getKey());
 
       TemplateContext templateContext = new TemplateContext(notification.getKey().getId(), language);
       Identity author = CommonsUtils.getService(IdentityManager.class)
@@ -122,6 +125,7 @@ public class MailTemplateProvider extends TemplateProvider {
       templateContext.put("coworkerTask", coworker);
       templateContext.put("usersMentioned", usersMentioned);
       //
+      templateContext.put("ACTION_NAME", encoder.encode(actionName.toString()));
       templateContext.put("FOOTER_LINK", LinkProviderUtils.getRedirectUrl("notification_settings", receiver.getRemoteId()));
       String subject = TemplateUtils.processSubject(templateContext);
 

@@ -702,7 +702,58 @@ public class TestTaskDAO extends AbstractTest {
     // test countOverdueTasks
     assertEquals("should be 2 overdue tasks", Long.valueOf(2L), tDAO.countOverdueTasks(username));
   }
-  
+
+  @Test
+  public void testAddWatchersToTasks() throws Exception {
+    // Test Add watchers to task
+    String user="john";
+    Task task = newTaskInstance("task ", "description of task ", username);
+    tDAO.create(task);
+    Set<String> watchers = new HashSet<>();
+    tDAO.addWatcherToTask(user,task);
+    watchers=tDAO.getWatchersOfTask(task);
+    assertEquals(1, watchers.size());
+    assertTrue(watchers.contains(user));
+  }
+
+  @Test
+  public void testDeleteWatchersToTasks() throws Exception {
+    // Test Delete watcher From task
+    String user="john";
+    Task task = newTaskInstance("task ", "description of task", username);
+    tDAO.create(task);
+    //Add watcher to task
+    tDAO.addWatcherToTask(user,task);
+    Set<String> watchers=tDAO.getWatchersOfTask(task);
+    assertEquals(1, watchers.size());
+    // Delete watcher from task
+    tDAO.deleteWatcherOfTask(user,task);
+    watchers=tDAO.getWatchersOfTask(task);
+    assertEquals(0, watchers.size());
+  }
+
+  @Test
+  public void testGetWatchersOfTask() throws Exception{
+    // Test GetWatchers of task
+    Task task = newTaskInstance("Task ", "", null);
+    Set<String> watchers = new HashSet<String>();
+    tDAO.addWatcherToTask("john",task);
+    tDAO.create(task);
+    //Add watcher to task
+    tDAO.addWatcherToTask("marry",task);
+    tDAO.update(task);
+
+    //Then Test getWatchersOfTask after adding a watcher
+    Assert.assertEquals(2, tDAO.getWatchersOfTask(task).size());
+    assertTrue(tDAO.getWatchersOfTask(task).contains("marry"));
+
+    //Delete watcher from task
+    tDAO.deleteWatcherOfTask("marry",task);
+    tDAO.update(task);
+    //Then Test getWatchersOfTask after deleting a watcher
+    Assert.assertEquals(1, tDAO.getWatchersOfTask(task).size());
+    assertFalse(tDAO.getWatchersOfTask(task).contains("marry"));
+  }
   private Task newTaskInstance(String taskTitle, String description, String assignee) {
     Task task = new Task();
     task.setTitle(taskTitle);

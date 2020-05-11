@@ -26,11 +26,7 @@ import org.exoplatform.services.listener.Listener;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.exception.EntityNotFoundException;
-import org.exoplatform.task.integration.notification.NotificationUtils;
-import org.exoplatform.task.integration.notification.TaskAssignPlugin;
-import org.exoplatform.task.integration.notification.TaskCompletedPlugin;
-import org.exoplatform.task.integration.notification.TaskCoworkerPlugin;
-import org.exoplatform.task.integration.notification.TaskDueDatePlugin;
+import org.exoplatform.task.integration.notification.*;
 import org.exoplatform.task.service.TaskPayload;
 import org.exoplatform.task.service.TaskService;
 
@@ -64,9 +60,17 @@ public class TaskLoggingListener extends Listener<TaskService, TaskPayload> {
   private void logTaskUpdate(TaskService service, String username, Task before, Task after) throws EntityNotFoundException {
     if (isDiff(before.getStartDate(), after.getStartDate()) || isDiff(before.getEndDate(), after.getEndDate())) {
       service.addTaskLog(after.getId(), username, "edit_workplan", "");
+
+      NotificationContext ctx = buildContext(after);
+      ctx.append(NotificationUtils.ACTION_NAME, "edit_workplan");
+      dispatch(ctx, TaskEditionPlugin.ID);
     }
     if (isDiff(before.getTitle(), after.getTitle())) {
       service.addTaskLog(after.getId(), username, "edit_title", "");
+
+      NotificationContext ctx = buildContext(after);
+      dispatch(ctx, TaskEditionPlugin.ID);
+      ctx.append(NotificationUtils.ACTION_NAME, "edit_title");
     }
     if (isDiff(before.getDueDate(), after.getDueDate())) {
       service.addTaskLog(after.getId(), username, "edit_duedate", "");
@@ -76,6 +80,17 @@ public class TaskLoggingListener extends Listener<TaskService, TaskPayload> {
     }
     if (isDiff(before.getDescription(), after.getDescription())) {
       service.addTaskLog(after.getId(), username, "edit_description", "");
+
+      NotificationContext ctx = buildContext(after);
+      ctx.append(NotificationUtils.ACTION_NAME, "edit_description");
+      dispatch(ctx, TaskEditionPlugin.ID);
+    }
+    if(isDiff(before.getPriority(),after.getPriority())) {
+      service.addTaskLog(after.getId(), username ,"edit_priority","");
+
+      NotificationContext ctx = buildContext(after);
+      ctx.append(NotificationUtils.ACTION_NAME, "edit_priority");
+      dispatch(ctx, TaskEditionPlugin.ID);
     }
     if (isDiff(before.isCompleted(), after.isCompleted())) {
       service.addTaskLog(after.getId(), username, "mark_done", "");
@@ -122,6 +137,10 @@ public class TaskLoggingListener extends Listener<TaskService, TaskPayload> {
 
     } else if (isDiff(before.getStatus(), after.getStatus())) {
       service.addTaskLog(after.getId(), username, "edit_status", after.getStatus().getName());
+
+      NotificationContext ctx = buildContext(after);
+      ctx.append(NotificationUtils.ACTION_NAME, "edit_status");
+      dispatch(ctx,TaskEditionPlugin.ID);
     }
   }
 

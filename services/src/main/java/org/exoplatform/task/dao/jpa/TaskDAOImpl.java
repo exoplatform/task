@@ -416,5 +416,35 @@ public class TaskDAOImpl extends CommonJPADAO<Task, Long> implements TaskHandler
         Long result = query.getSingleResult();
         return result == null ? 0 : result;    
     }
+
+    @Override
+    public void addWatcherToTask(String username, Task task) throws Exception {
+        Set<String> watchers = getWatchersOfTask(task);
+        if (watchers != null && !watchers.contains(username)) {
+            watchers.add(username);
+            task.setWatcher(watchers);
+            update(task);
+        }
+    }
+
+    @Override
+    public void deleteWatcherOfTask(String username, Task task) throws Exception {
+        Set<String> watchers = getWatchersOfTask( task) ;
+        if (watchers != null && watchers.contains(username)) {
+            watchers.remove(username);
+            task.setWatcher(watchers);
+            update(task);
+        } else {
+            throw new Exception("Cannot remove watcher " + username +  "of task because watcher does not exist.");
+        }
+    }
+
+    @Override
+    public Set<String> getWatchersOfTask(Task task)  {
+        Query query = getEntityManager().createNamedQuery("Task.getWatcher", String.class);
+        query.setParameter("taskid", task.getId());
+        List<String> watchers =query.getResultList();
+        return new HashSet<String> (watchers);
+    }
 }
 

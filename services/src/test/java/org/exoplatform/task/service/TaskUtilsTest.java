@@ -16,9 +16,7 @@
 */
 package org.exoplatform.task.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -184,9 +182,19 @@ public class TaskUtilsTest {
     } catch (Exception e) {
       fail(e.getMessage());
     }
-
+    Task task=taskService.getTask(TestUtils.EXISTING_TASK_ID);
+    //Test  task is not watched
+    Set watchers=new HashSet<>(Arrays.asList("user1", "user2"));
+    task.setWatcher(watchers);
     TaskModel taskModel = TaskUtil.getTaskModel(TestUtils.EXISTING_TASK_ID, true, rb_en, username, taskService, null, userService, null);
-    assertNotNull(taskModel); 
+    assertNotNull(taskModel);
+    assertFalse(taskModel.isWatched());
+
+    //Test task is  watched
+    watchers.add("Tib");
+    taskModel = TaskUtil.getTaskModel(TestUtils.EXISTING_TASK_ID, true, rb_en, username, taskService, null, userService, null);
+    assertTrue(taskModel.isWatched());
+
     List<CommentModel> comments = taskModel.getComments();
     assertNotNull(comments);
     assertEquals(1, comments.size());

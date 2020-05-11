@@ -46,6 +46,7 @@
                                                                    <%
                                                     String profileUrl = "<a href=\""+ PROFILE_URL + "\"><strong>" + USER + "</strong></a>";
                                                     def msg = _ctx.appRes("Notification.message.TaskAssignPlugin", profileUrl);
+
                                                     if (PROJECT_NAME != null && !PROJECT_NAME.isEmpty()) {
                                                       msg +=  " " + _ctx.appRes("Notification.message.inProject",
                                                                           " <a href=\"" + PROJECT_URL + "\" ><strong>" + PROJECT_NAME + "</strong></a>");

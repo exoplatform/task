@@ -63,6 +63,6 @@ public class TaskDueDatePlugin extends AbstractNotificationPlugin {
   public boolean isValid(NotificationContext ctx) {
     Task task = ctx.value(NotificationUtils.TASK);
     return task.getDueDate() != null && ((task.getAssignee() != null && !task.getAssignee().isEmpty()) ||
-        (task.getCoworker() != null && task.getCoworker().size() > 0));
+        (task.getCoworker() != null && task.getCoworker().size() > 0)||(task.getWatcher() != null && task.getWatcher().size() > 0));
   }
 }

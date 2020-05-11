@@ -58,5 +58,10 @@ public interface TaskHandler extends GenericDAO<Task, Long> {
 
   Long countOverdueTasks(String user);
 
+  void addWatcherToTask(String username, Task task) throws Exception;
+
+  void deleteWatcherOfTask(String username,Task task) throws Exception;
+
+  Set<String> getWatchersOfTask(Task task);
 }
 

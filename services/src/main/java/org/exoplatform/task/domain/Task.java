@@ -70,6 +70,8 @@ import org.exoplatform.task.service.TaskBuilder;
         query = "SELECT t FROM TaskTask t WHERE t.activityId = :activityId"),
     @NamedQuery(name = "Task.getCoworker",
         query = "SELECT c FROM TaskTask t inner join t.coworker c WHERE t.id = :taskid"),
+    @NamedQuery(name = "Task.getWatcher",
+        query = "SELECT w FROM TaskTask t inner join t.watcher w WHERE t.id = :taskid"),
     @NamedQuery(name = "Task.updateStatus",
         query = "UPDATE TaskTask t SET t.status = :status_new WHERE t.status = :status_old"),
     @NamedQuery(name = "Task.getTaskWithCoworkers",
@@ -137,6 +139,11 @@ public class Task {
   @CollectionTable(name = "TASK_TASK_COWORKERS",
       joinColumns = @JoinColumn(name = "TASK_ID"))
   private Set<String> coworker = new HashSet<String>();
+
+  @ElementCollection(fetch = FetchType.LAZY)
+  @CollectionTable(name = "TASK_TASK_WATCHERS",
+      joinColumns = @JoinColumn(name = "TASK_ID"))
+  private Set<String> watcher =  new HashSet<String>();
 
   @Column(name = "CREATED_BY")
   private String      createdBy;
@@ -303,6 +310,14 @@ public class Task {
     this.coworker = coworker;
   }
 
+  public Set<String> getWatcher() {
+    return watcher;
+  }
+
+  public void setWatcher(Set<String> watcher) {
+    this.watcher = watcher;
+  }
+
   public String getActivityId() {
     return activityId;
   }
@@ -335,6 +350,7 @@ public class Task {
     newTask.setCreatedTime(getCreatedTime());
     newTask.setActivityId(getActivityId());
     newTask.setCompleted(isCompleted());
+    newTask.setWatcher(getWatcher());
     newTask.setRank(getRank());
     
     //performance issue, need lazy load
@@ -361,6 +377,7 @@ public class Task {
     if (assignee != null ? !assignee.equals(task.assignee) : task.assignee != null) return false;
     if (context != null ? !context.equals(task.context) : task.context != null) return false;
     if (coworker != null ? !coworker.equals(task.coworker) : task.coworker != null) return false;
+    if (watcher != null ? !watcher.equals(task.watcher) : task.watcher != null) return false;
     if (createdBy != null ? !createdBy.equals(task.createdBy) : task.createdBy != null) return false;
     if (createdTime != null ? !createdTime.equals(task.createdTime) : task.createdTime != null) return false;
     if (description != null ? !description.equals(task.description) : task.description != null) return false;
@@ -376,7 +393,7 @@ public class Task {
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, title, description, priority, context, assignee, status, completed, coworker,
+    return Objects.hash(id, title, description, priority, context, assignee, status, completed, coworker,watcher,
             createdBy, createdTime, startDate, endDate, dueDate);
   }
 }

@@ -282,7 +282,50 @@
       </init-params>
     </component-plugin>
   </external-component-plugins>
-  
+
+  <external-component-plugins>
+    <target-component>org.exoplatform.commons.api.notification.service.setting.PluginContainer</target-component>
+    <component-plugin>
+      <name>notification.plugins</name>
+      <set-method>addPlugin</set-method>
+      <type>org.exoplatform.task.integration.notification.TaskEditionPlugin</type>
+      <description>Initial information for plugin.</description>
+      <init-params>
+        <object-param>
+          <name>template.TaskEditionPlugin</name>
+          <description>The template of TaskEditionPlugin</description>
+          <object
+                  type="org.exoplatform.commons.api.notification.plugin.config.PluginConfig">
+            <field name="pluginId">
+              <string>TaskEditionPlugin</string>
+            </field>
+            <field name="resourceBundleKey">
+              <string>UINotification.label.TaskEditionPlugin</string>
+            </field>
+            <field name="order">
+              <string>7</string>
+            </field>
+            <field name="defaultConfig">
+              <collection type="java.util.ArrayList">
+                <value>
+                  <string>daily</string>
+                </value>
+                <value>
+                  <string>Instantly</string>
+                </value>
+              </collection>
+            </field>
+            <field name="groupId">
+              <string>task</string>
+            </field>
+            <field name="bundlePath">
+              <string>locale.notification.TaskNotification</string>
+            </field>
+          </object>
+        </object-param>
+      </init-params>
+    </component-plugin>
+  </external-component-plugins>
   <!-- template channel register -->
   <external-component-plugins>
     <target-component>org.exoplatform.commons.api.notification.channel.ChannelManager</target-component>

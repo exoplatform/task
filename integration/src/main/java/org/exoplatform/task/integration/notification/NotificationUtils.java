@@ -28,8 +28,10 @@ public class NotificationUtils {
   public final static ArgumentLiteral<Comment> COMMENT = new ArgumentLiteral<Comment>(Comment.class, "comment");
   public final static ArgumentLiteral<String> CREATOR = new ArgumentLiteral<String>(String.class, "creator");
   public static final ArgumentLiteral<Set> COWORKER = new ArgumentLiteral<Set>(Set.class, "coworker");
+  public static final ArgumentLiteral<Set> WATCHER = new ArgumentLiteral<Set>(Set.class, "watcher");
   public static final ArgumentLiteral<Set> MENTIONED = new ArgumentLiteral<Set>(Set.class, "mentioned");
   public static final ArgumentLiteral<Set> RECEIVERS = new ArgumentLiteral<Set>(Set.class, "receivers");
+  public static final ArgumentLiteral<String> ACTION_NAME = new ArgumentLiteral<>(String.class, "actionName");
   public static final String TASKS = "tasks";
   public final static String TASK_TITLE = "taskName";
   public static final String TASK_CREATOR = "taskCreator";
@@ -46,6 +48,7 @@ public class NotificationUtils {
   public static final String TASK_ASSIGNEE = "taskAssignee";
   public static final String ADDED_COWORKER = "addedCoworker";
   public static final String TASK_COWORKERS = "taskCoworkers";
+  public static final String TASK_WATCHERS="taskWatchers";
   public static final String MENTIONED_USERS = "mentionedUsers";
-  
+
 }

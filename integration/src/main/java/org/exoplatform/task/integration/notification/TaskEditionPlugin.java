@@ -20,14 +20,14 @@ import org.exoplatform.commons.api.notification.NotificationContext;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.task.domain.Task;
 
-public class TaskCompletedPlugin extends AbstractNotificationPlugin {
-  
-  public TaskCompletedPlugin(InitParams initParams) {
+public class TaskEditionPlugin extends AbstractNotificationPlugin {
+
+  public TaskEditionPlugin(InitParams initParams) {
     super(initParams);
   }
 
-  public static final String ID = "TaskCompletedPlugin";
-  
+  public static final String ID = "TaskEditionPlugin";
+
   @Override
   public String getId() {
     return ID;
@@ -36,7 +36,7 @@ public class TaskCompletedPlugin extends AbstractNotificationPlugin {
   @Override
   public boolean isValid(NotificationContext ctx) {
     Task task = ctx.value(NotificationUtils.TASK);
-    return task.isCompleted() && ((task.getAssignee() != null && !task.getAssignee().isEmpty()) ||
-        (task.getCoworker() != null && task.getCoworker().size() > 0) || (task.getWatcher() != null && task.getWatcher().size() > 0));
+    return((task.getAssignee() != null && !task.getAssignee().isEmpty()) ||
+            (task.getCoworker() != null && task.getCoworker().size() > 0)||(task.getWatcher() != null && task.getWatcher().size() > 0));
   }
 }

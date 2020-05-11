@@ -1,0 +1,23 @@
+#{param name=taskId /}
+#{param name=msg /}
+
+<!-- ConfirmWatchTask-->
+ <div class="confirmwatchTask uiPopup modal hide fade" data-taskid="${taskId}" tabindex="-1" role="dialog" aria-labelledby="confirmLabel" aria-hidden="true">
+    <div class="popupHeader clearfix">
+        <a onclick="" title="Close Window" data-dismiss="modal" aria-hidden="true" class="uiIconClose pull-right"></a>
+        <div id="confirmLabel" class="PopupTitle popupTitle">Information</div>
+    </div>
+    <div class="PopupContent popupContent">
+        <div class="media">
+            <div class="pull-left">
+                <i class="uiIconColorQuestion"></i>
+            </div>
+             <div class="media-body">
+                 <p class="msg">${msg}</p>
+            </div>
+        </div>
+        <div class="uiAction uiActionBorder">
+            <button  onclick='window.close()' class="btn btn-primary" data-dismiss="modal">&{label.ok}</button>
+        </div>
+    </div>
+</div>

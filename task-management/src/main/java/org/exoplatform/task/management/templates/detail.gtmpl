@@ -18,6 +18,7 @@ def encoder = HTMLEntityEncoder.getInstance();
 
 def task = taskModel.getTask();
 def readOnly = taskModel.isReadOnly();
+def isWatched = taskModel.isWatched();
 def breadcumbs = taskModel.getBreadcumbs();
 def assignee = taskModel.getAssignee();
 def hasAssignee = (assignee != null && assignee.getUsername() != "guest" && assignee.getUsername() != null);
@@ -33,12 +34,20 @@ if (readOnly) {
     readOnlyClass = "readOnly";
 }
 def locale = bundle != null ? bundle.getLocale() : Locale.getDefault(Locale.Category.FORMAT);
-
 %>
 <div class="addTask uiBox ${task.completed ? "task-completed" : ""}" data-taskid="${task.id}">
 <div class="uiContentBox">
 <div class="clearfix">
 <div class="pull-right action-buttons dropdown">
+<% if (TaskUtil.isEligibleWatcher(task,currentUser.username)) {%>
+<span class="watchContainer">
+<% if (!isWatched){ %>
+<a class="permalink actionIcon action-watch-task" href="#" title="&{label.watch}"   data-WatchedTask="false"  data-toggle="tooltip" data-placement="bottom"><i class="uiIconWatchPage"></i></a>
+<% } else { %>
+<a class="permalink actionIcon action-watch-task" href="#" title="&{label.Unwatch}" data-WatchedTask="true" data-toggle="tooltip" data-placement="bottom"><i class="uiIconHide"></i></a>
+<% } %>
+<% }%>
+</span>
 <span class="taskPermalinkContainer" title="&{label.permalink}" data-toggle="tooltip" data-placement="bottom">
 <a href="${TaskUtil.buildTaskURL(task)}" data-toggle="popover" data-placement="left"
 class="permalink actionIcon taskPermalink" style="position: relative;">

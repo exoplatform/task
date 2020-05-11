@@ -57,7 +57,7 @@ public class TaskServiceImpl implements TaskService {
   private DAOHandler daoHandler;
 
   private ListenerService listenerService;
-  
+
   public TaskServiceImpl(DAOHandler daoHandler, ListenerService listenerService) {
     this.daoHandler = daoHandler;
     this.listenerService = listenerService;
@@ -77,7 +77,7 @@ public class TaskServiceImpl implements TaskService {
 
     return result;
   }
-  
+
   @Override
   @ExoTransactional
   public Task updateTask(Task task) {
@@ -93,7 +93,7 @@ public class TaskServiceImpl implements TaskService {
     } catch (Exception e) {
       LOG.error("Error while broadcasting task creation event", e);
     }
- 
+
     return newTask;
   }
 
@@ -197,7 +197,7 @@ public class TaskServiceImpl implements TaskService {
   public Comment addComment(long id, String username, String comment) throws EntityNotFoundException {
     return addComment(id, 0, username, comment);
   }
-  
+
   @Override
   @ExoTransactional
   public ChangeLog addTaskLog(long id, String username, String actionName, String target) throws EntityNotFoundException {
@@ -353,5 +353,19 @@ public class TaskServiceImpl implements TaskService {
   @Override
   public Long countOverdueTasks(String user) {
     return daoHandler.getTaskHandler().countOverdueTasks(user);
+  }
+
+  @Override
+  public void addWatcherToTask(String user, Task task) throws Exception {
+    daoHandler.getTaskHandler().addWatcherToTask(user, task);
+  }
+
+  @Override
+  public void deleteWatcherOfTask(String user, Task task) throws Exception {
+    daoHandler.getTaskHandler().deleteWatcherOfTask(user,task);
+  }
+
+  public Set<String> getWatchersOfTask(Task task){
+    return daoHandler.getTaskHandler().getWatchersOfTask(task);
   }
 }

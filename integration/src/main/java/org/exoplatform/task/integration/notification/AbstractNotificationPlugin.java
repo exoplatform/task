@@ -48,6 +48,7 @@ public abstract class AbstractNotificationPlugin extends BaseNotificationPlugin 
     String notificationCreator = ctx.value(NotificationUtils.CREATOR);
     Set coworker = ctx.value(NotificationUtils.COWORKER);
     Set mentioned = ctx.value(NotificationUtils.MENTIONED);
+    String actionName=ctx.value(NotificationUtils.ACTION_NAME);
     //
     String projectName = "";
     String projectId = "";
@@ -67,8 +68,9 @@ public abstract class AbstractNotificationPlugin extends BaseNotificationPlugin 
     String projectUrl = buildProjectUrl(project, container, controller);
     String assignee = task.getAssignee();
     Set<String> listOfCoworker = task.getCoworker();
-    String taskCreator= task.getCreatedBy();
+    Set<String> listOfWatcher = task.getWatcher();
     Set<String> receivers = getReceiver(task, ctx);
+    String taskCreator= task.getCreatedBy();
     RequestLifeCycle.end();
     
     return NotificationInfo.instance()
@@ -81,9 +83,12 @@ public abstract class AbstractNotificationPlugin extends BaseNotificationPlugin 
                                .with(NotificationUtils.TASK_URL, taskUrl)
                                .with(NotificationUtils.PROJECT_URL, projectUrl)
                                .with(NotificationUtils.TASK_ASSIGNEE, assignee)
+                               .with(NotificationUtils.RECEIVERS.getKey(), String.valueOf(receivers))
                                .with(NotificationUtils.TASK_COWORKERS, String.valueOf(listOfCoworker))
+                               .with(NotificationUtils.TASK_WATCHERS, String.valueOf(listOfWatcher))
                                .with(NotificationUtils.ADDED_COWORKER, String.valueOf(coworker))
                                .with(NotificationUtils.MENTIONED_USERS, String.valueOf(mentioned))
+                               .with(NotificationUtils.ACTION_NAME.getKey(),String.valueOf(actionName))
                                .with(NotificationUtils.TASK_CREATOR, taskCreator)
                                .key(getKey()).end();
   }
@@ -105,6 +110,9 @@ public abstract class AbstractNotificationPlugin extends BaseNotificationPlugin 
     }
     if (task.getCoworker() != null && task.getCoworker().size() > 0) {
       receivers.addAll(task.getCoworker());
+    }
+    if (task.getWatcher() != null && task.getWatcher().size() > 0) {
+      receivers.addAll(task.getWatcher());
     }
     if(ctx != null) {
       receivers.remove(ctx.value(NotificationUtils.CREATOR));

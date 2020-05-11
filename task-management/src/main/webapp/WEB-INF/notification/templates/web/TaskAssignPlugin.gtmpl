@@ -8,12 +8,12 @@
         String URL = PROJECT_URL;
       	String msg = "";
       	String profileUrl = "<a class=\"user-name text-bold\" href=\"" + PROFILE_URL + "\">" + USER + "</a>";
-       	if (COUNT != null && Integer.parseInt(COUNT) > 1) {
-       	 msg = _ctx.appRes("Notification.message.more.TaskAssignPlugin", profileUrl, COUNT);
-       	} else {
+        if (COUNT != null && Integer.parseInt(COUNT) > 1) {
+         msg = _ctx.appRes("Notification.message.more.TaskAssignPlugin", profileUrl, COUNT);
+        } else {
          URL = TASK_URL;
-       	 msg = _ctx.appRes("Notification.message.TaskAssignPlugin", profileUrl);
-       	}
+         msg = _ctx.appRes("Notification.message.TaskAssignPlugin", profileUrl);
+        }
        	if (PROJECT_NAME != null && !PROJECT_NAME.isEmpty()) {
        	  msg += " " + _ctx.appRes("Notification.message.inProject", "<b>" + PROJECT_NAME + "</b>");
        	}

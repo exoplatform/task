@@ -15,7 +15,12 @@ define('taskDetailView', ['SHARED/jquery', 'taskManagementApp', 'taskCenterView'
             var taskId = $a.closest('[data-taskid]').data('taskid');
             taApp.showDialog('TaskController.openConfirmDeleteTask()', {id : taskId});
         });
-
+        $rightPanel.on('click', 'a.action-watch-task', function(e){
+            var $a = $(e.target).closest('a');
+            var taskId =$a.closest('[data-taskid]').data('taskid');
+            var isWatchedTask =$a.closest('[data-WatchedTask]').data('watchedtask');
+            taApp.showDialog('TaskController.watchUnwatch()', {id : taskId, isWatched : isWatchedTask});
+        });
         $rightPanel.on('click', 'a.action-clone-task', function(e){
             var $a = $(e.target).closest('a');
             var taskId = $a.closest('[data-taskid]').data('taskid');
@@ -214,7 +219,6 @@ define('taskDetailView', ['SHARED/jquery', 'taskManagementApp', 'taskCenterView'
                 });
             });
     };
-
     detailView.initCloneTaskDialog = function() {
         var ui = taApp.getUI();
         var $leftPanel = ui.$leftPanel;

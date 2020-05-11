@@ -26,6 +26,7 @@ import org.exoplatform.task.domain.Task;
 public class TaskModel {
   private Task task;
   private boolean readOnly;
+  private boolean isWatched;
   private String breadcumbs;
   private User assignee;
   private int numberCoworkers;
@@ -33,7 +34,7 @@ public class TaskModel {
   private List<CommentModel> comments;
   private User currentUser;
   private List<Label> labels = new ArrayList<Label>();
-  
+
   public Task getTask() {
     return task;
   }
@@ -93,5 +94,13 @@ public class TaskModel {
 
   public void setReadOnly(boolean readOnly) {
     this.readOnly = readOnly;
+  }
+
+  public boolean isWatched() {
+    return isWatched;
+  }
+
+  public void setWatched(boolean isWatched) {
+    this.isWatched = isWatched;
   }
 }
