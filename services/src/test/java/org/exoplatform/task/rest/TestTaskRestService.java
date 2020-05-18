@@ -1,7 +1,6 @@
 package org.exoplatform.task.rest;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -341,16 +340,26 @@ public class TestTaskRestService {
 
     Comment comment = new Comment();
     comment.setId(1);
-
+    // Sending non empty comment
     when(taskService.addComment(1, john.getUserId(), "commentText")).thenReturn(comment);
     when(taskService.getTask(1)).thenReturn(task);
-    // When
     Response response = taskRestService.addTaskComment("commentText", 1);
-
-    // Then
     assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
     CommentModel commentModel = (CommentModel) response.getEntity();
     assertNotNull(commentModel);
+    assertEquals(commentModel.getFormattedComment(),"commentText");
+
+    // Sending an empty comment
+    response = taskRestService.addTaskComment("", 1);
+    assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+
+    // Sending an encoded comment
+    response = taskRestService.addTaskComment("x%20%3C%3D%202", 1);
+    assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+    commentModel = (CommentModel) response.getEntity();
+    assertNotNull(commentModel);
+    assertEquals(commentModel.getFormattedComment(),"x <= 2");
+
   }
 
   @Test
@@ -372,12 +381,24 @@ public class TestTaskRestService {
 
     when(taskService.addComment(1, 1, john.getUserId(), "commentText")).thenReturn(comment);
     when(taskService.getTask(1)).thenReturn(task);
-    // When
-    Response response = taskRestService.addTaskSubComment("commentText", 1, 1);
 
-    // Then
+    // Sending non empty subcomment
+    Response response = taskRestService.addTaskSubComment("commentText", 1, 1);
     assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
     CommentModel commentModel = (CommentModel) response.getEntity();
     assertNotNull(commentModel);
+    assertEquals(commentModel.getFormattedComment(),"commentText");
+
+    // Sending an empty subcomment
+    response = taskRestService.addTaskSubComment("", 1,1);
+    assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+
+    // Sending an encoded subcomment
+    response = taskRestService.addTaskSubComment("x%20%3C%3D%202", 1,1);
+    assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+    commentModel = (CommentModel) response.getEntity();
+    assertNotNull(commentModel);
+    assertEquals(commentModel.getFormattedComment(),"x <= 2");
+
   }
 }

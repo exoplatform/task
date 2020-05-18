@@ -6,18 +6,12 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
+import java.net.URLDecoder;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -433,11 +427,13 @@ public class TaskRestService implements ResourceContainer {
     if (task == null) {
       return Response.status(Response.Status.NOT_FOUND).build();
     }
+    if (commentText == null || commentText.isEmpty()) {
+      return Response.status(Response.Status.BAD_REQUEST).build();
+    }
     if (!TaskUtil.hasEditPermission(task)) {
       return Response.status(Response.Status.FORBIDDEN).build();
     }
-    commentText = commentText.replace("\\", "");
-    commentText = commentText.substring(1, commentText.length() - 1);
+    commentText = URLDecoder.decode(commentText, "UTF-8");
     Comment addedComment = taskService.addComment(id, currentUser, commentText);
     CommentModel commentModel = new CommentModel(addedComment, userService.loadUser(currentUser), commentText);
     return Response.ok(commentModel).build();
@@ -467,7 +463,11 @@ public class TaskRestService implements ResourceContainer {
     if (!TaskUtil.hasEditPermission(task)) {
       return Response.status(Response.Status.FORBIDDEN).build();
     }
-    commentText = commentText.substring(1, commentText.length() - 1);
+    if (commentText == null || commentText.isEmpty()) {
+      return Response.status(Response.Status.BAD_REQUEST).build();
+    }
+
+    commentText = URLDecoder.decode(commentText, "UTF-8");
     Comment addedComment = taskService.addComment(id, commentId, currentUser, commentText);
     CommentModel commentModel = new CommentModel(addedComment, userService.loadUser(currentUser), commentText);
     return Response.ok(commentModel).build();
