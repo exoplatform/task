@@ -554,6 +554,7 @@
                 });
       },
       updateTask() {
+        this.$emit('updateTask', this.task);
         updateTask(this.task.id,this.task);
       },
       autoSaveDescription() {
