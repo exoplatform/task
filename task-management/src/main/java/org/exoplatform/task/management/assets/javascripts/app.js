@@ -127,6 +127,7 @@ $(document).ready(function() {
         var $permalink = $rightPanelContent.find('.taskPermalink');
         var link = $permalink[0].href;
         $rightPanelContent.find('.taskPermalinkPopoverContent input').attr("value", link);
+        window.history.replaceState("",document.title, link);
         $permalink.popover({
             html: true,
             content: $rightPanelContent.find('.taskPermalinkPopoverContent').html()
