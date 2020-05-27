@@ -108,6 +108,9 @@ public abstract class AbstractNotificationPlugin extends BaseNotificationPlugin 
     if (task.getAssignee() != null && !task.getAssignee().isEmpty()) {
       receivers.add(task.getAssignee());
     }
+    if (task.getCreatedBy()!= null && !task.getCreatedBy().isEmpty()) {
+      receivers.add(task.getCreatedBy());
+    }
     if (task.getCoworker() != null && task.getCoworker().size() > 0) {
       receivers.addAll(task.getCoworker());
     }

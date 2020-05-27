@@ -70,14 +70,32 @@ public class AbstractNotificationPluginTest {
   }
 
   @Test
-  public void shouldNotReturnCreatorInReceivers() throws Exception {
+  public void shouldReturnWatchersInReceivers() throws Exception {
+    // Given
+    Task task = new Task();
+    task.setWatcher(new HashSet<>(Arrays.asList("user1", "user2")));
+
+    AbstractNotificationPlugin notificationPlugin = new DummyNotificationPlugin(new InitParams());
+
+    // When
+    Set<String> receivers = notificationPlugin.getReceiver(task, null);
+
+    // Then
+    assertNotNull(receivers);
+    assertEquals(2, receivers.size());
+    assertTrue(receivers.contains("user1"));
+    assertTrue(receivers.contains("user2"));
+  }
+
+  @Test
+  public void shouldReturnCreatorInReceivers() throws Exception {
     // Given
     Task task = new Task();
     task.setAssignee("user1");
+    task.setCreatedBy("user2");
     task.setCoworker(new HashSet<>(Arrays.asList("user2", "user3")));
 
     NotificationContext ctx = NotificationContextImpl.cloneInstance();
-    ctx.append(NotificationUtils.CREATOR, "user2");
 
     AbstractNotificationPlugin notificationPlugin = new DummyNotificationPlugin(new InitParams());
 
@@ -86,8 +104,9 @@ public class AbstractNotificationPluginTest {
 
     // Then
     assertNotNull(receivers);
-    assertEquals(2, receivers.size());
+    assertEquals(3, receivers.size());
     assertTrue(receivers.contains("user1"));
+    assertTrue(receivers.contains("user2"));
     assertTrue(receivers.contains("user3"));
   }
 }

@@ -37,6 +37,6 @@ public class TaskEditionPlugin extends AbstractNotificationPlugin {
   public boolean isValid(NotificationContext ctx) {
     Task task = ctx.value(NotificationUtils.TASK);
     return((task.getAssignee() != null && !task.getAssignee().isEmpty()) ||
-            (task.getCoworker() != null && task.getCoworker().size() > 0)||(task.getWatcher() != null && task.getWatcher().size() > 0));
+            (task.getCoworker() != null && task.getCoworker().size() > 0)||(task.getWatcher() != null && task.getWatcher().size() > 0) || (task.getCreatedBy() != null && !task.getCreatedBy().isEmpty()));
   }
 }
