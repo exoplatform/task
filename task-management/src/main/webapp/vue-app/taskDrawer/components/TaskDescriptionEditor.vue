@@ -7,7 +7,7 @@
       contenteditable="true"
       class="py-1 px-2"
       @click="showDescriptionEditor()" 
-      v-html="inputVal">{{ placeholder }}</div>
+      v-html="urlVerify(inputVal)">{{ placeholder }}</div>
     <textarea
       id="descriptionContent"
       ref="editor"
@@ -104,7 +104,13 @@
             },
           showDescriptionEditor:function () {
             this.editorReady = !this.editorReady;
-          }
+          },
+          urlVerify(text) {
+            const urlRegex = /(https?:\/\/[^\s]+)/g;
+            return text.replace(urlRegex, function (url) {
+              return `<a href="${  url  }" target="_blank">${  url  }</a>`;
+            })
+          },
         }
     };
 </script>
