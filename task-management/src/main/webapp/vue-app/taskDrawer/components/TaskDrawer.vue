@@ -339,7 +339,7 @@
 
 <script>
 
-  import {updateTask, getTaskLogs, getTaskComments, addTaskComments, getStatusesByProjectId} from '../taskDrawerApi';
+  import {updateTask, getTaskLogs, getTaskComments, addTaskComments, getStatusesByProjectId, urlVerify} from '../taskDrawerApi';
 
   export default {
     props: {
@@ -673,19 +673,7 @@
         }
       },
       urlVerify(text) {
-        return text.replace(/((?:href|src)=")?((((https?|ftp|file):\/\/)|www\.)[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])/ig,
-                function (matchedText, hrefOrSrc) {
-                  // the second group of the regex captures the html attribute 'html' or 'src',
-                  // so if it exists it means that it is already an html link or an image and it should not be converted
-                  if (hrefOrSrc) {
-                    return matchedText;
-                  }
-                  let url = matchedText;
-                  if (url.indexOf('www.') === 0) {
-                    url = 'http://' + url;
-                  }
-                  return '<a href="' + url + '" target="_blank">' + matchedText + '</a>';
-                });
+        return urlVerify(text);
       }
     }
   }
