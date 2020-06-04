@@ -19,6 +19,8 @@ package org.exoplatform.task.service.impl;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -29,6 +31,9 @@ import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.listener.ListenerService;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.exoplatform.social.core.identity.model.Identity;
+import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
+import org.exoplatform.social.core.service.LinkProvider;
 import org.exoplatform.task.dao.DAOHandler;
 import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.dao.TaskQuery;
@@ -52,6 +57,8 @@ import org.exoplatform.task.service.TaskService;
 public class TaskServiceImpl implements TaskService {
 
   private static final Log LOG = ExoLogger.getExoLogger(TaskServiceImpl.class);
+
+  private static final Pattern pattern = Pattern.compile("@([^\\s]+)|@([^\\s]+)$");
 
   @Inject
   private DAOHandler daoHandler;
@@ -137,7 +144,9 @@ public class TaskServiceImpl implements TaskService {
 
   @Override
   public Comment getComment(long commentId) {
-    return daoHandler.getCommentHandler().find(commentId);
+    Comment comment = daoHandler.getCommentHandler().find(commentId);
+    comment.setComment(substituteUsernames(comment.getComment()));
+    return comment;
   }
 
   @Override
@@ -150,8 +159,10 @@ public class TaskServiceImpl implements TaskService {
     if(listComments == null || listComments.isEmpty()) {
       return;
     }
+    listComments.forEach(comment -> comment.setComment(substituteUsernames(comment.getComment())));
     List<Comment> subComments = daoHandler.getCommentHandler().getSubComments(listComments);
     for (Comment comment : listComments) {
+      subComments.forEach(subComment -> subComment.setComment(substituteUsernames(subComment.getComment())));
       comment.setSubComments(subComments.stream()
                                         .filter(subComment -> subComment.getParentComment().getId() == comment.getId())
                                         .collect(Collectors.toList()));
@@ -367,5 +378,41 @@ public class TaskServiceImpl implements TaskService {
 
   public Set<String> getWatchersOfTask(Task task){
     return daoHandler.getTaskHandler().getWatchersOfTask(task);
+  }
+
+  private String substituteUsernames(String message) {
+    if (message == null || message.trim().isEmpty()) {
+      return message;
+    }
+    //
+    Matcher matcher = pattern.matcher(message);
+
+    // Replace all occurrences of pattern in input
+    StringBuffer buf = new StringBuffer();
+    while (matcher.find()) {
+      // Get the match result
+      String username = matcher.group().substring(1);
+      if (username == null || username.isEmpty()) {
+        continue;
+      }
+      Identity identity = LinkProvider.getIdentityManager().getOrCreateIdentity(OrganizationIdentityProvider.NAME, username, false);
+      if (identity == null || identity.isDeleted() || !identity.isEnable()) {
+        continue;
+      }
+      try {
+        username = LinkProvider.getProfileLink(username, "dw");
+      } catch (Exception e) {
+        continue;
+      }
+      // Insert replacement
+      if (username != null) {
+        matcher.appendReplacement(buf, username);
+      }
+    }
+    if (buf.length() > 0) {
+      matcher.appendTail(buf);
+      return buf.toString();
+    }
+    return message;
   }
 }

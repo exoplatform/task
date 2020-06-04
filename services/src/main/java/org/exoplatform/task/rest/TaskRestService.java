@@ -7,35 +7,55 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
 import java.net.URLDecoder;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ws.rs.*;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.exoplatform.task.domain.*;
-import org.exoplatform.task.dto.ChangeLogEntry;
-import org.exoplatform.task.model.CommentModel;
-import org.exoplatform.task.model.User;
-import org.exoplatform.task.util.CommentUtil;
-import org.exoplatform.task.service.StatusService;
-import org.exoplatform.task.service.UserService;
-import org.exoplatform.task.util.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import org.exoplatform.commons.utils.ListAccess;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.exoplatform.services.rest.resource.ResourceContainer;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
+import org.exoplatform.task.domain.ChangeLog;
+import org.exoplatform.task.domain.Comment;
+import org.exoplatform.task.domain.Label;
+import org.exoplatform.task.domain.Project;
+import org.exoplatform.task.domain.Status;
+import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.dto.ChangeLogEntry;
 import org.exoplatform.task.exception.EntityNotFoundException;
+import org.exoplatform.task.model.CommentModel;
+import org.exoplatform.task.model.User;
 import org.exoplatform.task.service.ProjectService;
+import org.exoplatform.task.service.StatusService;
 import org.exoplatform.task.service.TaskService;
-import org.exoplatform.services.log.ExoLogger;
-import org.exoplatform.services.log.Log;
+import org.exoplatform.task.service.UserService;
+import org.exoplatform.task.util.CommentUtil;
+import org.exoplatform.task.util.ListUtil;
+import org.exoplatform.task.util.ProjectUtil;
+import org.exoplatform.task.util.TaskUtil;
+import org.exoplatform.task.util.UserUtil;
 
 @Path("/tasks")
 @Api(value = "/tasks", description = "Managing tasks")
@@ -359,7 +379,7 @@ public class TaskRestService implements ResourceContainer {
     Collections.sort(logs);
 
     List<ChangeLogEntry> changeLogEntries = changeLogsToChangeLogEntries(logs);
-    
+
     return Response.ok(changeLogEntries).build();
   }
 
@@ -435,6 +455,9 @@ public class TaskRestService implements ResourceContainer {
     }
     commentText = URLDecoder.decode(commentText, "UTF-8");
     Comment addedComment = taskService.addComment(id, currentUser, commentText);
+    if (addedComment != null) {
+      addedComment = taskService.getComment(addedComment.getId());
+    }
     CommentModel commentModel = new CommentModel(addedComment, userService.loadUser(currentUser), commentText);
     return Response.ok(commentModel).build();
   }
@@ -469,6 +492,9 @@ public class TaskRestService implements ResourceContainer {
 
     commentText = URLDecoder.decode(commentText, "UTF-8");
     Comment addedComment = taskService.addComment(id, commentId, currentUser, commentText);
+    if (addedComment != null) {
+      addedComment = taskService.getComment(addedComment.getId());
+    }
     CommentModel commentModel = new CommentModel(addedComment, userService.loadUser(currentUser), commentText);
     return Response.ok(commentModel).build();
   }
@@ -495,6 +521,29 @@ public class TaskRestService implements ResourceContainer {
     }
     taskService.removeComment(commentId);
     return Response.ok(comment).build();
+  }
+  @GET
+  @Path("usersToMention/{query}")
+  @RolesAllowed("users")
+  @Produces(MediaType.APPLICATION_JSON)
+  @ApiOperation(value = "Gets users to mention in comment",
+          httpMethod = "GET",
+          response = Response.class,
+          notes = "This returns users to mention in comment")
+  @ApiResponses(value = {
+          @ApiResponse(code = 200, message = "Request fulfilled")})
+  public Response findUsersToMention(@ApiParam(value = "Query", required = true) @PathParam("query") String query) throws Exception {
+    ListAccess<User> list = userService.findUserByName(query);
+    JSONArray usersJsonArray = new JSONArray();
+    for(User user : list.load(0, UserUtil.SEARCH_LIMIT)) {
+      JSONObject userJson = new JSONObject();
+      userJson.put("id", "@" + user.getUsername());
+      userJson.put("name", user.getDisplayName());
+      userJson.put("avatar", user.getAvatar());
+      userJson.put("type", "contact");
+      usersJsonArray.put(userJson);
+    }
+    return Response.ok(usersJsonArray.toString()).build();
   }
 
   private CommentModel addCommentModel(Comment comment, List<CommentModel> commentModelsList) {

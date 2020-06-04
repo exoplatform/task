@@ -299,7 +299,8 @@
                     </v-list-item-avatar>
                     <v-layout row class="editorContent ml-0">
                       <task-comment-editor
-                        v-model="editorData"      
+                        ref="commentEditor"
+                        v-model="editorData"
                         :placeholder="commentPlaceholder"
                         :reset="reset"
                         class="mr-4 comment"/>
@@ -478,8 +479,9 @@
         this.subEditorIsOpen = true;
       },
       addTaskComment() {
-        this.editorData=this.editorData.replace(/\n|\r/g,'');
-        addTaskComments(this.task.id,this.editorData).then((comment => {
+        let comment = this.$refs.commentEditor.getMessage();
+        comment = this.urlVerify(comment);
+        addTaskComments(this.task.id,comment).then((comment => {
           this.comments.push(comment)
         })
         );
@@ -669,6 +671,21 @@
           $('body').removeClass('hide-scroll');
           this.$emit('closeDrawer', this.drawer);
         }
+      },
+      urlVerify(text) {
+        return text.replace(/((?:href|src)=")?((((https?|ftp|file):\/\/)|www\.)[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])/ig,
+                function (matchedText, hrefOrSrc) {
+                  // the second group of the regex captures the html attribute 'html' or 'src',
+                  // so if it exists it means that it is already an html link or an image and it should not be converted
+                  if (hrefOrSrc) {
+                    return matchedText;
+                  }
+                  let url = matchedText;
+                  if (url.indexOf('www.') === 0) {
+                    url = 'http://' + url;
+                  }
+                  return '<a href="' + url + '" target="_blank">' + matchedText + '</a>';
+                });
       }
     }
   }

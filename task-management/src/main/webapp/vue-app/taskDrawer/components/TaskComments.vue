@@ -70,7 +70,7 @@
           <v-row>   
             <span
               class="taskContentComment"
-              v-html="urlVerify(comment.comment)"></span></v-row>
+              v-html="comment.comment"></span></v-row>
           <v-row><v-btn
             id="reply_btn"
             depressed
@@ -105,6 +105,7 @@
           </v-list-item-avatar>
           <v-layout row class="editorContent ml-0">
             <task-comment-editor
+              ref="subCommentEditor"
               v-model="editorData"
               :placeholder="commentPlaceholder"
               class="mr-4 subComment"
@@ -220,11 +221,12 @@
               }
             },
             addTaskSubComment() {
-              this.editorData=this.editorData.replace(/\n|\r/g,'');
-              addTaskSubComment(this.task.id, this.comment.id, this.editorData).then((comment => {
-                      this.comment.subComments = this.comment.subComments || [];
-                      this.comment.subComments.push(comment)
-                  })
+              let subComment = this.$refs.subCommentEditor.getMessage();
+              subComment = this.urlVerify(subComment);
+              addTaskSubComment(this.task.id, this.comment.id, subComment).then((comment => {
+                        this.comment.subComments = this.comment.subComments || [];
+                        this.comment.subComments.push(comment)
+                      })
               );
               this.showEditor = false;
             },
@@ -266,11 +268,20 @@
               return new Date(this.comment.createdTime.time).toLocaleString(lang, options).split("/").join("-");
             },
             urlVerify(text) {
-              const urlRegex = /(https?:\/\/[^\s]+)/g;
-              return text.replace(urlRegex, function (url) {
-                return `<a href="${  url  }" target="_blank">${  url  }</a>`;
-              })
-            },
+              return text.replace(/((?:href|src)=")?((((https?|ftp|file):\/\/)|www\.)[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])/ig,
+                      function (matchedText, hrefOrSrc) {
+                        // the second group of the regex captures the html attribute 'html' or 'src',
+                        // so if it exists it means that it is already an html link or an image and it should not be converted
+                        if (hrefOrSrc) {
+                          return matchedText;
+                        }
+                        let url = matchedText;
+                        if (url.indexOf('www.') === 0) {
+                          url = 'http://' + url;
+                        }
+                        return '<a href="' + url + '" target="_blank">' + matchedText + '</a>';
+                      });
+            }
         }
     }
 </script>
