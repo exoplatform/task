@@ -27,12 +27,14 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.exoplatform.social.core.space.spi.SpaceService;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.rest.resource.ResourceContainer;
 import org.exoplatform.services.security.ConversationState;
@@ -75,11 +77,14 @@ public class TaskRestService implements ResourceContainer {
   
   private UserService userService;
 
-  public TaskRestService(TaskService taskService, ProjectService projectService, StatusService statusService,UserService userService) {
+  private SpaceService spaceService;
+
+  public TaskRestService(TaskService taskService, ProjectService projectService, StatusService statusService,UserService userService, SpaceService spaceService) {
     this.taskService = taskService;
     this.projectService = projectService;
     this.statusService = statusService;
     this.userService = userService;
+    this.spaceService = spaceService;
   }
 
   private enum TaskType {
@@ -542,6 +547,33 @@ public class TaskRestService implements ResourceContainer {
       userJson.put("avatar", user.getAvatar());
       userJson.put("type", "contact");
       usersJsonArray.put(userJson);
+    }
+    return Response.ok(usersJsonArray.toString()).build();
+  }
+
+  @GET
+  @Path("users/{query}/{projectName}")
+  @RolesAllowed("users")
+  @Produces(MediaType.APPLICATION_JSON)
+  @ApiOperation(value = "Gets users by query and project name",
+          httpMethod = "GET",
+          response = Response.class,
+          notes = "This returns users by query and project name")
+  @ApiResponses(value = {
+          @ApiResponse(code = 200, message = "Request fulfilled")})
+  public Response getUsersByQueryAndProjectName(@ApiParam(value = "Query", required = true) @PathParam("query") String query,
+                                                @ApiParam(value = "projectName", required = true) @PathParam("projectName") String projectName) throws Exception {
+    ListAccess<User> usersList = userService.findUserByName(query);
+    JSONArray usersJsonArray = new JSONArray();
+    for (User user : usersList.load(0, UserUtil.SEARCH_LIMIT)) {
+      JSONObject userJson = new JSONObject();
+      Space space = spaceService.getSpaceByPrettyName(projectName);
+      if (space == null || spaceService.isMember(space, user.getUsername())) {
+        userJson.put("username", user.getUsername());
+        userJson.put("fullname", user.getDisplayName());
+        userJson.put("avatar", user.getAvatar());
+        usersJsonArray.put(userJson);
+      }
     }
     return Response.ok(usersJsonArray.toString()).build();
   }

@@ -16,7 +16,7 @@
             v-if="(typeof taskAssignee !== 'undefined')"
             size="22" 
             class="mr-2 ml-0 pt-1">
-            <v-img v-if="(typeof taskAssignee.username !== 'undefined')" :src="getUserAvatar(taskAssignee.username)"/>
+            <v-img v-if="(typeof taskAssignee.username !== 'undefined')" :src="taskAssignee.avatar"/>
           </v-list-item-avatar>
           <v-list-item-avatar 
             v-else 
@@ -47,9 +47,11 @@
           v-custom-click-outside="closeAssigneeMenu"
           ref="assigneeMenu"
           v-model="taskAssignee"
-          :items="users"
-          :filter="filterUsers"  
+          :items="suggestedUsers"
+          :search-input.sync="searchAssignee"
+          :hide-no-data="!searchAssignee"
           flat
+          no-filter
           solo
           style="width: 90%"
           chips
@@ -57,6 +59,7 @@
           @change="updateTask()">
           <template v-slot:selection="{ attrs, item, parent, selected }">
             <v-chip
+              v-if="(typeof item !== 'undefined')"
               v-bind="attrs"
               label
               dark
@@ -64,7 +67,7 @@
               color="#578DC9"
               small>
               <v-avatar left>
-                <v-img :src="getUserAvatar(item.username)"/>
+                <v-img :src="item.avatar"/>
               </v-avatar>
               <span class="pr-2 assignee-name">
                 {{ item.fullname }}
@@ -77,11 +80,12 @@
           </template>
           <template v-slot:item="{ index, item }">
             <v-chip
+              v-if="(typeof item !== 'undefined')"
               label
               color="white"
               small>
               <v-avatar left>
-                <v-img :src="getUserAvatar(item.username)"/>
+                <v-img :src="item.avatar"/>
               </v-avatar>
               {{ item.fullname }}
             </v-chip>
@@ -97,11 +101,11 @@
           id="coworkerInput"
           ref="coworkerMenu"
           v-model="taskCoworkers"
-          :items="users"
-          :filter="filterUsers"
+          :items="suggestedUsers"
+          :search-input.sync="searchCoworkers"
           deletable-chips
           flat
-          autofocus
+          no-filter
           multiple
           solo
           style="width: 90%"
@@ -117,7 +121,7 @@
               color="#578DC9"
               small>
               <v-avatar left>
-                <v-img :src="getUserAvatar(item.username)"/>
+                <v-img :src="item.avatar"/>
               </v-avatar>
               <span class="assignee-name pr-2">
                 {{ item.fullname }}
@@ -134,7 +138,7 @@
               color="white"
               small>
               <v-avatar left>
-                <v-img :src="getUserAvatar(item.username)"/>
+                <v-img :src="item.avatar"/>
               </v-avatar>
               {{ item.fullname }}
             </v-chip>
@@ -147,7 +151,7 @@
 </template>
 
 <script>
-  import {getAllUsers, updateTask} from '../taskDrawerApi'
+  import {updateTask, getSuggestedUsers, getUser} from '../taskDrawerApi'
 
   export default {
     props: {
@@ -166,17 +170,28 @@
     },
     data() {
       return {
-        users: [],
+        suggestedUsers: [],
         taskAssignee: '',
         taskCoworkers: [],
         currentUser: '',
-        userFullName: '',
         menu: false,
+        searchAssignee : '',
+        searchCoworkers : ''
       }
     },
     watch: {
       globalMenu(val) {
-        this.$emit('menuIsOpen',val)
+        this.$emit('menuIsOpen', val);
+      },
+      searchAssignee(val) {
+          if (val) {
+            this.searchSuggestedUsers(val);
+          }
+      },
+      searchCoworkers(val) {
+          if (val) {
+            this.searchSuggestedUsers(val);
+          }
       }
     },
     created() {
@@ -184,24 +199,24 @@
     },
     methods: {
       getUsers() {
-        getAllUsers().then((users) => {
-          this.users = users.users;
-          this.taskAssignee = this.users.find(user => user.username === this.task.assignee);
-          for (let i = 0; i < this.task.coworker.length; i++) {
-            this.taskCoworkers.push(this.users.find(user => user.username === this.task.coworker[i]))
-          }
-          this.currentUser = this.users.find(user => user.username === eXo.env.portal.userName);
+        getUser(this.task.assignee).then((user) => {
+          this.taskAssignee = user;
+          this.suggestedUsers.push(this.taskAssignee);
+        });
+        for (let i = 0; i < this.task.coworker.length; i++) {
+          getUser(this.task.coworker[i]).then((user) => {
+            this.taskCoworkers.push(user);
+            this.suggestedUsers.push(user);
+          });
+        }
+        getUser(eXo.env.portal.userName).then((user) => {
+          this.currentUser = user;
+        });
+      },
+      searchSuggestedUsers(query) {
+        getSuggestedUsers(query , this.task.status.project.name).then((users) => {
+          this.suggestedUsers = this.arrayUnique(this.suggestedUsers.concat(users));
         })
-      },
-      getUserAvatar(username) {
-        return `/rest/v1/social/users/${username}/avatar`;
-      },
-      filterUsers(item, queryText) {
-        return (
-                item.fullname.toLocaleLowerCase().indexOf(queryText.toLocaleLowerCase()) >
-                -1 ||
-                item.fullname.toLocaleLowerCase().indexOf(queryText.toLocaleLowerCase()) > -1
-        );
       },
       updateTask() {
         this.task.coworker = [];
@@ -233,7 +248,7 @@
         if (typeof this.$refs.coworkerMenu !== 'undefined') {
           this.$refs.coworkerMenu.isMenuActive = false;
         }
-      }, 
+      },
       closeAssigneeMenu() {
         if (typeof this.$refs.assigneeMenu !== 'undefined') {
           this.$refs.assigneeMenu.isMenuActive = false;
@@ -241,6 +256,17 @@
       },
       closeMenu() {
         this.globalMenu = false;
+      },
+      arrayUnique(array) {
+        const a = array.concat();
+        for (let i = 0; i < a.length; ++i) {
+          for (let j = i + 1; j < a.length; ++j) {
+            if (a[i].username === a[j].username) {
+              a.splice(j--, 1);
+            }
+          }
+        }
+        return a;
       }
     }
   }

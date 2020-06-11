@@ -149,7 +149,7 @@ export function getAllUsers() {
 }
 
 export function getTaskLogs(taskId) {
-  return fetch(`/rest/tasks/logs/${taskId}`, {
+  return fetch(`/portal/rest/tasks/logs/${taskId}`, {
     method: 'GET',
     credentials: 'include',
   }).then((resp) => {
@@ -238,6 +238,34 @@ export function findUsersToMention(query) {
     }
     else {
       throw new Error ('Error when getting users to mention');
+    }
+  })
+}
+
+export function getSuggestedUsers(query, projectName) {
+  return fetch(`/portal/rest/tasks/users/${query}/${projectName}`, {
+    method: 'GET',
+    credentials: 'include',
+  }).then((resp) => {
+    if(resp && resp.ok) {
+      return resp.json();
+    }
+    else {
+      throw new Error ('Error when getting suggested users');
+    }
+  })
+}
+
+export function getUser(username) {
+  return fetch(`/portal/rest/v1/social/users/${username}`, {
+    method: 'GET',
+    credentials: 'include',
+  }).then((resp) => {
+    if(resp && resp.ok) {
+      return resp.json();
+    }
+    else {
+      throw new Error ('Error when getting user');
     }
   })
 }

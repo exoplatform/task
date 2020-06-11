@@ -11,6 +11,7 @@ import java.util.Set;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.RuntimeDelegate;
 
+import org.exoplatform.social.core.space.spi.SpaceService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,6 +47,9 @@ public class TestTaskRestService {
   @Mock
   UserService    userService;
 
+  @Mock
+  SpaceService spaceService;
+
   @Before
   public void setup() {
     RuntimeDelegate.setInstance(new RuntimeDelegateImpl());
@@ -54,7 +58,7 @@ public class TestTaskRestService {
   @Test
   public void testGetTasks() throws Exception {
     // Given
-    TaskRestService taskRestService = new TaskRestService(taskService, projectService, statusService, userService);
+    TaskRestService taskRestService = new TaskRestService(taskService, projectService, statusService, userService, spaceService);
     Identity root = new Identity("root");
     ConversationState.setCurrent(new ConversationState(root));
     Task task1 = new Task();
@@ -118,7 +122,7 @@ public class TestTaskRestService {
   @Test
   public void testUpdateTaskById() throws Exception {
     // Given
-    TaskRestService taskRestService = new TaskRestService(taskService, projectService, statusService, userService);
+    TaskRestService taskRestService = new TaskRestService(taskService, projectService, statusService, userService, spaceService);
     Identity john = new Identity("john");
     ConversationState.setCurrent(new ConversationState(john));
     Task task1 = new Task();
@@ -148,7 +152,7 @@ public class TestTaskRestService {
   @Test
   public void testGetProjects() throws Exception {
     // Given
-    TaskRestService taskRestService = new TaskRestService(taskService, projectService, statusService, userService);
+    TaskRestService taskRestService = new TaskRestService(taskService, projectService, statusService, userService, spaceService);
     Identity root = new Identity("root");
     ConversationState.setCurrent(new ConversationState(root));
 
@@ -173,7 +177,7 @@ public class TestTaskRestService {
   @Test
   public void testGetDefaultStatusByProjectId() throws Exception {
     // Given
-    TaskRestService taskRestService = new TaskRestService(taskService, projectService, statusService, userService);
+    TaskRestService taskRestService = new TaskRestService(taskService, projectService, statusService, userService, spaceService);
     Identity john = new Identity("john");
     ConversationState.setCurrent(new ConversationState(john));
     Project project = new Project();
@@ -201,7 +205,7 @@ public class TestTaskRestService {
   @Test
   public void testGetLabels() throws Exception {
     // Given
-    TaskRestService taskRestService = new TaskRestService(taskService, projectService, statusService, userService);
+    TaskRestService taskRestService = new TaskRestService(taskService, projectService, statusService, userService, spaceService);
     Identity root = new Identity("root");
     ConversationState.setCurrent(new ConversationState(root));
 
@@ -248,7 +252,7 @@ public class TestTaskRestService {
   @Test
   public void getLabelsByTaskId() throws Exception {
     // Given
-    TaskRestService taskRestService = new TaskRestService(taskService, projectService, statusService, userService);
+    TaskRestService taskRestService = new TaskRestService(taskService, projectService, statusService, userService, spaceService);
     Identity root = new Identity("root");
     ConversationState.setCurrent(new ConversationState(root));
 
@@ -295,7 +299,7 @@ public class TestTaskRestService {
   @Test
   public void testAddTaskToLabel() throws Exception {
     // Given
-    TaskRestService taskRestService = new TaskRestService(taskService, projectService, statusService, userService);
+    TaskRestService taskRestService = new TaskRestService(taskService, projectService, statusService, userService, spaceService);
     Identity root = new Identity("root");
     ConversationState.setCurrent(new ConversationState(root));
 
@@ -328,7 +332,7 @@ public class TestTaskRestService {
   @Test
   public void testAddTaskComment() throws Exception {
     // Given
-    TaskRestService taskRestService = new TaskRestService(taskService, projectService, statusService, userService);
+    TaskRestService taskRestService = new TaskRestService(taskService, projectService, statusService, userService, spaceService);
     Identity john = new Identity("john");
     ConversationState.setCurrent(new ConversationState(john));
 
@@ -365,7 +369,7 @@ public class TestTaskRestService {
   @Test
   public void testAddTaskSubComment() throws Exception {
     // Given
-    TaskRestService taskRestService = new TaskRestService(taskService, projectService, statusService, userService);
+    TaskRestService taskRestService = new TaskRestService(taskService, projectService, statusService, userService, spaceService);
     Identity john = new Identity("john");
     ConversationState.setCurrent(new ConversationState(john));
 
