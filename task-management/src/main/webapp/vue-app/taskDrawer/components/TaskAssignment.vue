@@ -13,7 +13,7 @@
       <template v-slot:activator="{ on }">
         <v-list-item :title="$t('tooltip.clickToEdit')" style="cursor: pointer;">
           <v-list-item-avatar
-            v-if="(typeof taskAssignee !== 'undefined')"
+            v-if="task.assignee"
             size="22" 
             class="mr-2 ml-0 pt-1">
             <v-img v-if="(typeof taskAssignee.username !== 'undefined')" :src="taskAssignee.avatar"/>
@@ -29,7 +29,7 @@
             class="user-name"
             v-on="on"> + {{ taskCoworkers.length }} {{ $t('label.coworker') }}</span>
           <span
-            v-else-if="taskCoworkers.length === 0 && (typeof taskAssignee === 'undefined')"
+            v-else-if="taskCoworkers.length === 0 && !task.assignee"
             class="user-name"
             v-on="on"> {{ $t('label.unassigned') }} </span>
           <span
@@ -47,7 +47,7 @@
           v-custom-click-outside="closeAssigneeMenu"
           ref="assigneeMenu"
           v-model="taskAssignee"
-          :items="suggestedUsers"
+          :items="suggestedAssignee"
           :search-input.sync="searchAssignee"
           :hide-no-data="!searchAssignee"
           flat
@@ -101,7 +101,7 @@
           id="coworkerInput"
           ref="coworkerMenu"
           v-model="taskCoworkers"
-          :items="suggestedUsers"
+          :items="suggestedCoworkers"
           :search-input.sync="searchCoworkers"
           deletable-chips
           flat
@@ -170,7 +170,8 @@
     },
     data() {
       return {
-        suggestedUsers: [],
+        suggestedAssignee: [],
+        suggestedCoworkers: [],
         taskAssignee: '',
         taskCoworkers: [],
         currentUser: '',
@@ -184,14 +185,14 @@
         this.$emit('menuIsOpen', val);
       },
       searchAssignee(val) {
-          if (val) {
-            this.searchSuggestedUsers(val);
-          }
+        if (val) {
+          this.suggestedAssignee = this.searchSuggestedUsers(val);
+        }
       },
       searchCoworkers(val) {
-          if (val) {
-            this.searchSuggestedUsers(val);
-          }
+        if (val) {
+          this.suggestedCoworkers = this.searchSuggestedCoworkers(val);
+        }
       }
     },
     created() {
@@ -199,14 +200,17 @@
     },
     methods: {
       getUsers() {
-        getUser(this.task.assignee).then((user) => {
-          this.taskAssignee = user;
-          this.suggestedUsers.push(this.taskAssignee);
-        });
+        if (this.task.assignee) {
+          getUser(this.task.assignee).then((user) => {
+            this.taskAssignee = user;
+            this.suggestedAssignee.push(this.taskAssignee);
+          });
+        }
+
         for (let i = 0; i < this.task.coworker.length; i++) {
           getUser(this.task.coworker[i]).then((user) => {
             this.taskCoworkers.push(user);
-            this.suggestedUsers.push(user);
+            this.suggestedCoworkers.push(user);
           });
         }
         getUser(eXo.env.portal.userName).then((user) => {
@@ -214,8 +218,23 @@
         });
       },
       searchSuggestedUsers(query) {
-        getSuggestedUsers(query , this.task.status.project.name).then((users) => {
-          this.suggestedUsers = this.arrayUnique(this.suggestedUsers.concat(users));
+        getSuggestedUsers(query, this.task.status !== null ? this.task.status.project.name : null).then((users) => {
+          this.suggestedAssignee = users;
+          if (this.taskAssignee && !this.suggestedAssignee.includes(this.taskAssignee)) {
+            this.suggestedAssignee.push(this.taskAssignee)
+          }
+        })
+      },
+      searchSuggestedCoworkers(query) {
+        getSuggestedUsers(query, this.task.status !== null ? this.task.status.project.name : null).then((users) => {
+          this.suggestedCoworkers = users;
+          if (this.taskCoworkers) {
+            for (let i = 0; i < this.taskCoworkers.length; i++) {
+              if (!this.suggestedCoworkers.includes(this.taskCoworkers[i])) {
+                this.suggestedCoworkers.push(this.taskCoworkers[i])
+              }
+            }
+          }
         })
       },
       updateTask() {
@@ -232,11 +251,17 @@
       },
       assignToMe() {
         this.taskAssignee = this.currentUser;
+        if (!this.suggestedAssignee.includes(this.currentUser)) {
+          this.suggestedAssignee.push(this.currentUser);
+        }
         this.updateTask()
       },
       setMeAsCoworker() {
         if (!this.taskCoworkers.includes(this.currentUser)) {
           this.taskCoworkers.push(this.currentUser);
+          if (!this.suggestedCoworkers.includes(this.currentUser)) {
+            this.suggestedCoworkers.push(this.currentUser);
+          }
           this.updateTask()
         }
       },
@@ -257,17 +282,6 @@
       closeMenu() {
         this.globalMenu = false;
       },
-      arrayUnique(array) {
-        const a = array.concat();
-        for (let i = 0; i < a.length; ++i) {
-          for (let j = i + 1; j < a.length; ++j) {
-            if (a[i].username === a[j].username) {
-              a.splice(j--, 1);
-            }
-          }
-        }
-        return a;
-      }
     }
   }
 </script>
