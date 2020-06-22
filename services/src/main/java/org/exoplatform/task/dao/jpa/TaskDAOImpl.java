@@ -446,5 +446,25 @@ public class TaskDAOImpl extends CommonJPADAO<Task, Long> implements TaskHandler
         List<String> watchers =query.getResultList();
         return new HashSet<String> (watchers);
     }
+
+    @Override
+    public List<Task> findTasks(String user, String term, int limit) {
+      Query query = getEntityManager().createNamedQuery("Task.findTasks", Task.class);
+      query.setParameter("userName", user);
+      query.setParameter("term", "%" + term.replaceAll("%", "").toLowerCase() + "%");
+      if (limit > 0) {
+        query.setMaxResults(limit);
+      }
+      return cloneEntities(query.getResultList());
+    }
+
+    @Override
+    public long countTasks(String user, String term) {
+      TypedQuery<Long> query = getEntityManager().createNamedQuery("Task.countTasks", Long.class);
+      query.setParameter("userName", user);
+      query.setParameter("term", "%" + term.replaceAll("%", "").toLowerCase() + "%");
+      Long result = query.getSingleResult();
+      return result == null ? 0 : result;
+    }
 }
 

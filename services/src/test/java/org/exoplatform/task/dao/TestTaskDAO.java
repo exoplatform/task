@@ -754,12 +754,49 @@ public class TestTaskDAO extends AbstractTest {
     Assert.assertEquals(1, tDAO.getWatchersOfTask(task).size());
     assertFalse(tDAO.getWatchersOfTask(task).contains("marry"));
   }
+
+  @Test
+  public void testFindTasks() throws Exception {
+    String user="john";
+    Task task = newTaskInstance("What is Lorem Ipsum?", "Lorem Ipsum is simply dummy text of the printing", user);
+    tDAO.create(task);
+
+    List<Task> tasks = tDAO.findTasks(user, "Lorem", 10);
+    assertEquals(1, tasks.size());
+
+    tasks = tDAO.findTasks(user, "lorem", 10);
+    assertEquals(1, tasks.size());
+
+    tasks = tDAO.findTasks(user, "simply", 10);
+    assertEquals(1, tasks.size());
+
+    tasks = tDAO.findTasks("root", "simply", 10);
+    assertEquals(0, tasks.size());
+
+    tasks = tDAO.findTasks(user, "example", 10);
+    assertEquals(0, tasks.size());
+  }
+
+  @Test
+  public void testCountTasks() throws Exception {
+    String user="john";
+    Task task = newTaskInstance("What is Lorem Ipsum?", "Lorem Ipsum is simply dummy text of the printing", user);
+    tDAO.create(task);
+
+    assertEquals(1, tDAO.countTasks(user, "Lorem"));
+    assertEquals(1, tDAO.countTasks(user, "lorem"));
+    assertEquals(1, tDAO.countTasks(user, "simply"));
+    assertEquals(0, tDAO.countTasks("root", "simply"));
+    assertEquals(0, tDAO.countTasks(user, "example"));
+  }
+
   private Task newTaskInstance(String taskTitle, String description, String assignee) {
     Task task = new Task();
     task.setTitle(taskTitle);
     task.setDescription(description);
     task.setAssignee(assignee);
     task.setCreatedBy(username);
+    task.setCreatedTime(new Date());
     return task;
   }
 

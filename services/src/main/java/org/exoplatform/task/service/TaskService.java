@@ -139,4 +139,25 @@ public interface TaskService {
   void addWatcherToTask(String username, Task task) throws Exception;
 
   void deleteWatcherOfTask(String username, Task task) throws Exception;
-  }
+
+  /**
+   * Find tasks assigned to a user using a term to find in title or description
+   * of the task
+   * 
+   * @param user username
+   * @param query term to search in title or description
+   * @param limit
+   * @return {@link List} of {@link Task}
+   */
+  List<Task> findTasks(String user, String query, int limit);
+
+  /**
+   * Count tasks assigned to a user using a search term to find in title or
+   * description of the task
+   * 
+   * @param user username
+   * @param query term to search in title or description
+   * @return tasks count
+   */
+  long countTasks(String user, String query);
+}

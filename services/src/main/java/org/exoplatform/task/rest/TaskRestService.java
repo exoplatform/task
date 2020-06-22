@@ -28,6 +28,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.exoplatform.social.core.space.spi.SpaceService;
+
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -103,43 +105,51 @@ public class TaskRestService implements ResourceContainer {
   @ApiResponses(value = {
       @ApiResponse(code = 200, message = "Request fulfilled") })
   public Response getTasks(@ApiParam(value = "Type of task to get (all, incoming, overdue)", required = false) @QueryParam("status") String status,
+                           @ApiParam(value = "Search term", required = false) @QueryParam("q") String query,
                            @ApiParam(value = "Offset", required = false, defaultValue = "0") @QueryParam("offset") int offset,
                            @ApiParam(value = "Limit", required = false, defaultValue = "20") @QueryParam("limit") int limit,
                            @ApiParam(value = "Returning the number of tasks or not", defaultValue = "false") @QueryParam("returnSize") boolean returnSize) throws Exception {
     String currentUser = ConversationState.getCurrent().getIdentity().getUserId();
-    List<Task> tasks = new ArrayList<Task>();
-    Long tasksSize;
-    TaskType taskType;
-    try {
-      taskType = TaskType.valueOf(status.toUpperCase());
-    } catch (Exception e) {
-      taskType = TaskType.ALL;
+
+    long tasksSize;
+    List<Task> tasks = null;
+    if (StringUtils.isBlank(query)) {
+      TaskType taskType;
+      try {
+        taskType = TaskType.valueOf(status.toUpperCase());
+      } catch (Exception e) {
+        taskType = TaskType.ALL;
+      }
+      if (limit <= 0) {
+        limit = DEFAULT_LIMIT;
+      }
+      switch (taskType) {
+      case INCOMING: {
+        ListAccess<Task> tasksListAccess = taskService.getIncomingTasks(currentUser);
+        tasks = Arrays.asList(tasksListAccess.load(offset, limit));
+        tasksSize = Long.valueOf(tasksListAccess.getSize());
+        break;
+      }
+      case OVERDUE: {
+        tasks = taskService.getOverdueTasks(currentUser, limit);
+        tasksSize = taskService.countOverdueTasks(currentUser);
+        break;
+      }
+      default: {
+        tasks = taskService.getUncompletedTasks(currentUser, limit);
+        tasksSize = taskService.countUncompletedTasks(currentUser);
+      }
+      }      
+    } else {
+      tasks = taskService.findTasks(currentUser, query, limit);
+      tasksSize = taskService.countTasks(currentUser, query);
     }
-    if (limit <= 0) {
-      limit = DEFAULT_LIMIT;
-    }
-    switch (taskType) {
-    case INCOMING: {
-      ListAccess<Task> tasksListAccess = taskService.getIncomingTasks(currentUser);
-      tasks = Arrays.asList(tasksListAccess.load(offset, limit));
-      tasksSize = Long.valueOf(tasksListAccess.getSize());
-      break;
-    }
-    case OVERDUE: {
-      tasks = taskService.getOverdueTasks(currentUser, limit);
-      tasksSize = taskService.countOverdueTasks(currentUser);
-      break;
-    }
-    default: {
-      tasks = taskService.getUncompletedTasks(currentUser, limit);
-      tasksSize = taskService.countUncompletedTasks(currentUser);
-    }
-    }
-    // TODO Need to return always tasks and size
+
     if (returnSize) {
       JSONObject tasksSizeJsonObject = new JSONObject();
       tasksSizeJsonObject.put("size", tasksSize);
-      return Response.ok(tasksSizeJsonObject.toString()).build();
+      tasksSizeJsonObject.put("tasks", tasks);
+      return Response.ok(tasksSizeJsonObject).build();
     } else {
       return Response.ok(tasks).build();
     }

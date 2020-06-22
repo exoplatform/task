@@ -1,17 +1,19 @@
 package org.exoplatform.task.rest;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+
+import static org.mockito.Matchers.*;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.RuntimeDelegate;
 
 import org.exoplatform.social.core.space.spi.SpaceService;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -95,11 +97,14 @@ public class TestTaskRestService {
     when(taskService.countOverdueTasks("root")).thenReturn(Long.valueOf(overdueTasks.size()));
     when(taskService.getIncomingTasks("root")).thenReturn(incomingTasksListAccess);
     when(taskService.countOverdueTasks("root")).thenReturn(Long.valueOf(incomingTasksListAccess.getSize()));
+    when(taskService.findTasks(eq("root"), eq("searchTerm"), anyInt())).thenReturn(Collections.singletonList(task4));
+    when(taskService.countTasks(eq("root"), eq("searchTerm"))).thenReturn(1L);
 
     // When
-    Response response = taskRestService.getTasks("overdue", 0, 20, false);
-    Response response1 = taskRestService.getTasks("incoming", 0, 20, false);
-    Response response2 = taskRestService.getTasks("", 0, 20, false);
+    Response response = taskRestService.getTasks("overdue", null, 0, 20, false);
+    Response response1 = taskRestService.getTasks("incoming", null, 0, 20, false);
+    Response response2 = taskRestService.getTasks("", null, 0, 20, false);
+    Response response3 = taskRestService.getTasks("whatever", "searchTerm", 0, 20, true);
 
     // Then
     assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -117,6 +122,16 @@ public class TestTaskRestService {
     assertNotNull(tasks2);
     assertEquals(3, tasks2.size());
 
+    assertEquals(Response.Status.OK.getStatusCode(), response3.getStatus());
+    JSONObject tasks3JsonObject = (JSONObject) response3.getEntity();
+    assertNotNull(tasks3JsonObject);
+    assertTrue(tasks3JsonObject.has("size"));
+    assertTrue(tasks3JsonObject.has("tasks"));
+    JSONArray tasks3 = (JSONArray) tasks3JsonObject.get("tasks");
+    assertNotNull(tasks3);
+    assertEquals(1, tasks3.length());
+    Long tasks3Size = (Long) tasks3JsonObject.get("size");
+    assertEquals(1L, tasks3Size.longValue());
   }
 
   @Test

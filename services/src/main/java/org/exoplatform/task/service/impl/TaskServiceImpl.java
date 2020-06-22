@@ -26,6 +26,8 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.StringUtils;
+
 import org.exoplatform.commons.api.persistence.ExoTransactional;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.listener.ListenerService;
@@ -349,6 +351,28 @@ public class TaskServiceImpl implements TaskService {
   @Override
   public Long countUncompletedTasks(String user) {
     return daoHandler.getTaskHandler().countUncompletedTasks(user);
+  }
+
+  @Override
+  public List<Task> findTasks(String user, String query, int limit) {
+    if (StringUtils.isBlank(user)) {
+      throw new IllegalArgumentException("user parameter is mandatory");
+    }
+    if (StringUtils.isBlank(query)) {
+      throw new IllegalArgumentException("query parameter is mandatory");
+    }
+    return daoHandler.getTaskHandler().findTasks(user, query, limit);
+  }
+
+  @Override
+  public long countTasks(String user, String query) {
+    if (StringUtils.isBlank(user)) {
+      throw new IllegalArgumentException("user parameter is mandatory");
+    }
+    if (StringUtils.isBlank(query)) {
+      throw new IllegalArgumentException("query parameter is mandatory");
+    }
+    return daoHandler.getTaskHandler().countTasks(user, query);
   }
 
   @Override
