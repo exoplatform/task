@@ -4,7 +4,8 @@
     flat 
     min-height="227">
     <p
-      class="px-2 pt-2 pb-1 center"
+      :title="result.title"
+      class="px-2 pt-2 pb-1 text-left text-truncate"
       v-html="result.title">
     </p>
     <div class="mx-auto d-flex flex-grow-1 px-3 py-0">
@@ -13,6 +14,16 @@
         :title="excerptText"
         class="text-wrap text-break caption flex-grow-1">
       </div>
+    </div>
+    <div v-if="projectName" class="mx-3">
+      <v-chip
+        :title="projectName"
+        :color="projectColor"
+        :href="projectLink"
+        class="border-radius width-auto mb-3 mt-2 py-2"
+        outlined>
+        <div class="text-truncate">{{ projectName }}</div>
+      </v-chip>
     </div>
     <v-list class="light-grey-background flex-grow-0 border-top-color no-border-radius pa-0">
       <v-list-item :href="link" class="px-0 pt-1 pb-2">
@@ -45,10 +56,21 @@ export default {
     },
   },
   data: () => ({
-    excerptLines: 5,
     lineHeight: 22,
   }),
   computed: {
+    projectName() {
+      return this.result.status && this.result.status.project && this.result.status.project.name || '';
+    },
+    projectColor() {
+      return this.result.status && this.result.status.project && this.result.status.project.color || '';
+    },
+    projectLink() {
+      return this.result.status && this.result.status.project && `${eXo.env.portal.context}/${eXo.env.portal.portalName}/tasks/projectDetail/${this.result.status.project.id}` || '';
+    },
+    excerptLines() {
+      return this.result.status && 3 || 5;
+    },
     maxEllipsisHeight() {
       return this.lineHeight * this.excerptLines;
     },
