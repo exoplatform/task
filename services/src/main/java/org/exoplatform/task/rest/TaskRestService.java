@@ -49,8 +49,7 @@ import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.dto.ChangeLogEntry;
 import org.exoplatform.task.exception.EntityNotFoundException;
-import org.exoplatform.task.model.CommentModel;
-import org.exoplatform.task.model.User;
+import org.exoplatform.task.model.*;
 import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.StatusService;
 import org.exoplatform.task.service.TaskService;
@@ -112,7 +111,7 @@ public class TaskRestService implements ResourceContainer {
     String currentUser = ConversationState.getCurrent().getIdentity().getUserId();
 
     long tasksSize;
-    List<Task> tasks = null;
+    List<?> tasks = null;
     if (StringUtils.isBlank(query)) {
       TaskType taskType;
       try {
@@ -142,6 +141,17 @@ public class TaskRestService implements ResourceContainer {
       }      
     } else {
       tasks = taskService.findTasks(currentUser, query, limit);
+      tasks = tasks.stream().map(task -> {
+        long taskId = ((Task) task).getId();
+        int commentCount;
+        try {
+          commentCount = taskService.getComments(taskId).getSize();
+        } catch (Exception e) {
+          LOG.warn("Error retrieving task '{}' comments count", taskId, e);
+          commentCount = 0;
+        }
+        return new TaskModel(((Task) task), commentCount);
+      }).collect(Collectors.toList());
       tasksSize = taskService.countTasks(currentUser, query);
     }
 

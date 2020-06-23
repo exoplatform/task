@@ -35,6 +35,14 @@ public class TaskModel {
   private User currentUser;
   private List<Label> labels = new ArrayList<Label>();
 
+  public TaskModel() {
+  }
+
+  public TaskModel(Task task, long commentCount) {
+    this.task = task;
+    this.commentCount = commentCount;
+  }
+
   public Task getTask() {
     return task;
   }

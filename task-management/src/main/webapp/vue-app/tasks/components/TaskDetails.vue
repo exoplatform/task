@@ -85,7 +85,7 @@
         },
         computed : {
           projectBorder() {
-            return this.task.status.project.color + "_border"
+            return `${this.task.status.project.color  }_border`
           }
         },
         methods: {
