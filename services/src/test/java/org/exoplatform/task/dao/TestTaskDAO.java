@@ -771,6 +771,9 @@ public class TestTaskDAO extends AbstractTest {
     assertEquals(1, tasks.size());
 
     tasks = tDAO.findTasks("root", "simply", 10);
+    assertEquals(1, tasks.size());
+
+    tasks = tDAO.findTasks("mary", "simply", 10);
     assertEquals(0, tasks.size());
 
     tasks = tDAO.findTasks(user, "example", 10);
@@ -786,7 +789,8 @@ public class TestTaskDAO extends AbstractTest {
     assertEquals(1, tDAO.countTasks(user, "Lorem"));
     assertEquals(1, tDAO.countTasks(user, "lorem"));
     assertEquals(1, tDAO.countTasks(user, "simply"));
-    assertEquals(0, tDAO.countTasks("root", "simply"));
+    assertEquals(1, tDAO.countTasks("root", "simply"));
+    assertEquals(0, tDAO.countTasks("mary", "simply"));
     assertEquals(0, tDAO.countTasks(user, "example"));
   }
 

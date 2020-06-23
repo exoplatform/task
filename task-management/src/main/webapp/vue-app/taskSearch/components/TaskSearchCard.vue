@@ -3,11 +3,12 @@
     class="d-flex flex-column border-radius box-shadow mr-2 mb-4" 
     flat 
     min-height="227">
-    <p
-      :title="result.title"
-      class="px-2 pt-2 pb-1 text-left text-truncate"
-      v-html="result.title">
-    </p>
+    <a
+      :title="taskTitleText"
+      :href="link"
+      class="px-3 pt-2 pb-1 text-left text-truncate"
+      v-html="taskTitle">
+    </a>
     <div class="mx-auto d-flex flex-grow-1 px-3 py-0">
       <div
         ref="excerptNode"
@@ -60,28 +61,31 @@ export default {
   }),
   computed: {
     projectName() {
-      return this.result.status && this.result.status.project && this.result.status.project.name || '';
+      return this.result && this.result.status && this.result.status.project && this.result.status.project.name || '';
     },
     projectColor() {
-      return this.result.status && this.result.status.project && this.result.status.project.color || '';
+      return this.result && this.result.status && this.result.status.project && this.result.status.project.color || '';
     },
     projectLink() {
-      return this.result.status && this.result.status.project && `${eXo.env.portal.context}/${eXo.env.portal.portalName}/tasks/projectDetail/${this.result.status.project.id}` || '';
-    },
-    excerptLines() {
-      return this.result.status && 3 || 5;
+      return this.result && this.result.status && this.result.status.project && `${eXo.env.portal.context}/${eXo.env.portal.portalName}/tasks/projectDetail/${this.result.status.project.id}` || '';
     },
     maxEllipsisHeight() {
-      return this.lineHeight * this.excerptLines;
-    },
-    excerptText() {
-      return this.result && this.result.excerpt || this.result.description;
+      return this.result && this.result.status && 68 || 120;
     },
     excerptHtml() {
-      return this.result && this.result.excerpt || this.result.description;
+      return this.result && this.result.excerpt || this.result.description || '';
+    },
+    excerptText() {
+      return $('<div />').html(this.excerptHtml).text();
     },
     taskCreatedTime() {
       return this.result && this.result.createdTime && this.result.createdTime.time;
+    },
+    taskTitle() {
+      return this.result && this.result.title || '';
+    },
+    taskTitleText() {
+      return $('<div />').html(this.taskTitle).text();
     },
     taskDetails() {
       if (!this.result) {
