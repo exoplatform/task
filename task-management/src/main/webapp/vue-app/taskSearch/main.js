@@ -9,8 +9,8 @@ export function formatSearchResult(results, term) {
       const commentCount = task.commentCount;
       task = task.task;
       task.commentCount = commentCount;
-      task.title = task.title.replace(new RegExp(`(${term})`, 'ig'), `<span class="searchMatchExcerpt">$1</span>`);
-      task.excerpt = $('<div />').html(task.description).text().replace(new RegExp(`(${term})`, 'ig'), `<span class="searchMatchExcerpt">$1</span>`);
+      task.titleExcerpt = task.title.replace(new RegExp(`(${term})`, 'ig'), `<span class="searchMatchExcerpt">$1</span>`);
+      task.descriptionExcerpt = $('<div />').html(task.description).text().replace(new RegExp(`(${term})`, 'ig'), `<span class="searchMatchExcerpt">$1</span>`);
       return task;
     });
   }

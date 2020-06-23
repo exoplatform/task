@@ -481,11 +481,10 @@
       addTaskComment() {
         let comment = this.$refs.commentEditor.getMessage();
         comment = this.urlVerify(comment);
-        addTaskComments(this.task.id,comment).then((comment => {
-          this.comments.push(comment)
-        })
-        );
-        this.reset = !this.reset;
+        addTaskComments(this.task.id,comment).then(comment => {
+          this.comments.push(comment);
+          this.reset = !this.reset;
+        });
       },
       getUserAvatar(username) {
         return `/rest/v1/social/users/${username}/avatar`;

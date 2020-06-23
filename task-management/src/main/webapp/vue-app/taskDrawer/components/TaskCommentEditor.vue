@@ -1,8 +1,8 @@
 <template>
   <div>
     <textarea 
-      id="commentContent"
-      ref="editor" 
+      ref="editor"
+      :id="id" 
       v-model="inputVal" 
       :placeholder="placeholder" 
       cols="30" 
@@ -32,6 +32,7 @@
     data() {
       return {
         inputVal: this.value,
+        id: `commentContent${parseInt(Math.random() * 10000).toString()}`,
       };
     },
     watch: {
@@ -39,7 +40,7 @@
         this.$emit('input', val);
       },
       reset() {
-        CKEDITOR.instances['commentContent'].destroy(true);
+        CKEDITOR.instances[this.id].destroy(true);
         this.initCKEditor();
       },
     },
@@ -134,7 +135,7 @@
         });
       },
       getMessage: function() {
-        const newData = CKEDITOR.instances['commentContent'].getData();
+        const newData = CKEDITOR.instances[this.id].getData();
         return newData ? newData.trim() : '';
       }
     }
