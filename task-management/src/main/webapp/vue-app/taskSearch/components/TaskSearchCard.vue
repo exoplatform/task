@@ -1,6 +1,6 @@
 <template>
   <v-card 
-    class="d-flex flex-column border-radius box-shadow mr-2 mb-4" 
+    class="d-flex flex-column border-radius box-shadow" 
     flat
     min-height="227">
     <a

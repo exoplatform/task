@@ -16,9 +16,9 @@
             </v-flex>
             <v-flex xs1>
               <v-btn
+                :href="taskLink"
                 class="my-2"
-                icon
-                @click="navigateTo(`tasks/taskDetail/${task.id}`)">
+                icon>
                 <i class="uiIconAndroidOpen grey-color"></i>
               </v-btn>
             </v-flex>
@@ -386,8 +386,11 @@
       }
     },
     computed: {
+      taskLink() {
+        return `${eXo.env.portal.context}/${eXo.env.portal.portalName}/tasks/taskDetail/${this.task.id}`;
+      },
       currentUserAvatar() {
-        return `/rest/v1/social/users/${eXo.env.portal.userName}/avatar`;
+        return `/portal/rest/v1/social/users/${eXo.env.portal.userName}/avatar`;
       },
       dateRangeText () {
         return this.dates.join('~')
