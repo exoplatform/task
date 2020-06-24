@@ -36,7 +36,13 @@
             {{ taskDetails }}
           </v-list-item-title>
           <v-list-item-subtitle>
-            <date-format :value="taskCreatedTime" />
+            <template v-if="taskDueDate">
+              {{ $t('label.dueDate') }}:
+              <date-format :value="taskDueDate" class="d-inline" />
+            </template>
+            <template v-else>
+              {{ $t('label.noDueDate') }}
+            </template>
           </v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
@@ -78,8 +84,8 @@ export default {
     excerptText() {
       return $('<div />').html(this.excerptHtml).text();
     },
-    taskCreatedTime() {
-      return this.result && this.result.createdTime && this.result.createdTime.time;
+    taskDueDate() {
+      return this.result && this.result.dueDate && this.result.dueDate.time;
     },
     taskTitle() {
       return this.result && this.result.titleExcerpt || '';
