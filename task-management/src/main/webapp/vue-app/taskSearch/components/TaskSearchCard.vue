@@ -5,8 +5,8 @@
     min-height="227">
     <a
       :title="taskTitleText"
-      :href="link"
       class="px-3 pt-2 pb-1 text-left text-truncate"
+      @click="openTaskDrawer"
       v-html="taskTitle">
     </a>
     <div class="mx-auto d-flex flex-grow-1 px-3 py-0">
@@ -93,9 +93,6 @@ export default {
       }
       const commentCount = this.result.commentCount || 0;
       return this.$t('Search.task.commentsCount', {0: commentCount});
-    },
-    link() {
-      return `${eXo.env.portal.context}/${eXo.env.portal.portalName}/tasks/taskDetail/${this.result.id}`;
     },
   },
   mounted() {
