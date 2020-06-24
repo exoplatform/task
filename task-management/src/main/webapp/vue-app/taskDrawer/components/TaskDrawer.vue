@@ -6,7 +6,8 @@
     temporary
     stateless
     absolute
-    width="33%">
+    width="420"
+    max-width="100%">
     <div class="drawer-header">
       <v-flex xs12>
         <v-card flat>
