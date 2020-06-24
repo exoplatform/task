@@ -16,3 +16,23 @@ export function formatSearchResult(results, term) {
   }
   return results;
 }
+
+$('.VuetifyApp .v-application').first().append('<div id="TaskSearchDrawers" />');
+
+const appId = 'TaskSearchDrawers';
+
+const lang = typeof eXo !== 'undefined' ? eXo.env.portal.language : 'en';
+Vue.use(Vuetify);
+const vuetify = new Vuetify({
+  dark: true,
+  iconfont: '',
+});
+
+const urls = [`${eXo.env.portal.context}/${eXo.env.portal.rest}/i18n/bundle/locale.portlet.taskManagement-${lang}.json`];
+exoi18n.loadLanguageAsync(lang, urls).then(i18n => {
+  new Vue({
+    template: `<task-search-drawer />`,
+    vuetify,
+    i18n
+  }).$mount(`#${appId}`);
+});

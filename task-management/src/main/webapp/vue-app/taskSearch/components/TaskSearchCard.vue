@@ -27,7 +27,7 @@
       </v-chip>
     </div>
     <v-list class="light-grey-background flex-grow-0 border-top-color no-border-radius pa-0">
-      <v-list-item class="px-0 pt-1 pb-2" @click="drawer = true">
+      <v-list-item class="px-0 pt-1 pb-2" @click="openTaskDrawer">
         <v-list-item-icon class="mx-0 my-auto">
           <span class="uiIconCalTask tertiary--text pl-1 pr-2 display-1"></span>
         </v-list-item-icon>
@@ -41,11 +41,6 @@
         </v-list-item-content>
       </v-list-item>
     </v-list>
-    <task-drawer 
-      :drawer="drawer"
-      :task="result"
-      @updateTask="refreshTask"
-      @closeDrawer="drawer = false"/>
   </v-card>
 </template>
 
@@ -63,7 +58,6 @@ export default {
   },
   data: () => ({
     lineHeight: 22,
-    drawer: false,
   }),
   computed: {
     projectName() {
@@ -108,11 +102,8 @@ export default {
     this.computeEllipsis();
   },
   methods: {
-    refreshTask() {
-      this.drawer = false;
-      window.setTimeout(() => {
-        this.$emit('refresh');
-      }, 400);
+    openTaskDrawer() {
+      document.dispatchEvent(new CustomEvent('openTaskDetail', {'detail': this.result}));
     },
     computeEllipsis() {
       if (!this.excerptHtml || this.excerptHtml.length === 0) {
