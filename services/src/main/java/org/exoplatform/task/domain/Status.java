@@ -64,6 +64,7 @@ public class Status implements Comparable<Status>{
 
   private String name;
 
+  @Column(name = "\"RANK\"")
   private Integer rank;
 
   //This field only used for cascade remove

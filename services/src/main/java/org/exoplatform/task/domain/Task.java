@@ -141,6 +141,7 @@ public class Task {
   @JoinColumn(name = "STATUS_ID")
   private Status      status;
 
+  @Column(name = "\"RANK\"")
   private int         rank;
 
   private boolean completed = false;
