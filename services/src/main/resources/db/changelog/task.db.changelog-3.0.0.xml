@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+  <!-- rename the column "RANK" since "RANK" became a reserved keyword for MySQL 8.0.2 and later -->
+  <changeSet id="3.0.0-01" author="task">
+    <renameColumn tableName="TASK_STATUS" oldColumnName="RANK" newColumnName="STATUS_RANK" columnDataType="INTEGER"/>
+    <renameColumn tableName="TASK_TASKS" oldColumnName="RANK" newColumnName="TASK_RANK" columnDataType="INT"/>
+  </changeSet>
+
+</databaseChangeLog>
