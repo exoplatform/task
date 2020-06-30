@@ -229,7 +229,7 @@
         <execution>
           <id>core</id>
           <configuration>
-            <sourceDirectory>${project.build.directory}/src/main/webapp/skin/css</sourceDirectory>
+            <sourceDirectory>${project.build.directory}/src/main/webapp/skin/less</sourceDirectory>
             <outputDirectory>${project.build.directory}/${project.build.finalName}/skin/css</outputDirectory>
             <compress>false</compress>
             <includes>

@@ -1,3 +1,4 @@
+@import "variables.less";
 // Variables
 @primaryColor: #578DC9;
 @greyColor: #a8b3c5;
@@ -21,13 +22,19 @@
   .flagCard {
     border-radius: 0px 5px 5px 0px;
   }
-
+  .color-title {
+    color: @greyColor;
+  }
   .taskTitle {
     color: black;
     flex: 1 1 100%;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+  .iconlarge {
+    font-size: 40px;
+    color:@successColorLight;
   }
   .noTasks {
     display: flex;
@@ -55,7 +62,7 @@
       p {
         font-weight: normal;
         font-size: 15px;
-        color: #a8b3c5;
+        color: @greyColor;
       }
     }
   }
@@ -138,7 +145,7 @@
   }
   .assignTo {
     .v-select__slot {
-      border: 1px solid #a8b3c5;
+      border: 1px solid @greyColor;
       border-radius: 5px;
     }
   }
@@ -190,7 +197,7 @@
     .v-label {
       top: 10px;
       font-size: 15px!important;
-      color: #a8b3c5 !important;
+      color: @greyColor !important;
       margin-left: 6px;
     }
   }
