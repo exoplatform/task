@@ -195,7 +195,7 @@
               <goal>copy-resources</goal>
             </goals>
             <configuration>
-              <outputDirectory>${project.build.directory}/src/main/webapp/skin/css</outputDirectory>
+              <outputDirectory>${project.build.directory}/src/main/webapp/skin/less</outputDirectory>
               <resources>
                 <resource>
                   <directory>src/main/webapp/skin/css</directory>
@@ -223,24 +223,24 @@
         </executions>
       </plugin>
       <plugin>
-      <groupId>org.lesscss</groupId>
-      <artifactId>lesscss-maven-plugin</artifactId>
-      <executions>
-        <execution>
-          <id>core</id>
-          <configuration>
-            <sourceDirectory>${project.build.directory}/src/main/webapp/skin/less</sourceDirectory>
-            <outputDirectory>${project.build.directory}/${project.build.finalName}/skin/css</outputDirectory>
-            <compress>false</compress>
-            <includes>
-              <include>tasks.less</include>
-            </includes>
-          </configuration>
-          <goals>
-            <goal>compile</goal>
-          </goals>
-        </execution>
-      </executions>
+        <groupId>org.lesscss</groupId>
+        <artifactId>lesscss-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>core</id>
+            <configuration>
+              <sourceDirectory>${project.build.directory}/src/main/webapp/skin/less</sourceDirectory>
+              <outputDirectory>${project.build.directory}/${project.build.finalName}/skin/css</outputDirectory>
+              <compress>false</compress>
+              <includes>
+                <include>tasks.less</include>
+              </includes>
+            </configuration>
+            <goals>
+              <goal>compile</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>com.github.eirslett</groupId>
