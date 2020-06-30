@@ -40,7 +40,6 @@ import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.exception.NotAllowedOperationOnEntityException;
 import org.exoplatform.task.model.User;
 import org.exoplatform.task.service.UserService;
-import org.exoplatform.task.util.TaskUtil;
 
 import java.util.ArrayList;
 import java.util.TimeZone;
@@ -181,9 +180,12 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public TimeZone getUserTimezone(String username) {
-    if (TaskUtil.isCalendarEnabled()) {
-      return TaskUtil.getUserTimezone(username);
+    org.exoplatform.social.core.identity.model.Identity userIdentity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, username, false);
+    if (userIdentity == null || userIdentity.getProfile().getTimeZone() == null) {
+      return TimeZone.getDefault();
+    } else {
+      String timeZoneId = userIdentity.getProfile().getTimeZone();
+      return TimeZone.getTimeZone(timeZoneId);
     }
-    return TimeZone.getDefault();
   }
 }

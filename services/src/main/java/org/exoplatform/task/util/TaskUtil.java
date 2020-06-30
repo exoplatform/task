@@ -22,7 +22,6 @@ import java.util.*;
 
 import org.gatein.common.text.EntityEncoder;
 
-import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.commons.utils.HTMLEntityEncoder;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.container.*;
@@ -705,18 +704,6 @@ public final class TaskUtil {
   public static boolean isCalendarEnabled() {
     return ExoContainer.hasProfile("calendar");
   }
-
-  public static TimeZone getUserTimezone(String username) {
-    try {
-      CalendarService calendarService = ExoContainerContext.getService(CalendarService.class);
-      org.exoplatform.calendar.service.CalendarSetting setting = calendarService.getCalendarSetting(username);
-      return TimeZone.getTimeZone(setting.getTimeZone());
-    } catch (Exception e) {
-      LOG.error("Can't retrieve timezone", e);
-    }
-    return null;
-  }
-
   public static List<Label> buildRootLabels(List<Label> labels) {
     if (labels == null) return labels;
 
