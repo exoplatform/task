@@ -341,15 +341,18 @@ public class Task {
   }
 
   public Task clone() {
-    Set<String> coworkerClone;
+    Set<String> coworkerClone = new HashSet<String>();
+    Set<String> watcherClone = new HashSet<String>();
     if (getCoworker() != null) {
       coworkerClone = new HashSet<String>(getCoworker());
-    } else {
-      coworkerClone = new HashSet<String>();
+    }
+    if (getWatcher() != null) {
+      watcherClone = new HashSet<String>(getWatcher());
     }
     Task newTask = new TaskBuilder().withTitle(this.getTitle())
         .withAssignee(this.getAssignee())
         .withCoworker(coworkerClone)
+        .withWatcher(watcherClone)
         .withContext(this.getContext())
         .withCreatedBy(this.getCreatedBy())
         .withDescription(this.getDescription())
@@ -364,7 +367,6 @@ public class Task {
     newTask.setCreatedTime(getCreatedTime());
     newTask.setActivityId(getActivityId());
     newTask.setCompleted(isCompleted());
-    newTask.setWatcher(getWatcher());
     newTask.setRank(getRank());
     
     //performance issue, need lazy load

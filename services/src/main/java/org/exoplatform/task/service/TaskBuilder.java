@@ -38,6 +38,7 @@ public class TaskBuilder {
   private String context;
   private String assignee;
   private Set<String> coworker;
+  private Set<String> watcher;
 
   private Status status;
 
@@ -57,6 +58,7 @@ public class TaskBuilder {
     task.setContext(context);
     task.setAssignee(assignee);
     task.setCoworker(coworker);
+    task.setWatcher(watcher);
     task.setStatus(status);
     task.setCreatedBy(createdBy);
     task.setCreatedTime(createdTime);
@@ -82,6 +84,11 @@ public class TaskBuilder {
 
   public TaskBuilder withAssignee(String assignee) {
     this.assignee = assignee;
+    return this;
+  }
+
+  public TaskBuilder withWatcher(Set<String> watcher) {
+    this.watcher = watcher;
     return this;
   }
 
