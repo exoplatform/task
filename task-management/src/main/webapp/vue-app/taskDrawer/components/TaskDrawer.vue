@@ -56,9 +56,9 @@
               <v-icon dark size="18">mdi-checkbox-marked-circle</v-icon>
             </v-btn>
             <v-textarea
-              v-if="!task.completed"
               id="task-name"
               v-model="task.title"
+              :class="{taskCompleted: task.completed}"
               :placeholder="$t('label.title')"
               auto-grow
               rows="1"
@@ -463,6 +463,7 @@
     },
     methods: {
       closeDrawer() {
+        this.$emit('updateTaskList');
         this.drawer = false;
         $('body').removeClass('hide-scroll');
         this.$emit('closeDrawer',this.drawer);
@@ -507,7 +508,6 @@
       },
       markAsCompleted(){
         this.task.completed = !this.task.completed;
-        this.$emit('updateTaskList');
         this.updateTask()
       },
       addDueDate() {
