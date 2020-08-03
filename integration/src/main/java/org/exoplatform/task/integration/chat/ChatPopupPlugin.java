@@ -24,9 +24,9 @@ import java.util.*;
 
 import javax.ws.rs.core.MediaType;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import org.exoplatform.commons.api.ui.*;
@@ -124,7 +124,8 @@ public class ChatPopupPlugin extends BaseUIPlugin {
         }
       }
 
-      JSONArray jTasks = new JSONArray();
+      ObjectMapper mapper = new ObjectMapper();
+      byte[] result = null;
       for (String name : username.split(",")) {
         Task task = new Task();
         task.setAssignee(name);
@@ -134,9 +135,14 @@ public class ChatPopupPlugin extends BaseUIPlugin {
         task.setCreatedTime(new Date());
         task.setStatus(status);
         task = taskService.createTask(task);
-        jTasks.add(buildJSON(task));
+        try {
+          result = mapper.writeValueAsBytes(buildJSON(task));
+        } catch (Exception e) {
+          log.error("Problem when adding task in chat", e);
+          return null;
+        }
       }
-      return new Response(jTasks.toJSONString().getBytes(), MediaType.APPLICATION_JSON);
+      return new Response(result, MediaType.APPLICATION_JSON);
     } else if (CREATE_TASK_INLINE_ACTION.equals(actionName)) {
       ParserContext parserCtx = new ParserContext(userService.getUserTimezone(creator));
       Task task = parseText(taskInput, parserCtx);
