@@ -22,12 +22,11 @@ define('x_editable_ckeditor', ['SHARED/jquery', 'SHARED/edit_inline_js', 'SHARED
                 var editor = this.$input.first().ckeditor({
                   customConfig: '/commons-extension/ckeditorCustom/config.js',
                   toolbarLocation: 'top',
-                  removePlugins: 'suggester,simpleLink,confighelper',
+                  removePlugins: 'suggester,confighelper',
                   toolbar: [
-                    ['Styles'],
-                    ['Bold','Italic','Underline'],
-                    ['TextColor'],
-                    ['NumberedList','BulletedList']
+                    ['Bold','Italic','RemoveFormat',],
+                    ['-','NumberedList','BulletedList','Blockquote'],
+                    ['-','simpleLink', 'selectImage'],
                   ],
                   on: {
                       blur: function () {
