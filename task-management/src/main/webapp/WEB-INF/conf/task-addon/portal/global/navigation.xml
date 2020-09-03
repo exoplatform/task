@@ -32,5 +32,11 @@
       <visibility>SYSTEM</visibility>
       <page-reference>portal::global::tasks</page-reference>
     </node>
+    <node>
+      <name>tasksone</name>
+      <label>#{addon.task.navigation.node.label}</label>
+      <visibility>SYSTEM</visibility>
+      <page-reference>portal::global::tasksone</page-reference>
+    </node>
   </page-nodes>
 </node-navigation>

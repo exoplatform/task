@@ -1,10 +1,316 @@
 @import "variables.less";
-// Variables
-@primaryColor: #578DC9;
-@greyColor: #a8b3c5;
-@greyBackground: #e1e8ee;
-@btnPrimaryDisableBackground: #afc9e5;
-@blackColor: #333333;
+@import "mixins.less";
+
+@taskCardMaxHeight: 250px;
+@taskCardParentMargin: 22px;
+@taskCardParentMaxHeight: @taskCardParentMargin + @taskCardMaxHeight;
+
+/*----------------------Tasks Management ---------------------*/
+#TasksParentContainer {
+  margin: 25px;
+  #TasksManagementPortlet {
+    .tasksMenuParent {
+      margin-bottom: 10px;
+    }
+    .projectAndTasksContainer {
+      .tasksToolbar {
+        .inputTasksFilter {
+          max-width: 250px;
+        }
+        .selectTasksFilter {
+          height: 40px;
+          width: auto;
+          padding-right: 20px;
+        }
+      }
+      .tasksListContainer {
+        .taskCardFlip {
+          transition: 0.6s;
+          transform-style: preserve-3d;
+          position: relative;
+          min-height: @taskCardParentMaxHeight;
+          padding: 0;
+          .taskCardFront {
+            z-index: 2;
+            transform: rotateY(0deg);
+            backface-visibility: hidden;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: @taskCardMaxHeight;
+            max-height: @taskCardMaxHeight;
+            width: 100%;
+            max-width: 100%;
+            .tasksCardItem {
+              height: @taskCardMaxHeight;
+              max-height: @taskCardMaxHeight;
+              flex-direction: column;
+              .taskItemToolbar {
+                .uiIconInformation {
+                  font-size: 20px;
+                }
+                .uiIconVerticalDots {
+                  font-size: 16px;
+                }
+              }
+              .noProjectColor {
+                background: @lightGrey;
+                .toolbarNoColor {
+                  color: @baseColorLight;
+                }
+              }
+              .taskItemInfo {
+                .taskItemDescription {
+                  min-height: 75px;
+                  p {
+                    margin-bottom: 0;
+                  }
+                  .noProjectDescription {
+                    color: @greyColorLighten1;
+                  }
+                }
+                .ProjectSpace {
+                  .v-list-item {
+                    min-height: 38px!important;
+                    .noSpaceProjectIcon {
+                      height: 28px;
+                      min-width: 28px;
+                      width: 28px;
+                      background: @greyColor;
+                      color: white;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                    }
+                    .noSpaceLabel {
+                      color: @greyColorLighten1;
+                    }
+                  }
+                }
+                .SpaceAdmin {
+                  .v-list-item {
+                    min-height: 38px!important;
+                  }
+                }
+              }
+            }
+          }
+          .tasksCardBack {
+            transform: rotateY(180deg);
+            backface-visibility: hidden;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: @taskCardMaxHeight;
+            max-height: @taskCardMaxHeight;
+            width: 100%;
+            max-width: 100%;
+            .tasksCardItem {
+              height: @taskCardMaxHeight;
+              max-height: @taskCardMaxHeight;
+              flex-direction: column;
+              .projectDetailsReverse {
+                position: relative;
+                .reverseInfoIcon {
+                  position: absolute;
+                  top: 12px;
+                }
+              }
+            }
+          }
+        }
+        .taskCardFlipped {
+          transform: rotateY(180deg);
+        }
+      }
+    }
+    #tasksListApplication {
+      #tasksList {
+        .tasksListItem {
+          background-color: @tableBackgroundAccent;
+          border: 1px solid @tableBorder;
+          border-radius: 4px;
+          .taskCheckBox {
+            max-width: 4%;
+            width: 4%;
+          }
+          .taskTitle {
+            width: 25%;
+            max-width: 25%;
+            text-align: left;
+            flex: 1 1 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+          .taskProject {
+            max-width: 15%;
+            width: 15%;
+            text-align: left;
+            .taskProjectName {
+              flex: 1 1 auto;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+              display: inline-block;
+              max-width: 160px;
+            }
+            .noProjectColor {
+              background: transparent!important;
+              border: 2px solid @baseColorLight;
+              color: @baseColorLight;
+            }
+            .beige {
+              background: transparent!important;
+              border: 2px solid #FFE1BE;
+              color: #FFE1BE;
+            }
+            .asparagus {
+              background: transparent!important;
+              border: 2px solid #909958;
+              color: #909958;
+            }
+            .laurel_green {
+              background: transparent!important;
+              border: 2px solid #BED67E;
+              color: #BED67E;
+            }
+            .moss_green {
+              background: transparent!important;
+              border: 2px solid #98CC81;
+              color: #98CC81;
+            }
+            .munsell_blue {
+              background: transparent!important;
+              border: 2px solid #319AB3;
+              color: #319AB3;
+            }
+            .sky_blue {
+              background: transparent!important;
+              border: 2px solid #4DBED9;
+              color: #4DBED9;
+            }
+            .powder_blue {
+              background: transparent!important;
+              border: 2px solid #9EE4F5;
+              color: #9EE4F5;
+            }
+            .baby_blue {
+              background: transparent!important;
+              border: 2px solid #B2E2FF;
+              color: #B2E2FF;
+            }
+            .navy_blue {
+              background: transparent!important;
+              border: 2px solid #4273C8;
+              color: #4273C8;
+            }
+            .blue_gray {
+              background: transparent!important;
+              border: 2px solid #8EB0EA;
+              color: #8EB0EA;
+            }
+            .light_blue {
+              background: transparent!important;
+              border: 2px solid #B3CFFF;
+              color: #B3CFFF;
+            }
+            .light_gray {
+              background: transparent!important;
+              border: 2px solid #CDCDCD;
+              color: #CDCDCD;
+            }
+            .purple {
+              background: transparent!important;
+              border: 2px solid #774EA9;
+              color: #774EA9;
+            }
+            .light_purple {
+              background: transparent!important;
+              border: 2px solid #BC99E7;
+              color: #BC99E7;
+            }
+            .pink {
+              background: transparent!important;
+              border: 2px solid #FFC8F0;
+              color: #FFC8F0;
+            }
+            .hot_pink {
+              background: transparent!important;
+              border: 2px solid #F97575;
+              color: #F97575;
+            }
+            .Orange {
+              background: transparent!important;
+              border: 2px solid #FFA500;
+              color: #FFA500;
+            }
+            .light_brown {
+              background: transparent!important;
+              border: 2px solid #C5B294;
+              color: #C5B294;
+            }
+            .gray {
+              background: transparent!important;
+              border: 2px solid #A39594;
+              color: #A39594;
+            }
+            .plum {
+              background: transparent!important;
+              border: 2px solid #CEA6AC;
+              color: #CEA6AC;
+            }
+          }
+          .taskAssignee {
+            max-width: 10%;
+            width: 10%;
+            text-align: center;
+          }
+          .taskLabels {
+            max-width: 10%;
+            width: 10%;
+            text-align: center;
+            .labelText {
+              background: @greyColor;
+              padding: 2px 4px;
+            }
+            .noLabelText {
+              color: @greyColorLighten1;
+            }
+          }
+          .taskActions {
+            max-width: 12%;
+            width: 12%;
+            text-align: center;
+          }
+          .taskStat {
+            max-width: 12%;
+            width: 12%;
+            text-align: left;
+            .uiBatteryHalfIcon {
+              &:before {
+                content: "\e9b2";
+                font-family: "PLF-FONT-ICONS" !important;
+                color: @header-popup-title;
+                font-style: normal;
+                font-size: 22px;
+              }
+            }
+            .taskStatLabel {
+
+            }
+          }
+          .taskDueDate {
+            max-width: 12%;
+            width: 12%;
+            text-align: right;
+          }
+        }
+      }
+    }
+  }
+}
+
 /*--------------------------Tasks ---------------------------*/
 
 #tasks {
@@ -23,7 +329,7 @@
     border-radius: 0px 5px 5px 0px;
   }
   .color-title {
-    color: @greyColor;
+    color: @greyColorLighten1;
   }
   .taskTitle {
     color: black;
@@ -62,7 +368,7 @@
       p {
         font-weight: normal;
         font-size: 15px;
-        color: @greyColor;
+        color: @greyColorLighten1;
       }
     }
   }
@@ -130,22 +436,22 @@
     input[type="text"] {
       font-size: 15px!important;
       cursor: pointer!important;
-      color: @blackColor !important;
+      color: @textColor !important;
       width: 84px;
     }
     input[type="text"]::placeholder {
-      color: @greyColor !important;
+      color: @greyColorLighten1 !important;
       padding-left: 8px;
     }
     .v-icon.v-icon.v-icon--link {
-      color: @greyColor;
+      color: @greyColorLighten1;
       padding-top: 8px;
       font-size: 20px;
     }
   }
   .assignTo {
     .v-select__slot {
-      border: 1px solid @greyColor;
+      border: 1px solid @greyColorLighten1;
       border-radius: 5px;
     }
   }
@@ -170,7 +476,7 @@
   .selectFont {
     .v-select__selection--comma {
       font-size: 15px;
-      color: @blackColor !important;
+      color: @textColor !important;
       min-width: max-content!important;
     }
     .v-menu__content {
@@ -197,7 +503,7 @@
     .v-label {
       top: 10px;
       font-size: 15px!important;
-      color: @greyColor !important;
+      color: @greyColorLighten1 !important;
       margin-left: 6px;
     }
   }
@@ -209,7 +515,7 @@
   }
   .mx-input {
     width: 92% !important;
-    color: @greyColor;
+    color: @greyColorLighten1;
     cursor: pointer;
     &:focus {
       border: none;
@@ -275,7 +581,7 @@
   }
 
   .taskDescription {
-    border: 1px solid @greyBackground;
+    border: 1px solid @greyColor;
     border-radius: 5px;
     padding-top: 8px;
     padding-bottom: 8px
@@ -289,7 +595,7 @@
         content: attr(placeholder);
         pointer-events: none;
         display: block;
-        color: @greyColor!important;
+        color: @greyColorLighten1!important;
       }
     }
   }
@@ -337,7 +643,7 @@
   .custom-placeholer-color {
     input {
       &::placeholder {
-        color: @greyColor !important;
+        color: @greyColorLighten1 !important;
         opacity: 1;
       }
     }
@@ -346,7 +652,7 @@
     >.v-tabs-bar {
       .v-tab {
         &:not(.v-tab--active) {
-          color: @greyColor;
+          color: @greyColorLighten1;
         }
       }
     }
@@ -388,7 +694,7 @@
   .task-name {
     width: 90%;
     input[type="text"]::placeholder {
-      color: @greyColor !important;
+      color: @greyColorLighten1 !important;
     }
     &.taskCompleted{
       text-decoration: line-through;
