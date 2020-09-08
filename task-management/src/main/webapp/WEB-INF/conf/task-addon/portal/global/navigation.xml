@@ -33,10 +33,10 @@
       <page-reference>portal::global::tasks</page-reference>
     </node>
     <node>
-      <name>tasksone</name>
+      <name>taskstest</name>
       <label>#{addon.task.navigation.node.label}</label>
       <visibility>SYSTEM</visibility>
-      <page-reference>portal::global::tasksone</page-reference>
+      <page-reference>portal::global::taskstest</page-reference>
     </node>
   </page-nodes>
 </node-navigation>
