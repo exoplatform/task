@@ -7,11 +7,12 @@
             <v-col
               v-for="project in projects"
               :key="project.id"
+              :id="'project-'+project.id"
               cols="12"
               md="6"
               lg="4"
               xl="3"
-              class="pa-0">
+              class="pa-0 projectItem">
               <project-card
                 :project="project"/>
             </v-col>

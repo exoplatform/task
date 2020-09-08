@@ -15,8 +15,62 @@
         :class="project.color && 'white--text' || 'toolbarNoColor'"
         icon
         small
-        class="uiIconVerticalDots taskInfoIcon d-flex">
+        class="uiIconVerticalDots taskInfoIcon d-flex"
+        @click="displayActionMenu = true">
       </i>
+      <v-menu
+        v-model="displayActionMenu"
+        :attach="`#project-${project.id}`"
+        transition="slide-x-reverse-transition"
+        content-class="projectActionMenu"
+        offset-y>
+        <v-list>
+          <v-list-item>
+            <v-list-item-title class="subtitle-2">
+              <i class="uiIcon uiIconEdit pr-1"></i>
+              <span>Edit</span>
+            </v-list-item-title>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-title class="subtitle-2">
+              <i class="uiIcon uiIconHide pr-1"></i>
+              <span>Masquer</span>
+            </v-list-item-title>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-title class="subtitle-2">
+              <i class="uiIcon uiIconShare pr-1"></i>
+              <span>Partager</span>
+            </v-list-item-title>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-title class="subtitle-2">
+              <i class="uiIcon uiIconCloneNode pr-1"></i>
+              <span>Cloner</span>
+            </v-list-item-title>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-title class="subtitle-2">
+              <i class="uiIcon uiIconStar pr-1"></i>
+              <span>Add as Favorite</span>
+            </v-list-item-title>
+          </v-list-item>
+          <v-list-item class="px-2">
+            <v-list-item-title class="noColorLabel caption text-center text--secondary">
+              <span>No color</span>
+            </v-list-item-title>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-title class="subtitle-2 row projectColorPicker">
+              <span
+                v-for="(color, i) in projectColors"
+                :key="i"
+                :class="color.class"
+                class="projectColorCell"></span>
+            </v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
     </div>
     <div class="taskItemInfo pa-3">
       <div class="taskItemDescription">
@@ -61,7 +115,7 @@
               <a href="#">Admin Name</a>
             </v-list-item-title>
           </v-list-item-content>
-          <v-icon size="12" class="orange--text lighten-2">fa-star</v-icon>
+          <i class="uiIcon uiIconStar"></i>
         </v-list-item>
       </div>
     </div>
@@ -78,10 +132,46 @@
     data () {
       return {
         isSpaceProject: false,
+        displayActionMenu: false,
+        waitTimeUntilCloseMenu: 200,
+        projectColors: [
+          { class: 'asparagus' },
+          { class: 'munsell_blue' },
+          { class: 'navy_blue' },
+          { class: 'purple' },
+          { class: 'red' },
+          { class: 'brown' },
+          { class: 'laurel_green' },
+          { class: 'sky_blue' },
+          { class: 'blue_gray' },
+          { class: 'light_purple' },
+          { class: 'hot_pink' },
+          { class: 'light_brown' },
+          { class: 'moss_green' },
+          { class: 'powder_blue' },
+          { class: 'light_blue' },
+          { class: 'pink' },
+          { class: 'Orange' },
+          { class: 'gray' },
+          { class: 'green' },
+          { class: 'baby_blue' },
+          { class: 'light_gray' },
+          { class: 'beige' },
+          { class: 'yellow' },
+          { class: 'plum' },
+        ],
       }
     },
     created() {
       this.projectSpaceInformation();
+      $(document).on('mousedown', () => {
+        if (this.displayActionMenu) {
+          window.setTimeout(() => {
+            this.displayActionMenu = false;
+            this.displaySecondButton = false;
+          }, this.waitTimeUntilCloseMenu);
+        }
+      });
     },
     methods: {
       projectSpaceInformation() {
