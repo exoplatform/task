@@ -7,7 +7,7 @@
       <v-btn
         class="btn px-2 btn-primary addNewProjectButton">
         <span class="d-none font-weight-regular d-sm-inline">
-          + Add Project
+          + {{ $t('label.addProject') }}
         </span>
       </v-btn>
     </v-toolbar-title>
@@ -23,7 +23,7 @@
         class="selectTasksFilter my-auto mr-2 subtitle-1 ignore-vuetify-classes d-none d-sm-inline">
         <option
           value="allProjects">
-          All Projects
+          {{ $t('label.allProject') }}
         </option>
         <option
           value="favorites">

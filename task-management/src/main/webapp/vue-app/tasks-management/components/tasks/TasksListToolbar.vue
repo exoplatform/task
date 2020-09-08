@@ -7,7 +7,7 @@
       <v-btn
         class="btn px-2 btn-primary addNewProjectButton">
         <span class="d-none font-weight-regular d-sm-inline">
-          + Add Tasks
+          + {{ $t('label.addTask') }}
         </span>
       </v-btn>
     </v-toolbar-title>

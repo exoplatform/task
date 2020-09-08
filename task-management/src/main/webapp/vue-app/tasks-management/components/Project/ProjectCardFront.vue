@@ -28,40 +28,40 @@
           <v-list-item>
             <v-list-item-title class="subtitle-2">
               <i class="uiIcon uiIconEdit pr-1"></i>
-              <span>Edit</span>
+              <span>{{ $t('label.edit') }}</span>
             </v-list-item-title>
           </v-list-item>
           <v-list-item>
             <v-list-item-title class="subtitle-2">
               <i class="uiIcon uiIconHide pr-1"></i>
-              <span>Masquer</span>
+              <span>{{ $t('label.hide') }}</span>
             </v-list-item-title>
           </v-list-item>
           <v-list-item>
             <v-list-item-title class="subtitle-2">
               <i class="uiIcon uiIconShare pr-1"></i>
-              <span>Partager</span>
+              <span>{{ $t('label.share') }}</span>
             </v-list-item-title>
           </v-list-item>
           <v-list-item>
             <v-list-item-title class="subtitle-2">
               <i class="uiIcon uiIconCloneNode pr-1"></i>
-              <span>Cloner</span>
+              <span>{{ $t('label.clone') }}</span>
             </v-list-item-title>
           </v-list-item>
           <v-list-item>
             <v-list-item-title class="subtitle-2">
               <i class="uiIcon uiIconStar pr-1"></i>
-              <span>Add as Favorite</span>
+              <span>{{ $t('label.addAsFavorite') }}</span>
             </v-list-item-title>
           </v-list-item>
           <v-list-item class="px-2">
             <v-list-item-title class="noColorLabel caption text-center text--secondary">
-              <span>No color</span>
+              <span>{{ $t('label.noColor') }}</span>
             </v-list-item-title>
           </v-list-item>
           <v-list-item>
-            <v-list-item-title class="subtitle-2 row projectColorPicker">
+            <v-list-item-title class="subtitle-2 row projectColorPicker mx-auto my-2">
               <span
                 v-for="(color, i) in projectColors"
                 :key="i"
@@ -81,7 +81,7 @@
           :line-clamp="3"
           end-char=".."/>
         <div v-else>
-          <span class="noProjectDescription">No description available</span>
+          <span class="noProjectDescription">{{ $t('label.noDescription') }}</span>
         </div>
       </div>
       <v-divider class="pb-4"/>
@@ -101,7 +101,7 @@
             <v-list-item-avatar size="28" class="spaceAvatar py-1">
               <i class="uiIconEcmsNameSpace noSpaceProjectIcon"></i>
             </v-list-item-avatar>
-            <v-list-item-title class="noSpaceLabel body-2">No Space</v-list-item-title>
+            <v-list-item-title class="noSpaceLabel body-2">{{ $t('label.noSpace') }}</v-list-item-title>
           </v-list-item>
         </div>
       </div>

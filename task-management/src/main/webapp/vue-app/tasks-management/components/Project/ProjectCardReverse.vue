@@ -8,7 +8,7 @@
         @click="$emit('flip')">
       </i>
       <div class="projectDetails d-flex">
-        <p class="font-weight-bold ma-auto ">Project Details</p>
+        <p class="font-weight-bold ma-auto ">{{ $t('label.projectDetail') }}</p>
       </div>
     </div>
     <div style="margin:auto;">

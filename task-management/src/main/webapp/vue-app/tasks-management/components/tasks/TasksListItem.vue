@@ -24,7 +24,7 @@
     <div class="taskLabels">
       <span v-if="labels && labels.length == 1" class="labelText">{{ labels[0].name }}</span>
       <span v-else-if="labels && labels.length > 1" class="labelText">{{ labels.length }} labels</span>
-      <span v-else class="noLabelText">No labels</span>
+      <span v-else class="noLabelText"> {{ $t('label.noLabel') }}</span>
     </div>
     <!--<div class="taskActions"><span>task actions</span></div>-->
     <div class="taskStat d-flex align-center">
