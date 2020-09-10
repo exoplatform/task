@@ -14,7 +14,7 @@
 * You should have received a copy of the GNU Lesser General Public License
 * along with this program. If not, see http://www.gnu.org/licenses/ .
 */
-package org.exoplatform.task.service.impl;
+package org.exoplatform.task.legacy.service.impl;
 
 import org.exoplatform.task.dao.CommentHandler;
 import org.exoplatform.task.dao.LabelHandler;

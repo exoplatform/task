@@ -29,14 +29,13 @@ import org.junit.Test;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.task.dao.DAOHandler;
 import org.exoplatform.task.dao.ProjectHandler;
-import org.exoplatform.task.dao.ProjectQuery;
 import org.exoplatform.task.dao.TaskHandler;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.service.ParserContext;
-import org.exoplatform.task.service.TaskParser;
-import org.exoplatform.task.service.impl.TaskParserImpl;
+import org.exoplatform.task.legacy.service.ParserContext;
+import org.exoplatform.task.legacy.service.TaskParser;
+import org.exoplatform.task.legacy.service.impl.TaskParserImpl;
 import org.exoplatform.task.AbstractTest;
 
 /**

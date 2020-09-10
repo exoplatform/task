@@ -32,7 +32,7 @@ import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.integration.notification.NotificationUtils;
 import org.exoplatform.task.integration.notification.TaskCommentPlugin;
 import org.exoplatform.task.integration.notification.TaskMentionPlugin;
-import org.exoplatform.task.service.TaskService;
+import org.exoplatform.task.legacy.service.TaskService;
 import org.exoplatform.task.util.ListUtil;
 
 import java.util.ArrayList;

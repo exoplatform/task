@@ -17,7 +17,6 @@
   
 package org.exoplatform.task.integration;
 
-import org.apache.commons.lang.StringUtils;
 import org.exoplatform.commons.api.notification.NotificationContext;
 import org.exoplatform.commons.api.notification.model.PluginKey;
 import org.exoplatform.commons.notification.impl.NotificationContextImpl;
@@ -27,8 +26,8 @@ import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.integration.notification.*;
-import org.exoplatform.task.service.TaskPayload;
-import org.exoplatform.task.service.TaskService;
+import org.exoplatform.task.legacy.service.TaskPayload;
+import org.exoplatform.task.legacy.service.TaskService;
 
 import java.util.Collections;
 import java.util.HashSet;

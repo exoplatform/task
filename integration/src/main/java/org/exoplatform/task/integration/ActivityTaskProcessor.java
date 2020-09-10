@@ -18,7 +18,6 @@
 package org.exoplatform.task.integration;
 
 import org.exoplatform.commons.persistence.impl.EntityManagerService;
-import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.component.RequestLifeCycle;
 import org.exoplatform.container.xml.InitParams;
@@ -27,8 +26,7 @@ import org.exoplatform.portal.mop.SiteKey;
 import org.exoplatform.social.core.BaseActivityProcessorPlugin;
 import org.exoplatform.social.core.activity.model.ExoSocialActivity;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.service.TaskService;
-import org.exoplatform.task.util.ResourceUtil;
+import org.exoplatform.task.legacy.service.TaskService;
 import org.exoplatform.task.util.TaskUtil;
 import org.exoplatform.web.WebAppController;
 import org.exoplatform.web.application.RequestContext;

@@ -1,113 +1,99 @@
 package org.exoplatform.task.rest;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.exoplatform.social.core.space.spi.SpaceService;
-
 import org.apache.commons.lang3.StringUtils;
+import org.exoplatform.commons.utils.CommonsUtils;
+import org.exoplatform.social.core.manager.IdentityManager;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.log.ExoLogger;
-import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.rest.resource.ResourceContainer;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
-import org.exoplatform.task.domain.ChangeLog;
-import org.exoplatform.task.domain.Comment;
-import org.exoplatform.task.domain.Label;
-import org.exoplatform.task.domain.Project;
+import org.exoplatform.social.core.space.model.Space;
+import org.exoplatform.social.core.space.spi.SpaceService;
 import org.exoplatform.task.domain.Status;
-import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.dto.ChangeLogEntry;
+import org.exoplatform.task.dto.*;
 import org.exoplatform.task.exception.EntityNotFoundException;
-import org.exoplatform.task.model.*;
-import org.exoplatform.task.service.ProjectService;
-import org.exoplatform.task.service.StatusService;
-import org.exoplatform.task.service.TaskService;
-import org.exoplatform.task.service.UserService;
-import org.exoplatform.task.util.CommentUtil;
-import org.exoplatform.task.util.ListUtil;
-import org.exoplatform.task.util.ProjectUtil;
-import org.exoplatform.task.util.TaskUtil;
-import org.exoplatform.task.util.UserUtil;
+import org.exoplatform.task.legacy.service.UserService;
+import org.exoplatform.task.model.Permission;
+import org.exoplatform.task.model.User;
+import org.exoplatform.task.rest.model.CommentEntity;
+import org.exoplatform.task.rest.model.TaskEntity;
+import org.exoplatform.task.service.*;
+import org.exoplatform.task.storage.CommentStorage;
+import org.exoplatform.task.util.*;
+
+import io.swagger.annotations.*;
 
 @Path("/tasks")
 @Api(value = "/tasks", description = "Managing tasks")
 @RolesAllowed("users")
 public class TaskRestService implements ResourceContainer {
 
-
   private static final int DEFAULT_LIMIT = 20;
 
-  private static final Log LOG = ExoLogger.getLogger(TaskRestService.class);
+  private static final Log LOG           = ExoLogger.getLogger(TaskRestService.class);
 
-  private TaskService    taskService;
+  private TaskService      taskService;
 
-  private ProjectService projectService;
-  
-  private StatusService statusService;
-  
-  private UserService userService;
+  private CommentService   commentService;
 
-  private SpaceService spaceService;
+  private ProjectService   projectService;
 
-  public TaskRestService(TaskService taskService, ProjectService projectService, StatusService statusService,UserService userService, SpaceService spaceService) {
+  private StatusService    statusService;
+
+  private UserService      userService;
+
+  private SpaceService     spaceService;
+
+  private LabelService     labelService;
+
+  private CommentStorage   commentStorage;
+
+  public TaskRestService(TaskService taskService,
+                         CommentService commentService,
+                         ProjectService projectService,
+                         StatusService statusService,
+                         UserService userService,
+                         SpaceService spaceService,
+                         LabelService labelService) {
     this.taskService = taskService;
+    this.commentService = commentService;
     this.projectService = projectService;
     this.statusService = statusService;
     this.userService = userService;
     this.spaceService = spaceService;
+    this.labelService = labelService;
   }
 
   private enum TaskType {
-    ALL,
-    INCOMING,
-    OVERDUE
+    ALL, INCOMING, OVERDUE
   }
 
   @GET
   @RolesAllowed("users")
   @Produces(MediaType.APPLICATION_JSON)
-  @ApiOperation(value = "Gets uncompleted tasks of the authenticated user",
-      httpMethod = "GET",
-      response = Response.class,
-      notes = "This returns uncompleted tasks of the authenticated user in the following cases: <br/><ul><li>The authenticated is the creator of the task</li><li>The authenticated is the assignee of the task</li><li>The authenticated is a coworker of the task</li></ul>")
-  @ApiResponses(value = {
-      @ApiResponse(code = 200, message = "Request fulfilled") })
+  @ApiOperation(value = "Gets uncompleted tasks of the authenticated user", httpMethod = "GET", response = Response.class, notes = "This returns uncompleted tasks of the authenticated user in the following cases: <br/><ul><li>The authenticated is the creator of the task</li><li>The authenticated is the assignee of the task</li><li>The authenticated is a coworker of the task</li></ul>")
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled") })
   public Response getTasks(@ApiParam(value = "Type of task to get (all, incoming, overdue)", required = false) @QueryParam("status") String status,
                            @ApiParam(value = "Search term", required = false) @QueryParam("q") String query,
                            @ApiParam(value = "Offset", required = false, defaultValue = "0") @QueryParam("offset") int offset,
                            @ApiParam(value = "Limit", required = false, defaultValue = "20") @QueryParam("limit") int limit,
-                           @ApiParam(value = "Returning the number of tasks or not", defaultValue = "false") @QueryParam("returnSize") boolean returnSize) throws Exception {
+                           @ApiParam(value = "Returning the number of tasks or not", defaultValue = "false") @QueryParam("returnSize") boolean returnSize,
+                           @ApiParam(value = "Returning All Details", defaultValue = "false") @QueryParam("returnDetails") boolean returnDetails) throws Exception {
     String currentUser = ConversationState.getCurrent().getIdentity().getUserId();
 
     long tasksSize;
@@ -124,9 +110,8 @@ public class TaskRestService implements ResourceContainer {
       }
       switch (taskType) {
       case INCOMING: {
-        ListAccess<Task> tasksListAccess = taskService.getIncomingTasks(currentUser);
-        tasks = Arrays.asList(tasksListAccess.load(offset, limit));
-        tasksSize = Long.valueOf(tasksListAccess.getSize());
+        tasks = taskService.getIncomingTasks(currentUser, offset, limit);
+        tasksSize = taskService.countIncomingTasks(currentUser);
         break;
       }
       case OVERDUE: {
@@ -138,19 +123,19 @@ public class TaskRestService implements ResourceContainer {
         tasks = taskService.getUncompletedTasks(currentUser, limit);
         tasksSize = taskService.countUncompletedTasks(currentUser);
       }
-      }      
+      }
     } else {
       tasks = taskService.findTasks(currentUser, query, limit);
       tasks = tasks.stream().map(task -> {
-        long taskId = ((Task) task).getId();
+        long taskId = ((TaskDto) task).getId();
         int commentCount;
         try {
-          commentCount = taskService.getComments(taskId).getSize();
+          commentCount = commentService.getComments(taskId).getSize();
         } catch (Exception e) {
           LOG.warn("Error retrieving task '{}' comments count", taskId, e);
           commentCount = 0;
         }
-        return new TaskModel(((Task) task), commentCount);
+        return new TaskEntity(((TaskDto) task), commentCount);
       }).collect(Collectors.toList());
       tasksSize = taskService.countTasks(currentUser, query);
     }
@@ -158,9 +143,20 @@ public class TaskRestService implements ResourceContainer {
     if (returnSize) {
       JSONObject tasksSizeJsonObject = new JSONObject();
       tasksSizeJsonObject.put("size", tasksSize);
-      tasksSizeJsonObject.put("tasks", tasks);
+      if (returnDetails) {
+        tasksSizeJsonObject.put("tasks",
+                                tasks.stream()
+                                     .map(task -> getTaskDetails((TaskDto) task, currentUser))
+                                     .collect(Collectors.toList()));
+      } else {
+        tasksSizeJsonObject.put("tasks", tasks);
+      }
       return Response.ok(tasksSizeJsonObject).build();
     } else {
+      if (returnDetails) {
+        return Response.ok(tasks.stream().map(task -> getTaskDetails((TaskDto) task, currentUser)).collect(Collectors.toList()))
+                       .build();
+      }
       return Response.ok(tasks).build();
     }
   }
@@ -169,21 +165,16 @@ public class TaskRestService implements ResourceContainer {
   @Path("{id}")
   @Produces(MediaType.APPLICATION_JSON)
   @RolesAllowed("users")
-  @ApiOperation(value = "Updates a specific task by id",
-      httpMethod = "PUT",
-      response = Response.class,
-      notes = "This updates the task if the authenticated user has permissions to view the objects linked to this task.")
-  @ApiResponses(value = {
-      @ApiResponse(code = 200, message = "Request fulfilled"),
-      @ApiResponse(code = 400, message = "Invalid query input"),
-      @ApiResponse(code = 403, message = "Unauthorized operation"),
+  @ApiOperation(value = "Updates a specific task by id", httpMethod = "PUT", response = Response.class, notes = "This updates the task if the authenticated user has permissions to view the objects linked to this task.")
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled"),
+      @ApiResponse(code = 400, message = "Invalid query input"), @ApiResponse(code = 403, message = "Unauthorized operation"),
       @ApiResponse(code = 404, message = "Resource not found") })
   public Response updateTaskById(@ApiParam(value = "Task id", required = true) @PathParam("id") long id,
-                                 @ApiParam(value = "task object to be updated", required = true) Task updatedTask) throws Exception {
+                                 @ApiParam(value = "task object to be updated", required = true) TaskDto updatedTask) throws Exception {
     if (updatedTask == null) {
       return Response.status(Response.Status.BAD_REQUEST).build();
     }
-    Task task = taskService.getTask(id);
+    TaskDto task = taskService.getTask(id);
     if (task == null) {
       return Response.status(Response.Status.NOT_FOUND).build();
     }
@@ -198,15 +189,11 @@ public class TaskRestService implements ResourceContainer {
   @Path("projects")
   @RolesAllowed("users")
   @Produces(MediaType.APPLICATION_JSON)
-  @ApiOperation(value = "Gets projects",
-      httpMethod = "GET",
-      response = Response.class,
-      notes = "This returns projects of the authenticated user")
-  @ApiResponses(value = {
-      @ApiResponse(code = 200, message = "Request fulfilled"),
+  @ApiOperation(value = "Gets projects", httpMethod = "GET", response = Response.class, notes = "This returns projects of the authenticated user")
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled"),
       @ApiResponse(code = 500, message = "Internal server error") })
   public Response getProjects() {
-    List<Project> projects = ProjectUtil.getProjectTree(null, projectService);
+    List<ProjectDto> projects = ProjectUtil.getProjectTree(null, projectService);
     JSONArray projectsJsonArray = new JSONArray();
     try {
       projectsJsonArray = buildJSON(projectsJsonArray, projects);
@@ -221,24 +208,19 @@ public class TaskRestService implements ResourceContainer {
   @Path("projects/status/{id}")
   @RolesAllowed("users")
   @Produces(MediaType.APPLICATION_JSON)
-  @ApiOperation(value = "Gets the default status by project id",
-          httpMethod = "GET",
-          response = Response.class,
-          notes = "This returns the default status by project id")
-  @ApiResponses(value = {
-          @ApiResponse(code = 200, message = "Request fulfilled"),
-          @ApiResponse(code = 403, message = "Unauthorized operation"),
-          @ApiResponse(code = 500, message = "Internal server error")})
+  @ApiOperation(value = "Gets the default status by project id", httpMethod = "GET", response = Response.class, notes = "This returns the default status by project id")
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled"),
+      @ApiResponse(code = 403, message = "Unauthorized operation"), @ApiResponse(code = 500, message = "Internal server error") })
   public Response getDefaultStatusByProjectId(@ApiParam(value = "Project id", required = true) @PathParam("id") long id) throws EntityNotFoundException {
     Identity currentUser = ConversationState.getCurrent().getIdentity();
-    Project project = projectService.getProject(id);
+    ProjectDto project = projectService.getProject(id);
     if (project == null) {
       return Response.status(Response.Status.NOT_FOUND).build();
     }
     if (!project.canView(currentUser)) {
       return Response.status(Response.Status.UNAUTHORIZED).build();
     }
-    Status status = statusService.getDefaultStatus(id);
+    StatusDto status = statusService.getDefaultStatus(id);
     return Response.ok(status).build();
   }
 
@@ -246,24 +228,19 @@ public class TaskRestService implements ResourceContainer {
   @Path("projects/statuses/{id}")
   @RolesAllowed("users")
   @Produces(MediaType.APPLICATION_JSON)
-  @ApiOperation(value = "Gets the statuses by project id",
-          httpMethod = "GET",
-          response = Response.class,
-          notes = "This returns the statuses by project id")
-  @ApiResponses(value = {
-          @ApiResponse(code = 200, message = "Request fulfilled"),
-          @ApiResponse(code = 403, message = "Unauthorized operation"),
-          @ApiResponse(code = 404, message = "Resource not found")})
+  @ApiOperation(value = "Gets the statuses by project id", httpMethod = "GET", response = Response.class, notes = "This returns the statuses by project id")
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled"),
+      @ApiResponse(code = 403, message = "Unauthorized operation"), @ApiResponse(code = 404, message = "Resource not found") })
   public Response getStatusesByProjectId(@ApiParam(value = "Project id", required = true) @PathParam("id") long id) throws EntityNotFoundException {
     Identity currentUser = ConversationState.getCurrent().getIdentity();
-    Project project = projectService.getProject(id);
+    ProjectDto project = projectService.getProject(id);
     if (project == null) {
       return Response.status(Response.Status.NOT_FOUND).build();
     }
     if (!project.canView(currentUser)) {
       return Response.status(Response.Status.UNAUTHORIZED).build();
     }
-    List<Status> projectStatuses = statusService.getStatuses(id);
+    List<StatusDto> projectStatuses = statusService.getStatuses(id);
     return Response.ok(projectStatuses).build();
   }
 
@@ -271,16 +248,12 @@ public class TaskRestService implements ResourceContainer {
   @Path("labels")
   @RolesAllowed("users")
   @Produces(MediaType.APPLICATION_JSON)
-  @ApiOperation(value = "Gets labels of the authenticated user",
-      httpMethod = "GET",
-      response = Response.class,
-      notes = "This returns labels of the authenticated user")
-  @ApiResponses(value = {
-      @ApiResponse(code = 200, message = "Request fulfilled") })
+  @ApiOperation(value = "Gets labels of the authenticated user", httpMethod = "GET", response = Response.class, notes = "This returns labels of the authenticated user")
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled") })
   public Response getLabels() {
     String currentUser = ConversationState.getCurrent().getIdentity().getUserId();
-    List<Label> labels = new ArrayList<Label>();
-    labels = Arrays.asList(ListUtil.load(taskService.findLabelsByUser(currentUser), 0, -1));
+    List<LabelDto> labels = new ArrayList<LabelDto>();
+    labels = Arrays.asList(ListUtil.load(labelService.findLabelsByUser(currentUser), 0, -1));
     return Response.ok(labels).build();
   }
 
@@ -288,18 +261,14 @@ public class TaskRestService implements ResourceContainer {
   @Path("labels/{id}")
   @RolesAllowed("users")
   @Produces(MediaType.APPLICATION_JSON)
-  @ApiOperation(value = "Gets labels of a specific task by id",
-      httpMethod = "GET",
-      response = Response.class,
-      notes = "This returns labels of a specific task by id")
-  @ApiResponses(value = {
-      @ApiResponse(code = 200, message = "Request fulfilled"),
+  @ApiOperation(value = "Gets labels of a specific task by id", httpMethod = "GET", response = Response.class, notes = "This returns labels of a specific task by id")
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled"),
       @ApiResponse(code = 500, message = "Internal server error") })
   public Response getLabelsByTaskId(@ApiParam(value = "Task id", required = true) @PathParam("id") long id) {
     String currentUser = ConversationState.getCurrent().getIdentity().getUserId();
-    List<Label> labels = new ArrayList<Label>();
+    List<LabelDto> labels = new ArrayList<LabelDto>();
     try {
-      labels = Arrays.asList(ListUtil.load(taskService.findLabelsByTask(id, currentUser), 0, -1));
+      labels = Arrays.asList(ListUtil.load(labelService.findLabelsByTask(id, currentUser), 0, -1));
     } catch (EntityNotFoundException e) {
       LOG.error("Error getting label by task id", e);
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -310,22 +279,17 @@ public class TaskRestService implements ResourceContainer {
   @POST
   @Path("labels/{id}")
   @RolesAllowed("users")
-  @ApiOperation(value = "Adds a specific task by id to a label",
-      httpMethod = "POST",
-      response = Response.class,
-      notes = "This adds a specific task by id to a label")
-  @ApiResponses(value = {
-      @ApiResponse(code = 200, message = "Request fulfilled"),
-      @ApiResponse(code = 400, message = "Invalid query input"),
-      @ApiResponse(code = 403, message = "Unauthorized operation"),
+  @ApiOperation(value = "Adds a specific task by id to a label", httpMethod = "POST", response = Response.class, notes = "This adds a specific task by id to a label")
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled"),
+      @ApiResponse(code = 400, message = "Invalid query input"), @ApiResponse(code = 403, message = "Unauthorized operation"),
       @ApiResponse(code = 404, message = "Resource not found") })
-  public Response addTaskToLabel(@ApiParam(value = "label", required = true) Label addedLabel,
+  public Response addTaskToLabel(@ApiParam(value = "label", required = true) LabelDto addedLabel,
                                  @ApiParam(value = "Task id", required = true) @PathParam("id") long id) throws Exception {
     String currentUser = ConversationState.getCurrent().getIdentity().getUserId();
     if (addedLabel == null) {
       return Response.status(Response.Status.BAD_REQUEST).build();
     }
-    Task task = taskService.getTask(id);
+    TaskDto task = taskService.getTask(id);
     if (task == null) {
       return Response.status(Response.Status.NOT_FOUND).build();
     }
@@ -334,10 +298,10 @@ public class TaskRestService implements ResourceContainer {
     }
     if (addedLabel.getId() == 0) {// Create a new label and add a task to it
       addedLabel.setUsername(currentUser);
-      Label label = taskService.createLabel(addedLabel);
-      taskService.addTaskToLabel(id, label.getId());
+      LabelDto label = labelService.createLabel(addedLabel);
+      labelService.addTaskToLabel(task, label.getId());
     } else {// Add a task to an existing label
-      taskService.addTaskToLabel(id, addedLabel.getId());
+      labelService.addTaskToLabel(task, addedLabel.getId());
     }
     return Response.ok(addedLabel).build();
   }
@@ -345,28 +309,23 @@ public class TaskRestService implements ResourceContainer {
   @DELETE
   @Path("labels/{id}/{labelId}")
   @RolesAllowed("users")
-  @ApiOperation(value = "Deletes a specific task association to a specific label",
-      httpMethod = "DELETE",
-      response = Response.class,
-      notes = "This deletes a specific task association to a specific label")
-  @ApiResponses(value = {
-      @ApiResponse(code = 200, message = "Request fulfilled"),
-      @ApiResponse(code = 403, message = "Unauthorized operation"),
-      @ApiResponse(code = 404, message = "Resource not found") })
+  @ApiOperation(value = "Deletes a specific task association to a specific label", httpMethod = "DELETE", response = Response.class, notes = "This deletes a specific task association to a specific label")
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled"),
+      @ApiResponse(code = 403, message = "Unauthorized operation"), @ApiResponse(code = 404, message = "Resource not found") })
   public Response removeTaskFromLabel(@ApiParam(value = "label id", required = true) @PathParam("labelId") long labelId,
                                       @ApiParam(value = "Task id", required = true) @PathParam("id") long id) throws Exception {
-    Task task = taskService.getTask(id);
+    TaskDto task = taskService.getTask(id);
     if (task == null) {
       return Response.status(Response.Status.NOT_FOUND).build();
     }
-    Label label = taskService.getLabel(labelId);
+    LabelDto label = labelService.getLabel(labelId);
     if (label == null) {
       return Response.status(Response.Status.NOT_FOUND).build();
     }
     if (!TaskUtil.hasEditPermission(task)) {
       return Response.status(Response.Status.FORBIDDEN).build();
     }
-    taskService.removeTaskFromLabel(id, labelId);
+    labelService.removeTaskFromLabel(task, labelId);
     return Response.ok(label).build();
   }
 
@@ -374,18 +333,13 @@ public class TaskRestService implements ResourceContainer {
   @Path("logs/{id}")
   @RolesAllowed("users")
   @Produces(MediaType.APPLICATION_JSON)
-  @ApiOperation(value = "Gets a logs of a specific task",
-          httpMethod = "GET",
-          response = Response.class,
-          notes = "This returns a logs of a specific task")
-  @ApiResponses(value = {
-          @ApiResponse(code = 200, message = "Request fulfilled"),
-          @ApiResponse(code = 401, message = "Unauthorized operation"),
-          @ApiResponse(code = 404, message = "Resource not found")})
+  @ApiOperation(value = "Gets a logs of a specific task", httpMethod = "GET", response = Response.class, notes = "This returns a logs of a specific task")
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled"),
+      @ApiResponse(code = 401, message = "Unauthorized operation"), @ApiResponse(code = 404, message = "Resource not found") })
   public Response getTaskLogs(@ApiParam(value = "Task id", required = true) @PathParam("id") long id,
                               @ApiParam(value = "Offset", required = false, defaultValue = "0") @QueryParam("offset") int offset,
                               @ApiParam(value = "Limit", required = false, defaultValue = "-1") @QueryParam("limit") int limit) throws Exception {
-    Task task = taskService.getTask(id);
+    TaskDto task = taskService.getTask(id);
     if (task == null) {
       return Response.status(Response.Status.NOT_FOUND).build();
     }
@@ -395,55 +349,46 @@ public class TaskRestService implements ResourceContainer {
     if (limit == 0) {
       limit = -1;
     }
-    ChangeLog[] arr = ListUtil.load(taskService.getTaskLogs(id), offset, limit);
+    ChangeLogEntry[] arr = ListUtil.load(taskService.getTaskLogs(id), offset, limit);
     if (arr == null) {
       return Response.ok(Collections.emptyList()).build();
     }
-    List<ChangeLog> logs = new LinkedList<ChangeLog>(Arrays.asList(arr));
-
-    Collections.sort(logs);
-
-    List<ChangeLogEntry> changeLogEntries = changeLogsToChangeLogEntries(logs);
-
-    return Response.ok(changeLogEntries).build();
+    List<ChangeLogEntry> logs = new LinkedList<ChangeLogEntry>(Arrays.asList(arr));
+    return Response.ok(logs).build();
   }
 
   @GET
   @Path("comments/{id}")
   @RolesAllowed("users")
   @Produces(MediaType.APPLICATION_JSON)
-  @ApiOperation(value = "Gets a comment list of a specific task",
-          httpMethod = "GET",
-          response = Response.class,
-          notes = "This returns a comment list of a specific task")
-  @ApiResponses(value = {
-          @ApiResponse(code = 200, message = "Request fulfilled"),
-          @ApiResponse(code = 403, message = "Unauthorized operation"),
-          @ApiResponse(code = 404, message = "Resource not found")})
+  @ApiOperation(value = "Gets a comment list of a specific task", httpMethod = "GET", response = Response.class, notes = "This returns a comment list of a specific task")
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled"),
+      @ApiResponse(code = 403, message = "Unauthorized operation"), @ApiResponse(code = 404, message = "Resource not found") })
   public Response getTaskComments(@ApiParam(value = "Task id", required = true) @PathParam("id") long id,
                                   @ApiParam(value = "Offset", required = false, defaultValue = "0") @QueryParam("offset") int offset,
                                   @ApiParam(value = "Limit", required = false, defaultValue = "-1") @QueryParam("limit") int limit) throws Exception {
-    Task task = taskService.getTask(id);
+    TaskDto task = taskService.getTask(id);
     if (task == null) {
       return Response.status(Response.Status.NOT_FOUND).build();
     }
     if (!TaskUtil.hasViewPermission(task)) {
       return Response.status(Response.Status.UNAUTHORIZED).build();
     }
-    ListAccess<Comment> commentsListAccess = taskService.getComments(id);
+    ListAccess<CommentDto> commentsListAccess = commentService.getComments(id);
     if (limit == 0) {
       limit = -1;
     }
-//    Comment[] comments = ListUtil.load(commentsListAccess, offset, limit); To be replaced for other methods
-    List<Comment> comments = Arrays.asList(commentsListAccess.load(offset, limit));
-    taskService.loadSubComments(comments);
+    // Comment[] comments = ListUtil.load(commentsListAccess, offset, limit); To be
+    // replaced for other methods
+    List<CommentDto> comments = Arrays.asList(commentsListAccess.load(offset, limit));
+    commentService.loadSubComments(comments);
 
-    List<CommentModel> commentModelsList = new ArrayList<CommentModel>();
-    for (Comment comment : comments) {
-      CommentModel commentModel = addCommentModel(comment, commentModelsList);
+    List<CommentEntity> commentModelsList = new ArrayList<CommentEntity>();
+    for (CommentDto comment : comments) {
+      CommentEntity commentModel = addCommentModel(comment, commentModelsList);
       if (!comment.getSubComments().isEmpty()) {
-        List<CommentModel> subCommentsModelsList = new ArrayList<>();
-        for (Comment subComment : comment.getSubComments()) {
+        List<CommentEntity> subCommentsModelsList = new ArrayList<>();
+        for (CommentDto subComment : commentStorage.listCommentsToDtos(comment.getSubComments())) {
           addCommentModel(subComment, subCommentsModelsList);
         }
         commentModel.setSubComments(subCommentsModelsList);
@@ -456,19 +401,14 @@ public class TaskRestService implements ResourceContainer {
   @POST
   @Path("comments/{id}")
   @RolesAllowed("users")
-  @ApiOperation(value = "Adds comment to a specific task by id",
-          httpMethod = "POST",
-          response = Response.class,
-          notes = "This Adds comment to a specific task by id")
-  @ApiResponses(value = {
-          @ApiResponse(code = 200, message = "Request fulfilled"),
-          @ApiResponse(code = 400, message = "Invalid query input"),
-          @ApiResponse(code = 403, message = "Unauthorized operation"),
-          @ApiResponse(code = 404, message = "Resource not found") })
+  @ApiOperation(value = "Adds comment to a specific task by id", httpMethod = "POST", response = Response.class, notes = "This Adds comment to a specific task by id")
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled"),
+      @ApiResponse(code = 400, message = "Invalid query input"), @ApiResponse(code = 403, message = "Unauthorized operation"),
+      @ApiResponse(code = 404, message = "Resource not found") })
   public Response addTaskComment(@ApiParam(value = "Comment text", required = true) String commentText,
                                  @ApiParam(value = "Task id", required = true) @PathParam("id") long id) throws Exception {
     String currentUser = ConversationState.getCurrent().getIdentity().getUserId();
-    Task task = taskService.getTask(id);
+    TaskDto task = taskService.getTask(id);
     if (task == null) {
       return Response.status(Response.Status.NOT_FOUND).build();
     }
@@ -479,32 +419,27 @@ public class TaskRestService implements ResourceContainer {
       return Response.status(Response.Status.FORBIDDEN).build();
     }
     commentText = URLDecoder.decode(commentText, "UTF-8");
-    Comment addedComment = taskService.addComment(id, currentUser, commentText);
+    CommentDto addedComment = commentService.addComment(task, currentUser, commentText);
     if (addedComment != null) {
-      addedComment = taskService.getComment(addedComment.getId());
+      addedComment = commentService.getComment(addedComment.getId());
     }
-    CommentModel commentModel = new CommentModel(addedComment, userService.loadUser(currentUser), commentText);
-    return Response.ok(commentModel).build();
+    CommentEntity commentEntity = new CommentEntity(addedComment, userService.loadUser(currentUser), commentText);
+    return Response.ok(commentEntity).build();
   }
 
   @POST
   @Path("comments/{commentId}/{id}")
   @RolesAllowed("users")
-  @ApiOperation(value = "Adds a sub comment to a specific parent comment by id and a specific task by id",
-          httpMethod = "POST",
-          response = Response.class,
-          notes = "This Adds sub comment to a parent comment in specific task by id")
-  @ApiResponses(value = {
-          @ApiResponse(code = 200, message = "Request fulfilled"),
-          @ApiResponse(code = 400, message = "Invalid query input"),
-          @ApiResponse(code = 403, message = "Unauthorized operation"),
-          @ApiResponse(code = 404, message = "Resource not found")})
+  @ApiOperation(value = "Adds a sub comment to a specific parent comment by id and a specific task by id", httpMethod = "POST", response = Response.class, notes = "This Adds sub comment to a parent comment in specific task by id")
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled"),
+      @ApiResponse(code = 400, message = "Invalid query input"), @ApiResponse(code = 403, message = "Unauthorized operation"),
+      @ApiResponse(code = 404, message = "Resource not found") })
   public Response addTaskSubComment(@ApiParam(value = "Comment text", required = true) String commentText,
                                     @ApiParam(value = "Comment id", required = true) @PathParam("commentId") long commentId,
                                     @ApiParam(value = "Task id", required = true) @PathParam("id") long id) throws Exception {
 
     String currentUser = ConversationState.getCurrent().getIdentity().getUserId();
-    Task task = taskService.getTask(id);
+    TaskDto task = taskService.getTask(id);
     if (task == null) {
       return Response.status(Response.Status.NOT_FOUND).build();
     }
@@ -516,51 +451,43 @@ public class TaskRestService implements ResourceContainer {
     }
 
     commentText = URLDecoder.decode(commentText, "UTF-8");
-    Comment addedComment = taskService.addComment(id, commentId, currentUser, commentText);
+    CommentDto addedComment = commentService.addComment(task, commentId, currentUser, commentText);
     if (addedComment != null) {
-      addedComment = taskService.getComment(addedComment.getId());
+      addedComment = commentService.getComment(addedComment.getId());
     }
-    CommentModel commentModel = new CommentModel(addedComment, userService.loadUser(currentUser), commentText);
-    return Response.ok(commentModel).build();
+    CommentEntity commentEntity = new CommentEntity(addedComment, userService.loadUser(currentUser), commentText);
+    return Response.ok(commentEntity).build();
   }
 
   @DELETE
   @Path("comments/{commentId}")
   @RolesAllowed("users")
-  @ApiOperation(value = "Deletes a specific task comment by id",
-          httpMethod = "DELETE",
-          response = Response.class,
-          notes = "This deletes a specific task comment by id")
-  @ApiResponses(value = {
-          @ApiResponse(code = 200, message = "Request fulfilled"),
-          @ApiResponse(code = 403, message = "Unauthorized operation"),
-          @ApiResponse(code = 404, message = "Resource not found")})
+  @ApiOperation(value = "Deletes a specific task comment by id", httpMethod = "DELETE", response = Response.class, notes = "This deletes a specific task comment by id")
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled"),
+      @ApiResponse(code = 403, message = "Unauthorized operation"), @ApiResponse(code = 404, message = "Resource not found") })
   public Response deleteComment(@ApiParam(value = "Comment id", required = true) @PathParam("commentId") long commentId) throws Exception {
-    Comment comment = taskService.getComment(commentId);
+    CommentDto comment = commentService.getComment(commentId);
     if (comment == null) {
       return Response.status(Response.Status.NOT_FOUND).build();
     }
     Identity currentIdentity = ConversationState.getCurrent().getIdentity();
-    if (!TaskUtil.canDeleteComment(currentIdentity, comment)) {
+    if (!TaskUtil.canDeleteComment(currentIdentity, commentStorage.commentToEntity(comment))) {
       return Response.status(Response.Status.FORBIDDEN).build();
     }
-    taskService.removeComment(commentId);
+    commentService.removeComment(commentId);
     return Response.ok(comment).build();
   }
+
   @GET
   @Path("usersToMention/{query}")
   @RolesAllowed("users")
   @Produces(MediaType.APPLICATION_JSON)
-  @ApiOperation(value = "Gets users to mention in comment",
-          httpMethod = "GET",
-          response = Response.class,
-          notes = "This returns users to mention in comment")
-  @ApiResponses(value = {
-          @ApiResponse(code = 200, message = "Request fulfilled")})
+  @ApiOperation(value = "Gets users to mention in comment", httpMethod = "GET", response = Response.class, notes = "This returns users to mention in comment")
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled") })
   public Response findUsersToMention(@ApiParam(value = "Query", required = true) @PathParam("query") String query) throws Exception {
     ListAccess<User> list = userService.findUserByName(query);
     JSONArray usersJsonArray = new JSONArray();
-    for(User user : list.load(0, UserUtil.SEARCH_LIMIT)) {
+    for (User user : list.load(0, UserUtil.SEARCH_LIMIT)) {
       JSONObject userJson = new JSONObject();
       userJson.put("id", "@" + user.getUsername());
       userJson.put("name", user.getDisplayName());
@@ -575,12 +502,8 @@ public class TaskRestService implements ResourceContainer {
   @Path("users/{query}/{projectName}")
   @RolesAllowed("users")
   @Produces(MediaType.APPLICATION_JSON)
-  @ApiOperation(value = "Gets users by query and project name",
-          httpMethod = "GET",
-          response = Response.class,
-          notes = "This returns users by query and project name")
-  @ApiResponses(value = {
-          @ApiResponse(code = 200, message = "Request fulfilled")})
+  @ApiOperation(value = "Gets users by query and project name", httpMethod = "GET", response = Response.class, notes = "This returns users by query and project name")
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled") })
   public Response getUsersByQueryAndProjectName(@ApiParam(value = "Query", required = true) @PathParam("query") String query,
                                                 @ApiParam(value = "projectName", required = true) @PathParam("projectName") String projectName) throws Exception {
     ListAccess<User> usersList = userService.findUserByName(query);
@@ -598,23 +521,23 @@ public class TaskRestService implements ResourceContainer {
     return Response.ok(usersJsonArray.toString()).build();
   }
 
-  private CommentModel addCommentModel(Comment comment, List<CommentModel> commentModelsList) {
+  private CommentEntity addCommentModel(CommentDto comment, List<CommentEntity> commentModelsList) {
     User user = userService.loadUser(comment.getAuthor());
     Status taskStatus = comment.getTask().getStatus();
     if (taskStatus != null) {
       comment.getTask().setStatus(taskStatus.clone());// To be checked
     }
-    CommentModel commentModel = new CommentModel(comment, user, CommentUtil.formatMention(comment.getComment(), userService));
-    if (commentModel.getSubComments() == null) {
-      commentModel.setSubComments(new ArrayList<>());
+    CommentEntity commentEntity = new CommentEntity(comment, user, CommentUtil.formatMention(comment.getComment(), userService));
+    if (commentEntity.getSubComments() == null) {
+      commentEntity.setSubComments(new ArrayList<>());
     }
-    commentModelsList.add(commentModel);
-    return commentModel;
+    commentModelsList.add(commentEntity);
+    return commentEntity;
   }
 
-  private JSONArray buildJSON(JSONArray projectsJsonArray, List<Project> projects) throws JSONException {
+  private JSONArray buildJSON(JSONArray projectsJsonArray, List<ProjectDto> projects) throws JSONException {
     Identity currentUser = ConversationState.getCurrent().getIdentity();
-    for (Project project : projects) {
+    for (ProjectDto project : projects) {
       if (project.canView(currentUser)) {
         long projectId = project.getId();
         JSONObject projectJson = new JSONObject();
@@ -624,28 +547,64 @@ public class TaskRestService implements ResourceContainer {
         projectJson.put("participator", projectService.getParticipator(projectId));
         projectJson.put("hiddenOn", project.getHiddenOn());
         projectJson.put("manager", projectService.getManager(projectId));
-        projectJson.put("children", projectService.getSubProjects(projectId));
+        projectJson.put("children", projectService.getSubProjects(projectId, 0, -1));
         projectJson.put("dueDate", project.getDueDate());
         projectJson.put("calendarIntegrated", project.isCalendarIntegrated());
         projectJson.put("description", project.getDescription());
         projectJson.put("status", statusService.getStatus(projectId));
         projectsJsonArray.put(projectJson);
-        if (projectService.getSubProjects(projectId) != null) {
-          List<Project> children = Arrays.asList(ListUtil.load(projectService.getSubProjects(projectId), 0, -1));
+        if (projectService.getSubProjects(projectId, 0, -1) != null) {
+          List<ProjectDto> children = projectService.getSubProjects(projectId, 0, -1);
           buildJSON(projectsJsonArray, children);
         }
       }
     }
     return projectsJsonArray;
   }
-  private ChangeLogEntry changeLogToChangeLogEntry(ChangeLog changeLog) {
-    return new ChangeLogEntry(changeLog,userService);
+  /*
+   * private ChangeLogEntry changeLogToChangeLogEntry(ChangeLog changeLog) {
+   * return new ChangeLogEntry(changeLog,userService); } private
+   * List<ChangeLogEntry> changeLogsToChangeLogEntries(List<ChangeLog> ChangeLogs)
+   * { return ChangeLogs.stream() .filter(Objects::nonNull)
+   * .map(this::changeLogToChangeLogEntry) .collect(Collectors.toList()); }
+   */
+
+  private TaskEntity getTaskDetails(TaskDto task, String userName) {
+
+    long taskId = task.getId();
+    int commentCount;
+    try {
+      commentCount = commentService.getComments(taskId).getSize();
+    } catch (Exception e) {
+      LOG.warn("Error retrieving task '{}' comments count", taskId, e);
+      commentCount = 0;
+    }
+    List<LabelDto> labels = new ArrayList<>();
+    try {
+      labels = Arrays.asList(labelService.findLabelsByTask(taskId, userName).load(0, -1));
+    } catch (Exception e) {
+      LOG.warn("Error retrieving task '{}' labels", taskId, e);
+    }
+    Space space = getProjectSpace(task, CommonsUtils.getService(SpaceService.class));
+    TaskEntity taskEntity = new TaskEntity(((TaskDto) task), commentCount);
+    taskEntity.setLabels(labels);
+    taskEntity.setSpace(space);
+    return  taskEntity;
   }
 
-  private List<ChangeLogEntry> changeLogsToChangeLogEntries(List<ChangeLog> ChangeLogs) {
-    return ChangeLogs.stream()
-                     .filter(Objects::nonNull)
-                     .map(this::changeLogToChangeLogEntry)
-                     .collect(Collectors.toList());
+  private Space getProjectSpace(TaskDto task, SpaceService spaceService) {
+    if (task.getStatus().getProject().getManager() != null && task.getStatus().getProject().getManager().size() > 0) {
+      for (String permission : task.getStatus().getProject().getManager()) {
+        int index = permission.indexOf(':');
+        if (index > -1) {
+          String groupId = permission.substring(index + 1);
+          Space space = spaceService.getSpaceByGroupId(groupId);
+          if (space != null) {
+            return space;
+          }
+        }
+      }
+    }
+    return null;
   }
 }

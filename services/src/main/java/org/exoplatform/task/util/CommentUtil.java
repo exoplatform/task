@@ -22,7 +22,7 @@ package org.exoplatform.task.util;
 import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.commons.utils.HTMLEntityEncoder;
 import org.exoplatform.task.model.User;
-import org.exoplatform.task.service.UserService;
+import org.exoplatform.task.legacy.service.UserService;
 
 import java.util.StringTokenizer;
 

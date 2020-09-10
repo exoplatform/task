@@ -14,7 +14,7 @@
 * You should have received a copy of the GNU Lesser General Public License
 * along with this program. If not, see http://www.gnu.org/licenses/ .
 */
-package org.exoplatform.task.service;
+package org.exoplatform.task.legacy.service;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
@@ -27,6 +27,7 @@ import java.util.*;
 
 import org.exoplatform.services.idgenerator.IDGeneratorService;
 import org.exoplatform.services.jcr.util.IdGenerator;
+import org.exoplatform.task.legacy.service.impl.TaskServiceImpl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -57,7 +58,6 @@ import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.model.CommentModel;
 import org.exoplatform.task.model.TaskModel;
 import org.exoplatform.task.model.User;
-import org.exoplatform.task.service.impl.TaskServiceImpl;
 import org.exoplatform.task.util.TaskUtil;
 
 @RunWith(MockitoJUnitRunner.class)

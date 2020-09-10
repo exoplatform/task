@@ -22,7 +22,6 @@ package org.exoplatform.task.management.controller;
 import javax.inject.Inject;
 
 import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 import juzu.MimeType;
@@ -32,16 +31,13 @@ import juzu.Response;
 import juzu.impl.common.Tools;
 import juzu.request.SecurityContext;
 
-import org.exoplatform.common.http.HTTPStatus;
 import org.exoplatform.commons.juzu.ajax.Ajax;
 import org.exoplatform.commons.utils.HTMLEntityEncoder;
 import org.exoplatform.commons.utils.ListAccess;
-import org.exoplatform.container.ExoContainer;
 import org.exoplatform.portal.config.UserACL;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.Group;
-import org.exoplatform.services.organization.MembershipHandler;
 import org.exoplatform.services.organization.MembershipType;
 import org.exoplatform.services.organization.MembershipTypeHandler;
 import org.exoplatform.services.organization.OrganizationService;
@@ -49,7 +45,6 @@ import org.exoplatform.services.organization.Query;
 import org.exoplatform.services.organization.UserHandler;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
-import org.exoplatform.services.security.MembershipEntry;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.UserSetting;
 import org.exoplatform.task.exception.EntityNotFoundException;
@@ -58,9 +53,9 @@ import org.exoplatform.task.exception.UnAuthorizedOperationException;
 import org.exoplatform.task.model.Permission;
 import org.exoplatform.task.model.User;
 import org.exoplatform.task.model.UserGroup;
-import org.exoplatform.task.service.ProjectService;
-import org.exoplatform.task.service.StatusService;
-import org.exoplatform.task.service.UserService;
+import org.exoplatform.task.legacy.service.ProjectService;
+import org.exoplatform.task.legacy.service.StatusService;
+import org.exoplatform.task.legacy.service.UserService;
 import org.exoplatform.task.util.*;
 
 import org.gatein.common.text.EntityEncoder;

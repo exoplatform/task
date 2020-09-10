@@ -17,21 +17,19 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.exoplatform.task.service;
+package org.exoplatform.task.legacy.service;
 
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Set;
 import java.util.TimeZone;
 
+import org.exoplatform.task.legacy.service.impl.TaskParserImpl;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.exoplatform.task.domain.Priority;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.service.impl.TaskParserImpl;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.

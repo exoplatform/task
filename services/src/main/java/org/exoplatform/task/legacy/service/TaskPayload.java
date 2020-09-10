@@ -15,7 +15,7 @@
  * along with this program; if not, see<http://www.gnu.org/licenses/>.
  **/
   
-package org.exoplatform.task.service;
+package org.exoplatform.task.legacy.service;
 
 import org.exoplatform.task.domain.Task;
 

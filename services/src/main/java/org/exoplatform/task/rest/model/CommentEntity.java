@@ -15,19 +15,25 @@
  * along with this program; if not, see<http://www.gnu.org/licenses/>.
  **/
   
-package org.exoplatform.task.service;
+package org.exoplatform.task.rest.model;
 
-import java.util.TimeZone;
+import lombok.Data;
+import org.exoplatform.task.dto.CommentDto;
+import org.exoplatform.task.model.User;
 
-public class ParserContext {
-  private TimeZone timezone;
+import java.util.List;
 
-  public ParserContext(TimeZone timezone) {
-    this.timezone = timezone;
+@Data
+public class CommentEntity {
+  private final CommentDto comment;
+  private final User author;
+  private final String formattedComment;
+  private List<CommentEntity> subComments;
+
+
+  public CommentEntity(CommentDto cmt, User author, String formattedComment) {
+    this.comment = cmt;
+    this.author = author;
+    this.formattedComment = formattedComment;
   }
-
-  public TimeZone getTimezone() {
-    return timezone;
-  }
-  
 }

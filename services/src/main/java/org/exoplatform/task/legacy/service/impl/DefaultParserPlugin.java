@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.exoplatform.task.service.impl;
+package org.exoplatform.task.legacy.service.impl;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -26,9 +26,9 @@ import java.util.regex.Pattern;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.task.domain.Priority;
-import org.exoplatform.task.service.ParserContext;
-import org.exoplatform.task.service.TaskBuilder;
-import org.exoplatform.task.service.TaskParserPlugin;
+import org.exoplatform.task.legacy.service.TaskParserPlugin;
+import org.exoplatform.task.legacy.service.ParserContext;
+import org.exoplatform.task.legacy.service.TaskBuilder;
 import org.exoplatform.task.util.DateUtil;
 
 /**

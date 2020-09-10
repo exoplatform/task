@@ -17,36 +17,13 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.exoplatform.task.service.impl;
-
-import java.util.ServiceLoader;
+package org.exoplatform.task.legacy.service;
 
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.service.ParserContext;
-import org.exoplatform.task.service.TaskBuilder;
-import org.exoplatform.task.service.TaskParser;
-import org.exoplatform.task.service.TaskParserPlugin;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
-public class TaskParserImpl implements TaskParser {
-  ServiceLoader<TaskParserPlugin> parsers = ServiceLoader.load(TaskParserPlugin.class,
-                                                               this.getClass().getClassLoader());
-
-  @Override
-  public Task parse(String input, ParserContext context) {
-    if(input == null) {
-      return null;
-    }
-
-    TaskBuilder builder = new TaskBuilder();
-    String in = input;
-    for(TaskParserPlugin parser : parsers) {
-      in = parser.parse(in, context, builder);
-    }
-    builder.withTitle(in);
-
-    return builder.build();
-  }
+public interface TaskParser {
+  Task parse(String input, ParserContext context);
 }

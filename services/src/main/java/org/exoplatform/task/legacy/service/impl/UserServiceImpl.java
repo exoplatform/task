@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.exoplatform.task.service.impl;
+package org.exoplatform.task.legacy.service.impl;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -39,7 +39,7 @@ import org.exoplatform.task.domain.UserSetting;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.exception.NotAllowedOperationOnEntityException;
 import org.exoplatform.task.model.User;
-import org.exoplatform.task.service.UserService;
+import org.exoplatform.task.legacy.service.UserService;
 
 import java.util.ArrayList;
 import java.util.TimeZone;

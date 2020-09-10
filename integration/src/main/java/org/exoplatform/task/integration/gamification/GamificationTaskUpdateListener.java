@@ -15,8 +15,8 @@ import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
 import org.exoplatform.social.core.manager.IdentityManager;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.service.TaskPayload;
-import org.exoplatform.task.service.TaskService;
+import org.exoplatform.task.legacy.service.TaskPayload;
+import org.exoplatform.task.legacy.service.TaskService;
 import org.exoplatform.task.util.TaskUtil;
 
 public class GamificationTaskUpdateListener extends Listener<TaskService, TaskPayload> {
