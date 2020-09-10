@@ -100,6 +100,7 @@ public class TaskDAOImpl extends CommonJPADAO<Task, Long> implements TaskHandler
     return  findAllByMembership(user, memberships);
   }
 
+    @Override
   public List<Task> findAllByMembership(String user, List<String> memberships) {
 
     Query query = getEntityManager().createNamedQuery("Task.findByMemberships", Task.class);

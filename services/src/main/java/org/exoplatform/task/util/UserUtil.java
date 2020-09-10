@@ -35,6 +35,9 @@ import org.exoplatform.services.organization.Group;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.services.security.MembershipEntry;
+import org.exoplatform.social.core.identity.model.Profile;
+import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
+import org.exoplatform.social.core.manager.IdentityManager;
 import org.exoplatform.task.model.UserGroup;
 
 /**
@@ -140,5 +143,16 @@ public final class UserUtil {
       }
     }
     return false;
+  }
+
+  public static org.exoplatform.task.model.User getUser(String userName){
+    if(userName==null) return null;
+    IdentityManager identityManager = CommonsUtils.getService(IdentityManager.class);
+    org.exoplatform.social.core.identity.model.Identity id = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME,userName);
+    if(id==null){
+      return null;
+    }
+    Profile profile = id.getProfile();
+    return new org.exoplatform.task.model.User(userName,  profile.getEmail(),  null,  null, profile.getFullName(), profile.getAvatarUrl(), profile.getUrl());
   }
 }

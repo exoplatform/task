@@ -26,6 +26,7 @@ import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.dto.LabelDto;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -56,6 +57,9 @@ public class TestUtils {
 
   public static long EXISTING_COMMENT_ID = 1;
   public static long UNEXISTING_COMMENT_ID = 2;
+
+  public static long EXISTING_LABEL_ID = 1;
+  public static long UNEXISTING_LABEL_ID = 2;
 
   public static void initH2DB() throws SQLException,
       ClassNotFoundException, LiquibaseException {
@@ -126,6 +130,14 @@ public class TestUtils {
     status.setName("TODO");
     status.setRank(1);
     return status;
+  }
+
+  public static LabelDto getDefaultLabel() {
+    LabelDto labelDto = new LabelDto();
+    labelDto.setId(EXISTING_LABEL_ID);
+    labelDto.setName("TODO");
+    labelDto.setUsername("label");
+    return labelDto;
   }
 
   public static Project getDefaultProject() {

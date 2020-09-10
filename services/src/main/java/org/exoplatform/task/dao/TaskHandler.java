@@ -36,6 +36,8 @@ public interface TaskHandler extends GenericDAO<Task, Long> {
 
   ListAccess<Task> findTasks(TaskQuery query);
 
+  public List<Task> findAllByMembership(String user, List<String> memberships);
+
   public <T> List<T> selectTaskField(TaskQuery query, String fieldName);
 
   Task findTaskByActivityId(String activityId);

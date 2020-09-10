@@ -37,16 +37,12 @@ import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.domain.Project;
-import org.exoplatform.task.service.ProjectService;
+import org.exoplatform.task.legacy.service.ProjectService;
 import org.exoplatform.task.util.ProjectUtil;
 import org.exoplatform.task.util.ResourceUtil;
 import org.exoplatform.task.util.StringUtil;
 import org.exoplatform.task.util.UserUtil;
 import org.exoplatform.web.WebAppController;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 public class ProjectSearchConnector extends SearchServiceConnector {
 

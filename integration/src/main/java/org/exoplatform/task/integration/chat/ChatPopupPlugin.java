@@ -27,6 +27,7 @@ import javax.ws.rs.core.MediaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.exoplatform.task.legacy.service.*;
 import org.json.simple.JSONObject;
 
 import org.exoplatform.commons.api.ui.*;
@@ -42,7 +43,7 @@ import org.exoplatform.task.dao.ProjectQuery;
 import org.exoplatform.task.domain.*;
 import org.exoplatform.task.integration.ActivityTaskProcessor;
 import org.exoplatform.task.model.User;
-import org.exoplatform.task.service.*;
+import org.exoplatform.task.legacy.service.*;
 import org.exoplatform.task.util.*;
 
 @SuppressWarnings("unchecked")
@@ -59,17 +60,17 @@ public class ChatPopupPlugin extends BaseUIPlugin {
 
   private static final String CREATE_TASK_INLINE_ACTION = "createTaskInline";
 
-  private ProjectService      projectService;
+  private ProjectService projectService;
 
-  private StatusService       statusService;
+  private StatusService statusService;
 
   private SpaceService        spaceService;
 
   private TaskService         taskService;
 
-  private UserService         userService;
+  private UserService userService;
 
-  private TaskParser          taskParser;
+  private TaskParser taskParser;
 
   private String              pluginType                = "chat_extension_popup";
   

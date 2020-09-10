@@ -24,7 +24,7 @@
   <parent>
     <artifactId>addons-parent-pom</artifactId>
     <groupId>org.exoplatform.addons</groupId>
-    <version>12-RC01</version>
+    <version>13-M01</version>
   </parent>
   <groupId>org.exoplatform.addons.task</groupId>
   <artifactId>task-management-parent</artifactId>
@@ -58,6 +58,7 @@
     <org.webjars.select2.version>3.5.2</org.webjars.select2.version>
     <mockito.version>2.0.13-beta</mockito.version>
     <h2database.version>1.2.145</h2database.version>
+    <org.lombok.version>1.18.2</org.lombok.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -116,6 +117,13 @@
         <groupId>org.exoplatform.addons.task</groupId>
         <artifactId>task-management-config</artifactId>
         <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <version>${org.lombok.version}</version>
+        <scope>provided</scope>
       </dependency>
       <!--juzu-plugins-less4j:1.1.0 requires less4j:1.4.0 which is not compatible with antlr 3.5-->
       <dependency>

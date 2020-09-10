@@ -13,13 +13,28 @@
   </component>
 
   <component>
-    <key>org.exoplatform.task.service.StatusService</key>
-    <type>org.exoplatform.task.service.impl.StatusServiceImpl</type>
+    <key>org.exoplatform.task.legacy.service.StatusService</key>
+    <type>org.exoplatform.task.legacy.service.impl.StatusServiceImpl</type>
   </component>
 
   <component>
-    <key>org.exoplatform.task.service.UserService</key>
-    <type>org.exoplatform.task.service.impl.UserServiceImpl</type>
+    <key>org.exoplatform.task.legacy.service.UserService</key>
+    <type>org.exoplatform.task.legacy.service.impl.UserServiceImpl</type>
+  </component>
+
+  <component>
+    <key>org.exoplatform.task.legacy.service.TaskService</key>
+    <type>org.exoplatform.task.legacy.service.impl.TaskServiceImpl</type>
+  </component>
+
+  <component>
+    <key>org.exoplatform.task.legacy.service.ProjectService</key>
+    <type>org.exoplatform.task.legacy.service.impl.ProjectServiceImpl</type>
+  </component>
+
+  <component>
+    <key>org.exoplatform.task.legacy.service.TaskParser</key>
+    <type>org.exoplatform.task.legacy.service.impl.TaskParserImpl</type>
   </component>
 
   <component>
@@ -28,13 +43,49 @@
   </component>
 
   <component>
+    <key>org.exoplatform.task.storage.TaskStorage</key>
+    <type>org.exoplatform.task.storage.impl.TaskStorageImpl</type>
+  </component>
+
+  <component>
+    <key>org.exoplatform.task.storage.LabelStorage</key>
+    <type>org.exoplatform.task.storage.impl.LabelStorageImpl</type>
+  </component>
+
+  <component>
+    <key>org.exoplatform.task.storage.CommentStorage</key>
+    <type>org.exoplatform.task.storage.impl.CommentStorageImpl</type>
+  </component>
+
+  <component>
+    <key>org.exoplatform.task.storage.ProjectStorage</key>
+    <type>org.exoplatform.task.storage.impl.ProjectStorageImpl</type>
+  </component>
+
+  <component>
+    <key>org.exoplatform.task.storage.StatusStorage</key>
+    <type>org.exoplatform.task.storage.impl.StatusStorageImpl</type>
+  </component>
+
+
+  <component>
     <key>org.exoplatform.task.service.ProjectService</key>
     <type>org.exoplatform.task.service.impl.ProjectServiceImpl</type>
   </component>
 
   <component>
-    <key>org.exoplatform.task.service.TaskParser</key>
-    <type>org.exoplatform.task.service.impl.TaskParserImpl</type>
+    <key>org.exoplatform.task.service.CommentService</key>
+    <type>org.exoplatform.task.service.impl.CommentServiceImpl</type>
+  </component>
+
+  <component>
+    <key>org.exoplatform.task.service.LabelService</key>
+    <type>org.exoplatform.task.service.impl.LabelServiceImpl</type>
+  </component>
+
+  <component>
+    <key>org.exoplatform.task.service.StatusService</key>
+    <type>org.exoplatform.task.service.impl.StatusServiceImpl</type>
   </component>
 
   <component>

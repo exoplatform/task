@@ -93,13 +93,12 @@ define('project-menu', ['SHARED/jquery', 'SHARED/taskLocale', 'ta_edit_inline', 
           CKEDITOR.basePath = '/commons-extension/ckeditor/';
           $dialog.find('textarea').ckeditor({
             customConfig: '/commons-extension/ckeditorCustom/config.js',
-            removePlugins: 'selectImage,simpleLink,hideBottomToolbar',
+            removePlugins: 'hideBottomToolbar',
             toolbarLocation: 'top',
             toolbar: [
-              ['Styles'],
-              ['Bold','Italic','Underline'],
-              ['TextColor'],
-              ['NumberedList','BulletedList']
+            ['Bold','Italic','RemoveFormat',],
+            ['-','NumberedList','BulletedList','Blockquote'],
+            ['-','simpleLink', 'selectImage'],
             ]
           });
           CKEDITOR.on('instanceReady', function(e) {

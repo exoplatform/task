@@ -24,7 +24,7 @@ import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.service.UserService;
+import org.exoplatform.task.legacy.service.UserService;
 import org.exoplatform.task.util.DateUtil;
 import org.exoplatform.task.util.ResourceUtil;
 import org.json.JSONException;
