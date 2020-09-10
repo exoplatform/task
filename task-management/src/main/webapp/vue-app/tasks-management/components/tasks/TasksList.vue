@@ -3,7 +3,7 @@
     <div
       v-for="task in tasks"
       :key="task.id"
-      class="tasksListItem pa-4">
+      class="tasksListItem">
       <tasks-list-item
         :task="task"/>
     </div>

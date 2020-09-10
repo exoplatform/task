@@ -1,5 +1,7 @@
 <template>
-  <div class="d-flex align-center">
+  <div
+    :class="getTaskPriorityColor(task.priority)"
+    class="taslListItemView  px-4 py-3 d-flex align-center">
     <div class="taskCheckBox">
       <v-radio
         v-model="enabled"
@@ -74,7 +76,19 @@
         return this.$tasksService.getLabelsByTaskId(id).then(data => {
           this.labels = data;
         });
-      }
+      },
+      getTaskPriorityColor(priority) {
+        switch(priority) {
+          case "HIGH":
+            return "taskHighPriority";
+          case "NORMAL":
+            return "taskNormalPriority";
+          case "LOW":
+            return "taskLowPriority";
+          case "NONE":
+            return "taskNonePriority";
+        }
+      },
     }
   }
 </script>

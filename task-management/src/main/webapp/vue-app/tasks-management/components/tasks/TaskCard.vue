@@ -1,6 +1,9 @@
 <template>
   <v-app id="taskCardItem" class="pa-3">
-    <v-card class="taskCard pa-3" flat>
+    <v-card
+      :class="getTaskPriorityColor(task.priority)"
+      class="taskCard pa-3"
+      flat>
       <div class="taskTitleId d-flex justify-space-between">
         <div class="taskTitle d-flex align-start">
           <v-radio
@@ -91,7 +94,19 @@
         return this.$userService.getUser(userName).then(data => {
           this.user = data;
         });
-      }
+      },
+      getTaskPriorityColor(priority) {
+        switch(priority) {
+          case "HIGH":
+            return "taskHighPriority";
+          case "NORMAL":
+            return "taskNormalPriority";
+          case "LOW":
+            return "taskLowPriority";
+          case "NONE":
+            return "taskNonePriority";
+        }
+      },
     }
   }
 </script>
