@@ -13,7 +13,7 @@ export function getProjectsList () {
 }
 
 export function getMyTasksList () {
-  return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/tasks`, {
+  return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/tasks?returnDetails=true`, {
     method: 'GET',
     credentials: 'include',
   }).then(resp => {
@@ -36,5 +36,4 @@ export function getLabelsByTaskId(taskId) {
       return resp.json();
     }
   });
-
 }

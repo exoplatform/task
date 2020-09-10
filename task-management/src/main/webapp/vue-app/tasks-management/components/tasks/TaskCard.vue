@@ -1,7 +1,7 @@
 <template>
   <v-app id="taskCardItem" class="pa-3">
     <v-card
-      :class="getTaskPriorityColor(task.priority)"
+      :class="getTaskPriorityColor(task.task.priority)"
       class="taskCard pa-3"
       flat>
       <div class="taskTitleId d-flex justify-space-between">
@@ -11,20 +11,20 @@
             value="radio-1"
             class="shrink mt-0"/>
           <ellipsis
-            v-if="task.title "
-            :title="task.title "
-            :data="task.title "
+            v-if="task.task.title "
+            :title="task.task.title "
+            :data="task.task.title "
             :line-clamp="2"
             end-char=".."/>
         </div>
         <div class="taskId">
-          <span class="caption text-sub-title">ID : {{ task.id }}</span>
+          <span class="caption text-sub-title">ID : {{ task.task.id }}</span>
         </div>
       </div>
       <div class="taskProjectAndLabel d-flex justify-space-between align-center mt-3">
         <div class="taskProject">
-          <div :class="task.status.project.color || 'noProjectColor'" class="taskProjectName mr-3 pa-1">
-            <span class="font-weight-bold">{{ task.status.project.name }}</span>
+          <div :class="task.task.status.project.color || 'noProjectColor'" class="taskProjectName mr-3 pa-1">
+            <span class="font-weight-bold">{{ task.task.status.project.name }}</span>
           </div>
         </div>
         <div class="taskLabels">
@@ -46,16 +46,16 @@
         </div>
         <div class="taskAssignee">
           <exo-user-avatar
-            :username="task.assignee"
-            :title="user.fullname"
-            :avatar-url="user.avatar"
+            :username="task.assignee.username"
+            :title="task.assignee.displayName"
+            :avatar-url="task.assignee.avatar"
             :size="iconSize"/>
         </div>
       </div>
       <v-divider/>
       <siv class="taskStatusAndDate d-flex justify-space-between pt-3">
         <div class="taskStat">
-          <span class="taskStatLabel pl-2">{{ task.status.name }}</span>
+          <span class="taskStatLabel pl-2">{{ task.task.status.name }}</span>
         </div>
         <div class="taskDueDate">
           <span>22/12/2020</span>
@@ -75,26 +75,12 @@
     data() {
       return {
         enabled: false,
-        labels:[],
+        labels:['label1', 'label2'],
         user: {},
         iconSize: 32,
       }
     },
-    created() {
-      this.getLabelsByTaskId(this.task.id);
-      this.getUser(this.task.assignee);
-    },
     methods: {
-      getLabelsByTaskId(id) {
-        return this.$tasksService.getLabelsByTaskId(id).then(data => {
-          this.labels = data;
-        });
-      },
-      getUser(userName) {
-        return this.$userService.getUser(userName).then(data => {
-          this.user = data;
-        });
-      },
       getTaskPriorityColor(priority) {
         switch(priority) {
           case "HIGH":
