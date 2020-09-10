@@ -14,7 +14,7 @@
     <v-spacer/>
     <v-scale-transition>
       <v-text-field
-        placeholder="Filter by project"
+        :placeholder="$t('label.filterProject','Enter project name')"
         prepend-inner-icon="fa-filter"
         class="inputTasksFilter pa-0 mr-3 my-auto"/>
     </v-scale-transition>

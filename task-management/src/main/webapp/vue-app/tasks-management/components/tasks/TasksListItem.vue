@@ -1,9 +1,9 @@
 <template>
   <div class="d-flex align-center">
     <div class="taskCheckBox">
-      <v-checkbox
+      <v-radio
         v-model="enabled"
-        hide-details
+        value="radio-1"
         class="shrink mr-2 mt-0"/>
     </div>
     <div class="taskTitle pr-3">
@@ -26,12 +26,22 @@
       <span v-else-if="labels && labels.length > 1" class="labelText">{{ labels.length }} labels</span>
       <span v-else class="noLabelText"> {{ $t('label.noLabel') }}</span>
     </div>
-    <!--<div class="taskActions"><span>task actions</span></div>-->
-    <div class="taskStat d-flex align-center">
-      <i class="uiBatteryHalfIcon"></i>
+    <div class="taskActions d-flex justify-center align-center">
+      <div class="taskComment d-flex">
+        <i class="uiIcon uiCommentIcon"></i>
+        <span class="taskCommentNumber caption">4</span>
+      </div>
+      <div class="taskAttachment  d-flex pl-3">
+        <i class="uiIcon uiAttachIcon"></i>
+        <span class="taskAttachNumber caption">2</span>
+      </div>
+    </div>
+    <div class="taskStat">
       <span class="taskStatLabel pl-2">{{ task.status.name }}</span>
     </div>
-    <div class="taskDueDate">22/12/2020</div>
+    <div class="taskDueDate">
+      <span>22/12/2020</span>
+    </div>
   </div>
 </template>
 <script>
@@ -46,7 +56,7 @@
       return {
         enabled: false,
         user: {},
-        iconSize: 37,
+        iconSize: 32,
         labels:[]
       }
     },

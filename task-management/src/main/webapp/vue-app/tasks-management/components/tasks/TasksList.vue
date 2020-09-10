@@ -11,22 +11,11 @@
 </template>
 <script>
   export default {
-    data () {
-      return {
-        tasks: []
+    props: {
+      tasks: {
+        type: Array,
+        default: () => [],
       }
     },
-    created() {
-      this.getTasksList();
-      console.log('tessjhfjdf dhjkhdjgkhdf dhgjdhgjkd');
-      console.log(this.tasks);
-    },
-    methods: {
-      getTasksList() {
-        return this.$tasksService.getMyTasksList().then(data => {
-          this.tasks = data;
-        });
-      }
-    }
   }
 </script>

@@ -12,11 +12,44 @@
       </v-btn>
     </v-toolbar-title>
     <v-spacer/>
+    <div class="taskDisplay">
+      <v-tabs
+        v-model="tasksTabModel"
+        @change="$emit('changed')">
+        <v-tab :href="taskCardTab" class="taskTabCards">
+          <i class="uiIcon uiIconCards"></i>
+          <span>{{ $t('label.cardsView') }}</span>
+        </v-tab>
+        <v-tab :href="taskListTab" class="taskTabList">
+          <i class="uiIcon uiIconList"></i>
+          <span>{{ $t('label.listView') }}</span>
+        </v-tab>
+      </v-tabs>
+    </div>
+    <v-spacer/>
     <v-scale-transition>
       <v-text-field
-        placeholder="Filter by task"
+        :placeholder="$t('label.filterTask','Enter task')"
         prepend-inner-icon="fa-filter"
         class="inputTasksFilter pa-0 mr-3 my-auto"/>
     </v-scale-transition>
   </v-toolbar>
 </template>
+<script>
+  export default {
+    props: {
+      taskCardTab:{
+        type: String,
+        default: ''
+      },
+      taskListTab: {
+        type: String,
+        default: ''
+      },
+      tasksTabModel: {
+        type: String,
+        default: ''
+      }
+    }
+  }
+</script>

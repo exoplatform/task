@@ -9,7 +9,9 @@ import ProjectCardReverse from './components/Project/ProjectCardReverse.vue';
 import TasksDashboard from './components/tasks/TasksDashboard.vue';
 import TasksListToolbar from './components/tasks/TasksListToolbar.vue';
 import TasksList from './components/tasks/TasksList.vue';
-import TasksListItem from "./components/tasks/TasksListItem.vue";
+import TasksListItem from './components/tasks/TasksListItem.vue';
+import TasksCardsList from './components/tasks/TasksCardsList.vue'
+import TaskCard from './components/tasks/TaskCard.vue'
 
 const components = {
   'tasks-management': TasksManagement,
@@ -23,7 +25,9 @@ const components = {
   'tasks-dashboard': TasksDashboard,
   'tasks-list-toolbar': TasksListToolbar,
   'tasks-list': TasksList,
-  'tasks-list-item': TasksListItem
+  'tasks-list-item': TasksListItem,
+  'tasks-cards-list': TasksCardsList,
+  'task-card': TaskCard
 
 };
 
