@@ -46,18 +46,29 @@
         .taskTabCards {
           border: 1px solid @borderColor;
           border-radius: 5px 0 0 5px;
-          height: 40px;
-          min-height: 40px;
+          height: 38px;
+          min-height: 38px;
         }
         .taskTabList {
           border: 1px solid @borderColor;
           border-radius: 0 5px 5px 0;
-          height: 40px;
-          min-height: 40px;
+          height: 38px;
+          min-height: 38px;
         }
         .v-tab.v-tab--active {
           border: 1px solid @primaryColor;
           background-color: @tabNormalLinkBackground;
+        }
+        .filterTasksSetting {
+          .uiIconFilterSetting {
+            font-family: "PLF-FONT-ICONS" !important;
+            font-style: normal;
+            font-size: 16px;
+            color: @primaryColor;
+            &:before {
+              content: "\eaf2";
+            }
+          }
         }
       }
       .tasksListContainer {

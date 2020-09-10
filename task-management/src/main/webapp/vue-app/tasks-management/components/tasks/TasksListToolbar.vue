@@ -33,6 +33,16 @@
         prepend-inner-icon="fa-filter"
         class="inputTasksFilter pa-0 mr-3 my-auto"/>
     </v-scale-transition>
+    <v-scale-transition>
+      <v-btn
+        class="btn px-2 btn-primary filterTasksSetting" 
+        outlined>
+        <i class="uiIcon uiIconFilterSetting pr-3"></i>
+        <span class="d-none font-weight-regular caption d-sm-inline">
+          {{ $t('label.filter') }} (3)
+        </span>
+      </v-btn>
+    </v-scale-transition>
   </v-toolbar>
 </template>
 <script>
