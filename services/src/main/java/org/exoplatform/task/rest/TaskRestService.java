@@ -10,12 +10,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
-import org.exoplatform.commons.utils.CommonsUtils;
-import org.exoplatform.social.core.manager.IdentityManager;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -28,7 +27,6 @@ import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.dto.*;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.legacy.service.UserService;
-import org.exoplatform.task.model.Permission;
 import org.exoplatform.task.model.User;
 import org.exoplatform.task.rest.model.CommentEntity;
 import org.exoplatform.task.rest.model.TaskEntity;
@@ -130,7 +128,7 @@ public class TaskRestService implements ResourceContainer {
         long taskId = ((TaskDto) task).getId();
         int commentCount;
         try {
-          commentCount = commentService.getComments(taskId).getSize();
+          commentCount = commentService.countComments(taskId);
         } catch (Exception e) {
           LOG.warn("Error retrieving task '{}' comments count", taskId, e);
           commentCount = 0;
@@ -252,9 +250,7 @@ public class TaskRestService implements ResourceContainer {
   @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled") })
   public Response getLabels() {
     String currentUser = ConversationState.getCurrent().getIdentity().getUserId();
-    List<LabelDto> labels = new ArrayList<LabelDto>();
-    labels = Arrays.asList(ListUtil.load(labelService.findLabelsByUser(currentUser), 0, -1));
-    return Response.ok(labels).build();
+    return Response.ok(labelService.findLabelsByUser(currentUser, 0, -1)).build();
   }
 
   @GET
@@ -266,14 +262,7 @@ public class TaskRestService implements ResourceContainer {
       @ApiResponse(code = 500, message = "Internal server error") })
   public Response getLabelsByTaskId(@ApiParam(value = "Task id", required = true) @PathParam("id") long id) {
     String currentUser = ConversationState.getCurrent().getIdentity().getUserId();
-    List<LabelDto> labels = new ArrayList<LabelDto>();
-    try {
-      labels = Arrays.asList(ListUtil.load(labelService.findLabelsByTask(id, currentUser), 0, -1));
-    } catch (EntityNotFoundException e) {
-      LOG.error("Error getting label by task id", e);
-      return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-    }
-    return Response.ok(labels).build();
+    return Response.ok(labelService.findLabelsByTask(id, currentUser, 0, -1)).build();
   }
 
   @POST
@@ -374,13 +363,10 @@ public class TaskRestService implements ResourceContainer {
     if (!TaskUtil.hasViewPermission(task)) {
       return Response.status(Response.Status.UNAUTHORIZED).build();
     }
-    ListAccess<CommentDto> commentsListAccess = commentService.getComments(id);
     if (limit == 0) {
       limit = -1;
     }
-    // Comment[] comments = ListUtil.load(commentsListAccess, offset, limit); To be
-    // replaced for other methods
-    List<CommentDto> comments = Arrays.asList(commentsListAccess.load(offset, limit));
+    List<CommentDto> comments = commentService.getComments(id, offset, limit);
     commentService.loadSubComments(comments);
 
     List<CommentEntity> commentModelsList = new ArrayList<CommentEntity>();
@@ -574,14 +560,14 @@ public class TaskRestService implements ResourceContainer {
     long taskId = task.getId();
     int commentCount;
     try {
-      commentCount = commentService.getComments(taskId).getSize();
+      commentCount = commentService.countComments(taskId);
     } catch (Exception e) {
       LOG.warn("Error retrieving task '{}' comments count", taskId, e);
       commentCount = 0;
     }
     List<LabelDto> labels = new ArrayList<>();
     try {
-      labels = Arrays.asList(labelService.findLabelsByTask(taskId, userName).load(0, -1));
+      labels = labelService.findLabelsByTask(taskId, userName, 0, -1);
     } catch (Exception e) {
       LOG.warn("Error retrieving task '{}' labels", taskId, e);
     }
@@ -589,11 +575,12 @@ public class TaskRestService implements ResourceContainer {
     TaskEntity taskEntity = new TaskEntity(((TaskDto) task), commentCount);
     taskEntity.setLabels(labels);
     taskEntity.setSpace(space);
-    return  taskEntity;
+    return taskEntity;
   }
 
   private Space getProjectSpace(TaskDto task, SpaceService spaceService) {
-    if (task.getStatus().getProject().getManager() != null && task.getStatus().getProject().getManager().size() > 0) {
+    if (task.getStatus() != null && task.getStatus().getProject().getManager() != null
+        && task.getStatus().getProject().getManager().size() > 0) {
       for (String permission : task.getStatus().getProject().getManager()) {
         int index = permission.indexOf(':');
         if (index > -1) {

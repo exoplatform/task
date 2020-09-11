@@ -1,6 +1,14 @@
 package org.exoplatform.task.storage.impl;
 
-import org.exoplatform.commons.utils.ListAccess;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import javax.inject.Inject;
+
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.task.dao.DAOHandler;
@@ -9,12 +17,6 @@ import org.exoplatform.task.dto.CommentDto;
 import org.exoplatform.task.dto.TaskDto;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.storage.CommentStorage;
-
-import javax.inject.Inject;
-import java.util.List;
-import java.util.Objects;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class CommentStorageImpl implements CommentStorage {
 
@@ -37,8 +39,21 @@ public class CommentStorageImpl implements CommentStorage {
     }
 
     @Override
-    public ListAccess<CommentDto> getComments(long taskId) {
-        return (ListAccess<CommentDto>) commentToDto((Comment) daoHandler.getCommentHandler().findComments(taskId));
+    public List<CommentDto> getComments(long taskId, int offset, int limit) {
+        try {
+        return Arrays.asList(daoHandler.getCommentHandler().findComments(taskId).load(offset, limit)).stream().map(this::commentToDto).collect(Collectors.toList());
+        } catch (Exception e) {
+            return new ArrayList<CommentDto>();
+        }
+    }
+
+    @Override
+    public int countComments(long taskId) {
+        try {
+        return daoHandler.getCommentHandler().findComments(taskId).getSize();
+        } catch (Exception e) {
+            return 0;
+        }
     }
 
     @Override

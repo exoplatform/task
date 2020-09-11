@@ -52,8 +52,13 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public ListAccess<CommentDto> getComments(long taskId) {
-        return commentStorage.getComments(taskId);
+    public List<CommentDto> getComments(long taskId, int offset, int limit) {
+        return commentStorage.getComments(taskId,offset,limit);
+    }
+
+    @Override
+    public int countComments(long taskId) {
+        return commentStorage.countComments(taskId);
     }
 
     @Override

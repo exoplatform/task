@@ -1,30 +1,31 @@
 package org.exoplatform.task.service;
 
-import org.exoplatform.commons.utils.ListAccess;
+import java.util.List;
+
 import org.exoplatform.task.dto.CommentDto;
 import org.exoplatform.task.dto.TaskDto;
 import org.exoplatform.task.exception.EntityNotFoundException;
 
-import java.util.List;
-
 public interface CommentService {
 
-    String TASK_COMMENT_CREATION = "exo.task.taskCommentCreation";
+  String TASK_COMMENT_CREATION = "exo.task.taskCommentCreation";
 
-    CommentDto getComment(long commentId);
+  CommentDto getComment(long commentId);
 
-    ListAccess<CommentDto> getComments(long taskId);
+  CommentDto addComment(TaskDto task, String username, String commentText) throws EntityNotFoundException;
 
-    CommentDto addComment(TaskDto task, String username, String commentText) throws EntityNotFoundException;
+  CommentDto addComment(TaskDto task, long parentCommentId, String username, String comment) throws EntityNotFoundException;
 
-    CommentDto addComment(TaskDto task, long parentCommentId, String username, String comment) throws EntityNotFoundException;
+  void removeComment(long commentId) throws EntityNotFoundException;
 
-    void removeComment(long commentId) throws EntityNotFoundException;
+  List<CommentDto> getComments(long taskId, int offset, int limit);
 
-    /**
-     * Fetch sub comments of designed comments
-     *
-     * @param listComments the given list of comments.
-     */
-    void loadSubComments(List<CommentDto> listComments);
+  int countComments(long taskId);
+
+  /**
+   * Fetch sub comments of designed comments
+   *
+   * @param listComments the given list of comments.
+   */
+  void loadSubComments(List<CommentDto> listComments);
 }
