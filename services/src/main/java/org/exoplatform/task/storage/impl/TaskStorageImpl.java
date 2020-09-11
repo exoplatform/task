@@ -245,6 +245,9 @@ public class TaskStorageImpl implements TaskStorage {
     }
 
     public Task toEntity(TaskDto taskDto) {
+        if(taskDto==null){
+            return null;
+        }
         Task taskEntity = new Task();
         taskEntity.setId(taskDto.getId());
         taskEntity.setTitle(taskDto.getTitle());
@@ -267,6 +270,9 @@ public class TaskStorageImpl implements TaskStorage {
     }
 
     public TaskDto toDto(Task taskEntity) {
+        if(taskEntity==null){
+            return null;
+        }
         TaskDto task = new TaskDto();
         task.setId(taskEntity.getId());
         task.setTitle(taskEntity.getTitle());

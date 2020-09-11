@@ -55,7 +55,7 @@ import javax.persistence.Table;
     @NamedQuery(name = "Status.findStatusByProject",
                 query = "SELECT s FROM TaskStatus s WHERE s.project.id = :projectId ORDER BY s.rank ASC"),
     @NamedQuery(name = "Status.countTaskStatusByProject",
-                query = "SELECT m.name AS name, COUNT(m) AS total FROM TaskStatus AS m where m.project.id = :projectID GROUP BY m.name ORDER BY m.name ASC")
+                query = "SELECT m.name AS name, COUNT(m) AS total FROM TaskStatus AS m where m.project.id = :projectId GROUP BY m.name ORDER BY m.name ASC")
 
         })
 public class Status implements Comparable<Status>{

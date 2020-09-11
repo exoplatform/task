@@ -116,6 +116,9 @@ public class StatusStorageImpl implements StatusStorage {
 
   @Override
   public Status statusToEntity(StatusDto statusDto) {
+    if(statusDto==null){
+      return null;
+    }
     Status status = new Status();
     status.setId(statusDto.getId());
     status.setName(statusDto.getName());
@@ -126,6 +129,9 @@ public class StatusStorageImpl implements StatusStorage {
 
   @Override
   public StatusDto statusToDTO(Status status) {
+    if(status==null){
+      return null;
+    }
     StatusDto statusDto = new StatusDto();
     statusDto.setId(status.getId());
     statusDto.setName(status.getName());

@@ -79,6 +79,9 @@ public class CommentStorageImpl implements CommentStorage {
 
     @Override
     public Comment commentToEntity(CommentDto commentDto) {
+        if(commentDto==null){
+            return null;
+        }
         Comment comment = new Comment();
         comment.setId(commentDto.getId());
         comment.setAuthor(commentDto.getAuthor());
@@ -90,6 +93,9 @@ public class CommentStorageImpl implements CommentStorage {
 
     @Override
     public CommentDto commentToDto(Comment comment) {
+        if(comment==null){
+            return null;
+        }
         CommentDto commentDto = new CommentDto();
         commentDto.setId(comment.getId());
         commentDto.setAuthor(comment.getAuthor());

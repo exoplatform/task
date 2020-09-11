@@ -85,6 +85,9 @@ public class LabelStorageImpl implements LabelStorage {
 
   @Override
   public Label labelToEntity(LabelDto labelDto) {
+    if(labelDto==null){
+      return null;
+    }
     Label label = new Label();
     label.setId(labelDto.getId());
     label.setUsername(labelDto.getUsername());
@@ -97,6 +100,9 @@ public class LabelStorageImpl implements LabelStorage {
 
   @Override
   public LabelDto labelToDto(Label label) {
+    if(label==null){
+      return null;
+    }
     LabelDto labelDto = new LabelDto(label);
     labelDto.setId(label.getId());
     labelDto.setUsername(label.getUsername());
