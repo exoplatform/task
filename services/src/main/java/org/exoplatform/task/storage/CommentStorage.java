@@ -1,37 +1,38 @@
 package org.exoplatform.task.storage;
 
-import org.exoplatform.commons.utils.ListAccess;
+import java.util.List;
+
 import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.dto.CommentDto;
 import org.exoplatform.task.dto.TaskDto;
 import org.exoplatform.task.exception.EntityNotFoundException;
 
-import java.util.List;
-
 public interface CommentStorage {
 
-    CommentDto getComment(long commentId);
+  CommentDto getComment(long commentId);
 
-    ListAccess<CommentDto> getComments(long taskId);
+  List<CommentDto> getComments(long taskId, int offset, int limit);
 
-    CommentDto addComment(TaskDto task, String username, String commentText) throws EntityNotFoundException;
+  int countComments(long taskId);
 
-    CommentDto addComment(TaskDto task, long parentCommentId, String username, String comment) throws EntityNotFoundException;
+  CommentDto addComment(TaskDto task, String username, String commentText) throws EntityNotFoundException;
 
-    void removeComment(long commentId) throws EntityNotFoundException;
+  CommentDto addComment(TaskDto task, long parentCommentId, String username, String comment) throws EntityNotFoundException;
 
-    /**
-     * Fetch sub comments of designed comments
-     *
-     * @param listComments the given list of comments.
-     */
-    void loadSubComments(List<CommentDto> listComments);
+  void removeComment(long commentId) throws EntityNotFoundException;
 
-    Comment commentToEntity(CommentDto commentDto);
+  /**
+   * Fetch sub comments of designed comments
+   *
+   * @param listComments the given list of comments.
+   */
+  void loadSubComments(List<CommentDto> listComments);
 
-    CommentDto commentToDto(Comment comment);
+  Comment commentToEntity(CommentDto commentDto);
 
-    List<CommentDto> listCommentsToDtos(List<Comment> comments);
+  CommentDto commentToDto(Comment comment);
 
-    public List<Comment> listCommentsToEntitys(List<CommentDto> commentDtos);
+  List<CommentDto> listCommentsToDtos(List<Comment> comments);
+
+  public List<Comment> listCommentsToEntitys(List<CommentDto> commentDtos);
 }

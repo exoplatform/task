@@ -37,13 +37,13 @@ public class LabelServiceImpl implements LabelService {
 
 
     @Override
-    public ListAccess<LabelDto> findLabelsByUser(String username) {
-        return labelStorage.findLabelsByUser(username);
+    public List<LabelDto> findLabelsByUser(String username, int offset, int limit) {
+        return labelStorage.findLabelsByUser(username,offset,limit);
     }
 
     @Override
-    public ListAccess<LabelDto> findLabelsByTask(long taskId, String username) throws EntityNotFoundException {
-        return labelStorage.findLabelsByTask(taskId, username);
+    public List<LabelDto> findLabelsByTask(long taskId, String username, int offset, int limit) {
+        return labelStorage.findLabelsByTask(taskId, username,offset,limit);
     }
 
     @Override
