@@ -18,6 +18,4 @@ public interface StatusHandler extends GenericDAO<Status, Long> {
   Status findByName(String name, long projectID);
 
   List<Status> getStatuses(long projectId);
-
-  List<Object[]> countTaskStatusByProject(long projectId);
 }

@@ -262,4 +262,12 @@ public class TaskServiceImpl implements TaskService {
         return taskStorage.getWatchersOfTask(task);
     }
 
+
+    @Override
+    public List<Object[]> countTaskStatusByProject(long projectId) {
+        return taskStorage.countTaskStatusByProject(projectId);
+    }
+
+
+
 }

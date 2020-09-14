@@ -221,6 +221,12 @@ public class TaskStorageImpl implements TaskStorage {
     }
 
     @Override
+    public List<Object[]> countTaskStatusByProject(long projectId) {
+        return daoHandler.getTaskHandler().countTaskStatusByProject(projectId);
+    }
+
+
+    @Override
     public ChangeLog changeLogToEntity(ChangeLogEntry changeLogEntry) {
         ChangeLog changeLog = new ChangeLog();
         changeLog.setId(changeLogEntry.getId());

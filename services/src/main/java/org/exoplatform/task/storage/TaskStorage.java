@@ -126,6 +126,8 @@ public interface TaskStorage {
 
     ListAccess<ChangeLogEntry> getTaskLogs(long taskId);
 
+    List<Object[]> countTaskStatusByProject(long projectId);
+
     ChangeLog changeLogToEntity(ChangeLogEntry changeLogEntry);
 
     ChangeLogEntry changeLogToDto(ChangeLog changeLog);

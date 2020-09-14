@@ -124,5 +124,4 @@ public class StatusServiceImpl implements StatusService {
         return statusStorage.updateStatus(id, name);
     }
 
-
 }

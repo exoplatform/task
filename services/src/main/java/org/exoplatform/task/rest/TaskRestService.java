@@ -23,6 +23,7 @@ import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
+import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.dto.*;
 import org.exoplatform.task.exception.EntityNotFoundException;
@@ -527,6 +528,59 @@ public class TaskRestService implements ResourceContainer {
       if (project.canView(currentUser)) {
         long projectId = project.getId();
         JSONObject projectJson = new JSONObject();
+        List<Object[]> statusObjects = taskService.countTaskStatusByProject(projectId);
+        if (statusObjects != null && statusObjects.size() > 0) {
+          JSONArray statusStats = new JSONArray();
+          for (Object[] result : statusObjects) {
+            JSONObject statJson = new JSONObject();
+            statJson.put("status", (String) result[0]);
+            statJson.put("taskNumber", ((Number) result[1]).intValue());
+            statusStats.put(statJson);
+          }
+          projectJson.put("statusStats", statusStats);
+        }
+        Space space = null;
+        Set<String> projectManagers = projectService.getManager(projectId);
+        Set<String> managers = new LinkedHashSet();
+        if (projectManagers.size() > 0) {
+          for (String permission : projectService.getManager(projectId)) {
+            int index = permission.indexOf(':');
+            if (index > -1) {
+              String groupId = permission.substring(index + 1);
+              space = spaceService.getSpaceByGroupId(groupId);
+              managers.addAll(Arrays.asList(space.getManagers()));
+            } else {
+              managers.add(permission);
+            }
+          }
+        }
+        if (managers.size() > 0) {
+          JSONArray managersJsonArray = new JSONArray();
+          for (String usr : managers) {
+            JSONObject manager = new JSONObject();
+            User user_ = UserUtil.getUser(usr);
+            manager.put("username", user_.getUsername());
+            manager.put("email", user_.getEmail());
+            manager.put("displayName", user_.getDisplayName());
+            manager.put("avatar", user_.getAvatar());
+            manager.put("url", user_.getUrl());
+            manager.put("enable", user_.isEnable());
+            manager.put("deleted", user_.isDeleted());
+            managersJsonArray.put(manager);
+          }
+          projectJson.put("managerIdentities", managersJsonArray);
+        }
+        if(space!=null){
+          JSONObject spaceJson = new JSONObject();
+          spaceJson.put("prettyName",space.getPrettyName());
+          spaceJson.put("url",space.getUrl());
+          spaceJson.put("displayName",space.getDisplayName());
+          spaceJson.put("id",space.getId());
+          spaceJson.put("avatarUrl",space.getAvatarUrl());
+          spaceJson.put("description",space.getDescription());
+          projectJson.put("space", space);
+        }
+
         projectJson.put("id", projectId);
         projectJson.put("name", project.getName());
         projectJson.put("color", project.getColor());
@@ -571,27 +625,28 @@ public class TaskRestService implements ResourceContainer {
     } catch (Exception e) {
       LOG.warn("Error retrieving task '{}' labels", taskId, e);
     }
-    Space space = getProjectSpace(task, CommonsUtils.getService(SpaceService.class));
+    Space space = null;
+    if (task.getStatus() != null && task.getStatus().getProject() != null) {
+      space = getProjectSpace(task.getStatus().getProject(), CommonsUtils.getService(SpaceService.class));
+    }
+
     TaskEntity taskEntity = new TaskEntity(((TaskDto) task), commentCount);
     taskEntity.setLabels(labels);
     taskEntity.setSpace(space);
     return taskEntity;
   }
 
-  private Space getProjectSpace(TaskDto task, SpaceService spaceService) {
-    if (task.getStatus() != null && task.getStatus().getProject().getManager() != null
-        && task.getStatus().getProject().getManager().size() > 0) {
-      for (String permission : task.getStatus().getProject().getManager()) {
-        int index = permission.indexOf(':');
-        if (index > -1) {
-          String groupId = permission.substring(index + 1);
-          Space space = spaceService.getSpaceByGroupId(groupId);
-          if (space != null) {
-            return space;
-          }
-        }
+  private Space getProjectSpace(Project project, SpaceService spaceService) {
+    for (String permission : projectService.getManager(project.getId())) {
+      int index = permission.indexOf(':');
+      if (index > -1) {
+        String groupId = permission.substring(index + 1);
+        Space space = spaceService.getSpaceByGroupId(groupId);
+        return space;
+
       }
     }
+
     return null;
   }
 }

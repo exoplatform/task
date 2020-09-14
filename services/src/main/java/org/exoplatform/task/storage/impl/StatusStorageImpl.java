@@ -140,11 +140,6 @@ public class StatusStorageImpl implements StatusStorage {
     return statusDto;
   }
 
-  @Override
-  public List<Object[]> countTaskStatusByProject(long projectId) {
-    return daoHandler.getStatusHandler().countTaskStatusByProject(projectId);
-  }
-
   private StatusDto findAltStatus(StatusDto st, ProjectDto project) {
     List<StatusDto> allSt = new LinkedList<StatusDto>(getStatuses(project.getId()));
     Collections.sort(allSt.stream().map(this::statusToEntity).collect(Collectors.toList()));

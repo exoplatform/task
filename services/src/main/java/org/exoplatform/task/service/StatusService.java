@@ -49,4 +49,6 @@ public interface StatusService {
     StatusDto removeStatus(long statusId) throws EntityNotFoundException, NotAllowedOperationOnEntityException;
 
     StatusDto updateStatus(long statusId, String statusName) throws EntityNotFoundException, NotAllowedOperationOnEntityException;
+
+
 }

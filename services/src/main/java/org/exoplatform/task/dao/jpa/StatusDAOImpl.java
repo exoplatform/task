@@ -89,18 +89,6 @@ public class StatusDAOImpl extends CommonJPADAO<Status, Long> implements StatusH
     return findByNamedQuery("Status.findStatusByProject", param, -1);
   }
 
-  @Override
-  public List<Object[]> countTaskStatusByProject(long projectId) {
-    TypedQuery<Object[]> query = getEntityManager().createNamedQuery("Status.countTaskStatusByProject", Object[].class)
-            .setParameter("projectId",projectId);
-    try {
-      return query.getResultList();
-    } catch (NoResultException e) {
-      return new ArrayList<Object[]>();
-    } catch (Exception e) {
-      return new ArrayList<Object[]>();
-    }
-  }
 
   public List<Status> findByNamedQuery(String query, Map<String, Object> params, int limit) {
     EntityManager em = getEntityManager();

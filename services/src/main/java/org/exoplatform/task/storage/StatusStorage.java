@@ -45,5 +45,4 @@ public interface StatusStorage {
 
   public StatusDto statusToDTO(Status status);
 
-  public List<Object[]> countTaskStatusByProject(long projectId);
 }

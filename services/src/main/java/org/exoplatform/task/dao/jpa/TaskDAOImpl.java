@@ -28,11 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
-import javax.persistence.PersistenceException;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
+import javax.persistence.*;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
@@ -466,6 +462,20 @@ public class TaskDAOImpl extends CommonJPADAO<Task, Long> implements TaskHandler
       query.setParameter("term", "%" + term.replaceAll("%", "").toLowerCase() + "%");
       Long result = query.getSingleResult();
       return result == null ? 0 : result;
+    }
+
+
+    @Override
+    public List<Object[]> countTaskStatusByProject(long projectId) {
+        TypedQuery<Object[]> query = getEntityManager().createNamedQuery("Task.countTaskStatusByProject", Object[].class)
+                .setParameter("projectId",projectId);
+        try {
+            return query.getResultList();
+        } catch (NoResultException e) {
+            return new ArrayList<Object[]>();
+        } catch (Exception e) {
+            return new ArrayList<Object[]>();
+        }
     }
 }
 

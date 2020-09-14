@@ -86,5 +86,7 @@ public interface TaskHandler extends GenericDAO<Task, Long> {
    * @return tasks count
    */
   long countTasks(String user, String query);
+
+    List<Object[]> countTaskStatusByProject(long projectId);
 }
 
