@@ -9,7 +9,11 @@
         @click="$emit('flip')">
       </i>
       <v-spacer />
-      <span :class="project.color && 'white--text' || 'toolbarNoColor'">{{ project.name }}</span>
+      <span
+        :class="project.color && 'white--text' || 'toolbarNoColor'"
+        class="projectCardTitle">
+        {{ project.name }}
+      </span>
       <v-spacer />
       <i
         :class="project.color && 'white--text' || 'toolbarNoColor'"

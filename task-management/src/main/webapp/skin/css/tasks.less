@@ -98,9 +98,17 @@
                 .taskItemToolbar {
                   .uiIconInformation {
                     font-size: 20px;
+                    margin-top: -3px;
                   }
                   .uiIconVerticalDots {
                     font-size: 16px;
+                    margin-top: -3px;
+                  }
+                  .projectCardTitle {
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    max-width: 75%;
                   }
                 }
                 .noProjectColor {
@@ -142,7 +150,7 @@
                       min-height: 38px!important;
                       .uiIconStar {
                         &:before {
-                          content: "\e97d";
+                          content: "\e97f";
                           font-family: "PLF-FONT-ICONS" !important;
                           color: @colorIconOrange;
                           font-style: normal;
