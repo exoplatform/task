@@ -39,12 +39,6 @@
           </v-list-item>
           <v-list-item>
             <v-list-item-title class="subtitle-2">
-              <i class="uiIcon uiIconShare pr-1"></i>
-              <span>{{ $t('label.share') }}</span>
-            </v-list-item-title>
-          </v-list-item>
-          <v-list-item>
-            <v-list-item-title class="subtitle-2">
               <i class="uiIcon uiIconCloneNode pr-1"></i>
               <span>{{ $t('label.clone') }}</span>
             </v-list-item-title>
@@ -65,7 +59,7 @@
               <span
                 v-for="(color, i) in projectColors"
                 :key="i"
-                :class="color.class"
+                :class="[ color.class , color.class === project.color ? 'isSelected' : '']"
                 class="projectColorCell"></span>
             </v-list-item-title>
           </v-list-item>
