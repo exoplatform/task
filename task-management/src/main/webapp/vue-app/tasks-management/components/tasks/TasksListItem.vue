@@ -37,6 +37,7 @@
         <i class="uiIcon uiAttachIcon"></i>
         <span class="taskAttachNumber caption">2</span>
       </div>
+
     </div>
     <div class="taskStat">
       <span class="taskStatLabel pl-2">{{ task.task.status.name }}</span>
