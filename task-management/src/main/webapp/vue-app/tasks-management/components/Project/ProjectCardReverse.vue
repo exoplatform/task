@@ -11,8 +11,30 @@
         <p class="font-weight-bold ma-auto ">{{ $t('label.projectDetail') }}</p>
       </div>
     </div>
-    <div style="margin:auto;">
-      <div :id="'echartProjectTasks'+project.id" style="width:300px; height:220px; margin:auto;"></div>
+    <div class="echartStatsContent d-flex align-center px-2" style="margin:auto;">
+      <div :id="'echartProjectTasks'+project.id" style="width:160px; height:200px;"></div>
+      <div class="projectTasksTotalNumber">
+        <span class="totalNumber font-weight-bold">{{ totalLeftTasks }}</span>
+        <span class="text-body-2 totalLabel">{{ $t('exo.tasks.label.leftTasks') }}</span>
+      </div>
+      <div class="projectStatusNumber pl-4">
+        <p class="d-flex justify-space-between mb-2 taskToDoLabel">
+          <span class="caption">{{ $t('exo.tasks.status.todo') }}</span>
+          <span>{{ getStatusValue('ToDo') }}</span>
+        </p>
+        <p class="d-flex justify-space-between mb-2 taskInProgressLabel">
+          <span class="caption">{{ $t('exo.tasks.status.inprogress') }}</span>
+          <span>{{ getStatusValue('InProgress') }}</span>
+        </p>
+        <p class="d-flex justify-space-between mb-2 taskWaitingOnLabel">
+          <span class="caption">{{ $t('exo.tasks.status.waitingon') }}</span>
+          <span>{{ getStatusValue('WaitingOn') }}</span>
+        </p>
+        <p class="d-flex justify-space-between mb-2 taskDoneLabel">
+          <span class="caption">{{ $t('exo.tasks.status.done') }}</span>
+          <span>{{ getStatusValue('Done') }}</span>
+        </p>
+      </div>
     </div>
   </v-card>
 </template>
@@ -26,34 +48,17 @@
     },
     data() {
       return {
+        totalLeftTasks: 0,
         option : {
           tooltip: {
             trigger: 'item',
             formatter: '{b}:<br/> {c} ({d}%)'
           },
-          legend: {
-            orient: 'vertical',
-            right: '5%',
-            top: '15%',
-            data: ['Done', 'To Do', 'Doing', 'Blocked', 'Completed']
-          },
-          graphic: {
-            type: 'text',
-            left: '22%',
-            top: '42%',
-            style: {
-              text: '21 tasks left',
-              font: '14px arial',
-              fill: '#4d5466',
-              width: 30,
-              height: 30
-            }
-          },
             series: [
               {
                 type: 'pie',
-                center: ['35%', '45%'],
-                radius: ['65%', '60%'],
+                center: ['50%', '50%'],
+                radius: ['80%', '75%'],
                 avoidLabelOverlap: false,
                 label: {
                   show: false,
@@ -70,14 +75,14 @@
                   show: false
                 },
                 data: [
-                  {value: 335, name: 'Done'},
-                  {value: 310, name: 'To Do'},
-                  {value: 234, name: 'Doing'},
-                  {value: 135, name: 'Blocked'},
-                  {value: 1548, name: 'Completed'}
-                ]
+                  {value: this.getStatusValue('ToDo') , name: this.$t('exo.tasks.status.todo'),},
+                  {value: this.getStatusValue('InProgress'), name: this.$t('exo.tasks.status.inprogress')},
+                  {value: this.getStatusValue('WaitingOn'), name: this.$t('exo.tasks.status.waitingon')},
+                  {value: this.getStatusValue('Done') , name: this.$t('exo.tasks.status.done')}
+                ],
               }
-            ]
+            ],
+          color: ['#2da9e1', '#feca0e', '#e52a2d', '#008f3a']
           }
         }
     },
@@ -86,10 +91,17 @@
           this.initChart(this.option);
         },200);
     },
+    created() {
+      this.totalLeftTasks = this.getStatusValue('ToDo') + this.getStatusValue('InProgress') + this.getStatusValue('WaitingOn');
+    },
     methods :{
       initChart(option,id) {
           const chart = echarts.init($(`#echartProjectTasks${this.project.id}`)[0]);
           chart.setOption(option, true);
+      },
+      getStatusValue(status) {
+        const statusTaskNumber = this.project.statusStats.filter( elem => elem.status === status);
+        return statusTaskNumber && statusTaskNumber.length ? statusTaskNumber[0].taskNumber : 0;
       }
     }
   }

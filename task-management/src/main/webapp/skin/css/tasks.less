@@ -181,6 +181,56 @@
                   .reverseInfoIcon {
                     position: absolute;
                     top: 12px;
+                    color: @greyColorLighten1;
+                    font-size: 20px;
+                  }
+                }
+                .echartStatsContent {
+                  .projectStatusNumber{
+                    width: 50%;
+                    p {
+                      position: relative;
+                      &:before {
+                        position: absolute;
+                        content: '';
+                        width: 7px;
+                        height: 7px;
+                        border-radius: 50%;
+                        margin-left: -15px;
+                        top: 5px;
+                      }
+                    }
+                    .taskToDoLabel {
+                      &:before {
+                        background: @infoColor;
+                      }
+                    }
+                    .taskInProgressLabel {
+                      &:before {
+                        background: @warningColor;
+                      }
+                    }
+                    .taskWaitingOnLabel {
+                      &:before {
+                        background: @errorColor;
+                      }
+                    }
+                    .taskDoneLabel {
+                      &:before {
+                        background: @successColor;
+                      }
+                    }
+                  }
+                  .projectTasksTotalNumber {
+                    position: absolute;
+                    left: 17%;
+                    span {
+                      display: block;
+                      text-align: center;
+                    }
+                    .totalNumber {
+                      font-size: 1.5rem;
+                    }
                   }
                 }
               }
