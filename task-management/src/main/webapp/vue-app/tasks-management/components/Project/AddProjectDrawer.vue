@@ -43,6 +43,23 @@
         </textarea>
       </div>
     </template>
+    <template slot="footer">
+      <div class="d-flex">
+        <v-spacer />
+        <v-btn
+          class="btn mr-2">
+          <template>
+            {{ $t('popup.cancel') }}
+          </template>
+        </v-btn>
+        <v-btn
+          class="btn btn-primary">
+          <template>
+            {{ $t('label.save') }}
+          </template>
+        </v-btn>
+      </div>
+    </template>
   </exo-drawer>
 </template>
 <script>
