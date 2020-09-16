@@ -45,4 +45,8 @@ public interface StatusStorage {
 
   public StatusDto statusToDTO(Status status);
 
+  public List<StatusDto> listStatusToDTOs(List<Status> status);
+
+  public List<Status> listStatusToEntitys(List<StatusDto> status);
+
 }

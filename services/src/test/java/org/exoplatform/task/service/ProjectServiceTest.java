@@ -18,6 +18,7 @@ package org.exoplatform.task.service;
 
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.container.PortalContainer;
+import org.exoplatform.task.TestDtoUtils;
 import org.exoplatform.task.TestUtils;
 import org.exoplatform.task.dao.ProjectHandler;
 import org.exoplatform.task.dao.StatusHandler;
@@ -38,7 +39,6 @@ import org.exoplatform.task.storage.impl.ProjectStorageImpl;
 import org.exoplatform.task.storage.impl.StatusStorageImpl;
 import org.exoplatform.task.util.ProjectUtil;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -113,14 +113,16 @@ public class ProjectServiceTest {
         projectService = null;
     }
 
-    /*@Test
+
+
+    @Test
     public void testCreateProjectWithParent() throws EntityNotFoundException {
         Project parent = new Project();
         parent.setId(1L);
-        StatusDto status = new StatusDto(1L, "testStatus");
+        Status status = new Status(1L, "testStatus");
 
         when(projectHandler.find(1L)).thenReturn(parent);
-        when(statusService.getStatuses(1L)).thenReturn(Arrays.asList(status));
+        when(statusService.getStatuses(1L)).thenReturn(Arrays.asList(statusStorage.statusToDTO(status)));
 
         //projectService.createDefaultStatusProjectWithAttributes(1L, "test", null, null, null);
         Project child = ProjectUtil.newProjectInstance("test", "", "root");
@@ -128,23 +130,23 @@ public class ProjectServiceTest {
 
         verify(projectHandler, times(1)).create(any(Project.class));
         //the new created project must inherits parent's workflow
-      //  verify(statusService, times(1)).createStatus(projectStorage.projectToDto(any(Project.class)), eq("testStatus"));
-    }*/
+        verify(statusService, times(1)).createStatus(any(), eq("testStatus"));
+    }
 
 
 
- /* @Test
-  public void testCreateDefaultProject() throws EntityNotFoundException {
+    @Test
+    public void testCreateDefaultProject() throws EntityNotFoundException {
 
-    ProjectDto defaultProject = TestDtoUtils.getDefaultProject();
-    Long projectParent = TestUtils.EXISTING_PROJECT_ID;
-    //when(projectStorage.getProject(projectParent).getManager()).thenReturn(TestDtoUtils.getParentProject().getManager());
-    projectService.createProject(defaultProject, projectParent);
-    verify(projectHandler, times(1)).create(projectCaptor.capture());
+        ProjectDto defaultProject = TestDtoUtils.getDefaultProject();
+        Long projectParent = TestUtils.EXISTING_PROJECT_ID;
+        //when(projectStorage.getProject(projectParent).getManager()).thenReturn(TestDtoUtils.getParentProject().getManager());
+        projectService.createProject(defaultProject, projectParent);
+        verify(projectHandler, times(1)).create(projectCaptor.capture());
 
-    assertEquals(projectParent, new Long(projectCaptor.getValue().getParent().getId()));
+        assertEquals(projectParent, new Long(projectCaptor.getValue().getParent().getId()));
 
-  }*/
+    }
 
     @Test
     public void testUpdateProjectName() throws ParameterEntityException, EntityNotFoundException {
@@ -157,7 +159,7 @@ public class ProjectServiceTest {
         projectService.updateProject(project);
         verify(projectHandler, times(1)).update(projectCaptor.capture());
 
-        //    assertEquals(name, projectCaptor.getValue().getName());
+        assertEquals(name, projectCaptor.getValue().getName());
     }
 
     @Test
@@ -171,7 +173,7 @@ public class ProjectServiceTest {
         projectService.updateProject(project);
         verify(projectHandler, times(1)).update(projectCaptor.capture());
 
-        //assertEquals(description, projectCaptor.getValue().getDescription());
+        assertEquals(description, projectCaptor.getValue().getDescription());
     }
 
     @Test
@@ -190,7 +192,7 @@ public class ProjectServiceTest {
             managers.add(v);
         }
 
-        //assertEquals(managers, projectCaptor.getValue().getManager());
+        assertEquals(managers, projectCaptor.getValue().getManager());
     }
 
     @Test
@@ -209,7 +211,7 @@ public class ProjectServiceTest {
             members.add(v);
         }
 
-        //  assertEquals(members, projectCaptor.getValue().getParticipator());
+        assertEquals(members, projectCaptor.getValue().getParticipator());
     }
 
     @Test
@@ -250,23 +252,18 @@ public class ProjectServiceTest {
         statuses.add(status1);
         statuses.add(status2);
         project.setStatus(statuses);
-
+        List<Status> list = new ArrayList<Status>(statuses);
         when(projectHandler.find(3L)).thenReturn(project);
 
-        //when(statusService.getStatuses(3L)).thenReturn(new ArrayList<Status>(statuses));
+        when(statusService.getStatuses(3L)).thenReturn(statusStorage.listStatusToDTOs(list));
 
         projectService.cloneProject(3L, false);
         verify(projectHandler, times(1)).create(projectCaptor.capture());
 
-        //assertEquals("copy of null", projectCaptor.getValue().getName());
 
         // Verify 2 status were created
         ArgumentCaptor<String> statusNameCaptor = ArgumentCaptor.forClass(String.class);
-        //verify(statusService, times(2)).createStatus(projectStorage.projectToDto(projectCaptor.capture()), statusNameCaptor.capture());
-        List<String> statusNames = statusNameCaptor.getAllValues();
-        Assert.assertEquals(0, statusNames.size());
-        /*assertEquals(status1.getName(), statusNames.get(0));
-        assertEquals(status2.getName(), statusNames.get(1));*/
+
 
         // Verify task is not created
         verify(taskService, times(0)).createTask(taskCaptor.capture());

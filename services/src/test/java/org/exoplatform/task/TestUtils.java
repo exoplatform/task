@@ -27,6 +27,8 @@ import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.dto.LabelDto;
+import org.exoplatform.task.dto.UserSettingDto;
+import org.exoplatform.task.model.User;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -132,6 +134,14 @@ public class TestUtils {
     return status;
   }
 
+  public static UserSettingDto getDefaultUserSettingDto(){
+    UserSettingDto userSettingDto = new UserSettingDto();
+    userSettingDto.setUsername("user");
+    userSettingDto.setShowHiddenProject(true);
+    userSettingDto.setShowHiddenLabel(true);
+    return userSettingDto;
+  }
+
   public static LabelDto getDefaultLabel() {
     LabelDto labelDto = new LabelDto();
     labelDto.setId(EXISTING_LABEL_ID);
@@ -150,6 +160,17 @@ public class TestUtils {
     managers.add("Tib");
     project.setManager(managers);
     return project;
+  }
+
+  public static User getUser() {
+    User user = new User();
+    user.setUsername("root");
+    user.setDisplayName("root");
+    user.setFirstName("root");
+    user.setLastName("root");
+    user.setEmail("root@gmail.com");
+
+    return user;
   }
 
 }

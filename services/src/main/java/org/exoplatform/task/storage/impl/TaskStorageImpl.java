@@ -216,8 +216,12 @@ public class TaskStorageImpl implements TaskStorage {
     }
 
     @Override
-    public ListAccess<ChangeLogEntry> getTaskLogs(long taskId) {
-        return (ListAccess<ChangeLogEntry>) changeLogToDto((ChangeLog) daoHandler.getTaskLogHandler().findTaskLogs(taskId));
+    public List<ChangeLogEntry> getTaskLogs(long taskId, int offset, int limit) throws Exception {
+        return Arrays.asList(daoHandler.getTaskLogHandler().findTaskLogs(taskId).load(offset, limit))
+                .stream()
+                .map(this::changeLogToDto)
+                .collect(Collectors.toList());
+
     }
 
     @Override

@@ -49,11 +49,9 @@ import org.exoplatform.task.dao.DAOHandler;
 import org.exoplatform.task.dao.StatusHandler;
 import org.exoplatform.task.dao.TaskHandler;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.dto.CommentDto;
 import org.exoplatform.task.dto.TaskDto;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.exception.ParameterEntityException;
-import org.exoplatform.task.legacy.service.UserService;
 import org.exoplatform.task.service.impl.TaskServiceImpl;
 import org.exoplatform.task.storage.TaskStorage;
 import org.exoplatform.task.storage.impl.TaskStorageImpl;
@@ -82,20 +80,10 @@ public class TaskServiceTest {
   @Mock
   DAOHandler                 daoHandler;
 
-  @Mock
-  UserService                userService;
-
   // ArgumentCaptors are how you can retrieve objects that were passed into a
   // method call
   @Captor
   ArgumentCaptor<Task>       taskCaptor;
-
-  @Captor
-  ArgumentCaptor<CommentDto> commentCaptor;
-  // @Captor
-  // ArgumentCaptor<Event<TaskService, TaskPayload>> eventCaptor;
-
-  // @Mock TaskLoggingListener listener;
 
   @Before
   public void setUp() throws Exception {
@@ -147,11 +135,10 @@ public class TaskServiceTest {
     verify(taskHandler, times(1)).update(taskCaptor.capture());
 
     assertEquals(newTitle, taskCaptor.getValue().getTitle());
-    // verify(listener, times(1)).onEvent(eventCaptor.capture());
   }
 
   @Test
-  public void testUpdateTaskDescription() throws ParameterEntityException, EntityNotFoundException {
+  public void testUpdateTaskDescription() throws EntityNotFoundException {
 
     String newDescription = "This is a new description";
 
@@ -161,12 +148,12 @@ public class TaskServiceTest {
 
     verify(taskHandler, times(1)).update(taskCaptor.capture());
 
-    assertEquals(newDescription, taskCaptor.getValue().getDescription());
+    assertEquals(task.getDescription(), taskCaptor.getValue().getDescription());
 
   }
 
   @Test
-  public void testUpdateTaskCompleted() throws ParameterEntityException, EntityNotFoundException {
+  public void testUpdateTaskCompleted() throws EntityNotFoundException {
 
     Boolean newCompleted = true;
 
@@ -181,7 +168,7 @@ public class TaskServiceTest {
   }
 
   @Test
-  public void testUpdateTaskAssignee() throws ParameterEntityException, EntityNotFoundException {
+  public void testUpdateTaskAssignee() throws EntityNotFoundException {
 
     String newAssignee = "Tib";
 
@@ -193,10 +180,13 @@ public class TaskServiceTest {
 
     assertEquals(newAssignee, taskCaptor.getValue().getAssignee());
 
+    taskService.findTasks(newAssignee, newAssignee, 1);
+    verify(taskHandler, times(1)).findTasks(newAssignee,newAssignee,1);
+
   }
 
   @Test
-  public void testUpdateTaskCoworker() throws ParameterEntityException, EntityNotFoundException {
+  public void testUpdateTaskCoworker() throws EntityNotFoundException {
 
     Set<String> newCoworkers = new HashSet<String>();
     newCoworkers.add("Tib");
@@ -222,11 +212,56 @@ public class TaskServiceTest {
   }
 
   @Test
+  public void testUpdateTaskWatcher() throws EntityNotFoundException {
+
+    Set<String> newWatchers = new HashSet<String>();
+    newWatchers.add("Tib");
+    newWatchers.add("Trong");
+    newWatchers.add("Phuong");
+    newWatchers.add("Tuyen");
+
+    TaskDto task = taskService.getTask(TestUtils.EXISTING_TASK_ID);
+    task.setWatcher(newWatchers);
+    when(daoHandler.getTaskHandler().getWatchersOfTask(any())).thenReturn(newWatchers);
+    taskService.getWatchersOfTask(task);
+
+    verify(taskHandler, times(1)).getWatchersOfTask(taskCaptor.capture());
+
+    Set<String> newWatcher = new HashSet<String>();
+    for (String v : newWatchers) {
+      newWatcher.add(v);
+    }
+    assertEquals(newWatcher, taskCaptor.getValue().getWatcher());
+
+  }
+
+  @Test
+  public void testWatcherToTask() throws Exception {
+
+    Set<String> newWatchers = new HashSet<String>();
+    newWatchers.add("Tib");
+
+    TaskDto task = taskService.getTask(TestUtils.EXISTING_TASK_ID);
+    task.setWatcher(newWatchers);
+    when(daoHandler.getTaskHandler().update(any())).thenReturn(taskStorage.toEntity(task));
+    taskService.addWatcherToTask("Tib",task);
+
+    verify(taskHandler, times(1)).getWatchersOfTask(taskCaptor.capture());
+
+    Set<String> newWatcher = new HashSet<String>();
+    for (String v : newWatchers) {
+      newWatcher.add(v);
+    }
+    assertEquals(newWatcher, taskCaptor.getValue().getWatcher());
+
+  }
+
+
+  @Test
   public void testUpdateTaskStatus() throws ParameterEntityException, EntityNotFoundException {
 
     TaskDto task = taskService.getTask(TestUtils.EXISTING_TASK_ID);
     task.setStatus(statusHandler.find(TestUtils.EXISTING_STATUS_ID));
-    ;
     taskService.updateTask(task);
 
     verify(taskHandler, times(1)).update(taskCaptor.capture());
@@ -253,6 +288,28 @@ public class TaskServiceTest {
   }
 
   @Test
+  public void testFindTasks() throws  EntityNotFoundException {
+
+    String newAssignee = "Tib";
+
+    TaskDto task = taskService.getTask(TestUtils.EXISTING_TASK_ID);
+    task.setAssignee(newAssignee);
+    taskService.updateTask(task);
+
+    verify(taskHandler, times(1)).update(taskCaptor.capture());
+
+    assertEquals(newAssignee, taskCaptor.getValue().getAssignee());
+
+    taskService.findTasks(newAssignee, newAssignee, 1);
+    verify(taskHandler, times(1)).findTasks(newAssignee,newAssignee,1);
+
+    assertEquals(task.getId(), taskCaptor.getValue().getId());
+
+  }
+
+
+
+  @Test
   public void testDeleteTaskById() throws EntityNotFoundException {
     taskService.removeTask(TestUtils.EXISTING_TASK_ID);
     verify(taskHandler, times(1)).delete(taskCaptor.capture());
@@ -274,7 +331,7 @@ public class TaskServiceTest {
     assertEquals(defaultTask.getPriority(), taskCaptor.getValue().getPriority());
     assertEquals(defaultTask.getContext(), taskCaptor.getValue().getContext());
     assertEquals(defaultTask.getAssignee(), taskCaptor.getValue().getAssignee());
-    // assertEquals(defaultTask.getCoworker(), taskCaptor.getValue().getCoworker());
+    assertEquals(defaultTask.getCoworker(), taskCaptor.getValue().getCoworker());
     assertEquals(defaultTask.getStatus(), taskCaptor.getValue().getStatus());
     assertEquals(defaultTask.getCreatedBy(), taskCaptor.getValue().getCreatedBy());
     // Only the createdTime must be different for the cloned task
@@ -284,10 +341,5 @@ public class TaskServiceTest {
     assertEquals(defaultTask.getDueDate(), taskCaptor.getValue().getDueDate());
   }
 
-  /*
-   * @Test(expected = EntityNotFoundException.class) public void
-   * testTaskNotFoundException() throws EntityNotFoundException {
-   * taskService.getTask(TestUtils.UNEXISTING_TASK_ID); }
-   */
 
 }

@@ -107,6 +107,8 @@ public class TestDtoUtils {
     task.setCreatedBy("root");
     task.setPriority(Priority.NORMAL);
     task.setCreatedTime(new Date());
+    Set<String> coworker = new HashSet<String>();
+    task.setCoworker(coworker);
     return task;
   }
 

@@ -339,11 +339,11 @@ public class TaskRestService implements ResourceContainer {
     if (limit == 0) {
       limit = -1;
     }
-    ChangeLogEntry[] arr = ListUtil.load(taskService.getTaskLogs(id), offset, limit);
+    List<ChangeLogEntry> arr =taskService.getTaskLogs(id, offset, limit);
     if (arr == null) {
       return Response.ok(Collections.emptyList()).build();
     }
-    List<ChangeLogEntry> logs = new LinkedList<ChangeLogEntry>(Arrays.asList(arr));
+    List<ChangeLogEntry> logs = new LinkedList<ChangeLogEntry>(arr);
     return Response.ok(logs).build();
   }
 
@@ -458,7 +458,7 @@ public class TaskRestService implements ResourceContainer {
       return Response.status(Response.Status.NOT_FOUND).build();
     }
     Identity currentIdentity = ConversationState.getCurrent().getIdentity();
-    if (!TaskUtil.canDeleteComment(currentIdentity, commentStorage.commentToEntity(comment))) {
+    if (!TaskUtil.canDeleteComment(currentIdentity, comment)) {
       return Response.status(Response.Status.FORBIDDEN).build();
     }
     commentService.removeComment(commentId);

@@ -4,10 +4,17 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.RuntimeDelegate;
 
+import org.exoplatform.task.TestUtils;
+import org.exoplatform.task.domain.Project;
+import org.exoplatform.task.domain.Status;
+import org.exoplatform.task.model.User;
+import org.exoplatform.task.storage.ProjectStorage;
+import org.exoplatform.task.storage.StatusStorage;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Before;
@@ -35,7 +42,13 @@ public class TestTaskRestService {
   ProjectService projectService;
 
   @Mock
+  ProjectStorage projectStorage;
+
+  @Mock
   StatusService  statusService;
+
+  @Mock
+  StatusStorage statusStorage;
 
   @Mock
   UserService    userService;
@@ -58,12 +71,12 @@ public class TestTaskRestService {
   public void testGetTasks() throws Exception {
     // Given
     TaskRestService taskRestService = new TaskRestService(taskService,
-                                                          commentService,
-                                                          projectService,
-                                                          statusService,
-                                                          userService,
-                                                          spaceService,
-                                                          labelService);
+            commentService,
+            projectService,
+            statusService,
+            userService,
+            spaceService,
+            labelService);
     Identity root = new Identity("root");
     ConversationState.setCurrent(new ConversationState(root));
     TaskDto task1 = new TaskDto();
@@ -96,7 +109,7 @@ public class TestTaskRestService {
     Response response1 = taskRestService.getTasks("incoming", null, 0, 20, false, false);
     Response response2 = taskRestService.getTasks("", null, 0, 20, false, false);
     Response response3 = taskRestService.getTasks("whatever", "searchTerm", 0, 20, true, false);
-
+    //Response response4 = taskRestService.getTasks("whatever", "searchTerm", 0, 20, true, true);
     // Then
     assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
     List<TaskDto> tasks = (List<TaskDto>) response.getEntity();
@@ -129,12 +142,12 @@ public class TestTaskRestService {
   public void testUpdateTaskById() throws Exception {
     // Given
     TaskRestService taskRestService = new TaskRestService(taskService,
-                                                          commentService,
-                                                          projectService,
-                                                          statusService,
-                                                          userService,
-                                                          spaceService,
-                                                          labelService);
+            commentService,
+            projectService,
+            statusService,
+            userService,
+            spaceService,
+            labelService);
     Identity john = new Identity("john");
     ConversationState.setCurrent(new ConversationState(john));
     TaskDto task1 = new TaskDto();
@@ -148,29 +161,42 @@ public class TestTaskRestService {
     taskService.createTask(task1);
     taskService.createTask(task2);
 
+    // When
+    Response response = taskRestService.updateTaskById(1, null);
+
+    // Then
+    assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+
+    // When
+    Response response1 = taskRestService.updateTaskById(3, task2);
+
+    // Then
+    assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response1.getStatus());
+
     when(taskService.getTask(1)).thenReturn(task1);
     when(taskService.updateTask(task2)).thenReturn(task2);
 
     // When
-    Response response = taskRestService.updateTaskById(1, task2);
+    Response response2 = taskRestService.updateTaskById(1, task2);
 
     // Then
-    assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-    TaskDto task = (TaskDto) response.getEntity();
+    assertEquals(Response.Status.OK.getStatusCode(), response2.getStatus());
+    TaskDto task = (TaskDto) response2.getEntity();
     assertNotNull(task);
     assertEquals("updatedTask", task.getTitle());
+
   }
 
   @Test
   public void testGetProjects() throws Exception {
     // Given
     TaskRestService taskRestService = new TaskRestService(taskService,
-                                                          commentService,
-                                                          projectService,
-                                                          statusService,
-                                                          userService,
-                                                          spaceService,
-                                                          labelService);
+            commentService,
+            projectService,
+            statusService,
+            userService,
+            spaceService,
+            labelService);
     Identity root = new Identity("root");
     ConversationState.setCurrent(new ConversationState(root));
 
@@ -193,48 +219,157 @@ public class TestTaskRestService {
   }
 
   @Test
+  public void testGetSatusesByProjectId() throws Exception {
+    // Given
+    TaskRestService taskRestService = new TaskRestService(taskService,
+            commentService,
+            projectService,
+            statusService,
+            userService,
+            spaceService,
+            labelService);
+    Identity root = new Identity("root");
+    ConversationState.setCurrent(new ConversationState(root));
+
+    ProjectDto project1 = new ProjectDto();
+    project1.setName("project1");
+    projectService.createProject(project1);
+    ProjectDto project2 = new ProjectDto();
+    project2.setName("project2");
+    projectService.createProject(project2);
+    ProjectDto project3 = new ProjectDto();
+    project3.setName("project3");
+    projectService.createProject(project3);
+
+    StatusDto status1 = new StatusDto(3, "ToDo", 1, projectStorage.projectToEntity(project1));
+    StatusDto status2 = new StatusDto(4, "ToDo", 2, projectStorage.projectToEntity(project1));
+
+    List<StatusDto> statuses = new ArrayList<>();
+    statuses.add(status1);
+    statuses.add(status2);
+    List<Status> list = statusStorage.listStatusToEntitys(statuses);
+    Set<Status> foo = new HashSet<Status>(list);
+    project1.setStatus(foo);
+
+    Set<String> participator = new HashSet<String>();
+    participator.add("Tib");
+    project1.setParticipator(participator);
+
+    Set<String> managers = new HashSet<String>();
+    managers.add("Tib");
+    project1.setManager(managers);
+
+    Set<String> participator1 = new HashSet<String>();
+    participator1.add("root");
+    project2.setParticipator(participator1);
+
+    Set<String> managers1 = new HashSet<String>();
+    managers1.add("root");
+    project2.setManager(managers1);
+
+    // When
+    Response response1 = taskRestService.getStatusesByProjectId(project1.getId());
+
+    // Then
+    assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response1.getStatus());
+
+    // When
+    when(projectService.getProject(project1.getId())).thenReturn(project1);
+    Response response2 = taskRestService.getStatusesByProjectId(project1.getId());
+
+    // Then
+    assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response2.getStatus());
+
+    // When
+    when(projectService.getProject(project2.getId())).thenReturn(project2);
+    Response response3 = taskRestService.getStatusesByProjectId(project2.getId());
+
+    // Then
+    assertEquals(Response.Status.OK.getStatusCode(), response3.getStatus());
+    assertNotNull(response3.getEntity());
+
+  }
+
+  @Test
   public void testGetDefaultStatusByProjectId() throws Exception {
     // Given
     TaskRestService taskRestService = new TaskRestService(taskService,
-                                                          commentService,
-                                                          projectService,
-                                                          statusService,
-                                                          userService,
-                                                          spaceService,
-                                                          labelService);
-    Identity john = new Identity("john");
-    ConversationState.setCurrent(new ConversationState(john));
-    ProjectDto project = new ProjectDto();
-    project.setId(1);
-    Set<String> manager = new HashSet<String>();
-    manager.add("john");
-    project.setManager(manager);
-    StatusDto status = new StatusDto();
-    status.setId(1);
-    status.setName("status 1");
+            commentService,
+            projectService,
+            statusService,
+            userService,
+            spaceService,
+            labelService);
+    Identity root = new Identity("root");
+    ConversationState.setCurrent(new ConversationState(root));
 
-    when(projectService.getProject(1L)).thenReturn(project);
-    when(statusService.getDefaultStatus(1L)).thenReturn(status);
+    ProjectDto project1 = new ProjectDto();
+    project1.setName("project1");
+    projectService.createProject(project1);
+    ProjectDto project2 = new ProjectDto();
+    project2.setName("project2");
+    projectService.createProject(project2);
+    ProjectDto project3 = new ProjectDto();
+    project3.setName("project3");
+    projectService.createProject(project3);
+
+    StatusDto status1 = new StatusDto(3, "ToDo", 1, projectStorage.projectToEntity(project1));
+    StatusDto status2 = new StatusDto(4, "ToDo", 2, projectStorage.projectToEntity(project1));
+
+    List<StatusDto> statuses = new ArrayList<>();
+    statuses.add(status1);
+    statuses.add(status2);
+    List<Status> list = statusStorage.listStatusToEntitys(statuses);
+    Set<Status> foo = new HashSet<Status>(list);
+    project1.setStatus(foo);
+
+    Set<String> participator = new HashSet<String>();
+    participator.add("Tib");
+    project1.setParticipator(participator);
+
+    Set<String> managers = new HashSet<String>();
+    managers.add("Tib");
+    project1.setManager(managers);
+
+    Set<String> participator1 = new HashSet<String>();
+    participator1.add("root");
+    project2.setParticipator(participator1);
+
+    Set<String> managers1 = new HashSet<String>();
+    managers1.add("root");
+    project2.setManager(managers1);
 
     // When
-    /*
-     * Response response = taskRestService.getDefaultStatusByProjectId(1); // Then
-     * assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-     * Status status1 = (Status) response.getEntity(); assertNotNull(status1);
-     * assertEquals("status 1", status1.getName());
-     */
+    when(projectService.getProject(project1.getId())).thenReturn(project1);
+    when(statusService.getDefaultStatus(project1.getId())).thenReturn(status1);
+    Response response = taskRestService.getDefaultStatusByProjectId(project1.getId());
+
+    // Then
+    assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
+
+    // When
+    when(projectService.getProject(project2.getId())).thenReturn(project2);
+    when(statusService.getDefaultStatus(project2.getId())).thenReturn(status1);
+    Response response1 = taskRestService.getDefaultStatusByProjectId(project2.getId());
+
+    // Then
+    assertEquals(Response.Status.OK.getStatusCode(), response1.getStatus());
+    assertNotNull(response1.getEntity());
+
+
   }
+
 
   @Test
   public void testGetLabels() throws Exception {
     // Given
     TaskRestService taskRestService = new TaskRestService(taskService,
-                                                          commentService,
-                                                          projectService,
-                                                          statusService,
-                                                          userService,
-                                                          spaceService,
-                                                          labelService);
+            commentService,
+            projectService,
+            statusService,
+            userService,
+            spaceService,
+            labelService);
     Identity root = new Identity("root");
     ConversationState.setCurrent(new ConversationState(root));
 
@@ -270,12 +405,12 @@ public class TestTaskRestService {
   public void getLabelsByTaskId() throws Exception {
     // Given
     TaskRestService taskRestService = new TaskRestService(taskService,
-                                                          commentService,
-                                                          projectService,
-                                                          statusService,
-                                                          userService,
-                                                          spaceService,
-                                                          labelService);
+            commentService,
+            projectService,
+            statusService,
+            userService,
+            spaceService,
+            labelService);
     Identity root = new Identity("root");
     ConversationState.setCurrent(new ConversationState(root));
 
@@ -323,12 +458,12 @@ public class TestTaskRestService {
   public void testAddTaskToLabel() throws Exception {
     // Given
     TaskRestService taskRestService = new TaskRestService(taskService,
-                                                          commentService,
-                                                          projectService,
-                                                          statusService,
-                                                          userService,
-                                                          spaceService,
-                                                          labelService);
+            commentService,
+            projectService,
+            statusService,
+            userService,
+            spaceService,
+            labelService);
     Identity root = new Identity("root");
     ConversationState.setCurrent(new ConversationState(root));
 
@@ -344,7 +479,103 @@ public class TestTaskRestService {
 
     LabelDto label2 = new LabelDto();
     label2.setId(2);
-    ;
+    label2.setName("label1");
+
+    LabelDto label3 = new LabelDto();
+    label3.setId(0);
+
+    when(labelService.createLabel(label1)).thenReturn(label1);
+    when(taskService.getTask(1)).thenReturn(task);
+
+    // When
+    Response response = taskRestService.addTaskToLabel(label1, 1);
+
+    // Then
+    assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+    LabelDto addedLabel = (LabelDto) response.getEntity();
+    assertNotNull(addedLabel);
+
+
+    // When
+    Response response1 = taskRestService.addTaskToLabel(null, 1);
+
+    // Then
+    assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response1.getStatus());
+
+
+    // When
+    Response response2 = taskRestService.addTaskToLabel(label1, 3);
+
+    // Then
+    assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response2.getStatus());
+
+    // When
+    when(labelService.createLabel(label3)).thenReturn(label1);
+    Response response3 = taskRestService.addTaskToLabel(label3, 1);
+
+    // Then
+    assertEquals(Response.Status.OK.getStatusCode(), response3.getStatus());
+
+  }
+
+  @Test
+  public void testGetTaskLogs() throws Exception {
+    // Given
+    TaskRestService taskRestService = new TaskRestService(taskService,
+            commentService,
+            projectService,
+            statusService,
+            userService,
+            spaceService,
+            labelService);
+    Identity root = new Identity("root");
+    ConversationState.setCurrent(new ConversationState(root));
+
+    TaskDto task = new TaskDto();
+    task.setId(1);
+    task.setCreatedBy("root");
+    task.setAssignee("root");
+    taskService.createTask(task);
+   //When
+    Response response = taskRestService.getTaskLogs(task.getId(), 0,1);
+
+    // Then
+    assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+
+    //When
+    when(taskService.getTask(1)).thenReturn(task);
+
+    Response response1 = taskRestService.getTaskLogs(task.getId(), 0,1);
+
+    // Then
+    assertEquals(Response.Status.OK.getStatusCode(), response1.getStatus());
+   }
+
+  @Test
+  public void testRemoveTaskFromLabel() throws Exception {
+    // Given
+    TaskRestService taskRestService = new TaskRestService(taskService,
+            commentService,
+            projectService,
+            statusService,
+            userService,
+            spaceService,
+            labelService);
+    Identity root = new Identity("root");
+    ConversationState.setCurrent(new ConversationState(root));
+
+    TaskDto task = new TaskDto();
+    task.setId(1);
+    task.setCreatedBy("root");
+    task.setAssignee("root");
+    taskService.createTask(task);
+
+    LabelDto label1 = new LabelDto();
+    label1.setId(1);
+    label1.setName("label1");
+
+    LabelDto label2 = new LabelDto();
+    label2.setId(2);
     label2.setName("label1");
 
     when(labelService.createLabel(label1)).thenReturn(label1);
@@ -357,18 +588,29 @@ public class TestTaskRestService {
     assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
     LabelDto addedLabel = (LabelDto) response.getEntity();
     assertNotNull(addedLabel);
+
+    Response response1 = taskRestService.removeTaskFromLabel(1,1);
+    assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response1.getStatus());
+
+    when(labelService.getLabel(1)).thenReturn(label1);
+    when(taskService.getTask(1)).thenReturn(task);
+
+    Response response2 = taskRestService.removeTaskFromLabel(1,1);
+    assertEquals(Response.Status.OK.getStatusCode(), response2.getStatus());
+    TaskDto addedLabel1 = (TaskDto) response1.getEntity();
+    assertNull(addedLabel1);
   }
 
   @Test
   public void testAddTaskComment() throws Exception {
     // Given
     TaskRestService taskRestService = new TaskRestService(taskService,
-                                                          commentService,
-                                                          projectService,
-                                                          statusService,
-                                                          userService,
-                                                          spaceService,
-                                                          labelService);
+            commentService,
+            projectService,
+            statusService,
+            userService,
+            spaceService,
+            labelService);
     Identity john = new Identity("john");
     ConversationState.setCurrent(new ConversationState(john));
 
@@ -380,6 +622,8 @@ public class TestTaskRestService {
 
     CommentDto comment = new CommentDto();
     comment.setId(1);
+    List<CommentDto> comments = new ArrayList<CommentDto>();
+    comments.add(comment);
     // Sending non empty comment
     when(commentService.addComment(task, john.getUserId(), "commentText")).thenReturn(comment);
     when(taskService.getTask(1)).thenReturn(task);
@@ -400,18 +644,119 @@ public class TestTaskRestService {
     assertNotNull(commentModel);
     assertEquals(commentModel.getFormattedComment(), "x <= 2");
 
+    when(commentService.getComment(comment.getId())).thenReturn(comment);
+    response = taskRestService.getTaskComments(3, 0, 1);
+    assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+
+    response = taskRestService.getTaskComments(1, 0, 1);
+    assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+  }
+
+  @Test
+  public void testfindUsersToMention() throws Exception {
+    // Given
+    TaskRestService taskRestService = new TaskRestService(taskService,
+            commentService,
+            projectService,
+            statusService,
+            userService,
+            spaceService,
+            labelService);
+
+    Identity root = new Identity("root");
+    ConversationState.setCurrent(new ConversationState(root));
+
+    ProjectDto project1 = new ProjectDto();
+    project1.setName("project1");
+
+    when(projectService.getProject(project1.getId())).thenReturn(project1);
+
+    final User user = TestUtils.getUser();
+    ListAccess<User> lists = new ListAccess<User>() {
+      @Override
+      public User[] load(int i, int i1) throws Exception, IllegalArgumentException {
+        return new User[]{user};
+      }
+
+      @Override
+      public int getSize() throws Exception {
+        return 1;
+      }
+    };
+
+    when(userService.findUserByName("root")).thenReturn(lists);
+    Response response = taskRestService.findUsersToMention("root");
+    assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+    response = taskRestService.getUsersByQueryAndProjectName("root", "project1");
+    assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+  }
+
+  @Test
+  public void testDeleteComment() throws Exception {
+    // Given
+    TaskRestService taskRestService = new TaskRestService(taskService,
+            commentService,
+            projectService,
+            statusService,
+            userService,
+            spaceService,
+            labelService);
+    Identity john = new Identity("john");
+    ConversationState.setCurrent(new ConversationState(john));
+
+    TaskDto task = new TaskDto();
+    task.setId(1);
+    task.setCreatedBy("john");
+    task.setAssignee("john");
+    taskService.createTask(task);
+
+    CommentDto comment = new CommentDto();
+    comment.setId(1);
+    comment.setAuthor(john.getUserId());
+
+    // Sending non empty comment
+    when(commentService.addComment(task, john.getUserId(), "commentText")).thenReturn(comment);
+    when(taskService.getTask(1)).thenReturn(task);
+    Response response = taskRestService.addTaskComment("commentText", 1);
+    assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+    CommentEntity commentModel = (CommentEntity) response.getEntity();
+    assertNotNull(commentModel);
+    assertEquals(commentModel.getFormattedComment(), "commentText");
+
+    // Sending an encoded comment
+    response = taskRestService.addTaskComment("x%20%3C%3D%202", 1);
+    assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+    commentModel = (CommentEntity) response.getEntity();
+    assertNotNull(commentModel);
+    assertEquals(commentModel.getFormattedComment(), "x <= 2");
+
+    when(commentService.getComment(1)).thenReturn(null);
+    response = taskRestService.deleteComment( 1);
+    assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+
+    comment.setAuthor(john.getUserId());
+    when(commentService.getComment(1)).thenReturn(comment);
+    response = taskRestService.deleteComment( 1);
+    assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+    when(commentService.getComment(1)).thenReturn(comment);
+    ConversationState.setCurrent(new ConversationState(null));
+    response = taskRestService.deleteComment( 1);
+    assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
+
   }
 
   @Test
   public void testAddTaskSubComment() throws Exception {
     // Given
     TaskRestService taskRestService = new TaskRestService(taskService,
-                                                          commentService,
-                                                          projectService,
-                                                          statusService,
-                                                          userService,
-                                                          spaceService,
-                                                          labelService);
+            commentService,
+            projectService,
+            statusService,
+            userService,
+            spaceService,
+            labelService);
     Identity john = new Identity("john");
     ConversationState.setCurrent(new ConversationState(john));
 

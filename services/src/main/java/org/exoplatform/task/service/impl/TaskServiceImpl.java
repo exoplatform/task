@@ -151,8 +151,8 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public ListAccess<ChangeLogEntry> getTaskLogs(long taskId) {
-        return taskStorage.getTaskLogs(taskId);
+    public List<ChangeLogEntry> getTaskLogs(long taskId, int offset, int limit) throws Exception {
+        return taskStorage.getTaskLogs(taskId,  offset,  limit);
     }
 
 

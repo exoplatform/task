@@ -20,6 +20,7 @@ package org.exoplatform.task.util;
 import java.text.*;
 import java.util.*;
 
+import org.exoplatform.task.dto.CommentDto;
 import org.exoplatform.task.dto.TaskDto;
 import org.exoplatform.task.legacy.service.ProjectService;
 import org.exoplatform.task.legacy.service.StatusService;
@@ -776,6 +777,26 @@ public final class TaskUtil {
 
     return false;
   }
+
+  public static boolean canDeleteComment(Identity identity, CommentDto comment) {
+    if (comment == null || identity == null) {
+      return false;
+    }
+
+    // Owner can delete his comment
+    if (identity.getUserId().equals(comment.getAuthor())) {
+      return true;
+    }
+
+    // Project manager can delete comment
+    Task task = comment.getTask();
+    if (task.getStatus() != null) {
+      Project pj = task.getStatus().getProject();
+      return pj.canEdit(identity);
+    }
+
+    return false;
+  }
   
   private static boolean isLabelIn(Label child, Label parent) {
     Label pr = child;
@@ -1013,9 +1034,9 @@ public final class TaskUtil {
 
   public static boolean hasViewPermission(TaskDto task) {
     Identity identity = ConversationState.getCurrent().getIdentity();
-    String userId = identity.getUserId();
+    //String userId = identity.getUserId();
 
-    return hasMentionedUser(task, userId) || hasEditPermission(task);
+    return hasEditPermission(task);
   }
 
   private static boolean hasMentionedUser(Task task, String userId) {

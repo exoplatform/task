@@ -35,4 +35,11 @@ public class StatusDto implements Serializable {
         this.name = name;
     }
 
+    public StatusDto(long id, String name, Integer rank, Project project) {
+        this.id = id;
+        this.name = name;
+        this.rank = rank;
+        this.project = project;
+    }
+
 }

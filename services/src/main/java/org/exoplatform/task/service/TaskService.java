@@ -86,7 +86,7 @@ public interface TaskService {
     ChangeLogEntry addTaskLog(long taskId, String username, String actionName, String target) throws EntityNotFoundException;
 
 
-    ListAccess<ChangeLogEntry> getTaskLogs(long taskId);
+    List<ChangeLogEntry> getTaskLogs(long taskId, int offset, int limit) throws Exception;
 
     //TODO: should use via #findTasks(TaskQuery)?
     TaskDto findTaskByActivityId(String activityId);

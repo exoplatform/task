@@ -124,7 +124,7 @@ public interface TaskStorage {
      */
     ChangeLogEntry addTaskLog(ChangeLogEntry changeLogEntry) throws EntityNotFoundException;
 
-    ListAccess<ChangeLogEntry> getTaskLogs(long taskId);
+    List<ChangeLogEntry> getTaskLogs(long taskId, int offset, int limit) throws Exception;
 
     List<Object[]> countTaskStatusByProject(long projectId);
 
