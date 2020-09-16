@@ -5,6 +5,7 @@ import ProjectListToolbar from './components/Project/ProjectListToolbar.vue';
 import ProjectCard from './components/Project/ProjectCard.vue';
 import ProjectCardFront from './components/Project/ProjectCardFront.vue';
 import ProjectCardReverse from './components/Project/ProjectCardReverse.vue';
+import AddProjectDrawer from './components/Project/AddProjectDrawer.vue';
 
 import TasksDashboard from './components/tasks/TasksDashboard.vue';
 import TasksListToolbar from './components/tasks/TasksListToolbar.vue';
@@ -21,6 +22,7 @@ const components = {
   'project-card': ProjectCard,
   'project-card-front': ProjectCardFront,
   'project-card-Reverse': ProjectCardReverse,
+  'add-project-drawer': AddProjectDrawer,
 
   'tasks-dashboard': TasksDashboard,
   'tasks-list-toolbar': TasksListToolbar,

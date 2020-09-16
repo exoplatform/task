@@ -71,6 +71,47 @@
           }
         }
       }
+      .addProjectDrawer {
+        .drawerContent {
+          padding: 16px;
+          .addProjectTitle {
+            .uiIconProject {
+              font-family: "PLF-FONT-ICONS" !important;
+              font-style: normal;
+              font-size: 22px;
+              color: @primaryColor;
+              &:before {
+                content: "\e665";
+              }
+            }
+            .projectInputTitle {
+              .v-input__slot {
+                &:before {
+                  display: none;
+                }
+                label {
+                  color: @greyColorLighten1;
+                  letter-spacing: .2px;
+                }
+              }
+            }
+          }
+          .projectPermissionsUsers {
+            .permisionLabel {
+              color: @textLightColor;
+            }
+          }
+          .projectDescription {
+            label {
+              font-size: 1rem !important;
+              font-weight: 400;
+              letter-spacing: 0.03125em !important;
+              line-height: 1.5rem;
+              color: @textLightColor!important;
+            }
+          }
+        }
+      }
       .tasksListContainer {
         .projectItem {
           position: relative;
