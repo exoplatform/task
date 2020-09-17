@@ -33,7 +33,10 @@ import org.exoplatform.task.rest.model.CommentEntity;
 import org.exoplatform.task.rest.model.TaskEntity;
 import org.exoplatform.task.service.*;
 import org.exoplatform.task.storage.CommentStorage;
-import org.exoplatform.task.util.*;
+import org.exoplatform.task.util.CommentUtil;
+import org.exoplatform.task.util.ProjectUtil;
+import org.exoplatform.task.util.TaskUtil;
+import org.exoplatform.task.util.UserUtil;
 
 import io.swagger.annotations.*;
 
@@ -339,7 +342,7 @@ public class TaskRestService implements ResourceContainer {
     if (limit == 0) {
       limit = -1;
     }
-    List<ChangeLogEntry> arr =taskService.getTaskLogs(id, offset, limit);
+    List<ChangeLogEntry> arr = taskService.getTaskLogs(id, offset, limit);
     if (arr == null) {
       return Response.ok(Collections.emptyList()).build();
     }
@@ -529,16 +532,18 @@ public class TaskRestService implements ResourceContainer {
         long projectId = project.getId();
         JSONObject projectJson = new JSONObject();
         List<Object[]> statusObjects = taskService.countTaskStatusByProject(projectId);
+        JSONArray statusStats = new JSONArray();
         if (statusObjects != null && statusObjects.size() > 0) {
-          JSONArray statusStats = new JSONArray();
+
           for (Object[] result : statusObjects) {
             JSONObject statJson = new JSONObject();
             statJson.put("status", (String) result[0]);
             statJson.put("taskNumber", ((Number) result[1]).intValue());
             statusStats.put(statJson);
           }
-          projectJson.put("statusStats", statusStats);
+
         }
+        projectJson.put("statusStats", statusStats);
         Space space = null;
         Set<String> projectManagers = projectService.getManager(projectId);
         Set<String> managers = new LinkedHashSet();
@@ -570,14 +575,14 @@ public class TaskRestService implements ResourceContainer {
           }
           projectJson.put("managerIdentities", managersJsonArray);
         }
-        if(space!=null){
+        if (space != null) {
           JSONObject spaceJson = new JSONObject();
-          spaceJson.put("prettyName",space.getPrettyName());
-          spaceJson.put("url",space.getUrl());
-          spaceJson.put("displayName",space.getDisplayName());
-          spaceJson.put("id",space.getId());
-          spaceJson.put("avatarUrl",space.getAvatarUrl());
-          spaceJson.put("description",space.getDescription());
+          spaceJson.put("prettyName", space.getPrettyName());
+          spaceJson.put("url", space.getUrl());
+          spaceJson.put("displayName", space.getDisplayName());
+          spaceJson.put("id", space.getId());
+          spaceJson.put("avatarUrl", space.getAvatarUrl());
+          spaceJson.put("description", space.getDescription());
           projectJson.put("space", space);
         }
 
@@ -627,7 +632,7 @@ public class TaskRestService implements ResourceContainer {
     }
     Space space = null;
     if (task.getStatus() != null && task.getStatus().getProject() != null) {
-      space = getProjectSpace(task.getStatus().getProject(), CommonsUtils.getService(SpaceService.class));
+      space = getProjectSpace(task.getStatus().getProject());
     }
 
     TaskEntity taskEntity = new TaskEntity(((TaskDto) task), commentCount);
@@ -636,7 +641,7 @@ public class TaskRestService implements ResourceContainer {
     return taskEntity;
   }
 
-  private Space getProjectSpace(Project project, SpaceService spaceService) {
+  private Space getProjectSpace(Project project) {
     for (String permission : projectService.getManager(project.getId())) {
       int index = permission.indexOf(':');
       if (index > -1) {
