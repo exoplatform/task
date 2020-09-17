@@ -1,5 +1,5 @@
 <template>
-  <v-card class="tasksCardItem">
+  <v-card class="tasksCardItem" flat>
     <div :class="project.color || 'noProjectColor'" class="taskItemToolbar d-flex px-2 py-3 align-center font-weight-bold">
       <i
         :class="project.color && 'white--text' || 'toolbarNoColor'"
@@ -84,18 +84,18 @@
       </div>
       <v-divider class="pb-4"/>
       <div class="ProjectSpace">
-        <div v-if="isSpaceProject">
-          <v-list-item>
+        <div v-if="project.space">
+          <v-list-item class="px-0">
             <v-list-item-avatar size="28" class="spaceAvatar py-1">
               <v-img src="/portal/rest/v1/social/spaces/default-image/avatar"/>
             </v-list-item-avatar>
             <v-list-item-title class="body-2">
-              <a href="#">Space Name</a>
+              <a href="#">{{ project.name }}</a>
             </v-list-item-title>
           </v-list-item>
         </div>
         <div v-else>
-          <v-list-item>
+          <v-list-item class="px-0">
             <v-list-item-avatar size="28" class="spaceAvatar py-1">
               <i class="uiIconEcmsNameSpace noSpaceProjectIcon"></i>
             </v-list-item-avatar>
@@ -104,13 +104,13 @@
         </div>
       </div>
       <div class="SpaceAdmin">
-        <v-list-item>
+        <v-list-item class="px-0">
           <v-list-item-avatar size="28" class="userAvatar py-1">
-            <v-img src="/portal/rest/v1/social/users/default-image/avatar"/>
+            <v-img :src="project.managerIdentities[0].avatar"/>
           </v-list-item-avatar>
           <v-list-item-content>
             <v-list-item-title class="body-2">
-              <a href="#">Admin Name</a>
+              <a :href="project.managerIdentities[0].url">{{ project.managerIdentities[0].displayName }}</a>
             </v-list-item-title>
           </v-list-item-content>
           <i class="uiIcon uiIconStar"></i>
@@ -129,7 +129,6 @@
     },
     data () {
       return {
-        isSpaceProject: false,
         displayActionMenu: false,
         waitTimeUntilCloseMenu: 200,
         projectColors: [
@@ -161,7 +160,6 @@
       }
     },
     created() {
-      this.projectSpaceInformation();
       $(document).on('mousedown', () => {
         if (this.displayActionMenu) {
           window.setTimeout(() => {
@@ -171,15 +169,5 @@
         }
       });
     },
-    methods: {
-      projectSpaceInformation() {
-        if(this.project.manager) {
-          const el = this.project.manager.find(a => a.includes("manager:/spaces"));
-          if (el) {
-            this.isSpaceProject = true;
-          }
-        }
-      }
-    }
   }
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <v-card class="tasksCardItem">
+  <v-card class="tasksCardItem" flat>
     <div class="projectDetailsReverse pa-3">
       <i
         icon
@@ -11,11 +11,16 @@
         <p class="font-weight-bold ma-auto ">{{ $t('label.projectDetail') }}</p>
       </div>
     </div>
-    <div class="echartStatsContent d-flex align-center px-2" style="margin:auto;">
-      <div :id="'echartProjectTasks'+project.id" style="width:160px; height:200px;"></div>
-      <div class="projectTasksTotalNumber">
-        <span class="totalNumber font-weight-bold">{{ totalLeftTasks }}</span>
-        <span class="text-body-2 totalLabel">{{ $t('exo.tasks.label.leftTasks') }}</span>
+    <div 
+      v-if=" totalLeftTasks > 0 "
+      class="echartStatsContent d-flex justify-space-evently align-center px-2"
+      style="margin:auto;">
+      <div class="echartAndLabel">
+        <div :id="'echartProjectTasks'+project.id" style="width:160px; height:200px;"></div>
+        <div class="projectTasksTotalNumber">
+          <span class="totalNumber font-weight-bold">{{ totalLeftTasks }}</span>
+          <span class="text-body-2 totalLabel">{{ $t('exo.tasks.label.leftTasks') }}</span>
+        </div>
       </div>
       <div class="projectStatusNumber pl-4">
         <p class="d-flex justify-space-between mb-1 taskToDoLabel">
@@ -35,6 +40,11 @@
           <span>{{ getStatusValue('Done') }}</span>
         </p>
       </div>
+    </div>
+    <div v-else class="noTasksProject">
+      <div class="noTasksProjectIcon"><i class="uiIcon uiIconTask"></i></div>
+      <div class="noTasksProjectLabel"><span>{{ $t('label.noTasks') }}</span></div>
+      <div class="noTasksProjectLink"><a href="#">{{ $t('label.addTask') }}</a></div>
     </div>
   </v-card>
 </template>
@@ -87,12 +97,14 @@
         }
     },
     mounted() {
-      window.setTimeout(() => {
+      if(this.project.statusStats) {
+        window.setTimeout(() => {
           this.initChart(this.option);
         },200);
+      }
     },
     created() {
-      this.totalLeftTasks = this.getStatusValue('ToDo') + this.getStatusValue('InProgress') + this.getStatusValue('WaitingOn');
+      this.totalLeftTasks = this.getStatusValue('ToDo') + this.getStatusValue('InProgress') + this.getStatusValue('WaitingOn')+ this.getStatusValue('Done');
     },
     methods :{
       initChart(option,id) {
@@ -100,8 +112,12 @@
           chart.setOption(option, true);
       },
       getStatusValue(status) {
-        const statusTaskNumber = this.project.statusStats.filter( elem => elem.status === status);
-        return statusTaskNumber && statusTaskNumber.length ? statusTaskNumber[0].taskNumber : 0;
+        if(this.project.statusStats && this.project.statusStats.length ) {
+          const statusTaskNumber = this.project.statusStats.filter( elem => elem.status === status);
+          return statusTaskNumber && statusTaskNumber.length ? statusTaskNumber[0].taskNumber : 0;
+        } else {
+          return '';
+        }
       }
     }
   }
