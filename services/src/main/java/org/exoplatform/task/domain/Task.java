@@ -43,7 +43,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.exoplatform.commons.api.persistence.ExoEntity;
-import org.exoplatform.task.service.TaskBuilder;
+import org.exoplatform.task.legacy.service.TaskBuilder;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>
@@ -115,6 +115,8 @@ import org.exoplatform.task.service.TaskBuilder;
             "WHERE (ta.assignee = :userName OR ta.createdBy = :userName OR :userName in (select co FROM ta.coworker co)) " +
             "AND (lower(ta.title) LIKE lower(:term)  OR lower(ta.description) LIKE :term) "
     ),
+        @NamedQuery(name = "Task.countTaskStatusByProject",
+                query = "SELECT m.status.name AS name, COUNT(m) AS total FROM TaskTask AS m where m.status.project.id = :projectId GROUP BY m.status.name ORDER BY m.status.name ASC")
 })
 public class Task {
 

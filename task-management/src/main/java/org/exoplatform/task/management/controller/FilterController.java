@@ -41,10 +41,10 @@ import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.management.model.ViewState;
 import org.exoplatform.task.management.service.ViewStateService;
-import org.exoplatform.task.service.ProjectService;
-import org.exoplatform.task.service.StatusService;
-import org.exoplatform.task.service.TaskService;
-import org.exoplatform.task.service.UserService;
+import org.exoplatform.task.legacy.service.ProjectService;
+import org.exoplatform.task.legacy.service.StatusService;
+import org.exoplatform.task.legacy.service.TaskService;
+import org.exoplatform.task.legacy.service.UserService;
 import org.exoplatform.task.util.ProjectUtil;
 import org.json.JSONException;
 

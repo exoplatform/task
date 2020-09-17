@@ -1,10 +1,645 @@
 @import "variables.less";
-// Variables
-@primaryColor: #578DC9;
-@greyColor: #a8b3c5;
-@greyBackground: #e1e8ee;
-@btnPrimaryDisableBackground: #afc9e5;
-@blackColor: #333333;
+@import "mixins.less";
+
+@taskCardMaxHeight: 250px;
+@taskCardParentMargin: 22px;
+@taskCardParentMaxHeight: @taskCardParentMargin + @taskCardMaxHeight;
+
+/*----------------------Tasks Management ---------------------*/
+#TasksParentContainer {
+  margin: 25px;
+  #TasksManagementPortlet {
+    .tasksMenuParent {
+      margin-bottom: 10px;
+    }
+    .projectAndTasksContainer {
+      .tasksToolbar {
+        .inputTasksFilter {
+          max-width: 250px;
+        }
+        .selectTasksFilter {
+          height: 40px;
+          width: auto;
+          padding-right: 20px;
+        }
+        .taskDisplay {
+          .uiIcon {
+            font-family: "PLF-FONT-ICONS" !important;
+            font-style: normal;
+            font-size: 16px;
+            padding-right: 10px;
+          }
+          .uiIconCards {
+            &:before {
+              content: "\e635";
+            }
+          }
+          .uiIconList {
+            &:before {
+              content: "\e62e";
+            }
+          }
+        }
+        .v-tabs-slider-wrapper {
+          display: none;
+        }
+        .taskTabCards {
+          border: 1px solid @borderColor;
+          border-radius: 5px 0 0 5px;
+          height: 38px;
+          min-height: 38px;
+        }
+        .taskTabList {
+          border: 1px solid @borderColor;
+          border-radius: 0 5px 5px 0;
+          height: 38px;
+          min-height: 38px;
+        }
+        .v-tab.v-tab--active {
+          border: 1px solid @primaryColor;
+          background-color: @tabNormalLinkBackground;
+        }
+        .filterTasksSetting {
+          .uiIconFilterSetting {
+            font-family: "PLF-FONT-ICONS" !important;
+            font-style: normal;
+            font-size: 16px;
+            color: @primaryColor;
+            &:before {
+              content: "\eaf2";
+            }
+          }
+        }
+      }
+      .addProjectDrawer {
+        .drawerContent {
+          padding: 16px;
+          .addProjectTitle {
+            .uiIconProject {
+              font-family: "PLF-FONT-ICONS" !important;
+              font-style: normal;
+              font-size: 22px;
+              color: @primaryColor;
+              &:before {
+                content: "\e665";
+              }
+            }
+            .projectInputTitle {
+              .v-input__slot {
+                &:before {
+                  display: none;
+                }
+                label {
+                  color: @greyColorLighten1;
+                  letter-spacing: .2px;
+                }
+              }
+            }
+          }
+          .projectPermissionsUsers {
+            .permisionLabel {
+              color: @textLightColor;
+            }
+          }
+          .projectDescription {
+            label {
+              font-size: 1rem !important;
+              font-weight: 400;
+              letter-spacing: 0.03125em !important;
+              line-height: 1.5rem;
+              color: @textLightColor!important;
+            }
+          }
+        }
+      }
+      .tasksListContainer {
+        .projectItem {
+          position: relative;
+          .taskCardFlip {
+            transition: 0.6s;
+            transform-style: preserve-3d;
+            position: relative;
+            min-height: @taskCardParentMaxHeight;
+            padding: 0;
+            .taskCardFront {
+              z-index: 2;
+              transform: rotateY(0deg);
+              backface-visibility: hidden;
+              position: absolute;
+              top: 0;
+              left: 0;
+              height: @taskCardMaxHeight;
+              max-height: @taskCardMaxHeight;
+              width: 100%;
+              max-width: 100%;
+              .tasksCardItem {
+                height: @taskCardMaxHeight;
+                max-height: @taskCardMaxHeight;
+                flex-direction: column;
+                border: 1px solid @borderColor;
+                .taskItemToolbar {
+                  .uiIconInformation {
+                    font-size: 20px;
+                    margin-top: -3px;
+                  }
+                  .uiIconVerticalDots {
+                    font-size: 16px;
+                    margin-top: -3px;
+                  }
+                  .projectCardTitle {
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    max-width: 75%;
+                  }
+                }
+                .noProjectColor {
+                  background: @lightGrey;
+                  .toolbarNoColor {
+                    color: @baseColorLight;
+                  }
+                }
+                .taskItemInfo {
+                  .taskItemDescription {
+                    min-height: 75px;
+                    p {
+                      margin-bottom: 0;
+                    }
+                    .noProjectDescription {
+                      color: @greyColorLighten1;
+                    }
+                  }
+                  .ProjectSpace {
+                    .v-list-item {
+                      min-height: 38px!important;
+                      .noSpaceProjectIcon {
+                        height: 28px;
+                        min-width: 28px;
+                        width: 28px;
+                        background: @greyColor;
+                        color: white;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                      }
+                      .noSpaceLabel {
+                        color: @greyColorLighten1;
+                      }
+                    }
+                  }
+                  .SpaceAdmin {
+                    .v-list-item {
+                      min-height: 38px!important;
+                      .uiIconStar {
+                        &:before {
+                          content: "\e97f";
+                          font-family: "PLF-FONT-ICONS" !important;
+                          color: @colorIconOrange;
+                          font-style: normal;
+                          font-size: 18px;
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+            .tasksCardBack {
+              transform: rotateY(180deg);
+              backface-visibility: hidden;
+              position: absolute;
+              top: 0;
+              left: 0;
+              height: @taskCardMaxHeight;
+              max-height: @taskCardMaxHeight;
+              width: 100%;
+              max-width: 100%;
+              .tasksCardItem {
+                height: @taskCardMaxHeight;
+                max-height: @taskCardMaxHeight;
+                flex-direction: column;
+                border: 1px solid @borderColor;
+                .projectDetailsReverse {
+                  position: relative;
+                  .reverseInfoIcon {
+                    position: absolute;
+                    top: 12px;
+                    color: @greyColorLighten1;
+                    font-size: 20px;
+                  }
+                }
+                .noTasksProject {
+                  height: 80%;
+                  text-align: center;
+                  padding-top: 50px;
+
+                  .noTasksProjectIcon {
+                    .uiIconTask {
+                      color: @greyColor;
+                      font-size: 40px;
+                      padding-bottom: 10px;
+                    }
+                  }
+                }
+                .echartStatsContent {
+                  justify-content: space-evenly;
+                  .echartAndLabel {
+                    position: relative;
+                    .projectTasksTotalNumber {
+                      position: absolute;
+                      left: 60px;
+                      top: 35%;
+                      span {
+                        display: block;
+                        text-align: center;
+                      }
+                      .totalNumber {
+                        font-size: 1.5rem;
+                      }
+                    }
+                  }
+                  .projectStatusNumber{
+                    width: 40%;
+                    p {
+                      position: relative;
+                      &:before {
+                        position: absolute;
+                        content: '';
+                        width: 7px;
+                        height: 7px;
+                        border-radius: 50%;
+                        margin-left: -15px;
+                        top: 5px;
+                      }
+                    }
+                    .taskToDoLabel {
+                      &:before {
+                        background: @infoColor;
+                      }
+                    }
+                    .taskInProgressLabel {
+                      &:before {
+                        background: @warningColor;
+                      }
+                    }
+                    .taskWaitingOnLabel {
+                      &:before {
+                        background: @errorColor;
+                      }
+                    }
+                    .taskDoneLabel {
+                      &:before {
+                        background: @successColor;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+          .taskCardFlipped {
+            transform: rotateY(180deg);
+          }
+          .projectActionMenu {
+            right: 27px;
+            left: auto!important;
+            top: 45px!important;
+            .v-list-item {
+              min-height: 30px!important;
+              .uiIcon {
+                font-size: 16px;
+              }
+              .noColorLabel {
+                border: 1px solid @borderColor;
+                cursor: pointer;
+              }
+              .projectColorPicker {
+                width: 144px;
+                max-width: 144px;
+                .projectColorCell {
+                  width: 20px;
+                  height: 20px;
+                  min-width: 20px;
+                  min-height: 20px;
+                  margin: 2px;
+                  cursor: pointer;
+                }
+                .isSelected {
+                  position: relative;
+                  text-align: center;
+                  &:before {
+                    content: '\e9c6';
+                    font-family: 'PLF-FONT-ICONS' !important;
+                    color: white;
+                    font-size: 14px;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    #tasksListApplication {
+      .tasksCardsContainer {
+        #taskCardItem {
+          .taskCard {
+            border: 1px solid @tableBorder!important;
+            min-height: 210px;
+            height: 210px;
+            background: @tableBackgroundAccent;
+            .taskTitleId {
+              min-height: 42px;
+              height: 42px;
+              .taskTitle {
+                width: 75%;
+                max-width: 75%;
+                .uiIconCircle {
+                  font-family: "PLF-FONT-ICONS" !important;
+                  color: @primaryColor;
+                  font-style: normal;
+                  font-weight: bold;
+                  font-size: 26px;
+                  padding-right: 10px;
+                  cursor: pointer;
+                  &:before {
+                    content: "\ea47";
+                  }
+                }
+              }
+              .taskId {
+                width: 25%;
+                max-width: 25%;
+                text-align: right;
+              }
+            }
+          }
+          .taskHighPriority {
+            border-left: 10px solid @errorColor!important;
+          }
+          .taskNormalPriority {
+            border-left: 10px solid @warningColor!important;
+          }
+          .taskLowPriority {
+            border-left: 10px solid @successColor!important;
+          }
+          .taskNonePriority {
+            border-left: 10px solid @primaryColor!important;
+          }
+        }
+      }
+      #tasksList {
+        .tasksListItem {
+          .taskListItemView {
+            background-color: @tableBackgroundAccent;
+            border: 1px solid @tableBorder;
+            border-radius: 4px;
+            .taskCheckBox {
+              max-width: 3%;
+              width: 3%;
+              .uiIconCircle {
+                font-family: "PLF-FONT-ICONS" !important;
+                color: @primaryColor;
+                font-style: normal;
+                font-weight: bold;
+                font-size: 26px;
+                padding-top: 5px;
+                padding-right: 12px;
+                cursor: pointer;
+                &:before {
+                  content: "\ea47";
+                }
+              }
+            }
+            .taskTitle {
+              width: 22%;
+              max-width: 22%;
+              text-align: left;
+              flex: 1 1 100%;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+            }
+            .taskProject {
+              max-width: 16%;
+              width: 16%;
+              text-align: left;
+              .taskProjectName {
+                max-width: 160px;
+              }
+            }
+            .taskAssignee {
+              max-width: 13%;
+              width: 13%;
+              text-align: center;
+            }
+            .taskLabels {
+              max-width: 10%;
+              width: 10%;
+              text-align: center;
+            }
+            .taskActions {
+              max-width: 12%;
+              width: 12%;
+              text-align: center;
+            }
+            .taskStat {
+              max-width: 12%;
+              width: 12%;
+              text-align: center;
+              .taskStatLabel {
+
+              }
+            }
+            .taskDueDate {
+              max-width: 12%;
+              width: 12%;
+              text-align: right;
+            }
+          }
+          .taskHighPriority {
+            border-left: 5px solid @errorColor!important;
+          }
+          .taskNormalPriority {
+            border-left: 5px solid @warningColor!important;
+          }
+          .taskLowPriority {
+            border-left: 5px solid @successColor!important;
+          }
+          .taskNonePriority {
+            border-left: 5px solid @primaryColor!important;
+          }
+        }
+      }
+      .taskProject {
+        .taskProjectName {
+          flex: 1 1 auto;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          display: inline-block;
+        }
+        .taskProjectNameCard {
+          width: 140px;
+        }
+        .noProjectColor {
+          background: transparent!important;
+          border: 2px solid @baseColorLight;
+          color: @baseColorLight;
+        }
+        .beige {
+          background: transparent!important;
+          border: 2px solid #FFE1BE;
+          color: #FFE1BE;
+        }
+        .asparagus {
+          background: transparent!important;
+          border: 2px solid #909958;
+          color: #909958;
+        }
+        .laurel_green {
+          background: transparent!important;
+          border: 2px solid #BED67E;
+          color: #BED67E;
+        }
+        .moss_green {
+          background: transparent!important;
+          border: 2px solid #98CC81;
+          color: #98CC81;
+        }
+        .munsell_blue {
+          background: transparent!important;
+          border: 2px solid #319AB3;
+          color: #319AB3;
+        }
+        .sky_blue {
+          background: transparent!important;
+          border: 2px solid #4DBED9;
+          color: #4DBED9;
+        }
+        .powder_blue {
+          background: transparent!important;
+          border: 2px solid #9EE4F5;
+          color: #9EE4F5;
+        }
+        .baby_blue {
+          background: transparent!important;
+          border: 2px solid #B2E2FF;
+          color: #B2E2FF;
+        }
+        .navy_blue {
+          background: transparent!important;
+          border: 2px solid #4273C8;
+          color: #4273C8;
+        }
+        .blue_gray {
+          background: transparent!important;
+          border: 2px solid #8EB0EA;
+          color: #8EB0EA;
+        }
+        .light_blue {
+          background: transparent!important;
+          border: 2px solid #B3CFFF;
+          color: #B3CFFF;
+        }
+        .light_gray {
+          background: transparent!important;
+          border: 2px solid #CDCDCD;
+          color: #CDCDCD;
+        }
+        .purple {
+          background: transparent!important;
+          border: 2px solid #774EA9;
+          color: #774EA9;
+        }
+        .light_purple {
+          background: transparent!important;
+          border: 2px solid #BC99E7;
+          color: #BC99E7;
+        }
+        .pink {
+          background: transparent!important;
+          border: 2px solid #FFC8F0;
+          color: #FFC8F0;
+        }
+        .hot_pink {
+          background: transparent!important;
+          border: 2px solid #F97575;
+          color: #F97575;
+        }
+        .Orange {
+          background: transparent!important;
+          border: 2px solid #FFA500;
+          color: #FFA500;
+        }
+        .light_brown {
+          background: transparent!important;
+          border: 2px solid #C5B294;
+          color: #C5B294;
+        }
+        .gray {
+          background: transparent!important;
+          border: 2px solid #A39594;
+          color: #A39594;
+        }
+        .plum {
+          background: transparent!important;
+          border: 2px solid #CEA6AC;
+          color: #CEA6AC;
+        }
+      }
+      .taskLabels {
+        .labelText {
+          background: @greyColor;
+          padding: 2px 4px;
+        }
+        .noLabelText {
+          color: @greyColorLighten1;
+        }
+      }
+      .taskAssignee {
+        .taskWorkerAvatar {
+          background-position: center;
+          background-size: cover;
+          border-radius: 50%;
+          width: 31px;
+          height: 31px;
+          img {
+            display: none;
+          }
+        }
+      }
+      .taskActions {
+        .taskComment {
+          .uiCommentIcon {
+            padding-right: 2px;
+            margin-top: -2px;
+            &:before {
+              content: "\ea42";
+              font-family: "PLF-FONT-ICONS" !important;
+              color: @likeButtonColor;
+              font-style: normal;
+              font-size: 20px;
+            }
+          }
+        }
+        .taskAttachment {
+          .uiAttachIcon {
+            padding-right: 2px;
+            &:before {
+              content: "\e91f";
+              font-family: "PLF-FONT-ICONS" !important;
+              color: @likeButtonColor;
+              font-style: normal;
+              font-size: 18px;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
 /*--------------------------Tasks ---------------------------*/
 
 #tasks {
@@ -23,7 +658,7 @@
     border-radius: 0px 5px 5px 0px;
   }
   .color-title {
-    color: @greyColor;
+    color: @greyColorLighten1;
   }
   .taskTitle {
     color: black;
@@ -62,7 +697,7 @@
       p {
         font-weight: normal;
         font-size: 15px;
-        color: @greyColor;
+        color: @greyColorLighten1;
       }
     }
   }
@@ -130,22 +765,22 @@
     input[type="text"] {
       font-size: 15px!important;
       cursor: pointer!important;
-      color: @blackColor !important;
+      color: @textColor !important;
       width: 84px;
     }
     input[type="text"]::placeholder {
-      color: @greyColor !important;
+      color: @greyColorLighten1 !important;
       padding-left: 8px;
     }
     .v-icon.v-icon.v-icon--link {
-      color: @greyColor;
+      color: @greyColorLighten1;
       padding-top: 8px;
       font-size: 20px;
     }
   }
   .assignTo {
     .v-select__slot {
-      border: 1px solid @greyColor;
+      border: 1px solid @greyColorLighten1;
       border-radius: 5px;
     }
   }
@@ -170,7 +805,7 @@
   .selectFont {
     .v-select__selection--comma {
       font-size: 15px;
-      color: @blackColor !important;
+      color: @textColor !important;
       min-width: max-content!important;
     }
     .v-menu__content {
@@ -197,7 +832,7 @@
     .v-label {
       top: 10px;
       font-size: 15px!important;
-      color: @greyColor !important;
+      color: @greyColorLighten1 !important;
       margin-left: 6px;
     }
   }
@@ -209,7 +844,7 @@
   }
   .mx-input {
     width: 92% !important;
-    color: @greyColor;
+    color: @greyColorLighten1;
     cursor: pointer;
     &:focus {
       border: none;
@@ -275,7 +910,7 @@
   }
 
   .taskDescription {
-    border: 1px solid @greyBackground;
+    border: 1px solid @greyColor;
     border-radius: 5px;
     padding-top: 8px;
     padding-bottom: 8px
@@ -289,7 +924,7 @@
         content: attr(placeholder);
         pointer-events: none;
         display: block;
-        color: @greyColor!important;
+        color: @greyColorLighten1!important;
       }
     }
   }
@@ -337,7 +972,7 @@
   .custom-placeholer-color {
     input {
       &::placeholder {
-        color: @greyColor !important;
+        color: @greyColorLighten1 !important;
         opacity: 1;
       }
     }
@@ -346,7 +981,7 @@
     >.v-tabs-bar {
       .v-tab {
         &:not(.v-tab--active) {
-          color: @greyColor;
+          color: @greyColorLighten1;
         }
       }
     }
@@ -388,7 +1023,7 @@
   .task-name {
     width: 90%;
     input[type="text"]::placeholder {
-      color: @greyColor !important;
+      color: @greyColorLighten1 !important;
     }
     &.taskCompleted{
       text-decoration: line-through;

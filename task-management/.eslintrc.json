@@ -18,7 +18,9 @@
         "eXo": true,
         "Vue": true,
         "Vuetify": true,
+        "VueEllipsis": true,
         "exoi18n": true,
+        "echarts": true,
         "cCometd": true,
         "CKEDITOR": true,
         "extensionRegistry": true

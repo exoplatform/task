@@ -26,6 +26,9 @@ import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.dto.LabelDto;
+import org.exoplatform.task.dto.UserSettingDto;
+import org.exoplatform.task.model.User;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -56,6 +59,9 @@ public class TestUtils {
 
   public static long EXISTING_COMMENT_ID = 1;
   public static long UNEXISTING_COMMENT_ID = 2;
+
+  public static long EXISTING_LABEL_ID = 1;
+  public static long UNEXISTING_LABEL_ID = 2;
 
   public static void initH2DB() throws SQLException,
       ClassNotFoundException, LiquibaseException {
@@ -128,6 +134,22 @@ public class TestUtils {
     return status;
   }
 
+  public static UserSettingDto getDefaultUserSettingDto(){
+    UserSettingDto userSettingDto = new UserSettingDto();
+    userSettingDto.setUsername("user");
+    userSettingDto.setShowHiddenProject(true);
+    userSettingDto.setShowHiddenLabel(true);
+    return userSettingDto;
+  }
+
+  public static LabelDto getDefaultLabel() {
+    LabelDto labelDto = new LabelDto();
+    labelDto.setId(EXISTING_LABEL_ID);
+    labelDto.setName("TODO");
+    labelDto.setUsername("label");
+    return labelDto;
+  }
+
   public static Project getDefaultProject() {
     Project project = new Project();
     project.setId(EXISTING_PROJECT_ID);
@@ -138,6 +160,17 @@ public class TestUtils {
     managers.add("Tib");
     project.setManager(managers);
     return project;
+  }
+
+  public static User getUser() {
+    User user = new User();
+    user.setUsername("root");
+    user.setDisplayName("root");
+    user.setFirstName("root");
+    user.setLastName("root");
+    user.setEmail("root@gmail.com");
+
+    return user;
   }
 
 }

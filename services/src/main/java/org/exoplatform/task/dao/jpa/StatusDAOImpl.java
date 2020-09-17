@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
@@ -87,6 +88,7 @@ public class StatusDAOImpl extends CommonJPADAO<Status, Long> implements StatusH
     param.put("projectId", projectId);
     return findByNamedQuery("Status.findStatusByProject", param, -1);
   }
+
 
   public List<Status> findByNamedQuery(String query, Map<String, Object> params, int limit) {
     EntityManager em = getEntityManager();

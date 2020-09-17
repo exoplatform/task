@@ -36,6 +36,8 @@ public interface TaskHandler extends GenericDAO<Task, Long> {
 
   ListAccess<Task> findTasks(TaskQuery query);
 
+  public List<Task> findAllByMembership(String user, List<String> memberships);
+
   public <T> List<T> selectTaskField(TaskQuery query, String fieldName);
 
   Task findTaskByActivityId(String activityId);
@@ -84,5 +86,7 @@ public interface TaskHandler extends GenericDAO<Task, Long> {
    * @return tasks count
    */
   long countTasks(String user, String query);
+
+    List<Object[]> countTaskStatusByProject(long projectId);
 }
 

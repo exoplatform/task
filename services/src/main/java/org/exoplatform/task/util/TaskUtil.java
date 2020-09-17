@@ -20,6 +20,12 @@ package org.exoplatform.task.util;
 import java.text.*;
 import java.util.*;
 
+import org.exoplatform.task.dto.CommentDto;
+import org.exoplatform.task.dto.TaskDto;
+import org.exoplatform.task.legacy.service.ProjectService;
+import org.exoplatform.task.legacy.service.StatusService;
+import org.exoplatform.task.legacy.service.TaskService;
+import org.exoplatform.task.legacy.service.UserService;
 import org.gatein.common.text.EntityEncoder;
 
 import org.exoplatform.commons.utils.HTMLEntityEncoder;
@@ -36,7 +42,7 @@ import org.exoplatform.task.domain.*;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.exception.ParameterEntityException;
 import org.exoplatform.task.model.*;
-import org.exoplatform.task.service.*;
+import org.exoplatform.task.legacy.service.*;
 import org.exoplatform.web.controller.router.Router;
 
 /**
@@ -186,7 +192,7 @@ public final class TaskUtil {
                                        TaskService taskService, OrganizationService orgService, UserService userService, ProjectService projectService) throws EntityNotFoundException {
     TaskModel taskModel = new TaskModel();
     
-    Task task = taskService.getTask(id); //Can throw TaskNotFoundException    
+    Task task = taskService.getTask(id); //Can throw TaskNotFoundException
     Set<String> coworker = getCoworker(taskService, id);
     task.setCoworker(coworker);
     taskModel.setTask(task);
@@ -771,6 +777,26 @@ public final class TaskUtil {
 
     return false;
   }
+
+  public static boolean canDeleteComment(Identity identity, CommentDto comment) {
+    if (comment == null || identity == null) {
+      return false;
+    }
+
+    // Owner can delete his comment
+    if (identity.getUserId().equals(comment.getAuthor())) {
+      return true;
+    }
+
+    // Project manager can delete comment
+    Task task = comment.getTask();
+    if (task.getStatus() != null) {
+      Project pj = task.getStatus().getProject();
+      return pj.canEdit(identity);
+    }
+
+    return false;
+  }
   
   private static boolean isLabelIn(Label child, Label parent) {
     Label pr = child;
@@ -979,6 +1005,26 @@ public final class TaskUtil {
     return UserUtil.isPlatformAdmin(identity);
   }
 
+  public static boolean hasEditPermission(TaskDto task) {
+    Identity identity = ConversationState.getCurrent().getIdentity();
+    String userId = identity.getUserId();
+
+    if ((task.getAssignee() != null && task.getAssignee().equals(identity.getUserId())) ||
+        getCoworker(task.getId()).contains(userId) ||
+        (task.getCreatedBy() != null && task.getCreatedBy().equals(userId))) {
+      return true;
+    }
+
+    if (task.getStatus() != null) {
+      Project project = task.getStatus().getProject();
+      if (project.canView(identity)) {
+        return true;
+      }
+    }
+
+    return UserUtil.isPlatformAdmin(identity);
+  }
+
   public static boolean hasViewPermission(Task task) {
     Identity identity = ConversationState.getCurrent().getIdentity();
     String userId = identity.getUserId();
@@ -986,7 +1032,20 @@ public final class TaskUtil {
     return hasMentionedUser(task, userId) || hasEditPermission(task);
   }
 
+  public static boolean hasViewPermission(TaskDto task) {
+    Identity identity = ConversationState.getCurrent().getIdentity();
+    //String userId = identity.getUserId();
+
+    return hasEditPermission(task);
+  }
+
   private static boolean hasMentionedUser(Task task, String userId) {
+    TaskService taskService = getTaskService();
+    Set<String> mentionedUsers = taskService.getMentionedUsers(task.getId());
+    return mentionedUsers.contains(userId);
+  }
+
+  private static boolean hasMentionedUser(TaskDto task, String userId) {
     TaskService taskService = getTaskService();
     Set<String> mentionedUsers = taskService.getMentionedUsers(task.getId());
     return mentionedUsers.contains(userId);

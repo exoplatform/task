@@ -11,7 +11,7 @@ import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
 import org.exoplatform.social.core.manager.IdentityManager;
 import org.exoplatform.task.domain.Comment;
-import org.exoplatform.task.service.TaskService;
+import org.exoplatform.task.legacy.service.TaskService;
 import org.exoplatform.task.util.TaskUtil;
 
 public class GamificationTaskCommentListener extends Listener<TaskService, Comment> {

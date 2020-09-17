@@ -61,5 +61,52 @@
         </object-param>
       </init-params>
     </component-plugin>
+
+    <component-plugin>
+      <name>NewTasks</name>
+      <set-method>addApplicationPlugin</set-method>
+      <type>org.exoplatform.appcenter.plugin.ApplicationPlugin</type>
+      <init-params>
+        <value-param>
+          <name>imagePath</name>
+          <value>war:/../images/new_tasks.png</value>
+        </value-param>
+        <value-param>
+          <name>override</name>
+          <value>${exo.app-center.tasks.override:false}</value>
+        </value-param>
+        <object-param>
+          <name>application</name>
+          <description>description</description>
+          <object type="org.exoplatform.appcenter.dto.Application">
+            <field name="title">
+              <string>New Tasks</string>
+            </field>
+            <field name="url">
+              <string>./taskstest</string>
+            </field>
+            <field name="description">
+              <string>New Tasks UI application</string>
+            </field>
+            <field name="permissions">
+              <collection type="java.util.ArrayList" item-type="java.lang.String">
+                <value>
+                  <string>*:/spaces/exo_employees</string>
+                </value>
+              </collection>
+            </field>
+            <field name="active">
+              <boolean>true</boolean>
+            </field>
+            <field name="isMandatory">
+              <boolean>true</boolean>
+            </field>
+            <field name="isMobile">
+              <boolean>true</boolean>
+            </field>
+          </object>
+        </object-param>
+      </init-params>
+    </component-plugin>
   </external-component-plugins>
 </configuration>

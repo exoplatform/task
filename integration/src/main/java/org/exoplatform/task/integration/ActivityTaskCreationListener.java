@@ -29,12 +29,12 @@ import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.service.ParserContext;
-import org.exoplatform.task.service.ProjectService;
-import org.exoplatform.task.service.StatusService;
-import org.exoplatform.task.service.TaskParser;
-import org.exoplatform.task.service.TaskService;
-import org.exoplatform.task.service.UserService;
+import org.exoplatform.task.legacy.service.ParserContext;
+import org.exoplatform.task.legacy.service.ProjectService;
+import org.exoplatform.task.legacy.service.StatusService;
+import org.exoplatform.task.legacy.service.TaskParser;
+import org.exoplatform.task.legacy.service.TaskService;
+import org.exoplatform.task.legacy.service.UserService;
 import org.exoplatform.task.util.ProjectUtil;
 import org.exoplatform.task.util.StringUtil;
 
