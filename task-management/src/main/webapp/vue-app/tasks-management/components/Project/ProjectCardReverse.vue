@@ -18,19 +18,19 @@
         <span class="text-body-2 totalLabel">{{ $t('exo.tasks.label.leftTasks') }}</span>
       </div>
       <div class="projectStatusNumber pl-4">
-        <p class="d-flex justify-space-between mb-2 taskToDoLabel">
+        <p class="d-flex justify-space-between mb-1 taskToDoLabel">
           <span class="caption">{{ $t('exo.tasks.status.todo') }}</span>
           <span>{{ getStatusValue('ToDo') }}</span>
         </p>
-        <p class="d-flex justify-space-between mb-2 taskInProgressLabel">
+        <p class="d-flex justify-space-between mb-1 taskInProgressLabel">
           <span class="caption">{{ $t('exo.tasks.status.inprogress') }}</span>
           <span>{{ getStatusValue('InProgress') }}</span>
         </p>
-        <p class="d-flex justify-space-between mb-2 taskWaitingOnLabel">
+        <p class="d-flex justify-space-between mb-1 taskWaitingOnLabel">
           <span class="caption">{{ $t('exo.tasks.status.waitingon') }}</span>
           <span>{{ getStatusValue('WaitingOn') }}</span>
         </p>
-        <p class="d-flex justify-space-between mb-2 taskDoneLabel">
+        <p class="d-flex justify-space-between mb-1 taskDoneLabel">
           <span class="caption">{{ $t('exo.tasks.status.done') }}</span>
           <span>{{ getStatusValue('Done') }}</span>
         </p>
@@ -82,7 +82,7 @@
                 ],
               }
             ],
-          color: ['#2da9e1', '#feca0e', '#e52a2d', '#008f3a']
+          color: ['#476a9c', '#ffb441', '#bc4343', '#2eb58c']
           }
         }
     },

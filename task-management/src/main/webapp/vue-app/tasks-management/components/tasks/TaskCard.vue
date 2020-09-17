@@ -31,8 +31,17 @@
           </div>
         </div>
         <div class="taskLabels">
-          <span v-if="task.labels && task.labels.length == 1" class="labelText">{{ task.labels[0].name }}</span>
-          <span v-else-if="task.labels && task.labels.length > 1" class="labelText">{{ task.labels.length }} {{ $t('label.labels') }}</span>
+          <span
+            v-if="task.labels && task.labels.length == 1"
+            class="labelText">
+            {{ task.labels[0].name }}
+          </span>
+          <span
+            v-else-if="task.labels && task.labels.length > 1"
+            :title="getLabelsList(task.labels)"
+            class="labelText">
+            {{ task.labels.length }} {{ $t('label.labels') }}
+          </span>
           <span v-else class="noLabelText caption"> {{ $t('label.noLabel') }}</span>
         </div>
       </div>
@@ -139,6 +148,15 @@
           this.task.coworker.forEach((coworker) => {
             this.assigneeAndCoworkerArray.push(coworker);
           })
+        }
+      },
+      getLabelsList(taskLabels) {
+        if (taskLabels.length > 1) {
+          let labelText = '';
+          taskLabels.forEach((label) => {
+            labelText += `${label.name}\r\n`;
+          });
+          return labelText;
         }
       }
     }
