@@ -325,14 +325,27 @@
         #taskCardItem {
           .taskCard {
             border: 1px solid @tableBorder!important;
-            min-height: 200px;
-            height: 200px;
+            min-height: 210px;
+            height: 210px;
+            background: @tableBackgroundAccent;
             .taskTitleId {
               min-height: 42px;
               height: 42px;
               .taskTitle {
                 width: 75%;
                 max-width: 75%;
+                .uiIconCircle {
+                  font-family: "PLF-FONT-ICONS" !important;
+                  color: @primaryColor;
+                  font-style: normal;
+                  font-weight: bold;
+                  font-size: 26px;
+                  padding-right: 10px;
+                  cursor: pointer;
+                  &:before {
+                    content: "\ea47";
+                  }
+                }
               }
               .taskId {
                 width: 25%;
@@ -357,17 +370,30 @@
       }
       #tasksList {
         .tasksListItem {
-          .taslListItemView {
+          .taskListItemView {
             background-color: @tableBackgroundAccent;
             border: 1px solid @tableBorder;
             border-radius: 4px;
             .taskCheckBox {
               max-width: 3%;
               width: 3%;
+              .uiIconCircle {
+                font-family: "PLF-FONT-ICONS" !important;
+                color: @primaryColor;
+                font-style: normal;
+                font-weight: bold;
+                font-size: 26px;
+                padding-top: 5px;
+                padding-right: 12px;
+                cursor: pointer;
+                &:before {
+                  content: "\ea47";
+                }
+              }
             }
             .taskTitle {
-              width: 25%;
-              max-width: 25%;
+              width: 22%;
+              max-width: 22%;
               text-align: left;
               flex: 1 1 100%;
               overflow: hidden;
@@ -379,17 +405,12 @@
               width: 16%;
               text-align: left;
               .taskProjectName {
-                flex: 1 1 auto;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: nowrap;
-                display: inline-block;
                 max-width: 160px;
               }
             }
             .taskAssignee {
-              max-width: 10%;
-              width: 10%;
+              max-width: 13%;
+              width: 13%;
               text-align: center;
             }
             .taskLabels {
@@ -431,6 +452,16 @@
         }
       }
       .taskProject {
+        .taskProjectName {
+          flex: 1 1 auto;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          display: inline-block;
+        }
+        .taskProjectNameCard {
+          width: 140px;
+        }
         .noProjectColor {
           background: transparent!important;
           border: 2px solid @baseColorLight;
@@ -544,6 +575,18 @@
         }
         .noLabelText {
           color: @greyColorLighten1;
+        }
+      }
+      .taskAssignee {
+        .taskWorkerAvatar {
+          background-position: center;
+          background-size: cover;
+          border-radius: 50%;
+          width: 31px;
+          height: 31px;
+          img {
+            display: none;
+          }
         }
       }
       .taskActions {
