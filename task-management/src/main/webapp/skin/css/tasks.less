@@ -136,6 +136,7 @@
                 height: @taskCardMaxHeight;
                 max-height: @taskCardMaxHeight;
                 flex-direction: column;
+                border: 1px solid @borderColor;
                 .taskItemToolbar {
                   .uiIconInformation {
                     font-size: 20px;
@@ -217,6 +218,7 @@
                 height: @taskCardMaxHeight;
                 max-height: @taskCardMaxHeight;
                 flex-direction: column;
+                border: 1px solid @borderColor;
                 .projectDetailsReverse {
                   position: relative;
                   .reverseInfoIcon {
@@ -226,7 +228,36 @@
                     font-size: 20px;
                   }
                 }
+                .noTasksProject {
+                  height: 80%;
+                  text-align: center;
+                  padding-top: 50px;
+
+                  .noTasksProjectIcon {
+                    .uiIconTask {
+                      color: @greyColor;
+                      font-size: 40px;
+                      padding-bottom: 10px;
+                    }
+                  }
+                }
                 .echartStatsContent {
+                  justify-content: space-evenly;
+                  .echartAndLabel {
+                    position: relative;
+                    .projectTasksTotalNumber {
+                      position: absolute;
+                      left: 60px;
+                      top: 35%;
+                      span {
+                        display: block;
+                        text-align: center;
+                      }
+                      .totalNumber {
+                        font-size: 1.5rem;
+                      }
+                    }
+                  }
                   .projectStatusNumber{
                     width: 40%;
                     p {
@@ -260,17 +291,6 @@
                       &:before {
                         background: @successColor;
                       }
-                    }
-                  }
-                  .projectTasksTotalNumber {
-                    position: absolute;
-                    left: 17%;
-                    span {
-                      display: block;
-                      text-align: center;
-                    }
-                    .totalNumber {
-                      font-size: 1.5rem;
                     }
                   }
                 }
