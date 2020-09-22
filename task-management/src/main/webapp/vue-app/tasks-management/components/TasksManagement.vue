@@ -25,8 +25,8 @@
   export default {
     data () {
       return {
-        tab: 'tab-2'
+        tab: 'tab-2',
       }
-    }
+    },
   }
 </script>

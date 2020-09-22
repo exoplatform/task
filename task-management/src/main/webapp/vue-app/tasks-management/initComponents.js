@@ -15,6 +15,13 @@ import TasksListItem from './components/tasks/TasksListItem.vue';
 import TasksCardsList from './components/tasks/TasksCardsList.vue'
 import TaskCard from './components/tasks/TaskCard.vue'
 
+import TasksViewDashboard from "./components/ProjectTasks/TasksViewDashboard.vue";
+import TasksViewToolbar from "./components/ProjectTasks/TasksViewToolbar.vue";
+import TasksViewBoard from "./components/ProjectTasks/TasksViewBoard.vue";
+import TasksViewList from './components/ProjectTasks/TasksViewList.vue';
+import TaskViewGantt from './components/ProjectTasks/TasksViewGantt.vue';
+import TasksViewHeader from "./components/ProjectTasks/TasksViewHeader.vue";
+
 const components = {
   'tasks-management': TasksManagement,
   'project-dashboard': ProjectDashboard,
@@ -31,8 +38,14 @@ const components = {
   'tasks-list': TasksList,
   'tasks-list-item': TasksListItem,
   'tasks-cards-list': TasksCardsList,
-  'task-card': TaskCard
+  'task-card': TaskCard,
 
+  'tasks-view-dashboard': TasksViewDashboard,
+  'tasks-view-toolbar': TasksViewToolbar,
+  'tasks-view-board': TasksViewBoard,
+  'tasks-view-list': TasksViewList,
+  'tasks-view-gantt': TaskViewGantt,
+  'tasks-view-header': TasksViewHeader,
 };
 
 for (const key in components) {

@@ -398,6 +398,69 @@
           }
         }
       }
+      .projectTasksDashboard {
+        .tasksToolbar {
+          .taskDisplay {
+            .taskTabBoard {
+              border: 1px solid @borderColor;
+              border-radius: 5px 0 0 5px;
+              height: 38px;
+              min-height: 38px;
+              .uiIconBoard {
+                &:before {
+                  content: "\e631";
+                }
+              }
+            }
+            .taskTabList {
+              border-radius: 0;
+            }
+            .taskTabGantt {
+              border: 1px solid @borderColor;
+              border-radius: 0 5px 5px 0;
+              height: 38px;
+              min-height: 38px;
+              .uiIconGantt {
+                &:before {
+                  content: "\e623";
+                }
+              }
+            }
+          }
+        }
+        .tasksView {
+          .projectTaskItem {
+            position: relative;
+            .tasksViewHeader {
+              .taskStatusName {
+
+              }
+              .taskNumberAndActions {
+                .uiIconThreeDots {
+                  font-size: 15px;
+                  &:before {
+                    content: '\e79c';
+                  }
+                }
+              }
+              .taskStatusActionMenu {
+                right: 27px;
+                left: auto!important;
+                top: 35px!important;
+                .v-list-item {
+                  min-height: 30px!important;
+                }
+              }
+            }
+            .v-divider {
+              border-top-width: 2px;
+              margin-top: 4px;
+            }
+          }
+        }
+      }
+      }
+
     }
     #tasksListApplication {
       .tasksCardsContainer {
@@ -697,7 +760,6 @@
       }
     }
   }
-}
 
 /*--------------------------Tasks ---------------------------*/
 

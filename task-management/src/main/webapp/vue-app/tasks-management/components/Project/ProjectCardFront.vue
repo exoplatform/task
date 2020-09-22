@@ -71,7 +71,9 @@
       </v-menu>
     </div>
     <div class="taskItemInfo pa-3">
-      <div class="taskItemDescription">
+      <div
+        class="taskItemDescription"
+        @click="showProjectTasksDetails(project.id)">
         <ellipsis
           v-if="project.description"
           :title="project.description"
@@ -164,10 +166,14 @@
         if (this.displayActionMenu) {
           window.setTimeout(() => {
             this.displayActionMenu = false;
-            this.displaySecondButton = false;
           }, this.waitTimeUntilCloseMenu);
         }
       });
     },
+    methods : {
+      showProjectTasksDetails(projectId) {
+        document.dispatchEvent(new CustomEvent('showProjectTasks', {detail: projectId}));
+      }
+    }
   }
 </script>
