@@ -231,7 +231,7 @@ public class ProjectServiceTest {
     }
 
     @Test
-    public void testCloneProjectById() throws EntityNotFoundException {
+    public void testCloneProjectById() throws Exception {
 
         Project project = TestUtils.getDefaultProject();
         project.setName("Tib Project");

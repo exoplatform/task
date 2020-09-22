@@ -9,6 +9,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.RuntimeDelegate;
 
 import org.exoplatform.task.TestUtils;
+import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.model.User;
 import org.exoplatform.task.storage.ProjectStorage;
 import org.exoplatform.task.storage.StatusStorage;
@@ -127,6 +128,37 @@ public class TestTaskRestService {
     assertEquals(1, tasks3.length());
     Long tasks3Size = (Long) tasks3JsonObject.get("size");
     assertEquals(1L, tasks3Size.longValue());
+  }
+
+  @Test
+  public void testGetTasksByProjectId() throws Exception {
+    // Given
+    TaskRestService taskRestService = new TaskRestService(taskService,
+            commentService,
+            projectService,
+            statusService,
+            userService,
+            spaceService,
+            labelService);
+    Identity root = new Identity("root");
+    ConversationState.setCurrent(new ConversationState(root));
+    TaskDto task1 = new TaskDto();
+    TaskDto task2 = new TaskDto();
+    TaskDto task3 = new TaskDto();
+    TaskDto task4 = new TaskDto();
+    List<TaskDto>tasks = new ArrayList<TaskDto>();
+    tasks.add(task1);
+    tasks.add(task2);
+    tasks.add(task3);
+    tasks.add(task4);
+    TaskQuery taskQuery = new TaskQuery();
+    List<Long> allProjectIds = new ArrayList<Long>();
+    allProjectIds.add((long) 1);
+    when(taskService.findTasks(taskQuery,0,-1)).thenReturn(tasks);
+    // When
+    Response response = taskRestService.getTasksByProjectId((long)1,0,-1,false,false);
+    // Then
+    assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
   }
 
   @Test

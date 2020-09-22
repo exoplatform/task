@@ -10,6 +10,7 @@ import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
+import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.dto.*;
@@ -137,6 +138,49 @@ public class TaskRestService implements ResourceContainer {
     if (returnSize) {
       JSONObject tasksSizeJsonObject = new JSONObject();
       tasksSizeJsonObject.put("size", tasksSize);
+      if (returnDetails) {
+        tasksSizeJsonObject.put("tasks",
+                                tasks.stream()
+                                     .map(task -> getTaskDetails((TaskDto) task, currentUser))
+                                     .collect(Collectors.toList()));
+      } else {
+        tasksSizeJsonObject.put("tasks", tasks);
+      }
+      return Response.ok(tasksSizeJsonObject).build();
+    } else {
+      if (returnDetails) {
+        return Response.ok(tasks.stream().map(task -> getTaskDetails((TaskDto) task, currentUser)).collect(Collectors.toList()))
+                       .build();
+      }
+      return Response.ok(tasks).build();
+    }
+  }
+
+  @GET
+  @Path("project/{id}")
+  @RolesAllowed("users")
+  @Produces(MediaType.APPLICATION_JSON)
+  @ApiOperation(value = "Gets tasks by projectIdr", httpMethod = "GET", response = Response.class, notes = "This returns list of tasks by project")
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled") })
+  public Response getTasksByProjectId(@ApiParam(value = "Id", required = true, defaultValue = "0") @PathParam("id") Long id,
+                                      @ApiParam(value = "Offset", required = false, defaultValue = "0") @QueryParam("offset") int offset,
+                                      @ApiParam(value = "Limit", required = false, defaultValue = "0") @QueryParam("limit") int limit,
+                                      @ApiParam(value = "Returning the number of tasks or not", defaultValue = "false") @QueryParam("returnSize") boolean returnSize,
+                                      @ApiParam(value = "Returning All Details", defaultValue = "false") @QueryParam("returnDetails") boolean returnDetails) throws Exception {
+    String currentUser = ConversationState.getCurrent().getIdentity().getUserId();
+
+    long tasksSize;
+    List<?> tasks = null;
+    TaskQuery taskQuery = new TaskQuery();
+    List<Long> allProjectIds = new ArrayList<Long>();
+    allProjectIds.add(id);
+    if (limit == 0) {
+      limit = -1;
+    }
+    tasks = taskService.findTasks(taskQuery,limit,offset);
+
+    if (returnSize) {
+      JSONObject tasksSizeJsonObject = new JSONObject();
       if (returnDetails) {
         tasksSizeJsonObject.put("tasks",
                                 tasks.stream()

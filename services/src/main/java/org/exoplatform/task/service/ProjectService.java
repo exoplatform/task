@@ -73,7 +73,7 @@ public interface ProjectService {
      * @return The cloned project.
      * @throws EntityNotFoundException when user is not authorized to clone project.
      */
-    ProjectDto cloneProject(long projectId, boolean cloneTask) throws EntityNotFoundException;
+    ProjectDto cloneProject(long projectId, boolean cloneTask) throws EntityNotFoundException, Exception;
 
     /**
      * Return a list of children of a parent project with given <code>parentId</code>.
