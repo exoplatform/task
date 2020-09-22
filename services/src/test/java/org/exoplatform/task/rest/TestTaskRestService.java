@@ -4,14 +4,11 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.RuntimeDelegate;
 
 import org.exoplatform.task.TestUtils;
-import org.exoplatform.task.domain.Project;
-import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.model.User;
 import org.exoplatform.task.storage.ProjectStorage;
 import org.exoplatform.task.storage.StatusStorage;
@@ -42,13 +39,7 @@ public class TestTaskRestService {
   ProjectService projectService;
 
   @Mock
-  ProjectStorage projectStorage;
-
-  @Mock
   StatusService  statusService;
-
-  @Mock
-  StatusStorage statusStorage;
 
   @Mock
   UserService    userService;
@@ -109,7 +100,7 @@ public class TestTaskRestService {
     Response response1 = taskRestService.getTasks("incoming", null, 0, 20, false, false);
     Response response2 = taskRestService.getTasks("", null, 0, 20, false, false);
     Response response3 = taskRestService.getTasks("whatever", "searchTerm", 0, 20, true, false);
-    //Response response4 = taskRestService.getTasks("whatever", "searchTerm", 0, 20, true, true);
+
     // Then
     assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
     List<TaskDto> tasks = (List<TaskDto>) response.getEntity();
@@ -184,179 +175,6 @@ public class TestTaskRestService {
     TaskDto task = (TaskDto) response2.getEntity();
     assertNotNull(task);
     assertEquals("updatedTask", task.getTitle());
-
-  }
-
-  @Test
-  public void testGetProjects() throws Exception {
-    // Given
-    TaskRestService taskRestService = new TaskRestService(taskService,
-            commentService,
-            projectService,
-            statusService,
-            userService,
-            spaceService,
-            labelService);
-    Identity root = new Identity("root");
-    ConversationState.setCurrent(new ConversationState(root));
-
-    ProjectDto project1 = new ProjectDto();
-    project1.setName("project1");
-    projectService.createProject(project1);
-    ProjectDto project2 = new ProjectDto();
-    project2.setName("project2");
-    projectService.createProject(project2);
-    ProjectDto project3 = new ProjectDto();
-    project3.setName("project3");
-    projectService.createProject(project3);
-
-    // When
-    Response response = taskRestService.getProjects();
-
-    // Then
-    assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-    assertNotNull(response.getEntity());
-  }
-
-  @Test
-  public void testGetSatusesByProjectId() throws Exception {
-    // Given
-    TaskRestService taskRestService = new TaskRestService(taskService,
-            commentService,
-            projectService,
-            statusService,
-            userService,
-            spaceService,
-            labelService);
-    Identity root = new Identity("root");
-    ConversationState.setCurrent(new ConversationState(root));
-
-    ProjectDto project1 = new ProjectDto();
-    project1.setName("project1");
-    projectService.createProject(project1);
-    ProjectDto project2 = new ProjectDto();
-    project2.setName("project2");
-    projectService.createProject(project2);
-    ProjectDto project3 = new ProjectDto();
-    project3.setName("project3");
-    projectService.createProject(project3);
-
-    StatusDto status1 = new StatusDto(3, "ToDo", 1, projectStorage.projectToEntity(project1));
-    StatusDto status2 = new StatusDto(4, "ToDo", 2, projectStorage.projectToEntity(project1));
-
-    List<StatusDto> statuses = new ArrayList<>();
-    statuses.add(status1);
-    statuses.add(status2);
-    List<Status> list = statusStorage.listStatusToEntitys(statuses);
-    Set<Status> foo = new HashSet<Status>(list);
-    project1.setStatus(foo);
-
-    Set<String> participator = new HashSet<String>();
-    participator.add("Tib");
-    project1.setParticipator(participator);
-
-    Set<String> managers = new HashSet<String>();
-    managers.add("Tib");
-    project1.setManager(managers);
-
-    Set<String> participator1 = new HashSet<String>();
-    participator1.add("root");
-    project2.setParticipator(participator1);
-
-    Set<String> managers1 = new HashSet<String>();
-    managers1.add("root");
-    project2.setManager(managers1);
-
-    // When
-    Response response1 = taskRestService.getStatusesByProjectId(project1.getId());
-
-    // Then
-    assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response1.getStatus());
-
-    // When
-    when(projectService.getProject(project1.getId())).thenReturn(project1);
-    Response response2 = taskRestService.getStatusesByProjectId(project1.getId());
-
-    // Then
-    assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response2.getStatus());
-
-    // When
-    when(projectService.getProject(project2.getId())).thenReturn(project2);
-    Response response3 = taskRestService.getStatusesByProjectId(project2.getId());
-
-    // Then
-    assertEquals(Response.Status.OK.getStatusCode(), response3.getStatus());
-    assertNotNull(response3.getEntity());
-
-  }
-
-  @Test
-  public void testGetDefaultStatusByProjectId() throws Exception {
-    // Given
-    TaskRestService taskRestService = new TaskRestService(taskService,
-            commentService,
-            projectService,
-            statusService,
-            userService,
-            spaceService,
-            labelService);
-    Identity root = new Identity("root");
-    ConversationState.setCurrent(new ConversationState(root));
-
-    ProjectDto project1 = new ProjectDto();
-    project1.setName("project1");
-    projectService.createProject(project1);
-    ProjectDto project2 = new ProjectDto();
-    project2.setName("project2");
-    projectService.createProject(project2);
-    ProjectDto project3 = new ProjectDto();
-    project3.setName("project3");
-    projectService.createProject(project3);
-
-    StatusDto status1 = new StatusDto(3, "ToDo", 1, projectStorage.projectToEntity(project1));
-    StatusDto status2 = new StatusDto(4, "ToDo", 2, projectStorage.projectToEntity(project1));
-
-    List<StatusDto> statuses = new ArrayList<>();
-    statuses.add(status1);
-    statuses.add(status2);
-    List<Status> list = statusStorage.listStatusToEntitys(statuses);
-    Set<Status> foo = new HashSet<Status>(list);
-    project1.setStatus(foo);
-
-    Set<String> participator = new HashSet<String>();
-    participator.add("Tib");
-    project1.setParticipator(participator);
-
-    Set<String> managers = new HashSet<String>();
-    managers.add("Tib");
-    project1.setManager(managers);
-
-    Set<String> participator1 = new HashSet<String>();
-    participator1.add("root");
-    project2.setParticipator(participator1);
-
-    Set<String> managers1 = new HashSet<String>();
-    managers1.add("root");
-    project2.setManager(managers1);
-
-    // When
-    when(projectService.getProject(project1.getId())).thenReturn(project1);
-    when(statusService.getDefaultStatus(project1.getId())).thenReturn(status1);
-    Response response = taskRestService.getDefaultStatusByProjectId(project1.getId());
-
-    // Then
-    assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
-
-    // When
-    when(projectService.getProject(project2.getId())).thenReturn(project2);
-    when(statusService.getDefaultStatus(project2.getId())).thenReturn(status1);
-    Response response1 = taskRestService.getDefaultStatusByProjectId(project2.getId());
-
-    // Then
-    assertEquals(Response.Status.OK.getStatusCode(), response1.getStatus());
-    assertNotNull(response1.getEntity());
-
-
   }
 
 
@@ -686,9 +504,6 @@ public class TestTaskRestService {
 
     when(userService.findUserByName("root")).thenReturn(lists);
     Response response = taskRestService.findUsersToMention("root");
-    assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-
-    response = taskRestService.getUsersByQueryAndProjectName("root", "project1");
     assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
   }
 

@@ -1,6 +1,7 @@
 package org.exoplatform.task.dto;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.services.security.MembershipEntry;
 import org.exoplatform.task.domain.Project;
@@ -12,6 +13,7 @@ import java.util.*;
 
 
 @Data
+@NoArgsConstructor
 public class ProjectDto implements Serializable {
     private long      id;
 
@@ -37,6 +39,13 @@ public class ProjectDto implements Serializable {
 
     private Set<UserSetting> hiddenOn;
 
+    public ProjectDto(String name, String description, HashSet<Status> statuses, Set<String> managers, Set<String> participators) {
+        this.name=name;
+        this.description=description;
+        this.status=statuses;
+        this.manager=managers;
+        this.participator=participators;
+    }
 
 
     public ProjectDto clone(boolean cloneTask) {

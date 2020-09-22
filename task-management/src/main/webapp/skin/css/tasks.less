@@ -100,6 +100,41 @@
             .permisionLabel {
               color: @textLightColor;
             }
+            .listOfManager,.listOfParticipant {
+              display: flex;
+              a.flex-nowrap.flex-shrink-0.d-flex {
+                margin-right: 5px;
+                .v-avatar.pull-left.my-auto {
+                  height: 30px;
+                  min-width: 30px;
+                  width: 30px;
+                }
+              }
+              .editManager,.editParticipant {
+                margin-left: 10px;
+                margin-top: 3px;
+                a.editManager,a.editParticipant {
+                  text-decoration: underline;
+                  i.fas.fa-pencil-alt.uiIconProject {
+                    text-decoration: underline;
+                    font-size: 11px;
+                  }
+                }
+                label.editManagerInfo,label.editParticipantInfo {
+                  font-size: 10px;
+                  color: @textLightColor;
+                  font-style: italic;
+                  i.uiIconInformation.uiIconProject {
+                    font-size: 10px;
+                    color: @textLightColor;
+                    font-style: italic;
+                  }
+                }
+              }
+            }
+          }
+          span#cke_1_bottom {
+            height: 27px;
           }
           .projectDescription {
             label {

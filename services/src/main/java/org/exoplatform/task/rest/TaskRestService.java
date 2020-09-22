@@ -1,20 +1,7 @@
 package org.exoplatform.task.rest;
 
-import java.net.URLDecoder;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import javax.annotation.security.RolesAllowed;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
+import io.swagger.annotations.*;
 import org.apache.commons.lang3.StringUtils;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -26,19 +13,24 @@ import org.exoplatform.social.core.space.spi.SpaceService;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.dto.*;
-import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.legacy.service.UserService;
 import org.exoplatform.task.model.User;
 import org.exoplatform.task.rest.model.CommentEntity;
 import org.exoplatform.task.rest.model.TaskEntity;
 import org.exoplatform.task.service.*;
 import org.exoplatform.task.storage.CommentStorage;
-import org.exoplatform.task.util.CommentUtil;
-import org.exoplatform.task.util.ProjectUtil;
-import org.exoplatform.task.util.TaskUtil;
-import org.exoplatform.task.util.UserUtil;
+import org.exoplatform.task.util.*;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import io.swagger.annotations.*;
+import javax.annotation.security.RolesAllowed;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.net.URLDecoder;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Path("/tasks")
 @Api(value = "/tasks", description = "Managing tasks")
@@ -187,64 +179,6 @@ public class TaskRestService implements ResourceContainer {
     return Response.ok(task).build();
   }
 
-  @GET
-  @Path("projects")
-  @RolesAllowed("users")
-  @Produces(MediaType.APPLICATION_JSON)
-  @ApiOperation(value = "Gets projects", httpMethod = "GET", response = Response.class, notes = "This returns projects of the authenticated user")
-  @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled"),
-      @ApiResponse(code = 500, message = "Internal server error") })
-  public Response getProjects() {
-    List<ProjectDto> projects = ProjectUtil.getProjectTree(null, projectService);
-    JSONArray projectsJsonArray = new JSONArray();
-    try {
-      projectsJsonArray = buildJSON(projectsJsonArray, projects);
-    } catch (Exception e) {
-      LOG.error("Error getting projects", e);
-      return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-    }
-    return Response.ok(projectsJsonArray.toString()).build();
-  }
-
-  @GET
-  @Path("projects/status/{id}")
-  @RolesAllowed("users")
-  @Produces(MediaType.APPLICATION_JSON)
-  @ApiOperation(value = "Gets the default status by project id", httpMethod = "GET", response = Response.class, notes = "This returns the default status by project id")
-  @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled"),
-      @ApiResponse(code = 403, message = "Unauthorized operation"), @ApiResponse(code = 500, message = "Internal server error") })
-  public Response getDefaultStatusByProjectId(@ApiParam(value = "Project id", required = true) @PathParam("id") long id) throws EntityNotFoundException {
-    Identity currentUser = ConversationState.getCurrent().getIdentity();
-    ProjectDto project = projectService.getProject(id);
-    if (project == null) {
-      return Response.status(Response.Status.NOT_FOUND).build();
-    }
-    if (!project.canView(currentUser)) {
-      return Response.status(Response.Status.UNAUTHORIZED).build();
-    }
-    StatusDto status = statusService.getDefaultStatus(id);
-    return Response.ok(status).build();
-  }
-
-  @GET
-  @Path("projects/statuses/{id}")
-  @RolesAllowed("users")
-  @Produces(MediaType.APPLICATION_JSON)
-  @ApiOperation(value = "Gets the statuses by project id", httpMethod = "GET", response = Response.class, notes = "This returns the statuses by project id")
-  @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled"),
-      @ApiResponse(code = 403, message = "Unauthorized operation"), @ApiResponse(code = 404, message = "Resource not found") })
-  public Response getStatusesByProjectId(@ApiParam(value = "Project id", required = true) @PathParam("id") long id) throws EntityNotFoundException {
-    Identity currentUser = ConversationState.getCurrent().getIdentity();
-    ProjectDto project = projectService.getProject(id);
-    if (project == null) {
-      return Response.status(Response.Status.NOT_FOUND).build();
-    }
-    if (!project.canView(currentUser)) {
-      return Response.status(Response.Status.UNAUTHORIZED).build();
-    }
-    List<StatusDto> projectStatuses = statusService.getStatuses(id);
-    return Response.ok(projectStatuses).build();
-  }
 
   @GET
   @Path("labels")
@@ -488,28 +422,6 @@ public class TaskRestService implements ResourceContainer {
     return Response.ok(usersJsonArray.toString()).build();
   }
 
-  @GET
-  @Path("users/{query}/{projectName}")
-  @RolesAllowed("users")
-  @Produces(MediaType.APPLICATION_JSON)
-  @ApiOperation(value = "Gets users by query and project name", httpMethod = "GET", response = Response.class, notes = "This returns users by query and project name")
-  @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled") })
-  public Response getUsersByQueryAndProjectName(@ApiParam(value = "Query", required = true) @PathParam("query") String query,
-                                                @ApiParam(value = "projectName", required = true) @PathParam("projectName") String projectName) throws Exception {
-    ListAccess<User> usersList = userService.findUserByName(query);
-    JSONArray usersJsonArray = new JSONArray();
-    for (User user : usersList.load(0, UserUtil.SEARCH_LIMIT)) {
-      JSONObject userJson = new JSONObject();
-      Space space = spaceService.getSpaceByPrettyName(projectName);
-      if (space == null || spaceService.isMember(space, user.getUsername())) {
-        userJson.put("username", user.getUsername());
-        userJson.put("fullname", user.getDisplayName());
-        userJson.put("avatar", user.getAvatar());
-        usersJsonArray.put(userJson);
-      }
-    }
-    return Response.ok(usersJsonArray.toString()).build();
-  }
 
   private CommentEntity addCommentModel(CommentDto comment, List<CommentEntity> commentModelsList) {
     User user = userService.loadUser(comment.getAuthor());

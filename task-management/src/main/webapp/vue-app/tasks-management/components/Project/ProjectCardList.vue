@@ -35,7 +35,7 @@
     },
     methods: {
       getProjectsList() {
-        return this.$tasksService.getProjectsList().then(data => {
+        return this.$projectService.getProjectsList().then(data => {
           this.projects = data;
         });
       }

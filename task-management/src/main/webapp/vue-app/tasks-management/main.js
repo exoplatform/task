@@ -1,6 +1,7 @@
 import './initComponents.js';
 import { tasksConstants } from '../../js/tasksConstants.js';
 import * as tasksService from '../../js/tasksService.js';
+import * as projectService from '../../js/projectService.js';
 
 Vue.use(Vuetify);
 Vue.use(VueEllipsis);
@@ -12,6 +13,11 @@ const vuetify = new Vuetify({
 window.Object.defineProperty(Vue.prototype, '$tasksService', {
   value: tasksService,
 });
+
+window.Object.defineProperty(Vue.prototype, '$projectService', {
+  value: projectService,
+});
+
 
 //getting language of user
 const lang = eXo && tasksConstants.LANG || 'en';
