@@ -1,4 +1,5 @@
 import './initComponents.js';
+import '../taskDrawer/initComponents.js';
 import { tasksConstants } from '../../js/tasksConstants.js';
 import * as tasksService from '../../js/tasksService.js';
 import * as projectService from '../../js/projectService.js';

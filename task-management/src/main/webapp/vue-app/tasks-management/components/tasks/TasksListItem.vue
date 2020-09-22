@@ -6,7 +6,11 @@
       <i :title="$t('message.markAsCompleted')" class="uiIcon uiIconCircle"></i>
     </div>
     <div class="taskTitle pr-3">
-      <span>{{ task.task.title }}</span>
+      <a
+        ref="tooltip"
+        @click="openTaskDrawer()">
+        <span>{{ task.task.title }}</span>
+      </a>
     </div>
     <div class="taskProject">
       <div v-if="isPersonnalTask" class="taskProjectName mr-3 pa-1">
@@ -64,6 +68,12 @@
         <span class="caption text-sub-title">{{ $t('label.noDueDate') }}</span>
       </div>
     </div>
+    <task-drawer 
+      v-if="drawer"
+      :drawer="drawer"
+      :task="task.task"
+      @updateTaskList="updateTaskList()"
+      @closeDrawer="onCloseDrawer"/>
   </div>
 </template>
 <script>
@@ -85,7 +95,8 @@
         },
         assigneeAndCoworkerArray: [],
         isPersonnalTask : this.task.task.status === null,
-        labelList: ''
+        labelList: '',
+        drawer:null
       }
     },
     computed: {
@@ -138,7 +149,13 @@
           });
           return labelText;
         }
-      }
+      },
+                  openTaskDrawer() {
+                this.drawer = true;
+            },
+            onCloseDrawer: function(drawer){
+                this.drawer = drawer;
+            },
     }
   }
 </script>

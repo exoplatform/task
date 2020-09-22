@@ -7,12 +7,16 @@
       <div class="taskTitleId d-flex justify-space-between">
         <div class="taskTitle d-flex align-start">
           <i :title="$t('message.markAsCompleted')" class="uiIcon uiIconCircle"></i>
-          <ellipsis
-            v-if="task.task.title "
-            :title="task.task.title "
-            :data="task.task.title "
-            :line-clamp="2"
-            end-char=".."/>
+          <a
+            ref="tooltip"
+            @click="openTaskDrawer()">
+            <ellipsis
+              v-if="task.task.title "
+              :title="task.task.title "
+              :data="task.task.title "
+              :line-clamp="2"
+              end-char=".."/>
+          </a>
         </div>
         <div class="taskId">
           <span class="caption text-sub-title">ID : {{ task.task.id }}</span>
@@ -84,6 +88,12 @@
         </div>
       </siv>
     </v-card>
+
+    <task-drawer 
+      v-if="drawer"
+      :drawer="drawer"
+      :task="task.task"
+      @closeDrawer="onCloseDrawer"/>
   </v-app>
 </template>
 <script>
@@ -105,7 +115,8 @@
           day: 'numeric',
         },
         assigneeAndCoworkerArray: [],
-        isPersonnalTask : this.task.task.status === null
+        isPersonnalTask : this.task.task.status === null,
+        drawer:null
       }
     },
     computed: {
@@ -158,7 +169,13 @@
           });
           return labelText;
         }
-      }
+      },
+                        openTaskDrawer() {
+                this.drawer = true;
+            },
+            onCloseDrawer: function(drawer){
+                this.drawer = drawer;
+            }
     }
   }
 </script>
