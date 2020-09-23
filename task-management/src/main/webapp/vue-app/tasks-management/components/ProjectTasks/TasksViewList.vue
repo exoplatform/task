@@ -1,21 +1,29 @@
 <template>
-  <v-card
-    class="tasksView tasksViewList pt-6"
-    flat>
-    <v-item-group class="pa-4">
-      <div class="ma-0 border-box-sizing">
-        <div
-          v-for="(status, index) in statusList"
-          :key="index"
-          class="py-0 px-4 projectTaskItem">
-          <tasks-view-header
-            :status="status"
-            :view-type="'list'"/>
+  <v-app class="tasksList">
+    <v-card
+      class="tasksView tasksListItem tasksViewList pt-6"
+      flat>
+      <v-item-group class="pa-4">
+        <div class="ma-0 border-box-sizing">
+          <div
+            v-for="(status, index) in statusList"
+            :key="index"
+            class="pt-0 pb-8 px-4 projectTaskItem">
+            <tasks-view-header
+              :status="status"
+              :view-type="'list'"
+              :tasks-number="getTasksByStatus(tasksList,status.name).length"/>
+            <v-divider/>
+            <task-view-list-item
+              v-for="task in getTasksByStatus(tasksList,status.name)"
+              :key="task.task.id"
+              :task="task"/>
+          </div>
+          <v-divider/>
         </div>
-        <v-divider/>
-      </div>
-    </v-item-group>
-  </v-card>
+      </v-item-group>
+    </v-card>
+  </v-app>
 </template>
 <script>
   export default {
@@ -23,6 +31,23 @@
       statusList: {
         type: Array,
         default: () => []
+      },
+      tasksList: {
+        type: Array,
+        default: () => []
+      }
+    },
+    methods: {
+      getTasksByStatus(items ,statusName) {
+        const tasksByStatus = [];
+        items.forEach((item) => {
+          if(item.task.status) {
+            if(item.task.status.name ===  statusName) {
+              tasksByStatus.push(item);
+            }
+          }
+        });
+        return tasksByStatus;
       }
     }
   }

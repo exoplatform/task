@@ -21,6 +21,8 @@ import TasksViewBoard from "./components/ProjectTasks/TasksViewBoard.vue";
 import TasksViewList from './components/ProjectTasks/TasksViewList.vue';
 import TaskViewGantt from './components/ProjectTasks/TasksViewGantt.vue';
 import TasksViewHeader from "./components/ProjectTasks/TasksViewHeader.vue";
+import TaskViewCard from "./components/ProjectTasks/TaskViewCard.vue";
+import TaskViewListItem from "./components/ProjectTasks/TaskViewListItem.vue";
 
 const components = {
   'tasks-management': TasksManagement,
@@ -46,6 +48,9 @@ const components = {
   'tasks-view-list': TasksViewList,
   'tasks-view-gantt': TaskViewGantt,
   'tasks-view-header': TasksViewHeader,
+  'task-view-card': TaskViewCard,
+  'task-view-list-item': TaskViewListItem
+
 };
 
 for (const key in components) {

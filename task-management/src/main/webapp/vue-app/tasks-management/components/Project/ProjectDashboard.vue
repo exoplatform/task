@@ -8,7 +8,7 @@
       <project-card-list/>
     </div>
     <div v-else>
-      <tasks-view-dashboard :project-id="projectId"/>
+      <tasks-view-dashboard :project="project"/>
     </div>
   </v-app>
 </template>
@@ -17,14 +17,14 @@
     data () {
       return {
         displayDetails : false,
-        projectId: ''
+        project: ''
       }
     },
     created() {
       document.addEventListener('showProjectTasks', (event) => {
         if (event && event.detail) {
           this.displayDetails = true;
-          this.projectId =  event.detail;
+          this.project =  event.detail;
         }
       });
       document.addEventListener('hideProjectTasks', (event) => {

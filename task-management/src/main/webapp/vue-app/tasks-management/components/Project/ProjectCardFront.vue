@@ -73,7 +73,7 @@
     <div class="taskItemInfo pa-3">
       <div
         class="taskItemDescription"
-        @click="showProjectTasksDetails(project.id)">
+        @click="showProjectTasksDetails(project)">
         <ellipsis
           v-if="project.description"
           :title="project.description"
@@ -171,8 +171,8 @@
       });
     },
     methods : {
-      showProjectTasksDetails(projectId) {
-        document.dispatchEvent(new CustomEvent('showProjectTasks', {detail: projectId}));
+      showProjectTasksDetails(project) {
+        document.dispatchEvent(new CustomEvent('showProjectTasks', {detail: project}));
       }
     }
   }

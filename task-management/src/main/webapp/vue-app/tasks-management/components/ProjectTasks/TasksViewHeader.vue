@@ -4,7 +4,7 @@
     class="tasksViewHeader d-flex justify-space-between">
     <p class="taskStatusName font-weight-bold text-color mb-1">{{ status.name }}</p>
     <p class="taskNumberAndActions mb-1">
-      <span class="caption">1-6 of 23</span>
+      <span class="caption">{{ tasksNumber }}</span>
       <i
         class="uiIcon uiIconThreeDots"
         @click="displayActionMenu = true"></i>
@@ -54,6 +54,10 @@
       viewType: {
         type: String,
         default: ''
+      },
+      tasksNumber: {
+        type: Number,
+        default: 0
       }
     },
     data() {

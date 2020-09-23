@@ -1,6 +1,6 @@
 <template>
   <v-card
-    class="tasksView tasksViewBoard pt-6"
+    class="tasksView tasksViewBoard tasksCardsContainer pt-6"
     flat>
     <v-item-group class="pa-4">
       <v-container class="pa-0">
@@ -11,8 +11,13 @@
             class="py-0 px-4 projectTaskItem">
             <tasks-view-header
               :status="status"
-              :view-type="'board'"/>
+              :view-type="'board'"
+              :tasks-number="getTasksByStatus(tasksList,status.name).length"/>
             <v-divider/>
+            <task-view-card
+              v-for="task in getTasksByStatus(tasksList,status.name)"
+              :key="task.task.id"
+              :task="task"/>
           </v-col>
         </v-row>
       </v-container>
@@ -25,6 +30,23 @@
       statusList: {
         type: Array,
         default: () => []
+      },
+      tasksList: {
+        type: Array,
+        default: () => []
+      }
+    },
+    methods: {
+      getTasksByStatus(items ,statusName) {
+        const tasksByStatus = [];
+        items.forEach((item) => {
+          if(item.task.status) {
+            if(item.task.status.name ===  statusName) {
+              tasksByStatus.push(item);
+            }
+          }
+        });
+        return tasksByStatus;
       }
     }
   }
