@@ -20,7 +20,7 @@
       <div class="projectPermissionsUsers">
         <p class="permisionLabel body-1">{{ $t('label.permission') }}</p>
         <div class="listOfManager" >
-          <a 
+          <a
             v-for="manager in listOfManager" 
             :key="manager.src" 
             href="#" 
@@ -28,6 +28,7 @@
             <div class="v-avatar pull-left my-auto">
               <img :src="manager.src">
             </div>
+            <span class="d-flex uiIconMemberAdmin primary--text"></span>
           </a>
           <div class="editManager">
             <a href="#" class="editManager">
@@ -52,7 +53,7 @@
           </a>
           <div class="editParticipant">
             <a class="editParticipant" href="#">
-              <i class="fas fa-pencil-alt uiIconProject"></i>
+              <i class="fas fa-plus"></i>
               {{ $t('label.editParticipant') }}
             </a>
             <label class="editParticipantInfo">
@@ -71,27 +72,32 @@
         <exo-task-editor
           ref="richEditor"
           v-model="projectinformation.description"
-          :max-length="MESSAGE_MAX_LENGTH"
-          :placeholder="$t('task.placeholder').replace('{0}', MESSAGE_MAX_LENGTH)"/>
+          :max-length="MESSAGE_MAX_LENGTH"/>
       </div>
     </template>
     <template slot="footer">
       <div class="d-flex">
         <v-spacer />
-        <v-btn
-          class="btn mr-2"
-          @click="cancel">
-          <template>
-            {{ $t('popup.cancel') }}
-          </template>
-        </v-btn>
-        <v-btn
-          class="btn btn-primary"
-          @click="saveProject">
-          <template>
-            {{ $t('label.save') }}
-          </template>
-        </v-btn>
+        <div class="VuetifyApp">
+          <div class="d-btn">
+            <v-btn
+              class="btn mr-2"
+              @click="cancel">
+              <template>
+                {{ $t('popup.cancel') }}
+              </template>
+            </v-btn>
+
+            <v-btn 
+              :loading="postProject"
+              class="btn btn-primary"
+              @click="saveProject">
+              <template>
+                {{ $t('label.save') }}
+              </template>
+            </v-btn>
+          </div>
+        </div>
       </div>
     </template>
   </exo-drawer>
@@ -101,12 +107,13 @@
     data() {
       return {
         MESSAGE_MAX_LENGTH:1000,
-        listOfManager:[{src:"/portal/rest/v1/social/users/default-image/avatar"},{src:"/portal/rest/v1/social/users/default-image/avatar"}],
+        listOfManager:[{src:"/portal/rest/v1/social/users/default-image/avatar"}],
         listOfParticipant:[{src:"/portal/rest/v1/social/users/default-image/avatar"}],
         projectinformation:{
           name:'',
           description:'',
         },
+        postProject:false,
       };
     },
     computed: {
@@ -131,6 +138,7 @@
           manager: eXo.env.portal.userName
         };
         return this.$projectService.addProject(projects).then(project=> {
+          this.postProject= true;
           this.$emit('update-cart', project);
           if(project) {
             window.location.href = `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest`;

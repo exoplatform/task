@@ -72,6 +72,12 @@
         }
       }
       .addProjectDrawer {
+        hr.my-0.v-divider.theme--light{
+          margin-top: 5px!important;
+        }
+        .v-btn:not(.v-btn--round).v-size--default{
+          width: 64px!important;
+        }
         .drawerContent {
           padding: 16px;
           .addProjectTitle {
@@ -109,13 +115,27 @@
                   min-width: 30px;
                   width: 30px;
                 }
+                span.d-flex.uiIconMemberAdmin.primary--text:before {
+                  font-family: "PLF-FONT-ICONS";
+                  content: "\e66f";
+                  font-size: 11px;
+                  margin-top: 25px;
+                  margin-left: -13px;
+                  z-index: 9999;
+                  width: 16px;
+                  height: 16px;
+                  border-radius: 20px;
+                  background: #fff;
+                  border: 1px solid @primaryColor!important;
+                  color: @primaryColor!important;
+                }
               }
               .editManager,.editParticipant {
                 margin-left: 10px;
                 margin-top: 3px;
                 a.editManager,a.editParticipant {
                   text-decoration: underline;
-                  i.fas.fa-pencil-alt.uiIconProject {
+                  i.fas.fa-pencil-alt.uiIconProject,i.fas.fa-plus {
                     text-decoration: underline;
                     font-size: 11px;
                   }
@@ -124,10 +144,10 @@
                   font-size: 10px;
                   color: @textLightColor;
                   font-style: italic;
-                  i.uiIconInformation.uiIconProject {
-                    font-size: 10px;
+                  i.uiIconInformation.uiIconProject:before {
+                    content: "\ea93";
+                    font-size: 13px;
                     color: @textLightColor;
-                    font-style: italic;
                   }
                 }
               }
@@ -135,6 +155,10 @@
           }
           span#cke_1_bottom {
             height: 27px;
+            background-color: transparent;
+          }
+          .cke_bottom .cke_button_icon {
+            filter: opacity(0.2);
           }
           .projectDescription {
             label {
