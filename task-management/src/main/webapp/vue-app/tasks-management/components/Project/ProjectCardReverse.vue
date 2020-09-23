@@ -97,7 +97,7 @@
         }
     },
     mounted() {
-      if(this.project.statusStats) {
+      if(this.project.statusStats && this.project.statusStats.length) {
         window.setTimeout(() => {
           this.initChart(this.option);
         },200);

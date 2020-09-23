@@ -1,5 +1,5 @@
 <template>
-  <v-app id="tasksList" class="ma-3">
+  <v-app class="tasksList ma-3">
     <div
       v-for="task in tasks"
       :key="task.id"

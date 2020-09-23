@@ -177,6 +177,7 @@ public class TaskRestService implements ResourceContainer {
     if (limit == 0) {
       limit = -1;
     }
+    taskQuery.setProjectIds(allProjectIds);
     tasks = taskService.findTasks(taskQuery,limit,offset);
 
     if (returnSize) {

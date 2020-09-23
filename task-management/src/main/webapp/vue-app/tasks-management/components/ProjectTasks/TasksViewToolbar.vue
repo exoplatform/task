@@ -1,11 +1,11 @@
 <template>
   <v-toolbar
-    id="TasksListToolbar"
+    id="TasksDashboardToolbar"
     flat
     class="tasksToolbar pb-3">
     <v-toolbar-title>
       <v-btn
-        class="btn px-2 btn-primary addNewProjectButton">
+        class="btn px-2 btn-primary addNewTaskButton">
         <span class="d-none font-weight-regular d-sm-inline">
           + {{ $t('label.addTask') }}
         </span>
@@ -13,15 +13,27 @@
     </v-toolbar-title>
     <v-spacer/>
     <div class="taskDisplay">
-      <v-tabs
-        @change="$emit('changed')">
-        <v-tab :href="taskCardTab" class="taskTabCards">
-          <i class="uiIcon uiIconCards"></i>
+      <v-tabs>
+        <v-tab
+          :href="taskCardTabView"
+          class="taskTabBoard"
+          @change="$emit('taskViewChangeTab', 'board')">
+          <i class="uiIcon uiIconBoard"></i>
           <span>{{ $t('label.cardsView') }}</span>
         </v-tab>
-        <v-tab :href="taskListTab" class="taskTabList">
+        <v-tab
+          :href="taskListTabView"
+          class="taskTabList"
+          @change="$emit('taskViewChangeTab', 'list')">
           <i class="uiIcon uiIconList"></i>
           <span>{{ $t('label.listView') }}</span>
+        </v-tab>
+        <v-tab
+          :href="taskGanttTabView"
+          class="taskTabGantt"
+          @change="$emit('taskViewChangeTab', 'gantt')">
+          <i class="uiIcon uiIconGantt"></i>
+          <span>Gantt</span>
         </v-tab>
       </v-tabs>
     </div>
@@ -34,7 +46,7 @@
     </v-scale-transition>
     <v-scale-transition>
       <v-btn
-        class="btn px-2 btn-primary filterTasksSetting" 
+        class="btn px-2 btn-primary filterTasksSetting"
         outlined>
         <i class="uiIcon uiIconFilterSetting pr-3"></i>
         <span class="d-none font-weight-regular caption d-sm-inline">
@@ -47,11 +59,15 @@
 <script>
   export default {
     props: {
-      taskCardTab:{
+      taskCardTabView:{
         type: String,
         default: ''
       },
-      taskListTab: {
+      taskListTabView: {
+        type: String,
+        default: ''
+      },
+      taskGanttTabView: {
         type: String,
         default: ''
       },
