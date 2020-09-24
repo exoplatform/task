@@ -17,12 +17,15 @@
                 :project="project"/>
             </v-col>
           </v-row>
-          <v-btn
-            class="loadMoreButton ma-auto btn"
-            block
-            @click="loadNextPage">
-            {{ $t('spacesList.button.showMore') }}
-          </v-btn>
+          <v-row class="ma-0 border-box-sizing">
+            <v-btn
+              :disabled="disableBtn"
+              class="loadMoreButton ma-auto btn"
+              block
+              @click="loadNextPage">
+              {{ $t('spacesList.button.showMore') }}
+            </v-btn>
+          </v-row>
         </v-container>
       </v-item-group>
     </v-card>
@@ -38,7 +41,8 @@
         projectSize: 0,
         limit: 20,
         limitToFetch: 0,
-        originalLimitToFetch: 0
+        originalLimitToFetch: 0,
+        disableBtn:false
       }
     },
     created() {
@@ -48,15 +52,19 @@
     methods: {
       getProjectsList() {
         return this.$projectService.getProjectsList(this.offset, this.limitToFetch).then(data => {
-          this.projects = data.projects;
+          this.projects.push(...data.projects);
           this.projectSize = data.projectNumber;
         });
       },
       loadNextPage() {
-        if(this.limitToFetch <= this.pageSize) {
+        if(this.limitToFetch <= this.projectSize) {
+          this.offset+= this.limit;
           this.limitToFetch = this.limitToFetch += this.limit;
+          this.getProjectsList()
+        }else{
+          this.disableBtn=true
         }
-
+        
       },
     }
   }
