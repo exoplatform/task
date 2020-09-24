@@ -1,6 +1,9 @@
 package org.exoplatform.task.dto;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.services.security.MembershipEntry;
 import org.exoplatform.task.domain.Project;
@@ -12,7 +15,11 @@ import java.util.*;
 
 
 @Data
+@NoArgsConstructor
 public class ProjectDto implements Serializable {
+    private static final Log LOG           = ExoLogger.getLogger(ProjectDto.class);
+
+
     private long      id;
 
     private String    name;
@@ -37,6 +44,13 @@ public class ProjectDto implements Serializable {
 
     private Set<UserSetting> hiddenOn;
 
+    public ProjectDto(String name, String description, HashSet<Status> statuses, Set<String> managers, Set<String> participators) {
+        this.name=name;
+        this.description=description;
+        this.status=statuses;
+        this.manager=managers;
+        this.participator=participators;
+    }
 
 
     public ProjectDto clone(boolean cloneTask) {
@@ -55,9 +69,15 @@ public class ProjectDto implements Serializable {
     }
 
     public boolean canView(Identity user) {
-        Set<String> permissions = new HashSet<String>(getParticipator());
-        permissions.addAll(getManager());
-
+        Set<String> permissions = new HashSet<String>();
+        Set<String> Participants = getParticipator();
+        Set<String> managers = getManager();
+        if(Participants!=null){
+            permissions.addAll(Participants);
+        }
+        if(managers!=null){
+            permissions.addAll(managers);
+        }
         return hasPermission(user, permissions);
     }
 

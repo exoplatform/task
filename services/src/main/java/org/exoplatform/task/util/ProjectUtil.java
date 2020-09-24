@@ -1,19 +1,19 @@
-/* 
-* Copyright (C) 2003-2015 eXo Platform SAS.
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Lesser General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU Lesser General Public License for more details.
-*
-* You should have received a copy of the GNU Lesser General Public License
-* along with this program. If not, see http://www.gnu.org/licenses/ .
-*/
+/*
+ * Copyright (C) 2003-2015 eXo Platform SAS.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses/ .
+ */
 package org.exoplatform.task.util;
 
 import java.text.DateFormat;
@@ -106,29 +106,21 @@ public final class ProjectUtil {
     return ProjectUtil.buildRootProjects(new LinkedList<Project>(tmp));
   }
 
-  public static List<ProjectDto> getProjectTree(String space_group_id, org.exoplatform.task.service.ProjectService projectService) {
-    List<String> memberships = new LinkedList<String>();
-    ConversationState state = ConversationState.getCurrent();
-    Identity identity = state.getIdentity();
-    if (space_group_id == null) {
-      memberships.addAll(UserUtil.getMemberships(identity));
-    } else {
-      memberships.addAll(UserUtil.getSpaceMemberships(space_group_id));
-    }
+  public static List<ProjectDto> getProjectTree(List<String> memberships, Identity identity , org.exoplatform.task.service.ProjectService projectService,int offset, int limit) {
 
-//    ListAccess<Project> projects = projectService.findProjects(memberships, null, null);
-    ProjectQuery manQ = new ProjectQuery();
+    List<ProjectDto> projects = projectService.findProjects(memberships,null,null,offset, limit);
+/*    ProjectQuery manQ = new ProjectQuery();
     manQ.setManager(memberships);
-    List<ProjectDto> editPrj = projectService.findProjects(manQ,0,-1);
+    List<ProjectDto> editPrj = projectService.findProjects(manQ,offset,limit);
     //
     ProjectQuery parQ = new ProjectQuery();
     parQ.setParticipator(memberships);
-    List<ProjectDto> viewPrj = projectService.findProjects(parQ,0,-1);
-    //
+    List<ProjectDto> viewPrj = projectService.findProjects(parQ,offset,limit);
+    //*/
     Set<ProjectDto> tmp = new HashSet<ProjectDto>();
     try {
-      tmp.addAll(buildProxyDto(editPrj, identity, true));
-      tmp.addAll(buildProxyDto(viewPrj, identity, false));
+    //  tmp.addAll(buildProxyDto(editPrj, identity, true));
+      tmp.addAll(buildProxyDto(projects, identity, false));
     } catch (Exception ex) {
       LOG.error("Can't load project ", ex);
     }
@@ -484,11 +476,25 @@ public final class ProjectUtil {
     return newProjectInstance(name, description, managers, Collections.<String>emptySet());
   }
 
+  public static ProjectDto newProjectInstanceDto(String name, String description, String username) {
+    Set<String> managers = new HashSet<String>();
+    managers.add(username);
+    return newProjectInstanceDto(name, description, managers, Collections.<String>emptySet());
+  }
+
   public static Project newProjectInstance(String name, String description, Set<String> managers, Set<String> participators) {
     //CKEditor encode user input already, but we still need to remove malicious code
     //here in case user inject request using curl TA-387
     description = StringUtil.encodeInjectedHtmlTag(description);
     Project p = new Project(name, description, new HashSet<Status>(), managers, participators);
+    return p;
+  }
+
+  public static ProjectDto newProjectInstanceDto(String name, String description, Set<String> managers, Set<String> participators) {
+    //CKEditor encode user input already, but we still need to remove malicious code
+    //here in case user inject request using curl TA-387
+    description = StringUtil.encodeInjectedHtmlTag(description);
+    ProjectDto p = new ProjectDto(name, description, new HashSet<Status>(), managers, participators);
     return p;
   }
 
@@ -951,5 +957,4 @@ public final class ProjectUtil {
     }
   }
 
-  
 }

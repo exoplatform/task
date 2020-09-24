@@ -92,6 +92,11 @@
     <key>org.exoplatform.task.rest.TaskRestService</key>
     <type>org.exoplatform.task.rest.TaskRestService</type>
   </component>
+
+  <component>
+    <key>org.exoplatform.task.rest.ProjectRestService</key>
+    <type>org.exoplatform.task.rest.ProjectRestService</type>
+  </component>
   
   <external-component-plugins>
     <target-component>org.exoplatform.commons.api.persistence.DataInitializer</target-component>

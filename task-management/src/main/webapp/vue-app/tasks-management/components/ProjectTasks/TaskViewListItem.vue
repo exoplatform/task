@@ -12,17 +12,6 @@
         <span>{{ task.task.title }}</span>
       </a>
     </div>
-    <div class="taskProject">
-      <div v-if="isPersonnalTask" class="taskProjectName mr-3 pa-1">
-        <span class="caption text-sub-title">{{ $t('label.noProject') }}</span>
-      </div>
-      <div 
-        v-else 
-        :class="task.task.status.project.color || 'noProjectColor'" 
-        class="taskProjectName mr-3 pa-1">
-        <span class="font-weight-bold">{{ task.task.status.project.name }}</span>
-      </div>
-    </div>
     <div class="taskAssignee d-flex flex-nowrap">
       <exo-user-avatar
         v-for="user in assigneeAndCoworkerArray"
@@ -54,12 +43,6 @@
       </div>
 
     </div>
-    <div class="taskStat">
-      <span v-if="isPersonnalTask" class="caption text-sub-title">{{ $t('label.noStatus') }}</span>
-      <span v-else class="taskStatLabel pl-2">
-        {{ getTaskStatusLabel(task.task.status.name) }}
-      </span>
-    </div>
     <div class="taskDueDate">
       <div v-if="taskDueDate">
         <date-format :value="taskDueDate" :format="dateTimeFormat" />
@@ -68,12 +51,6 @@
         <span class="caption text-sub-title">{{ $t('label.noDueDate') }}</span>
       </div>
     </div>
-    <task-drawer 
-      v-if="drawer"
-      :drawer="drawer"
-      :task="task.task"
-      @updateTaskList="updateTaskList()"
-      @closeDrawer="onCloseDrawer"/>
   </div>
 </template>
 <script>
@@ -129,18 +106,6 @@
           })
         }
       },
-      getTaskStatusLabel(status) {
-        switch(status) {
-          case "ToDo":
-            return this.$t('exo.tasks.status.todo');
-          case "InProgress":
-            return this.$t('exo.tasks.status.inprogress');
-          case "WaitingOn":
-            return this.$t('exo.tasks.status.waitingon');
-          case "Done":
-            return this.$t('exo.tasks.status.done');
-        }
-      },
       getLabelsList(taskLabels) {
         if (taskLabels.length > 1) {
           let labelText = '';
@@ -150,12 +115,6 @@
           return labelText;
         }
       },
-                  openTaskDrawer() {
-                this.drawer = true;
-            },
-            onCloseDrawer: function(drawer){
-                this.drawer = drawer;
-            },
     }
   }
 </script>

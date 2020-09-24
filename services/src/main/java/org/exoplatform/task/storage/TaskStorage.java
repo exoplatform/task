@@ -60,8 +60,6 @@ public interface TaskStorage {
 
     List<TaskDto> findTasks(TaskQuery query, int offset, int limit) throws Exception;
 
-    ListAccess<TaskDto> findTasks(TaskQuery query);
-
     int countTasks(TaskQuery query) throws Exception;
 
     <T> List<T> selectTaskField(TaskQuery query, String fieldName);

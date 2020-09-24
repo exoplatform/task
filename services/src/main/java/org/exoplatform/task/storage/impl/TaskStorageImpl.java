@@ -83,11 +83,6 @@ public class TaskStorageImpl implements TaskStorage {
         return taskEntities.stream().map(this::toDto).collect(Collectors.toList());
     }
 
-    @Override
-    public ListAccess<TaskDto> findTasks(TaskQuery query) {
-        return (ListAccess<TaskDto>) toDto((Task) daoHandler.getTaskHandler().findTasks(query));
-    }
-
     public int countTasks(TaskQuery query) throws Exception {
         return daoHandler.getTaskHandler().findTasks(query).getSize();
     }

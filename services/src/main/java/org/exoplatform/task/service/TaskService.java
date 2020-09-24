@@ -63,7 +63,6 @@ public interface TaskService {
 
     List<TaskDto> findTasks(String user, String query, int limit);
 
-    ListAccess<TaskDto> findTasks(TaskQuery query);
 
     int countTasks(TaskQuery query) throws Exception;
 

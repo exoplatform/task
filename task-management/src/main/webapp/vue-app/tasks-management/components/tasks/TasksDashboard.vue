@@ -23,7 +23,6 @@
   export default {
     data () {
       return {
-        tabTasks: 'tasks-list',
         isTasksTabChanged: false,
         tasks: []
       }

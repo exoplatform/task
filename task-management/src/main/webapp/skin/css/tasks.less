@@ -72,9 +72,16 @@
         }
       }
       .addProjectDrawer {
+        hr.my-0.v-divider.theme--light{
+          margin-top: 5px!important;
+        }
+        .v-btn:not(.v-btn--round).v-size--default{
+          width: 64px!important;
+        }
         .drawerContent {
           padding: 16px;
           .addProjectTitle {
+            margin-top: -10px;
             .uiIconProject {
               font-family: "PLF-FONT-ICONS" !important;
               font-style: normal;
@@ -89,17 +96,94 @@
                 &:before {
                   display: none;
                 }
+                &:after{
+                  font-size: 15px;
+                  min-height: 40px;
+                  padding: 0 10px;
+                  border: Solid 1px var(--allPagesBorderColor, #e1e8ee);
+                  border-radius: 5px;
+                  box-shadow: none;
+                  max-height: 115px;
+                  text-overflow: ellipsis;
+                  bottom: auto;
+                }
                 label {
                   color: @greyColorLighten1;
                   letter-spacing: .2px;
                 }
+                .v-text-field__slot{
+                  margin-left: 5px;
+                }
               }
             }
+          }
+          hr.py-3.v-divider.theme--light{
+            margin-top: 10px;
           }
           .projectPermissionsUsers {
             .permisionLabel {
               color: @textLightColor;
             }
+            .listOfManager,.listOfParticipant {
+              display: flex;
+              a.flex-nowrap.flex-shrink-0.d-flex {
+                margin-right: 5px;
+                .v-avatar.pull-left.my-auto {
+                  height: 30px;
+                  min-width: 30px;
+                  width: 30px;
+                }
+                span.d-flex.uiIconMemberAdmin.primary--text:before {
+                  font-family: "PLF-FONT-ICONS";
+                  content: "\e66f";
+                  font-size: 11px;
+                  margin-top: 25px;
+                  margin-left: -13px;
+                  z-index: 9999;
+                  width: 16px;
+                  height: 16px;
+                  border-radius: 20px;
+                  background: #fff;
+                  border: 1px solid @primaryColor!important;
+                  color: @primaryColor!important;
+                }
+              }
+              .editManager,.editParticipant {
+                margin-left: 10px;
+                margin-top: 3px;
+                a.editManager,a.editParticipant {
+                  text-decoration: underline;
+                  i.fas.fa-pencil-alt.uiIconProject,i.fas.fa-plus {
+                    text-decoration: underline;
+                    font-size: 11px;
+                  }
+                }
+                label.editManagerInfo,label.editParticipantInfo {
+                  font-size: 10px;
+                  color: @textLightColor;
+                  font-style: italic;
+                  i.uiIconInformation.uiIconProject:before {
+                    content: "\ea93";
+                    font-size: 13px;
+                    color: @textLightColor;
+                  }
+                }
+              }
+            }
+          }
+          div#cke_descriptionContent{
+            margin-top: 15px;
+            margin-left: 33px;
+          }
+          div#cke_1_contents{
+            height: 85px!important;
+          }
+          span#cke_1_bottom {
+            height: 29px;
+            background-color: transparent;
+          }
+          .cke_bottom .cke_button_icon {
+            filter: opacity(0.2);
           }
           .projectDescription {
             label {
@@ -162,6 +246,7 @@
                 .taskItemInfo {
                   .taskItemDescription {
                     min-height: 75px;
+                    cursor: pointer;
                     p {
                       margin-bottom: 0;
                     }
@@ -339,8 +424,119 @@
           }
         }
       }
+      .projectTasksDashboard {
+        .taskViewBreadcrumb {
+          a {
+            i {
+              color: @greyColorLighten1;
+              &:before {
+                content: "\e913";
+              }
+            }
+            span {
+              font-size: 1.25rem;
+              letter-spacing: .5px;
+              padding-left: 10px;
+            }
+          }
+        }
+        .tasksToolbar {
+          .taskDisplay {
+            .taskTabBoard {
+              border: 1px solid @borderColor;
+              border-radius: 5px 0 0 5px;
+              height: 38px;
+              min-height: 38px;
+              .uiIconBoard {
+                &:before {
+                  content: "\e631";
+                }
+              }
+            }
+            .taskTabList {
+              border-radius: 0;
+            }
+            .taskTabGantt {
+              border: 1px solid @borderColor;
+              border-radius: 0 5px 5px 0;
+              height: 38px;
+              min-height: 38px;
+              .uiIconGantt {
+                &:before {
+                  content: "\e623";
+                }
+              }
+            }
+          }
+        }
+        .tasksView {
+          .projectTaskItem {
+            position: relative;
+            .taskCard {
+              height: 150px;
+              min-height: 150px;
+              border-left-width: 5px !important;
+              .v-divider {
+                border-top-width: 1px!important;
+                margin-top: 0!important;
+                margin-bottom: 0!important;
+              }
+
+            }
+            .tasksViewHeader {
+              .taskStatusName {
+
+              }
+              .taskNumberAndActions {
+                .uiIconThreeDots {
+                  font-size: 15px;
+                  &:before {
+                    content: '\e79c';
+                  }
+                }
+              }
+              .taskStatusActionMenu {
+                right: 27px;
+                left: auto!important;
+                top: 35px!important;
+                .v-list-item {
+                  min-height: 30px!important;
+                }
+              }
+            }
+            .v-divider {
+              border-top-width: 2px;
+              margin-top: 4px;
+              margin-bottom: 18px;
+            }
+          }
+        }
+        .noTasksProject {
+          min-height: 50vh;
+          height: 50vh;
+          text-align: center;
+          padding-top: 10%;
+          .noTasksProjectIcon {
+            i {
+              font-size: 70px;
+              color: @greyColor;
+              padding-bottom: 20px;
+            }
+          }
+          .noTasksProjectLabel {
+            font-size: 1.3rem;
+            color: @greyColorLighten1;
+          }
+          .noTasksProjectLink {
+            font-size: 1.1rem;
+            padding-top: 12px;
+          }
+        }
+      }
+      }
+
     }
-    #tasksListApplication {
+    .projectAndTasksContainer {
       .tasksCardsContainer {
         #taskCardItem {
           .taskCard {
@@ -388,7 +584,7 @@
           }
         }
       }
-      #tasksList {
+      .tasksList {
         .tasksListItem {
           .taskListItemView {
             background-color: @tableBackgroundAccent;
@@ -638,7 +834,6 @@
       }
     }
   }
-}
 
 /*--------------------------Tasks ---------------------------*/
 

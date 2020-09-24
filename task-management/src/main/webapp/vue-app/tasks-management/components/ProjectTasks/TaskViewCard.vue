@@ -1,38 +1,35 @@
 <template>
-  <v-app id="taskCardItem" class="pa-3">
+  <v-app id="taskCardItem" class="py-3">
     <v-card
       :class="getTaskPriorityColor(task.task.priority)"
       class="taskCard pa-3"
       flat>
-      <div class="taskTitleId d-flex justify-space-between">
+      <div class="taskTitleId">
         <div class="taskTitle d-flex align-start">
           <i :title="$t('message.markAsCompleted')" class="uiIcon uiIconCircle"></i>
           <a
-            ref="tooltip"
-            @click="openTaskDrawer()">
+            ref="tooltip">
             <ellipsis
               v-if="task.task.title "
               :title="task.task.title "
               :data="task.task.title "
               :line-clamp="2"
-              end-char=".."/>
+              end-char=".."
+              @click="openTaskDrawer()"/>
           </a>
         </div>
-        <div class="taskId">
-          <span class="caption text-sub-title">ID : {{ task.task.id }}</span>
-        </div>
       </div>
-      <div class="taskProjectAndLabel d-flex justify-space-between align-center mt-3">
-        <div class="taskProject">
-          <div v-if="isPersonnalTask" class="taskProjectName mr-3 pa-1">
-            <span class="caption text-sub-title">{{ $t('label.noProject') }}</span>
-          </div>
-          <div 
-            v-else 
-            :class="task.task.status.project.color || 'noProjectColor'" 
-            class="taskProjectName taskProjectNameCard mr-3 pa-1">
-            <span class="font-weight-bold">{{ task.task.status.project.name }}</span>
-          </div>
+      <div class="taskLabelsAndWorker d-flex justify-space-between my-3">
+        <div class="taskAssignee  d-flex flex-nowrap">
+          <exo-user-avatar
+            v-for="user in assigneeAndCoworkerArray"
+            :key="user"
+            :username="user.username"
+            :title="user.displayName"
+            :avatar-url="user.avatar"
+            :size="iconSize"
+            :style="'background-image: url('+user.avatar+')'"
+            class="mx-1 taskWorkerAvatar"/>
         </div>
         <div class="taskLabels">
           <span
@@ -49,7 +46,8 @@
           <span v-else class="noLabelText caption"> {{ $t('label.noLabel') }}</span>
         </div>
       </div>
-      <div class="taskActionsAndWorker d-flex justify-space-between my-3">
+      <v-divider/>
+      <siv class="taskStatusAndDate d-flex justify-space-between pt-3">
         <div class="taskActions d-flex justify-center align-center">
           <div class="taskComment d-flex">
             <i class="uiIcon uiCommentIcon"></i>
@@ -59,24 +57,6 @@
             <i class="uiIcon uiAttachIcon"></i>
             <span class="taskAttachNumber caption">2</span>
           </div>
-        </div>
-        <div class="taskAssignee  d-flex flex-nowrap">
-          <exo-user-avatar
-            v-for="user in assigneeAndCoworkerArray"
-            :key="user"
-            :username="user.username"
-            :title="user.displayName"
-            :avatar-url="user.avatar"
-            :size="iconSize"
-            :style="'background-image: url('+user.avatar+')'"
-            class="mx-1 taskWorkerAvatar"/>
-        </div>
-      </div>
-      <v-divider/>
-      <siv class="taskStatusAndDate d-flex justify-space-between pt-3">
-        <div class="taskStat">
-          <span v-if="isPersonnalTask" class="caption text-sub-title">{{ $t('label.noStatus') }}</span>
-          <span v-else class="taskStatLabel pl-2">{{ getTaskStatusLabel(task.task.status.name) }}</span>
         </div>
         <div class="taskDueDate">
           <div v-if="taskDueDate">
@@ -88,8 +68,7 @@
         </div>
       </siv>
     </v-card>
-
-    <task-drawer 
+    <task-drawer
       v-if="drawer"
       :drawer="drawer"
       :task="task.task"
@@ -106,7 +85,6 @@
     },
     data() {
       return {
-        enabled: false,
         user: {},
         iconSize: 32,
         dateTimeFormat: {
@@ -140,18 +118,6 @@
             return "taskNonePriority";
         }
       },
-      getTaskStatusLabel(status) {
-        switch(status) {
-          case "ToDo":
-            return this.$t('exo.tasks.status.todo');
-          case "InProgress":
-            return this.$t('exo.tasks.status.inprogress');
-          case "WaitingOn":
-            return this.$t('exo.tasks.status.waitingon');
-          case "Done":
-            return this.$t('exo.tasks.status.done');
-        }
-      },
       getTaskAssigneeAndCoworkers() {
         this.assigneeAndCoworkerArray.push(this.task.assignee);
         if (this.task.coworker || this.task.coworker.length > 0 )
@@ -172,7 +138,7 @@
       },
       openTaskDrawer() {
         this.drawer = true;
-        },
+      },
       onCloseDrawer: function(drawer){
         this.drawer = drawer;
       }
