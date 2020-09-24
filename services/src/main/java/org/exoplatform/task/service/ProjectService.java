@@ -21,6 +21,8 @@ public interface ProjectService {
      */
     ProjectDto getProject(Long projectId) throws EntityNotFoundException;
 
+    int countProjects(List<String> memberships, String keyword);
+
     Set<String> getManager(long projectId);
 
     Set<String> getParticipator(long projectId);
@@ -84,6 +86,8 @@ public interface ProjectService {
     List<ProjectDto> getSubProjects(long parentId,int offset ,int limit);
 
     List<ProjectDto> findProjects(ProjectQuery query,int offset ,int limit);
+
+    int countProjects(ProjectQuery query);
 
     List<ProjectDto> findProjects(List<String> memberships, String keyword, OrderBy order,int offset ,int limit);
 }

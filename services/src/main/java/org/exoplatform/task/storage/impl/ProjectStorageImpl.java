@@ -6,6 +6,7 @@ import org.exoplatform.task.dao.DAOHandler;
 import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.dao.ProjectQuery;
 import org.exoplatform.task.domain.Project;
+import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.dto.ProjectDto;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.storage.ProjectStorage;
@@ -96,6 +97,16 @@ public class ProjectStorageImpl implements ProjectStorage {
     }
 
     @Override
+    public int countProjects(ProjectQuery query) {
+        try {
+            return daoHandler.getProjectHandler().findProjects(query).getSize();
+        } catch (Exception e) {
+            return 0;
+        }
+
+    }
+
+    @Override
     public List<ProjectDto> findProjects(List<String> memberships, String keyword, OrderBy order, int offset, int limit) {
         try {
             return Arrays.asList(daoHandler.getProjectHandler().findAllByMembershipsAndKeyword(memberships, keyword, order).load(offset, limit)).stream().map(this::projectToDto).collect(Collectors.toList());
@@ -104,6 +115,15 @@ public class ProjectStorageImpl implements ProjectStorage {
         }
     }
 
+    @Override
+    public int countProjects(List<String> memberships, String keyword) {
+        try {
+            return daoHandler.getProjectHandler().findAllByMembershipsAndKeyword(memberships, keyword,null).getSize();
+        } catch (Exception e) {
+            return 0;
+        }
+
+    }
     @Override
     public Project projectToEntity(ProjectDto projectDto) {
         if(projectDto==null){
@@ -137,8 +157,8 @@ public class ProjectStorageImpl implements ProjectStorage {
         projectDto.setParent(project.getParent());
         projectDto.setColor(project.getColor());
         projectDto.setDueDate(project.getDueDate());
-        projectDto.setParticipator(project.getParticipator());
-        projectDto.setManager(project.getManager());
+        projectDto.setParticipator(getParticipator(project.getId()));
+        projectDto.setManager(getManager(project.getId()));
         projectDto.setParent(project.getParent());
         projectDto.setStatus(project.getStatus());
         projectDto.setChildren(project.getChildren());

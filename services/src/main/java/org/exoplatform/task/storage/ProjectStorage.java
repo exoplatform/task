@@ -85,7 +85,11 @@ public interface ProjectStorage {
 
     List<ProjectDto> findProjects(ProjectQuery query,int offset ,int limit);
 
+    int countProjects(ProjectQuery query);
+
     List<ProjectDto> findProjects(List<String> memberships, String keyword, OrderBy order,int offset ,int limit);
+
+    int countProjects(List<String> memberships, String keyword);
 
     Project projectToEntity(ProjectDto projectDto);
 

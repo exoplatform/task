@@ -204,8 +204,18 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   @Override
+  public int countProjects(ProjectQuery query){
+    return projectStorage.countProjects(query);
+  }
+
+  @Override
   public List<ProjectDto> findProjects(List<String> memberships, String keyword, OrderBy order, int offset, int limit) {
     return projectStorage.findProjects(memberships, keyword, order, offset, limit);
+  }
+
+  @Override
+  public int countProjects(List<String> memberships, String keyword) {
+    return projectStorage.countProjects(memberships, keyword);
   }
 
   @Override

@@ -19,12 +19,11 @@ package org.exoplatform.task.service;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.task.TestDtoUtils;
 import org.exoplatform.task.TestUtils;
-import org.exoplatform.task.dao.DAOHandler;
-import org.exoplatform.task.dao.StatusHandler;
-import org.exoplatform.task.dao.TaskHandler;
+import org.exoplatform.task.dao.*;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.dao.ProjectQuery;
 import org.exoplatform.task.dto.ProjectDto;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.exception.NotAllowedOperationOnEntityException;
@@ -44,6 +43,9 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
@@ -64,6 +66,8 @@ public class StatusServiceTest {
     @Mock
     StatusHandler statusHandler;
     @Mock
+    ProjectHandler projectHandler;
+    @Mock
     DAOHandler daoHandler;
 
     @Captor
@@ -83,6 +87,7 @@ public class StatusServiceTest {
         //Mock DAO handler to return Mocked DAO
         when(daoHandler.getTaskHandler()).thenReturn(taskHandler);
         when(daoHandler.getStatusHandler()).thenReturn(statusHandler);
+        when(daoHandler.getProjectHandler()).thenReturn(projectHandler);
 
         //Mock some DAO methods
         when(taskHandler.find(TestUtils.EXISTING_TASK_ID)).thenReturn(TestUtils.getDefaultTask());
@@ -136,6 +141,11 @@ public class StatusServiceTest {
         Task t = TestUtils.getDefaultTask();
         t.setStatus(s2);
 
+        Set<String> participator = new HashSet<String>();
+        participator.add("Tib");
+        ProjectQuery query = new ProjectQuery();
+        query.setId(project.getId());
+        when(daoHandler.getProjectHandler().selectProjectField(query, "participator")).thenReturn(Collections.singletonList(participator));
         when(statusHandler.find(s2.getId())).thenReturn(s2);
         when(statusHandler.getStatuses(project.getId())).thenReturn(Arrays.asList(s1, s2)).thenReturn(Arrays.asList(s1));
 

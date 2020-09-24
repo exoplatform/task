@@ -161,7 +161,7 @@ public class TestProjectRestService {
     projectService.createProject(project3);
 
     // When
-    Response response = projectRestService.getProjects();
+    Response response = projectRestService.getProjects(0,-1);
 
     // Then
     assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());

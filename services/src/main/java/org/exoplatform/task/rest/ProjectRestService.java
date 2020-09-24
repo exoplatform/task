@@ -10,6 +10,7 @@ import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
+import org.exoplatform.task.dao.ProjectQuery;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.dto.ProjectDto;
 import org.exoplatform.task.dto.StatusDto;
@@ -81,16 +82,30 @@ public class ProjectRestService implements ResourceContainer {
   @ApiOperation(value = "Gets projects", httpMethod = "GET", response = Response.class, notes = "This returns projects of the authenticated user")
   @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled"),
       @ApiResponse(code = 500, message = "Internal server error") })
-  public Response getProjects() {
-    List<ProjectDto> projects = ProjectUtil.getProjectTree(null, projectService);
+  public Response getProjects(@ApiParam(value = "Offset", required = false, defaultValue = "0") @QueryParam("offset") int offset,
+                              @ApiParam(value = "Limit", required = false, defaultValue = "-1") @QueryParam("limit") int limit) {
+    if (limit == 0) {
+      limit = -1;
+    }
+
+    List<String> memberships = new LinkedList<String>();
+    ConversationState state = ConversationState.getCurrent();
+    Identity identity = state.getIdentity();
+    memberships.addAll(UserUtil.getMemberships(identity));
+    List<ProjectDto> projects = ProjectUtil.getProjectTree( memberships, identity , projectService,offset,limit);
+    int projectNumber = projectService.countProjects(memberships,null);
+    JSONObject global = new JSONObject();
+
     JSONArray projectsJsonArray = new JSONArray();
     try {
       projectsJsonArray = buildJSON(projectsJsonArray, projects);
+      global.put("projects",projectsJsonArray);
+      global.put("projectNumber",projectNumber);
     } catch (Exception e) {
       LOG.error("Error getting projects", e);
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }
-    return Response.ok(projectsJsonArray.toString()).build();
+    return Response.ok(global.toString()).build();
   }
 
   @GET
@@ -230,10 +245,10 @@ public class ProjectRestService implements ResourceContainer {
         projectJson.put("description", project.getDescription());
         projectJson.put("status", statusService.getStatus(projectId));
         projectsJsonArray.put(projectJson);
-        if (projectService.getSubProjects(projectId, 0, -1) != null) {
+/*        if (projectService.getSubProjects(projectId, 0, -1) != null) {
           List<ProjectDto> children = projectService.getSubProjects(projectId, 0, -1);
           buildJSON(projectsJsonArray, children);
-        }
+        }*/
       }
     }
     return projectsJsonArray;

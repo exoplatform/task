@@ -106,29 +106,21 @@ public final class ProjectUtil {
     return ProjectUtil.buildRootProjects(new LinkedList<Project>(tmp));
   }
 
-  public static List<ProjectDto> getProjectTree(String space_group_id, org.exoplatform.task.service.ProjectService projectService) {
-    List<String> memberships = new LinkedList<String>();
-    ConversationState state = ConversationState.getCurrent();
-    Identity identity = state.getIdentity();
-    if (space_group_id == null) {
-      memberships.addAll(UserUtil.getMemberships(identity));
-    } else {
-      memberships.addAll(UserUtil.getSpaceMemberships(space_group_id));
-    }
+  public static List<ProjectDto> getProjectTree(List<String> memberships, Identity identity , org.exoplatform.task.service.ProjectService projectService,int offset, int limit) {
 
-//    ListAccess<Project> projects = projectService.findProjects(memberships, null, null);
-    ProjectQuery manQ = new ProjectQuery();
+    List<ProjectDto> projects = projectService.findProjects(memberships,null,null,offset, limit);
+/*    ProjectQuery manQ = new ProjectQuery();
     manQ.setManager(memberships);
-    List<ProjectDto> editPrj = projectService.findProjects(manQ,0,-1);
+    List<ProjectDto> editPrj = projectService.findProjects(manQ,offset,limit);
     //
     ProjectQuery parQ = new ProjectQuery();
     parQ.setParticipator(memberships);
-    List<ProjectDto> viewPrj = projectService.findProjects(parQ,0,-1);
-    //
+    List<ProjectDto> viewPrj = projectService.findProjects(parQ,offset,limit);
+    //*/
     Set<ProjectDto> tmp = new HashSet<ProjectDto>();
     try {
-      tmp.addAll(buildProxyDto(editPrj, identity, true));
-      tmp.addAll(buildProxyDto(viewPrj, identity, false));
+    //  tmp.addAll(buildProxyDto(editPrj, identity, true));
+      tmp.addAll(buildProxyDto(projects, identity, false));
     } catch (Exception ex) {
       LOG.error("Can't load project ", ex);
     }
