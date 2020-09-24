@@ -81,6 +81,7 @@
         .drawerContent {
           padding: 16px;
           .addProjectTitle {
+            margin-top: -10px;
             .uiIconProject {
               font-family: "PLF-FONT-ICONS" !important;
               font-style: normal;
@@ -95,12 +96,29 @@
                 &:before {
                   display: none;
                 }
+                &:after{
+                  font-size: 15px;
+                  min-height: 40px;
+                  padding: 0 10px;
+                  border: Solid 1px var(--allPagesBorderColor, #e1e8ee);
+                  border-radius: 5px;
+                  box-shadow: none;
+                  max-height: 115px;
+                  text-overflow: ellipsis;
+                  bottom: auto;
+                }
                 label {
                   color: @greyColorLighten1;
                   letter-spacing: .2px;
                 }
+                .v-text-field__slot{
+                  margin-left: 5px;
+                }
               }
             }
+          }
+          hr.py-3.v-divider.theme--light{
+            margin-top: 10px;
           }
           .projectPermissionsUsers {
             .permisionLabel {
@@ -153,8 +171,15 @@
               }
             }
           }
+          div#cke_descriptionContent{
+            margin-top: 15px;
+            margin-left: 33px;
+          }
+          div#cke_1_contents{
+            height: 85px!important;
+          }
           span#cke_1_bottom {
-            height: 27px;
+            height: 29px;
             background-color: transparent;
           }
           .cke_bottom .cke_button_icon {
