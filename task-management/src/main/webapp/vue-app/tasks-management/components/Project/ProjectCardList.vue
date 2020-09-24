@@ -17,6 +17,12 @@
                 :project="project"/>
             </v-col>
           </v-row>
+         <v-btn
+            class="loadMoreButton ma-auto btn"
+            block
+            @click="loadNextPage">
+            {{ $t('spacesList.button.showMore') }}
+          </v-btn>
         </v-container>
       </v-item-group>
     </v-card>
@@ -27,18 +33,31 @@
     data() {
       return {
         maxTasksSize: 10,
-        projects: []
+        projects: [],
+        offset: 0,
+        projectSize: 0,
+        limit: 20,
+        limitToFetch: 0,
+        originalLimitToFetch: 0
       }
     },
     created() {
+      this.originalLimitToFetch = this.limitToFetch = this.limit;
       this.getProjectsList();
     },
     methods: {
       getProjectsList() {
-        return this.$projectService.getProjectsList().then(data => {
-          this.projects = data;
+        return this.$projectService.getProjectsList(this.offset, this.limitToFetch).then(data => {
+          this.projects = data.projects;
+          this.projectSize = data.projectNumber;
         });
-      }
+      },
+      loadNextPage() {
+        if(this.limitToFetch <= this.pageSize) {
+          this.limitToFetch = this.limitToFetch += this.limit;
+        }
+
+      },
     }
   }
 </script>
