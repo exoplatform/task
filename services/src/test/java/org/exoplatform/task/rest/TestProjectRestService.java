@@ -237,6 +237,50 @@ public class TestProjectRestService {
   }
 
   @Test
+  public void testUpdateProject() throws Exception {
+    // Given
+    ProjectRestService projectRestService = new ProjectRestService(taskService,
+            commentService,
+            projectService,
+            statusService,
+            userService,
+            spaceService,
+            labelService);
+    Identity john = new Identity("john");
+    ConversationState.setCurrent(new ConversationState(john));
+    Set<String> manager = new HashSet<String>();
+    manager.add("john");
+    ProjectDto projectDto = new ProjectDto();
+    projectDto.setId(1);
+    projectDto.setDescription("bla bla bla");
+    projectDto.setManager(manager);
+    projectService.updateProject(projectDto);
+
+    when(projectService.updateProject(any())).thenReturn(projectDto);
+
+    Response response = projectRestService.updateProject(projectDto.getId(),projectDto);
+    assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+
+
+    projectDto.setName("john");
+    projectService.updateProject(projectDto);
+
+    when(projectService.updateProject(any())).thenReturn(projectDto);
+    when(projectService.getProject(projectDto.getId())).thenReturn(projectDto);
+    response = projectRestService.updateProject(projectDto.getId(),projectDto);
+    assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+    Identity root = new Identity("root");
+    ConversationState.setCurrent(new ConversationState(john));
+
+    when(projectService.updateProject(any())).thenReturn(projectDto);
+    when(projectService.getProject(projectDto.getId())).thenReturn(projectDto);
+    response = projectRestService.updateProject(projectDto.getId(),projectDto);
+    assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
+
+  }
+
+  @Test
   public void testGetSatusesByProjectId() throws Exception {
     // Given
     ProjectRestService projectRestService = new ProjectRestService(taskService,

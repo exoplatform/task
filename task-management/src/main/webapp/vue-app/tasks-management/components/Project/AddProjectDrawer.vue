@@ -104,6 +104,12 @@
 </template>
 <script>
   export default {
+    props: {
+      project: {
+        type: Object,
+        default: () => ({}),
+      }
+    },
     data() {
       return {
         MESSAGE_MAX_LENGTH:1000,
@@ -112,6 +118,7 @@
         projectinformation:{
           name:'',
           description:'',
+          id:'',
         },
         postProject:false,
       };
@@ -124,6 +131,17 @@
         };
       }
     },
+    created() {
+      if (this.project.name !== null ||this.project.name !==''){
+        this.projectinformation.name=this.project.name;
+      }
+      if (this.project.id !== null ||this.project.id !==''){
+        this.projectinformation.id=this.project.id;
+      }
+      if (this.project.description !== null || this.project.description !== ''){
+        this.projectinformation.description = this.project.description;
+      }
+    },
     methods: {
       open() {
         this.$refs.AddProjectDrawer.open();
@@ -133,23 +151,41 @@
       },
       saveProject() {
         const projects = {
+          id: this.projectinformation.id,
           name: this.projectinformation.name,
           description: this.projectinformation.description,
           manager: eXo.env.portal.userName
         };
-        return this.$projectService.addProject(projects).then(project=> {
-          this.postProject= true;
-          this.$emit('update-cart', project);
-          if(project) {
-            window.location.href = `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest`;
-          } else {
-            window.location.href = `${eXo.env.portal.context}/${eXo.env.portal.portalName}`;
-          }
-        })
-                .catch(e => {
-                  console.debug("Error saving project", e);
-                  this.$emit('error', e && e.message ? e.message : String(e));
-                });
+        if ( typeof projects.id !== 'undefined'){
+          return this.$projectService.updateProjectInfo(projects).then(project=> {
+            this.postProject= true;
+            this.$emit('update-cart', project);
+            if(project) {
+              window.location.href = `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest`;
+            } else {
+              window.location.href = `${eXo.env.portal.context}/${eXo.env.portal.portalName}`;
+            }
+          })
+                  .catch(e => {
+                    console.debug("Error updating project", e);
+                    this.$emit('error', e && e.message ? e.message : String(e));
+                  });
+        }else{
+          return this.$projectService.addProject(projects).then(project=> {
+            this.postProject= true;
+            this.$emit('update-cart', project);
+            if(project) {
+              window.location.href = `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest`;
+            } else {
+              window.location.href = `${eXo.env.portal.context}/${eXo.env.portal.portalName}`;
+            }
+          })
+                  .catch(e => {
+                    console.debug("Error saving project", e);
+                    this.$emit('error', e && e.message ? e.message : String(e));
+                  });
+        }
+
       }
     }
   }

@@ -32,7 +32,10 @@
           <v-list-item>
             <v-list-item-title class="subtitle-2">
               <i class="uiIcon uiIconEdit pr-1"></i>
-              <span>{{ $t('label.edit') }}</span>
+              <a 
+                ref="tooltip" 
+                class="black--text" 
+                @click="$emit('openDrawer')"><span>{{ $t('label.edit') }}</span></a>
             </v-list-item-title>
           </v-list-item>
           <v-list-item>
@@ -159,6 +162,7 @@
           { class: 'yellow' },
           { class: 'plum' },
         ],
+        drawer:null
       }
     },
     created() {
@@ -173,7 +177,13 @@
     methods : {
       showProjectTasksDetails(project) {
         document.dispatchEvent(new CustomEvent('showProjectTasks', {detail: project}));
-      }
+      },
+      openEditDrawer() {
+        this.$refs.addProjectDrawer.open();
+      },
+      onCloseDrawer: function (drawer) {
+        this.drawer = drawer;
+      },
     }
   }
 </script>

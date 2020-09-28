@@ -14,7 +14,9 @@ import org.exoplatform.task.dao.ProjectQuery;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.dto.ProjectDto;
 import org.exoplatform.task.dto.StatusDto;
+import org.exoplatform.task.dto.TaskDto;
 import org.exoplatform.task.exception.EntityNotFoundException;
+import org.exoplatform.task.exception.ParameterEntityException;
 import org.exoplatform.task.exception.UnAuthorizedOperationException;
 import org.exoplatform.task.legacy.service.UserService;
 import org.exoplatform.task.model.User;
@@ -308,7 +310,7 @@ public class ProjectRestService implements ResourceContainer {
       Long parentId = projectDto.getParent().getId();
       ProjectDto parent = projectService.getProject(parentId);
       if (!parent.canEdit(ConversationState.getCurrent().getIdentity())) {
-        throw new UnAuthorizedOperationException(parentId, Project.class, "getNoPermissionMsg()");
+        return Response.status(Response.Status.UNAUTHORIZED).build();
       }
       project = projectService.createProject(project, parentId);
     } else {
@@ -323,6 +325,49 @@ public class ProjectRestService implements ResourceContainer {
     result.put("color", "transparent");
 
     return Response.ok(result.toString()).build();
+  }
+
+
+  @PUT
+  @Path("updateproject/{projectId}")
+  @Produces(MediaType.APPLICATION_JSON)
+  @RolesAllowed("users")
+  @ApiOperation(value = "Update Project", httpMethod = "POST", response = Response.class, notes = "This Update Project info")
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled"),
+  @ApiResponse(code = 400, message = "Invalid query input"),
+  @ApiResponse(code = 403, message = "Unauthorized operation"),
+  @ApiResponse(code = 404, message = "Resource not found") })
+  public Response updateProject(@ApiParam(value = "projectId", required = true) @PathParam("projectId") long projectId,
+                                  @ApiParam(value = "Project", required = true) ProjectDto projectDto)
+          throws EntityNotFoundException, ParameterEntityException, UnAuthorizedOperationException {
+    if(projectDto.getName() == null) {
+      return Response.status(Response.Status.NOT_FOUND).build();
+    }
+    Identity identity = ConversationState.getCurrent().getIdentity();
+    if (projectDto.getParent()!= null && !projectDto.getParent().toString() .isEmpty()) {
+      Long parentId = Long.parseLong(projectDto.getParent().toString());
+      try {
+        if (!projectService.getProject(parentId).canEdit(identity)) {
+          return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+      } catch (EntityNotFoundException ex) {
+      }
+    }
+    if (!projectService.getProject(projectId).canEdit(identity)) {
+      return Response.status(Response.Status.UNAUTHORIZED).build();
+    }
+
+    Map<String, String[]> fields = new HashMap<String, String[]>();
+    fields.put("name", new String[] {projectDto.getName()});
+    String description = StringUtil.encodeInjectedHtmlTag(projectDto.getDescription());
+    fields.put("description", new String[] {description});
+    if (projectDto.getParent()!=null) {
+      fields.put("parent", new String[]{projectDto.getParent().toString()});
+    }
+    fields.put("calendarIntegrated", new String[]{String.valueOf(projectDto.isCalendarIntegrated())});
+    ProjectDto project = ProjectUtil.saveProjectField(projectService, projectId, fields);
+    projectService.updateProject(project);
+    return Response.ok(Response.Status.OK).build();
   }
 
 }
