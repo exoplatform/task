@@ -9,6 +9,7 @@
           <i :title="$t('message.markAsCompleted')" class="uiIcon uiIconCircle"></i>
           <a
             ref="tooltip"
+            class="text-color"
             @click="openTaskDrawer()">
             <ellipsis
               v-if="task.task.title "
@@ -22,16 +23,34 @@
           <span class="caption text-sub-title">ID : {{ task.task.id }}</span>
         </div>
       </div>
-      <div class="taskProjectAndLabel d-flex justify-space-between align-center mt-3">
-        <div class="taskProject">
-          <div v-if="isPersonnalTask" class="taskProjectName mr-3 pa-1">
-            <span class="caption text-sub-title">{{ $t('label.noProject') }}</span>
-          </div>
-          <div 
-            v-else 
-            :class="task.task.status.project.color || 'noProjectColor'" 
-            class="taskProjectName taskProjectNameCard mr-3 pa-1">
-            <span class="font-weight-bold">{{ task.task.status.project.name }}</span>
+      <div class="taskAssigneeAndLabels d-flex justify-space-between align-center mt-3">
+        <div :class="showAllAvatarList && 'AllAssigneeAvatar'" class="taskAssignee  d-flex flex-nowrap">
+          <exo-user-avatar
+            v-for="user in avatarToDisplay"
+            :key="user"
+            :username="user.username"
+            :title="user.displayName"
+            :avatar-url="user.avatar"
+            :size="iconSize"
+            :style="'background-image: url('+user.avatar+')'"
+            class="mx-1 taskWorkerAvatar"/>
+          <i
+            v-if="showAllAvatarList"
+            class="uiIcon uiIconArrowBack"
+            @click="showAllAvatarList = false"></i>
+          <div class="seeMoreAvatars">
+            <div
+              v-if="assigneeAndCoworkerArray.length > maxAvatarToShow && !showAllAvatarList"
+              class="seeMoreItem"
+              @click="showAllAvatarList = true">
+              <v-avatar
+                :size="iconSize">
+                <img
+                  :src="assigneeAndCoworkerArray[maxAvatarToShow].avatar"
+                  :title="assigneeAndCoworkerArray[maxAvatarToShow].displayName">
+              </v-avatar>
+              <span class="seeMoreAvatarList">+{{ showMoreAvatarsNumber }}</span>
+            </div>
           </div>
         </div>
         <div class="taskLabels">
@@ -49,31 +68,56 @@
           <span v-else class="noLabelText caption"> {{ $t('label.noLabel') }}</span>
         </div>
       </div>
-      <div class="taskActionsAndWorker d-flex justify-space-between my-3">
+      <div class="taskActionsAndProject d-flex justify-space-between my-3">
         <div class="taskActions d-flex justify-center align-center">
           <div class="taskComment d-flex">
             <i class="uiIcon uiCommentIcon"></i>
-            <span class="taskCommentNumber caption">4</span>
+            <span class="taskCommentNumber caption">{{ task.commentCount }}</span>
           </div>
           <div class="taskAttachment  d-flex pl-3">
             <i class="uiIcon uiAttachIcon"></i>
             <span class="taskAttachNumber caption">2</span>
           </div>
         </div>
-        <div class="taskAssignee  d-flex flex-nowrap">
-          <exo-user-avatar
-            v-for="user in assigneeAndCoworkerArray"
-            :key="user"
-            :username="user.username"
-            :title="user.displayName"
-            :avatar-url="user.avatar"
-            :size="iconSize"
-            :style="'background-image: url('+user.avatar+')'"
-            class="mx-1 taskWorkerAvatar"/>
+        <div class="taskProject">
+          <div v-if="isPersonnalTask" class="taskProjectName pa-1">
+            <span class="caption text-sub-title">{{ $t('label.noProject') }}</span>
+          </div>
+          <div v-else class="projectSpaceDetails d-flex">
+            <div class="spaceAvatar pr-1">
+              <a
+                v-if="isSpaceProject"
+                :href="spaceUrl(task.space.url)">
+                <v-avatar
+                  :size="32"
+                  tile>
+                  <v-img
+                    :src="task.space.avatarUrl"
+                    :height="31"
+                    :width="31"
+                    :max-height="31"
+                    :max-width="31"
+                    class="mx-auto spaceAvatarImg"/>
+                </v-avatar>
+              </a>
+              <v-avatar
+                v-else
+                :size="32"
+                tile
+                class="noSpaceAvatar">
+                <i class="uiIconEcmsNameSpace noSpaceProjectIcon"></i>
+              </v-avatar>
+            </div>
+            <div
+              :class="task.task.status.project.color || 'noProjectColor'"
+              class="taskProjectName taskProjectNameCard pa-1">
+              <span class="font-weight-bold">{{ task.task.status.project.name }}</span>
+            </div>
+          </div>
         </div>
       </div>
       <v-divider/>
-      <siv class="taskStatusAndDate d-flex justify-space-between pt-3">
+      <div class="taskStatusAndDate d-flex justify-space-between pt-3">
         <div class="taskStat">
           <span v-if="isPersonnalTask" class="caption text-sub-title">{{ $t('label.noStatus') }}</span>
           <span v-else class="taskStatLabel pl-2">{{ getTaskStatusLabel(task.task.status.name) }}</span>
@@ -86,7 +130,7 @@
             <span class="caption text-sub-title">{{ $t('label.noDueDate') }}</span>
           </div>
         </div>
-      </siv>
+      </div>
     </v-card>
 
     <task-drawer 
@@ -108,7 +152,7 @@
       return {
         enabled: false,
         user: {},
-        iconSize: 32,
+        iconSize: 26,
         dateTimeFormat: {
           year: 'numeric',
           month: 'numeric',
@@ -116,14 +160,37 @@
         },
         assigneeAndCoworkerArray: [],
         isPersonnalTask : this.task.task.status === null,
-        drawer:null
+        drawer:null,
+        isSpaceProject: this.task.space !== null,
+        maxAvatarToShow : 3,
+        showAllAvatarList: false
       }
     },
     computed: {
       taskDueDate() {
         return this.task && this.task.task.dueDate && this.task.task.dueDate.time;
       },
+      avatarToDisplay () {
+          if(!this.showAllAvatarList) {
+            return this.assigneeAndCoworkerArray.slice(0, this.maxAvatarToShow-1);
+          } else {
+            return this.assigneeAndCoworkerArray;
+          }
+      },
+      showMoreAvatarsNumber() {
+        return this.assigneeAndCoworkerArray.length - this.maxAvatarToShow;
+      }
     },
+    /*watch: {
+      avatarToDisplay ()
+      {
+        if(!this.showAllAvatarList) {
+          return this.assigneeAndCoworkerArray.slice(0, this.maxAvatarToShow-1);
+        } else {
+          return this.assigneeAndCoworkerArray;
+        }
+      }
+    },*/
     created() {
       this.getTaskAssigneeAndCoworkers();
     },
@@ -175,6 +242,12 @@
         },
       onCloseDrawer: function(drawer){
         this.drawer = drawer;
+      },
+      spaceUrl(spaceUrl) {
+        if (!this.spaceUrl) {
+          return '#';
+        }
+        return `${eXo.env.portal.context}/g/:spaces:${spaceUrl}/`;
       }
     }
   }

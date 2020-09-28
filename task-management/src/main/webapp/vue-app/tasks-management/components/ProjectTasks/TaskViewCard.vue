@@ -4,11 +4,12 @@
       :class="getTaskPriorityColor(task.task.priority)"
       class="taskCard pa-3"
       flat>
-      <div class="taskTitleId">
+      <div class="taskTitleId  d-flex justify-space-between">
         <div class="taskTitle d-flex align-start">
           <i :title="$t('message.markAsCompleted')" class="uiIcon uiIconCircle"></i>
           <a
-            ref="tooltip">
+            ref="tooltip"
+            class="text-color">
             <ellipsis
               v-if="task.task.title "
               :title="task.task.title "
@@ -17,6 +18,9 @@
               end-char=".."
               @click="openTaskDrawer()"/>
           </a>
+        </div>
+        <div class="taskId">
+          <span class="caption text-sub-title">ID : {{ task.task.id }}</span>
         </div>
       </div>
       <div class="taskLabelsAndWorker d-flex justify-space-between my-3">

@@ -13,7 +13,8 @@ import TasksListToolbar from './components/tasks/TasksListToolbar.vue';
 import TasksList from './components/tasks/TasksList.vue';
 import TasksListItem from './components/tasks/TasksListItem.vue';
 import TasksCardsList from './components/tasks/TasksCardsList.vue'
-import TaskCard from './components/tasks/TaskCard.vue'
+import TaskCard from './components/tasks/TaskCard.vue';
+import TasksFilterDrawer from "./components/tasks/TasksFilterDrawer.vue";
 
 import TasksViewDashboard from "./components/ProjectTasks/TasksViewDashboard.vue";
 import TasksViewToolbar from "./components/ProjectTasks/TasksViewToolbar.vue";
@@ -41,6 +42,8 @@ const components = {
   'tasks-list-item': TasksListItem,
   'tasks-cards-list': TasksCardsList,
   'task-card': TaskCard,
+  'task-filter-drawer':TasksFilterDrawer,
+
 
   'tasks-view-dashboard': TasksViewDashboard,
   'tasks-view-toolbar': TasksViewToolbar,

@@ -480,9 +480,6 @@
           .projectTaskItem {
             position: relative;
             .taskCard {
-              height: 150px;
-              min-height: 150px;
-              border-left-width: 5px !important;
               .v-divider {
                 border-top-width: 1px!important;
                 margin-top: 0!important;
@@ -548,8 +545,8 @@
         #taskCardItem {
           .taskCard {
             border: 1px solid @tableBorder!important;
-            min-height: 210px;
-            height: 210px;
+            min-height: 200px;
+            height: 200px;
             background: @tableBackgroundAccent;
             .taskTitleId {
               min-height: 42px;
@@ -683,7 +680,22 @@
           display: inline-block;
         }
         .taskProjectNameCard {
-          width: 140px;
+          width: 120px;
+        }
+        .spaceAvatar {
+          .spaceAvatarImg {
+            border-radius: 4px;
+          }
+        }
+        .noSpaceAvatar {
+          background: white;
+          color: white;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          .noSpaceProjectIcon {
+            color: @greyColor;
+          }
         }
         .noProjectColor {
           background: transparent!important;
@@ -795,20 +807,68 @@
         .labelText {
           background: @greyColor;
           padding: 2px 4px;
+          cursor: pointer;
         }
         .noLabelText {
           color: @greyColorLighten1;
         }
       }
       .taskAssignee {
+        padding: 2px 4px;
         .taskWorkerAvatar {
           background-position: center;
           background-size: cover;
           border-radius: 50%;
-          width: 31px;
-          height: 31px;
+          width: 26px;
+          height: 26px;
           img {
             display: none;
+          }
+        }
+        .seeMoreAvatars {
+          .seeMoreItem {
+            position: relative;
+            &:before {
+              content: "";
+              width: 100%;
+              height: 100%;
+              position: absolute;
+              background: @baseColorMedium;
+              border-radius: 50%;
+              opacity: .5;
+              z-index: 1;
+            }
+            .seeMoreAvatarList {
+              position: absolute;
+              top: 0;
+              left: 0;
+              right: 0;
+              text-align: center;
+              width: 30px;
+              height: 30px;
+              color: white;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              cursor: pointer;
+              font-size: 15px;
+              font-weight: bold;
+              z-index: 1;
+            }
+          }
+        }
+      }
+      .AllAssigneeAvatar {
+        box-shadow: 0 0 2px 1px @greyColor;
+        padding: 2px 4px;
+        border-radius: 25px;
+        .uiIconArrowBack {
+          font-size: 12px;
+          padding-top: 6px;
+          padding-left: 4px;
+          cursor: pointer;
+          &:before {
+            content: "\e74f";
           }
         }
       }
