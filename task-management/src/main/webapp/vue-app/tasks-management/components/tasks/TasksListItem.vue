@@ -8,13 +8,14 @@
     <div class="taskTitle pr-3">
       <a
         ref="tooltip"
+        class="text-color"
         @click="openTaskDrawer()">
         <span>{{ task.task.title }}</span>
       </a>
     </div>
     <div class="taskProject">
       <div v-if="isPersonnalTask" class="taskProjectName mr-3 pa-1">
-        <span class="caption text-sub-title">{{ $t('label.noProject') }}</span>
+        <span class="body-2 text-sub-title">{{ $t('label.noProject') }}</span>
       </div>
       <div 
         v-else 
@@ -59,7 +60,7 @@
         :title="getLabelsList(task.labels)"
         class="labelText">{{ task.labels.length }} {{ $t('label.labels') }}
       </span>
-      <span v-else class="noLabelText caption"> {{ $t('label.noLabel') }}</span>
+      <span v-else class="noLabelText body-2"> {{ $t('label.noLabel') }}</span>
     </div>
     <div class="taskActions d-flex justify-center align-center">
       <div class="taskComment d-flex">
@@ -73,7 +74,7 @@
 
     </div>
     <div class="taskStat">
-      <span v-if="isPersonnalTask" class="caption text-sub-title">{{ $t('label.noStatus') }}</span>
+      <span v-if="isPersonnalTask" class="body-2 text-sub-title">{{ $t('label.noStatus') }}</span>
       <span v-else class="taskStatLabel pl-2">
         {{ getTaskStatusLabel(task.task.status.name) }}
       </span>
@@ -83,7 +84,7 @@
         <date-format :value="taskDueDate" :format="dateTimeFormat" />
       </div>
       <div v-else>
-        <span class="caption text-sub-title">{{ $t('label.noDueDate') }}</span>
+        <span class="body-2 text-sub-title">{{ $t('label.noDueDate') }}</span>
       </div>
     </div>
     <task-drawer 

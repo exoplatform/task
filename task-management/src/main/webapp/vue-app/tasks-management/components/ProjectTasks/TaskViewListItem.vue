@@ -49,7 +49,7 @@
         :title="getLabelsList(task.labels)"
         class="labelText">{{ task.labels.length }} {{ $t('label.labels') }}
       </span>
-      <span v-else class="noLabelText caption"> {{ $t('label.noLabel') }}</span>
+      <span v-else class="noLabelText body-2"> {{ $t('label.noLabel') }}</span>
     </div>
     <div class="taskActions d-flex justify-center align-center">
       <div class="taskComment d-flex">
@@ -67,7 +67,7 @@
         <date-format :value="taskDueDate" :format="dateTimeFormat" />
       </div>
       <div v-else>
-        <span class="caption text-sub-title">{{ $t('label.noDueDate') }}</span>
+        <span class="body-2 text-sub-title">{{ $t('label.noDueDate') }}</span>
       </div>
     </div>
   </div>

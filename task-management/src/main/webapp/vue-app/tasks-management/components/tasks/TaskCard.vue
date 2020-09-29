@@ -65,7 +65,7 @@
             class="labelText">
             {{ task.labels.length }} {{ $t('label.labels') }}
           </span>
-          <span v-else class="noLabelText caption"> {{ $t('label.noLabel') }}</span>
+          <span v-else class="noLabelText body-2"> {{ $t('label.noLabel') }}</span>
         </div>
       </div>
       <div class="taskActionsAndProject d-flex justify-space-between my-3">
@@ -81,7 +81,7 @@
         </div>
         <div class="taskProject">
           <div v-if="isPersonnalTask" class="taskProjectName pa-1">
-            <span class="caption text-sub-title">{{ $t('label.noProject') }}</span>
+            <span class="body-2 text-sub-title">{{ $t('label.noProject') }}</span>
           </div>
           <div v-else class="projectSpaceDetails d-flex">
             <div class="spaceAvatar pr-1">
@@ -119,7 +119,7 @@
       <v-divider/>
       <div class="taskStatusAndDate d-flex justify-space-between pt-3">
         <div class="taskStat">
-          <span v-if="isPersonnalTask" class="caption text-sub-title">{{ $t('label.noStatus') }}</span>
+          <span v-if="isPersonnalTask" class="body-2 text-sub-title">{{ $t('label.noStatus') }}</span>
           <span v-else class="taskStatLabel pl-2">{{ getTaskStatusLabel(task.task.status.name) }}</span>
         </div>
         <div class="taskDueDate">
@@ -127,7 +127,7 @@
             <date-format :value="taskDueDate" :format="dateTimeFormat" />
           </div>
           <div v-else>
-            <span class="caption text-sub-title">{{ $t('label.noDueDate') }}</span>
+            <span class="body-2 text-sub-title">{{ $t('label.noDueDate') }}</span>
           </div>
         </div>
       </div>
