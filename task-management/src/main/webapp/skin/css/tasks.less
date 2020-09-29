@@ -56,8 +56,8 @@
           min-height: 38px;
         }
         .v-tab.v-tab--active {
-          border: 1px solid @primaryColor;
-          background-color: @tabNormalLinkBackground;
+          border: 1px solid @primaryColor!important;
+          background-color: @tabNormalLinkBackground!important;
         }
         .filterTasksSetting {
           .uiIconFilterSetting {
@@ -274,15 +274,84 @@
                     }
                   }
                   .SpaceAdmin {
+                    .managerAvatarsList {
+                      .projectManagersAvatar {
+                        background-position: center;
+                        background-size: cover;
+                        border-radius: 50%;
+                        width: 28px;
+                        height: 28px;
+                      }
+                      img {
+                        display: none;
+                      }
+                    }
                     .v-list-item {
                       min-height: 38px!important;
-                      .uiIconStar {
-                        &:before {
-                          content: "\e97f";
-                          font-family: "PLF-FONT-ICONS" !important;
-                          color: @colorIconOrange;
-                          font-style: normal;
-                          font-size: 18px;
+                    }
+                    .uiIconStar {
+                      position: absolute;
+                      top: 85%;
+                      right: 10px;
+                      z-index: 0;
+                      &:before {
+                        content: "\e97f";
+                        font-family: "PLF-FONT-ICONS" !important;
+                        color: @colorIconOrange;
+                        font-style: normal;
+                        font-size: 18px;
+                      }
+                    }
+                    .spaceAdminWrapper {
+                      position: relative;
+                      z-index: 2;
+                      .managerAvatarsList {
+                        .seeMoreAvatars {
+                          .seeMoreItem {
+                            position: relative;
+                            &:before {
+                              content: "";
+                              width: 100%;
+                              height: 100%;
+                              position: absolute;
+                              background: @baseColorMedium;
+                              border-radius: 50%;
+                              opacity: .5;
+                              z-index: 1;
+                            }
+                            .seeMoreAvatarList {
+                              position: absolute;
+                              top: 0;
+                              left: 0;
+                              right: 0;
+                              text-align: center;
+                              width: 30px;
+                              height: 30px;
+                              color: white;
+                              display: flex;
+                              align-items: center;
+                              justify-content: center;
+                              cursor: pointer;
+                              font-size: 15px;
+                              font-weight: bold;
+                              z-index: 1;
+                            }
+                          }
+                        }
+                      }
+                      .AllManagerAvatar {
+                        box-shadow: 0 0 2px 1px @greyColor;
+                        border-radius: 25px;
+                        z-index: 1;
+                        background: white;
+                        .uiIconArrowBack {
+                          font-size: 12px;
+                          padding-top: 6px;
+                          padding-left: 4px;
+                          cursor: pointer;
+                          &:before {
+                            content: "\e74f";
+                          }
                         }
                       }
                     }
@@ -574,6 +643,10 @@
               }
             }
           }
+          .taskViewCard {
+            min-height: 180px;
+            height: 180px;
+          }
           .taskHighPriority {
             border-left: 10px solid @errorColor!important;
           }
@@ -668,6 +741,28 @@
           }
           .taskNonePriority {
             border-left: 5px solid @primaryColor!important;
+          }
+        }
+        .tasksViewList {
+          .taskTitle {
+            width: 32%!important;
+            max-width: 32%!important;
+          }
+          .taskAssignee {
+            max-width: 15%!important;
+            width: 15%!important;
+          }
+          .taskLabels {
+            max-width: 20%!important;
+            width: 20%!important;
+          }
+          .taskActions {
+            max-width: 15%!important;
+            width: 15%!important;
+          }
+          .taskDueDate {
+            max-width: 15%!important;
+            width: 15%!important;
           }
         }
       }
@@ -815,6 +910,7 @@
       }
       .taskAssignee {
         padding: 2px 4px;
+        padding-left: 0;
         .taskWorkerAvatar {
           background-position: center;
           background-size: cover;
@@ -860,7 +956,6 @@
       }
       .AllAssigneeAvatar {
         box-shadow: 0 0 2px 1px @greyColor;
-        padding: 2px 4px;
         border-radius: 25px;
         .uiIconArrowBack {
           font-size: 12px;

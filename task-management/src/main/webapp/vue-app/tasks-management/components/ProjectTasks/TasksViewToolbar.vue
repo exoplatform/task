@@ -13,14 +13,14 @@
         </v-btn>
       </v-toolbar-title>
       <v-spacer/>
-      <div class="taskDisplay">
+      <div class="taskDisplay pt-2">
         <v-tabs>
           <v-tab
             :href="taskCardTabView"
             class="taskTabBoard"
             @change="$emit('taskViewChangeTab', 'board')">
             <i class="uiIcon uiIconBoard"></i>
-            <span>{{ $t('label.cardsView') }}</span>
+            <span>{{ $t('label.boardView') }}</span>
           </v-tab>
           <v-tab
             :href="taskListTabView"

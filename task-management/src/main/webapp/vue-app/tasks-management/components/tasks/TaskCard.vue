@@ -24,7 +24,7 @@
         </div>
       </div>
       <div class="taskAssigneeAndLabels d-flex justify-space-between align-center mt-3">
-        <div :class="showAllAvatarList && 'AllAssigneeAvatar'" class="taskAssignee  d-flex flex-nowrap">
+        <div :class="showAllAvatarList && 'AllAssigneeAvatar'" class="taskAssignee d-flex flex-nowrap">
           <exo-user-avatar
             v-for="user in avatarToDisplay"
             :key="user"
@@ -181,16 +181,6 @@
         return this.assigneeAndCoworkerArray.length - this.maxAvatarToShow;
       }
     },
-    /*watch: {
-      avatarToDisplay ()
-      {
-        if(!this.showAllAvatarList) {
-          return this.assigneeAndCoworkerArray.slice(0, this.maxAvatarToShow-1);
-        } else {
-          return this.assigneeAndCoworkerArray;
-        }
-      }
-    },*/
     created() {
       this.getTaskAssigneeAndCoworkers();
     },

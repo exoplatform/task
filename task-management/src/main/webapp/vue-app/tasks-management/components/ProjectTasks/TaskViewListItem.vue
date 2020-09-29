@@ -8,13 +8,14 @@
     <div class="taskTitle pr-3">
       <a
         ref="tooltip"
+        class="text-color"
         @click="openTaskDrawer()">
         <span>{{ task.task.title }}</span>
       </a>
     </div>
-    <div class="taskAssignee d-flex flex-nowrap">
+    <div :class="showAllAvatarList && 'AllAssigneeAvatar'" class="taskAssignee d-flex flex-nowrap">
       <exo-user-avatar
-        v-for="user in assigneeAndCoworkerArray"
+        v-for="user in avatarToDisplay"
         :key="user"
         :username="user.username"
         :title="user.displayName"
@@ -22,6 +23,24 @@
         :size="iconSize"
         :style="'background-image: url('+user.avatar+')'"
         class="mx-1 taskWorkerAvatar"/>
+      <i
+        v-if="showAllAvatarList"
+        class="uiIcon uiIconArrowBack"
+        @click="showAllAvatarList = false"></i>
+      <div class="seeMoreAvatars">
+        <div
+          v-if="assigneeAndCoworkerArray.length > maxAvatarToShow && !showAllAvatarList"
+          class="seeMoreItem"
+          @click="showAllAvatarList = true">
+          <v-avatar
+            :size="iconSize">
+            <img
+              :src="assigneeAndCoworkerArray[maxAvatarToShow].avatar"
+              :title="assigneeAndCoworkerArray[maxAvatarToShow].displayName">
+          </v-avatar>
+          <span class="seeMoreAvatarList">+{{ showMoreAvatarsNumber }}</span>
+        </div>
+      </div>
     </div>
     <div class="taskLabels">
       <span v-if="task.labels && task.labels.length == 1" class="labelText">{{ task.labels[0].name }}</span>
@@ -64,7 +83,7 @@
     data () {
       return {
         enabled: false,
-        iconSize: 30,
+        iconSize: 26,
         dateTimeFormat: {
           year: 'numeric',
           month: 'numeric',
@@ -73,13 +92,25 @@
         assigneeAndCoworkerArray: [],
         isPersonnalTask : this.task.task.status === null,
         labelList: '',
-        drawer:null
+        drawer:null,
+        maxAvatarToShow : 3,
+        showAllAvatarList: false
       }
     },
     computed: {
       taskDueDate() {
         return this.task && this.task.task.dueDate && this.task.task.dueDate.time;
       },
+      avatarToDisplay () {
+        if(!this.showAllAvatarList) {
+          return this.assigneeAndCoworkerArray.slice(0, this.maxAvatarToShow-1);
+        } else {
+          return this.assigneeAndCoworkerArray;
+        }
+      },
+      showMoreAvatarsNumber() {
+        return this.assigneeAndCoworkerArray.length - this.maxAvatarToShow;
+      }
     },
     created() {
       this.getTaskAssigneeAndCoworkers();
