@@ -28,14 +28,11 @@
         transition="slide-x-reverse-transition"
         content-class="projectActionMenu"
         offset-y>
-        <v-list>
-          <v-list-item>
+        <v-list class="pa-0" dense>
+          <v-list-item class="menu-list" @click="$emit('openDrawer')" >
             <v-list-item-title class="subtitle-2">
               <i class="uiIcon uiIconEdit pr-1"></i>
-              <a 
-                ref="tooltip" 
-                class="black--text" 
-                @click="$emit('openDrawer')"><span>{{ $t('label.edit') }}</span></a>
+              <span>{{ $t('label.edit') }}</span>
             </v-list-item-title>
           </v-list-item>
           <v-list-item>

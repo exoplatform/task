@@ -1,12 +1,12 @@
 <template>
   <div class="projectDescription">
-    <textarea 
-      id="descriptionContent" 
-      ref="editor" 
-      v-model="inputVal" 
-      :placeholder="placeholder" 
-      cols="30" 
-      rows="10" 
+    <textarea
+      id="descriptionTaskContent"
+      ref="editor"
+      v-model="inputVal"
+      :placeholder="placeholder"
+      cols="30"
+      rows="10"
       class="textarea"></textarea>
 
   </div>
@@ -18,6 +18,10 @@
       value: {
         type: String,
         default: ''
+      },
+      reset: {
+        type: Boolean,
+        default: false
       },
       placeholder: {
         type: String,
@@ -42,15 +46,19 @@
       },
       value(val) {
         // watch value to reset the editor value if the value has been updated by the component parent
-        const editorData = CKEDITOR.instances['activityContent'].getData();
+        const editorData = CKEDITOR.instances['descriptionTaskContent'].getData();
         if (editorData != null && val !== editorData) {
           if (val === '') {
             this.initCKEditor();
           } else {
-            CKEDITOR.instances['activityContent'].setData(val);
+            CKEDITOR.instances['descriptionTaskContent'].setData(val);
           }
         }
-      }
+      },
+      reset() {
+        CKEDITOR.instances['descriptionTaskContent'].destroy(true);
+        this.initCKEditor();
+      },
     },
     mounted() {
       this.initCKEditor();
@@ -58,9 +66,6 @@
     methods: {
       initCKEditor: function () {
         CKEDITOR.plugins.addExternal('/commons-extension/eXoPlugins/embedsemantic/','plugin.js');
-        if (typeof CKEDITOR.instances['activityContent'] !== 'undefined') {
-          CKEDITOR.instances['activityContent'].destroy(true);
-        }
         let extraPlugins = 'simpleLink,widget';
         const windowWidth = $(window).width();
         const windowHeight = $(window).height();
@@ -102,10 +107,10 @@
         });
       },
       setFocus: function() {
-        CKEDITOR.instances['activityContent'].focus();
+        CKEDITOR.instances['descriptionTaskContent'].focus();
       },
       getMessage: function() {
-        const newData = CKEDITOR.instances['activityContent'].getData();
+        const newData = CKEDITOR.instances['descriptionTaskContent'].getData();
         return newData ? newData : '';
       }
     }

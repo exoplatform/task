@@ -87,6 +87,7 @@
               font-style: normal;
               font-size: 22px;
               color: @primaryColor;
+              margin-right: 15px;
               &:before {
                 content: "\e665";
               }
@@ -140,7 +141,7 @@
                   margin-top: 25px;
                   margin-left: -13px;
                   z-index: 9999;
-                  width: 16px;
+                  width: 14px;
                   height: 16px;
                   border-radius: 20px;
                   background: #fff;
@@ -171,7 +172,7 @@
               }
             }
           }
-          div#cke_descriptionContent{
+          div#cke_descriptionTaskContent{
             margin-top: 15px;
             margin-left: 33px;
           }
@@ -391,6 +392,12 @@
             top: 45px!important;
             .v-list-item {
               min-height: 30px!important;
+              &:hover{
+                .uiIcon,span {
+                  color: #ffffff!important;
+                }
+                background-image: linear-gradient(to bottom, var(--allPagesPrimaryColor, #578dc9), var(--allPagesPrimaryColor, #578dc9));
+              }
               .uiIcon {
                 font-size: 16px;
               }
