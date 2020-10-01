@@ -44,7 +44,7 @@
       <div class="noTasksProjectLabel"><span>{{ $t('label.noTasks') }}</span></div>
       <div class="noTasksProjectLink"><a href="#">{{ $t('label.addTask') }}</a></div>
     </div>
-
+    <tasks-assignee-coworker-drawer/>
   </v-app>
 </template>
 <script>

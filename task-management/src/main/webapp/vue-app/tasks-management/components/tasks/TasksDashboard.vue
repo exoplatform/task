@@ -17,6 +17,7 @@
           :tasks="tasks"/>
       </v-tab-item>
     </v-tabs-items>
+    <tasks-assignee-coworker-drawer/>
   </v-app>
 </template>
 <script>

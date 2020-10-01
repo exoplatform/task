@@ -130,15 +130,11 @@
               :size="iconSize"
               :style="'background-image: url('+manager.avatar+')'"
               class="mr-1 projectManagersAvatar"/>
-            <i
-              v-if="showAllAvatarList"
-              class="uiIcon uiIconArrowBack"
-              @click="showAllAvatarList = false"></i>
             <div class="seeMoreAvatars">
               <div
-                v-if="managerIdentities.length > maxAvatarToShow && !showAllAvatarList"
+                v-if="managerIdentities.length > maxAvatarToShow"
                 class="seeMoreItem"
-                @click="showAllAvatarList = true">
+                @click="$root.$emit('displayProjectManagers', managerIdentities)">
                 <v-avatar
                   :size="iconSize"
                   :style="'background-image: url('+managerIdentities[maxAvatarToShow].avatar+')'"
@@ -193,13 +189,12 @@
         ],
         managerIdentities: this.project && this.project.managerIdentities,
         iconSize: 28,
-        maxAvatarToShow : 5,
-        showAllAvatarList: false
+        maxAvatarToShow : 5
       }
     },
     computed: {
       avatarToDisplay () {
-        if(!this.showAllAvatarList) {
+        if(this.managerIdentities.length > this.maxAvatarToShow) {
           return this.managerIdentities.slice(0, this.maxAvatarToShow-1);
         } else {
           return this.managerIdentities;

@@ -10,6 +10,7 @@
     <div v-else>
       <tasks-view-dashboard :project="project"/>
     </div>
+    <project-manager-drawer />
   </v-app>
 </template>
 <script>
