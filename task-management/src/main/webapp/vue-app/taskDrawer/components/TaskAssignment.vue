@@ -200,6 +200,7 @@
     },
     methods: {
       getUsers() {
+        if (this.task.id!=null){
         if (this.task.assignee) {
           getUser(this.task.assignee).then((user) => {
             this.taskAssignee = user;
@@ -212,6 +213,7 @@
             this.taskCoworkers.push(user);
             this.suggestedCoworkers.push(user);
           });
+        }
         }
         getUser(eXo.env.portal.userName).then((user) => {
           this.currentUser = user;

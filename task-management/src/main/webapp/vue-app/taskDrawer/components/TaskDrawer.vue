@@ -48,6 +48,7 @@
               :labels-list="labelsList" 
               @openLabelsList="openLabelsList()"/>
             <v-btn
+              v-if="task.id!=null"
               id="check_btn"
               class="ml-n2"
               icon
@@ -272,7 +273,7 @@
               </v-alert>
             </v-flex>
           </v-container>
-          <v-flex xs12 class="pt-2 px-4">
+          <v-flex v-if="task.id!=null" xs12 class="pt-2 px-4">
             <v-tabs color="#578DC9">
               <v-tab class="text-capitalize">{{ $t('label.comments') }}</v-tab>
               <v-tab class="text-capitalize">{{ $t('label.changes') }}</v-tab>
@@ -335,12 +336,40 @@
         </v-layout>
       </v-container>
     </div>
+
+    
+    <div v-if="task.id==null" class="drawer-footer">
+      <v-divider />
+      <div class="d-flex drawer-footer-content">
+        <v-spacer />
+        <div class="VuetifyApp">
+          <v-spacer></v-spacer>
+          <div class="d-btn">
+            <v-btn
+              class="btn mr-2"
+              @click="closeDrawer">
+              <template>
+                {{ $t('popup.cancel') }}
+              </template>
+            </v-btn>
+
+            <v-btn 
+              class="btn btn-primary"
+              @click="addTask">
+              <template>
+                {{ $t('label.save') }}
+              </template>
+            </v-btn>
+          </div>
+        </div>
+      </div>
+    </div>
   </v-navigation-drawer>
 </template>
 
 <script>
 
-  import {updateTask, getTaskLogs, getTaskComments, addTaskComments, getStatusesByProjectId, urlVerify} from '../taskDrawerApi';
+  import {updateTask, addTask, getTaskLogs, getTaskComments, addTaskComments, getStatusesByProjectId, urlVerify} from '../taskDrawerApi';
 
   export default {
     props: {
@@ -388,6 +417,9 @@
     },
     computed: {
       taskLink() {
+        if(this.task==null||this.task.id){
+          return ""
+        }
         return `${eXo.env.portal.context}/${eXo.env.portal.portalName}/tasks/taskDetail/${this.task.id}`;
       },
       currentUserAvatar() {
@@ -446,6 +478,7 @@
       }
     },
     created() {
+      if(this.task.id!=null){
       this.retrieveTaskLogs();
       this.getTaskComments();
       this.getStatusesByProjectId();
@@ -456,6 +489,7 @@
           this.dates[0] = new Date(this.task.startDate.time).toISOString().substr(0, 10);
           this.dates[1] = new Date(this.task.endDate.time).toISOString().substr(0, 10);
       }
+            }
       document.addEventListener('keyup', this.escapeKeyListener);
     },
     destroyed: function() {
@@ -559,14 +593,22 @@
                 });
       },
       updateTask() {
+        if(this.task.id!=null){
         this.$emit('updateTask', this.task);
         updateTask(this.task.id,this.task);
+        }
+      },
+      addTask() {
+        this.$emit('addeTask', this.task);
+        addTask(this.task);
       },
       autoSaveDescription() {
+        if(this.task.id!=null){
         clearTimeout(this.saveDescription);
         this.saveDescription = setTimeout(() => {
           Vue.nextTick(() => this.updateTask(this.task.id));
         }, this.autoSaveDelay);
+      }
       },
       retrieveTaskLogs() {
         getTaskLogs(this.task.id).then(

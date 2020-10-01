@@ -200,6 +200,24 @@ public class TaskRestService implements ResourceContainer {
     }
   }
 
+  @POST
+  @Produces(MediaType.APPLICATION_JSON)
+  @RolesAllowed("users")
+  @ApiOperation(value = "Add a new task", httpMethod = "POT", response = Response.class, notes = "This adds a new task.")
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled"),
+      @ApiResponse(code = 400, message = "Invalid query input"), @ApiResponse(code = 403, message = "Unauthorized operation"),
+      @ApiResponse(code = 404, message = "Resource not found") })
+  public Response addTask(@ApiParam(value = "task object to be updated", required = true) TaskDto task) throws Exception {
+    if (task == null) {
+      return Response.status(Response.Status.BAD_REQUEST).build();
+    }
+    String currentUser = ConversationState.getCurrent().getIdentity().getUserId();
+    task.setCreatedBy(currentUser);
+    task.setCreatedTime(new Date());
+    task = taskService.createTask(task);
+    return Response.ok(task).build();
+  }
+
   @PUT
   @Path("{id}")
   @Produces(MediaType.APPLICATION_JSON)

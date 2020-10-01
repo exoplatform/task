@@ -87,14 +87,14 @@
         },
         created() {
             this.getProjects();
-            if (this.task.status != null) {
+            if (this.task.id != null && this.task.status != null) {
               this.projectModel = this.task.status.project;
             }
         },
         methods: {
             getProjects() {
                 getProjects().then((projects) => {
-                    this.projects = projects;
+                    this.projects = projects.projects;
                 })
             },
             filterProjects(item, queryText) {

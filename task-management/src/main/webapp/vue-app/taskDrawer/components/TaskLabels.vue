@@ -119,7 +119,7 @@
         },
         created() {
             this.getMyAllLabels();
-            this.getTaskLabels();
+            if(this.task.id!=null){this.getTaskLabels();}
         },
         methods: {
             filter(item, queryText, itemText) {
