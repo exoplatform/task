@@ -23,7 +23,7 @@
             single-line
             @change="resetCustomValidity">
         </div>
-        <v-divider class="py-3"/>
+        <!--<v-divider class="py-3"/>
         <div class="projectPermissionsUsers">
           <p class="permisionLabel body-1">{{ $t('label.permission') }}</p>
           <div class="listOfManager" >
@@ -40,7 +40,7 @@
                 class="peopleInfoIcon d-flex not-clickable primary-border-color ml-1 v-btn v-btn--flat v-btn--icon v-btn--round theme--light v-size--small primary--text" 
                 title="Space manager">
                 <span class="v-btn__content">
-                  <span class="d-flex uiIconMemberAdmin primary--text"></span>
+                  <span class="d-flex uiIconMemberAdmin primary&#45;&#45;text"></span>
                 </span>
               </button>
             </a>
@@ -76,7 +76,7 @@
               </label>
             </div>
           </div>
-        </div>
+        </div>-->
         <hr>
         <div class="projectDescription">
           <v-label
