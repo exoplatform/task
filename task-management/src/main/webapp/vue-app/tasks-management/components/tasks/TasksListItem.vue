@@ -13,43 +13,70 @@
         <span>{{ task.task.title }}</span>
       </a>
     </div>
-    <div class="taskProject">
+    <div class="taskProject pr-3">
       <div v-if="isPersonnalTask" class="taskProjectName mr-3 pa-1">
         <span class="body-2 text-sub-title">{{ $t('label.noProject') }}</span>
       </div>
-      <div 
-        v-else 
-        :class="task.task.status.project.color || 'noProjectColor'" 
-        class="taskProjectName mr-3 pa-1">
-        <span class="font-weight-bold">{{ task.task.status.project.name }}</span>
+      <div v-else class="projectSpaceDetails d-flex">
+        <div class="spaceAvatar pr-1">
+          <a
+            v-if="isSpaceProject"
+            :href="spaceUrl(task.space.url)">
+            <v-avatar
+              :size="32"
+              tile>
+              <v-img
+                :src="task.space.avatarUrl"
+                :height="31"
+                :width="31"
+                :max-height="31"
+                :max-width="31"
+                class="mx-auto spaceAvatarImg"/>
+            </v-avatar>
+          </a>
+          <v-avatar
+            v-else
+            :size="32"
+            tile
+            class="noSpaceAvatar">
+            <i class="uiIconEcmsNameSpace noSpaceProjectIcon"></i>
+          </v-avatar>
+        </div>
+        <div
+          :class="task.task.status.project.color || 'noProjectColor'"
+          class="taskProjectName taskProjectNameCard pa-1">
+          <span class="font-weight-bold">{{ task.task.status.project.name }}</span>
+        </div>
       </div>
     </div>
-    <div :class="showAllAvatarList && 'AllAssigneeAvatar'" class="taskAssignee d-flex flex-nowrap">
-      <exo-user-avatar
-        v-for="user in avatarToDisplay"
-        :key="user"
-        :username="user.username"
-        :title="user.displayName"
-        :avatar-url="user.avatar"
-        :size="iconSize"
-        :style="'background-image: url('+user.avatar+')'"
-        class="mx-1 taskWorkerAvatar"/>
-      <i
-        v-if="showAllAvatarList"
-        class="uiIcon uiIconArrowBack"
-        @click="showAllAvatarList = false"></i>
-      <div class="seeMoreAvatars">
-        <div
-          v-if="assigneeAndCoworkerArray.length > maxAvatarToShow && !showAllAvatarList"
-          class="seeMoreItem"
-          @click="showAllAvatarList = true">
-          <v-avatar
-            :size="iconSize">
-            <img
-              :src="assigneeAndCoworkerArray[maxAvatarToShow].avatar"
-              :title="assigneeAndCoworkerArray[maxAvatarToShow].displayName">
-          </v-avatar>
-          <span class="seeMoreAvatarList">+{{ showMoreAvatarsNumber }}</span>
+    <div class="taskAssignee">
+      <div :class="showAllAvatarList && 'AllAssigneeAvatar'" class="d-flex flex-nowrap">
+        <exo-user-avatar
+          v-for="user in avatarToDisplay"
+          :key="user"
+          :username="user.username"
+          :title="user.displayName"
+          :avatar-url="user.avatar"
+          :size="iconSize"
+          :style="'background-image: url('+user.avatar+')'"
+          class="mx-1 taskWorkerAvatar"/>
+        <i
+          v-if="showAllAvatarList"
+          class="uiIcon uiIconArrowBack"
+          @click="showAllAvatarList = false"></i>
+        <div class="seeMoreAvatars">
+          <div
+            v-if="assigneeAndCoworkerArray.length > maxAvatarToShow && !showAllAvatarList"
+            class="seeMoreItem"
+            @click="showAllAvatarList = true">
+            <v-avatar
+              :size="iconSize">
+              <img
+                :src="assigneeAndCoworkerArray[maxAvatarToShow].avatar"
+                :title="assigneeAndCoworkerArray[maxAvatarToShow].displayName">
+            </v-avatar>
+            <span class="seeMoreAvatarList">+{{ showMoreAvatarsNumber }}</span>
+          </div>
         </div>
       </div>
     </div>
@@ -116,6 +143,7 @@
         isPersonnalTask : this.task.task.status === null,
         labelList: '',
         drawer:null,
+        isSpaceProject: this.task.space !== null,
         maxAvatarToShow : 3,
         showAllAvatarList: false
       }
@@ -181,12 +209,18 @@
           return labelText;
         }
       },
-                  openTaskDrawer() {
-                this.drawer = true;
-            },
-            onCloseDrawer: function(drawer){
-                this.drawer = drawer;
-            },
+      openTaskDrawer() {
+        this.drawer = true;
+      },
+      onCloseDrawer: function(drawer){
+        this.drawer = drawer;
+      },
+      spaceUrl(spaceUrl) {
+        if (!this.spaceUrl) {
+          return '#';
+        }
+        return `${eXo.env.portal.context}/g/:spaces:${spaceUrl}/`;
+      }
     }
   }
 </script>

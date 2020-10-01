@@ -650,6 +650,28 @@
                 text-align: right;
               }
             }
+            .taskAssignee {
+              height: 35px;
+              min-height: 35px;
+              .assigneDetails {
+                padding-top: 2px;
+                padding-bottom: 2px;
+                padding-right: 4px;
+                padding-left: 0;
+              }
+            }
+            .taskAssigneeAndLabels {
+              .taskAssignee {
+                height: 35px;
+                min-height: 35px;
+                .assigneDetails {
+                  padding-top: 2px;
+                  padding-bottom: 2px;
+                  padding-right: 4px;
+                  padding-left: 0;
+                }
+              }
+            }
           }
           .taskViewCard {
             min-height: 180px;
@@ -712,7 +734,7 @@
             .taskAssignee {
               max-width: 13%;
               width: 13%;
-              text-align: center;
+              text-align: left;
             }
             .taskLabels {
               max-width: 10%;
@@ -917,8 +939,8 @@
         }
       }
       .taskAssignee {
-        padding: 2px 4px;
-        padding-left: 0;
+        //padding: 2px 4px;
+        //padding-left: 0;
         .taskWorkerAvatar {
           background-position: center;
           background-size: cover;
@@ -965,6 +987,10 @@
       .AllAssigneeAvatar {
         box-shadow: 0 0 2px 1px @greyColor;
         border-radius: 25px;
+        width: auto!important;
+        display: inline-flex!important;
+        padding: 2px 4px;
+        padding-left: 0;
         .uiIconArrowBack {
           font-size: 12px;
           padding-top: 6px;

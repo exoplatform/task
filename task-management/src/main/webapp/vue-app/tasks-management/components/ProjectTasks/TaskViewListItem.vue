@@ -13,32 +13,34 @@
         <span>{{ task.task.title }}</span>
       </a>
     </div>
-    <div :class="showAllAvatarList && 'AllAssigneeAvatar'" class="taskAssignee d-flex flex-nowrap">
-      <exo-user-avatar
-        v-for="user in avatarToDisplay"
-        :key="user"
-        :username="user.username"
-        :title="user.displayName"
-        :avatar-url="user.avatar"
-        :size="iconSize"
-        :style="'background-image: url('+user.avatar+')'"
-        class="mx-1 taskWorkerAvatar"/>
-      <i
-        v-if="showAllAvatarList"
-        class="uiIcon uiIconArrowBack"
-        @click="showAllAvatarList = false"></i>
-      <div class="seeMoreAvatars">
-        <div
-          v-if="assigneeAndCoworkerArray.length > maxAvatarToShow && !showAllAvatarList"
-          class="seeMoreItem"
-          @click="showAllAvatarList = true">
-          <v-avatar
-            :size="iconSize">
-            <img
-              :src="assigneeAndCoworkerArray[maxAvatarToShow].avatar"
-              :title="assigneeAndCoworkerArray[maxAvatarToShow].displayName">
-          </v-avatar>
-          <span class="seeMoreAvatarList">+{{ showMoreAvatarsNumber }}</span>
+    <div class="taskAssignee">
+      <div :class="showAllAvatarList && 'AllAssigneeAvatar'" class="d-flex flex-nowrap">
+        <exo-user-avatar
+          v-for="user in avatarToDisplay"
+          :key="user"
+          :username="user.username"
+          :title="user.displayName"
+          :avatar-url="user.avatar"
+          :size="iconSize"
+          :style="'background-image: url('+user.avatar+')'"
+          class="mx-1 taskWorkerAvatar"/>
+        <i
+          v-if="showAllAvatarList"
+          class="uiIcon uiIconArrowBack"
+          @click="showAllAvatarList = false"></i>
+        <div class="seeMoreAvatars">
+          <div
+            v-if="assigneeAndCoworkerArray.length > maxAvatarToShow && !showAllAvatarList"
+            class="seeMoreItem"
+            @click="showAllAvatarList = true">
+            <v-avatar
+              :size="iconSize">
+              <img
+                :src="assigneeAndCoworkerArray[maxAvatarToShow].avatar"
+                :title="assigneeAndCoworkerArray[maxAvatarToShow].displayName">
+            </v-avatar>
+            <span class="seeMoreAvatarList">+{{ showMoreAvatarsNumber }}</span>
+          </div>
         </div>
       </div>
     </div>
