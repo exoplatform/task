@@ -2,13 +2,14 @@
   <v-app id="taskCardItem" class="py-3">
     <v-card
       :class="getTaskPriorityColor(task.task.priority)"
-      class="taskCard pa-3"
+      class="taskCard taskViewCard pa-3"
       flat>
-      <div class="taskTitleId">
+      <div class="taskTitleId  d-flex justify-space-between">
         <div class="taskTitle d-flex align-start">
           <i :title="$t('message.markAsCompleted')" class="uiIcon uiIconCircle"></i>
           <a
-            ref="tooltip">
+            ref="tooltip"
+            class="text-color">
             <ellipsis
               v-if="task.task.title "
               :title="task.task.title "
@@ -18,18 +19,41 @@
               @click="openTaskDrawer()"/>
           </a>
         </div>
+        <div class="taskId">
+          <span class="caption text-sub-title">ID : {{ task.task.id }}</span>
+        </div>
       </div>
-      <div class="taskLabelsAndWorker d-flex justify-space-between my-3">
-        <div class="taskAssignee  d-flex flex-nowrap">
-          <exo-user-avatar
-            v-for="user in assigneeAndCoworkerArray"
-            :key="user"
-            :username="user.username"
-            :title="user.displayName"
-            :avatar-url="user.avatar"
-            :size="iconSize"
-            :style="'background-image: url('+user.avatar+')'"
-            class="mx-1 taskWorkerAvatar"/>
+      <div class="taskLabelsAndWorker d-flex justify-space-between align-center my-3">
+        <div class="taskAssignee">
+          <div :class="showAllAvatarList && 'AllAssigneeAvatar'" class="assigneDetails d-flex flex-nowrap">
+            <exo-user-avatar
+              v-for="user in avatarToDisplay"
+              :key="user"
+              :username="user.username"
+              :title="user.displayName"
+              :avatar-url="user.avatar"
+              :size="iconSize"
+              :style="'background-image: url('+user.avatar+')'"
+              class="mx-1 taskWorkerAvatar"/>
+            <i
+              v-if="showAllAvatarList"
+              class="uiIcon uiIconArrowBack"
+              @click="showAllAvatarList = false"></i>
+            <div class="seeMoreAvatars">
+              <div
+                v-if="assigneeAndCoworkerArray.length > maxAvatarToShow && !showAllAvatarList"
+                class="seeMoreItem"
+                @click="showAllAvatarList = true">
+                <v-avatar
+                  :size="iconSize">
+                  <img
+                    :src="assigneeAndCoworkerArray[maxAvatarToShow].avatar"
+                    :title="assigneeAndCoworkerArray[maxAvatarToShow].displayName">
+                </v-avatar>
+                <span class="seeMoreAvatarList">+{{ showMoreAvatarsNumber }}</span>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="taskLabels">
           <span
@@ -43,12 +67,11 @@
             class="labelText">
             {{ task.labels.length }} {{ $t('label.labels') }}
           </span>
-          <span v-else class="noLabelText caption"> {{ $t('label.noLabel') }}</span>
+          <span v-else class="noLabelText body-2"> {{ $t('label.noLabel') }}</span>
         </div>
       </div>
-      <v-divider/>
-      <siv class="taskStatusAndDate d-flex justify-space-between pt-3">
-        <div class="taskActions d-flex justify-center align-center">
+      <div class="taskActionsWrapper mb-3">
+        <div class="taskActions d-flex align-center">
           <div class="taskComment d-flex">
             <i class="uiIcon uiCommentIcon"></i>
             <span class="taskCommentNumber caption">4</span>
@@ -58,15 +81,18 @@
             <span class="taskAttachNumber caption">2</span>
           </div>
         </div>
+      </div>
+      <v-divider/>
+      <div class="taskStatusAndDate d-flex justify-end pt-2">
         <div class="taskDueDate">
           <div v-if="taskDueDate">
             <date-format :value="taskDueDate" :format="dateTimeFormat" />
           </div>
           <div v-else>
-            <span class="caption text-sub-title">{{ $t('label.noDueDate') }}</span>
+            <span class="body-2 text-sub-title">{{ $t('label.noDueDate') }}</span>
           </div>
         </div>
-      </siv>
+      </div>
     </v-card>
     <task-drawer
       v-if="drawer"
@@ -86,7 +112,7 @@
     data() {
       return {
         user: {},
-        iconSize: 32,
+        iconSize: 26,
         dateTimeFormat: {
           year: 'numeric',
           month: 'numeric',
@@ -94,13 +120,25 @@
         },
         assigneeAndCoworkerArray: [],
         isPersonnalTask : this.task.task.status === null,
-        drawer:null
+        drawer:null,
+        maxAvatarToShow : 3,
+        showAllAvatarList: false
       }
     },
     computed: {
       taskDueDate() {
         return this.task && this.task.task.dueDate && this.task.task.dueDate.time;
       },
+      avatarToDisplay () {
+        if(!this.showAllAvatarList) {
+          return this.assigneeAndCoworkerArray.slice(0, this.maxAvatarToShow-1);
+        } else {
+          return this.assigneeAndCoworkerArray;
+        }
+      },
+      showMoreAvatarsNumber() {
+        return this.assigneeAndCoworkerArray.length - this.maxAvatarToShow;
+      }
     },
     created() {
       this.getTaskAssigneeAndCoworkers();

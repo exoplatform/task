@@ -25,3 +25,14 @@ export function addProject(project) {
     return data.json();
   });
 }
+
+export function updateProjectInfo(project) {
+  return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/projects/updateproject/${project.id}`, {
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    credentials: 'include',
+    method: 'PUT',
+    body: JSON.stringify(project)
+  }).then(resp => resp.json());
+}

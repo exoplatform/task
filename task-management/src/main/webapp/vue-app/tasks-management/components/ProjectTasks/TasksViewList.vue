@@ -12,6 +12,7 @@
             <tasks-view-header
               :status="status"
               :view-type="'list'"
+              :max-tasks-to-show="maxTasksToShow"
               :tasks-number="getTasksByStatus(tasksList,status.name).length"/>
             <v-divider/>
             <task-view-list-item
@@ -37,6 +38,13 @@
         default: () => []
       }
     },
+    data () {
+      return {
+        maxTasksToShow: 6,
+        tasksStatsStartValue:0,
+      }
+    },
+
     methods: {
       getTasksByStatus(items ,statusName) {
         const tasksByStatus = [];
@@ -48,7 +56,7 @@
           }
         });
         return tasksByStatus;
-      }
+      },
     }
   }
 </script>

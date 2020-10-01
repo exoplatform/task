@@ -14,7 +14,7 @@
         </v-btn>
       </v-toolbar-title>
       <v-spacer/>
-      <v-scale-transition>
+      <!--<v-scale-transition>
         <v-text-field
           :placeholder="$t('label.filterProject','Enter project name')"
           prepend-inner-icon="fa-filter"
@@ -32,7 +32,7 @@
             Favorites
           </option>
         </select>
-      </v-scale-transition>
+      </v-scale-transition>-->
     </v-toolbar>
     <add-project-drawer
       ref="addProjectDrawer"/>

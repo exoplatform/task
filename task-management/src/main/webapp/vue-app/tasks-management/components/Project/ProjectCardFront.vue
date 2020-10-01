@@ -28,14 +28,14 @@
         transition="slide-x-reverse-transition"
         content-class="projectActionMenu"
         offset-y>
-        <v-list>
-          <v-list-item>
+        <v-list class="pa-0" dense>
+          <v-list-item class="menu-list" @click="$emit('openDrawer')" >
             <v-list-item-title class="subtitle-2">
               <i class="uiIcon uiIconEdit pr-1"></i>
               <span>{{ $t('label.edit') }}</span>
             </v-list-item-title>
           </v-list-item>
-          <v-list-item>
+          <!--<v-list-item>
             <v-list-item-title class="subtitle-2">
               <i class="uiIcon uiIconHide pr-1"></i>
               <span>{{ $t('label.hide') }}</span>
@@ -54,7 +54,7 @@
             </v-list-item-title>
           </v-list-item>
           <v-list-item class="px-2">
-            <v-list-item-title class="noColorLabel caption text-center text--secondary">
+            <v-list-item-title class="noColorLabel caption text-center text&#45;&#45;secondary">
               <span>{{ $t('label.noColor') }}</span>
             </v-list-item-title>
           </v-list-item>
@@ -66,7 +66,7 @@
                 :class="[ color.class , color.class === project.color ? 'isSelected' : '']"
                 class="projectColorCell"></span>
             </v-list-item-title>
-          </v-list-item>
+          </v-list-item>-->
         </v-list>
       </v-menu>
     </div>
@@ -105,18 +105,50 @@
           </v-list-item>
         </div>
       </div>
-      <div class="SpaceAdmin">
-        <v-list-item class="px-0">
-          <v-list-item-avatar size="28" class="userAvatar py-1">
-            <v-img :src="project.managerIdentities[0].avatar"/>
-          </v-list-item-avatar>
-          <v-list-item-content>
-            <v-list-item-title class="body-2">
-              <a :href="project.managerIdentities[0].url">{{ project.managerIdentities[0].displayName }}</a>
-            </v-list-item-title>
-          </v-list-item-content>
-          <i class="uiIcon uiIconStar"></i>
-        </v-list-item>
+      <div class="SpaceAdmin d-flex justify-space-between align-center">
+        <div class="spaceAdminWrapper">
+          <v-list-item v-if="managerIdentities && managerIdentities.length === 1" class="px-0">
+            <v-list-item-avatar size="28" class="userAvatar py-1">
+              <v-img :src="project.managerIdentities[0].avatar"/>
+            </v-list-item-avatar>
+            <v-list-item-content>
+              <v-list-item-title class="body-2">
+                <a :href="project.managerIdentities[0].url">{{ project.managerIdentities[0].displayName }}</a>
+              </v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+          <div
+            v-else
+            :class="showAllAvatarList && 'AllManagerAvatar'"
+            class="managerAvatarsList d-flex flex-nowrap my-3">
+            <exo-user-avatar
+              v-for="manager in avatarToDisplay"
+              :key="manager"
+              :username="manager.username"
+              :title="manager.displayName"
+              :avatar-url="manager.avatar"
+              :size="iconSize"
+              :style="'background-image: url('+manager.avatar+')'"
+              class="mr-1 projectManagersAvatar"/>
+            <i
+              v-if="showAllAvatarList"
+              class="uiIcon uiIconArrowBack"
+              @click="showAllAvatarList = false"></i>
+            <div class="seeMoreAvatars">
+              <div
+                v-if="managerIdentities.length > maxAvatarToShow && !showAllAvatarList"
+                class="seeMoreItem"
+                @click="showAllAvatarList = true">
+                <v-avatar
+                  :size="iconSize"
+                  :style="'background-image: url('+managerIdentities[maxAvatarToShow].avatar+')'"
+                  :title="managerIdentities[maxAvatarToShow].displayName"/>
+                <span class="seeMoreAvatarList">+{{ showMoreAvatarsNumber }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--<i class="uiIcon uiIconStar"></i>-->
       </div>
     </div>
   </v-card>
@@ -159,6 +191,22 @@
           { class: 'yellow' },
           { class: 'plum' },
         ],
+        managerIdentities: this.project && this.project.managerIdentities,
+        iconSize: 28,
+        maxAvatarToShow : 5,
+        showAllAvatarList: false
+      }
+    },
+    computed: {
+      avatarToDisplay () {
+        if(!this.showAllAvatarList) {
+          return this.managerIdentities.slice(0, this.maxAvatarToShow-1);
+        } else {
+          return this.managerIdentities;
+        }
+      },
+      showMoreAvatarsNumber() {
+        return this.managerIdentities.length - this.maxAvatarToShow;
       }
     },
     created() {
@@ -173,7 +221,13 @@
     methods : {
       showProjectTasksDetails(project) {
         document.dispatchEvent(new CustomEvent('showProjectTasks', {detail: project}));
-      }
+      },
+      openEditDrawer() {
+        this.$refs.addProjectDrawer.open();
+      },
+      onCloseDrawer: function (drawer) {
+        this.drawer = drawer;
+      },
     }
   }
 </script>
