@@ -1,8 +1,8 @@
 <template>
   <div class="projectDescription">
     <textarea
-      id="descriptionTaskContent"
       ref="editor"
+      :id="descriptionTaskContent"
       v-model="inputVal"
       :placeholder="placeholder"
       cols="30"
@@ -27,6 +27,10 @@
         type: String,
         default: ''
       },
+      id: {
+        type: String,
+        default: ''
+      },
       maxLength: {
         type: Number,
         default: -1
@@ -35,6 +39,7 @@
     data() {
       return {
         SMARTPHONE_LANDSCAPE_WIDTH: 768,
+        descriptionTaskContent:'',
         inputVal: this.value,
         charsCount: 0,
         editorReady: false
@@ -45,27 +50,42 @@
         this.$emit('input', val);
       },
       value(val) {
-        // watch value to reset the editor value if the value has been updated by the component parent
-        const editorData = CKEDITOR.instances['descriptionTaskContent'].getData();
-        if (editorData != null && val !== editorData) {
-          if (val === '') {
-            this.initCKEditor();
-          } else {
-            CKEDITOR.instances['descriptionTaskContent'].setData(val);
-          }
+
+           for(const instances in CKEDITOR.instances){
+           if(CKEDITOR.instances[instances].element.$.id===this.descriptionTaskContent){
+           const editorData = CKEDITOR.instances[instances].getData();
+           // watch value to reset the editor value if the value has been updated by the component parent
+           if (editorData != null && val !== editorData) {
+             if (val === '') {
+               this.initCKEditor(instances);
+             } else {
+               CKEDITOR.instances[instances].setData(val);
+               CKEDITOR.instances[instances].setData(val);
+             }
+           }
+         }
         }
+
       },
       reset() {
-        CKEDITOR.instances['descriptionTaskContent'].destroy(true);
+        CKEDITOR.instances[this.descriptionTaskContent].destroy(true);
         this.initCKEditor();
       },
     },
     mounted() {
+      if (this.id !== '' || this.id !== null){
+        this.descriptionTaskContent = 'descriptionTaskContent'.concat(this.id);
+      }else {
+        this.descriptionTaskContent = 'descriptionTaskContent';
+      }
       this.initCKEditor();
     },
     methods: {
-      initCKEditor: function () {
+      initCKEditor: function (instances) {
         CKEDITOR.plugins.addExternal('/commons-extension/eXoPlugins/embedsemantic/','plugin.js');
+        if (typeof CKEDITOR.instances[instances] !== 'undefined') {
+          CKEDITOR.instances[instances].destroy(true);
+        }
         let extraPlugins = 'simpleLink,widget';
         const windowWidth = $(window).width();
         const windowHeight = $(window).height();
@@ -107,10 +127,10 @@
         });
       },
       setFocus: function() {
-        CKEDITOR.instances['descriptionTaskContent'].focus();
+        CKEDITOR.instances[this.descriptionTaskContent].focus();
       },
       getMessage: function() {
-        const newData = CKEDITOR.instances['descriptionTaskContent'].getData();
+        const newData = CKEDITOR.instances[this.descriptionTaskContent].getData();
         return newData ? newData : '';
       }
     }

@@ -21,7 +21,6 @@
             type="text"
             class="projectInputTitle pl-3 pt-1"
             single-line
-            required
             @change="resetCustomValidity">
         </div>
         <v-divider class="py-3"/>
@@ -36,7 +35,11 @@
               <div class="v-avatar pull-left my-auto">
                 <img :src="manager.src">
               </div>
-              <span class="d-flex uiIconMemberAdmin primary--text"></span>
+              <button type="button" class="peopleInfoIcon d-flex not-clickable primary-border-color ml-1 v-btn v-btn--flat v-btn--icon v-btn--round theme--light v-size--small primary--text" title="Space manager">
+                <span class="v-btn__content">
+                  <span class="d-flex uiIconMemberAdmin primary--text"></span>
+                </span>
+              </button>
             </a>
             <div class="editManager">
               <a href="#" class="editManager">
@@ -80,7 +83,8 @@
           <exo-task-editor
             ref="richEditor"
             v-model="projectInformation.description"
-            :max-length="MESSAGE_MAX_LENGTH"/>
+            :max-length="MESSAGE_MAX_LENGTH"
+            :id="project.id"/>
         </div>
       </v-form>
     </template>
@@ -122,7 +126,6 @@
     data() {
       return {
         MESSAGE_MAX_LENGTH:1000,
-        labelDrawer: this.$t('label.addProject'),
         listOfManager:[{src:"/portal/rest/v1/social/users/default-image/avatar"}],
         listOfParticipant:[{src:"/portal/rest/v1/social/users/default-image/avatar"}],
         activityComposerActions: [],
@@ -140,6 +143,14 @@
           placeholder: this.$t('label.inviteManagers'),
           noDataLabel: this.$t('label.noDataLabel'),
         };
+      },
+      labelDrawer(){
+        if (typeof this.project.id !== 'undefined'){
+          return this.$t('label.editProject');
+        }
+        else {
+          return this.$t('label.addProject')
+        }
       }
     },
     created() {
@@ -156,9 +167,6 @@
     methods: {
       open() {
         this.$refs.addProjectDrawer.open();
-        if (typeof this.project.id !== 'undefined'){
-          this.labelDrawer =this.$t('label.editProject');
-        }
         window.setTimeout(() => this.$refs.addProjectTitle.querySelector('input').focus(), 200);
       },
       cancel() {
@@ -167,7 +175,6 @@
           this.projectInformation.description = this.project.description;
           if ( typeof this.project.id === 'undefined' && this.projectInformation.description!=='') {
             this.projectInformation.description='';
-            CKEDITOR.instances['descriptionTaskContent'].setData('');
           }
         }
         this.$refs.addProjectDrawer.close();

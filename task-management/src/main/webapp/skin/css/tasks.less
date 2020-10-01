@@ -93,21 +93,14 @@
               }
             }
             .projectInputTitle {
+              &:before {
+                display: none;
+              }
+              &:after{
+                border: Solid 1px @borderColor!important;
+                border-radius: 5px!important;
+              }
               .v-input__slot {
-                &:before {
-                  display: none;
-                }
-                &:after{
-                  font-size: 15px;
-                  min-height: 40px;
-                  padding: 0 10px;
-                  border: Solid 1px var(--allPagesBorderColor, #e1e8ee);
-                  border-radius: 5px;
-                  box-shadow: none;
-                  max-height: 115px;
-                  text-overflow: ellipsis;
-                  bottom: auto;
-                }
                 label {
                   color: @greyColorLighten1;
                   letter-spacing: .2px;
@@ -134,19 +127,14 @@
                   min-width: 30px;
                   width: 30px;
                 }
-                span.d-flex.uiIconMemberAdmin.primary--text:before {
-                  font-family: "PLF-FONT-ICONS";
-                  content: "\e66f";
-                  font-size: 11px;
-                  margin-top: 25px;
-                  margin-left: -13px;
+                .peopleInfoIcon {
                   z-index: 9999;
-                  width: 14px;
-                  height: 16px;
-                  border-radius: 20px;
                   background: #fff;
-                  border: 1px solid @primaryColor!important;
-                  color: @primaryColor!important;
+                  height: 19px;
+                  width: 19px;
+                  margin-top: 23px;
+                  margin-left: -13px!important;
+                  margin-right: -14px;
                 }
               }
               .editManager,.editParticipant {
@@ -172,7 +160,7 @@
               }
             }
           }
-          div#cke_descriptionTaskContent{
+          .cke_browser_webkit{
             margin-top: 15px;
             margin-left: 33px;
           }
@@ -396,7 +384,7 @@
                 .uiIcon,span {
                   color: #ffffff!important;
                 }
-                background-image: linear-gradient(to bottom, var(--allPagesPrimaryColor, #578dc9), var(--allPagesPrimaryColor, #578dc9));
+                background-image: linear-gradient(to bottom, @primaryColor, @primaryColor);
               }
               .uiIcon {
                 font-size: 16px;

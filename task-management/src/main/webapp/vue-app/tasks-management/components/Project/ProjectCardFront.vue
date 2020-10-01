@@ -35,7 +35,7 @@
               <span>{{ $t('label.edit') }}</span>
             </v-list-item-title>
           </v-list-item>
-          <v-list-item>
+          <!--<v-list-item>
             <v-list-item-title class="subtitle-2">
               <i class="uiIcon uiIconHide pr-1"></i>
               <span>{{ $t('label.hide') }}</span>
@@ -54,7 +54,7 @@
             </v-list-item-title>
           </v-list-item>
           <v-list-item class="px-2">
-            <v-list-item-title class="noColorLabel caption text-center text--secondary">
+            <v-list-item-title class="noColorLabel caption text-center text&#45;&#45;secondary">
               <span>{{ $t('label.noColor') }}</span>
             </v-list-item-title>
           </v-list-item>
@@ -66,7 +66,7 @@
                 :class="[ color.class , color.class === project.color ? 'isSelected' : '']"
                 class="projectColorCell"></span>
             </v-list-item-title>
-          </v-list-item>
+          </v-list-item>-->
         </v-list>
       </v-menu>
     </div>
