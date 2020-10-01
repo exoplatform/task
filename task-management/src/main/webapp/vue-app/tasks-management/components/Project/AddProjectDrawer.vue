@@ -35,7 +35,10 @@
               <div class="v-avatar pull-left my-auto">
                 <img :src="manager.src">
               </div>
-              <button type="button" class="peopleInfoIcon d-flex not-clickable primary-border-color ml-1 v-btn v-btn--flat v-btn--icon v-btn--round theme--light v-size--small primary--text" title="Space manager">
+              <button 
+                type="button" 
+                class="peopleInfoIcon d-flex not-clickable primary-border-color ml-1 v-btn v-btn--flat v-btn--icon v-btn--round theme--light v-size--small primary--text" 
+                title="Space manager">
                 <span class="v-btn__content">
                   <span class="d-flex uiIconMemberAdmin primary--text"></span>
                 </span>

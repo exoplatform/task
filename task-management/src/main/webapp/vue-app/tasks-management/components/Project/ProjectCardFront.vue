@@ -148,7 +148,7 @@
             </div>
           </div>
         </div>
-        <i class="uiIcon uiIconStar"></i>
+        <!--<i class="uiIcon uiIconStar"></i>-->
       </div>
     </div>
   </v-card>
