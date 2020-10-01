@@ -3,7 +3,7 @@
     :id="'task-'+viewType+'-'+status.name"
     class="tasksViewHeader d-flex justify-space-between align-center">
     <div class="taskStatusName font-weight-bold text-color mb-1">{{ status.name }}</div>
-    <div class="taskNumberAndActions d-flex align-center mb-1">
+    <!--<div class="taskNumberAndActions d-flex align-center mb-1">
       <span v-if="tasksNumber < maxTasksToShow" class="caption">{{ tasksNumber }}</span>
       <div v-else class="showTasksPagination">
         <span class="caption">
@@ -54,7 +54,7 @@
           </v-list-item>
         </v-list>
       </v-menu>
-    </div>
+    </div>-->
   </div>
 </template>
 <script>

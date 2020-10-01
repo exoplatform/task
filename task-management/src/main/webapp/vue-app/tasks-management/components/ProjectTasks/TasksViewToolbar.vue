@@ -4,14 +4,14 @@
       id="TasksDashboardToolbar"
       flat
       class="tasksToolbar pb-3">
-      <v-toolbar-title>
+      <!--<v-toolbar-title>
         <v-btn
           class="btn px-2 btn-primary addNewTaskButton">
           <span class="d-none font-weight-regular d-sm-inline">
             + {{ $t('label.addTask') }}
           </span>
         </v-btn>
-      </v-toolbar-title>
+      </v-toolbar-title>-->
       <v-spacer/>
       <div class="taskDisplay pt-2">
         <v-tabs>
@@ -29,17 +29,17 @@
             <i class="uiIcon uiIconList"></i>
             <span>{{ $t('label.listView') }}</span>
           </v-tab>
-          <v-tab
+          <!--<v-tab
             :href="taskGanttTabView"
             class="taskTabGantt"
             @change="$emit('taskViewChangeTab', 'gantt')">
             <i class="uiIcon uiIconGantt"></i>
             <span>Gantt</span>
-          </v-tab>
+          </v-tab>-->
         </v-tabs>
       </div>
       <v-spacer/>
-      <v-scale-transition>
+      <!--<v-scale-transition>
         <v-text-field
           :placeholder="$t('label.filterTask','Enter task')"
           prepend-inner-icon="fa-filter"
@@ -55,7 +55,7 @@
             {{ $t('label.filter') }} (3)
           </span>
         </v-btn>
-      </v-scale-transition>
+      </v-scale-transition>-->
     </v-toolbar>
     <task-filter-drawer
       ref="filterTasksDrawer"/>

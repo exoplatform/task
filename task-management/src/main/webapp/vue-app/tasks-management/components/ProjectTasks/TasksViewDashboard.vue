@@ -31,11 +31,11 @@
           :status-list="statusList"
           :tasks-list="tasksList"/>
       </v-tab-item>
-      <v-tab-item
+      <!--<v-tab-item
         v-show="taskViewTabName == 'gantt'"
         eager>
         <tasks-view-gantt/>
-      </v-tab-item>
+      </v-tab-item>-->
     </v-tabs-items>
     <div
       v-else
