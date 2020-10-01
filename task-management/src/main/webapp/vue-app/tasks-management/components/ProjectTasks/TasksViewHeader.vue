@@ -1,10 +1,23 @@
 <template>
   <div
     :id="'task-'+viewType+'-'+status.name"
-    class="tasksViewHeader d-flex justify-space-between">
-    <p class="taskStatusName font-weight-bold text-color mb-1">{{ status.name }}</p>
-    <p class="taskNumberAndActions mb-1">
-      <span class="caption">{{ tasksNumber }}</span>
+    class="tasksViewHeader d-flex justify-space-between align-center">
+    <div class="taskStatusName font-weight-bold text-color mb-1">{{ status.name }}</div>
+    <div class="taskNumberAndActions d-flex align-center mb-1">
+      <span v-if="tasksNumber < maxTasksToShow" class="caption">{{ tasksNumber }}</span>
+      <div v-else class="showTasksPagination">
+        <span class="caption">
+          {{ limitTasksToshow }} - {{ initialTasksToShow }} of {{ tasksNumber }}
+        </span>
+        <v-btn
+          :disabled="disableBtnLoadMore"
+          icon
+          small
+          @click="loadNextTasks">
+          <i class="uiIcon uiIconArrowNext text-color"></i>
+        </v-btn>
+
+      </div>
       <i
         class="uiIcon uiIconThreeDots"
         @click="displayActionMenu = true"></i>
@@ -41,7 +54,7 @@
           </v-list-item>
         </v-list>
       </v-menu>
-    </p>
+    </div>
   </div>
 </template>
 <script>
@@ -58,11 +71,26 @@
       tasksNumber: {
         type: Number,
         default: 0
+      },
+      maxTasksToShow: {
+        type: Number,
+        default: 0
       }
     },
     data() {
       return {
         displayActionMenu: false,
+        tasksStatsStartValue:1,
+        originalTasksToShow: this.maxTasksToShow,
+        disableBtnLoadMore: false
+      }
+    },
+    computed: {
+      initialTasksToShow() {
+        return this.originalTasksToShow;
+      },
+      limitTasksToshow() {
+        return this.tasksStatsStartValue;
       }
     },
     created() {
@@ -74,5 +102,17 @@
         }
       });
     },
+    methods: {
+      loadNextTasks() {
+        if(this.tasksNumber - this.originalTasksToShow >= this.maxTasksToShow) {
+          this.tasksStatsStartValue = this.originalTasksToShow+1;
+          this.originalTasksToShow += this.maxTasksToShow;
+        } else {
+          this.tasksStatsStartValue = this.originalTasksToShow;
+          this.originalTasksToShow = this.tasksNumber;
+          this.disableBtnLoadMore = true;
+        }
+      },
+    }
   }
 </script>

@@ -105,18 +105,50 @@
           </v-list-item>
         </div>
       </div>
-      <div class="SpaceAdmin">
-        <v-list-item class="px-0">
-          <v-list-item-avatar size="28" class="userAvatar py-1">
-            <v-img :src="project.managerIdentities[0].avatar"/>
-          </v-list-item-avatar>
-          <v-list-item-content>
-            <v-list-item-title class="body-2">
-              <a :href="project.managerIdentities[0].url">{{ project.managerIdentities[0].displayName }}</a>
-            </v-list-item-title>
-          </v-list-item-content>
-          <i class="uiIcon uiIconStar"></i>
-        </v-list-item>
+      <div class="SpaceAdmin d-flex justify-space-between align-center">
+        <div class="spaceAdminWrapper">
+          <v-list-item v-if="managerIdentities && managerIdentities.length === 1" class="px-0">
+            <v-list-item-avatar size="28" class="userAvatar py-1">
+              <v-img :src="project.managerIdentities[0].avatar"/>
+            </v-list-item-avatar>
+            <v-list-item-content>
+              <v-list-item-title class="body-2">
+                <a :href="project.managerIdentities[0].url">{{ project.managerIdentities[0].displayName }}</a>
+              </v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+          <div
+            v-else
+            :class="showAllAvatarList && 'AllManagerAvatar'"
+            class="managerAvatarsList d-flex flex-nowrap my-3">
+            <exo-user-avatar
+              v-for="manager in avatarToDisplay"
+              :key="manager"
+              :username="manager.username"
+              :title="manager.displayName"
+              :avatar-url="manager.avatar"
+              :size="iconSize"
+              :style="'background-image: url('+manager.avatar+')'"
+              class="mr-1 projectManagersAvatar"/>
+            <i
+              v-if="showAllAvatarList"
+              class="uiIcon uiIconArrowBack"
+              @click="showAllAvatarList = false"></i>
+            <div class="seeMoreAvatars">
+              <div
+                v-if="managerIdentities.length > maxAvatarToShow && !showAllAvatarList"
+                class="seeMoreItem"
+                @click="showAllAvatarList = true">
+                <v-avatar
+                  :size="iconSize"
+                  :style="'background-image: url('+managerIdentities[maxAvatarToShow].avatar+')'"
+                  :title="managerIdentities[maxAvatarToShow].displayName"/>
+                <span class="seeMoreAvatarList">+{{ showMoreAvatarsNumber }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <i class="uiIcon uiIconStar"></i>
       </div>
     </div>
   </v-card>
@@ -159,7 +191,22 @@
           { class: 'yellow' },
           { class: 'plum' },
         ],
-        drawer:null
+        managerIdentities: this.project && this.project.managerIdentities,
+        iconSize: 28,
+        maxAvatarToShow : 5,
+        showAllAvatarList: false
+      }
+    },
+    computed: {
+      avatarToDisplay () {
+        if(!this.showAllAvatarList) {
+          return this.managerIdentities.slice(0, this.maxAvatarToShow-1);
+        } else {
+          return this.managerIdentities;
+        }
+      },
+      showMoreAvatarsNumber() {
+        return this.managerIdentities.length - this.maxAvatarToShow;
       }
     },
     created() {
