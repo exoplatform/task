@@ -1,5 +1,8 @@
 <template>
-  <v-card class="tasksCardItem" flat>
+  <v-card 
+    :class="project.color && project.color+'_border_bottom' || ''"
+    class="tasksCardItem" 
+    flat>
     <div :class="project.color || 'noProjectColor'" class="taskItemToolbar d-flex px-2 py-3 align-center font-weight-bold">
       <i
         :class="project.color && 'white--text' || 'toolbarNoColor'"
@@ -8,7 +11,7 @@
         class="uiIconInformation taskInfoIcon d-flex"
         @click="$emit('flip')">
       </i>
-      <v-spacer />
+      <div class="spacer d-none d-sm-inline"></div>
       <span
         :class="project.color && 'white--text' || 'toolbarNoColor'"
         class="projectCardTitle">
@@ -84,13 +87,13 @@
           v-if="project.description"
           :title="project.description"
           :data="project.description"
-          :line-clamp="3"
-          end-char=".."/>
+          :line-clamp="2"
+          end-char="..."/>
         <div v-else>
           <span class="noProjectDescription">{{ $t('label.noDescription') }}</span>
         </div>
       </div>
-      <v-divider class="pb-4"/>
+      <v-divider class="pb-4 descriptionDivider"/>
       <div class="ProjectSpace">
         <div v-if="project.space">
           <v-list-item class="px-0">
@@ -111,6 +114,7 @@
           </v-list-item>
         </div>
       </div>
+      <v-divider class="d-sm-inline"/>
       <div class="SpaceAdmin d-flex justify-space-between align-center">
         <div class="spaceAdminWrapper">
           <v-list-item v-if="managerIdentities && managerIdentities.length === 1" class="px-0">

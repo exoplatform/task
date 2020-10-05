@@ -16,7 +16,10 @@
       class="echartStatsContent d-flex justify-space-evently align-center px-2"
       style="margin:auto;">
       <div class="echartAndLabel">
-        <div :id="'echartProjectTasks'+project.id" style="width:160px; height:200px;"></div>
+        <div 
+          :id="'echartProjectTasks'+project.id" 
+          class="echartPieContent" 
+          style="width:160px; height:200px;"></div>
         <div class="projectTasksTotalNumber">
           <span class="totalNumber font-weight-bold">{{ totalLeftTasks }}</span>
           <span class="text-body-2 totalLabel">{{ $t('exo.tasks.label.leftTasks') }}</span>
