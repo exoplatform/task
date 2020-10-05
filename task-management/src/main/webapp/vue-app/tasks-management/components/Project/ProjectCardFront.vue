@@ -35,6 +35,12 @@
               <span>{{ $t('label.edit') }}</span>
             </v-list-item-title>
           </v-list-item>
+          <v-list-item class="draftButton" @click="confirmDeleteProject()">
+            <v-list-item-title class="subtitle-2">
+              <i class="uiIcon uiIconTrash pr-1"></i>
+              <span>{{ $t('label.delete') }}</span>
+            </v-list-item-title>
+          </v-list-item>
           <!--<v-list-item>
             <v-list-item-title class="subtitle-2">
               <i class="uiIcon uiIconHide pr-1"></i>
@@ -147,6 +153,13 @@
         <!--<i class="uiIcon uiIconStar"></i>-->
       </div>
     </div>
+    <exo-confirm-dialog
+      ref="CancelSavingChangesDialog"
+      :message="$t('popup.msg', {0: project.name})"
+      :title="$t('popup.confirm')"
+      :ok-label="$t('popup.delete')"
+      :cancel-label="$t('popup.cancel')"
+      @ok="deleteProject()" />
   </v-card>
 </template>
 <script>
@@ -223,6 +236,15 @@
       onCloseDrawer: function (drawer) {
         this.drawer = drawer;
       },
+      confirmDeleteProject: function () {
+        this.$refs.CancelSavingChangesDialog.open();
+      },
+
+      deleteProject(){
+        this.$projectService.deleteProjectInfo(this.project)
+                .then(() => this.$emit('projectDeleted'))
+                .then(window.location.href = `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest`);
+      }
     }
   }
 </script>

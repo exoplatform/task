@@ -10,11 +10,8 @@ import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
-import org.exoplatform.task.dao.ProjectQuery;
-import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.dto.ProjectDto;
 import org.exoplatform.task.dto.StatusDto;
-import org.exoplatform.task.dto.TaskDto;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.exception.ParameterEntityException;
 import org.exoplatform.task.exception.UnAuthorizedOperationException;
@@ -367,6 +364,36 @@ public class ProjectRestService implements ResourceContainer {
     fields.put("calendarIntegrated", new String[]{String.valueOf(projectDto.isCalendarIntegrated())});
     ProjectDto project = ProjectUtil.saveProjectField(projectService, projectId, fields);
     projectService.updateProject(project);
+    return Response.ok(Response.Status.OK).build();
+  }
+
+  @DELETE
+  @Path("{projectId}")
+  @Consumes(MediaType.APPLICATION_JSON)
+  @RolesAllowed("users")
+  @ApiOperation(value = "Delete Project", httpMethod = "DELETE", response = Response.class, notes = "This deletes the Project", consumes = "application/json")
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Project deleted"),
+          @ApiResponse(code = 400, message = "Invalid query input"),
+          @ApiResponse(code = 401, message = "User not authorized to delete the Project"),
+          @ApiResponse(code = 500, message = "Internal server error") })
+  public Response deleteProject(@ApiParam(value = "projectId", required = true) @PathParam("projectId") Long projectId,
+                                @ApiParam(value = "deleteChild", defaultValue = "false") @QueryParam("deleteChild")Boolean deleteChild,
+                                @ApiParam(value = "Offset", required = false, defaultValue = "0") @QueryParam("offset") int offset,
+                                @ApiParam(value = "Limit", required = false, defaultValue = "-1") @QueryParam("limit") int limit) throws EntityNotFoundException, UnAuthorizedOperationException {
+    Identity identity = ConversationState.getCurrent().getIdentity();
+    ProjectDto project = projectService.getProject(projectId);
+    if (!project.canEdit(identity)) {
+      return Response.status(Response.Status.UNAUTHORIZED).build();
+    } else if (deleteChild) {
+      List<ProjectDto> childs = projectService.getSubProjects(projectId,offset,limit);
+      for (ProjectDto child : childs) {
+        if (!child.canEdit(identity)) {
+          return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+      }
+    }
+
+    projectService.removeProject(projectId, deleteChild);
     return Response.ok(Response.Status.OK).build();
   }
 

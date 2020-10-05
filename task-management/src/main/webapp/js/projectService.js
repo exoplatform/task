@@ -36,3 +36,10 @@ export function updateProjectInfo(project) {
     body: JSON.stringify(project)
   }).then(resp => resp.json());
 }
+
+export function deleteProjectInfo(project) {
+  return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/projects/${project.id}?&deleteChild=false`, {
+    credentials: 'include',
+    method: 'DELETE'
+  });
+}

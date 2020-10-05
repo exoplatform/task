@@ -389,4 +389,31 @@ public class TestProjectRestService {
     Response  response = projectRestService.getUsersByQueryAndProjectName("root", "project1");
     assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
   }
+
+  @Test
+  public void testDeleteProject() throws Exception {
+    // Given
+    ProjectRestService projectRestService = new ProjectRestService(taskService,
+            commentService,
+            projectService,
+            statusService,
+            userService,
+            spaceService,
+            labelService);
+    Identity john = new Identity("john");
+    ConversationState.setCurrent(new ConversationState(john));
+    Set<String> manager = new HashSet<String>();
+    manager.add("john");
+    ProjectDto projectDto = new ProjectDto();
+    projectDto.setId(1);
+    projectDto.setName("john");
+    projectDto.setDescription("bla bla bla");
+    projectDto.setManager(manager);
+
+    when(projectService.getProject(projectDto.getId())).thenReturn(projectDto);
+
+    Response response1 = projectRestService.deleteProject(projectDto.getId(),false,0,0);
+    assertEquals(Response.Status.OK.getStatusCode(), response1.getStatus());
+  }
+
 }
