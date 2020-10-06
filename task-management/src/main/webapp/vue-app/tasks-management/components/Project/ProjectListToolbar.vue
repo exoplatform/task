@@ -8,8 +8,9 @@
         <v-btn
           class="btn px-2 btn-primary addNewProjectButton"
           @click="openDrawer">
+          <i class="uiIcon uiIconPlus"></i>
           <span class="d-none font-weight-regular d-sm-inline">
-            + {{ $t('label.addProject') }}
+            {{ $t('label.addProject') }}
           </span>
         </v-btn>
       </v-toolbar-title>

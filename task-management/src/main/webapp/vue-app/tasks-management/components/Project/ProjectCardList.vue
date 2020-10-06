@@ -20,7 +20,7 @@
           <v-row class="ma-0 border-box-sizing">
             <v-btn
               :disabled="disableBtn"
-              class="loadMoreButton ma-auto btn"
+              class="loadMoreButton ma-auto mt-4 btn"
               block
               @click="loadNextPage">
               {{ $t('spacesList.button.showMore') }}
