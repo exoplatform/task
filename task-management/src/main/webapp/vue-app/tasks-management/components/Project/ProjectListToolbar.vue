@@ -18,7 +18,7 @@
       <v-scale-transition>
         <v-text-field
           v-model="keyword"
-          :placeholder="$t('label.filterProject','Enter project name')"
+          :placeholder="$t('label.filterProject')"
           prepend-inner-icon="fa-filter"
           class="inputTasksFilter pa-0 mr-3 my-auto"/>
       </v-scale-transition>
