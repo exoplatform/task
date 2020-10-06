@@ -44,16 +44,22 @@
               <span>{{ $t('label.delete') }}</span>
             </v-list-item-title>
           </v-list-item>
-          <!--<v-list-item>
-            <v-list-item-title class="subtitle-2">
-              <i class="uiIcon uiIconHide pr-1"></i>
-              <span>{{ $t('label.hide') }}</span>
-            </v-list-item-title>
-          </v-list-item>
-          <v-list-item>
+          <v-list-item @click="confirmCloneProject()">
             <v-list-item-title class="subtitle-2">
               <i class="uiIcon uiIconCloneNode pr-1"></i>
               <span>{{ $t('label.clone') }}</span>
+            </v-list-item-title>
+          </v-list-item>
+          <!--<v-list-item>
+            <v-list-item-title class="subtitle-2">
+              <i class="uiIcon uiIconTrash pr-1"></i>
+              <span>{{ $t('label.delete') }}</span>
+            </v-list-item-title>
+          </v-list-item>
+         <v-list-item>
+            <v-list-item-title class="subtitle-2">
+              <i class="uiIcon uiIconHide pr-1"></i>
+              <span>{{ $t('label.hide') }}</span>
             </v-list-item-title>
           </v-list-item>
           <v-list-item>
@@ -159,11 +165,18 @@
     </div>
     <exo-confirm-dialog
       ref="CancelSavingChangesDialog"
-      :message="$t('popup.msg', {0: project.name})"
+      :message="$t('popup.msg.delete', {0: project.name})"
       :title="$t('popup.confirm')"
       :ok-label="$t('popup.delete')"
       :cancel-label="$t('popup.cancel')"
       @ok="deleteProject()" />
+    <exo-confirm-dialog
+      ref="CancelSavingChangesCloneDialog"
+      :message="$t('popup.msg.clone', {0: project.name})"
+      :title="$t('popup.confirm')"
+      :ok-label="$t('popup.clone')"
+      :cancel-label="$t('popup.cancel')"
+      @ok="cloneProject()" />
   </v-card>
 </template>
 <script>
@@ -243,12 +256,19 @@
       confirmDeleteProject: function () {
         this.$refs.CancelSavingChangesDialog.open();
       },
-
-      deleteProject(){
+      confirmCloneProject: function () {
+        this.$refs.CancelSavingChangesCloneDialog.open();
+      },
+      deleteProject() {
         this.$projectService.deleteProjectInfo(this.project)
                 .then(() => this.$emit('projectDeleted'))
                 .then(window.location.href = `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest`);
-      }
+      },
+      cloneProject() {
+        this.$projectService.cloneProject(this.project)
+                .then(() => this.$emit('projectCloned'))
+                .then(window.location.href = `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest`)
+      },
     }
   }
 </script>

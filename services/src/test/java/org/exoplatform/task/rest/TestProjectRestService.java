@@ -416,4 +416,35 @@ public class TestProjectRestService {
     assertEquals(Response.Status.OK.getStatusCode(), response1.getStatus());
   }
 
+  public void testCloneProject() throws Exception {
+    // Given
+    ProjectRestService projectRestService = new ProjectRestService(taskService,
+            commentService,
+            projectService,
+            statusService,
+            userService,
+            spaceService,
+            labelService);
+    Identity john = new Identity("john");
+    ConversationState.setCurrent(new ConversationState(john));
+    Set<String> manager = new HashSet<String>();
+    manager.add("john");
+    ProjectDto projectDto = new ProjectDto();
+    projectDto.setId(1);
+    projectDto.setName("john");
+    projectDto.setDescription("bla bla bla");
+    projectDto.setManager(manager);
+
+    ProjectDto projectCloned = new ProjectDto();
+    projectCloned.setId(2);
+    projectCloned.setName("john");
+    projectCloned.setDescription("bla bla bla");
+    projectCloned.setManager(manager);
+
+    when(projectService.cloneProject(projectDto.getId(),true)).thenReturn(projectCloned);
+
+    Response response1 = projectRestService.cloneProject(projectDto);
+    assertEquals(Response.Status.OK.getStatusCode(), response1.getStatus());
+  }
+
 }

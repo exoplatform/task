@@ -397,4 +397,29 @@ public class ProjectRestService implements ResourceContainer {
     return Response.ok(Response.Status.OK).build();
   }
 
+  @POST
+  @Path("cloneproject")
+  @RolesAllowed("users")
+  @ApiOperation(value = "Clone a project", httpMethod = "POST", response = Response.class, notes = "This Clone project")
+  @ApiResponses(value = {@ApiResponse(code = 200, message = "Request fulfilled"),
+  @ApiResponse(code = 400, message = "Invalid query input"),
+  @ApiResponse(code = 403, message = "Unauthorized operation"),
+  @ApiResponse(code = 404, message = "Resource not found")})
+  public Response cloneProject(@ApiParam(value = "ProjectDto", required = true) ProjectDto projectDto) throws Exception {
+
+    ProjectDto currentProject = projectDto;
+    if (!currentProject.canEdit(ConversationState.getCurrent().getIdentity())) {
+      return Response.status(Response.Status.UNAUTHORIZED).build();
+    }
+    ProjectDto project = projectService.cloneProject(projectDto.getId(), Boolean.parseBoolean("true")); //Can throw ProjectNotFoundException
+
+    EntityEncoder encoder = HTMLEntityEncoder.getInstance();
+    JSONObject result = new JSONObject();
+    result.put("id", project.getId());
+    result.put("name", encoder.encode(project.getName()));
+    result.put("color", project.getColor());
+
+    return Response.ok(Response.Status.OK).build();
+  }
+
 }
