@@ -81,7 +81,8 @@ public class ProjectRestService implements ResourceContainer {
   @ApiOperation(value = "Gets projects", httpMethod = "GET", response = Response.class, notes = "This returns projects of the authenticated user")
   @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled"),
       @ApiResponse(code = 500, message = "Internal server error") })
-  public Response getProjects(@ApiParam(value = "Offset", required = false, defaultValue = "0") @QueryParam("offset") int offset,
+  public Response getProjects(@ApiParam(value = "Search term", required = false, defaultValue = "null") @QueryParam("q") String query,
+                              @ApiParam(value = "Offset", required = false, defaultValue = "0") @QueryParam("offset") int offset,
                               @ApiParam(value = "Limit", required = false, defaultValue = "-1") @QueryParam("limit") int limit) {
     if (limit == 0) {
       limit = -1;
@@ -91,8 +92,8 @@ public class ProjectRestService implements ResourceContainer {
     ConversationState state = ConversationState.getCurrent();
     Identity identity = state.getIdentity();
     memberships.addAll(UserUtil.getMemberships(identity));
-    List<ProjectDto> projects = ProjectUtil.getProjectTree( memberships, identity , projectService,offset,limit);
-    int projectNumber = projectService.countProjects(memberships,null);
+    List<ProjectDto> projects = ProjectUtil.getProjectTree( memberships,query, identity , projectService,offset,limit);
+    int projectNumber = projectService.countProjects(memberships,query);
     JSONObject global = new JSONObject();
 
     JSONArray projectsJsonArray = new JSONArray();

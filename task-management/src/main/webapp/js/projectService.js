@@ -1,7 +1,7 @@
 import {tasksConstants} from "./tasksConstants";
 
-export function getProjectsList (offset, limit) {
-  return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/projects/projects?offset=${offset || 0}&limit=${limit|| 0}`, {
+export function getProjectsList (query,offset, limit) {
+  return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/projects/projects?q=${query || null}&offset=${offset || 0}&limit=${limit|| 0}`, {
     method: 'GET',
     credentials: 'include',
   }).then(resp => {
