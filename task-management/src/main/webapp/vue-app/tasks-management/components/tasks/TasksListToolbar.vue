@@ -6,7 +6,7 @@
       class="tasksToolbar pb-3">
       <v-toolbar-title>
         <v-btn
-          class="btn px-2 btn-primary addNewProjectButton" 
+          class="btn px-2 btn-primary addNewProjectButton"
           @click="openTaskDrawer()">
           <span class="d-none font-weight-regular d-sm-inline">
             + {{ $t('label.addTask') }}
@@ -28,9 +28,10 @@
         </v-tabs>
       </div>
       <v-spacer/>
-      <!--<v-scale-transition>
+      <v-scale-transition>
         <v-text-field
-          :placeholder="$t('label.filterTask','Enter task')"
+          v-model="keyword"
+          :placeholder=" $t('label.filterTask') "
           prepend-inner-icon="fa-filter"
           class="inputTasksFilter pa-0 mr-3 my-auto"/>
       </v-scale-transition>
@@ -60,6 +61,10 @@
 <script>
   export default {
     props: {
+      keyword: {
+        type: String,
+        default: null,
+      },
       taskCardTab:{
         type: String,
         default: ''
@@ -69,6 +74,15 @@
         default: ''
       },
     },
+    watch: {
+      keyword() {
+        this.$emit('keyword-changed', this.keyword);
+      }
+    },
+    methods: {
+      openDrawer() {
+        this.$refs.filterTasksDrawer.open();
+      },
     data () {
       return {
         task: {id:null,status:{}},
@@ -87,7 +101,7 @@
                   },
             onAddTask() {
               this.$emit('taskAdded')
-            },                   
+            },
     }
   }
 </script>
