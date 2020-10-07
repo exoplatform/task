@@ -83,8 +83,8 @@
       searchTasks() {
         this.loadingTasks = true;
         return this.$tasksService.getMyTasksList(this.keyword, this.offset, this.limit).then(data => {
-          this.tasks = data || [];
-          this.tasksSize = this.tasks.length || 0;
+          this.tasks = data && data.tasks || [];
+          this.tasksSize = data && data.tasksNumber || 0;
           return this.$nextTick();
         }).then(() => {
           if (this.keyword && this.tasks.length >= this.limitToFetch) {

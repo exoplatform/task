@@ -45,7 +45,7 @@
             {{ $t('label.filter') }} (3)
           </span>
         </v-btn>
-      </v-scale-transition>-->
+      </v-scale-transition>
     </v-toolbar>
     <task-drawer
       v-if="drawer"
@@ -74,6 +74,12 @@
         default: ''
       },
     },
+    data () {
+      return {
+        task: {id:null,status:{}},
+        drawer:null
+      }
+    },
     watch: {
       keyword() {
         this.$emit('keyword-changed', this.keyword);
@@ -83,25 +89,15 @@
       openDrawer() {
         this.$refs.filterTasksDrawer.open();
       },
-    data () {
-      return {
-        task: {id:null,status:{}},
-         drawer:null
+      openTaskDrawer() {
+        this.drawer = true;
+      },
+      onCloseDrawer: function (drawer) {
+        this.drawer = drawer;
+      },
+      onAddTask() {
+        this.$emit('taskAdded')
       }
-    },
-     methods: {
-                  openTaskDrawer() {
-                this.drawer = true;
-            },
-            onCloseDrawer: function(drawer){
-                this.drawer = drawer;
-            },
-            openDrawer() {
-                    this.$refs.filterTasksDrawer.open();
-                  },
-            onAddTask() {
-              this.$emit('taskAdded')
-            },
     }
   }
 </script>

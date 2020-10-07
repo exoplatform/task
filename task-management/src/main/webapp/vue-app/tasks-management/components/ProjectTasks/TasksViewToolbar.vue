@@ -58,11 +58,13 @@
         </v-btn>
       </v-scale-transition>-->
     </v-toolbar>
-    <task-drawer v-if="drawer" :drawer="drawer"
-                 :task="task"
-                 @updateTaskList="updateTaskList()"
-                 @addTask="onAddTask()"
-                 @closeDrawer="onCloseDrawer"/>
+    <task-drawer 
+      v-if="drawer" 
+      :drawer="drawer"
+      :task="task"
+      @updateTaskList="updateTaskList()"
+      @addTask="onAddTask()"
+      @closeDrawer="onCloseDrawer"/>
     <task-filter-drawer
       ref="filterTasksDrawer"/>
   </v-app>

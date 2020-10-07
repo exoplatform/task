@@ -274,7 +274,10 @@
               </v-alert>
             </v-flex>
           </v-container>
-          <v-flex v-if="task.id!=null" xs12 class="pt-2 px-4">
+          <v-flex 
+            v-if="task.id!=null" 
+            xs12 
+            class="pt-2 px-4">
             <v-tabs color="#578DC9">
               <v-tab class="text-capitalize">{{ $t('label.comments') }}</v-tab>
               <v-tab class="text-capitalize">{{ $t('label.changes') }}</v-tab>
@@ -344,7 +347,7 @@
       <div class="d-flex drawer-footer-content">
         <v-spacer />
         <div class="VuetifyApp">
-          <v-spacer></v-spacer>
+          <v-spacer/>
           <div class="d-btn">
             <v-btn
               class="btn mr-2"
