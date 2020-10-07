@@ -121,7 +121,7 @@ public class TaskRestService implements ResourceContainer {
       }
     } else {
       tasks = taskService.findTasks(currentUser, query, limit);
-      tasks = tasks.stream().map(task -> {
+      /*tasks = tasks.stream().map(task -> {
         long taskId = ((TaskDto) task).getId();
         int commentCount;
         try {
@@ -131,7 +131,7 @@ public class TaskRestService implements ResourceContainer {
           commentCount = 0;
         }
         return new TaskEntity(((TaskDto) task), commentCount);
-      }).collect(Collectors.toList());
+      }).collect(Collectors.toList());*/
       tasksSize = taskService.countTasks(currentUser, query);
     }
 
