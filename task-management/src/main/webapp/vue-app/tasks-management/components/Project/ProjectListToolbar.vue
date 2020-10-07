@@ -15,13 +15,14 @@
         </v-btn>
       </v-toolbar-title>
       <v-spacer/>
-      <!--<v-scale-transition>
+      <v-scale-transition>
         <v-text-field
-          :placeholder="$t('label.filterProject','Enter project name')"
+          v-model="keyword"
+          :placeholder="$t('label.filterProject')"
           prepend-inner-icon="fa-filter"
           class="inputTasksFilter pa-0 mr-3 my-auto"/>
       </v-scale-transition>
-      <v-scale-transition>
+      <!--<v-scale-transition>
         <select
           class="selectTasksFilter my-auto mr-2 subtitle-1 ignore-vuetify-classes d-none d-sm-inline">
           <option
@@ -41,6 +42,17 @@
 </template>
 <script>
   export default {
+    props: {
+      keyword: {
+        type: String,
+        default: null,
+      },
+    },
+    watch: {
+      keyword() {
+        this.$emit('keyword-changed', this.keyword);
+      }
+    },
     methods: {
       openDrawer() {
         this.$refs.addProjectDrawer.open();
