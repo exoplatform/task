@@ -92,7 +92,7 @@ public class TaskRestService implements ResourceContainer {
     String currentUser = ConversationState.getCurrent().getIdentity().getUserId();
 
     long tasksSize;
-    List<?> tasks = null;
+    List<TaskDto> tasks = null;
     if (StringUtils.isBlank(query)) {
       TaskType taskType;
       try {
@@ -134,7 +134,7 @@ public class TaskRestService implements ResourceContainer {
       }).collect(Collectors.toList());*/
       tasksSize = taskService.countTasks(currentUser, query);
     }
-
+    JSONObject global = new JSONObject();
     if (returnSize) {
       JSONObject tasksSizeJsonObject = new JSONObject();
       tasksSizeJsonObject.put("size", tasksSize);
@@ -149,8 +149,11 @@ public class TaskRestService implements ResourceContainer {
       return Response.ok(tasksSizeJsonObject).build();
     } else {
       if (returnDetails) {
-        return Response.ok(tasks.stream().map(task -> getTaskDetails((TaskDto) task, currentUser)).collect(Collectors.toList()))
-                       .build();
+        tasks.stream().map(task -> getTaskDetails((TaskDto) task, currentUser)).collect(Collectors.toList());
+        global.put("tasks", tasks);
+        global.put("tasksNumber",tasksSize);
+        return Response.ok(global.toString())
+                .build();
       }
       return Response.ok(tasks).build();
     }
