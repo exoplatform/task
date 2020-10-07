@@ -6,6 +6,7 @@
     <tasks-list-toolbar
       :task-card-tab="'#tasks-cards'"
       :task-list-tab="'#tasks-list'"
+      @taskAdded="getTasksList()"
       @changed="changeSelectedTabItem()"/>
     <v-tabs-items>
       <v-tab-item v-show="isTasksTabChanged" eager>

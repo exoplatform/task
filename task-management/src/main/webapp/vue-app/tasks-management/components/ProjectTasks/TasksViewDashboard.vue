@@ -9,10 +9,12 @@
       </a>
     </div>
     <tasks-view-toolbar
+      :project="project"
       :task-card-tab-view="'#tasks-view-board'"
       :task-list-tab-view="'#tasks-view-list'"
       :task-gantt-tab-view="'#tasks-view-gantt'"
       :tasks-view-tab-model="'tasks-view-board'"
+      @taskAdded="getTasksByProject(project.id)"
       @taskViewChangeTab="getChangeTabValue"/>
     <v-tabs-items
       v-if="tasksList && tasksList.length">

@@ -68,7 +68,7 @@ public class TaskServiceImpl implements TaskService {
         //
         TaskPayload event = new TaskPayload(null, taskStorage.toEntity(result));
         try {
-            listenerService.broadcast(TASK_CREATION, this, event);
+            listenerService.broadcast(TASK_CREATION, null, event);
         } catch (Exception e) {
             LOG.error("Error while broadcasting task creation event", e);
         }

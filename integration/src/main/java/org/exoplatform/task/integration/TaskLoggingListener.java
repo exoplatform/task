@@ -20,6 +20,7 @@ package org.exoplatform.task.integration;
 import org.exoplatform.commons.api.notification.NotificationContext;
 import org.exoplatform.commons.api.notification.model.PluginKey;
 import org.exoplatform.commons.notification.impl.NotificationContextImpl;
+import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.services.listener.Event;
 import org.exoplatform.services.listener.Listener;
 import org.exoplatform.services.security.ConversationState;
@@ -41,6 +42,9 @@ public class TaskLoggingListener extends Listener<TaskService, TaskPayload> {
   @Override
   public void onEvent(Event<TaskService, TaskPayload> event) throws Exception {
     TaskService service = event.getSource();
+    if(service==null){
+      service= CommonsUtils.getService(TaskService.class);
+    }
     String username = ConversationState.getCurrent().getIdentity().getUserId();
     TaskPayload data = event.getData();
 

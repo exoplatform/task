@@ -205,7 +205,9 @@
         }
       },
       getTaskAssigneeAndCoworkers() {
+        if(this.task.assignee){
         this.assigneeAndCoworkerArray.push(this.task.assignee);
+        } 
         if (this.task.coworker || this.task.coworker.length > 0 )
         {
           this.task.coworker.forEach((coworker) => {

@@ -4,14 +4,15 @@
       id="TasksDashboardToolbar"
       flat
       class="tasksToolbar pb-3">
-      <!--<v-toolbar-title>
+      <v-toolbar-title>
         <v-btn
-          class="btn px-2 btn-primary addNewTaskButton">
+          class="btn px-2 btn-primary addNewTaskButton"
+          @click="openTaskDrawer()">
           <span class="d-none font-weight-regular d-sm-inline">
             + {{ $t('label.addTask') }}
           </span>
         </v-btn>
-      </v-toolbar-title>-->
+      </v-toolbar-title>
       <v-spacer/>
       <div class="taskDisplay pt-2">
         <v-tabs>
@@ -57,6 +58,11 @@
         </v-btn>
       </v-scale-transition>-->
     </v-toolbar>
+    <task-drawer v-if="drawer" :drawer="drawer"
+                 :task="task"
+                 @updateTaskList="updateTaskList()"
+                 @addTask="onAddTask()"
+                 @closeDrawer="onCloseDrawer"/>
     <task-filter-drawer
       ref="filterTasksDrawer"/>
   </v-app>
@@ -64,6 +70,10 @@
 <script>
   export default {
     props: {
+      project:{
+        type: Object,
+        default: null
+      },
       taskCardTabView:{
         type: String,
         default: ''
@@ -77,10 +87,27 @@
         default: ''
       },
     },
+    data () {
+      return {
+        task: {id:null,status:{}},
+         drawer:null
+      }
+    },
     methods: {
       openDrawer() {
         this.$refs.filterTasksDrawer.open();
       },
+        openTaskDrawer() {
+          this.task.status.project=this.project;
+                this.drawer = true;
+            },
+            onCloseDrawer: function(drawer){
+                this.drawer = drawer;
+            },
+ 
+            onAddTask() {
+              this.$emit('taskAdded')
+            },           
     }
   }
 </script>

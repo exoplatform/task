@@ -4,14 +4,15 @@
       id="TasksListToolbar"
       flat
       class="tasksToolbar pb-3">
-      <!--<v-toolbar-title>
+      <v-toolbar-title>
         <v-btn
-          class="btn px-2 btn-primary addNewProjectButton">
+          class="btn px-2 btn-primary addNewProjectButton" 
+          @click="openTaskDrawer()">
           <span class="d-none font-weight-regular d-sm-inline">
             + {{ $t('label.addTask') }}
           </span>
         </v-btn>
-      </v-toolbar-title>-->
+      </v-toolbar-title>
       <v-spacer/>
       <div class="taskDisplay">
         <v-tabs
@@ -45,6 +46,13 @@
         </v-btn>
       </v-scale-transition>-->
     </v-toolbar>
+    <task-drawer
+      v-if="drawer"
+      :drawer="drawer"
+      :task="task"
+      @updateTaskList="updateTaskList()"
+      @addTask="onAddTask()"
+      @closeDrawer="onCloseDrawer"/>
     <task-filter-drawer
       ref="filterTasksDrawer"/>
   </v-app>
@@ -61,10 +69,25 @@
         default: ''
       },
     },
-    methods: {
-      openDrawer() {
-        this.$refs.filterTasksDrawer.open();
-      },
+    data () {
+      return {
+        task: {id:null,status:{}},
+         drawer:null
+      }
+    },
+     methods: {
+                  openTaskDrawer() {
+                this.drawer = true;
+            },
+            onCloseDrawer: function(drawer){
+                this.drawer = drawer;
+            },
+            openDrawer() {
+                    this.$refs.filterTasksDrawer.open();
+                  },
+            onAddTask() {
+              this.$emit('taskAdded')
+            },                   
     }
   }
 </script>

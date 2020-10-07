@@ -89,12 +89,15 @@
             this.getProjects();
             if (this.task.status != null) {
               this.projectModel = this.task.status.project;
+               getDefaultStatusByProjectId(this.task.status.project.id).then((status) => {
+                    this.task.status = status;
+                })
             }
         },
         methods: {
             getProjects() {
                 getProjects().then((projects) => {
-                    this.projects = projects;
+                    this.projects = projects.projects;
                 })
             },
             filterProjects(item, queryText) {

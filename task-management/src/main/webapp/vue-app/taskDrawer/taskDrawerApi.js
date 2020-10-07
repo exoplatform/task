@@ -31,6 +31,24 @@ export function updateTask(taskId, task) {
   })
 }
 
+export function addTask(task) {
+    return fetch(`/portal/rest/tasks`, {
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json'
+        },
+        method: 'POST',
+        credentials: 'include',
+        body: JSON.stringify(task)
+    }).then((resp) => {
+        if (resp && resp.ok) {
+            return resp.json();
+        } else {
+            throw new Error('Error when adding task');
+        }
+    })
+}
+
 export function getMyAllLabels() {
   return fetch('/portal/rest/tasks/labels', {
     method: 'GET',
@@ -93,45 +111,42 @@ export function removeTaskFromLabel(taskId, labelId) {
 }
 
 export function getProjects() {
-  return fetch('/portal/rest/tasks/projects', {
-    method: 'GET',
-    credentials: 'include',
-  }).then((resp) => {
-    if(resp && resp.ok) {
-      return resp.json();
-    }
-    else {
-      throw new Error ('Error when getting projects');
-    }
-  })
+    return fetch('/portal/rest/projects/projects', {
+        method: 'GET',
+        credentials: 'include',
+    }).then((resp) => {
+        if (resp && resp.ok) {
+            return resp.json();
+        } else {
+            throw new Error('Error when getting projects');
+        }
+    })
 }
 
 export function getDefaultStatusByProjectId(projectId) {
-  return fetch(`/portal/rest/tasks/projects/status/${projectId}`, {
-    method: 'GET',
-    credentials: 'include',
-  }).then((resp) => {
-    if(resp && resp.ok) {
-      return resp.json();
-    }
-    else {
-      throw new Error ('Error when getting default status');
-    }
-  })
+    return fetch(`/portal/rest/projects/projects/status/${projectId}`, {
+        method: 'GET',
+        credentials: 'include',
+    }).then((resp) => {
+        if (resp && resp.ok) {
+            return resp.json();
+        } else {
+            throw new Error('Error when getting default status');
+        }
+    })
 }
 
 export function getStatusesByProjectId(projectId) {
-  return fetch(`/portal/rest/tasks/projects/statuses/${projectId}`, {
-    method: 'GET',
-    credentials: 'include',
-  }).then((resp) => {
-    if(resp && resp.ok) {
-      return resp.json();
-    } 
-    else {
-      throw new Error ('Error when getting project statuses');
-    }
-  })
+    return fetch(`/portal/rest/projects/projects/statuses/${projectId}`, {
+        method: 'GET',
+        credentials: 'include',
+    }).then((resp) => {
+        if (resp && resp.ok) {
+            return resp.json();
+        } else {
+            throw new Error('Error when getting project statuses');
+        }
+    })
 }
 
 export function getAllUsers() {
