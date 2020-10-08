@@ -38,7 +38,7 @@
       },
       getTasksList() {
         return this.$tasksService.getMyTasksList().then(data => {
-          this.tasks = data;
+          this.tasks = data.tasks;
         });
       }
     }

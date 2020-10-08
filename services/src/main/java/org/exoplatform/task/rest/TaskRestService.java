@@ -17,6 +17,7 @@ import org.exoplatform.task.dto.*;
 import org.exoplatform.task.legacy.service.UserService;
 import org.exoplatform.task.model.User;
 import org.exoplatform.task.rest.model.CommentEntity;
+import org.exoplatform.task.rest.model.PaginatedTaskList;
 import org.exoplatform.task.rest.model.TaskEntity;
 import org.exoplatform.task.service.*;
 import org.exoplatform.task.storage.CommentStorage;
@@ -134,28 +135,15 @@ public class TaskRestService implements ResourceContainer {
       }).collect(Collectors.toList());*/
       tasksSize = taskService.countTasks(currentUser, query);
     }
-    JSONObject global = new JSONObject();
-    JSONArray tasksJsonArray = new JSONArray();
     if (returnSize) {
-      JSONObject tasksSizeJsonObject = new JSONObject();
-      tasksSizeJsonObject.put("size", tasksSize);
       if (returnDetails) {
-        tasksSizeJsonObject.put("tasks",
-                                tasks.stream()
-                                     .map(task -> getTaskDetails((TaskDto) task, currentUser))
-                                     .collect(Collectors.toList()));
+        return Response.ok(new PaginatedTaskList(tasks.stream().map(task -> getTaskDetails((TaskDto) task, currentUser)).collect(Collectors.toList()),tasksSize)).build();
       } else {
-        tasksSizeJsonObject.put("tasks", tasks);
-      }
-      return Response.ok(tasksSizeJsonObject).build();
+        return Response.ok(tasks.stream().map(task -> getTaskDetails((TaskDto) task, currentUser)).collect(Collectors.toList())).build();      }
+
     } else {
       if (returnDetails) {
-        tasks.stream().map(task -> getTaskDetails((TaskDto) task, currentUser)).collect(Collectors.toList());
-        tasksJsonArray = buildJSONTask(tasksJsonArray, tasks);
-        global.put("tasks",tasksJsonArray);
-        global.put("tasksNumber",tasksSize);
-        return Response.ok(global.toString())
-                .build();
+        return Response.ok(new PaginatedTaskList(tasks.stream().map(task -> getTaskDetails((TaskDto) task, currentUser)).collect(Collectors.toList()),tasksSize)).build();
       }
       return Response.ok(tasks).build();
     }
@@ -589,36 +577,6 @@ public class TaskRestService implements ResourceContainer {
       }
     }
     return projectsJsonArray;
-  }
-
-  private JSONArray buildJSONTask(JSONArray tasksJsonArray, List<TaskDto> taskDtos) throws JSONException {
-
-    for (TaskDto taskDto : taskDtos) {
-        long taskDtoId = taskDto.getId();
-        JSONObject projectJson = new JSONObject();
-
-        projectJson.put("id", taskDtoId);
-        projectJson.put("titre", taskDto.getTitle());
-        projectJson.put("description", taskDto.getDescription());
-        projectJson.put("priority", taskDto.getPriority());
-        projectJson.put("context", taskDto.getContext());
-        projectJson.put("assignee", taskDto.getAssignee());
-        projectJson.put("status", taskDto.getAssignee());
-        projectJson.put("rank", taskDto.getRank());
-        projectJson.put("completed", taskDto.isCompleted());
-        projectJson.put("calendarIntegrated", taskDto.isCalendarIntegrated());
-        projectJson.put("coworker", taskDto.getCoworker());
-        projectJson.put("watcher", taskDto.getWatcher());
-        projectJson.put("createdBy", taskDto.getCreatedBy());
-        projectJson.put("createdTime", taskDto.getCreatedTime());
-        projectJson.put("startDate", taskDto.getStartDate());
-        projectJson.put("endDate", taskDto.getEndDate());
-        projectJson.put("dueDate", taskDto.getDueDate());
-        projectJson.put("activityId", taskDto.getActivityId());
-        tasksJsonArray.put(projectJson);
-
-    }
-    return tasksJsonArray;
   }
   /*
    * private ChangeLogEntry changeLogToChangeLogEntry(ChangeLog changeLog) {
