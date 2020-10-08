@@ -594,28 +594,104 @@ public class TaskRestService implements ResourceContainer {
   private JSONArray buildJSONTask(JSONArray tasksJsonArray, List<TaskDto> taskDtos) throws JSONException {
 
     for (TaskDto taskDto : taskDtos) {
-        long taskDtoId = taskDto.getId();
-        JSONObject projectJson = new JSONObject();
+      long taskDtoId = taskDto.getId();
+      JSONObject tasksGlobalJson = new JSONObject();
+      JSONObject tasksJson = new JSONObject();
 
-        projectJson.put("id", taskDtoId);
-        projectJson.put("titre", taskDto.getTitle());
-        projectJson.put("description", taskDto.getDescription());
-        projectJson.put("priority", taskDto.getPriority());
-        projectJson.put("context", taskDto.getContext());
-        projectJson.put("assignee", taskDto.getAssignee());
-        projectJson.put("status", taskDto.getAssignee());
-        projectJson.put("rank", taskDto.getRank());
-        projectJson.put("completed", taskDto.isCompleted());
-        projectJson.put("calendarIntegrated", taskDto.isCalendarIntegrated());
-        projectJson.put("coworker", taskDto.getCoworker());
-        projectJson.put("watcher", taskDto.getWatcher());
-        projectJson.put("createdBy", taskDto.getCreatedBy());
-        projectJson.put("createdTime", taskDto.getCreatedTime());
-        projectJson.put("startDate", taskDto.getStartDate());
-        projectJson.put("endDate", taskDto.getEndDate());
-        projectJson.put("dueDate", taskDto.getDueDate());
-        projectJson.put("activityId", taskDto.getActivityId());
-        tasksJsonArray.put(projectJson);
+      tasksJson.put("id", taskDtoId);
+      tasksJson.put("titre", taskDto.getTitle());
+      tasksJson.put("description", taskDto.getDescription());
+      tasksJson.put("priority", taskDto.getPriority());
+      tasksJson.put("context", taskDto.getContext());
+      tasksJson.put("assignee", taskDto.getAssignee());
+
+      if (taskDto.getAssignee() !=null) {
+        JSONObject user = new JSONObject();
+        User user_ = UserUtil.getUser(taskDto.getAssignee());
+        user.put("username", user_.getUsername());
+        user.put("firstname", user_.getFirstName());
+        user.put("lastname", user_.getLastName());
+        user.put("email", user_.getEmail());
+        user.put("displayName", user_.getDisplayName());
+        user.put("avatar", user_.getAvatar());
+        user.put("url", user_.getUrl());
+        user.put("enable", user_.isEnable());
+        user.put("deleted", user_.isDeleted());
+        tasksJson.put("createdBy", user);
+      }
+
+      if (taskDto.getStatus() !=null) {
+        JSONObject user = new JSONObject();
+        long projectId = taskDto.getStatus().getProject().getId();
+
+        if (taskDto.getStatus().getProject()!=null ) {
+          JSONObject projectJson = new JSONObject();
+          projectJson.put("id", projectId);
+          projectJson.put("name", taskDto.getStatus().getProject().getName());
+          projectJson.put("color", taskDto.getStatus().getProject().getColor());
+          projectJson.put("participator", projectService.getParticipator(projectId));
+          projectJson.put("hiddenOn", taskDto.getStatus().getProject().getHiddenOn());
+          projectJson.put("manager", projectService.getManager(projectId));
+          projectJson.put("children", projectService.getSubProjects(projectId, 0, -1));
+          projectJson.put("dueDate", taskDto.getStatus().getProject().getDueDate());
+          projectJson.put("calendarIntegrated", taskDto.getStatus().getProject().isCalendarIntegrated());
+          projectJson.put("description", taskDto.getStatus().getProject().getDescription());
+          projectJson.put("status", statusService.getStatus(projectId));
+          user.put("project", projectJson);
+        }
+
+        user.put("rank", taskDto.getStatus().getRank());
+        user.put("name", taskDto.getStatus().getName());
+        user.put("id", taskDto.getStatus().getId());
+        tasksJson.put("status", user);
+      }
+
+      tasksJson.put("comment",commentService.getComments(taskDtoId,0,-1));
+      tasksJson.put("rank", taskDto.getRank());
+      tasksJson.put("completed", taskDto.isCompleted());
+      tasksJson.put("calendarIntegrated", taskDto.isCalendarIntegrated());
+      tasksJson.put("coworker", taskDto.getCoworker());
+      tasksJson.put("watcher", taskDto.getWatcher());
+      tasksJson.put("createdTime", taskDto.getCreatedTime());
+      tasksJson.put("startDate", taskDto.getStartDate());
+      tasksJson.put("endDate", taskDto.getEndDate());
+      tasksJson.put("dueDate", taskDto.getDueDate());
+      tasksJson.put("activityId", taskDto.getActivityId());
+
+      if (taskDto.getCreatedBy() !=null) {
+        JSONObject user = new JSONObject();
+        User user_ = UserUtil.getUser(taskDto.getCreatedBy());
+        user.put("username", user_.getUsername());
+        user.put("firstname", user_.getFirstName());
+        user.put("lastname", user_.getLastName());
+        user.put("email", user_.getEmail());
+        user.put("displayName", user_.getDisplayName());
+        user.put("avatar", user_.getAvatar());
+        user.put("url", user_.getUrl());
+        user.put("enable", user_.isEnable());
+        user.put("deleted", user_.isDeleted());
+        tasksJson.put("createdBy", user);
+      }
+
+      Space space = null;
+      if (taskDto.getStatus()!= null) {
+        if (taskDto.getStatus().getProject() != null) {
+          space = getProjectSpace(taskDto.getStatus().getProject());
+          if (space!=null) {
+            JSONObject spaceJson = new JSONObject();
+            spaceJson.put("prettyName", space.getPrettyName());
+            spaceJson.put("url", space.getUrl());
+            spaceJson.put("displayName", space.getDisplayName());
+            spaceJson.put("id", space.getId());
+            spaceJson.put("avatarUrl", space.getAvatarUrl());
+            spaceJson.put("description", space.getDescription());
+            tasksJson.put("space", spaceJson);
+          }
+        }
+      }
+
+      tasksGlobalJson.put("tasks", tasksJson);
+      tasksJsonArray.put(tasksGlobalJson);
 
     }
     return tasksJsonArray;
