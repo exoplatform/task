@@ -6,7 +6,9 @@
     <tasks-list-toolbar
       :task-card-tab="'#tasks-cards'"
       :task-list-tab="'#tasks-list'"
+      :keyword="keyword"
       @taskAdded="searchTasks()"
+      @keyword-changed="keyword = $event"
       @changed="changeSelectedTabItem()"/>
     <v-tabs-items>
       <v-tab-item v-show="isTasksTabChanged" eager>
