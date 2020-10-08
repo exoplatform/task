@@ -13,9 +13,10 @@
         <v-card flat>
           <v-layout>
             <v-flex xs10>
-              <v-card-text class="blueGrey-Color drawer-title">{{ $t('label.drawer.header') }}</v-card-text>
+              <v-card-text v-if="task.id!=null" class="blueGrey-Color drawer-title">{{ $t('label.drawer.header') }}</v-card-text>
+              <v-card-text v-else class="blueGrey-Color drawer-title">{{ $t('label.drawer.header.add') }}</v-card-text>
             </v-flex>
-            <v-flex xs1>
+            <v-flex v-if="task.id!=null" xs1>
               <v-btn
                 :href="taskLink"
                 class="my-2"
@@ -44,6 +45,7 @@
               :projects-list="projectsList" 
               @openProjectsList="openProjectsList()"/>
             <task-labels 
+              v-if="task.id!=null"
               :task="task" 
               :labels-list="labelsList" 
               @openLabelsList="openLabelsList()"/>
@@ -272,7 +274,10 @@
               </v-alert>
             </v-flex>
           </v-container>
-          <v-flex xs12 class="pt-2 px-4">
+          <v-flex 
+            v-if="task.id!=null" 
+            xs12 
+            class="pt-2 px-4">
             <v-tabs color="#578DC9">
               <v-tab class="text-capitalize">{{ $t('label.comments') }}</v-tab>
               <v-tab class="text-capitalize">{{ $t('label.changes') }}</v-tab>
@@ -335,12 +340,40 @@
         </v-layout>
       </v-container>
     </div>
+
+    
+    <div v-if="task.id==null" class="drawer-footer">
+      <v-divider />
+      <div class="d-flex drawer-footer-content">
+        <v-spacer />
+        <div class="VuetifyApp">
+          <v-spacer/>
+          <div class="d-btn">
+            <v-btn
+              class="btn mr-2"
+              @click="closeDrawer">
+              <template>
+                {{ $t('popup.cancel') }}
+              </template>
+            </v-btn>
+
+            <v-btn 
+              class="btn btn-primary"
+              @click="addTask">
+              <template>
+                {{ $t('label.save') }}
+              </template>
+            </v-btn>
+          </div>
+        </div>
+      </div>
+    </div>
   </v-navigation-drawer>
 </template>
 
 <script>
 
-  import {updateTask, getTaskLogs, getTaskComments, addTaskComments, getStatusesByProjectId, urlVerify} from '../taskDrawerApi';
+  import {updateTask, addTask, getTaskLogs, getTaskComments, addTaskComments, getStatusesByProjectId, urlVerify} from '../taskDrawerApi';
 
   export default {
     props: {
@@ -388,6 +421,9 @@
     },
     computed: {
       taskLink() {
+        if(this.task==null||this.task.id){
+          return ""
+        }
         return `${eXo.env.portal.context}/${eXo.env.portal.portalName}/tasks/taskDetail/${this.task.id}`;
       },
       currentUserAvatar() {
@@ -446,9 +482,10 @@
       }
     },
     created() {
+      if(this.task.id!=null){
       this.retrieveTaskLogs();
       this.getTaskComments();
-      this.getStatusesByProjectId();
+      
       if (this.task.dueDate != null) {
           this.date = new Date(this.task.dueDate.time).toISOString().substr(0, 10);
       }
@@ -456,6 +493,10 @@
           this.dates[0] = new Date(this.task.startDate.time).toISOString().substr(0, 10);
           this.dates[1] = new Date(this.task.endDate.time).toISOString().substr(0, 10);
       }
+            }
+            if(this.task.status!=null && this.task.status.project!=null){
+              this.getStatusesByProjectId();
+            }
       document.addEventListener('keyup', this.escapeKeyListener);
     },
     destroyed: function() {
@@ -559,14 +600,30 @@
                 });
       },
       updateTask() {
+        if(this.task.id!=null){
         this.$emit('updateTask', this.task);
         updateTask(this.task.id,this.task);
+        }
+      },
+      addTask() {
+        
+
+        addTask(this.task).then(task => {
+              this.$emit('addTask', this.task);
+        
+        this.drawer = false;
+        $('body').removeClass('hide-scroll');
+        this.$emit('closeDrawer',this.drawer);
+        this.showEditor=false;
+            })
       },
       autoSaveDescription() {
+        if(this.task.id!=null){
         clearTimeout(this.saveDescription);
         this.saveDescription = setTimeout(() => {
           Vue.nextTick(() => this.updateTask(this.task.id));
         }, this.autoSaveDelay);
+      }
       },
       retrieveTaskLogs() {
         getTaskLogs(this.task.id).then(

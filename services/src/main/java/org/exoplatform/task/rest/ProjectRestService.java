@@ -10,11 +10,8 @@ import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
-import org.exoplatform.task.dao.ProjectQuery;
-import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.dto.ProjectDto;
 import org.exoplatform.task.dto.StatusDto;
-import org.exoplatform.task.dto.TaskDto;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.exception.ParameterEntityException;
 import org.exoplatform.task.exception.UnAuthorizedOperationException;
@@ -84,7 +81,8 @@ public class ProjectRestService implements ResourceContainer {
   @ApiOperation(value = "Gets projects", httpMethod = "GET", response = Response.class, notes = "This returns projects of the authenticated user")
   @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled"),
       @ApiResponse(code = 500, message = "Internal server error") })
-  public Response getProjects(@ApiParam(value = "Offset", required = false, defaultValue = "0") @QueryParam("offset") int offset,
+  public Response getProjects(@ApiParam(value = "Search term", required = false, defaultValue = "null") @QueryParam("q") String query,
+                              @ApiParam(value = "Offset", required = false, defaultValue = "0") @QueryParam("offset") int offset,
                               @ApiParam(value = "Limit", required = false, defaultValue = "-1") @QueryParam("limit") int limit) {
     if (limit == 0) {
       limit = -1;
@@ -94,8 +92,8 @@ public class ProjectRestService implements ResourceContainer {
     ConversationState state = ConversationState.getCurrent();
     Identity identity = state.getIdentity();
     memberships.addAll(UserUtil.getMemberships(identity));
-    List<ProjectDto> projects = ProjectUtil.getProjectTree( memberships, identity , projectService,offset,limit);
-    int projectNumber = projectService.countProjects(memberships,null);
+    List<ProjectDto> projects = ProjectUtil.getProjectTree( memberships,query, identity , projectService,offset,limit);
+    int projectNumber = projectService.countProjects(memberships,query);
     JSONObject global = new JSONObject();
 
     JSONArray projectsJsonArray = new JSONArray();
@@ -367,6 +365,61 @@ public class ProjectRestService implements ResourceContainer {
     fields.put("calendarIntegrated", new String[]{String.valueOf(projectDto.isCalendarIntegrated())});
     ProjectDto project = ProjectUtil.saveProjectField(projectService, projectId, fields);
     projectService.updateProject(project);
+    return Response.ok(Response.Status.OK).build();
+  }
+
+  @DELETE
+  @Path("{projectId}")
+  @Consumes(MediaType.APPLICATION_JSON)
+  @RolesAllowed("users")
+  @ApiOperation(value = "Delete Project", httpMethod = "DELETE", response = Response.class, notes = "This deletes the Project", consumes = "application/json")
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Project deleted"),
+          @ApiResponse(code = 400, message = "Invalid query input"),
+          @ApiResponse(code = 401, message = "User not authorized to delete the Project"),
+          @ApiResponse(code = 500, message = "Internal server error") })
+  public Response deleteProject(@ApiParam(value = "projectId", required = true) @PathParam("projectId") Long projectId,
+                                @ApiParam(value = "deleteChild", defaultValue = "false") @QueryParam("deleteChild")Boolean deleteChild,
+                                @ApiParam(value = "Offset", required = false, defaultValue = "0") @QueryParam("offset") int offset,
+                                @ApiParam(value = "Limit", required = false, defaultValue = "-1") @QueryParam("limit") int limit) throws EntityNotFoundException, UnAuthorizedOperationException {
+    Identity identity = ConversationState.getCurrent().getIdentity();
+    ProjectDto project = projectService.getProject(projectId);
+    if (!project.canEdit(identity)) {
+      return Response.status(Response.Status.UNAUTHORIZED).build();
+    } else if (deleteChild) {
+      List<ProjectDto> childs = projectService.getSubProjects(projectId,offset,limit);
+      for (ProjectDto child : childs) {
+        if (!child.canEdit(identity)) {
+          return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+      }
+    }
+
+    projectService.removeProject(projectId, deleteChild);
+    return Response.ok(Response.Status.OK).build();
+  }
+
+  @POST
+  @Path("cloneproject")
+  @RolesAllowed("users")
+  @ApiOperation(value = "Clone a project", httpMethod = "POST", response = Response.class, notes = "This Clone project")
+  @ApiResponses(value = {@ApiResponse(code = 200, message = "Request fulfilled"),
+  @ApiResponse(code = 400, message = "Invalid query input"),
+  @ApiResponse(code = 403, message = "Unauthorized operation"),
+  @ApiResponse(code = 404, message = "Resource not found")})
+  public Response cloneProject(@ApiParam(value = "ProjectDto", required = true) ProjectDto projectDto) throws Exception {
+
+    ProjectDto currentProject = projectDto;
+    if (!currentProject.canEdit(ConversationState.getCurrent().getIdentity())) {
+      return Response.status(Response.Status.UNAUTHORIZED).build();
+    }
+    ProjectDto project = projectService.cloneProject(projectDto.getId(), Boolean.parseBoolean("true")); //Can throw ProjectNotFoundException
+
+    EntityEncoder encoder = HTMLEntityEncoder.getInstance();
+    JSONObject result = new JSONObject();
+    result.put("id", project.getId());
+    result.put("name", encoder.encode(project.getName()));
+    result.put("color", project.getColor());
+
     return Response.ok(Response.Status.OK).build();
   }
 

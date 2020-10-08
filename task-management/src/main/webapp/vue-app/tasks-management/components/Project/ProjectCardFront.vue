@@ -1,5 +1,8 @@
 <template>
-  <v-card class="tasksCardItem" flat>
+  <v-card 
+    :class="project.color && project.color+'_border_bottom' || ''"
+    class="tasksCardItem" 
+    flat>
     <div :class="project.color || 'noProjectColor'" class="taskItemToolbar d-flex px-2 py-3 align-center font-weight-bold">
       <i
         :class="project.color && 'white--text' || 'toolbarNoColor'"
@@ -8,7 +11,7 @@
         class="uiIconInformation taskInfoIcon d-flex"
         @click="$emit('flip')">
       </i>
-      <v-spacer />
+      <div class="spacer d-none d-sm-inline"></div>
       <span
         :class="project.color && 'white--text' || 'toolbarNoColor'"
         class="projectCardTitle">
@@ -35,16 +38,28 @@
               <span>{{ $t('label.edit') }}</span>
             </v-list-item-title>
           </v-list-item>
-          <!--<v-list-item>
+          <v-list-item class="draftButton" @click="confirmDeleteProject()">
             <v-list-item-title class="subtitle-2">
-              <i class="uiIcon uiIconHide pr-1"></i>
-              <span>{{ $t('label.hide') }}</span>
+              <i class="uiIcon uiIconTrash pr-1"></i>
+              <span>{{ $t('label.delete') }}</span>
             </v-list-item-title>
           </v-list-item>
-          <v-list-item>
+          <v-list-item @click="confirmCloneProject()">
             <v-list-item-title class="subtitle-2">
               <i class="uiIcon uiIconCloneNode pr-1"></i>
               <span>{{ $t('label.clone') }}</span>
+            </v-list-item-title>
+          </v-list-item>
+          <!--<v-list-item>
+            <v-list-item-title class="subtitle-2">
+              <i class="uiIcon uiIconTrash pr-1"></i>
+              <span>{{ $t('label.delete') }}</span>
+            </v-list-item-title>
+          </v-list-item>
+         <v-list-item>
+            <v-list-item-title class="subtitle-2">
+              <i class="uiIcon uiIconHide pr-1"></i>
+              <span>{{ $t('label.hide') }}</span>
             </v-list-item-title>
           </v-list-item>
           <v-list-item>
@@ -78,13 +93,13 @@
           v-if="project.description"
           :title="project.description"
           :data="project.description"
-          :line-clamp="3"
-          end-char=".."/>
+          :line-clamp="2"
+          end-char="..."/>
         <div v-else>
           <span class="noProjectDescription">{{ $t('label.noDescription') }}</span>
         </div>
       </div>
-      <v-divider class="pb-4"/>
+      <v-divider class="pb-4 descriptionDivider"/>
       <div class="ProjectSpace">
         <div v-if="project.space">
           <v-list-item class="px-0">
@@ -105,6 +120,7 @@
           </v-list-item>
         </div>
       </div>
+      <v-divider class="d-sm-inline"/>
       <div class="SpaceAdmin d-flex justify-space-between align-center">
         <div class="spaceAdminWrapper">
           <v-list-item v-if="managerIdentities && managerIdentities.length === 1" class="px-0">
@@ -130,15 +146,11 @@
               :size="iconSize"
               :style="'background-image: url('+manager.avatar+')'"
               class="mr-1 projectManagersAvatar"/>
-            <i
-              v-if="showAllAvatarList"
-              class="uiIcon uiIconArrowBack"
-              @click="showAllAvatarList = false"></i>
             <div class="seeMoreAvatars">
               <div
-                v-if="managerIdentities.length > maxAvatarToShow && !showAllAvatarList"
+                v-if="managerIdentities.length > maxAvatarToShow"
                 class="seeMoreItem"
-                @click="showAllAvatarList = true">
+                @click="$root.$emit('displayProjectManagers', managerIdentities)">
                 <v-avatar
                   :size="iconSize"
                   :style="'background-image: url('+managerIdentities[maxAvatarToShow].avatar+')'"
@@ -151,6 +163,20 @@
         <!--<i class="uiIcon uiIconStar"></i>-->
       </div>
     </div>
+    <exo-confirm-dialog
+      ref="CancelSavingChangesDialog"
+      :message="$t('popup.msg.delete', {0: project.name})"
+      :title="$t('popup.confirm')"
+      :ok-label="$t('popup.delete')"
+      :cancel-label="$t('popup.cancel')"
+      @ok="deleteProject()" />
+    <exo-confirm-dialog
+      ref="CancelSavingChangesCloneDialog"
+      :message="$t('popup.msg.clone', {0: project.name})"
+      :title="$t('popup.confirm')"
+      :ok-label="$t('popup.clone')"
+      :cancel-label="$t('popup.cancel')"
+      @ok="cloneProject()" />
   </v-card>
 </template>
 <script>
@@ -193,13 +219,12 @@
         ],
         managerIdentities: this.project && this.project.managerIdentities,
         iconSize: 28,
-        maxAvatarToShow : 5,
-        showAllAvatarList: false
+        maxAvatarToShow : 5
       }
     },
     computed: {
       avatarToDisplay () {
-        if(!this.showAllAvatarList) {
+        if(this.managerIdentities.length > this.maxAvatarToShow) {
           return this.managerIdentities.slice(0, this.maxAvatarToShow-1);
         } else {
           return this.managerIdentities;
@@ -227,6 +252,22 @@
       },
       onCloseDrawer: function (drawer) {
         this.drawer = drawer;
+      },
+      confirmDeleteProject: function () {
+        this.$refs.CancelSavingChangesDialog.open();
+      },
+      confirmCloneProject: function () {
+        this.$refs.CancelSavingChangesCloneDialog.open();
+      },
+      deleteProject() {
+        this.$projectService.deleteProjectInfo(this.project)
+                .then(() => this.$emit('projectDeleted'))
+                .then(window.location.href = `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest`);
+      },
+      cloneProject() {
+        this.$projectService.cloneProject(this.project)
+                .then(() => this.$emit('projectCloned'))
+                .then(window.location.href = `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest`)
       },
     }
   }

@@ -9,10 +9,12 @@
       </a>
     </div>
     <tasks-view-toolbar
+      :project="project"
       :task-card-tab-view="'#tasks-view-board'"
       :task-list-tab-view="'#tasks-view-list'"
       :task-gantt-tab-view="'#tasks-view-gantt'"
       :tasks-view-tab-model="'tasks-view-board'"
+      @taskAdded="getTasksByProject(project.id)"
       @taskViewChangeTab="getChangeTabValue"/>
     <v-tabs-items
       v-if="tasksList && tasksList.length">
@@ -44,7 +46,7 @@
       <div class="noTasksProjectLabel"><span>{{ $t('label.noTasks') }}</span></div>
       <div class="noTasksProjectLink"><a href="#">{{ $t('label.addTask') }}</a></div>
     </div>
-
+    <tasks-assignee-coworker-drawer/>
   </v-app>
 </template>
 <script>

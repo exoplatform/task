@@ -106,10 +106,10 @@ public final class ProjectUtil {
     return ProjectUtil.buildRootProjects(new LinkedList<Project>(tmp));
   }
 
-  public static List<ProjectDto> getProjectTree(List<String> memberships, Identity identity , org.exoplatform.task.service.ProjectService projectService,int offset, int limit) {
+  public static List<ProjectDto> getProjectTree(List<String> memberships,String query, Identity identity , org.exoplatform.task.service.ProjectService projectService,int offset, int limit) {
 
-    List<ProjectDto> projects = projectService.findProjects(memberships,null,null,offset, limit);
-/*    ProjectQuery manQ = new ProjectQuery();
+    List<ProjectDto> projects = projectService.findProjects(memberships,query,null,offset, limit);
+    /* ProjectQuery manQ = new ProjectQuery();
     manQ.setManager(memberships);
     List<ProjectDto> editPrj = projectService.findProjects(manQ,offset,limit);
     //

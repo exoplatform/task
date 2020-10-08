@@ -17,6 +17,7 @@ import org.exoplatform.task.dto.*;
 import org.exoplatform.task.legacy.service.UserService;
 import org.exoplatform.task.model.User;
 import org.exoplatform.task.rest.model.CommentEntity;
+import org.exoplatform.task.rest.model.PaginatedTaskList;
 import org.exoplatform.task.rest.model.TaskEntity;
 import org.exoplatform.task.service.*;
 import org.exoplatform.task.storage.CommentStorage;
@@ -92,7 +93,7 @@ public class TaskRestService implements ResourceContainer {
     String currentUser = ConversationState.getCurrent().getIdentity().getUserId();
 
     long tasksSize;
-    List<?> tasks = null;
+    List<TaskDto> tasks = null;
     if (StringUtils.isBlank(query)) {
       TaskType taskType;
       try {
@@ -121,7 +122,7 @@ public class TaskRestService implements ResourceContainer {
       }
     } else {
       tasks = taskService.findTasks(currentUser, query, limit);
-      tasks = tasks.stream().map(task -> {
+      /*tasks = tasks.stream().map(task -> {
         long taskId = ((TaskDto) task).getId();
         int commentCount;
         try {
@@ -131,26 +132,18 @@ public class TaskRestService implements ResourceContainer {
           commentCount = 0;
         }
         return new TaskEntity(((TaskDto) task), commentCount);
-      }).collect(Collectors.toList());
+      }).collect(Collectors.toList());*/
       tasksSize = taskService.countTasks(currentUser, query);
     }
-
     if (returnSize) {
-      JSONObject tasksSizeJsonObject = new JSONObject();
-      tasksSizeJsonObject.put("size", tasksSize);
       if (returnDetails) {
-        tasksSizeJsonObject.put("tasks",
-                                tasks.stream()
-                                     .map(task -> getTaskDetails((TaskDto) task, currentUser))
-                                     .collect(Collectors.toList()));
+        return Response.ok(new PaginatedTaskList(tasks.stream().map(task -> getTaskDetails((TaskDto) task, currentUser)).collect(Collectors.toList()),tasksSize)).build();
       } else {
-        tasksSizeJsonObject.put("tasks", tasks);
-      }
-      return Response.ok(tasksSizeJsonObject).build();
+        return Response.ok(tasks.stream().map(task -> getTaskDetails((TaskDto) task, currentUser)).collect(Collectors.toList())).build();      }
+
     } else {
       if (returnDetails) {
-        return Response.ok(tasks.stream().map(task -> getTaskDetails((TaskDto) task, currentUser)).collect(Collectors.toList()))
-                       .build();
+        return Response.ok(new PaginatedTaskList(tasks.stream().map(task -> getTaskDetails((TaskDto) task, currentUser)).collect(Collectors.toList()),tasksSize)).build();
       }
       return Response.ok(tasks).build();
     }
@@ -198,6 +191,28 @@ public class TaskRestService implements ResourceContainer {
       }
       return Response.ok(tasks).build();
     }
+  }
+
+  @POST
+  @Produces(MediaType.APPLICATION_JSON)
+  @RolesAllowed("users")
+  @ApiOperation(value = "Add a new task", httpMethod = "POT", response = Response.class, notes = "This adds a new task.")
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled"),
+      @ApiResponse(code = 400, message = "Invalid query input"), @ApiResponse(code = 403, message = "Unauthorized operation"),
+      @ApiResponse(code = 404, message = "Resource not found") })
+  public Response addTask(@ApiParam(value = "task object to be updated", required = true) TaskDto task) throws Exception {
+    if (task == null) {
+      return Response.status(Response.Status.BAD_REQUEST).build();
+    }
+    String currentUser = ConversationState.getCurrent().getIdentity().getUserId();
+    task.setCreatedBy(currentUser);
+    task.setCreatedTime(new Date());
+    if(task.getStatus()==null||task.getStatus().getProject()==null){
+      task.setAssignee(currentUser);
+      task.setStatus(null);
+    }
+    task = taskService.createTask(task);
+    return Response.ok(task).build();
   }
 
   @PUT

@@ -206,13 +206,14 @@
             this.suggestedAssignee.push(this.taskAssignee);
           });
         }
-
+      if (this.task.coworker) {
         for (let i = 0; i < this.task.coworker.length; i++) {
           getUser(this.task.coworker[i]).then((user) => {
             this.taskCoworkers.push(user);
             this.suggestedCoworkers.push(user);
           });
         }
+      }
         getUser(eXo.env.portal.userName).then((user) => {
           this.currentUser = user;
         });

@@ -7,6 +7,7 @@ import ProjectCardFront from './components/Project/ProjectCardFront.vue';
 import ProjectCardReverse from './components/Project/ProjectCardReverse.vue';
 import AddProjectDrawer from './components/Project/AddProjectDrawer.vue';
 import ExoTaskEditor from "./components/Project/ExoTaskEditor.vue";
+import ProjectManagersDrawer from "./components/Project/ProjectManagersDrawer.vue";
 
 import TasksDashboard from './components/tasks/TasksDashboard.vue';
 import TasksListToolbar from './components/tasks/TasksListToolbar.vue';
@@ -15,6 +16,7 @@ import TasksListItem from './components/tasks/TasksListItem.vue';
 import TasksCardsList from './components/tasks/TasksCardsList.vue'
 import TaskCard from './components/tasks/TaskCard.vue';
 import TasksFilterDrawer from "./components/tasks/TasksFilterDrawer.vue";
+import TasksAssigneeAndCoworkerDrawer from "./components/tasks/TasksAssigneeAndCoworkerDrawer.vue";
 
 import TasksViewDashboard from "./components/ProjectTasks/TasksViewDashboard.vue";
 import TasksViewToolbar from "./components/ProjectTasks/TasksViewToolbar.vue";
@@ -35,6 +37,8 @@ const components = {
   'project-card-Reverse': ProjectCardReverse,
   'add-project-drawer': AddProjectDrawer,
   'exo-task-editor': ExoTaskEditor,
+  'project-manager-drawer': ProjectManagersDrawer,
+
 
   'tasks-dashboard': TasksDashboard,
   'tasks-list-toolbar': TasksListToolbar,
@@ -43,6 +47,7 @@ const components = {
   'tasks-cards-list': TasksCardsList,
   'task-card': TaskCard,
   'task-filter-drawer':TasksFilterDrawer,
+  'tasks-assignee-coworker-drawer': TasksAssigneeAndCoworkerDrawer,
 
 
   'tasks-view-dashboard': TasksViewDashboard,

@@ -49,34 +49,28 @@
         </div>
       </div>
     </div>
-    <div class="taskAssignee">
-      <div :class="showAllAvatarList && 'AllAssigneeAvatar'" class="d-flex flex-nowrap">
-        <exo-user-avatar
-          v-for="user in avatarToDisplay"
-          :key="user"
-          :username="user.username"
-          :title="user.displayName"
-          :avatar-url="user.avatar"
-          :size="iconSize"
-          :style="'background-image: url('+user.avatar+')'"
-          class="mx-1 taskWorkerAvatar"/>
-        <i
-          v-if="showAllAvatarList"
-          class="uiIcon uiIconArrowBack"
-          @click="showAllAvatarList = false"></i>
-        <div class="seeMoreAvatars">
-          <div
-            v-if="assigneeAndCoworkerArray.length > maxAvatarToShow && !showAllAvatarList"
-            class="seeMoreItem"
-            @click="showAllAvatarList = true">
-            <v-avatar
-              :size="iconSize">
-              <img
-                :src="assigneeAndCoworkerArray[maxAvatarToShow].avatar"
-                :title="assigneeAndCoworkerArray[maxAvatarToShow].displayName">
-            </v-avatar>
-            <span class="seeMoreAvatarList">+{{ showMoreAvatarsNumber }}</span>
-          </div>
+    <div class="taskAssignee d-flex flex-nowrap">
+      <exo-user-avatar
+        v-for="user in avatarToDisplay"
+        :key="user"
+        :username="user.username"
+        :title="user.displayName"
+        :avatar-url="user.avatar"
+        :size="iconSize"
+        :style="'background-image: url('+user.avatar+')'"
+        class="mx-1 taskWorkerAvatar"/>
+      <div class="seeMoreAvatars">
+        <div
+          v-if="assigneeAndCoworkerArray.length > maxAvatarToShow"
+          class="seeMoreItem"
+          @click="$root.$emit('displayTasksAssigneeAndCoworker', assigneeAndCoworkerArray)">
+          <v-avatar
+            :size="iconSize">
+            <img
+              :src="assigneeAndCoworkerArray[maxAvatarToShow].avatar"
+              :title="assigneeAndCoworkerArray[maxAvatarToShow].displayName">
+          </v-avatar>
+          <span class="seeMoreAvatarList">+{{ showMoreAvatarsNumber }}</span>
         </div>
       </div>
     </div>
@@ -144,8 +138,7 @@
         labelList: '',
         drawer:null,
         isSpaceProject: this.task.space !== null,
-        maxAvatarToShow : 3,
-        showAllAvatarList: false
+        maxAvatarToShow : 3
       }
     },
     computed: {
@@ -153,7 +146,7 @@
         return this.task && this.task.task.dueDate && this.task.task.dueDate.time;
       },
       avatarToDisplay () {
-        if(!this.showAllAvatarList) {
+        if(this.assigneeAndCoworkerArray.length > this. maxAvatarToShow) {
           return this.assigneeAndCoworkerArray.slice(0, this.maxAvatarToShow-1);
         } else {
           return this.assigneeAndCoworkerArray;
@@ -180,7 +173,9 @@
         }
       },
       getTaskAssigneeAndCoworkers() {
+                if(this.task.assignee){
         this.assigneeAndCoworkerArray.push(this.task.assignee);
+        } 
         if (this.task.coworker || this.task.coworker.length > 0 )
         {
           this.task.coworker.forEach((coworker) => {

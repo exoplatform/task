@@ -56,6 +56,8 @@ public class ProjectDto implements Serializable {
     public ProjectDto clone(boolean cloneTask) {
         ProjectDto project = new ProjectDto();
         project.setId(getId());
+        project.setName(this.getName());
+        project.setDescription(this.getDescription());
         project.setColor(this.getColor());
         project.setDueDate(this.getDueDate());
         if (this.getParent() != null) {

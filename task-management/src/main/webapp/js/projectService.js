@@ -1,7 +1,7 @@
 import {tasksConstants} from "./tasksConstants";
 
-export function getProjectsList (offset, limit) {
-  return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/projects/projects?offset=${offset || 0}&limit=${limit|| 0}`, {
+export function getProjectsList (query,offset, limit) {
+  return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/projects/projects?q=${query || ''}&offset=${offset || 0}&limit=${limit|| 0}`, {
     method: 'GET',
     credentials: 'include',
   }).then(resp => {
@@ -35,4 +35,24 @@ export function updateProjectInfo(project) {
     method: 'PUT',
     body: JSON.stringify(project)
   }).then(resp => resp.json());
+}
+
+export function deleteProjectInfo(project) {
+  return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/projects/${project.id}?&deleteChild=false`, {
+    credentials: 'include',
+    method: 'DELETE'
+  });
+}
+
+export function cloneProject(project) {
+  return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/projects/cloneproject`, {
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    credentials: 'include',
+    method: 'POST',
+    body: JSON.stringify(project)
+  }).then((data) => {
+    return data.json();
+  });
 }
