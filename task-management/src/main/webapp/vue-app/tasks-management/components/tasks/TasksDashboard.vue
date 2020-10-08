@@ -6,7 +6,9 @@
     <tasks-list-toolbar
       :task-card-tab="'#tasks-cards'"
       :task-list-tab="'#tasks-list'"
-      @taskAdded="getTasksList()"
+      :keyword="keyword"
+      @taskAdded="searchTasks()"
+      @keyword-changed="keyword = $event"
       @changed="changeSelectedTabItem()"/>
     <v-tabs-items>
       <v-tab-item v-show="isTasksTabChanged" eager>
@@ -18,6 +20,17 @@
           :tasks="tasks"/>
       </v-tab-item>
     </v-tabs-items>
+    <v-row class="ma-0 border-box-sizing">
+      <v-btn
+        v-if="canShowMore"
+        :loading="loadingTasks"
+        :disabled="loadingTasks"
+        class="loadMoreButton ma-auto mt-4 btn"
+        block
+        @click="loadNextPage">
+        {{ $t('spacesList.button.showMore') }}
+      </v-btn>
+    </v-row>
     <tasks-assignee-coworker-drawer/>
   </v-app>
 </template>
@@ -26,21 +39,79 @@
     data () {
       return {
         isTasksTabChanged: false,
-        tasks: []
+        tasks: [],
+        keyword: null,
+        loadingTasks: false,
+        offset: 0,
+        tasksSize: 0,
+        pageSize: 20,
+        limit: 20,
+        limitToFetch: 0,
+        originalLimitToFetch: 0,
+        startSearchAfterInMilliseconds: 600,
+        endTypingKeywordTimeout: 50,
+        startTypingKeywordTimeout: 0,
       }
     },
+    computed: {
+      canShowMore() {
+        return this.loadingTasks || this.tasks.length >= this.limitToFetch;
+      },
+    },
+    watch: {
+      keyword() {
+        if (!this.keyword) {
+          this.resetSearch();
+          this.searchTasks();
+          return;
+        }
+        this.startTypingKeywordTimeout = Date.now();
+        if (!this.loadingTasks) {
+          this.loadingTasks = true;
+          this.waitForEndTyping();
+        }
+      },
+      limitToFetch() {
+        this.searchTasks();
+      },
+    },
     created() {
-      this.getTasksList();
+      this.originalLimitToFetch = this.limitToFetch = this.limit;
     },
     methods: {
       changeSelectedTabItem() {
         this.isTasksTabChanged = !this.isTasksTabChanged;
       },
-      getTasksList() {
-        return this.$tasksService.getMyTasksList().then(data => {
-          this.tasks = data.tasks;
-        });
-      }
+      searchTasks() {
+        this.loadingTasks = true;
+        return this.$tasksService.getMyTasksList(this.keyword, this.offset, this.limit).then(data => {
+          this.tasks = data && data.tasks || [];
+          this.tasksSize = data && data.tasksNumber || 0;
+          return this.$nextTick();
+        }).then(() => {
+          if (this.keyword && this.tasks.length >= this.limitToFetch) {
+            this.limitToFetch += this.pageSize;
+          }
+        })
+          .finally(() => this.loadingTasks = false);
+      },
+      resetSearch() {
+        if (this.limitToFetch !== this.originalLimitToFetch) {
+          this.limitToFetch = this.originalLimitToFetch;
+        }
+      },
+      loadNextPage() {
+        this.originalLimitToFetch = this.limitToFetch += this.pageSize;
+      },
+      waitForEndTyping() {
+        window.setTimeout(() => {
+          if (Date.now() - this.startTypingKeywordTimeout > this.startSearchAfterInMilliseconds) {
+            this.searchTasks();
+          } else {
+            this.waitForEndTyping();
+          }
+        }, this.endTypingKeywordTimeout);
+      },
     }
   }
 </script>
