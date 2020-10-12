@@ -423,4 +423,31 @@ public class ProjectRestService implements ResourceContainer {
     return Response.ok(Response.Status.OK).build();
   }
 
+
+  @PUT
+  @Path("changeProjectColor/{projectId}")
+  @Produces(MediaType.APPLICATION_JSON)
+  @RolesAllowed("users")
+  @ApiOperation(value = "Change Project Color", httpMethod = "POST", response = Response.class, notes = "This change Project Color")
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled"),
+          @ApiResponse(code = 400, message = "Invalid query input"),
+          @ApiResponse(code = 403, message = "Unauthorized operation"),
+          @ApiResponse(code = 404, message = "Resource not found") })
+  public Response changeProjectColor(@ApiParam(value = "projectId", required = true) @PathParam("projectId") Long projectId,
+                                     @ApiParam(value = "color", required = false, defaultValue = "null") @QueryParam("color") String color)
+          throws EntityNotFoundException, ParameterEntityException, UnAuthorizedOperationException {
+    Map<String, String[]> fields = new HashMap<String, String[]>();
+    fields.put("color", new String[] {color});
+
+    ProjectDto project = projectService.getProject(projectId);
+    if (!project.canEdit(ConversationState.getCurrent().getIdentity())) {
+      return Response.status(Response.Status.UNAUTHORIZED).build();
+    }
+
+    project = ProjectUtil.saveProjectField(projectService, projectId, fields);
+    projectService.updateProject(project);
+    return Response.ok(Response.Status.OK).build();
+  }
+
+
 }

@@ -416,6 +416,7 @@ public class TestProjectRestService {
     assertEquals(Response.Status.OK.getStatusCode(), response1.getStatus());
   }
 
+  @Test
   public void testCloneProject() throws Exception {
     // Given
     ProjectRestService projectRestService = new ProjectRestService(taskService,
@@ -444,6 +445,39 @@ public class TestProjectRestService {
     when(projectService.cloneProject(projectDto.getId(),true)).thenReturn(projectCloned);
 
     Response response1 = projectRestService.cloneProject(projectDto);
+    assertEquals(Response.Status.OK.getStatusCode(), response1.getStatus());
+  }
+
+  @Test
+  public void testChangeProjectColor() throws Exception {
+    // Given
+    ProjectRestService projectRestService = new ProjectRestService(taskService,
+            commentService,
+            projectService,
+            statusService,
+            userService,
+            spaceService,
+            labelService);
+    Identity john = new Identity("john");
+    ConversationState.setCurrent(new ConversationState(john));
+    Set<String> manager = new HashSet<String>();
+    manager.add("john");
+    ProjectDto projectDto = new ProjectDto();
+    projectDto.setId(1);
+    projectDto.setColor("");
+    projectDto.setDescription("bla bla bla");
+    projectDto.setManager(manager);
+
+    ProjectDto projectDto1 = new ProjectDto();
+    projectDto.setId(1);
+    projectDto.setColor("red");
+    projectDto.setDescription("bla bla bla");
+    projectDto.setManager(manager);
+
+    when(projectService.getProject(projectDto.getId())).thenReturn(projectDto);
+    when(projectService.updateProject(projectDto)).thenReturn(projectDto1);
+
+    Response response1 = projectRestService.changeProjectColor(projectDto.getId(),"red");
     assertEquals(Response.Status.OK.getStatusCode(), response1.getStatus());
   }
 
