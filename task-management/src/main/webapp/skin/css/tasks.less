@@ -79,8 +79,32 @@
         }
       }
       .filterTasksDrawer {
+        .v-navigation-drawer__content{
+          padding-left: 20px;
+          button.reset.v-btn.v-btn--contained.theme--light.v-size--default{
+            cursor: pointer!important;
+            margin-right: 75px!important;
+            color: @primaryColor!important;
+            box-shadow: 0 0 #FFFFFE!important;
+            background-color: #FFFFFF!important;
+          }
+          .reset{
+            i.fas.fa-redo{
+              font-size: 11px;
+              margin-right: 5px;
+            }
+          }
+          .VuetifyApp{
+            .spacer{
+              display: none;
+            }
+          }
+        }
         .input-block-level {
           min-height: 40px!important;
+        }
+        .identitySuggester{
+          height: 37px;
         }
       }
       .addProjectDrawer {
@@ -180,8 +204,7 @@
             height: 85px!important;
           }
           .cke_bottom.cke_reset_all {
-            height: 29px;
-            background-color: transparent;
+            height: 30px;
           }
           .cke_bottom .cke_button_icon {
             filter: opacity(0.2);
@@ -459,6 +482,13 @@
             right: 27px;
             left: auto!important;
             top: 45px!important;
+            .VuetifyApp .theme--light.v-list-item:hover::before {
+              opacity: 0;
+              .uiIcon,span {
+                color: #ffffff!important;
+              }
+              background-image: linear-gradient(to bottom, @primaryColor, @primaryColor);
+            }
             .v-list-item {
               min-height: 30px!important;
               &:hover{

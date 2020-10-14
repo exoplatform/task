@@ -191,7 +191,7 @@
         this.resetCustomValidity();
         if (!this.projectInformation.name) {
           this.$refs.autoFocusInput1.setCustomValidity(this.$t('task.message.missingTitle'));
-        } else if (this.projectInformation.name.replace(/\s/g, "").length < 3 || this.projectInformation.name.replace(/\s/g, "").length > 1024) {
+        } else if (this.projectInformation.name.replace(/\s/g, "").length < 3 || this.projectInformation.name.replace(/\s/g, "").length > 200) {
           this.$refs.autoFocusInput1.setCustomValidity(this.$t('task.message.missingLengthTitle'));
         }
         if (!this.$refs.taskEventForm.validate() // Vuetify rules

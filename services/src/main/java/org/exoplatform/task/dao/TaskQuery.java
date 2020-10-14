@@ -25,6 +25,7 @@ import org.exoplatform.task.dao.condition.Condition;
 import org.exoplatform.task.dao.condition.Conditions;
 import org.exoplatform.task.domain.Priority;
 import org.exoplatform.task.domain.Status;
+import org.exoplatform.task.dto.StatusDto;
 import org.exoplatform.task.util.UserUtil;
 
 import java.util.*;
@@ -166,6 +167,10 @@ public class TaskQuery extends Query implements Cloneable {
   }
 
   public void setStatus(Status status) {
+    add(eq(TASK_STATUS, status));
+  }
+
+  public void setStatus(StatusDto status) {
     add(eq(TASK_STATUS, status));
   }
 

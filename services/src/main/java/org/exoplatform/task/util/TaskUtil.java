@@ -21,6 +21,7 @@ import java.text.*;
 import java.util.*;
 
 import org.exoplatform.task.dto.CommentDto;
+import org.exoplatform.task.dto.StatusDto;
 import org.exoplatform.task.dto.TaskDto;
 import org.exoplatform.task.legacy.service.ProjectService;
 import org.exoplatform.task.legacy.service.StatusService;
@@ -151,6 +152,40 @@ public final class TaskUtil {
       query.setCompleted(showCompleted);
     }
     
+    return query;
+  }
+
+  public static TaskQuery buildTaskQuery(TaskQuery query, String keyword,
+                                         List<Long> searchLabelIds,
+                                         StatusDto status,
+                                         DUE dueDate,
+                                         Priority priority,
+                                         List<String> searchAssignee,
+                                         Boolean showCompleted, TimeZone timezone) {
+    if (keyword != null && !keyword.trim().isEmpty()) {
+      query.setKeyword(keyword);
+    }
+    if (searchLabelIds != null && !searchLabelIds.isEmpty()) {
+      query.setLabelIds(searchLabelIds);
+    }
+    if (status != null) {
+      query.setStatus(status);
+    }
+    if (dueDate != null) {
+      Date[] due = TaskUtil.convertDueDate(dueDate.name(), timezone);
+      query.setDueDateFrom(due[0]);
+      query.setDueDateTo(due[1]);
+    }
+    if (priority != null) {
+      query.setPriority(priority);
+    }
+    if (searchAssignee != null && !searchAssignee.isEmpty()) {
+      query.setAssignee(searchAssignee);
+    }
+    if (showCompleted != null && !showCompleted) {
+      query.setCompleted(showCompleted);
+    }
+
     return query;
   }
 

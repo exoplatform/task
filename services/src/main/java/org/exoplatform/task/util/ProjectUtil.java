@@ -106,6 +106,35 @@ public final class ProjectUtil {
     return ProjectUtil.buildRootProjects(new LinkedList<Project>(tmp));
   }
 
+  public static List<ProjectDto> getProjectTree(String space_group_id, org.exoplatform.task.service.ProjectService projectService,int offset, int limit) {
+    List<String> memberships = new LinkedList<String>();
+    ConversationState state = ConversationState.getCurrent();
+    Identity identity = state.getIdentity();
+    if (space_group_id == null) {
+      memberships.addAll(UserUtil.getMemberships(identity));
+    } else {
+      memberships.addAll(UserUtil.getSpaceMemberships(space_group_id));
+    }
+
+//    ListAccess<Project> projects = projectService.findProjects(memberships, null, null);
+    ProjectQuery manQ = new ProjectQuery();
+    manQ.setManager(memberships);
+    List<ProjectDto> editPrj = projectService.findProjects(manQ,offset,limit);
+    //
+    ProjectQuery parQ = new ProjectQuery();
+    parQ.setParticipator(memberships);
+    List<ProjectDto> viewPrj = projectService.findProjects(parQ,offset,limit);
+    //
+    Set<ProjectDto> tmp = new HashSet<ProjectDto>();
+    try {
+      tmp.addAll(buildProxyDto(editPrj, identity, true));
+      tmp.addAll(buildProxyDto(viewPrj, identity, false));
+    } catch (Exception ex) {
+      LOG.error("Can't load project list", ex);
+    }
+    return ProjectUtil.buildRootProject(new LinkedList<ProjectDto>(tmp));
+  }
+
   public static List<ProjectDto> getProjectTree(List<String> memberships,String query, Identity identity , org.exoplatform.task.service.ProjectService projectService,int offset, int limit) {
 
     List<ProjectDto> projects = projectService.findProjects(memberships,query,null,offset, limit);
@@ -265,6 +294,23 @@ public final class ProjectUtil {
     return new ArrayList<Project>(projects);
   }
 
+  public static List<ProjectDto> flattenTree(List<ProjectDto> projectTree, org.exoplatform.task.service.ProjectService projectService,int offset, int limit) {
+    if (projectTree == null) {
+      return null;
+    }
+
+    Set<ProjectDto> projects = new HashSet<ProjectDto>();
+    for (ProjectDto p : projectTree) {
+      projects.add(p);
+      List<ProjectDto> tmp = projectService.getSubProjects(p.getId(),offset,limit);
+      List<ProjectDto> children = new LinkedList<ProjectDto>();
+
+      if (children != null && !children.isEmpty()) {
+        projects.addAll(flattenTree(children, projectService,offset,limit));
+      }
+    }
+    return new ArrayList<ProjectDto>(projects);
+  }
 
   //TODO: should move this method to web module
   public static String buildBreadcumbs(Long id, ProjectService projectService, ResourceBundle bundle) {

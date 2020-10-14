@@ -55,7 +55,9 @@
       @addTask="onAddTask()"
       @closeDrawer="onCloseDrawer"/>
     <task-filter-drawer
-      ref="filterTasksDrawer"/>
+      ref="filterTasksDrawer" 
+      @filter-task="filterTasks"
+      @reset-filter-task="resetFilterTask"/>
   </v-app>
 </template>
 <script>
@@ -76,6 +78,7 @@
     },
     data () {
       return {
+        tasks:null,
         task: {id:null,status:{}},
         drawer:null
       }
@@ -86,6 +89,13 @@
       }
     },
     methods: {
+      resetFilterTask(){
+        this.$emit('reset-filter-task-dashboard');
+      },
+      filterTasks(e){
+        this.tasks=e;
+        this.$emit('filter-task-dashboard', this.tasks);
+      },
       openDrawer() {
         this.$refs.filterTasksDrawer.open();
       },

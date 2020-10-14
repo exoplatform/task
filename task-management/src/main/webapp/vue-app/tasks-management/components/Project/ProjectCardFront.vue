@@ -44,13 +44,13 @@
               <span>{{ $t('label.delete') }}</span>
             </v-list-item-title>
           </v-list-item>
-          <v-list-item @click="confirmCloneProject()">
+          <v-list-item class="clone" @click="confirmCloneProject()">
             <v-list-item-title class="subtitle-2">
               <i class="uiIcon uiIconCloneNode pr-1"></i>
               <span>{{ $t('label.clone') }}</span>
             </v-list-item-title>
           </v-list-item>
-          <v-list-item class="px-2">
+          <v-list-item class="px-2 noColorLabel">
             <v-list-item-title class="noColorLabel caption text-center text&#45;&#45;secondary">
               <span @click="changeColorProject(project,'')">{{ $t('label.noColor') }}</span>
             </v-list-item-title>
@@ -269,7 +269,7 @@
     changeColorProject(project,color) {
       this.$projectService.updateProjectColor(project, color)
               .then(() => this.$emit('projectChangeColor'))
-              .then(window.location.href = `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest`);
+              .then(this.project.color = color);
     }
     }
   }
