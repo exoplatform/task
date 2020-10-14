@@ -9,7 +9,9 @@
       :keyword="keyword"
       @taskAdded="searchTasks()"
       @keyword-changed="keyword = $event"
-      @changed="changeSelectedTabItem()"/>
+      @changed="changeSelectedTabItem()"
+      @filter-task-dashboard="filterTaskDashboard"
+      @reset-filter-task-dashboard="resetFiltertaskDashboard"/>
     <v-tabs-items>
       <v-tab-item v-show="isTasksTabChanged" eager>
         <tasks-cards-list
@@ -79,6 +81,12 @@
       this.originalLimitToFetch = this.limitToFetch = this.limit;
     },
     methods: {
+      resetFiltertaskDashboard(){
+        this.searchTasks();
+      },
+      filterTaskDashboard(e){
+        this.tasks=e.tasks;
+      },
       changeSelectedTabItem() {
         this.isTasksTabChanged = !this.isTasksTabChanged;
       },

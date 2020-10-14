@@ -105,9 +105,9 @@
               </v-avatar>
             </div>
             <div
-              :class="task.task.status.project.color || 'noProjectColor'"
+              :class="task.task.status.project ? task.task.status.project.color : 'noProjectColor'"
               class="taskProjectName taskProjectNameCard pa-1">
-              <span class="font-weight-bold">{{ task.task.status.project.name }}</span>
+              <span class="font-weight-bold">{{ task.task.status.project ? task.task.status.project.name : '' }}</span>
             </div>
           </div>
         </div>

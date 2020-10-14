@@ -44,18 +44,28 @@
               <span>{{ $t('label.delete') }}</span>
             </v-list-item-title>
           </v-list-item>
-          <v-list-item @click="confirmCloneProject()">
+          <v-list-item class="clone" @click="confirmCloneProject()">
             <v-list-item-title class="subtitle-2">
               <i class="uiIcon uiIconCloneNode pr-1"></i>
               <span>{{ $t('label.clone') }}</span>
             </v-list-item-title>
           </v-list-item>
-          <!--<v-list-item>
-            <v-list-item-title class="subtitle-2">
-              <i class="uiIcon uiIconTrash pr-1"></i>
-              <span>{{ $t('label.delete') }}</span>
+          <v-list-item class="px-2 noColorLabel">
+            <v-list-item-title class="noColorLabel caption text-center text&#45;&#45;secondary">
+              <span @click="changeColorProject(project,'')">{{ $t('label.noColor') }}</span>
             </v-list-item-title>
           </v-list-item>
+          <v-list-item>
+            <v-list-item-title class="subtitle-2 row projectColorPicker mx-auto my-2">
+              <span
+                v-for="(color, i) in projectColors"
+                :key="i"
+                :class="[ color.class , color.class === project.color ? 'isSelected' : '']"
+                class="projectColorCell"
+                @click="changeColorProject(project,color.class)"></span>
+            </v-list-item-title>
+          </v-list-item>
+          <!--
          <v-list-item>
             <v-list-item-title class="subtitle-2">
               <i class="uiIcon uiIconHide pr-1"></i>
@@ -68,20 +78,7 @@
               <span>{{ $t('label.addAsFavorite') }}</span>
             </v-list-item-title>
           </v-list-item>
-          <v-list-item class="px-2">
-            <v-list-item-title class="noColorLabel caption text-center text&#45;&#45;secondary">
-              <span>{{ $t('label.noColor') }}</span>
-            </v-list-item-title>
-          </v-list-item>
-          <v-list-item>
-            <v-list-item-title class="subtitle-2 row projectColorPicker mx-auto my-2">
-              <span
-                v-for="(color, i) in projectColors"
-                :key="i"
-                :class="[ color.class , color.class === project.color ? 'isSelected' : '']"
-                class="projectColorCell"></span>
-            </v-list-item-title>
-          </v-list-item>-->
+          -->
         </v-list>
       </v-menu>
     </div>
@@ -269,6 +266,11 @@
                 .then(() => this.$emit('projectCloned'))
                 .then(window.location.href = `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest`)
       },
+    changeColorProject(project,color) {
+      this.$projectService.updateProjectColor(project, color)
+              .then(() => this.$emit('projectChangeColor'))
+              .then(this.project.color = color);
+    }
     }
   }
 </script>

@@ -11,10 +11,7 @@ import javax.ws.rs.ext.RuntimeDelegate;
 import org.exoplatform.task.TestUtils;
 import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.model.User;
-import org.exoplatform.task.storage.ProjectStorage;
-import org.exoplatform.task.storage.StatusStorage;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import org.exoplatform.task.rest.model.PaginatedTaskList;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -100,7 +97,7 @@ public class TestTaskRestService {
     Response response = taskRestService.getTasks("overdue", null, 0, 20, false, false);
     Response response1 = taskRestService.getTasks("incoming", null, 0, 20, false, false);
     Response response2 = taskRestService.getTasks("", null, 0, 20, false, false);
-    Response response3 = taskRestService.getTasks("whatever", "searchTerm", 0, 20, true, false);
+    Response response3 = taskRestService.getTasks("whatever", "searchTerm", 0, 20, true, true);
 
     // Then
     assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -119,15 +116,11 @@ public class TestTaskRestService {
     assertEquals(3, tasks2.size());
 
     assertEquals(Response.Status.OK.getStatusCode(), response3.getStatus());
-/*    JSONObject tasks3JsonObject = (JSONObject) response3.getEntity();
-    assertNotNull(tasks3JsonObject);
-    assertTrue(tasks3JsonObject.has("size"));
-    assertTrue(tasks3JsonObject.has("tasks"));
-    JSONArray tasks3 = (JSONArray) tasks3JsonObject.get("tasks");
+    PaginatedTaskList tasks3 = (PaginatedTaskList) response3.getEntity();
     assertNotNull(tasks3);
-    assertEquals(1, tasks3.length());
-    Long tasks3Size = (Long) tasks3JsonObject.get("size");
-    assertEquals(1L, tasks3Size.longValue());*/
+    assertNotNull(tasks3.getTasks());
+    assertNotNull(tasks3.getTasksNumber());
+    assertEquals(1,tasks3.getTasksNumber());
   }
 
   @Test

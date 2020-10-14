@@ -35,7 +35,7 @@
           prepend-inner-icon="fa-filter"
           class="inputTasksFilter pa-0 mr-3 my-auto"/>
       </v-scale-transition>
-      <!--<v-scale-transition>
+      <v-scale-transition>
         <v-btn
           class="btn px-2 btn-primary filterTasksSetting"
           outlined
@@ -45,7 +45,7 @@
             {{ $t('label.filter') }} (3)
           </span>
         </v-btn>
-      </v-scale-transition>-->
+      </v-scale-transition>
     </v-toolbar>
     <task-drawer
       v-if="drawer"
@@ -55,7 +55,9 @@
       @addTask="onAddTask()"
       @closeDrawer="onCloseDrawer"/>
     <task-filter-drawer
-      ref="filterTasksDrawer"/>
+      ref="filterTasksDrawer" 
+      @filter-task="filterTasks"
+      @reset-filter-task="resetFilterTask"/>
   </v-app>
 </template>
 <script>
@@ -76,6 +78,7 @@
     },
     data () {
       return {
+        tasks:null,
         task: {id:null,status:{}},
         drawer:null
       }
@@ -86,6 +89,13 @@
       }
     },
     methods: {
+      resetFilterTask(){
+        this.$emit('reset-filter-task-dashboard');
+      },
+      filterTasks(e){
+        this.tasks=e;
+        this.$emit('filter-task-dashboard', this.tasks);
+      },
       openDrawer() {
         this.$refs.filterTasksDrawer.open();
       },

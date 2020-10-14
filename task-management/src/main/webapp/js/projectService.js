@@ -56,3 +56,14 @@ export function cloneProject(project) {
     return data.json();
   });
 }
+
+export function updateProjectColor(project,color) {
+  return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/projects/changeProjectColor/${project.id}?&color=${color}`, {
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    credentials: 'include',
+    method: 'PUT',
+    body: JSON.stringify(project)
+  }).then(resp => resp.json());
+}
