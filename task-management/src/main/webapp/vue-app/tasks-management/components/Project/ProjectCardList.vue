@@ -85,7 +85,6 @@
     },
     created() {
       this.originalLimitToFetch = this.limitToFetch = this.limit;
-      this.searchProjects();
     },
     methods: {
       searchProjects() {

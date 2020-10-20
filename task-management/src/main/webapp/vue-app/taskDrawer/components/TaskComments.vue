@@ -70,7 +70,7 @@
           <v-row>   
             <span
               class="taskContentComment"
-              v-html="comment.comment"></span></v-row>
+              v-html="comment.formattedComment"></span></v-row>
           <v-row><v-btn
             id="reply_btn"
             depressed
@@ -179,7 +179,7 @@
         },
         computed: {
             relativeTime() {
-                return this.getRelativeTime(this.comment.createdTime.time)
+                return this.getRelativeTime(this.comment.comment.createdTime.time)
             },
             currentUserAvatar() {
                 return `/rest/v1/social/users/${eXo.env.portal.userName}/avatar`;
@@ -265,7 +265,7 @@
             },
             absoluteTime(options) {
               const lang = eXo && eXo.env && eXo.env.portal && eXo.env.portal.language || 'en';
-              return new Date(this.comment.createdTime.time).toLocaleString(lang, options).split("/").join("-");
+              return new Date(this.comment.comment.createdTime.time).toLocaleString(lang, options).split("/").join("-");
             },
             urlVerify(text) {
               return urlVerify(text);

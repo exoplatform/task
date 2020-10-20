@@ -28,6 +28,7 @@ import org.exoplatform.task.domain.LabelTaskMapping;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.dto.LabelDto;
 import org.exoplatform.task.exception.EntityNotFoundException;
+import org.exoplatform.task.legacy.service.UserService;
 import org.exoplatform.task.service.impl.LabelServiceImpl;
 import org.exoplatform.task.service.impl.StatusServiceImpl;
 import org.exoplatform.task.service.impl.TaskServiceImpl;
@@ -85,6 +86,9 @@ public class LabelServiceTest {
     @Mock
     DAOHandler daoHandler;
 
+    @Mock
+    UserService userService;
+
     @Captor
     ArgumentCaptor<Label> labelCaptor;
 
@@ -94,7 +98,7 @@ public class LabelServiceTest {
         // to fail
         PortalContainer.getInstance();
         projectStorage = new ProjectStorageImpl(daoHandler);
-        taskStorage = new TaskStorageImpl(daoHandler);
+        taskStorage = new TaskStorageImpl(daoHandler,userService);
         statusStorage = new StatusStorageImpl(daoHandler, projectStorage);
         statusService = new StatusServiceImpl(daoHandler, statusStorage);
         labelStorage = new LabelStorageImpl(daoHandler);

@@ -677,7 +677,7 @@ public class TaskRestService implements ResourceContainer {
     List<CommentEntity> commentModelsList = new ArrayList<CommentEntity>();
     for (CommentDto comment : comments) {
       CommentEntity commentModel = addCommentModel(comment, commentModelsList);
-      if (!comment.getSubComments().isEmpty()) {
+      if (comment.getSubComments()!=null&&!comment.getSubComments().isEmpty()) {
         List<CommentEntity> subCommentsModelsList = new ArrayList<>();
         for (CommentDto subComment : commentStorage.listCommentsToDtos(comment.getSubComments())) {
           addCommentModel(subComment, subCommentsModelsList);

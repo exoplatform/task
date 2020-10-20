@@ -421,7 +421,7 @@
     },
     computed: {
       taskLink() {
-        if(this.task==null||this.task.id){
+        if(this.task==null||this.task.id==null){
           return ""
         }
         return `${eXo.env.portal.context}/${eXo.env.portal.portalName}/tasks/taskDetail/${this.task.id}`;
