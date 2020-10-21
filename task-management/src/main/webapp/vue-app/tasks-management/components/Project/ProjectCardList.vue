@@ -85,6 +85,9 @@
     },
     created() {
       this.originalLimitToFetch = this.limitToFetch = this.limit;
+      this.$root.$on('update-projects-list', project => {
+       this.searchProjects();
+      });
     },
     methods: {
       searchProjects() {

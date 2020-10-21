@@ -55,7 +55,7 @@
     },
     methods: {
       openDrawer() {
-        this.$refs.addProjectDrawer.open();
+        this.$refs.addProjectDrawer.open({});
       },
     }
   }

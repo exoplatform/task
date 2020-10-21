@@ -15,8 +15,7 @@
       </div>
     </v-flex>
     <add-project-drawer
-      ref="addProjectDrawer"
-      :project="project"/>
+      ref="addProjectDrawer"/>
   </v-app>
 </template>
 <script>
@@ -34,7 +33,7 @@ export default {
   },
   methods:{
     openEditDrawer() {
-      this.$refs.addProjectDrawer.open();
+      this.$refs.addProjectDrawer.open(this.project);
     },
     onCloseDrawer: function(drawer){
       this.drawer = drawer;

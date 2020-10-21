@@ -8,7 +8,8 @@
       {{ labelDrawer }}
     </template>
     <template slot="content">
-      <v-form
+      <v-form 
+        v-if="projectInformation"
         ref="taskEventForm"
         class="flex"
         flat>
@@ -120,24 +121,15 @@
 </template>
 <script>
   export default {
-    props: {
-      project: {
-        type: Object,
-        default: () => ({}),
-      }
-    },
     data() {
       return {
         MESSAGE_MAX_LENGTH:1000,
         listOfManager:[{src:"/portal/rest/v1/social/users/default-image/avatar"}],
         listOfParticipant:[{src:"/portal/rest/v1/social/users/default-image/avatar"}],
         activityComposerActions: [],
-        projectInformation:{
-          name:'',
-          description:'',
-          id:'',
-        },
+        projectInformation:null,
         postProject:false,
+        project:{}
       };
     },
     computed: {
@@ -156,8 +148,16 @@
         }
       }
     },
-    created() {
-      if (this.project.name !== null ||this.project.name !==''){
+
+    methods: {
+      open(project) { 
+        this.project=project 
+        this.projectInformation={
+          name:'',
+          description:'',
+          id:'',
+        };
+            if (this.project.name !== null ||this.project.name !==''){
         this.projectInformation.name=this.project.name;
       }
       if (this.project.id !== null ||this.project.id !==''){
@@ -166,9 +166,6 @@
       if (this.project.description !== null || this.project.description !== ''){
         this.projectInformation.description = this.project.description;
       }
-    },
-    methods: {
-      open() {
         this.$refs.addProjectDrawer.open();
         window.setTimeout(() => this.$refs.addProjectTitle.querySelector('input').focus(), 200);
       },
@@ -209,32 +206,29 @@
             manager: eXo.env.portal.userName
           };
           if (typeof projects.id !== 'undefined') {
+            this.postProject = true;
             return this.$projectService.updateProjectInfo(projects).then(project => {
-              this.postProject = true;
               this.$emit('update-cart', project);
-              if (project) {
-                window.location.href = `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest`;
-              } else {
-                window.location.href = `${eXo.env.portal.context}/${eXo.env.portal.portalName}`;
-              }
+              this.$root.$emit('update-projects-list', {})
+              this.postProject = false;
+              this.$refs.addProjectDrawer.close();
             })
                     .catch(e => {
                       console.debug("Error updating project", e);
                       this.$emit('error', e && e.message ? e.message : String(e));
+                      this.postProject = false;
                     });
           } else {
             return this.$projectService.addProject(projects).then(project => {
-              this.postProject = true;
               this.$emit('update-cart', project);
-              if (project) {
-                window.location.href = `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest`;
-              } else {
-                window.location.href = `${eXo.env.portal.context}/${eXo.env.portal.portalName}`;
-              }
+             this.$root.$emit('update-projects-list', {})
+             this.postProject = false;
+               this.$refs.addProjectDrawer.close();
             })
                     .catch(e => {
                       console.debug("Error saving project", e);
                       this.$emit('error', e && e.message ? e.message : String(e));
+                      this.postProject = false;
                     });
           }
 
