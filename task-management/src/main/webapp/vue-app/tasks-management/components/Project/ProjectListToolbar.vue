@@ -36,8 +36,7 @@
         </select>
       </v-scale-transition>-->
     </v-toolbar>
-    <add-project-drawer
-      ref="addProjectDrawer"/>
+
   </v-app>
 </template>
 <script>
@@ -55,7 +54,7 @@
     },
     methods: {
       openDrawer() {
-        this.$refs.addProjectDrawer.open();
+       this.$root.$emit('open-project-drawer', {})
       },
     }
   }

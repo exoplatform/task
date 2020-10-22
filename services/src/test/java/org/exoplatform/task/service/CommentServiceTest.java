@@ -62,6 +62,8 @@ public class CommentServiceTest {
 
   ListenerService         listenerService;
 
+
+
   @Mock
   TaskHandler             taskHandler;
 
@@ -88,7 +90,7 @@ public class CommentServiceTest {
     // Make sure the container is started to prevent the ExoTransactional annotation
     // to fail
     PortalContainer.getInstance();
-    taskStorage = new TaskStorageImpl(daoHandler);
+    taskStorage = new TaskStorageImpl(daoHandler,userService);
     commentStorage = new CommentStorageImpl(daoHandler);
     statusService = new StatusServiceImpl(daoHandler, statusStorage);
     commentService = new CommentServiceImpl(taskStorage, commentStorage, daoHandler, listenerService);

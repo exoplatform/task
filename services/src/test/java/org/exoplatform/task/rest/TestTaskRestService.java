@@ -10,8 +10,12 @@ import javax.ws.rs.ext.RuntimeDelegate;
 
 import org.exoplatform.task.TestUtils;
 import org.exoplatform.task.dao.TaskQuery;
+import org.exoplatform.task.domain.Priority;
 import org.exoplatform.task.model.User;
 import org.exoplatform.task.rest.model.PaginatedTaskList;
+import org.exoplatform.task.rest.model.ViewState;
+import org.exoplatform.task.rest.model.ViewType;
+import org.exoplatform.task.service.impl.ViewStateService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,6 +34,7 @@ import org.exoplatform.task.service.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TestTaskRestService {
+  private static final ViewType LIST = null;
   @Mock
   TaskService    taskService;
 
@@ -50,6 +55,9 @@ public class TestTaskRestService {
 
   @Mock
   LabelService   labelService;
+
+  @Mock
+  ViewStateService viewStateService;
 
   @Before
   public void setup() {
@@ -630,6 +638,52 @@ public class TestTaskRestService {
     commentModel = (CommentEntity) response.getEntity();
     assertNotNull(commentModel);
     assertEquals(commentModel.getFormattedComment(), "x <= 2");
+
+  }
+
+  @Test
+  public void testFilterTasks() throws Exception {
+    // Given
+    TaskRestService taskRestService = new TaskRestService(taskService,
+            commentService,
+            projectService,
+            statusService,
+            userService,
+            spaceService,
+            labelService,
+            viewStateService);
+    Identity root = new Identity("root");
+    ConversationState.setCurrent(new ConversationState(root));
+    TaskDto task1 = new TaskDto();
+    TaskDto task2 = new TaskDto();
+    TaskDto task3 = new TaskDto();
+    task1.setAssignee("root");
+    task2.setTitle("exo");
+    task3.setPriority(Priority.NORMAL);
+    String Id="due@null";
+    ViewType viewType=LIST;
+    ViewState viewState=new ViewState(Id);
+    viewState.setGroupBy(null);
+    viewState.setOrderBy(null);
+    viewState.setViewType(viewType);
+
+    ViewState.Filter filter=new ViewState.Filter(Id);
+    filter.setAssignees(null);
+    filter.setDue(null);
+    filter.setKeyword("exo");
+
+    when(taskService.findTasks(any(), anyInt(), anyInt())).thenReturn(Collections.singletonList(task2));
+    when(viewStateService.getViewState(any())).thenReturn(viewState);
+    when(viewStateService.getFilter(any())).thenReturn(filter);
+    // When
+    Response response = taskRestService.filterTasks(null, -2, "exo","", null, null, false,null,null,null,null,null,1,"",null,"",0,0,false,false);
+
+    // Then
+    assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+    PaginatedTaskList tasks = (PaginatedTaskList) response.getEntity();
+    assertNotNull(tasks.getTasks());
+    assertEquals(1, tasks.getTasksNumber());
+
 
   }
 }

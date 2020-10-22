@@ -32,7 +32,7 @@
         content-class="projectActionMenu"
         offset-y>
         <v-list class="pa-0" dense>
-          <v-list-item class="menu-list" @click="$emit('openDrawer')" >
+          <v-list-item class="menu-list" @click="openEditDrawer()" >
             <v-list-item-title class="subtitle-2">
               <i class="uiIcon uiIconEdit pr-1"></i>
               <span>{{ $t('label.edit') }}</span>
@@ -245,7 +245,7 @@
         document.dispatchEvent(new CustomEvent('showProjectTasks', {detail: project}));
       },
       openEditDrawer() {
-        this.$refs.addProjectDrawer.open();
+       this.$emit('openDrawer')
       },
       onCloseDrawer: function (drawer) {
         this.drawer = drawer;

@@ -13,6 +13,7 @@ import org.exoplatform.task.dto.ChangeLogEntry;
 import org.exoplatform.task.dto.LabelDto;
 import org.exoplatform.task.dto.TaskDto;
 import org.exoplatform.task.exception.EntityNotFoundException;
+import org.exoplatform.task.legacy.service.UserService;
 import org.exoplatform.task.storage.TaskStorage;
 
 import javax.inject.Inject;
@@ -33,9 +34,13 @@ public class TaskStorageImpl implements TaskStorage {
     @Inject
     private final DAOHandler daoHandler;
 
+    @Inject
+    private final UserService userService;
 
-    public TaskStorageImpl(DAOHandler daoHandler) {
+
+    public TaskStorageImpl(DAOHandler daoHandler, UserService userService) {
         this.daoHandler = daoHandler;
+        this.userService = userService;
     }
 
     @Override
@@ -246,6 +251,7 @@ public class TaskStorageImpl implements TaskStorage {
         changeLogEntry.setActionName(changeLog.getActionName());
         changeLogEntry.setCreatedTime(changeLog.getCreatedTime());
         changeLogEntry.setTarget(changeLog.getTarget());
+        changeLogEntry.setAuthorFullName(userService.loadUser(changeLog.getAuthor()).getDisplayName());
         return changeLogEntry;
     }
 

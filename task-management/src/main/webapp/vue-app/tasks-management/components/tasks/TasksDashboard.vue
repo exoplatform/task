@@ -78,6 +78,7 @@
       },
     },
     created() {
+      window.history.pushState('page2', 'My Tasks', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest?mytasks`);
       this.originalLimitToFetch = this.limitToFetch = this.limit;
     },
     methods: {
@@ -91,8 +92,13 @@
         this.isTasksTabChanged = !this.isTasksTabChanged;
       },
       searchTasks() {
+        const tasks = {
+          query: this.keyword,
+          offset: this.offset,
+          limit: this.limit,
+        };
         this.loadingTasks = true;
-        return this.$tasksService.getMyTasksList(this.keyword, this.offset, this.limit).then(data => {
+        return this.$tasksService.filterTasksList(tasks).then(data => {
           this.tasks = data && data.tasks || [];
           this.tasksSize = data && data.tasksNumber || 0;
           return this.$nextTick();

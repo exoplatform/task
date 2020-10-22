@@ -89,7 +89,8 @@
             this.getProjects();
             if (this.task.status != null) {
               this.projectModel = this.task.status.project;
-               getDefaultStatusByProjectId(this.task.status.project.id).then((status) => {
+            }else{
+                    getDefaultStatusByProjectId(this.task.status.project.id).then((status) => {
                     this.task.status = status;
                 })
             }

@@ -28,10 +28,13 @@
       }
     },
     created() {
+      window.history.pushState('page2', 'My Projects', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest?myprojects`);
+
       document.addEventListener('showProjectTasks', (event) => {
         if (event && event.detail) {
           this.displayDetails = true;
           this.project =  event.detail;
+          window.history.pushState('page2', this.project.name, `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest?projectId=${this.project.id}`);
         }
       });
       document.addEventListener('hideProjectTasks', (event) => {

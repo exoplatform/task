@@ -9,6 +9,120 @@
 #TasksParentContainer {
   margin: 25px;
   #TasksManagementPortlet {
+    .addProjectDrawer {
+      hr.my-0.v-divider.theme--light{
+        margin-top: 5px!important;
+      }
+      .drawerContent {
+        padding: 16px;
+        .addProjectTitle {
+          margin-top: -10px;
+          .uiIconProject {
+            font-family: "PLF-FONT-ICONS" !important;
+            font-style: normal;
+            font-size: 22px;
+            color: @primaryColor;
+            margin-right: 15px;
+            &:before {
+              content: "\e665";
+            }
+          }
+          .projectInputTitle {
+            &:before {
+              display: none;
+            }
+            &:after{
+              border: Solid 1px @borderColor!important;
+              border-radius: 5px!important;
+            }
+            .v-input__slot {
+              label {
+                color: @greyColorLighten1;
+                letter-spacing: .2px;
+              }
+              .v-text-field__slot{
+                margin-left: 5px;
+              }
+            }
+          }
+        }
+        hr.py-3.v-divider.theme--light{
+          margin-top: 10px;
+        }
+        .projectPermissionsUsers {
+          .permisionLabel {
+            color: @textLightColor;
+          }
+          .listOfManager,.listOfParticipant {
+            display: flex;
+            a.flex-nowrap.flex-shrink-0.d-flex {
+              margin-right: 5px;
+              .v-avatar.pull-left.my-auto {
+                height: 30px;
+                min-width: 30px;
+                width: 30px;
+              }
+              .peopleInfoIcon {
+                z-index: 9999;
+                background: #fff;
+                height: 19px;
+                width: 19px;
+                margin-top: 23px;
+                margin-left: -13px!important;
+                margin-right: -14px;
+              }
+            }
+            .editManager,.editParticipant {
+              margin-left: 10px;
+              margin-top: 3px;
+              a.editManager,a.editParticipant {
+                text-decoration: underline;
+                i.fas.fa-pencil-alt.uiIconProject,i.fas.fa-plus {
+                  text-decoration: underline;
+                  font-size: 11px;
+                }
+              }
+              label.editManagerInfo,label.editParticipantInfo {
+                font-size: 10px;
+                color: @textLightColor;
+                font-style: italic;
+                i.uiIconInformation.uiIconProject:before {
+                  content: "\ea93";
+                  font-size: 13px;
+                  color: @textLightColor;
+                }
+              }
+            }
+          }
+        }
+        .cke_browser_webkit{
+          margin-top: 15px;
+          margin-left: 33px;
+        }
+        .cke_bottom.cke_reset_all {
+          background-color: transparent;
+          height: 30px;
+        }
+        .cke_bottom .cke_button_icon {
+          filter: opacity(0.2);
+        }
+        .projectDescription {
+          .activityCharsCount{
+            position: absolute;
+            bottom: 8px;
+            right: 10px;
+            color: #adadad;
+          }
+          label {
+            font-size: 1rem !important;
+            font-weight: 400;
+            letter-spacing: 0.03125em !important;
+            line-height: 1.5rem;
+            color: @textLightColor!important;
+          }
+        }
+      }
+    }
     .tasksMenuParent {
       margin-bottom: 10px;
     }
@@ -81,6 +195,175 @@
       .filterTasksDrawer {
         .v-navigation-drawer__content{
           padding-left: 20px;
+          /* switch */
+          .switch {
+            position: relative;
+            display: inline-block;
+            width: 53px;
+            height: 32px;
+            top: 0.4rem;
+          }
+
+          .switch input {
+            display: none;
+          }
+
+          .slider {
+            position: absolute;
+            cursor: pointer;
+            overflow: hidden;
+            top: 5px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 60px;
+            height: 20px;
+            background-color: #f2f2f2;
+            -webkit-transition: .4s;
+            transition: .4s;
+          }
+
+          .slider:before {
+            position: absolute;
+            z-index: 2;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 5px;
+            bottom: 3px;
+            background-color: darkgrey;
+            -webkit-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.22);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.22);
+            -webkit-transition: .4s;
+            transition: all 0.4s ease-in-out;
+          }
+
+          .slider:after {
+            position: absolute;
+            left: -20px;
+            z-index: 1;
+            content: "";
+            font-size: 13px;
+            text-align: left !important;
+            line-height: 19px;
+            padding-left: 0;
+            width: 95px;
+            height: 26px !important;
+            color: #f9f9f9;
+            background-repeat: repeat-x;
+            filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff578dc9', endColorstr='#ff2f5e92', GradientType=0);
+            -moz-box-shadow: inset 0px 3px 5px #224469;
+            -webkit-border-top-left-radius: 9px;
+            -moz-border-radius-topleft: 9px;
+            border-top-left-radius: 9px;
+            -webkit-border-bottom-left-radius: 9px;
+            -moz-border-radius-bottomleft: 9px;
+            border-bottom-left-radius: 9px;
+            height: 57px;
+            border-radius: 100px;
+            background-color: @primaryColor;
+            -webkit-transform: translateX(-190px);
+            -ms-transform: translateX(-190px);
+            transform: translateX(-190px);
+            transition: all 0.4s ease-in-out;
+          }
+
+          input:checked + .slider:after {
+            -webkit-transform: translateX(0px);
+            -ms-transform: translateX(0px);
+            transform: translateX(0px);
+            padding-left: 25px;
+          }
+
+          input:checked + .slider:before {
+            background-color: #fff;
+            -webkit-transform: translateX(38px);
+            -ms-transform: translateX(38px);
+            transform: translateX(38px);
+          }
+
+          input:checked + .slider:before {
+            -webkit-transform: translateX(38px);
+            -ms-transform: translateX(38px);
+            transform: translateX(38px);
+          }
+
+          /* Rounded sliders */
+          .slider.round {
+            border-radius: 100px;
+          }
+
+          .slider.round:before {
+            border-radius: 50%;
+          }
+
+          .absolute-no {
+            position: absolute;
+            left: 27px;
+            color: DarkGrey;
+            text-align: right !important;
+            font-size: 16px;
+            width: calc(100% - 25px);
+            line-height: 30px;
+            cursor: pointer;
+          }
+
+          input:not(:checked) + .slider > .absolute-yes {
+            z-index: -1;
+            position: absolute;
+            -webkit-transform: translateX(-190px);
+            -ms-transform: translateX(-190px);
+            transform: translateX(-190px);
+            left: 2px;
+            color: white;
+            text-align: right;
+            font-size: 16px;
+            width: calc(100% - 25px);
+            line-height: 22px;
+            cursor: pointer;
+            transition: all 0.4s ease-in-out;
+          }
+
+          input:checked + .slider > .absolute-yes {
+            -webkit-transform: translateX(0px);
+            -ms-transform: translateX(0px);
+            transform: translateX(0px);
+            z-index: 15;
+            position: absolute;
+            left: 2px;
+            color: white;
+            text-align: right;
+            font-size: 16px;
+            width: calc(100% - 25px);
+            line-height: 22px;
+            cursor: pointer;
+            transition: all 0.4s ease-in-out;
+            padding-right: 10px;
+          }
+
+          .absolute-no {
+            position: absolute;
+            left: 27px;
+            color: DarkGrey;
+            text-align: right !important;
+            font-size: 16px;
+            width: auto;
+            line-height: 30px;
+            cursor: pointer;
+          }
+
+          form.switchEnabled {
+            display: inline-flex;
+            margin: 20px 5px;
+          }
+
+          form.switchEnabled label.switch {
+            margin-left: 21px;
+            margin-top: -7px;
+          }
+          .flex.drawerContent.flex-grow-1.overflow-auto.border-box-sizing{
+            padding-right: 20px;
+          }
           button.reset.v-btn.v-btn--contained.theme--light.v-size--default{
             cursor: pointer!important;
             margin-right: 75px!important;
@@ -105,119 +388,6 @@
         }
         .identitySuggester{
           height: 37px;
-        }
-      }
-      .addProjectDrawer {
-        hr.my-0.v-divider.theme--light{
-          margin-top: 5px!important;
-        }
-        .v-btn:not(.v-btn--round).v-size--default{
-          width: 64px!important;
-        }
-        .drawerContent {
-          padding: 16px;
-          .addProjectTitle {
-            margin-top: -10px;
-            .uiIconProject {
-              font-family: "PLF-FONT-ICONS" !important;
-              font-style: normal;
-              font-size: 22px;
-              color: @primaryColor;
-              margin-right: 15px;
-              &:before {
-                content: "\e665";
-              }
-            }
-            .projectInputTitle {
-              &:before {
-                display: none;
-              }
-              &:after{
-                border: Solid 1px @borderColor!important;
-                border-radius: 5px!important;
-              }
-              .v-input__slot {
-                label {
-                  color: @greyColorLighten1;
-                  letter-spacing: .2px;
-                }
-                .v-text-field__slot{
-                  margin-left: 5px;
-                }
-              }
-            }
-          }
-          hr.py-3.v-divider.theme--light{
-            margin-top: 10px;
-          }
-          .projectPermissionsUsers {
-            .permisionLabel {
-              color: @textLightColor;
-            }
-            .listOfManager,.listOfParticipant {
-              display: flex;
-              a.flex-nowrap.flex-shrink-0.d-flex {
-                margin-right: 5px;
-                .v-avatar.pull-left.my-auto {
-                  height: 30px;
-                  min-width: 30px;
-                  width: 30px;
-                }
-                .peopleInfoIcon {
-                  z-index: 9999;
-                  background: #fff;
-                  height: 19px;
-                  width: 19px;
-                  margin-top: 23px;
-                  margin-left: -13px!important;
-                  margin-right: -14px;
-                }
-              }
-              .editManager,.editParticipant {
-                margin-left: 10px;
-                margin-top: 3px;
-                a.editManager,a.editParticipant {
-                  text-decoration: underline;
-                  i.fas.fa-pencil-alt.uiIconProject,i.fas.fa-plus {
-                    text-decoration: underline;
-                    font-size: 11px;
-                  }
-                }
-                label.editManagerInfo,label.editParticipantInfo {
-                  font-size: 10px;
-                  color: @textLightColor;
-                  font-style: italic;
-                  i.uiIconInformation.uiIconProject:before {
-                    content: "\ea93";
-                    font-size: 13px;
-                    color: @textLightColor;
-                  }
-                }
-              }
-            }
-          }
-          .cke_browser_webkit{
-            margin-top: 15px;
-            margin-left: 33px;
-          }
-          .cke_contents.cke_reset{
-            height: 85px!important;
-          }
-          .cke_bottom.cke_reset_all {
-            height: 30px;
-          }
-          .cke_bottom .cke_button_icon {
-            filter: opacity(0.2);
-          }
-          .projectDescription {
-            label {
-              font-size: 1rem !important;
-              font-weight: 400;
-              letter-spacing: 0.03125em !important;
-              line-height: 1.5rem;
-              color: @textLightColor!important;
-            }
-          }
         }
       }
       .tasksListContainer {
@@ -489,14 +659,16 @@
               }
               background-image: linear-gradient(to bottom, @primaryColor, @primaryColor);
             }
-            .v-list-item {
-              min-height: 30px!important;
+            .v-list-item.menu-list,.v-list-item.draftButton, .v-list-item.clone{
               &:hover{
                 .uiIcon,span {
                   color: #ffffff!important;
                 }
                 background-image: linear-gradient(to bottom, @primaryColor, @primaryColor);
               }
+            }
+            .v-list-item {
+              min-height: 30px!important;
               .uiIcon {
                 font-size: 16px;
               }

@@ -8,7 +8,8 @@
       {{ labelDrawer }}
     </template>
     <template slot="content">
-      <v-form
+      <v-form 
+        v-if="projectInformation"
         ref="taskEventForm"
         class="flex"
         flat>
@@ -87,60 +88,50 @@
             ref="richEditor"
             v-model="projectInformation.description"
             :max-length="MESSAGE_MAX_LENGTH"
-            :id="project.id"/>
+            :id="project.id"
+            :placeholder="$t('task.placeholder').replace('{0}', MESSAGE_MAX_LENGTH)"/>
         </div>
       </v-form>
     </template>
     <template slot="footer">
       <div class="d-flex">
         <v-spacer />
-        <div class="VuetifyApp">
-          <div class="d-btn">
-            <v-btn
-              class="btn mr-2"
-              @click="cancel">
-              <template>
-                {{ $t('popup.cancel') }}
-              </template>
-            </v-btn>
-
-            <v-btn 
-              :loading="postProject"
-              class="btn btn-primary"
-              @click="saveProject">
-              <template>
-                {{ $t('label.save') }}
-              </template>
-            </v-btn>
-          </div>
-        </div>
+        <v-btn
+          class="btn mr-2"
+          @click="cancel">
+          {{ $t('popup.cancel') }}
+        </v-btn>
+        <v-btn
+          :disabled="postDisabled"
+          :loading="postProject"
+          class="btn btn-primary"
+          @click="saveProject">
+          {{ $t('label.save') }}
+        </v-btn>
       </div>
     </template>
   </exo-drawer>
 </template>
 <script>
   export default {
-    props: {
-      project: {
-        type: Object,
-        default: () => ({}),
-      }
-    },
     data() {
       return {
-        MESSAGE_MAX_LENGTH:1000,
+        MESSAGE_MAX_LENGTH:250,
         listOfManager:[{src:"/portal/rest/v1/social/users/default-image/avatar"}],
         listOfParticipant:[{src:"/portal/rest/v1/social/users/default-image/avatar"}],
         activityComposerActions: [],
-        projectInformation:{
-          name:'',
-          description:'',
-          id:'',
-        },
+        projectInformation:null,
         postProject:false,
+        project:{}
       };
     },
     computed: {
+      postDisabled: function() {
+        if(this.projectInformation !== null){
+          const pureText = this.projectInformation.description ? this.projectInformation.description.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, '').trim() : '';
+          return pureText.length> this.MESSAGE_MAX_LENGTH ;
+        }
+      },
       suggesterLabels() {
         return {
           placeholder: this.$t('label.inviteManagers'),
@@ -156,8 +147,16 @@
         }
       }
     },
-    created() {
-      if (this.project.name !== null ||this.project.name !==''){
+ 
+    methods: {
+      open(project) { 
+        this.project=project 
+        this.projectInformation={
+          name:'',
+          description:'',
+          id:'',
+        };
+            if (this.project.name !== null ||this.project.name !==''){
         this.projectInformation.name=this.project.name;
       }
       if (this.project.id !== null ||this.project.id !==''){
@@ -166,9 +165,6 @@
       if (this.project.description !== null || this.project.description !== ''){
         this.projectInformation.description = this.project.description;
       }
-    },
-    methods: {
-      open() {
         this.$refs.addProjectDrawer.open();
         window.setTimeout(() => this.$refs.addProjectTitle.querySelector('input').focus(), 200);
       },
@@ -209,32 +205,29 @@
             manager: eXo.env.portal.userName
           };
           if (typeof projects.id !== 'undefined') {
+            this.postProject = true;
             return this.$projectService.updateProjectInfo(projects).then(project => {
-              this.postProject = true;
               this.$emit('update-cart', project);
-              if (project) {
-                window.location.href = `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest`;
-              } else {
-                window.location.href = `${eXo.env.portal.context}/${eXo.env.portal.portalName}`;
-              }
+              this.$root.$emit('update-projects-list', {})
+              this.postProject = false;
+              this.$refs.addProjectDrawer.close();
             })
                     .catch(e => {
                       console.debug("Error updating project", e);
                       this.$emit('error', e && e.message ? e.message : String(e));
+                      this.postProject = false;
                     });
           } else {
             return this.$projectService.addProject(projects).then(project => {
-              this.postProject = true;
               this.$emit('update-cart', project);
-              if (project) {
-                window.location.href = `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest`;
-              } else {
-                window.location.href = `${eXo.env.portal.context}/${eXo.env.portal.portalName}`;
-              }
+             this.$root.$emit('update-projects-list', {})
+             this.postProject = false;
+               this.$refs.addProjectDrawer.close();
             })
                     .catch(e => {
                       console.debug("Error saving project", e);
                       this.$emit('error', e && e.message ? e.message : String(e));
+                      this.postProject = false;
                     });
           }
 

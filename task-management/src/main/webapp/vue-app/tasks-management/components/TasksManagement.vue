@@ -19,6 +19,8 @@
         <project-dashboard/>
       </v-tab-item>
     </v-tabs-items>
+    <add-project-drawer
+      ref="addProjectDrawer"/>
   </v-app>
 </template>
 <script>
@@ -28,5 +30,37 @@
         tab: 'tab-2',
       }
     },
+ 
+  created(){
+     this.$root.$on('open-project-drawer', project => {
+       this.$refs.addProjectDrawer.open(project);
+      });
+
+     const search = document.location.search.substring(1);
+     if(search.includes('mytasks')){
+        this.tab='tab-1'
+        search.replace('mytasks','')
+     }
+     if(search.includes('myprojects')){
+        this.tab='tab-2'
+        search.replace('myprojects','')
+     }
+    if(search) {
+      const parameters = JSON.parse(
+        `{"${decodeURI(search)
+          .replace(/"/g, '\\"')
+          .replace(/&/g, '","')
+          .replace(/=/g, '":"')}"}`
+      );
+      const taskId = parameters.taskId && Number(parameters.taskId) || 0;
+      const projectId = parameters.projectId && Number(parameters.projectId) || 0;
+      if (projectId) {
+          this.$projectService.getProject(projectId).then(data => {
+          document.dispatchEvent(new CustomEvent('showProjectTasks', {detail: data}));
+        })
+        
+      } 
+    }
   }
+   }
 </script>

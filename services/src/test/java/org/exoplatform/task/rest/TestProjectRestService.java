@@ -1,5 +1,20 @@
 package org.exoplatform.task.rest;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.*;
+
+import java.util.*;
+
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.RuntimeDelegate;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.rest.impl.RuntimeDelegateImpl;
 import org.exoplatform.services.security.ConversationState;
@@ -15,25 +30,11 @@ import org.exoplatform.task.model.User;
 import org.exoplatform.task.service.*;
 import org.exoplatform.task.storage.ProjectStorage;
 import org.exoplatform.task.storage.StatusStorage;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
-
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.RuntimeDelegate;
-import java.util.*;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TestProjectRestService {
   @Mock
-  TaskService taskService;
+  TaskService    taskService;
 
   @Mock
   ProjectService projectService;
@@ -45,19 +46,19 @@ public class TestProjectRestService {
   StatusService  statusService;
 
   @Mock
-  StatusStorage statusStorage;
+  StatusStorage  statusStorage;
 
   @Mock
-  UserService userService;
+  UserService    userService;
 
   @Mock
-  SpaceService spaceService;
+  SpaceService   spaceService;
 
   @Mock
   CommentService commentService;
 
   @Mock
-  LabelService labelService;
+  LabelService   labelService;
 
   @Before
   public void setup() {
@@ -124,29 +125,27 @@ public class TestProjectRestService {
     assertEquals(3, tasks2.size());
 
     assertEquals(Response.Status.OK.getStatusCode(), response3.getStatus());
-   // JSONObject tasks3JsonObject = (JSONObject) response3.getEntity();
-   // assertNotNull(tasks3JsonObject);
-    //assertTrue(tasks3JsonObject.has("size"));
-   // assertTrue(tasks3JsonObject.has("tasks"));
-    //JSONArray tasks3 = (JSONArray) tasks3JsonObject.get("tasks");
-    //assertNotNull(tasks3);
-   // assertEquals(1, tasks3.length());
-   // Long tasks3Size = (Long) tasks3JsonObject.get("size");
-   // assertEquals(1L, tasks3Size.longValue());
+    // JSONObject tasks3JsonObject = (JSONObject) response3.getEntity();
+    // assertNotNull(tasks3JsonObject);
+    // assertTrue(tasks3JsonObject.has("size"));
+    // assertTrue(tasks3JsonObject.has("tasks"));
+    // JSONArray tasks3 = (JSONArray) tasks3JsonObject.get("tasks");
+    // assertNotNull(tasks3);
+    // assertEquals(1, tasks3.length());
+    // Long tasks3Size = (Long) tasks3JsonObject.get("size");
+    // assertEquals(1L, tasks3Size.longValue());
   }
-
-
 
   @Test
   public void testGetProjects() throws Exception {
     // Given
     ProjectRestService projectRestService = new ProjectRestService(taskService,
-                                                          commentService,
-                                                          projectService,
-                                                          statusService,
-                                                          userService,
-                                                          spaceService,
-                                                          labelService);
+                                                                   commentService,
+                                                                   projectService,
+                                                                   statusService,
+                                                                   userService,
+                                                                   spaceService,
+                                                                   labelService);
     Identity root = new Identity("root");
     ConversationState.setCurrent(new ConversationState(root));
 
@@ -161,7 +160,7 @@ public class TestProjectRestService {
     projectService.createProject(project3);
 
     // When
-    Response response = projectRestService.getProjects(null,-1,-1);
+    Response response = projectRestService.getProjects(null, -1, -1);
 
     // Then
     assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -172,12 +171,12 @@ public class TestProjectRestService {
   public void testGetDefaultStatusByProjectId() throws Exception {
     // Given
     ProjectRestService projectRestService = new ProjectRestService(taskService,
-                                                          commentService,
-                                                          projectService,
-                                                          statusService,
-                                                          userService,
-                                                          spaceService,
-                                                          labelService);
+                                                                   commentService,
+                                                                   projectService,
+                                                                   statusService,
+                                                                   userService,
+                                                                   spaceService,
+                                                                   labelService);
     Identity john = new Identity("john");
     ConversationState.setCurrent(new ConversationState(john));
     ProjectDto project = new ProjectDto();
@@ -193,22 +192,49 @@ public class TestProjectRestService {
     when(statusService.getDefaultStatus(1L)).thenReturn(status);
     when(projectService.getManager(1)).thenReturn(manager);
     // When
-     Response response = projectRestService.getDefaultStatusByProjectId(3);
-     assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+    Response response = projectRestService.getDefaultStatusByProjectId(3);
+    assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
 
   }
 
+  @Test
+  public void testGetProjectById() throws Exception {
+    // Given
+    ProjectRestService projectRestService = new ProjectRestService(taskService,
+                                                                   commentService,
+                                                                   projectService,
+                                                                   statusService,
+                                                                   userService,
+                                                                   spaceService,
+                                                                   labelService);
+    Identity john = new Identity("john");
+    ConversationState.setCurrent(new ConversationState(john));
+    ProjectDto project = new ProjectDto();
+    project.setId(1);
+    Set<String> manager = new HashSet<String>();
+    manager.add("john");
+    project.setManager(manager);
+
+    when(projectService.getProject(1L)).thenReturn(project);
+
+    // When
+    Response response = projectRestService.getProjectById(1);
+    // Then
+    assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+    assertNotNull(response.getEntity());
+
+  }
 
   @Test
   public void testAddProject() throws Exception {
     // Given
     ProjectRestService projectRestService = new ProjectRestService(taskService,
-            commentService,
-            projectService,
-            statusService,
-            userService,
-            spaceService,
-            labelService);
+                                                                   commentService,
+                                                                   projectService,
+                                                                   statusService,
+                                                                   userService,
+                                                                   spaceService,
+                                                                   labelService);
     Identity john = new Identity("john");
     ConversationState.setCurrent(new ConversationState(john));
     Set<String> manager = new HashSet<String>();
@@ -225,7 +251,6 @@ public class TestProjectRestService {
     Response response = projectRestService.createProject(projectDto);
     assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
-
     projectDto.setName(null);
     projectService.createProject(projectDto);
 
@@ -240,12 +265,12 @@ public class TestProjectRestService {
   public void testUpdateProject() throws Exception {
     // Given
     ProjectRestService projectRestService = new ProjectRestService(taskService,
-            commentService,
-            projectService,
-            statusService,
-            userService,
-            spaceService,
-            labelService);
+                                                                   commentService,
+                                                                   projectService,
+                                                                   statusService,
+                                                                   userService,
+                                                                   spaceService,
+                                                                   labelService);
     Identity john = new Identity("john");
     ConversationState.setCurrent(new ConversationState(john));
     Set<String> manager = new HashSet<String>();
@@ -258,16 +283,15 @@ public class TestProjectRestService {
 
     when(projectService.updateProject(any())).thenReturn(projectDto);
 
-    Response response = projectRestService.updateProject(projectDto.getId(),projectDto);
+    Response response = projectRestService.updateProject(projectDto.getId(), projectDto);
     assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
-
 
     projectDto.setName("john");
     projectService.updateProject(projectDto);
 
     when(projectService.updateProject(any())).thenReturn(projectDto);
     when(projectService.getProject(projectDto.getId())).thenReturn(projectDto);
-    response = projectRestService.updateProject(projectDto.getId(),projectDto);
+    response = projectRestService.updateProject(projectDto.getId(), projectDto);
     assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
     Identity root = new Identity("root");
@@ -275,7 +299,7 @@ public class TestProjectRestService {
 
     when(projectService.updateProject(any())).thenReturn(projectDto);
     when(projectService.getProject(projectDto.getId())).thenReturn(projectDto);
-    response = projectRestService.updateProject(projectDto.getId(),projectDto);
+    response = projectRestService.updateProject(projectDto.getId(), projectDto);
     assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
 
   }
@@ -284,12 +308,12 @@ public class TestProjectRestService {
   public void testGetSatusesByProjectId() throws Exception {
     // Given
     ProjectRestService projectRestService = new ProjectRestService(taskService,
-            commentService,
-            projectService,
-            statusService,
-            userService,
-            spaceService,
-            labelService);
+                                                                   commentService,
+                                                                   projectService,
+                                                                   statusService,
+                                                                   userService,
+                                                                   spaceService,
+                                                                   labelService);
     Identity root = new Identity("root");
     ConversationState.setCurrent(new ConversationState(root));
 
@@ -352,16 +376,16 @@ public class TestProjectRestService {
 
   }
 
-    @Test
+  @Test
   public void testfindUsersToMention() throws Exception {
     // Given
     ProjectRestService projectRestService = new ProjectRestService(taskService,
-            commentService,
-            projectService,
-            statusService,
-            userService,
-            spaceService,
-            labelService);
+                                                                   commentService,
+                                                                   projectService,
+                                                                   statusService,
+                                                                   userService,
+                                                                   spaceService,
+                                                                   labelService);
 
     Identity root = new Identity("root");
     ConversationState.setCurrent(new ConversationState(root));
@@ -375,7 +399,7 @@ public class TestProjectRestService {
     ListAccess<User> lists = new ListAccess<User>() {
       @Override
       public User[] load(int i, int i1) throws Exception, IllegalArgumentException {
-        return new User[]{user};
+        return new User[] { user };
       }
 
       @Override
@@ -386,7 +410,7 @@ public class TestProjectRestService {
 
     when(userService.findUserByName("root")).thenReturn(lists);
 
-    Response  response = projectRestService.getUsersByQueryAndProjectName("root", "project1");
+    Response response = projectRestService.getUsersByQueryAndProjectName("root", "project1");
     assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
   }
 
@@ -394,12 +418,12 @@ public class TestProjectRestService {
   public void testDeleteProject() throws Exception {
     // Given
     ProjectRestService projectRestService = new ProjectRestService(taskService,
-            commentService,
-            projectService,
-            statusService,
-            userService,
-            spaceService,
-            labelService);
+                                                                   commentService,
+                                                                   projectService,
+                                                                   statusService,
+                                                                   userService,
+                                                                   spaceService,
+                                                                   labelService);
     Identity john = new Identity("john");
     ConversationState.setCurrent(new ConversationState(john));
     Set<String> manager = new HashSet<String>();
@@ -412,7 +436,7 @@ public class TestProjectRestService {
 
     when(projectService.getProject(projectDto.getId())).thenReturn(projectDto);
 
-    Response response1 = projectRestService.deleteProject(projectDto.getId(),false,0,0);
+    Response response1 = projectRestService.deleteProject(projectDto.getId(), false, 0, 0);
     assertEquals(Response.Status.OK.getStatusCode(), response1.getStatus());
   }
 
@@ -420,12 +444,12 @@ public class TestProjectRestService {
   public void testCloneProject() throws Exception {
     // Given
     ProjectRestService projectRestService = new ProjectRestService(taskService,
-            commentService,
-            projectService,
-            statusService,
-            userService,
-            spaceService,
-            labelService);
+                                                                   commentService,
+                                                                   projectService,
+                                                                   statusService,
+                                                                   userService,
+                                                                   spaceService,
+                                                                   labelService);
     Identity john = new Identity("john");
     ConversationState.setCurrent(new ConversationState(john));
     Set<String> manager = new HashSet<String>();
@@ -442,7 +466,7 @@ public class TestProjectRestService {
     projectCloned.setDescription("bla bla bla");
     projectCloned.setManager(manager);
 
-    when(projectService.cloneProject(projectDto.getId(),true)).thenReturn(projectCloned);
+    when(projectService.cloneProject(projectDto.getId(), true)).thenReturn(projectCloned);
 
     Response response1 = projectRestService.cloneProject(projectDto);
     assertEquals(Response.Status.OK.getStatusCode(), response1.getStatus());
@@ -452,12 +476,12 @@ public class TestProjectRestService {
   public void testChangeProjectColor() throws Exception {
     // Given
     ProjectRestService projectRestService = new ProjectRestService(taskService,
-            commentService,
-            projectService,
-            statusService,
-            userService,
-            spaceService,
-            labelService);
+                                                                   commentService,
+                                                                   projectService,
+                                                                   statusService,
+                                                                   userService,
+                                                                   spaceService,
+                                                                   labelService);
     Identity john = new Identity("john");
     ConversationState.setCurrent(new ConversationState(john));
     Set<String> manager = new HashSet<String>();
@@ -477,7 +501,7 @@ public class TestProjectRestService {
     when(projectService.getProject(projectDto.getId())).thenReturn(projectDto);
     when(projectService.updateProject(projectDto)).thenReturn(projectDto1);
 
-    Response response1 = projectRestService.changeProjectColor(projectDto.getId(),"red");
+    Response response1 = projectRestService.changeProjectColor(projectDto.getId(), "red");
     assertEquals(Response.Status.OK.getStatusCode(), response1.getStatus());
   }
 

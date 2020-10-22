@@ -27,6 +27,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.exoplatform.task.legacy.service.UserService;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -80,6 +81,9 @@ public class TaskServiceTest {
   @Mock
   DAOHandler                 daoHandler;
 
+  @Mock
+  UserService userService;
+
   // ArgumentCaptors are how you can retrieve objects that were passed into a
   // method call
   @Captor
@@ -92,7 +96,7 @@ public class TaskServiceTest {
     PortalContainer.getInstance();
 
     listenerService = new ListenerService(new ExoContainerContext(container));
-    taskStorage = new TaskStorageImpl(daoHandler);
+    taskStorage = new TaskStorageImpl(daoHandler,userService);
     taskService = new TaskServiceImpl(taskStorage, daoHandler, listenerService);
 
     // Mock DAO handler to return Mocked DAO

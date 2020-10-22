@@ -29,10 +29,8 @@
           v-model="assignee"
           name="assignee"
           type-of-relations="user_to_invite"
-          height="100"
-          include-users
-          include-spaces
-          multiple/>
+          height="40"
+          include-users/>
         <v-label for="taskDueDate">
           <span class="font-weight-bold body-2">{{ $t('filter.task.due') }}</span>
         </v-label>
@@ -40,10 +38,7 @@
           v-model="dueDateSelected"
           name="taskDueDate"
           class="input-block-level ignore-vuetify-classes my-3">
-          <option 
-            value="" 
-            selected 
-            disabled>{{ $t('filter.task.all') }}</option>
+
           <option
             v-for="item in dueDate"
             :key="item.name"
@@ -59,10 +54,7 @@
           v-model="prioritySelected"
           name="priority"
           class="input-block-level ignore-vuetify-classes my-3">
-          <option
-            value=""
-            selected
-            disabled>{{ $t('filter.task.all') }}</option>
+
           <option
             v-for="item in priority"
             :key="item.name"
@@ -71,15 +63,25 @@
           </option>
         </select>
         <div class="showCompleteTasks d-flex flex-wrap pt-2">
-          <label for="showCompleteTasks" class="v-label theme--light my-auto float-left">
-            <span class="font-weight-bold body-2">{{ $t('filter.task.showCompleted') }}</span>
-          </label>
+          <form class="switchEnabled">
+            <label class="col-form-label pt-0" max-rows="6">{{ $t(`filter.task.showCompleted`)
+            }}:</label>
+            <label class="switch">
+              <input
+                v-model="showCompleteTasks"
+                type="checkbox">
+              <div class="slider round"><span class="absolute-yes">{{ $t(`filter.task.showCompleted.yes`,"YES") }}</span></div>
+              <span class="absolute-no">{{ $t(`filter.task.showCompleted.no`) }}</span>
+            </label>
+          </form>
+
+          <!--<v-switch v-model="showCompleteTasks" class="mt-0 ml-4" />
           <v-switch
             ref="autoFocusInput2"
             v-model="showCompleteTasks"
             true-value="true"
             false-value="false"
-            class="float-left my-0 ml-4" />
+            class="float-left my-0 ml-4" />-->
         </div>
       </form>
     </template>
@@ -139,7 +141,7 @@
         priority: [
           {name: ""},{name: "NONE"},{name: "LOW"},{name: "NORMAL"},{name: "HIGH"}
         ],
-        showCompleteTasks:false
+        showCompleteTasks:true,
       }
     },
     computed: {
@@ -160,15 +162,16 @@
         this.assignee=this.task.assignee;
         this.dueDateSelected='';
         this.prioritySelected='';
-        this.showCompleteTasks=false;
+        this.showCompleteTasks=true;
       },
       reset() {
         this.query=this.task.query;
         this.assignee=this.task.assignee;
         this.dueDateSelected='';
         this.prioritySelected='';
-        this.showCompleteTasks=false;
+        this.showCompleteTasks=true;
         this.$emit('reset-filter-task');
+        this.cancel();
       },
       filterTasks(){
         const tasks = {
@@ -179,10 +182,11 @@
           showCompleteTasks: this.showCompleteTasks
         };
         if (this.assignee !== null && this.assignee !== undefined && this.assignee !== ''){
-          tasks.assignee = this.assignee[0].remoteId;
+          tasks.assignee = this.assignee.remoteId;
         }
         return this.$tasksService.filterTasksList(tasks).then(tasks => {
           this.$emit('filter-task', tasks);
+          this.$refs.filterTasksDrawer.close();
 
         })
                 .catch(e => {
@@ -194,3 +198,4 @@
     }
   }
 </script>
+
