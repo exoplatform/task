@@ -88,7 +88,8 @@
             ref="richEditor"
             v-model="projectInformation.description"
             :max-length="MESSAGE_MAX_LENGTH"
-            :id="project.id"/>
+            :id="project.id"
+            :placeholder="$t('task.placeholder').replace('{0}', MESSAGE_MAX_LENGTH)"/>
         </div>
       </v-form>
     </template>
@@ -105,7 +106,8 @@
               </template>
             </v-btn>
 
-            <v-btn 
+            <v-btn
+              :disabled="postDisabled"
               :loading="postProject"
               class="btn btn-primary"
               @click="saveProject">
@@ -123,7 +125,7 @@
   export default {
     data() {
       return {
-        MESSAGE_MAX_LENGTH:1000,
+        MESSAGE_MAX_LENGTH:250,
         listOfManager:[{src:"/portal/rest/v1/social/users/default-image/avatar"}],
         listOfParticipant:[{src:"/portal/rest/v1/social/users/default-image/avatar"}],
         activityComposerActions: [],
@@ -133,6 +135,12 @@
       };
     },
     computed: {
+      postDisabled: function() {
+        if(this.projectInformation !== null){
+          const pureText = this.projectInformation.description ? this.projectInformation.description.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, '').trim() : '';
+          return pureText.length> this.MESSAGE_MAX_LENGTH ;
+        }
+      },
       suggesterLabels() {
         return {
           placeholder: this.$t('label.inviteManagers'),

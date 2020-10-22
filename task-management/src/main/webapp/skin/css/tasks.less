@@ -369,9 +369,6 @@
             margin-top: 15px;
             margin-left: 33px;
           }
-          .cke_contents.cke_reset{
-            height: 85px!important;
-          }
           .cke_bottom.cke_reset_all {
             background-color: transparent;
             height: 30px;
@@ -380,6 +377,12 @@
             filter: opacity(0.2);
           }
           .projectDescription {
+            .activityCharsCount{
+              position: absolute;
+              bottom: 8px;
+              right: 10px;
+              color: #adadad;
+            }
             label {
               font-size: 1rem !important;
               font-weight: 400;
@@ -659,14 +662,16 @@
               }
               background-image: linear-gradient(to bottom, @primaryColor, @primaryColor);
             }
-            .v-list-item {
-              min-height: 30px!important;
+            .v-list-item.menu-list,.v-list-item.draftButton, .v-list-item.clone{
               &:hover{
                 .uiIcon,span {
                   color: #ffffff!important;
                 }
                 background-image: linear-gradient(to bottom, @primaryColor, @primaryColor);
               }
+            }
+            .v-list-item {
+              min-height: 30px!important;
               .uiIcon {
                 font-size: 16px;
               }
