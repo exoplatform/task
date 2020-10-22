@@ -80,7 +80,6 @@
         const barDv = this.$refs.chart;
         barDv.style.width=`${window.innerWidth -100 }px`;
         if (barDv) {
-          console.log('bar_dv is not empty');
           const myChart = echarts.init(barDv);
           const GanttTasksList = [];
           const numberOfDays = [];
@@ -112,14 +111,14 @@
           });
           this.setDates(GanttTasksList);
           startDayTime = GanttTasksList.reverse()[0].startDateTime;
-          for(let step=0;  step < 7; step++ ) {
+          for(let step=0;  step < 14; step++ ) {
             tasksDate.push(this.$dateUtil.formatDateObjectToDisplay(new Date(startDayTime + (86400000*step)), this.dateFormat, this.lang))
           }
           const startTaskDelay = [];
           const tasksToDisplay = [];
           const delayToDisplay = [];
           GanttTasksList.forEach((item) => {
-            for(let step=0;  step < 7; step++ ) {
+            for(let step=0;  step < 14; step++ ) {
               if(item && item.startDate === tasksDate[step]) {
                 startTaskDelay.push(step);
                 tasksToDisplay.push(item);
@@ -130,23 +129,44 @@
           });
           const option={
             grid: {
-              left: "3%",
-              right: "3%",
-              bottom: "3%",
-              height:'auto',
-              containLabel: true
+              left: 250,
+              right: 20,
+              bottom: 20,
+              top: 70,
+            },
+            tooltip: {
+              trigger: "item",
+              axisPointer: {
+                type: "none"
+              }
             },
           yAxis: {
               type: "category",
               min: 0,
               max: tasksToDisplay.length-1,
-              splitLine: {show: false},
-              axisTick: {show: false},
-              axisLine: {show: true},
-              axisLabel: {show: true},
-              nameTextStyle: {
+              scale:true,
+              triggerEvent: true,
+              axisLine: {
+                show: false
+              },
+              axisTick: {
+                show: false,
+              },
+              axisLabel: {
+                margin: 250,
+                show: true,
+                inside: false,
                 align: "left",
-                fontSize : "12"
+                fontSize: 14,
+                formatter: function(params) {
+                  let val="";
+                  if(params.length >36){
+                    val = `${params.substr(0,36)}...`;
+                    return val;
+                  }else{
+                    return params;
+                  }
+                }
               },
               data: this.getTasksTitle(tasksToDisplay.reverse())
             },
@@ -156,10 +176,33 @@
               min:0,
               max: 6,
               splitNumber : 7,
-              splitLine: {show: false},
+              splitLine: {
+                show: true,
+                lineStyle: {
+                  color: "#f6f8fa"
+                }
+              },
+              /*name: "Tasks",
+              nameLocation: "start",
+              nameTextStyle: {
+                align: "left",
+                padding: [0, 0, 0, 250]
+              },*/
+              axisLine: {
+                show: false
+              },
+              axisTick: {
+                show: false,
+              },
               axisLabel: {
                 show: true,
                 align: "center",
+                inside: false,
+                fontSize: 13,
+                fontWeight: "bold",
+                backgroundColor: "#f6f8fa",
+                borderRadius: 3,
+                padding: 8,
                 interval: 0,
                 formatter: function (value,index) {
                   const tasksByDate = [];
@@ -174,7 +217,7 @@
               {
                 name: "planDate",
                 type: "bar",
-                stack: "plan",
+                stack: "planTasks",
                 barCategoryGap: "2",
                 barBorderRadius: [3, 3, 3, 3],
                 barWidth: 15,
@@ -191,9 +234,9 @@
                 data: startTaskDelay.reverse()
               },
               {
-                name: "plan",
+                name: "planTasks",
                 type: "bar",
-                stack: "plan",
+                stack: "planTasks",
                 barWidth: 70,
                 barCategoryGap: "2%",
                 itemStyle: {
@@ -214,8 +257,6 @@
           };
           myChart.setOption(option,true);
           myChart.resize();
-        } else {
-          console.log('bar_dv is empty!');
         }
       }
     }
