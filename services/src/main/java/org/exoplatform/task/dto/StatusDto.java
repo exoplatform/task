@@ -42,4 +42,11 @@ public class StatusDto implements Serializable {
         this.project = project;
     }
 
+    public StatusDto clone() {
+        StatusDto status = new StatusDto(getId(), getName(), getRank(), getProject().clone(false));
+
+        return status;
+    }
+
+
 }

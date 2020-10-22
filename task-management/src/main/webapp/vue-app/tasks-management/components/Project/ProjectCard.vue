@@ -14,8 +14,6 @@
           @flip="flipCard = false"/>
       </div>
     </v-flex>
-    <add-project-drawer
-      ref="addProjectDrawer"/>
   </v-app>
 </template>
 <script>
@@ -33,7 +31,7 @@ export default {
   },
   methods:{
     openEditDrawer() {
-      this.$refs.addProjectDrawer.open(this.project);
+       this.$root.$emit('open-project-drawer', this.project)
     },
     onCloseDrawer: function(drawer){
       this.drawer = drawer;

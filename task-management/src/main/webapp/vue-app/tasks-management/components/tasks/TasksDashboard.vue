@@ -78,6 +78,7 @@
       },
     },
     created() {
+      window.history.pushState('page2', 'My Tasks', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest?mytasks`);
       this.originalLimitToFetch = this.limitToFetch = this.limit;
     },
     methods: {

@@ -156,7 +156,7 @@
         }
       }
     },
-
+ 
     methods: {
       open(project) { 
         this.project=project 

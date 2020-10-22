@@ -2,6 +2,7 @@ package org.exoplatform.task.rest;
 
 import io.swagger.annotations.*;
 import org.apache.commons.lang3.StringUtils;
+import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -11,6 +12,7 @@ import org.exoplatform.services.security.Identity;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
 import org.exoplatform.task.dao.OrderBy;
+import org.exoplatform.task.dao.StatusHandler;
 import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
@@ -21,6 +23,7 @@ import org.exoplatform.task.rest.model.*;
 import org.exoplatform.task.service.*;
 import org.exoplatform.task.service.impl.ViewStateService;
 import org.exoplatform.task.storage.CommentStorage;
+import org.exoplatform.task.storage.StatusStorage;
 import org.exoplatform.task.util.*;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -518,6 +521,10 @@ public class TaskRestService implements ResourceContainer {
       task.setAssignee(currentUser);
       task.setStatus(null);
     }
+    if(task.getStatus()!=null&&task.getStatus().getId()==0&&task.getStatus().getProject()!=null) {
+      StatusStorage statusStorage = CommonsUtils.getService(StatusStorage.class);
+      task.setStatus(statusStorage.statusToEntity(statusService.getDefaultStatus(task.getStatus().getProject().getId())));
+    }
     task = taskService.createTask(task);
     return Response.ok(task).build();
   }
@@ -904,11 +911,11 @@ public class TaskRestService implements ResourceContainer {
       commentCount = 0;
     }
     List<LabelDto> labels = new ArrayList<>();
-    try {
+ /*   try {
       labels = labelService.findLabelsByTask(taskId, userName, 0, -1);
     } catch (Exception e) {
       LOG.warn("Error retrieving task '{}' labels", taskId, e);
-    }
+    }*/
     Space space = null;
     if (task.getStatus() != null && task.getStatus().getProject() != null) {
       space = getProjectSpace(task.getStatus().getProject());

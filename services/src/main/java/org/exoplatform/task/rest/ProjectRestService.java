@@ -108,13 +108,38 @@ public class ProjectRestService implements ResourceContainer {
     return Response.ok(global.toString()).build();
   }
 
+
+  @GET
+  @Path("projects/{id}")
+  @RolesAllowed("users")
+  @Produces(MediaType.APPLICATION_JSON)
+  @ApiOperation(value = "Gets  project by id", httpMethod = "GET", response = Response.class, notes = "This returns the default status by project id")
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled"),
+      @ApiResponse(code = 403, message = "Unauthorized operation"), @ApiResponse(code = 500, message = "Internal server error") })
+  public Response getProjectById(@ApiParam(value = "Project id", required = true) @PathParam("id") long id) throws EntityNotFoundException {
+    Identity currentUser = ConversationState.getCurrent().getIdentity();
+    ProjectDto project = projectService.getProject(id);
+    if (project == null) {
+      return Response.status(Response.Status.NOT_FOUND).build();
+    }
+    if (!project.canView(currentUser)) {
+      return Response.status(Response.Status.UNAUTHORIZED).build();
+    }
+    try{
+    return Response.ok(buildJsonProject(project).toString()).build();
+    } catch (JSONException e) {
+      LOG.error("Canit get Project with id {}, id",e);
+    }
+    return Response.status(Response.Status.NOT_FOUND).build();
+  }
+
   @GET
   @Path("projects/status/{id}")
   @RolesAllowed("users")
   @Produces(MediaType.APPLICATION_JSON)
   @ApiOperation(value = "Gets the default status by project id", httpMethod = "GET", response = Response.class, notes = "This returns the default status by project id")
   @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled"),
-      @ApiResponse(code = 403, message = "Unauthorized operation"), @ApiResponse(code = 500, message = "Internal server error") })
+          @ApiResponse(code = 403, message = "Unauthorized operation"), @ApiResponse(code = 500, message = "Internal server error") })
   public Response getDefaultStatusByProjectId(@ApiParam(value = "Project id", required = true) @PathParam("id") long id) throws EntityNotFoundException {
     Identity currentUser = ConversationState.getCurrent().getIdentity();
     ProjectDto project = projectService.getProject(id);
@@ -127,6 +152,7 @@ public class ProjectRestService implements ResourceContainer {
     StatusDto status = statusService.getDefaultStatus(id);
     return Response.ok(status).build();
   }
+
 
   @GET
   @Path("projects/statuses/{id}")
@@ -176,82 +202,83 @@ public class ProjectRestService implements ResourceContainer {
     Identity currentUser = ConversationState.getCurrent().getIdentity();
     for (ProjectDto project : projects) {
       if (project.canView(currentUser)) {
-        long projectId = project.getId();
-        JSONObject projectJson = new JSONObject();
-        List<Object[]> statusObjects = taskService.countTaskStatusByProject(projectId);
-        JSONArray statusStats = new JSONArray();
-        if (statusObjects != null && statusObjects.size() > 0) {
-
-          for (Object[] result : statusObjects) {
-            JSONObject statJson = new JSONObject();
-            statJson.put("status", (String) result[0]);
-            statJson.put("taskNumber", ((Number) result[1]).intValue());
-            statusStats.put(statJson);
-          }
-
-        }
-        projectJson.put("statusStats", statusStats);
-        Space space = null;
-        Set<String> projectManagers = projectService.getManager(projectId);
-        Set<String> managers = new LinkedHashSet();
-        if (projectManagers.size() > 0) {
-          for (String permission : projectService.getManager(projectId)) {
-            int index = permission.indexOf(':');
-            if (index > -1) {
-              String groupId = permission.substring(index + 1);
-              space = spaceService.getSpaceByGroupId(groupId);
-              managers.addAll(Arrays.asList(space.getManagers()));
-            } else {
-              managers.add(permission);
-            }
-          }
-        }
-        if (managers.size() > 0) {
-          JSONArray managersJsonArray = new JSONArray();
-          for (String usr : managers) {
-            JSONObject manager = new JSONObject();
-            User user_ = UserUtil.getUser(usr);
-            manager.put("username", user_.getUsername());
-            manager.put("email", user_.getEmail());
-            manager.put("displayName", user_.getDisplayName());
-            manager.put("avatar", user_.getAvatar());
-            manager.put("url", user_.getUrl());
-            manager.put("enable", user_.isEnable());
-            manager.put("deleted", user_.isDeleted());
-            managersJsonArray.put(manager);
-          }
-          projectJson.put("managerIdentities", managersJsonArray);
-        }
-        if (space != null) {
-          JSONObject spaceJson = new JSONObject();
-          spaceJson.put("prettyName", space.getPrettyName());
-          spaceJson.put("url", space.getUrl());
-          spaceJson.put("displayName", space.getDisplayName());
-          spaceJson.put("id", space.getId());
-          spaceJson.put("avatarUrl", space.getAvatarUrl());
-          spaceJson.put("description", space.getDescription());
-          projectJson.put("space", space);
-        }
-
-        projectJson.put("id", projectId);
-        projectJson.put("name", project.getName());
-        projectJson.put("color", project.getColor());
-        projectJson.put("participator", projectService.getParticipator(projectId));
-        projectJson.put("hiddenOn", project.getHiddenOn());
-        projectJson.put("manager", projectService.getManager(projectId));
-        projectJson.put("children", projectService.getSubProjects(projectId, 0, -1));
-        projectJson.put("dueDate", project.getDueDate());
-        projectJson.put("calendarIntegrated", project.isCalendarIntegrated());
-        projectJson.put("description", project.getDescription());
-        projectJson.put("status", statusService.getStatus(projectId));
-        projectsJsonArray.put(projectJson);
-/*        if (projectService.getSubProjects(projectId, 0, -1) != null) {
-          List<ProjectDto> children = projectService.getSubProjects(projectId, 0, -1);
-          buildJSON(projectsJsonArray, children);
-        }*/
+        projectsJsonArray.put(buildJsonProject(project));
       }
     }
     return projectsJsonArray;
+  }
+
+  private JSONObject buildJsonProject(ProjectDto project) throws JSONException{
+    
+      long projectId = project.getId();
+      JSONObject projectJson = new JSONObject();
+      List<Object[]> statusObjects = taskService.countTaskStatusByProject(projectId);
+      JSONArray statusStats = new JSONArray();
+      if (statusObjects != null && statusObjects.size() > 0) {
+
+        for (Object[] result : statusObjects) {
+          JSONObject statJson = new JSONObject();
+          statJson.put("status", (String) result[0]);
+          statJson.put("taskNumber", ((Number) result[1]).intValue());
+          statusStats.put(statJson);
+        }
+
+      }
+      projectJson.put("statusStats", statusStats);
+      Space space = null;
+      Set<String> projectManagers = projectService.getManager(projectId);
+      Set<String> managers = new LinkedHashSet();
+      if (projectManagers.size() > 0) {
+        for (String permission : projectService.getManager(projectId)) {
+          int index = permission.indexOf(':');
+          if (index > -1) {
+            String groupId = permission.substring(index + 1);
+            space = spaceService.getSpaceByGroupId(groupId);
+            managers.addAll(Arrays.asList(space.getManagers()));
+          } else {
+            managers.add(permission);
+          }
+        }
+      }
+      if (managers.size() > 0) {
+        JSONArray managersJsonArray = new JSONArray();
+        for (String usr : managers) {
+          JSONObject manager = new JSONObject();
+          User user_ = UserUtil.getUser(usr);
+          manager.put("username", user_.getUsername());
+          manager.put("email", user_.getEmail());
+          manager.put("displayName", user_.getDisplayName());
+          manager.put("avatar", user_.getAvatar());
+          manager.put("url", user_.getUrl());
+          manager.put("enable", user_.isEnable());
+          manager.put("deleted", user_.isDeleted());
+          managersJsonArray.put(manager);
+        }
+        projectJson.put("managerIdentities", managersJsonArray);
+      }
+      if (space != null) {
+        JSONObject spaceJson = new JSONObject();
+        spaceJson.put("prettyName", space.getPrettyName());
+        spaceJson.put("url", space.getUrl());
+        spaceJson.put("displayName", space.getDisplayName());
+        spaceJson.put("id", space.getId());
+        spaceJson.put("avatarUrl", space.getAvatarUrl());
+        spaceJson.put("description", space.getDescription());
+        projectJson.put("space", space);
+      }
+
+      projectJson.put("id", projectId);
+      projectJson.put("name", project.getName());
+      projectJson.put("color", project.getColor());
+      projectJson.put("participator", projectService.getParticipator(projectId));
+      projectJson.put("hiddenOn", project.getHiddenOn());
+      projectJson.put("manager", projectService.getManager(projectId));
+      projectJson.put("children", projectService.getSubProjects(projectId, 0, -1));
+      projectJson.put("dueDate", project.getDueDate());
+      projectJson.put("calendarIntegrated", project.isCalendarIntegrated());
+      projectJson.put("description", project.getDescription());
+      projectJson.put("status", statusService.getStatus(projectId));
+      return projectJson;
   }
 
 
