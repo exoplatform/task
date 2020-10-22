@@ -9,6 +9,123 @@
 #TasksParentContainer {
   margin: 25px;
   #TasksManagementPortlet {
+    .addProjectDrawer {
+      hr.my-0.v-divider.theme--light{
+        margin-top: 5px!important;
+      }
+      .v-btn:not(.v-btn--round).v-size--default{
+        width: 64px!important;
+      }
+      .drawerContent {
+        padding: 16px;
+        .addProjectTitle {
+          margin-top: -10px;
+          .uiIconProject {
+            font-family: "PLF-FONT-ICONS" !important;
+            font-style: normal;
+            font-size: 22px;
+            color: @primaryColor;
+            margin-right: 15px;
+            &:before {
+              content: "\e665";
+            }
+          }
+          .projectInputTitle {
+            &:before {
+              display: none;
+            }
+            &:after{
+              border: Solid 1px @borderColor!important;
+              border-radius: 5px!important;
+            }
+            .v-input__slot {
+              label {
+                color: @greyColorLighten1;
+                letter-spacing: .2px;
+              }
+              .v-text-field__slot{
+                margin-left: 5px;
+              }
+            }
+          }
+        }
+        hr.py-3.v-divider.theme--light{
+          margin-top: 10px;
+        }
+        .projectPermissionsUsers {
+          .permisionLabel {
+            color: @textLightColor;
+          }
+          .listOfManager,.listOfParticipant {
+            display: flex;
+            a.flex-nowrap.flex-shrink-0.d-flex {
+              margin-right: 5px;
+              .v-avatar.pull-left.my-auto {
+                height: 30px;
+                min-width: 30px;
+                width: 30px;
+              }
+              .peopleInfoIcon {
+                z-index: 9999;
+                background: #fff;
+                height: 19px;
+                width: 19px;
+                margin-top: 23px;
+                margin-left: -13px!important;
+                margin-right: -14px;
+              }
+            }
+            .editManager,.editParticipant {
+              margin-left: 10px;
+              margin-top: 3px;
+              a.editManager,a.editParticipant {
+                text-decoration: underline;
+                i.fas.fa-pencil-alt.uiIconProject,i.fas.fa-plus {
+                  text-decoration: underline;
+                  font-size: 11px;
+                }
+              }
+              label.editManagerInfo,label.editParticipantInfo {
+                font-size: 10px;
+                color: @textLightColor;
+                font-style: italic;
+                i.uiIconInformation.uiIconProject:before {
+                  content: "\ea93";
+                  font-size: 13px;
+                  color: @textLightColor;
+                }
+              }
+            }
+          }
+        }
+        .cke_browser_webkit{
+          margin-top: 15px;
+          margin-left: 33px;
+        }
+        .cke_bottom.cke_reset_all {
+          background-color: transparent;
+          height: 30px;
+        }
+        .cke_bottom .cke_button_icon {
+          filter: opacity(0.2);
+        }
+        .projectDescription {
+          .activityCharsCount{
+            position: absolute;
+            bottom: 8px;
+            right: 10px;
+            color: #adadad;
+          }
+          label {
+            font-size: 1rem !important;
+            font-weight: 400;
+            letter-spacing: 0.03125em !important;
+            line-height: 1.5rem;
+            color: @textLightColor!important;
+          }
+        }
+      }
+    }
     .tasksMenuParent {
       margin-bottom: 10px;
     }
@@ -274,123 +391,6 @@
         }
         .identitySuggester{
           height: 37px;
-        }
-      }
-      .addProjectDrawer {
-        hr.my-0.v-divider.theme--light{
-          margin-top: 5px!important;
-        }
-        .v-btn:not(.v-btn--round).v-size--default{
-          width: 64px!important;
-        }
-        .drawerContent {
-          padding: 16px;
-          .addProjectTitle {
-            margin-top: -10px;
-            .uiIconProject {
-              font-family: "PLF-FONT-ICONS" !important;
-              font-style: normal;
-              font-size: 22px;
-              color: @primaryColor;
-              margin-right: 15px;
-              &:before {
-                content: "\e665";
-              }
-            }
-            .projectInputTitle {
-              &:before {
-                display: none;
-              }
-              &:after{
-                border: Solid 1px @borderColor!important;
-                border-radius: 5px!important;
-              }
-              .v-input__slot {
-                label {
-                  color: @greyColorLighten1;
-                  letter-spacing: .2px;
-                }
-                .v-text-field__slot{
-                  margin-left: 5px;
-                }
-              }
-            }
-          }
-          hr.py-3.v-divider.theme--light{
-            margin-top: 10px;
-          }
-          .projectPermissionsUsers {
-            .permisionLabel {
-              color: @textLightColor;
-            }
-            .listOfManager,.listOfParticipant {
-              display: flex;
-              a.flex-nowrap.flex-shrink-0.d-flex {
-                margin-right: 5px;
-                .v-avatar.pull-left.my-auto {
-                  height: 30px;
-                  min-width: 30px;
-                  width: 30px;
-                }
-                .peopleInfoIcon {
-                  z-index: 9999;
-                  background: #fff;
-                  height: 19px;
-                  width: 19px;
-                  margin-top: 23px;
-                  margin-left: -13px!important;
-                  margin-right: -14px;
-                }
-              }
-              .editManager,.editParticipant {
-                margin-left: 10px;
-                margin-top: 3px;
-                a.editManager,a.editParticipant {
-                  text-decoration: underline;
-                  i.fas.fa-pencil-alt.uiIconProject,i.fas.fa-plus {
-                    text-decoration: underline;
-                    font-size: 11px;
-                  }
-                }
-                label.editManagerInfo,label.editParticipantInfo {
-                  font-size: 10px;
-                  color: @textLightColor;
-                  font-style: italic;
-                  i.uiIconInformation.uiIconProject:before {
-                    content: "\ea93";
-                    font-size: 13px;
-                    color: @textLightColor;
-                  }
-                }
-              }
-            }
-          }
-          .cke_browser_webkit{
-            margin-top: 15px;
-            margin-left: 33px;
-          }
-          .cke_bottom.cke_reset_all {
-            background-color: transparent;
-            height: 30px;
-          }
-          .cke_bottom .cke_button_icon {
-            filter: opacity(0.2);
-          }
-          .projectDescription {
-            .activityCharsCount{
-              position: absolute;
-              bottom: 8px;
-              right: 10px;
-              color: #adadad;
-            }
-            label {
-              font-size: 1rem !important;
-              font-weight: 400;
-              letter-spacing: 0.03125em !important;
-              line-height: 1.5rem;
-              color: @textLightColor!important;
-            }
-          }
         }
       }
       .tasksListContainer {

@@ -96,27 +96,18 @@
     <template slot="footer">
       <div class="d-flex">
         <v-spacer />
-        <div class="VuetifyApp">
-          <div class="d-btn">
-            <v-btn
-              class="btn mr-2"
-              @click="cancel">
-              <template>
-                {{ $t('popup.cancel') }}
-              </template>
-            </v-btn>
-
-            <v-btn
-              :disabled="postDisabled"
-              :loading="postProject"
-              class="btn btn-primary"
-              @click="saveProject">
-              <template>
-                {{ $t('label.save') }}
-              </template>
-            </v-btn>
-          </div>
-        </div>
+        <v-btn
+          class="btn mr-2"
+          @click="cancel">
+          {{ $t('popup.cancel') }}
+        </v-btn>
+        <v-btn
+          :disabled="postDisabled"
+          :loading="postProject"
+          class="btn btn-primary"
+          @click="saveProject">
+          {{ $t('label.save') }}
+        </v-btn>
       </div>
     </template>
   </exo-drawer>
