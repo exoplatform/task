@@ -43,9 +43,9 @@
           </v-avatar>
         </div>
         <div
-          :class="task.task.status.project ? task.task.status.project.color : 'noProjectColor'"
+          :class="getTaskColor()"
           class="taskProjectName taskProjectNameCard pa-1">
-          <span class="font-weight-bold">{{ task.task.status.project.name }}</span>
+          <span class="font-weight-bold">{{ getNameProject() }}</span>
         </div>
       </div>
     </div>
@@ -97,7 +97,7 @@
     <div class="taskStat">
       <span v-if="isPersonnalTask" class="body-2 text-sub-title">{{ $t('label.noStatus') }}</span>
       <span v-else class="taskStatLabel pl-2">
-        {{ getTaskStatusLabel(task.task.status.name) }}
+        {{ getTaskStatusLabel(getNameProject()) }}
       </span>
     </div>
     <div class="taskDueDate">
@@ -134,7 +134,7 @@
           day: 'numeric',
         },
         assigneeAndCoworkerArray: [],
-        isPersonnalTask : this.task.task.status === null,
+        isPersonnalTask : this.task.status === null,
         labelList: '',
         drawer:null,
         isSpaceProject: this.task.space !== null,
@@ -146,6 +146,7 @@
         return this.task && this.task.task.dueDate && this.task.task.dueDate.time;
       },
       avatarToDisplay () {
+        this.getTaskAssigneeAndCoworkers();
         if(this.assigneeAndCoworkerArray.length > this. maxAvatarToShow) {
           return this.assigneeAndCoworkerArray.slice(0, this.maxAvatarToShow-1);
         } else {
@@ -155,9 +156,6 @@
       showMoreAvatarsNumber() {
         return this.assigneeAndCoworkerArray.length - this.maxAvatarToShow;
       }
-    },
-    created() {
-      this.getTaskAssigneeAndCoworkers();
     },
     methods: {
       getTaskPriorityColor(priority) {
@@ -172,16 +170,38 @@
             return "taskNonePriority";
         }
       },
+      getTaskColor() {
+        if(this.task.task.status){
+          return this.task.task.status.project.color ? this.task.task.status.project.color : 'noProjectColor' ;
+        }
+        else {
+          return null
+        }
+      },
+      getNameProject(){
+        if(this.task.task.status){
+          return  this.task.task.status.project.name  ;
+        }
+        else {
+          return null
+        }
+      },
       getTaskAssigneeAndCoworkers() {
-                if(this.task.assignee){
-        this.assigneeAndCoworkerArray.push(this.task.assignee);
-        } 
-        if (this.task.coworker || this.task.coworker.length > 0 )
+        this.assigneeAndCoworkerArray=[]
+                if(this.task.assignee) {
+                  if (!this.assigneeAndCoworkerArray.some(assigneeAndCowoker => assigneeAndCowoker.username === this.task.assignee.username)) {
+
+                    this.assigneeAndCoworkerArray.push(this.task.assignee);
+                  }
+                }
+        if (this.task.coworker && this.task.coworker.length > 0 )
         {
-          this.task.coworker.forEach((coworker) => {
+          if(!  this.assigneeAndCoworkerArray.some(assigneeAndCowoker => assigneeAndCowoker.username === this.task.coworker.username)){
+
+            this.task.coworker.forEach((coworker) => {
             this.assigneeAndCoworkerArray.push(coworker);
           })
-        }
+        }}
       },
       getTaskStatusLabel(status) {
         switch(status) {

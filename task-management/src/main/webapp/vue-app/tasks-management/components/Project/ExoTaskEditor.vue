@@ -8,7 +8,11 @@
       cols="30"
       rows="10"
       class="textarea"></textarea>
-    <div v-show="editorReady" :class="charsCount > maxLength ? 'tooManyChars' : ''" class="activityCharsCount" style="">
+    <div 
+      v-show="editorReady" 
+      :class="charsCount > maxLength ? 'tooManyChars' : ''" 
+      class="activityCharsCount" 
+      style="">
       {{ charsCount }}{{ maxLength > -1 ? ' / ' + maxLength : '' }}
       <i class="uiIconMessageLength"></i>
     </div>

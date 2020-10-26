@@ -107,11 +107,24 @@
           filter: opacity(0.2);
         }
         .projectDescription {
+          .tooManyChars {
+            color: #bc4343!important;
+          }
+          .tooManyChars .uiIconMessageLength {
+            color: #bc4343!important;
+          }
           .activityCharsCount{
             position: absolute;
             bottom: 8px;
             right: 10px;
             color: #adadad;
+            .uiIconMessageLength {
+              font-size: 14px;
+              color: #2eb58c;
+              &:before {
+                content: "\e910";
+              }
+            }
           }
           label {
             font-size: 1rem !important;
@@ -193,6 +206,11 @@
         }
       }
       .filterTasksDrawer {
+        hr.my-0.v-divider.theme--light{
+          margin-left: -20px;
+          padding-left: 20px;
+          width: 400px;
+        }
         .v-navigation-drawer__content{
           padding-left: 20px;
           /* switch */
@@ -439,8 +457,14 @@
                 }
                 .taskItemInfo {
                   .taskItemDescription {
-                    min-height: 75px;
+                    min-height: 80px;
                     cursor: pointer;
+                    display: -webkit-box;
+                    -webkit-line-clamp: 4;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    max-height: 50%;
                     p {
                       margin-bottom: 0;
                     }
