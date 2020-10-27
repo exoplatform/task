@@ -58,13 +58,6 @@
         </v-btn>
       </v-scale-transition>-->
     </v-toolbar>
-    <task-drawer 
-      v-if="drawer" 
-      :drawer="drawer"
-      :task="task"
-      @updateTaskList="updateTaskList()"
-      @addTask="onAddTask()"
-      @closeDrawer="onCloseDrawer"/>
     <task-filter-drawer
       ref="filterTasksDrawer"/>
   </v-app>
@@ -101,15 +94,8 @@
       },
         openTaskDrawer() {
           this.task.status.project=this.project;
-                this.drawer = true;
-            },
-            onCloseDrawer: function(drawer){
-                this.drawer = drawer;
-            },
- 
-            onAddTask() {
-              this.$emit('taskAdded')
-            },           
+          this.$root.$emit('open-task-drawer', this.task)
+            },          
     }
   }
 </script>

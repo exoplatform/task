@@ -88,11 +88,6 @@
         </div>
       </div>
     </v-card>
-    <task-drawer
-      v-if="drawer"
-      :drawer="drawer"
-      :task="task.task"
-      @closeDrawer="onCloseDrawer"/>
   </v-app>
 </template>
 <script>
@@ -170,11 +165,9 @@
         }
       },
       openTaskDrawer() {
-        this.drawer = true;
+       this.$root.$emit('open-task-drawer', this.task.task)
       },
-      onCloseDrawer: function(drawer){
-        this.drawer = drawer;
-      }
+
     }
   }
 </script>

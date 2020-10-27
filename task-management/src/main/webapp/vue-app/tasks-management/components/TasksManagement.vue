@@ -21,6 +21,14 @@
     </v-tabs-items>
     <add-project-drawer
       ref="addProjectDrawer"/>
+      
+    <task-drawer
+      v-if="drawer"
+      :drawer="drawer"
+      :task="task"
+      @addTask="onAddTask()"
+      @updateTaskList="updateTaskList()"
+      @closeDrawer="onCloseDrawer"/>
   </v-app>
 </template>
 <script>
@@ -28,6 +36,11 @@
     data () {
       return {
         tab: 'tab-2',
+        drawer:null,
+        task: {
+        type: Object,
+        default: () => ({}),
+      }
       }
     },
  
@@ -35,7 +48,10 @@
      this.$root.$on('open-project-drawer', project => {
        this.$refs.addProjectDrawer.open(project);
       });
-
+     this.$root.$on('open-task-drawer', task => {
+       this.drawer = true;
+       this.task=task;
+      });
      const search = document.location.search.substring(1);
      if(search.includes('mytasks')){
         this.tab='tab-1'
@@ -58,9 +74,34 @@
           this.$projectService.getProject(projectId).then(data => {
           document.dispatchEvent(new CustomEvent('showProjectTasks', {detail: data}));
         })
-        
+      } 
+      if (taskId) {
+          this.$tasksService.getTaskById(taskId).then(data => {
+          this.task = data  
+          if(this.task.status.project){
+              document.dispatchEvent(new CustomEvent('showProjectTasks', {detail: data}));
+          }else{
+           this.tab='tab-1' 
+          }
+          this.drawer = true;
+          window.history.pushState('task', 'Task details', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest?taskId=${taskId}`);
+
+        })
       } 
     }
-  }
+  },
+  methods: {
+      onCloseDrawer: function(drawer){
+        this.drawer = drawer;
+      },
+       onAddTask() {
+        this.$root.$emit('task-added', this.task)
+      },
+      updateTaskList() {
+      this.drawer = false;
+       $('body').removeClass('hide-scroll');
+       setTimeout(this.removeTask, 100)
+      },
+}
    }
 </script>

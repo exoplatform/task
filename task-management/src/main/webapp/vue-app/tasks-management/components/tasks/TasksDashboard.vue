@@ -7,7 +7,6 @@
       :task-card-tab="'#tasks-cards'"
       :task-list-tab="'#tasks-list'"
       :keyword="keyword"
-      @taskAdded="searchTasks()"
       @keyword-changed="keyword = $event"
       @changed="changeSelectedTabItem()"
       @filter-task-dashboard="filterTaskDashboard"
@@ -78,8 +77,11 @@
       },
     },
     created() {
-      window.history.pushState('page2', 'My Tasks', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest?mytasks`);
+      // window.history.pushState('mytasks', 'My Tasks', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest?mytasks`);
       this.originalLimitToFetch = this.limitToFetch = this.limit;
+      this.$root.$on('task-added', task => {
+       this.searchTasks();
+      });
     },
     methods: {
       resetFiltertaskDashboard(){

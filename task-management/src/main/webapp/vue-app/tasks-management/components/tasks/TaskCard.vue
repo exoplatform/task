@@ -128,12 +128,6 @@
         </div>
       </div>
     </v-card>
-
-    <task-drawer 
-      v-if="drawer"
-      :drawer="drawer"
-      :task="task.task"
-      @closeDrawer="onCloseDrawer"/>
   </v-app>
 </template>
 <script>
@@ -156,7 +150,6 @@
         },
         assigneeAndCoworkerArray: [],
         isPersonnalTask : this.task.status === null,
-        drawer:null,
         isSpaceProject: this.task.space !== null,
         maxAvatarToShow : 3
       }
@@ -242,11 +235,8 @@
         }
       },
       openTaskDrawer() {
-        this.drawer = true;
+        this.$root.$emit('open-task-drawer', this.task.task)
         },
-      onCloseDrawer: function(drawer){
-        this.drawer = drawer;
-      },
       spaceUrl(spaceUrl) {
         if (!this.spaceUrl) {
           return '#';

@@ -108,12 +108,6 @@
         <span class="body-2 text-sub-title">{{ $t('label.noDueDate') }}</span>
       </div>
     </div>
-    <task-drawer 
-      v-if="drawer"
-      :drawer="drawer"
-      :task="task.task"
-      @updateTaskList="updateTaskList()"
-      @closeDrawer="onCloseDrawer"/>
   </div>
 </template>
 <script>
@@ -225,12 +219,9 @@
         }
       },
       openTaskDrawer() {
-        this.drawer = true;
+                 this.$root.$emit('open-task-drawer', this.task.task)
       },
-      onCloseDrawer: function(drawer){
-        this.drawer = drawer;
-      },
-      spaceUrl(spaceUrl) {
+       spaceUrl(spaceUrl) {
         if (!this.spaceUrl) {
           return '#';
         }

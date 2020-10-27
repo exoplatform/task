@@ -3,7 +3,7 @@
     id="projectListApplication"
     class="projectAndTasksContainer transparent"
     flat>
-    <div v-if="!displayDetails">
+    <div v-show="!displayDetails">
       <project-list-toolbar
         :keyword="keyword"
         @keyword-changed="keyword = $event"/>
@@ -11,7 +11,7 @@
         :keyword="keyword"
         :loading-projects="loadingProjects"/>
     </div>
-    <div v-else>
+    <div v-show="displayDetails">
       <tasks-view-dashboard :project="project"/>
     </div>
     <project-manager-drawer />
@@ -28,13 +28,13 @@
       }
     },
     created() {
-      window.history.pushState('page2', 'My Projects', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest?myprojects`);
+      window.history.pushState('myprojects', 'My Projects', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest?myprojects`);
 
       document.addEventListener('showProjectTasks', (event) => {
         if (event && event.detail) {
           this.displayDetails = true;
           this.project =  event.detail;
-          window.history.pushState('page2', this.project.name, `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest?projectId=${this.project.id}`);
+          window.history.pushState('project', this.project.name, `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest?projectId=${this.project.id}`);
         }
       });
       document.addEventListener('hideProjectTasks', (event) => {
