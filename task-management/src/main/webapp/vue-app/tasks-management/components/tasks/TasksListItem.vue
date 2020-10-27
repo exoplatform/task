@@ -20,7 +20,7 @@
       <div v-else class="projectSpaceDetails d-flex">
         <div class="spaceAvatar pr-1">
           <a
-            v-if="isSpaceProject"
+            v-if="task.space!==null"
             :href="spaceUrl(task.space.url)">
             <v-avatar
               :size="32"

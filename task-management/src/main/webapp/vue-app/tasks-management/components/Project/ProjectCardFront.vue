@@ -268,8 +268,10 @@
               .then(this.project.color = color);
     },
     getDescription(){
-      const description=this.project.description;
-      return description.substring(3, description.length - 5);
+      let text=this.project.description;
+      const div = document.createElement('div');
+      div.innerHTML = text;
+      text = div.textContent || div.innerText || '';
       }
     }
   }

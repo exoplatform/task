@@ -128,8 +128,10 @@
     computed: {
       postDisabled: function() {
         if(this.projectInformation !== null){
-          const pureText = this.projectInformation.description ? this.projectInformation.description.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, '').trim() : '';
-          return pureText.length> this.MESSAGE_MAX_LENGTH ;
+          let pureText = this.projectInformation.description ? this.projectInformation.description.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, '').trim() : '';
+          const div = document.createElement('div');
+          div.innerHTML = pureText;
+          pureText = div.textContent || div.innerText || '';          return pureText.length> this.MESSAGE_MAX_LENGTH ;
         }
       },
       suggesterLabels() {
