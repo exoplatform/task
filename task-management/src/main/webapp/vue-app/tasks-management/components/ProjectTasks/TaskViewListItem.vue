@@ -143,6 +143,9 @@
           return labelText;
         }
       },
+      openTaskDrawer() {
+       this.$root.$emit('open-task-drawer', this.task.task)
+      },
     }
   }
 </script>

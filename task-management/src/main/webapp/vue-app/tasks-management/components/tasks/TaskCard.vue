@@ -82,7 +82,7 @@
           <div v-else class="projectSpaceDetails d-flex">
             <div class="spaceAvatar pr-1">
               <a
-                v-if="isSpaceProject"
+                v-if="task.space!==null"
                 :href="spaceUrl(task.space.url)">
                 <v-avatar
                   :size="32"
@@ -105,9 +105,9 @@
               </v-avatar>
             </div>
             <div
-              :class="task.task.status.project ? task.task.status.project.color : 'noProjectColor'"
+              :class="getTaskColor()"
               class="taskProjectName taskProjectNameCard pa-1">
-              <span class="font-weight-bold">{{ task.task.status.project ? task.task.status.project.name : '' }}</span>
+              <span class="font-weight-bold">{{ getNameProject() }}</span>
             </div>
           </div>
         </div>
@@ -116,7 +116,7 @@
       <div class="taskStatusAndDate d-flex justify-space-between pt-3">
         <div class="taskStat">
           <span v-if="isPersonnalTask" class="body-2 text-sub-title">{{ $t('label.noStatus') }}</span>
-          <span v-else class="taskStatLabel pl-2">{{ getTaskStatusLabel(task.task.status.name) }}</span>
+          <span v-else class="taskStatLabel pl-2">{{ getTaskStatusLabel(getNameProject()) }}</span>
         </div>
         <div class="taskDueDate">
           <div v-if="taskDueDate">
@@ -128,12 +128,6 @@
         </div>
       </div>
     </v-card>
-
-    <task-drawer 
-      v-if="drawer"
-      :drawer="drawer"
-      :task="task.task"
-      @closeDrawer="onCloseDrawer"/>
   </v-app>
 </template>
 <script>
@@ -155,8 +149,7 @@
           day: 'numeric',
         },
         assigneeAndCoworkerArray: [],
-        isPersonnalTask : this.task.task.status === null,
-        drawer:null,
+        isPersonnalTask : this.task.status === null,
         isSpaceProject: this.task.space !== null,
         maxAvatarToShow : 3
       }
@@ -166,6 +159,7 @@
         return this.task && this.task.task.dueDate && this.task.task.dueDate.time;
       },
       avatarToDisplay () {
+        this.getTaskAssigneeAndCoworkers();
           if(this.assigneeAndCoworkerArray.length > this. maxAvatarToShow) {
             return this.assigneeAndCoworkerArray.slice(0, this.maxAvatarToShow-1);
           } else {
@@ -176,10 +170,25 @@
         return this.assigneeAndCoworkerArray.length - this.maxAvatarToShow;
       }
     },
-    created() {
-      this.getTaskAssigneeAndCoworkers();
-    },
     methods: {
+      getTaskColor() {
+        if(this.task.task.status){
+
+          return this.task.task.status.project.color ? this.task.task.status.project.color : 'noProjectColor' ;
+        }
+        else {
+          return null
+        }
+      },
+      getNameProject(){
+        if(this.task.task.status){
+
+          return  this.task.task.status.project.name  ;
+        }
+        else {
+          return null
+        }
+      },
       getTaskPriorityColor(priority) {
         switch(priority) {
           case "HIGH":
@@ -205,6 +214,7 @@
         }
       },
       getTaskAssigneeAndCoworkers() {
+        this.assigneeAndCoworkerArray=[]
         if(this.task.assignee){
         this.assigneeAndCoworkerArray.push(this.task.assignee);
         } 
@@ -225,11 +235,8 @@
         }
       },
       openTaskDrawer() {
-        this.drawer = true;
+        this.$root.$emit('open-task-drawer', this.task.task)
         },
-      onCloseDrawer: function(drawer){
-        this.drawer = drawer;
-      },
       spaceUrl(spaceUrl) {
         if (!this.spaceUrl) {
           return '#';

@@ -89,7 +89,7 @@ public class CommentServiceImpl implements CommentService {
         CommentDto obj = commentStorage.commentToDto(daoHandler.getCommentHandler().create(commentStorage.commentToEntity(newComment)));
 
         try {
-            listenerService.broadcast(TASK_COMMENT_CREATION, this, obj);
+            listenerService.broadcast(TASK_COMMENT_CREATION, null, obj);
         } catch (Exception e) {
             LOG.error("Error while broadcasting task creation event", e);
         }

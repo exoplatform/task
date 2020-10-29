@@ -116,7 +116,7 @@
   export default {
     data() {
       return {
-        MESSAGE_MAX_LENGTH:250,
+        MESSAGE_MAX_LENGTH:255,
         listOfManager:[{src:"/portal/rest/v1/social/users/default-image/avatar"}],
         listOfParticipant:[{src:"/portal/rest/v1/social/users/default-image/avatar"}],
         activityComposerActions: [],
@@ -128,8 +128,10 @@
     computed: {
       postDisabled: function() {
         if(this.projectInformation !== null){
-          const pureText = this.projectInformation.description ? this.projectInformation.description.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, '').trim() : '';
-          return pureText.length> this.MESSAGE_MAX_LENGTH ;
+          let pureText = this.projectInformation.description ? this.projectInformation.description.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, '').trim() : '';
+          const div = document.createElement('div');
+          div.innerHTML = pureText;
+          pureText = div.textContent || div.innerText || '';          return pureText.length> this.MESSAGE_MAX_LENGTH ;
         }
       },
       suggesterLabels() {
@@ -187,7 +189,7 @@
         this.resetCustomValidity();
         if (!this.projectInformation.name) {
           this.$refs.autoFocusInput1.setCustomValidity(this.$t('task.message.missingTitle'));
-        } else if (this.projectInformation.name.replace(/\s/g, "").length < 3 || this.projectInformation.name.replace(/\s/g, "").length > 200) {
+        } else if (this.projectInformation.name.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, '').trim().length < 3 || this.projectInformation.name.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, '').trim().length > 200) {
           this.$refs.autoFocusInput1.setCustomValidity(this.$t('task.message.missingLengthTitle'));
         }
         if (!this.$refs.taskEventForm.validate() // Vuetify rules

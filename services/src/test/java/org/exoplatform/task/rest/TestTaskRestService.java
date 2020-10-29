@@ -161,6 +161,27 @@ public class TestTaskRestService {
     // Then
     assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
   }
+  @Test
+  public void testGetTaskById() throws Exception {
+    // Given
+    TaskRestService taskRestService = new TaskRestService(taskService,
+            commentService,
+            projectService,
+            statusService,
+            userService,
+            spaceService,
+            labelService);
+    Identity root = new Identity("root");
+    ConversationState.setCurrent(new ConversationState(root));
+    TaskDto task1 = new TaskDto();
+    task1.setAssignee("root");
+    taskService.createTask(task1);
+    when(taskService.getTask(1)).thenReturn(task1);
+    // When
+    Response response = taskRestService.getTaskById((long)1);
+    // Then
+    assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+  }
 
   @Test
   public void testUpdateTaskById() throws Exception {

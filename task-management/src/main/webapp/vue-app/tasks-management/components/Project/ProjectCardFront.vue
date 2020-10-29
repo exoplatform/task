@@ -86,12 +86,8 @@
       <div
         class="taskItemDescription"
         @click="showProjectTasksDetails(project)">
-        <ellipsis
-          v-if="project.description"
-          :title="project.description"
-          :data="project.description"
-          :line-clamp="2"
-          end-char="..."/>
+        <p
+          v-if="project.description">{{ getDescription() }}</p>
         <div v-else>
           <span class="noProjectDescription">{{ $t('label.noDescription') }}</span>
         </div>
@@ -270,7 +266,13 @@
       this.$projectService.updateProjectColor(project, color)
               .then(() => this.$emit('projectChangeColor'))
               .then(this.project.color = color);
-    }
+    },
+    getDescription(){
+      let text=this.project.description;
+      const div = document.createElement('div');
+      div.innerHTML = text;
+      text = div.textContent || div.innerText || '';
+      }
     }
   }
 </script>

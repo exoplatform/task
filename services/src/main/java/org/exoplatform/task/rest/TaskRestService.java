@@ -103,6 +103,29 @@ public class TaskRestService implements ResourceContainer {
     ALL, INCOMING, OVERDUE
   }
 
+
+
+  @GET
+  @Path("{id}")
+  @Produces(MediaType.APPLICATION_JSON)
+  @RolesAllowed("users")
+  @ApiOperation(value = "Get task by id", httpMethod = "GET", response = Response.class, notes = "This get the task if the authenticated user has permissions to view the objects linked to this task.")
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled"),
+          @ApiResponse(code = 400, message = "Invalid query input"), @ApiResponse(code = 403, message = "Unauthorized operation"),
+          @ApiResponse(code = 404, message = "Resource not found") })
+  public Response getTaskById(@ApiParam(value = "Task id", required = true) @PathParam("id") long id) throws Exception {
+
+    TaskDto task = taskService.getTask(id);
+    if (task == null) {
+      return Response.status(Response.Status.NOT_FOUND).build();
+    }
+    if (!TaskUtil.hasEditPermission(task)) {
+      return Response.status(Response.Status.FORBIDDEN).build();
+    }
+    return Response.ok(task).build();
+  }
+
+
   @GET
   @RolesAllowed("users")
   @Produces(MediaType.APPLICATION_JSON)

@@ -8,7 +8,11 @@
       cols="30"
       rows="10"
       class="textarea"></textarea>
-    <div v-show="editorReady" :class="charsCount > maxLength ? 'tooManyChars' : ''" class="activityCharsCount" style="">
+    <div 
+      v-show="editorReady" 
+      :class="charsCount > maxLength ? 'tooManyChars' : ''" 
+      class="activityCharsCount" 
+      style="">
       {{ charsCount }}{{ maxLength > -1 ? ' / ' + maxLength : '' }}
       <i class="uiIconMessageLength"></i>
     </div>
@@ -120,7 +124,10 @@
 
               self.inputVal = newData;
 
-              const pureText = newData ? newData.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, '').trim() : '';
+              let pureText = newData ? newData.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, '').trim() : '';
+              const div = document.createElement('div');
+              div.innerHTML = pureText;
+              pureText = div.textContent || div.innerText || '';
               self.charsCount = pureText.length;
             },
             destroy: function () {

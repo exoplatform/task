@@ -134,6 +134,7 @@
         dueDateSelected:'',
         prioritySelected:'',
         query:'',
+        assignee:'',
         assigneeTask:'',
         dueDate: [
           {name: ""},{name: "OVERDUE"},{name: "TODAY"},{name: "TOMORROW"},{name: "UPCOMING"}
@@ -171,7 +172,6 @@
         this.prioritySelected='';
         this.showCompleteTasks=true;
         this.$emit('reset-filter-task');
-        this.cancel();
       },
       filterTasks(){
         const tasks = {
