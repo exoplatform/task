@@ -272,6 +272,7 @@
       const div = document.createElement('div');
       div.innerHTML = text;
       text = div.textContent || div.innerText || '';
+      return text;
       }
     }
   }

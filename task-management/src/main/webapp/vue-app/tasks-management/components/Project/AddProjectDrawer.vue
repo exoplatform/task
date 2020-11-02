@@ -13,7 +13,10 @@
         ref="taskEventForm"
         class="flex"
         flat>
-        <div ref="addProjectTitle" class="addProjectTitle d-flex align-center">
+        <div 
+          ref="addProjectTitle" 
+          class="addProjectTitle d-flex align-center"
+          @click="showManager = true,showParticipant = true">
           <i class="uiIcon uiIconProject"></i>
           <input
             ref="autoFocusInput1"
@@ -24,62 +27,130 @@
             single-line
             @change="resetCustomValidity">
         </div>
-        <!--<v-divider class="py-3"/>
+        <v-divider class="py-3"/>
         <div class="projectPermissionsUsers">
-          <p class="permisionLabel body-1">{{ $t('label.permission') }}</p>
-          <div class="listOfManager" >
-            <a
-              v-for="manager in listOfManager" 
-              :key="manager.src" 
-              href="#" 
-              class="flex-nowrap flex-shrink-0 d-flex">
-              <div class="v-avatar pull-left my-auto">
-                <img :src="manager.src">
-              </div>
-              <button 
-                type="button" 
-                class="peopleInfoIcon d-flex not-clickable primary-border-color ml-1 v-btn v-btn--flat v-btn--icon v-btn--round theme--light v-size--small primary--text" 
-                title="Space manager">
-                <span class="v-btn__content">
-                  <span class="d-flex uiIconMemberAdmin primary&#45;&#45;text"></span>
-                </span>
-              </button>
-            </a>
-            <div class="editManager">
-              <a href="#" class="editManager">
-                <i class="fas fa-pencil-alt uiIconProject"></i>
-                {{ $t('label.editManager') }}
+          <div @click="showManager = true,showParticipant = true">
+            <p class="permisionLabel body-1" >{{ $t('label.permission') }}</p>
+
+          </div>
+          <div class="listOfManager" @click="showParticipant = true">
+            <div class="listOfManageravatar" >
+              <a
+                v-for="manager in avatarManagerToDisplay"
+                :key="manager.avatar"
+                href="#"
+                class="flex-nowrap flex-shrink-0 d-flex">
+                <div class="v-avatar pull-left my-auto">
+                  <img :src="manager.avatar">
+                </div>
+                <button
+                  type="button"
+                  class="peopleInfoIcon d-flex not-clickable primary-border-color ml-1 v-btn v-btn--flat v-btn--icon v-btn--round theme--light v-size--small primary--text"
+                  title="Space manager">
+                  <span class="v-btn__content">
+                    <span class="d-flex uiIconMemberAdmin primary--text"></span>
+                  </span>
+                </button>
               </a>
-              <label class="editManagerInfo">
-                <i class="uiIconInformation uiIconProject"></i>
-                {{ $t('label.editManagerInfo') }}
-              </label>
+              <div class="seeMoreAvatars">
+                <div
+                  v-if="listOfManager.length > maxAvatarToShow"
+                  class="seeMoreItem"
+                  @click="$root.$emit('displayTasksAssigneeAndCoworker', listOfManager)">
+                  <v-avatar
+                    :size="iconSize">
+                    <img
+                      :src="listOfManager[maxAvatarToShow].avatar"
+                      :title="listOfManager[maxAvatarToShow].displayName">
+                  </v-avatar>
+                  <span class="seeMoreAvatarList">+{{ showMoreAvatarsNumber }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="editManager" >
+              <div
+                v-show="showManager"
+                class="editManager"
+                @click="showManager = false">
+                <a href="#" class="editManager">
+                  <i class="fas fa-pencil-alt uiIconProject"></i>
+                  {{ $t('label.editManager') }}
+                </a>
+                <label class="editManagerInfo">
+                  <i class="uiIconInformation uiIconProject"></i>
+                  {{ $t('label.editManagerInfo') }}
+                </label>
+              </div>
+              <exo-identity-suggester
+                v-show="!showManager"
+                ref="autoFocusInput3"
+                :labels="suggesterLabelsManagers"
+                v-model="manager"
+                :search-options="{currentUser: ''}"
+                name="assignee"
+                type-of-relations="user_to_invite"
+                include-users
+                multiple/>
             </div>
           </div>
-          <div class="listOfParticipant" >
-            <a 
-              v-for="participant in listOfParticipant" 
-              :key="participant.src" 
-              href="#" 
-              class="flex-nowrap flex-shrink-0 d-flex">
-              <div class="v-avatar pull-left my-auto">
-                <img :src="participant.src">
+          <div class="listOfParticipant" @click="showManager = true" >
+            <div class="listOfParticipantavatar" >
+
+              <a
+                v-for="participant in avatarParticipantToDisplay"
+                :key="participant.avatar"
+                href="#"
+                class="flex-nowrap flex-shrink-0 d-flex">
+                <div class="v-avatar pull-left my-auto">
+                  <img :src="participant.avatar">
+                </div>
+              </a>
+              <div class="seeMoreAvatars">
+                <div
+                  v-if="listOfParticipant.length > maxAvatarToShow"
+                  class="seeMoreItem">
+                  <v-avatar
+                    :size="iconSize">
+                    <img
+                      :src="listOfParticipant[maxAvatarToShow].avatar"
+                      :title="listOfParticipant[maxAvatarToShow].displayName">
+                  </v-avatar>
+                  <span class="seeMoreAvatarList">+{{ showMoreAvatarsParticipantNumber }}</span>
+                </div>
               </div>
-            </a>
+            </div>
             <div class="editParticipant">
-              <a class="editParticipant" href="#">
-                <i class="fas fa-plus"></i>
-                {{ $t('label.editParticipant') }}
-              </a>
-              <label class="editParticipantInfo">
-                <i class="uiIconInformation uiIconProject"></i>
-                {{ $t('label.editParticipantInfo') }}
-              </label>
+              <div
+                v-if="showParticipant"
+                class="editParticipant"
+                @click="showParticipant = false">
+                <a class="editParticipant" href="#">
+                  <i class="fas fa-plus"></i>
+                  {{ $t('label.editParticipant') }}
+                </a>
+                <label class="editParticipantInfo">
+                  <i class="uiIconInformation uiIconProject"></i>
+                  {{ $t('label.editParticipantInfo') }}
+                </label>
+              </div>
+              <exo-identity-suggester
+                v-if="!showParticipant"
+                ref="autoFocusInput3"
+                :labels="suggesterLabelsParticipant"
+                v-model="participator"
+                :search-options="{currentUser: ''}"
+                name="participant"
+                type-of-relations="user_to_invite"
+                min-height="37"
+                include-users
+                multiple/>
             </div>
+
           </div>
-        </div>-->
+        </div>
         <hr>
-        <div class="projectDescription">
+        <div class="projectDescription" @click="showManager = true,showParticipant = true">
           <v-label
             for="description">
             {{ $t('label.description') }}
@@ -117,12 +188,19 @@
     data() {
       return {
         MESSAGE_MAX_LENGTH:255,
-        listOfManager:[{src:"/portal/rest/v1/social/users/default-image/avatar"}],
-        listOfParticipant:[{src:"/portal/rest/v1/social/users/default-image/avatar"}],
+        defaultManager:[{avatar:"/portal/rest/v1/social/users/default-image/avatar"}],
+        defaultParticipant:[{avatar:"/portal/rest/v1/social/users/default-image/avatar"}],
+        listOfManager:[],
+        listOfParticipant:[],
         activityComposerActions: [],
         projectInformation:null,
+        manager:'',
+        participator:'',
         postProject:false,
-        project:{}
+        project:{},
+        maxAvatarToShow : 3,
+        showManager: true,
+        showParticipant:true
       };
     },
     computed: {
@@ -134,9 +212,43 @@
           pureText = div.textContent || div.innerText || '';          return pureText.length> this.MESSAGE_MAX_LENGTH ;
         }
       },
-      suggesterLabels() {
+
+      avatarParticipantToDisplay () {
+        this.getProjectParticipant();
+        if (this.listOfParticipant.length > this.maxAvatarToShow) {
+          return this.listOfParticipant.slice(0, this.maxAvatarToShow - 1);
+        } else if (this.listOfParticipant.length>0){
+          return this.listOfParticipant;
+        }else {
+          return this.defaultParticipant;
+        }
+      },
+      avatarManagerToDisplay () {
+        this.getProjectManagers();
+        if (this.listOfManager.length > this.maxAvatarToShow) {
+          return this.listOfManager.slice(0, this.maxAvatarToShow - 1);
+        } else if(this.listOfManager.length>0){
+          return this.listOfManager;
+        }else {
+          return this.defaultManager;
+        }
+
+      },
+      showMoreAvatarsNumber() {
+        return this.listOfManager.length - this.maxAvatarToShow;
+      },
+      showMoreAvatarsParticipantNumber() {
+        return this.listOfParticipant.length - this.maxAvatarToShow;
+      },
+      suggesterLabelsManagers() {
         return {
           placeholder: this.$t('label.inviteManagers'),
+          noDataLabel: this.$t('label.noDataLabel'),
+        };
+      },
+      suggesterLabelsParticipant() {
+        return {
+          placeholder: this.$t('label.inviteParticipant'),
           noDataLabel: this.$t('label.noDataLabel'),
         };
       },
@@ -152,7 +264,9 @@
  
     methods: {
       open(project) { 
-        this.project=project 
+        this.project=project
+        this.manager=''
+        this.participator=''
         this.projectInformation={
           name:'',
           description:'',
@@ -167,19 +281,24 @@
       if (this.project.description !== null || this.project.description !== ''){
         this.projectInformation.description = this.project.description;
       }
-        this.$refs.addProjectDrawer.open();
-        window.setTimeout(() => this.$refs.addProjectTitle.querySelector('input').focus(), 200);
+
+      this.$refs.addProjectDrawer.open();
+      window.setTimeout(() => this.$refs.addProjectTitle.querySelector('input').focus(), 200);
       },
       cancel() {
         if (this.project !== {}){
           this.projectInformation.name =this.project.name;
           this.projectInformation.description = this.project.description;
+          this.manager=this.project.manager;
+          this.participator=this.project.participator;
           if ( typeof this.project.id === 'undefined' && this.projectInformation.description!=='') {
             this.projectInformation.description='';
           }
         }
         this.$refs.addProjectDrawer.close();
-      },
+        this.showManager=true;
+        this.showParticipant=true;
+        },
       resetCustomValidity() {
         if (this.$refs.autoFocusInput1) {
           this.$refs.autoFocusInput1.setCustomValidity('');
@@ -204,8 +323,21 @@
             id: this.projectInformation.id,
             name: this.projectInformation.name,
             description: this.projectInformation.description,
-            manager: eXo.env.portal.userName
+            manager: [],
+            participator: [],
           };
+          if (this.manager && this.manager.length) {
+            this.manager.forEach(user => {
+              projects.manager.push(user.remoteId)
+            })
+          }
+
+          if (this.participator && this.participator.length) {
+            this.participator.forEach(user => {
+              projects.participator.push(user.remoteId)
+            })
+          }
+
           if (typeof projects.id !== 'undefined') {
             this.postProject = true;
             return this.$projectService.updateProjectInfo(projects).then(project => {
@@ -213,6 +345,7 @@
               this.$root.$emit('update-projects-list', {})
               this.postProject = false;
               this.$refs.addProjectDrawer.close();
+              this.showManager=true;
             })
                     .catch(e => {
                       console.debug("Error updating project", e);
@@ -225,6 +358,7 @@
              this.$root.$emit('update-projects-list', {})
              this.postProject = false;
                this.$refs.addProjectDrawer.close();
+              this.showManager=true;
             })
                     .catch(e => {
                       console.debug("Error saving project", e);
@@ -234,7 +368,23 @@
           }
 
         }
-      }
+      },
+      getProjectManagers() {
+        this.listOfManager=[]
+        if(this.project.managerIdentities) {
+          this.project.managerIdentities.forEach(user => {
+            this.listOfManager.push(user)
+          })
+        }
+      },
+      getProjectParticipant() {
+        this.listOfParticipant=[]
+        if(this.project.participatorIdentities) {
+          this.project.participatorIdentities.forEach(user => {
+            this.listOfParticipant.push(user)
+          })
+        }
+      },
     }
   }
 </script>

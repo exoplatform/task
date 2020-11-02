@@ -228,7 +228,10 @@ public class ProjectRestService implements ResourceContainer {
       Space space = null;
       Set<String> projectManagers = projectService.getManager(projectId);
       Set<String> managers = new LinkedHashSet();
-      if (projectManagers.size() > 0) {
+      Set<String> projectParticipators = projectService.getParticipator(projectId);
+      Set<String> participators = new LinkedHashSet();
+
+    if (projectManagers.size() > 0) {
         for (String permission : projectService.getManager(projectId)) {
           int index = permission.indexOf(':');
           if (index > -1) {
@@ -240,6 +243,19 @@ public class ProjectRestService implements ResourceContainer {
           }
         }
       }
+
+    if (projectParticipators.size() > 0) {
+      for (String permission : projectService.getParticipator(projectId)) {
+        int index = permission.indexOf(':');
+        if (index > -1) {
+          String groupId = permission.substring(index + 1);
+          space = spaceService.getSpaceByGroupId(groupId);
+          participators.addAll(Arrays.asList(space.getMembers()));
+        } else {
+          participators.add(permission);
+        }
+      }
+    }
       if (managers.size() > 0) {
         JSONArray managersJsonArray = new JSONArray();
         for (String usr : managers) {
@@ -256,6 +272,23 @@ public class ProjectRestService implements ResourceContainer {
         }
         projectJson.put("managerIdentities", managersJsonArray);
       }
+
+    if (participators.size() > 0) {
+      JSONArray participatorsJsonArray = new JSONArray();
+      for (String usr : participators) {
+        JSONObject participator = new JSONObject();
+        User user_ = UserUtil.getUser(usr);
+        participator.put("username", user_.getUsername());
+        participator.put("email", user_.getEmail());
+        participator.put("displayName", user_.getDisplayName());
+        participator.put("avatar", user_.getAvatar());
+        participator.put("url", user_.getUrl());
+        participator.put("enable", user_.isEnable());
+        participator.put("deleted", user_.isDeleted());
+        participatorsJsonArray.put(participator);
+      }
+      projectJson.put("participatorIdentities", participatorsJsonArray);
+    }
       if (space != null) {
         JSONObject spaceJson = new JSONObject();
         spaceJson.put("prettyName", space.getPrettyName());
@@ -325,7 +358,19 @@ public class ProjectRestService implements ResourceContainer {
       Set<String> managers = new HashSet<String>(Arrays.asList(currentUser, memberships.get(0)));
       Set<String> participators = new HashSet<String>(Arrays.asList(memberships.get(1)));
       project = ProjectUtil.newProjectInstanceDto(projectDto.getName(), description, managers, participators);
-    } else {
+    } else if (projectDto.getManager()!=null && projectDto.getManager().size() !=0 || projectDto.getParticipator()!=null && projectDto.getParticipator().size() !=0){
+      Set<String> managers = new HashSet<String>();
+      projectDto.getManager().forEach(name -> {
+        managers.add(name);
+      });
+      Set<String> paticipator = new HashSet<String>();
+      if (projectDto.getParticipator()!=null) {
+        projectDto.getParticipator().forEach(name -> {
+          paticipator.add(name);
+        });
+      }
+      project = ProjectUtil.newProjectInstanceDto(projectDto.getName(), description, managers, paticipator);
+    }else{
       project = ProjectUtil.newProjectInstanceDto(projectDto.getName(), description, currentUser);
     }
     boolean calInteg = projectDto.isCalendarIntegrated();
@@ -383,11 +428,21 @@ public class ProjectRestService implements ResourceContainer {
     }
 
     Map<String, String[]> fields = new HashMap<String, String[]>();
+    Map<String, Set<String>> fieldsSet = new HashMap<>();
     fields.put("name", new String[] {projectDto.getName()});
     String description = StringUtil.encodeInjectedHtmlTag(projectDto.getDescription());
     fields.put("description", new String[] {description});
     if (projectDto.getParent()!=null) {
       fields.put("parent", new String[]{projectDto.getParent().toString()});
+    }
+    if (projectDto.getManager()!=null){
+      Set<String> managers = new HashSet<String>();
+      projectDto.getManager().forEach(name -> {
+        managers.add(name);
+      });
+      String[] array = managers.toArray(new String[0]);
+      fieldsSet.put("manager",managers);
+      fields.put("manager", array);
     }
     fields.put("calendarIntegrated", new String[]{String.valueOf(projectDto.isCalendarIntegrated())});
     ProjectDto project = ProjectUtil.saveProjectField(projectService, projectId, fields);

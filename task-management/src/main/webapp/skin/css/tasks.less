@@ -54,9 +54,55 @@
             color: @textLightColor;
           }
           .listOfManager,.listOfParticipant {
-            display: flex;
-            a.flex-nowrap.flex-shrink-0.d-flex {
+
+            .identitySuggester{
+              margin: 0 0 !important;
+            }
+            .listOfManageravatar,.listOfParticipantavatar{
+              float: left;
+              display: flex;
               margin-right: 5px;
+              .seeMoreAvatars {
+                .seeMoreItem {
+                  position: relative;
+                  margin-top: 5px;
+                  &:before {
+                    content: "";
+                    width: 100%;
+                    height: 100%;
+                    position: absolute;
+                    background: @baseColorMedium;
+                    border-radius: 50%;
+                    opacity: .5;
+                    z-index: 1;
+                  }
+                  .v-avatar{
+                    height: 30px!important;
+                    min-width: 30px!important;
+                    width: 30px!important;
+                  }
+                  .seeMoreAvatarList {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    text-align: center;
+                    width: 30px;
+                    height: 30px;
+                    color: white;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    cursor: pointer;
+                    font-size: 15px;
+                    font-weight: bold;
+                    z-index: 1;
+                  }
+                }
+              }
+            }
+            a.flex-nowrap.flex-shrink-0.d-flex {
+              margin-right: 17px;
               .v-avatar.pull-left.my-auto {
                 height: 30px;
                 min-width: 30px;
@@ -74,13 +120,16 @@
             }
             .editManager,.editParticipant {
               margin-left: 10px;
-              margin-top: 3px;
+              margin-top: 10px;
               a.editManager,a.editParticipant {
                 text-decoration: underline;
                 i.fas.fa-pencil-alt.uiIconProject,i.fas.fa-plus {
                   text-decoration: underline;
                   font-size: 11px;
                 }
+              }
+              .v-select__selections{
+                min-height: 30px!important;
               }
               label.editManagerInfo,label.editParticipantInfo {
                 font-size: 10px;
