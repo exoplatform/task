@@ -21,25 +21,14 @@
             class="mr-2 ml-0 pt-1">
             <v-img v-if="(typeof taskAssignee.username !== 'undefined')" :src="taskAssignee.avatar"/>
           </v-list-item-avatar>
-          <v-list-item-avatar 
-            v-else 
-            size="22" 
-            class="mr-2 ml-0 pt-1">
-            <i class="uiIconUser"></i>
-          </v-list-item-avatar>
           <span
             v-if="taskCoworkers.length > 0"
-            class="user-name"
-            v-on="on"> + {{ taskCoworkers.length }} {{ $t('label.coworker') }}</span>
+            class="user-name pr-2"> + {{ taskCoworkers.length }} {{ $t('label.coworker') }}</span>
           <span
-            v-else-if="taskCoworkers.length === 0 && !task.assignee"
-            class="user-name"
-            v-on="on"> {{ $t('label.unassigned') }} </span>
-          <span
-            v-else
-            class="user-name"
-            v-on="on"
+            v-else-if="task.assignee"
+            class="user-name pr-2"
             v-html="taskAssignee.fullname"></span>
+          <a v-on="on">+ {{ $t('popup.add') }}</a>
         </v-list-item>
       </template>
       <v-card class="pb-4">
@@ -195,6 +184,11 @@
       searchCoworkers(val) {
         if (val) {
           this.suggestedCoworkers = this.searchSuggestedCoworkers(val);
+        }
+      },
+      task(val) {
+        if (val) {
+          this.getUsers();
         }
       }
     },
