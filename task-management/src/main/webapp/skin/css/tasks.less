@@ -1461,7 +1461,6 @@
       }
     }
   }
-
   @media (max-width: 1200px) {
     .theme--light.v-navigation-drawer {
       width: 60% !important;
@@ -1489,394 +1488,159 @@
 }
 
 /*----------- Task Drawer CSS ---------------*/
-#task-Drawer {
-  .uiIconBlue {
-    color: @primaryColor!important;
-  }
-  .v-select__selection {
-    max-width: 100% !important;
-  }
-  .v-menu__content {
-    max-width: 100% !important;
-    background-color: white!important;
-  }
-  #assigneeMenu {
-    .v-menu__content {
-      max-width: 70% !important;
-    }
-  }
-  .v-select.v-text-field {
-    input {
-      display: none;
-    }
-  }
-  .centered-input {
-    input {
-      text-align: center;
-    }
-  }
-  .taskTitle {
-    input[type="text"] {
-      font-size: 15px;
-      color: #8EB0EA;
-    }
-  }
-  .dateFont {
-    input[type="text"] {
-      font-size: 15px!important;
-      cursor: pointer!important;
-      color: @textColor !important;
-      width: 84px;
-    }
-    input[type="text"]::placeholder {
-      color: @greyColorLighten1 !important;
-      padding-left: 8px;
-    }
-    .v-icon.v-icon.v-icon--link {
-      color: @greyColorLighten1;
-      padding-top: 8px;
-      font-size: 20px;
-    }
-  }
-  .assignTo {
-    .v-select__slot {
-      border: 1px solid @greyColorLighten1;
-      border-radius: 5px;
-    }
-  }
-  .assignee-name {
-    flex: 1 1 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .v-date-picker-table--date {
-    td {
-      width: 38px;
-    }
-    tr {
-      display: table-row !important;
-    }
-  }
-
-  .v-date-picker-table {
-    height: 190px;
-  }
-  .selectFont {
-    .v-select__selection--comma {
-      font-size: 15px;
-      color: @textColor !important;
-      min-width: max-content!important;
-    }
-    .v-menu__content {
-      top: 48px!important;
-      left: 4px!important;
-      max-width: fit-content!important;
-    }
-    .v-list-item__title {
-      font-size: 14px;
-    }
-  }
-  .user-name {
-    font-size: 15px;
-    color: @primaryColor !important;
-  }
-  .v-autocomplete {
-    &:not(.v-input--is-disabled).v-select.v-text-field {
-      input {
-        display: block !important;
-      }
-    }
-  }
-  .v-text-field.v-text-field--solo {
-    .v-label {
-      top: 10px;
-      font-size: 15px!important;
-      color: @greyColorLighten1 !important;
-      margin-left: 6px;
-    }
-  }
-  .mx-icon-calendar {
-    display: none;
-  }
-  .mx-datepicker {
-    width: 82%;
-  }
-  .mx-input {
-    width: 92% !important;
-    color: @greyColorLighten1;
-    cursor: pointer;
-    &:focus {
-      border: none;
-      box-shadow: none;
-    }
-  }
-  #Task-title {
-    color: @primaryColor;
-  }
-  .projectName {
-    .v-input__control {
-      min-height: 0px;
-      height: 40px;
-      padding-top: 6px;
-      >.v-input__slot {
-        width: fit-content;
-      }
-    }
-  }
-  .v-navigation-drawer .v-list {
-    background-color: white;
-  }
-  .mdi-menu-down {
-    &::before {
-      display: none;
-    }
-  }
-  .v-text-field.v-text-field--solo {
-    &:not(.v-text-field--solo-flat) {
-      >.v-input__control {
-        >.v-input__slot {
-          box-shadow: none;
-          padding-left: 0px;
+.taskDrawer {
+  .taskProjectName {
+    .inputTaskProjectName {
+      .v-input__prepend-outer {
+        margin-top: 8px;
+        i {
+          color: @primaryColor;
+          font-size: 18px;
         }
-      }
-    }
-  }
-  .styleIcon {
-    padding-top: 10px
-  }
-  .v-input--selection-controls {
-    margin-top: 0px !important;
-  }
-  .v-text-field.v-text-field--enclosed {
-    >.v-input__control {
-      >.v-input__slot {
-        padding: 0px;
-        margin-bottom: 0px;
-      }
-    }
-  }
-  .editorContent {
-    .subComment {
-      max-width: 228px
-    }
-    .comment {
-      max-width: 290px
-    }
-  }
-  .hiddenEditor {
-    visibility: hidden !important;
-    display: none !important;
-  }
 
-  .taskDescription {
-    border: 1px solid @greyColor;
-    border-radius: 5px;
-    padding-top: 8px;
-    padding-bottom: 8px
-  }
-  #taskDescriptionId p {
-    line-height: 20px;
-  }
-  [contenteditable=true] {
-    &:empty {
-      &:before {
-        content: attr(placeholder);
-        pointer-events: none;
-        display: block;
-        color: @greyColorLighten1!important;
       }
-    }
-  }
-
-  .uiIconAndroidOpen:before {
-    font-family: 'PLF-FONT-ICONS';
-    font-style: normal;
-    font-size: 20px;
-    content: "\e966"
-  }
-  .drawer-title {
-    font-size: 20px;
-    font-weight: bold;
-  }
-  .drawer-header {
-    border-bottom: 1px solid rgba(13, 13, 13, 0.05);
-  }
-  .drawer-footer-content {
-    padding: 5px;
-    width: 100%;
-  }
-  .drawer-footer {
-      position: absolute;
-      bottom: 0;
-      width: 96%;
-  }
-
-  .drawer-content {
-    position: absolute;
-    top: 55px;
-    bottom: 0px;
-    overflow-y: auto;
-    overflow-x: hidden;
-    right: 0;
-    left: 0;
-  }
-  .v-text-field input {
-    padding: 0px;
-  }
-  input[type="text"] {
-    margin-bottom: 0px;
-    width: auto;
-  }
-  .v-tab {
-    box-sizing: border-box;
-    margin: 0px!important;
-  }
-  .v-tabs-slider-wrapper {
-    height: 3px !important;
-  }
-  .uiIconClock:before {
-    font-size: 15px;
-    color: @primaryColor;
-  }
-  .custom-placeholer-color {
-    input {
-      &::placeholder {
-        color: @greyColorLighten1 !important;
-        opacity: 1;
-      }
-    }
-  }
-  .theme--light.v-tabs {
-    >.v-tabs-bar {
-      .v-tab {
-        &:not(.v-tab--active) {
-          color: @greyColorLighten1;
+      .v-input__control {
+        min-height: 38px!important;
+        > .v-input__slot {
+          box-shadow: none!important;
+          padding: 0!important;
+          .v-select__slot {
+            label {
+              color: @greyColorLighten1;
+            }
+          }
         }
-      }
-    }
-  }
-  .ck.ck-content {
-    ul {
-      list-style-type: inherit;
-      li {
-        list-style-type: inherit;
-      }
-    }
-  }
-
-  .v-avatar {
-    align-self: flex-start!important;
-  }
-  .v-btn:not(.v-btn--round).v-size--small {
-    flex: none;
-  }
-  #reply_btn {
-    padding: 0px !important;
-    display: -webkit-box;
-  }
-
-  .commentBtn {
-    color: @primaryColor !important;
-    background-color: @primaryColor !important;
-
-    .v-btn__content {
-      color: white;
-    }
-  }
-  #check_btn {
-    color: @primaryColor!important;
-  }
-  .v-input {
-    display: inline-flex;
-  }
-  .task-name {
-    width: 90%;
-    input[type="text"]::placeholder {
-      color: @greyColorLighten1 !important;
-    }
-    &.taskCompleted{
-      text-decoration: line-through;
-    }
-  }
-  #task-name {
-    border: none!important;
-    color: @primaryColor !important;
-    resize: none!important;
-    .textarea:active {
-      box-shadow: none;
-    }
-  }
-  .theme--light.v-text-field {
-    >.v-input__control {
-      >.v-input__slot {
-        &:before {
+        .v-input__append-inner {
           display: none;
         }
       }
+      .v-menu__content {
+
+      }
     }
   }
-  .theme--dark.v-btn.v-btn--disabled {
-    &:not(.v-btn--flat) {
-      &:not(.v-btn--text) {
-        &:not(.v-btn--outlined) {
-          background-color: @btnPrimaryDisableBackground !important;
-          border-color: @btnPrimaryDisableBackground !important;
+  .taskTitleAndMark {
+    .v-textarea {
+      .v-input__control {
+        .v-input__slot {
+          &:before {
+            display: none;
+          }
+          &:after {
+            display: none!important;
+          }
+          .v-text-field__slot {
+
+          }
         }
       }
     }
-  }
-
-  .taskContentComment {
-    line-height: 20px;
-    word-break: break-word;
-    max-width: 300px;
-
-    p {
-      margin: 0px;
-    }
-  }
-  .dateTime {
-    color: #999;
-    cursor: default;
-  }
-  .dueDateAlert {
-    .v-alert__content {
-      color: #8f5804;
-      font-size: 14px;
-    }
-    .v-alert__wrapper {
-      .v-icon {
-        font-size: 18px;
-      }
-      .v-icon::before {
-        color: #8f5804!important;
+    #task-name {
+      border: none!important;
+      box-shadow: none!important;
+      padding: 3px 0px!important;
+      &::placeholder {
+        font-size: 16px!important;
       }
     }
-  }
-   .dueDateError {
-    .v-alert__content {
-      font-size: 14px;
+    #task-name::-moz-placeholder {
+      font-size: 16px!important;
+    } /* Firefox 19+ */
+    #task-name:-moz-placeholder {
+      font-size: 16px!important;
     }
-    .v-alert__wrapper {
-      .v-icon {
+    #task-name:-ms-input-placeholder {
+      font-size: 16px!important;
+    } /* IE */
+    .markAsCompletedBtn {
+      color: @primaryColor!important;
+      font-size: 22px!important;
+    }
+  }
+  .taskLabelsName {
+    .v-input__prepend-outer {
+      margin-top: 8px;
+      i {
+        color: @primaryColor;
         font-size: 18px;
       }
     }
+    .v-input__control {
+      min-height: 38px!important;
+      > .v-input__slot {
+        box-shadow: none!important;
+        padding: 0!important;
+        .v-select__slot {
+          label {
+            color: @greyColorLighten1;
+          }
+        }
+      }
+      .v-input__append-inner {
+        display: none;
+      }
+    }
   }
-  .deleteComment {
-    height: 19px;
-    width: 19px;
+  .taskDates {
+    .v-input__control {
+      > .v-input__slot {
+        box-shadow: none!important;
+        padding: 0!important;
+      }
+    }
+    .v-input__prepend-outer {
+      margin-top: 8px;
+      i {
+        color: @primaryColor;
+        font-size: 22px;
+      }
+      .uiIconClock:before {
+        color: @primaryColor;
+        font-size: 22px;
+      }
+    }
   }
+  .taskStatusAndPriority {
+    .v-input__control {
+      > .v-input__slot {
+        box-shadow: none!important;
+        padding: 0!important;
+      }
+    }
+    .v-input__prepend-outer {
+      margin-top: 8px;
 
-  .projectName {
-    height: 26px;
-    display: inline-table;
-    max-width: 220px;
+      i {
+        color: @primaryColor;
+        font-size: 22px;
+      }
+    }
   }
-  .uiIconBlue {
-    font-size: 14px;
-    margin-top: 4px;
+  .taskDescription {
+    .activityCharsCount.tooManyChars {
+      position: absolute;
+      bottom: 8px;
+      right: 10px;
+      color: @greyColorLighten1;
+    }
+    .cke_browser_webkit{
+      margin-top: 15px;
+      margin-left: 33px;
+    }
+    .cke_bottom.cke_reset_all {
+      background-color: transparent;
+      height: 30px;
+    }
+    .cke_bottom .cke_button_icon {
+      filter: opacity(0.2);
+    }
+    .uiIconMessageLength {
+      font-size: 14px;
+      color: @primaryColor;
+      &:before {
+        content: "\e910";
+      }
+    }
   }
 }
 

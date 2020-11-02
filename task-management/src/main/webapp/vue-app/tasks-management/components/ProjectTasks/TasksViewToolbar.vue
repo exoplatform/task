@@ -40,23 +40,6 @@
         </v-tabs>
       </div>
       <v-spacer/>
-      <!--<v-scale-transition>
-        <v-text-field
-          :placeholder="$t('label.filterTask','Enter task')"
-          prepend-inner-icon="fa-filter"
-          class="inputTasksFilter pa-0 mr-3 my-auto"/>
-      </v-scale-transition>
-      <v-scale-transition>
-        <v-btn
-          class="btn px-2 btn-primary filterTasksSetting"
-          outlined
-          @click="openDrawer">
-          <i class="uiIcon uiIconFilterSetting pr-3"></i>
-          <span class="d-none font-weight-regular caption d-sm-inline">
-            {{ $t('label.filter') }} (3)
-          </span>
-        </v-btn>
-      </v-scale-transition>-->
     </v-toolbar>
     <task-filter-drawer
       ref="filterTasksDrawer"/>
@@ -84,18 +67,17 @@
     },
     data () {
       return {
-        task: {id:null,status:{}},
-         drawer:null
+        task: {id:null,status:{},priority:'NONE'},
       }
     },
     methods: {
       openDrawer() {
         this.$refs.filterTasksDrawer.open();
       },
-        openTaskDrawer() {
-          this.task.status.project=this.project;
-          this.$root.$emit('open-task-drawer', this.task)
-            },          
+      openTaskDrawer() {
+        this.task.status.project=this.project;
+        this.$root.$emit('open-task-drawer', this.task)
+      },
     }
   }
 </script>

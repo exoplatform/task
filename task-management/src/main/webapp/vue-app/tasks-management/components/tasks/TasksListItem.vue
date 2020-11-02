@@ -130,7 +130,6 @@
         assigneeAndCoworkerArray: [],
         isPersonnalTask : this.task.status === null,
         labelList: '',
-        drawer:null,
         isSpaceProject: this.task.space !== null,
         maxAvatarToShow : 3
       }
@@ -219,9 +218,12 @@
         }
       },
       openTaskDrawer() {
-                 this.$root.$emit('open-task-drawer', this.task.task)
+        this.$root.$emit('open-task-drawer', this.task.task)
       },
-       spaceUrl(spaceUrl) {
+      onCloseDrawer: function(drawer){
+        this.drawer = drawer;
+      },
+      spaceUrl(spaceUrl) {
         if (!this.spaceUrl) {
           return '#';
         }

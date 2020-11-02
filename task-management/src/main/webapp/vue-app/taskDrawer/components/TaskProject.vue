@@ -9,9 +9,9 @@
         :filter="filterProjects"
         v-model="projectModel"
         :items="projects"
-        :label="$t('label.noProject')"
+        :label="$t('label.tapProject.name')"
         attach
-        class="pt-0 mb-0"
+        class="pt-0 mb-0 inputTaskProjectName taskInputArea"
         solo
         prepend-icon
         @click="openProjectsList()"
@@ -83,10 +83,8 @@
           },
           projectsList() {
             this.closeDropDownList()
-          }
-        },
-        created() {
-            this.getProjects();
+          },
+          task(){
             if (this.task.status != null) {
               this.projectModel = this.task.status.project;
             }else{
@@ -94,6 +92,11 @@
                     this.task.status = status;
                 })
             }
+          }
+        },
+        created() {
+            this.getProjects();
+            
         },
         methods: {
             getProjects() {

@@ -4,10 +4,10 @@
       v-model="tab" 
       slider-size="4" 
       class="tasksMenuParent white">
-      <v-tab href="#tab-1">
+      <v-tab href="#tab-1" @click="getMyTasks()">
         {{ $t('label.tasks.header') }}
       </v-tab>
-      <v-tab href="#tab-2">
+      <v-tab href="#tab-2" @click="getMyProjects()">
         {{ $t('label.projects') }}
       </v-tab>
     </v-tabs>
@@ -23,12 +23,8 @@
       ref="addProjectDrawer"/>
       
     <task-drawer
-      v-if="drawer"
-      :drawer="drawer"
-      :task="task"
-      @addTask="onAddTask()"
-      @updateTaskList="updateTaskList()"
-      @closeDrawer="onCloseDrawer"/>
+      ref="taskDrawer"
+      :task="task"/>
   </v-app>
 </template>
 <script>
@@ -36,7 +32,6 @@
     data () {
       return {
         tab: 'tab-2',
-        drawer:null,
         task: {
         type: Object,
         default: () => ({}),
@@ -49,8 +44,9 @@
        this.$refs.addProjectDrawer.open(project);
       });
      this.$root.$on('open-task-drawer', task => {
-       this.drawer = true;
        this.task=task;
+       window.history.pushState('task', 'Task details', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest?taskId=${task.id}`);
+       this.$refs.taskDrawer.open(task);
       });
      const search = document.location.search.substring(1);
      if(search.includes('mytasks')){
@@ -83,7 +79,7 @@
           }else{
            this.tab='tab-1' 
           }
-          this.drawer = true;
+          this.$refs.taskDrawer.open(this.task);
           window.history.pushState('task', 'Task details', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest?taskId=${taskId}`);
 
         })
@@ -94,14 +90,12 @@
       onCloseDrawer: function(drawer){
         this.drawer = drawer;
       },
-       onAddTask() {
-        this.$root.$emit('task-added', this.task)
+      getMyTasks(){
+      window.history.pushState('mytasks', 'My Tasks', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest?mytasks`);
       },
-      updateTaskList() {
-      this.drawer = false;
-       $('body').removeClass('hide-scroll');
-       setTimeout(this.removeTask, 100)
-      },
+      getMyProjects(){
+        window.history.pushState('myprojects', 'My Projects', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest?myprojects`);
+      }
 }
    }
 </script>

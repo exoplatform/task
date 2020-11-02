@@ -11,7 +11,10 @@
       offset-y
       bottom>
       <template v-slot:activator="{ on }">
-        <v-list-item :title="$t('tooltip.clickToEdit')" style="cursor: pointer;">
+        <v-list-item 
+          :title="$t('tooltip.clickToEdit')" 
+          style="cursor: pointer;" 
+          class="px-0">
           <v-list-item-avatar
             v-if="task.assignee"
             size="22" 

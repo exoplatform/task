@@ -236,7 +236,10 @@
       },
       openTaskDrawer() {
         this.$root.$emit('open-task-drawer', this.task.task)
-        },
+      },
+      onCloseDrawer: function(drawer){
+        this.drawer = drawer;
+      },
       spaceUrl(spaceUrl) {
         if (!this.spaceUrl) {
           return '#';

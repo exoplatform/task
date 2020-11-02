@@ -14,7 +14,6 @@
       :task-list-tab-view="'#tasks-view-list'"
       :task-gantt-tab-view="'#tasks-view-gantt'"
       :tasks-view-tab-model="'tasks-view-board'"
-      @taskAdded="getTasksByProject(project.id)"
       @taskViewChangeTab="getChangeTabValue"/>
     <v-tabs-items
       v-if="tasksList && tasksList.length">
@@ -65,9 +64,16 @@
         tasksList: []
       }
     },
-    created() {
+    watch:{
+      project(){
       this.getStatusByProject(this.project.id);
       this.getTasksByProject(this.project.id);
+      }
+    },
+    created() {
+      this.$root.$on('task-added', task => {
+       this.getTasksByProject(this.project.id);
+      });
     },
     methods : {
       hideProjectDetails() {

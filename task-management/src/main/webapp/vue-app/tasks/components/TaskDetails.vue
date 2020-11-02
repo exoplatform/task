@@ -25,6 +25,10 @@
                 v-text="task.title"/>
               <v-list-item-subtitle><div class="color-title">{{ dateFormatter(task.dueDate) }}</div></v-list-item-subtitle>
             </a>
+            <task-drawer
+              ref="taskDrawer"
+              :task="task"
+              @updateTaskList="updateTaskList()"/>
           </v-list-item-content>
         </v-flex>
         <v-flex
@@ -108,9 +112,16 @@
                 }
             },
             openTaskDrawer() {
-                 this.$root.$emit('open-task-drawer', this.task)
+              this.$refs.taskDrawer.open(this.task);
             },
-
+            onCloseDrawer: function(drawer){
+                this.drawer = drawer;
+            },
+            updateTaskList() {
+              this.drawer = false;
+              $('body').removeClass('hide-scroll');
+              setTimeout(this.removeTask, 100)
+            },
             removeTask() {
               this.$emit('removeTask',this.task.id)
             }

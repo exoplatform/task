@@ -165,9 +165,12 @@
         }
       },
       openTaskDrawer() {
-       this.$root.$emit('open-task-drawer', this.task.task)
+        this.$root.$emit('open-task-drawer', this.task.task)
       },
 
+      onCloseDrawer: function(drawer){
+        this.drawer = drawer;
+      }
     }
   }
 </script>

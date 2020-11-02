@@ -28,7 +28,7 @@
       }
     },
     created() {
-      window.history.pushState('myprojects', 'My Projects', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest?myprojects`);
+    //  window.history.pushState('myprojects', 'My Projects', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest?myprojects`);
 
       document.addEventListener('showProjectTasks', (event) => {
         if (event && event.detail) {
