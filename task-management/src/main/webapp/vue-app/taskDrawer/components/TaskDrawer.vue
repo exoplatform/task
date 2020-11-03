@@ -48,8 +48,8 @@
           @menuIsOpen="openAssigneeMenu()"/>
       </div>
       <v-divider class="my-0" />
-      <div class="taskDates d-flex py-4">
-        <div class="taslDueDadeCalender">
+      <div class="taskDates d-flex pt-4 pb-2">
+        <div class="taskDueDateCalender">
           <v-menu
             v-custom-click-outside="closeDatePickerMenu"
             ref="menu"
@@ -62,11 +62,11 @@
             <template v-slot:activator="{ on }">
               <v-text-field
                 v-model="date"
-                :placeholder="$t('label.dueDate')"
+                :placeholder="$t('label.chooseDate')"
+                :label="$t('label.dueDate')"
                 class="pt-0 mt-0 dateFont"
                 prepend-icon
                 readonly
-                solo
                 @click="openDatePickerMenu()"
                 v-on="on">
                 <template v-slot:prepend class="mr-4">
@@ -110,7 +110,7 @@
             </v-date-picker>
           </v-menu>
         </div>
-        <div class="taslPlanDadeCalender">
+        <div class="taskPlanDateCalender">
           <v-flex
             @mouseover="showDeleteDateBtn = true"
             @mouseleave="showDeleteDateBtn = false">
@@ -125,27 +125,26 @@
               <template v-slot:activator="{ on }">
                 <v-text-field
                   v-model="dateRangeText"
-                  :placeholder="$t('label.noWorkPlan')"
+                  :label="$t('label.noWorkPlan')"
+                  :placeholder="$t('label.chooseDate')"
                   class="pt-0 pl-1 mt-0 dateFont"
                   prepend-icon
                   append-icon
                   readonly
                   style="width: 100%"
-                  solo
                   @click="openDateRangeMenu()"
                   v-on="on">
                   model: {{ dates }}
                   <template v-slot:prepend class="mr-4">
-                    <i class="uiIconPLFCalendar uiIconBlue"></i>
+                    <i class="uiIconCalendar uiIconBlue"></i>
                   </template>
                   <template v-slot:append class="mr-4">
-                    <v-btn
+                    <i
                       v-show="dateRangeDeleteBtn"
                       :title="$t('label.remove')"
-                      icon
-                      @click="removeScheduledDate()">
-                      <i style="font-size: 10px" class="uiIconTrashMini uiIconBlue "></i>
-                    </v-btn>
+                      style="font-size: 10px"
+                      class="uiIconTrashMini uiIconBlue "
+                      @click="removeScheduledDate()"></i>
                   </template>
                 </v-text-field>
               </template>

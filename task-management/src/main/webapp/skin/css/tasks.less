@@ -1632,20 +1632,55 @@
   }
   .taskDates {
     .v-input__control {
+      margin-top: 12px;
       > .v-input__slot {
         box-shadow: none!important;
         padding: 0!important;
+        &:before {
+          display: none;
+        }
+        &:after {
+          display: none!important;
+        }
+        .v-label {
+          font-size: 22px!important;
+        }
+        .v-label--active {
+          transform: translateY(-16px) scale(0.75)!important;
+        }
+        input {
+          margin-top: 10px!important;
+          &::placeholder {
+            font-size: 16px!important;
+            font-style: italic!important;
+          }
+        }
       }
     }
     .v-input__prepend-outer {
-      margin-top: 8px;
-      i {
+      .uiIconCalendar {
         color: @primaryColor;
-        font-size: 22px;
+        font-size: 30px;
+        margin-top:6px;
+        &:before {
+          content: "\e619";
+        }
       }
-      .uiIconClock:before {
-        color: @primaryColor;
-        font-size: 22px;
+      .uiIconClock {
+        margin-top:6px;
+        &:before {
+          color: @primaryColor;
+          font-size: 30px;
+        }
+      }
+    }
+    .v-input__append-inner {
+      .uiIconTrashMini.uiIconBlue {
+        cursor: pointer;
+        position: absolute;
+        top: -6px;
+        right: 10px;
+        color: @errorColor!important;
       }
     }
   }
@@ -1690,6 +1725,9 @@
         content: "\e910";
       }
     }
+  }
+  .drawerContent {
+    padding: 16px;
   }
 }
 
