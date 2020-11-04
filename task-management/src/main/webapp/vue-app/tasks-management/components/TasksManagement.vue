@@ -24,7 +24,8 @@
       
     <task-drawer
       ref="taskDrawer"
-      :task="task"/>
+      :task="task" 
+      @closeDrawer="onCloseDrawer"/>
   </v-app>
 </template>
 <script>
@@ -45,17 +46,27 @@
       });
      this.$root.$on('open-task-drawer', task => {
        this.task=task;
+       if(task.id){
        window.history.pushState('task', 'Task details', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest?taskId=${task.id}`);
+       }
        this.$refs.taskDrawer.open(task);
       });
-     const search = document.location.search.substring(1);
+     this.$root.$on('task-drawer-closed', task => {
+       this.task=task;
+       if(this.task.status.project){
+          document.dispatchEvent(new CustomEvent('showProjectTasks', {detail: this.task.status.project}));
+          }else{
+           this.tab='tab-1' 
+          }
+      });
+     let search = document.location.search.substring(1);
      if(search.includes('mytasks')){
-        this.tab='tab-1'
+        search = this.tab='tab-1'
         search.replace('mytasks','')
      }
      if(search.includes('myprojects')){
         this.tab='tab-2'
-        search.replace('myprojects','')
+        search = search.replace('myprojects','')
      }
     if(search) {
       const parameters = JSON.parse(
@@ -75,21 +86,17 @@
           this.$tasksService.getTaskById(taskId).then(data => {
           this.task = data  
           if(this.task.status.project){
-              document.dispatchEvent(new CustomEvent('showProjectTasks', {detail: data}));
+              document.dispatchEvent(new CustomEvent('showProjectTasks', {detail: this.task.status.project}));
           }else{
            this.tab='tab-1' 
           }
           this.$refs.taskDrawer.open(this.task);
-          window.history.pushState('task', 'Task details', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest?taskId=${taskId}`);
-
+         // window.history.pushState('task', 'Task details', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest?taskId=${taskId}`);
         })
       } 
     }
   },
   methods: {
-      onCloseDrawer: function(drawer){
-        this.drawer = drawer;
-      },
       getMyTasks(){
       window.history.pushState('mytasks', 'My Tasks', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest?mytasks`);
       },

@@ -4,7 +4,8 @@
     ref="addTaskDrawer"
     class="taskDrawer"
     body-classes="hide-scroll decrease-z-index-more"
-    right>
+    right
+    @closed="onCloseDrawer">
     <template slot="title">
       {{ $t('label.drawer.header') }}
     </template>
@@ -679,6 +680,9 @@
         this.$emit('closeDrawer',this.drawer);
         this.showEditor=false;
         this.$refs.addTaskDrawer.close();
+      },
+      onCloseDrawer() {
+        this.$root.$emit('task-drawer-closed', this.task)
       },
     }
   }

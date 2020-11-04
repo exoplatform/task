@@ -306,7 +306,7 @@ public class ProjectRestService implements ResourceContainer {
       projectJson.put("participator", projectService.getParticipator(projectId));
       projectJson.put("hiddenOn", project.getHiddenOn());
       projectJson.put("manager", projectService.getManager(projectId));
-      projectJson.put("children", projectService.getSubProjects(projectId, 0, -1));
+      //projectJson.put("children", projectService.getSubProjects(projectId, 0, -1));
       projectJson.put("dueDate", project.getDueDate());
       projectJson.put("calendarIntegrated", project.isCalendarIntegrated());
       projectJson.put("description", project.getDescription());
