@@ -85,12 +85,16 @@
             this.closeDropDownList()
           },
           task(){
-            if (this.task.status != null) {
+            if (this.task && this.task.status) {
               this.projectModel = this.task.status.project;
             }else{
+              if(this.task.status.project){
                     getDefaultStatusByProjectId(this.task.status.project.id).then((status) => {
                     this.task.status = status;
+           
+
                 })
+                   }
             }
           }
         },

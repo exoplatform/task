@@ -329,6 +329,7 @@
     },
     data() {
       return {
+        enableAutosave: true,
         editorData: null,
         emptyValue: '',
         reset: false,
@@ -533,16 +534,19 @@
           $('body').removeClass('hide-scroll');
           this.$emit('closeDrawer',this.drawer);
           this.showEditor=false;
+          this.enableAutosave=false
+          this.task={}
           this.$refs.addTaskDrawer.close();
         })
       },
       autoSaveDescription() {
-        if(this.task.id!=null){
+        if(this.task.id!=null && this.enableAutosave){
           clearTimeout(this.saveDescription);
           this.saveDescription = setTimeout(() => {
             Vue.nextTick(() => this.updateTask(this.task.id));
           }, this.autoSaveDelay);
         }
+        this.enableAutosave=true
       },
       retrieveTaskLogs() {
         getTaskLogs(this.task.id).then(
@@ -656,6 +660,7 @@
         return urlVerify(text);
       },
       open(task) {
+        this.enableAutosave=false;
         this.task=task
         if(this.task.id!=null){
         this.retrieveTaskLogs();
@@ -682,7 +687,9 @@
         this.$refs.addTaskDrawer.close();
       },
       onCloseDrawer() {
+        this.enableAutosave=false;
         this.$root.$emit('task-drawer-closed', this.task)
+        this.task={}
       },
     }
   }
