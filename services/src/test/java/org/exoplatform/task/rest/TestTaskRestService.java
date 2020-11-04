@@ -730,4 +730,31 @@ public class TestTaskRestService {
 
 
   }
+
+  @Test
+  public void testUpdateCompleted() throws Exception {
+    // Given
+    TaskRestService taskRestService = new TaskRestService(taskService,
+            commentService,
+            projectService,
+            statusService,
+            userService,
+            spaceService,
+            labelService,
+            viewStateService);
+    Identity root = new Identity("root");
+    ConversationState.setCurrent(new ConversationState(root));
+    TaskDto task = new TaskDto();
+    task.setId(1);
+    task.setCreatedBy("root");
+    task.setAssignee("root");
+
+    when(taskService.getTask(1)).thenReturn(task);
+
+    // When
+    Response response = taskRestService.updateCompleted(1, true);
+
+    // Then
+    assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+  }
 }

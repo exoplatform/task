@@ -906,6 +906,9 @@
               .taskTitle {
                 width: 75%;
                 max-width: 75%;
+                .strikethrough{
+                  text-decoration: line-through;
+                }
                 .uiIconCircle {
                   font-family: "PLF-FONT-ICONS" !important;
                   color: @primaryColor;
@@ -917,6 +920,13 @@
                   &:before {
                     content: "\ea47";
                   }
+                }
+                .uiIconValidate{
+                  font-style: normal;
+                  font-weight: bold;
+                  font-size: 20px;
+                  padding-right: 10px;
+                  cursor: pointer;
                 }
               }
               .taskId {
@@ -990,6 +1000,9 @@
               }
             }
             .taskTitle {
+              .strikethrough{
+                text-decoration: line-through;
+              }
               width: 22%;
               max-width: 22%;
               text-align: left;
