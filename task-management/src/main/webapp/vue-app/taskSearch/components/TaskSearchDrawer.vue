@@ -1,15 +1,12 @@
 <template>
   <task-drawer
-    v-if="drawer"
-    :drawer="drawer"
-    :task="task"
-    @closeDrawer="drawer = false"/>
+    ref="taskDrawer"
+    :task="task"/>
 </template>
 
 <script>
 export default {
   data: () => ({
-    drawer: false,
     task: null,
   }),
   mounted() {
@@ -18,7 +15,7 @@ export default {
   methods: {
     openTaskDetail(event) {
       this.task = event && event.detail;
-      this.drawer = true;
+      this.$refs.taskDrawer.open(this.task);
     },
   }
 };

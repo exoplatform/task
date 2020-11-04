@@ -5,7 +5,8 @@
       :key="task.id"
       class="tasksListItem">
       <tasks-list-item
-        :task="task"/>
+        :task="task" 
+        @update-cart="updateCart"/>
     </div>
   </v-app>
 </template>
@@ -17,5 +18,13 @@
         default: () => [],
       }
     },
+    methods:{
+      updateCart(e){
+
+          this.tasks = this.tasks.filter((t) => t.task.id !== e.id);
+
+      }
+    }
   }
+
 </script>

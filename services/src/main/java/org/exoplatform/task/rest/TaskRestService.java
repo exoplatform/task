@@ -12,7 +12,6 @@ import org.exoplatform.services.security.Identity;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
 import org.exoplatform.task.dao.OrderBy;
-import org.exoplatform.task.dao.StatusHandler;
 import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
@@ -577,6 +576,28 @@ public class TaskRestService implements ResourceContainer {
   }
 
 
+  @DELETE
+  @Path("{id}")
+  @Produces(MediaType.APPLICATION_JSON)
+  @RolesAllowed("users")
+  @ApiOperation(value = "Updates a specific task by id", httpMethod = "PUT", response = Response.class, notes = "This updates the task if the authenticated user has permissions to view the objects linked to this task.")
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled"),
+      @ApiResponse(code = 400, message = "Invalid query input"), @ApiResponse(code = 403, message = "Unauthorized operation"),
+      @ApiResponse(code = 404, message = "Resource not found") })
+  public Response deleteTaskById(@ApiParam(value = "Task id", required = true) @PathParam("id") long id) throws Exception {
+
+    TaskDto task = taskService.getTask(id);
+    if (task == null) {
+      return Response.status(Response.Status.NOT_FOUND).build();
+    }
+    if (!TaskUtil.hasEditPermission(task)) {
+      return Response.status(Response.Status.FORBIDDEN).build();
+    }
+    taskService.removeTask(id);
+    return Response.ok().build();
+  }
+
+
   @GET
   @Path("labels")
   @RolesAllowed("users")
@@ -817,6 +838,26 @@ public class TaskRestService implements ResourceContainer {
       usersJsonArray.put(userJson);
     }
     return Response.ok(usersJsonArray.toString()).build();
+  }
+
+  @PUT
+  @Path("updateCompleted/{idTask}")
+  @Produces(MediaType.APPLICATION_JSON)
+  @RolesAllowed("users")
+  @ApiOperation(value = "Updates a specific task by id", httpMethod = "PUT", response = Response.class, notes = "This updates the task if the authenticated user has permissions to view the objects linked to this task.")
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled"),
+          @ApiResponse(code = 400, message = "Invalid query input"), @ApiResponse(code = 403, message = "Unauthorized operation"),
+          @ApiResponse(code = 404, message = "Resource not found") })
+  public Response updateCompleted(@ApiParam(value = "Task id", required = true) @PathParam("idTask") long idTask,
+                                  @ApiParam(value = "showCompleteTasks", defaultValue = "false") @QueryParam("showCompleteTasks") boolean showCompleteTasks) throws Exception {
+    TaskDto task = taskService.getTask(idTask);
+    if (!TaskUtil.hasEditPermission(task)) {
+      return Response.status(Response.Status.FORBIDDEN).build();
+    }
+    task.setCompleted(showCompleteTasks);
+    taskService.updateTask(task);
+
+    return Response.ok(task).build();
   }
 
 

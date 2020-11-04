@@ -9,7 +9,7 @@
       :hide-no-data="!search"
       :items="items"
       :search-input.sync="search"
-      :label="$t('label.label')"
+      :label="$t('label.tapLabel.name')"
       attach
       class="pt-0"
       hide-selected

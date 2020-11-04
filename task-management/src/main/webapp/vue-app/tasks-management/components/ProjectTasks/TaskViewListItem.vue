@@ -66,6 +66,7 @@
         <span class="body-2 text-sub-title">{{ $t('label.noDueDate') }}</span>
       </div>
     </div>
+
   </div>
 </template>
 <script>
@@ -88,7 +89,6 @@
         assigneeAndCoworkerArray: [],
         isPersonnalTask : this.task.task.status === null,
         labelList: '',
-        drawer:null,
         maxAvatarToShow : 3
       }
     },

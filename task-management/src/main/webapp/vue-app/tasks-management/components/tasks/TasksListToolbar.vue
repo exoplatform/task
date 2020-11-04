@@ -73,6 +73,7 @@
       return {
         tasks:null,
         task: {id:null,status:{}},
+        drawer:null
       }
     },
     watch: {
@@ -92,8 +93,8 @@
         this.$refs.filterTasksDrawer.open();
       },
       openTaskDrawer() {
-      this.$root.$emit('open-task-drawer', this.task)
-      }
+        this.$root.$emit('open-task-drawer', this.task)
+      },
     }
   }
 </script>

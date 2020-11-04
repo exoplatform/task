@@ -233,6 +233,29 @@ public class TestTaskRestService {
 
 
   @Test
+  public void deleteTaskById() throws Exception {
+      // Given
+      TaskRestService taskRestService = new TaskRestService(taskService,
+              commentService,
+              projectService,
+              statusService,
+              userService,
+              spaceService,
+              labelService);
+      Identity john = new Identity("john");
+      ConversationState.setCurrent(new ConversationState(john));
+      TaskDto task = new TaskDto();
+      task.setId(1);
+      task.setCreatedBy("john");
+      task.setAssignee("john");
+      taskService.createTask(task);
+      when(taskService.getTask(1)).thenReturn(task);
+      Response response = taskRestService.deleteTaskById( 1);
+      assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+    }
+
+
+    @Test
   public void testGetLabels() throws Exception {
     // Given
     TaskRestService taskRestService = new TaskRestService(taskService,
@@ -706,5 +729,32 @@ public class TestTaskRestService {
     assertEquals(1, tasks.getTasksNumber());
 
 
+  }
+
+  @Test
+  public void testUpdateCompleted() throws Exception {
+    // Given
+    TaskRestService taskRestService = new TaskRestService(taskService,
+            commentService,
+            projectService,
+            statusService,
+            userService,
+            spaceService,
+            labelService,
+            viewStateService);
+    Identity root = new Identity("root");
+    ConversationState.setCurrent(new ConversationState(root));
+    TaskDto task = new TaskDto();
+    task.setId(1);
+    task.setCreatedBy("root");
+    task.setAssignee("root");
+
+    when(taskService.getTask(1)).thenReturn(task);
+
+    // When
+    Response response = taskRestService.updateCompleted(1, true);
+
+    // Then
+    assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
   }
 }

@@ -300,7 +300,7 @@ public class TestProjectRestService {
     when(projectService.updateProject(any())).thenReturn(projectDto);
     when(projectService.getProject(projectDto.getId())).thenReturn(projectDto);
     response = projectRestService.updateProject(projectDto.getId(), projectDto);
-    assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
+    assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
   }
 

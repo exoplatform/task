@@ -77,3 +77,14 @@ export function getTasksByProjectId(projectId) {
         }
     });
 }
+
+export function updateCompleted(task) {
+    return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/tasks/updateCompleted/${task.id}?&showCompleteTasks=${task.showCompleteTasks}`, {
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+        method: 'PUT',
+        body: JSON.stringify(task)
+    }).then(resp => resp.json());
+}
