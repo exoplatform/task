@@ -1698,6 +1698,7 @@
     }
   }
   .taskStatusAndPriority {
+    justify-content: space-between;
     .v-input__control {
       > .v-input__slot {
         box-shadow: none!important;
@@ -1712,7 +1713,35 @@
         font-size: 22px;
       }
     }
-  }
+    .taskPriority {
+      .v-input__control {
+        > .v-input__slot {
+          .v-select__slot {
+            max-width: inherit!important;
+            width: auto!important;
+            flex-basis: 0!important;
+            min-width: 90px!important;
+          }
+          }
+        }
+      }
+    .taskStatus {
+      .v-input__control {
+        > .v-input__slot {
+          justify-content: flex-end!important;
+          .v-select__slot {
+            max-width: inherit!important;
+            width: auto!important;
+            flex-basis: 0!important;
+            min-width: 120px!important;
+            i {
+              font-size: 30px!important;
+            }
+          }
+          }
+        }
+      }
+    }
   .taskDescription {
     .activityCharsCount.tooManyChars {
       position: absolute;

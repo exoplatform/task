@@ -6,8 +6,11 @@
     body-classes="hide-scroll decrease-z-index-more"
     right
     @closed="onCloseDrawer">
-    <template slot="title">
+    <template v-if="task.id!=null" slot="title">
       {{ $t('label.drawer.header') }}
+    </template>
+    <template v-else slot="title">
+      {{ $t('label.drawer.header.add') }}
     </template>
     <template slot="content">
       <div class="taskProjectName">
@@ -15,13 +18,6 @@
           :task="task"
           :projects-list="projectsList"
           @openProjectsList="openProjectsList()"/>
-      </div>
-      <div class="taskLabelsName">
-        <task-labels
-          v-if="task.id!=null"
-          :task="task"
-          :labels-list="labelsList"
-          @openLabelsList="openLabelsList()"/>
       </div>
       <div class="taskTitleAndMark d-flex">
         <v-btn
@@ -41,6 +37,12 @@
           rows="1"
           class="pl-0 pt-0 task-name"
           @change="updateTask"/>
+      </div>
+      <div class="taskLabelsName">
+        <task-labels
+          :task="task"
+          :labels-list="labelsList"
+          @openLabelsList="openLabelsList()"/>
       </div>
       <div class="taskAssignement pb-3">
         <task-assignment
@@ -172,7 +174,7 @@
           <v-select
             v-custom-click-outside="closePrioritiesList"
             ref="selectPriority"
-            v-model="task.priority"
+            v-model="priority"
             :items="priorities"
             item-value="key"
             item-text="value"
@@ -180,8 +182,8 @@
             solo
             class="pt-0 selectFont"
             @change="updateTask(task.id)">
-            <template v-slot:prepend>
-              <v-icon :color="getTaskPriorityColor(task.priority)" size="20">mdi-flag-variant</v-icon>
+            <template v-slot:append>
+              <v-icon :color="priorityDefaultColor" size="20">mdi-flag-variant</v-icon>
             </template>
             <template slot="item" slot-scope="data">
               <v-list-avatar class="mr-2">
@@ -199,18 +201,14 @@
             <v-select
               v-custom-click-outside="closeStatusList"
               ref="selectStatus"
-              v-model="task.status.name"
+              v-model="taskStatus"
               :items="projectStatuses"
               item-value="key"
               item-text="value"
               attach
               class="pt-0 selectFont"
               solo
-              @change="updateTaskStatus()">
-              <template v-slot:prepend>
-                <i class="uiIconTime uiIconBlue"></i>
-              </template>
-            </v-select>
+              @change="updateTaskStatus()"/>
           </div>
         </div>
       </div>
@@ -334,10 +332,14 @@
         emptyValue: '',
         reset: false,
         disabledComment: true,
+        priority: '',
+        priorityDefaultColor:'',
+        taskStatus: 'ToDo',
         priorities: [{key:'HIGH',value:this.$t('label.priority.high')},
           {key:'NORMAL',value:this.$t('label.priority.normal')},
           {key:'LOW',value:this.$t('label.priority.low')},
           {key:'NONE',value:this.$t('label.priority.none')}],
+        defaultPriority: {key:'NORMAL',value:this.$t('label.priority.normal')},
         labelsList: false,
         projectsList: false,
         date: null,
@@ -423,6 +425,18 @@
     },
     created() {
       document.addEventListener('keyup', this.escapeKeyListener);
+      this.getStatusesByProjectId();
+      this.$root.$on('open-task-drawer', task => {
+        if(task.id!=null) {
+          this.priority = task.priority;
+          this.taskStatus = task.status.name;
+          this.priorityDefaultColor = this.getTaskPriorityColor(task.priority);
+        } else {
+          this.priority = {key:'NORMAL',value:this.$t('label.priority.normal')};
+          this.taskStatus = 'ToDo';
+          this.priorityDefaultColor = this.getTaskPriorityColor('NORMAL');
+        }
+      });
     },
     destroyed: function() {
       document.removeEventListener('keyup', this.escapeKeyListener);
@@ -509,13 +523,15 @@
         newDate.date = date.getDate();
       },
       updateTaskStatus() {
-        getStatusesByProjectId(this.task.status.project.id).then(
-          (projectStatuses) => {
-            const status = projectStatuses.find(s => s.name === this.task.status.name);
-            this.task.status.id = status.id;
-            this.task.status.rank = status.rank;
-            this.updateTask()
-          });
+        if (this.task.status != null) {
+          getStatusesByProjectId(this.task.status.project.id).then(
+            (projectStatuses) => {
+              const status = projectStatuses.find(s => s.name === this.task.status.name);
+              this.task.status.id = status.id;
+              this.task.status.rank = status.rank;
+              this.updateTask()
+            });
+        }
       },
       updateTask() {
         if(this.task.id!=null){
@@ -523,8 +539,8 @@
           window.setTimeout(() => {
              this.$root.$emit('task-added', this.task)
           }, 200);
-         
         }
+        this.priorityDefaultColor = this.getTaskPriorityColor(this.priority);
       },
       addTask() {
         addTask(this.task).then(task => {
@@ -586,6 +602,11 @@
                 }
               }
             });
+        } else {
+          this.projectStatuses.push({key: 'ToDo', value: this.$t('exo.tasks.status.todo')});
+          this.projectStatuses.push({key: 'InProgress', value: this.$t('exo.tasks.status.inprogress')});
+          this.projectStatuses.push({key: 'WaitingOn', value: this.$t('exo.tasks.status.waitingon')});
+          this.projectStatuses.push({key: 'Done', value: this.$t('exo.tasks.status.done')});
         }
       },
       navigateTo(pagelink) {

@@ -5,7 +5,8 @@
       id="assigneeMenu"
       v-model="globalMenu"
       :close-on-content-click="false"
-      :nudge-left="40"
+      :nudge-left="0"
+      :max-width="300"
       attach
       transition="scale-transition"
       offset-y
