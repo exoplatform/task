@@ -14,8 +14,7 @@
               xl="3"
               class="pa-0 projectItem">
               <task-card
-                :task="task"
-                @update-cart="updateCart"/>
+                :task="task"/>
             </v-col>
           </v-row>
         </v-container>
@@ -31,13 +30,6 @@
         default: () =>[],
       }
     },
-    methods:{
-      updateCart(e){
-
-        this.tasks = this.tasks.filter((t) => t.task.id !== e.id);
-
-      }
-    }
 
   }
 </script>

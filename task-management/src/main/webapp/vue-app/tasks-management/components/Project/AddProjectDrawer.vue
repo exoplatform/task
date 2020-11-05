@@ -282,7 +282,7 @@
         this.projectInformation.description = this.project.description;
       }
 
-        if (this.project.manager !== null && this.project.manager !== '' && this.project.manager !==undefined && this.project.id !== null ||this.project.id !==''){
+        if (this.project.manager !== null && this.project.manager !== '' && this.project.manager !==undefined ){
           this.manager = this.project.managerIdentities;
           this.manager = this.manager.map(user => ({
             id: `organization:${user.username}`,

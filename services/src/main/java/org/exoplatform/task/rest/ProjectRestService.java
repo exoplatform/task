@@ -444,6 +444,17 @@ public class ProjectRestService implements ResourceContainer {
       fieldsSet.put("manager",managers);
       fields.put("manager", array);
     }
+
+    if (projectDto.getParticipator()!=null){
+      Set<String> participators = new HashSet<String>();
+      projectDto.getParticipator().forEach(name -> {
+        participators.add(name);
+      });
+      String[] array = participators.toArray(new String[0]);
+      fieldsSet.put("participator",participators);
+      fields.put("participator", array);
+    }
+
     fields.put("calendarIntegrated", new String[]{String.valueOf(projectDto.isCalendarIntegrated())});
     ProjectDto project = ProjectUtil.saveProjectField(projectService, projectId, fields);
     projectService.updateProject(project);

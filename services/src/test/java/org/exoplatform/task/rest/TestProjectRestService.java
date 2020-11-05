@@ -272,13 +272,17 @@ public class TestProjectRestService {
                                                                    spaceService,
                                                                    labelService);
     Identity john = new Identity("john");
+    Identity exo = new Identity("exo");
     ConversationState.setCurrent(new ConversationState(john));
     Set<String> manager = new HashSet<String>();
     manager.add("john");
+    Set<String> participator = new HashSet<String>();
+    participator.add("exo");
     ProjectDto projectDto = new ProjectDto();
     projectDto.setId(1);
     projectDto.setDescription("bla bla bla");
     projectDto.setManager(manager);
+    projectDto.setParticipator(participator);
     projectService.updateProject(projectDto);
 
     when(projectService.updateProject(any())).thenReturn(projectDto);
