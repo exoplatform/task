@@ -90,6 +90,7 @@
       },
       filterTaskDashboard(e){
         this.tasks=e.tasks;
+        this.showCompleteTasks=e.showCompleteTasks;
       },
       changeSelectedTabItem() {
         this.isTasksTabChanged = !this.isTasksTabChanged;

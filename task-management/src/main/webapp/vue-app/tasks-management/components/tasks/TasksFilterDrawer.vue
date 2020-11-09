@@ -185,7 +185,7 @@
           tasks.assignee = this.assignee.remoteId;
         }
         return this.$tasksService.filterTasksList(tasks).then(tasks => {
-          this.$emit('filter-task', tasks);
+          this.$emit('filter-task',{ tasks,showCompleteTasks:this.showCompleteTasks });
           this.$refs.filterTasksDrawer.close();
 
         })
