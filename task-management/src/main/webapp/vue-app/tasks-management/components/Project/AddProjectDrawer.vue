@@ -82,7 +82,12 @@
                   {{ $t('label.editManagerInfo') }}
                 </label>
               </div>
-              <exo-identity-suggester
+              <project-assignee
+                v-if="!showManager"
+                ref="calendarOwne"
+                v-model="manager"
+                @initialized="$emit('initialized')" />
+                <!-- <exo-identity-suggester
                 v-if="!showManager"
                 ref="autoFocusInput3"
                 :labels="suggesterLabelsManagers"
@@ -91,7 +96,7 @@
                 name="assignee"
                 type-of-relations="user_to_invite"
                 include-users
-                multiple/>
+                multiple/>-->
             </div>
           </div>
           <div class="listOfParticipant" @click="showManager = true" >
@@ -194,7 +199,7 @@
         listOfParticipant:[],
         activityComposerActions: [],
         projectInformation:null,
-        manager:'',
+        manager:[],
         participator:'',
         postProject:false,
         project:{},
