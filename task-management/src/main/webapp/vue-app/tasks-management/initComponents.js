@@ -8,8 +8,6 @@ import ProjectCardReverse from './components/Project/ProjectCardReverse.vue';
 import AddProjectDrawer from './components/Project/AddProjectDrawer.vue';
 import ExoTaskEditor from "./components/Project/ExoTaskEditor.vue";
 import ProjectManagersDrawer from "./components/Project/ProjectManagersDrawer.vue";
-import ProjectAssignee from "./components/Project/ProjectAssignee.vue";
-import TaskEventFormAssigneeItem from "./components/Project/TaskEventFormAssigneeItem.vue";
 
 import TasksDashboard from './components/tasks/TasksDashboard.vue';
 import TasksListToolbar from './components/tasks/TasksListToolbar.vue';
@@ -40,8 +38,6 @@ const components = {
   'add-project-drawer': AddProjectDrawer,
   'exo-task-editor': ExoTaskEditor,
   'project-manager-drawer': ProjectManagersDrawer,
-  'project-assignee': ProjectAssignee,
-  'task-event-form-assignee-item': TaskEventFormAssigneeItem,
 
 
   'tasks-dashboard': TasksDashboard,
