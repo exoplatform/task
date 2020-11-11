@@ -82,16 +82,9 @@
                   {{ $t('label.editManagerInfo') }}
                 </label>
               </div>
-              <exo-identity-suggester
+              <project-assignee-manager
                 v-if="!showManager"
-                ref="autoFocusInput3"
-                :labels="suggesterLabelsManagers"
-                v-model="manager"
-                :search-options="{currentUser: ''}"
-                name="assignee"
-                type-of-relations="user_to_invite"
-                include-users
-                multiple/>
+                :manager="manager"/>
             </div>
           </div>
           <div class="listOfParticipant" @click="showManager = true" >
@@ -134,17 +127,9 @@
                   {{ $t('label.editParticipantInfo') }}
                 </label>
               </div>
-              <exo-identity-suggester
+              <project-assignee-participator
                 v-if="!showParticipant"
-                ref="autoFocusInput3"
-                :labels="suggesterLabelsParticipant"
-                v-model="participator"
-                :search-options="{currentUser: ''}"
-                name="participant"
-                type-of-relations="user_to_invite"
-                min-height="37"
-                include-users
-                multiple/>
+                :participator="participator"/>
             </div>
 
           </div>
@@ -194,8 +179,8 @@
         listOfParticipant:[],
         activityComposerActions: [],
         projectInformation:null,
-        manager:'',
-        participator:'',
+        manager:[],
+        participator:[],
         postProject:false,
         project:{},
         maxAvatarToShow : 3,
@@ -240,18 +225,6 @@
       showMoreAvatarsParticipantNumber() {
         return this.listOfParticipant.length - this.maxAvatarToShow;
       },
-      suggesterLabelsManagers() {
-        return {
-          placeholder: this.$t('label.inviteManagers'),
-          noDataLabel: this.$t('label.noDataLabel'),
-        };
-      },
-      suggesterLabelsParticipant() {
-        return {
-          placeholder: this.$t('label.inviteParticipant'),
-          noDataLabel: this.$t('label.noDataLabel'),
-        };
-      },
       labelDrawer(){
         if (typeof this.project.id !== 'undefined'){
           return this.$t('label.editProject');
@@ -261,12 +234,20 @@
         }
       }
     },
+    created() {
+      this.$root.$on('task-project-manager',manager =>{
+        this.manager=manager;
+      });
+      this.$root.$on('task-project-participator',participator =>{
+        this.participator=participator;
+      });
+    },
  
     methods: {
       open(project) { 
         this.project=project
-        this.manager=''
-        this.participator=''
+        this.manager=[]
+        this.participator=[]
         this.projectInformation={
           name:'',
           description:'',
@@ -359,7 +340,7 @@
               projects.participator.push(user.remoteId)
             })
           }
-
+          const managers = this.manager
           if (typeof projects.id !== 'undefined') {
             this.postProject = true;
             return this.$projectService.updateProjectInfo(projects).then(project => {
@@ -368,7 +349,13 @@
               this.postProject = false;
               this.$refs.addProjectDrawer.close();
               this.showManager=true;
-            })
+            }).then(
+                    this.project.managerIdentities = managers.map(user => ({
+                      avatar: user.profile.avatar,
+                      displayName: user.profile.fullName || user.profile.fullname,
+                      username: user.remoteId,
+                    }))
+            ).then(this.$root.$emit('update-projects-list-avatar', this.project.managerIdentities))
                     .catch(e => {
                       console.debug("Error updating project", e);
                       this.$emit('error', e && e.message ? e.message : String(e));

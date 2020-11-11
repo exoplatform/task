@@ -235,6 +235,9 @@
           }, this.waitTimeUntilCloseMenu);
         }
       });
+      this.$root.$on('update-projects-list-avatar',managerIdentities =>{
+        this.managerIdentities=managerIdentities;
+      });
     },
     methods : {
       showProjectTasksDetails(project) {

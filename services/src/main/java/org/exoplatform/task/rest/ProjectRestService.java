@@ -358,11 +358,15 @@ public class ProjectRestService implements ResourceContainer {
       Set<String> managers = new HashSet<String>(Arrays.asList(currentUser, memberships.get(0)));
       Set<String> participators = new HashSet<String>(Arrays.asList(memberships.get(1)));
       project = ProjectUtil.newProjectInstanceDto(projectDto.getName(), description, managers, participators);
-    } else if (projectDto.getManager()!=null && projectDto.getManager().size() !=0 || projectDto.getParticipator()!=null && projectDto.getParticipator().size() !=0){
+    } else if ((projectDto.getManager()!=null && projectDto.getManager().size() !=0 )|| (projectDto.getParticipator()!=null && projectDto.getParticipator().size() !=0)){
       Set<String> managers = new HashSet<String>();
-      projectDto.getManager().forEach(name -> {
-        managers.add(name);
-      });
+      if (projectDto.getManager().size() ==0 ){
+        managers.add(currentUser);
+      }else{
+        projectDto.getManager().forEach(name -> {
+          managers.add(name);
+        });
+      }
       Set<String> paticipator = new HashSet<String>();
       if (projectDto.getParticipator()!=null) {
         projectDto.getParticipator().forEach(name -> {
