@@ -87,7 +87,7 @@
         if (this.task && this.task.status) {
           this.projectModel = this.task.status.project;
         }
-        if(this.task && this.task.status && this.task.status.project) {
+        if(this.task && this.task.status && this.task.status.project && !this.task.status.name) {
           getDefaultStatusByProjectId(this.task.status.project.id).then((status) => {
             this.task.status = status;
           })

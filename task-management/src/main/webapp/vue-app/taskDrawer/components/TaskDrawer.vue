@@ -64,7 +64,7 @@
         <task-status
           :task="task"
           @statusListOpened="closePriority(); closeProjectsList();closeLabelsList();closeDueDateCalendar();closePlanDatesCalendar();closeAssignements()"
-          @updateTaskStatus="updateTask(task.id)"/>
+          @updateTaskStatus="updateTaskStatus(task)"/>
       </div>
       <v-divider class="my-0" />
       <div class="taskDescription py-4">
@@ -287,6 +287,10 @@
       },
       markAsCompleted(){
         this.task.completed = !this.task.completed;
+        this.updateTask()
+      },
+      updateTaskStatus(task){
+        this.task.status = task.status;
         this.updateTask()
       },
       updateTask() {

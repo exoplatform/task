@@ -69,13 +69,12 @@
     },
     methods: {
       updateTaskStatus() {
-        if (this.task.status != null) {
+        if (this.taskStatus != null) {
           getStatusesByProjectId(this.task.status.project.id).then(
             (projectStatuses) => {
-              const status = projectStatuses.find(s => s.name === this.task.status.name);
-              this.task.status.id = status.id;
-              this.task.status.rank = status.rank;
-              this.$emit('updateTaskStatus');
+              const status = projectStatuses.find(s => s.name === this.taskStatus);
+              this.task.status = status;
+              this.$emit('updateTaskStatus',this.task);
             });
         }
       },
