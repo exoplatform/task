@@ -1572,32 +1572,31 @@
 .taskDrawer {
   .taskProjectName {
     .inputTaskProjectName {
+      box-shadow: none!important;
+      border: none!important;
       .v-input__prepend-outer {
-        margin-top: 8px;
-        i {
-          color: @primaryColor;
-          font-size: 18px;
-        }
+          margin-top: 8px;
+          i {
+            color: @primaryColor;
+            font-size: 18px;
+          }
 
-      }
+        }
       .v-input__control {
-        min-height: 38px!important;
-        > .v-input__slot {
-          box-shadow: none!important;
-          padding: 0!important;
-          .v-select__slot {
-            label {
-              color: @greyColorLighten1;
+          min-height: 38px!important;
+          > .v-input__slot {
+            box-shadow: none!important;
+            padding: 0!important;
+            .v-select__slot {
+              label {
+                color: @greyColorLighten1;
+              }
             }
           }
+          .v-input__append-inner {
+            display: none;
+          }
         }
-        .v-input__append-inner {
-          display: none;
-        }
-      }
-      .v-menu__content {
-
-      }
     }
   }
   .taskTitleAndMark {
@@ -1639,26 +1638,30 @@
     }
   }
   .taskLabelsName {
-    .v-input__prepend-outer {
-      margin-top: 8px;
-      i {
-        color: @primaryColor;
-        font-size: 18px;
-      }
-    }
-    .v-input__control {
-      min-height: 38px!important;
-      > .v-input__slot {
-        box-shadow: none!important;
-        padding: 0!important;
-        .v-select__slot {
-          label {
-            color: @greyColorLighten1;
-          }
+    .inputTaskLabel{
+      box-shadow: none!important;
+      border: none!important;
+      .v-input__prepend-outer {
+        margin-top: 8px;
+        i {
+          color: @primaryColor;
+          font-size: 18px;
         }
       }
-      .v-input__append-inner {
-        display: none;
+      .v-input__control {
+        min-height: 38px!important;
+        > .v-input__slot {
+          box-shadow: none!important;
+          padding: 0!important;
+          .v-select__slot {
+            label {
+              color: @greyColorLighten1;
+            }
+          }
+        }
+        .v-input__append-inner {
+          display: none;
+        }
       }
     }
   }
@@ -1715,6 +1718,16 @@
         color: @errorColor!important;
       }
     }
+    .taskDueDateCalender {
+      /*.v-menu__content {
+        width: 290px!important;
+      }*/
+    }
+    .taskPlanDateCalender {
+      /*.v-menu__content {
+        width: 290px!important;
+      }*/
+    }
   }
   .taskStatusAndPriority {
     justify-content: space-between;
@@ -1740,10 +1753,32 @@
             width: auto!important;
             flex-basis: 0!important;
             min-width: 90px!important;
-          }
+            .v-input__append-inner {
+              position: absolute;
+              width: 100%;
+              height: 30px;
+              i {
+                position: absolute;
+                right: 0;
+                top: 4px;
+              }
+            }
           }
         }
       }
+      .v-menu__content {
+        top: 40px !important;
+        .v-list {
+          padding: 0!important;
+          .v-list-item {
+            min-height: 40px;
+            .v-list-item__content {
+              padding: 0!important;
+            }
+          }
+        }
+      }
+    }
     .taskStatus {
       .v-input__control {
         > .v-input__slot {
@@ -1756,7 +1791,28 @@
             i {
               font-size: 30px!important;
             }
+            .v-input__append-inner {
+              position: absolute;
+              width: 100%;
+              height: 30px;
+              i {
+                position: absolute;
+                right: 0;
+              }
+            }
           }
+          }
+        }
+        .v-menu__content {
+          top: 40px !important;
+          .v-list {
+            padding: 0!important;
+            .v-list-item {
+              min-height: 40px;
+              .v-list-item__content {
+                padding: 0!important;
+              }
+            }
           }
         }
       }
@@ -1791,6 +1847,25 @@
     padding: 16px;
   }
 }
+
+/*--------------Task priorities Colors ------------------*/
+
+.highPriorityColor {
+  color: @errorColor!important;
+}
+
+.normalPriorityColor {
+  color: @warningColor!important;
+}
+
+.lowPriorityColor {
+  color: @successColor!important;
+}
+
+.nonePriorityColor {
+  color: @infoColor!important;
+}
+
 
 /*--------------Task Project Colors ------------------*/
 

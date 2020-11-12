@@ -24,8 +24,7 @@
       
     <task-drawer
       ref="taskDrawer"
-      :task="task" 
-      @closeDrawer="onCloseDrawer"/>
+      :task="task"/>
   </v-app>
 </template>
 <script>

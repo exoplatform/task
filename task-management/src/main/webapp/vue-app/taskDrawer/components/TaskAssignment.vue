@@ -1,7 +1,6 @@
 <template>
   <div>
     <v-menu
-      v-custom-click-outside="closeMenu"
       id="assigneeMenu"
       v-model="globalMenu"
       :close-on-content-click="false"
@@ -15,7 +14,8 @@
         <v-list-item 
           :title="$t('tooltip.clickToEdit')" 
           style="cursor: pointer;" 
-          class="px-0">
+          class="px-0"
+          @click="$emit('assignmentsOpened')">
           <v-list-item-avatar
             v-if="task.assignee"
             size="22" 
@@ -174,9 +174,6 @@
       }
     },
     watch: {
-      globalMenu(val) {
-        this.$emit('menuIsOpen', val);
-      },
       searchAssignee(val) {
         if (val) {
           this.suggestedAssignee = this.searchSuggestedUsers(val);
@@ -194,6 +191,13 @@
       }
     },
     created() {
+      document.addEventListener('closeAssignments',()=> {
+        if (this.globalMenu) {
+          window.setTimeout(() => {
+            this.globalMenu = false;
+          }, 100);
+        }
+      });
       this.getUsers();
     },
     methods: {
@@ -277,9 +281,6 @@
         if (typeof this.$refs.assigneeMenu !== 'undefined') {
           this.$refs.assigneeMenu.isMenuActive = false;
         }
-      },
-      closeMenu() {
-        this.globalMenu = false;
       },
     }
   }
