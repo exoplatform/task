@@ -1,7 +1,7 @@
 import { tasksConstants } from "./tasksConstants";
 
-export function getProjectsList(query, offset, limit) {
-    return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/projects/projects?q=${query || ''}&offset=${offset || 0}&limit=${limit|| 0}`, {
+export function getProjectsList(query, offset, limit,participatorParam) {
+    return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/projects/projects?q=${query || ''}&offset=${offset || 0}&limit=${limit|| 0}&participatorParam=${participatorParam|| false}`, {
         method: 'GET',
         credentials: 'include',
     }).then(resp => {
@@ -13,8 +13,8 @@ export function getProjectsList(query, offset, limit) {
     });
 }
 
-export function getProject(id) {
-    return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/projects/projects/${id}`, {
+export function getProject(id,participatorParam) {
+    return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/projects/projects/${id}?&participatorParam=${participatorParam|| false}`, {
         method: 'GET',
         credentials: 'include',
     }).then(resp => {

@@ -244,49 +244,65 @@
     },
  
     methods: {
-      open(project) { 
-        this.project=project
-        this.manager=[]
-        this.participator=[]
-        this.projectInformation={
-          name:'',
-          description:'',
-          id:'',
-        };
+      open(project) {
+        if(project && project.id){
+          return this.$projectService.getProject(project.id,true).then(project => {
+            this.project=project
+            this.manager=[]
+            this.participator=[]
+            this.projectInformation={
+              name:'',
+              description:'',
+              id:'',
+            };
             if (this.project.name !== null ||this.project.name !==''){
-        this.projectInformation.name=this.project.name;
-      }
-      if (this.project.id !== null ||this.project.id !==''){
-        this.projectInformation.id=this.project.id;
-      }
-      if (this.project.description !== null || this.project.description !== ''){
-        this.projectInformation.description = this.project.description;
-      }
+              this.projectInformation.name=this.project.name;
+            }
+            if (this.project.id !== null ||this.project.id !==''){
+              this.projectInformation.id=this.project.id;
+            }
+            if (this.project.description !== null || this.project.description !== ''){
+              this.projectInformation.description = this.project.description;
+            }
 
-        if (this.project.manager !== null && this.project.manager !== '' && this.project.manager !==undefined ){
-          this.manager = this.project.managerIdentities;
-          this.manager = this.manager.map(user => ({
-            id: `organization:${user.username}`,
-            providerId: 'organization',
-            profile:{avatar:user.avatar,fullName:user.displayName},
-            remoteId: user.username,
-          }));
+            if (this.project.manager !== null && this.project.manager !== '' && this.project.manager !==undefined ){
+              this.manager = this.project.managerIdentities;
+              this.manager = this.manager.map(user => ({
+                id: `organization:${user.username}`,
+                providerId: 'organization',
+                profile:{avatar:user.avatar,fullName:user.displayName},
+                remoteId: user.username,
+              }));
 
+            }
+
+            if (this.project.participator !== null && this.project.participator !== '' && this.project.participator !==undefined && this.project.participator.length > 0){
+              this.participator = this.project.participatorIdentities;
+              this.participator = this.participator.map(user => ({
+                id: `organization:${user.username}`,
+                providerId: 'organization',
+                profile:{avatar:user.avatar,fullName:user.displayName},
+                remoteId: user.username,
+              }));
+
+            }
+
+            this.$refs.addProjectDrawer.open();
+            window.setTimeout(() => this.$refs.addProjectTitle.querySelector('input').focus(), 200);
+
+          })
+        } else {
+          this.project=project
+          this.manager=[]
+          this.participator=[]
+          this.projectInformation={
+            name:'',
+            description:'',
+            id:'',
+          };
+          this.$refs.addProjectDrawer.open();
+          window.setTimeout(() => this.$refs.addProjectTitle.querySelector('input').focus(), 200);
         }
-
-        if (this.project.participator !== null && this.project.participator !== '' && this.project.participator !==undefined && this.project.participator.length > 0){
-          this.participator = this.project.participatorIdentities;
-          this.participator = this.participator.map(user => ({
-            id: `organization:${user.username}`,
-            providerId: 'organization',
-            profile:{avatar:user.avatar,fullName:user.displayName},
-            remoteId: user.username,
-          }));
-
-        }
-
-      this.$refs.addProjectDrawer.open();
-      window.setTimeout(() => this.$refs.addProjectTitle.querySelector('input').focus(), 200);
       },
       cancel() {
         if (this.project !== {}){
@@ -341,7 +357,7 @@
             })
           }
           const managers = this.manager
-          if (typeof projects.id !== 'undefined') {
+          if (typeof projects.id !== 'undefined' && projects.id!== '') {
             this.postProject = true;
             return this.$projectService.updateProjectInfo(projects).then(project => {
               this.$emit('update-cart', project);

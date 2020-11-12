@@ -160,7 +160,7 @@ public class TestProjectRestService {
     projectService.createProject(project3);
 
     // When
-    Response response = projectRestService.getProjects(null, -1, -1);
+    Response response = projectRestService.getProjects(null, -1, -1,false);
 
     // Then
     assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -218,7 +218,7 @@ public class TestProjectRestService {
     when(projectService.getProject(1L)).thenReturn(project);
 
     // When
-    Response response = projectRestService.getProjectById(1);
+    Response response = projectRestService.getProjectById(1,true);
     // Then
     assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
     assertNotNull(response.getEntity());

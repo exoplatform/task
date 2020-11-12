@@ -100,7 +100,7 @@
               <v-img src="/portal/rest/v1/social/spaces/default-image/avatar"/>
             </v-list-item-avatar>
             <v-list-item-title class="body-2">
-              <a href="#">{{ project.name }}</a>
+              <a href="#">{{ getSpaceName }}</a>
             </v-list-item-title>
           </v-list-item>
         </div>
@@ -225,6 +225,10 @@
       },
       showMoreAvatarsNumber() {
         return this.managerIdentities.length - this.maxAvatarToShow;
+      },
+      getSpaceName(){
+        const str=this.project.space
+        return str.substr(0, str.indexOf(/spaces/)-2);
       }
     },
     created() {
@@ -277,6 +281,7 @@
       text = div.textContent || div.innerText || '';
       return text;
       }
-    }
+    },
+
   }
 </script>

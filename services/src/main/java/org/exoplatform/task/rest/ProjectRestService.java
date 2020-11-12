@@ -83,7 +83,8 @@ public class ProjectRestService implements ResourceContainer {
       @ApiResponse(code = 500, message = "Internal server error") })
   public Response getProjects(@ApiParam(value = "Search term", required = false, defaultValue = "null") @QueryParam("q") String query,
                               @ApiParam(value = "Offset", required = false, defaultValue = "0") @QueryParam("offset") int offset,
-                              @ApiParam(value = "Limit", required = false, defaultValue = "-1") @QueryParam("limit") int limit) {
+                              @ApiParam(value = "Limit", required = false, defaultValue = "-1") @QueryParam("limit") int limit,
+                              @ApiParam(value = "Participator Need", required = false, defaultValue = "false") @QueryParam("participatorParam") boolean participatorParam) {
     if (limit == 0) {
       limit = -1;
     }
@@ -98,7 +99,7 @@ public class ProjectRestService implements ResourceContainer {
 
     JSONArray projectsJsonArray = new JSONArray();
     try {
-      projectsJsonArray = buildJSON(projectsJsonArray, projects);
+      projectsJsonArray = buildJSON(projectsJsonArray, projects, participatorParam);
       global.put("projects",projectsJsonArray);
       global.put("projectNumber",projectNumber);
     } catch (Exception e) {
@@ -116,7 +117,8 @@ public class ProjectRestService implements ResourceContainer {
   @ApiOperation(value = "Gets  project by id", httpMethod = "GET", response = Response.class, notes = "This returns the default status by project id")
   @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled"),
       @ApiResponse(code = 403, message = "Unauthorized operation"), @ApiResponse(code = 500, message = "Internal server error") })
-  public Response getProjectById(@ApiParam(value = "Project id", required = true) @PathParam("id") long id) throws EntityNotFoundException {
+  public Response getProjectById(@ApiParam(value = "Project id", required = true) @PathParam("id") long id,
+                                 @ApiParam(value = "Participator Need", required = false, defaultValue = "false") @QueryParam("participatorParam") boolean participatorParam) throws EntityNotFoundException {
     Identity currentUser = ConversationState.getCurrent().getIdentity();
     ProjectDto project = projectService.getProject(id);
     if (project == null) {
@@ -126,7 +128,7 @@ public class ProjectRestService implements ResourceContainer {
       return Response.status(Response.Status.UNAUTHORIZED).build();
     }
     try{
-    return Response.ok(buildJsonProject(project).toString()).build();
+    return Response.ok(buildJsonProject(project, participatorParam).toString()).build();
     } catch (JSONException e) {
       LOG.error("Canit get Project with id {}, id",e);
     }
@@ -198,17 +200,17 @@ public class ProjectRestService implements ResourceContainer {
   }
 
 
-  private JSONArray buildJSON(JSONArray projectsJsonArray, List<ProjectDto> projects) throws JSONException {
+  private JSONArray buildJSON(JSONArray projectsJsonArray, List<ProjectDto> projects, boolean participatorParam) throws JSONException {
     Identity currentUser = ConversationState.getCurrent().getIdentity();
     for (ProjectDto project : projects) {
       if (project.canView(currentUser)) {
-        projectsJsonArray.put(buildJsonProject(project));
+        projectsJsonArray.put(buildJsonProject(project,participatorParam));
       }
     }
     return projectsJsonArray;
   }
 
-  private JSONObject buildJsonProject(ProjectDto project) throws JSONException{
+  private JSONObject buildJsonProject(ProjectDto project, boolean participatorParam) throws JSONException{
     
       long projectId = project.getId();
       JSONObject projectJson = new JSONObject();
@@ -244,7 +246,7 @@ public class ProjectRestService implements ResourceContainer {
         }
       }
 
-    if (projectParticipators.size() > 0) {
+    if (projectParticipators.size() > 0 && participatorParam) {
       for (String permission : projectService.getParticipator(projectId)) {
         int index = permission.indexOf(':');
         if (index > -1) {
@@ -254,6 +256,22 @@ public class ProjectRestService implements ResourceContainer {
         } else {
           participators.add(permission);
         }
+      }
+      if (participators.size() > 0) {
+        JSONArray participatorsJsonArray = new JSONArray();
+        for (String usr : participators) {
+          JSONObject participator = new JSONObject();
+          User user_ = UserUtil.getUser(usr);
+          participator.put("username", user_.getUsername());
+          participator.put("email", user_.getEmail());
+          participator.put("displayName", user_.getDisplayName());
+          participator.put("avatar", user_.getAvatar());
+          participator.put("url", user_.getUrl());
+          participator.put("enable", user_.isEnable());
+          participator.put("deleted", user_.isDeleted());
+          participatorsJsonArray.put(participator);
+        }
+        projectJson.put("participatorIdentities", participatorsJsonArray);
       }
     }
       if (managers.size() > 0) {
@@ -273,22 +291,7 @@ public class ProjectRestService implements ResourceContainer {
         projectJson.put("managerIdentities", managersJsonArray);
       }
 
-    if (participators.size() > 0) {
-      JSONArray participatorsJsonArray = new JSONArray();
-      for (String usr : participators) {
-        JSONObject participator = new JSONObject();
-        User user_ = UserUtil.getUser(usr);
-        participator.put("username", user_.getUsername());
-        participator.put("email", user_.getEmail());
-        participator.put("displayName", user_.getDisplayName());
-        participator.put("avatar", user_.getAvatar());
-        participator.put("url", user_.getUrl());
-        participator.put("enable", user_.isEnable());
-        participator.put("deleted", user_.isDeleted());
-        participatorsJsonArray.put(participator);
-      }
-      projectJson.put("participatorIdentities", participatorsJsonArray);
-    }
+
       if (space != null) {
         JSONObject spaceJson = new JSONObject();
         spaceJson.put("prettyName", space.getPrettyName());
