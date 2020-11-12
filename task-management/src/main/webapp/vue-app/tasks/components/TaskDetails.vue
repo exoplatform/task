@@ -112,14 +112,10 @@
                 }
             },
             openTaskDrawer() {
+              this.$root.$emit('open-task-drawer', this.task);
               this.$refs.taskDrawer.open(this.task);
             },
-            onCloseDrawer: function(drawer){
-                this.drawer = drawer;
-            },
             updateTaskList() {
-              this.drawer = false;
-              $('body').removeClass('hide-scroll');
               setTimeout(this.removeTask, 100)
             },
             removeTask() {

@@ -82,16 +82,9 @@
                   {{ $t('label.editManagerInfo') }}
                 </label>
               </div>
-              <exo-identity-suggester
+              <project-assignee-manager
                 v-if="!showManager"
-                ref="autoFocusInput3"
-                :labels="suggesterLabelsManagers"
-                v-model="manager"
-                :search-options="{currentUser: ''}"
-                name="assignee"
-                type-of-relations="user_to_invite"
-                include-users
-                multiple/>
+                :manager="manager"/>
             </div>
           </div>
           <div class="listOfParticipant" @click="showManager = true" >
@@ -134,17 +127,9 @@
                   {{ $t('label.editParticipantInfo') }}
                 </label>
               </div>
-              <exo-identity-suggester
+              <project-assignee-participator
                 v-if="!showParticipant"
-                ref="autoFocusInput3"
-                :labels="suggesterLabelsParticipant"
-                v-model="participator"
-                :search-options="{currentUser: ''}"
-                name="participant"
-                type-of-relations="user_to_invite"
-                min-height="37"
-                include-users
-                multiple/>
+                :participator="participator"/>
             </div>
 
           </div>
@@ -194,8 +179,8 @@
         listOfParticipant:[],
         activityComposerActions: [],
         projectInformation:null,
-        manager:'',
-        participator:'',
+        manager:[],
+        participator:[],
         postProject:false,
         project:{},
         maxAvatarToShow : 3,
@@ -240,18 +225,6 @@
       showMoreAvatarsParticipantNumber() {
         return this.listOfParticipant.length - this.maxAvatarToShow;
       },
-      suggesterLabelsManagers() {
-        return {
-          placeholder: this.$t('label.inviteManagers'),
-          noDataLabel: this.$t('label.noDataLabel'),
-        };
-      },
-      suggesterLabelsParticipant() {
-        return {
-          placeholder: this.$t('label.inviteParticipant'),
-          noDataLabel: this.$t('label.noDataLabel'),
-        };
-      },
       labelDrawer(){
         if (typeof this.project.id !== 'undefined'){
           return this.$t('label.editProject');
@@ -261,51 +234,75 @@
         }
       }
     },
+    created() {
+      this.$root.$on('task-project-manager',manager =>{
+        this.manager=manager;
+      });
+      this.$root.$on('task-project-participator',participator =>{
+        this.participator=participator;
+      });
+    },
  
     methods: {
-      open(project) { 
-        this.project=project
-        this.manager=''
-        this.participator=''
-        this.projectInformation={
-          name:'',
-          description:'',
-          id:'',
-        };
+      open(project) {
+        if(project && project.id){
+          return this.$projectService.getProject(project.id,true).then(project => {
+            this.project=project
+            this.manager=[]
+            this.participator=[]
+            this.projectInformation={
+              name:'',
+              description:'',
+              id:'',
+            };
             if (this.project.name !== null ||this.project.name !==''){
-        this.projectInformation.name=this.project.name;
-      }
-      if (this.project.id !== null ||this.project.id !==''){
-        this.projectInformation.id=this.project.id;
-      }
-      if (this.project.description !== null || this.project.description !== ''){
-        this.projectInformation.description = this.project.description;
-      }
+              this.projectInformation.name=this.project.name;
+            }
+            if (this.project.id !== null ||this.project.id !==''){
+              this.projectInformation.id=this.project.id;
+            }
+            if (this.project.description !== null || this.project.description !== ''){
+              this.projectInformation.description = this.project.description;
+            }
 
-        if (this.project.manager !== null && this.project.manager !== '' && this.project.manager !==undefined && this.project.id !== null ||this.project.id !==''){
-          this.manager = this.project.managerIdentities;
-          this.manager = this.manager.map(user => ({
-            id: `organization:${user.username}`,
-            providerId: 'organization',
-            profile:{avatar:user.avatar,fullName:user.displayName},
-            remoteId: user.username,
-          }));
+            if (this.project.manager !== null && this.project.manager !== '' && this.project.manager !==undefined ){
+              this.manager = this.project.managerIdentities;
+              this.manager = this.manager.map(user => ({
+                id: `organization:${user.username}`,
+                providerId: 'organization',
+                profile:{avatar:user.avatar,fullName:user.displayName},
+                remoteId: user.username,
+              }));
 
+            }
+
+            if (this.project.participator !== null && this.project.participator !== '' && this.project.participator !==undefined && this.project.participator.length > 0){
+              this.participator = this.project.participatorIdentities;
+              this.participator = this.participator.map(user => ({
+                id: `organization:${user.username}`,
+                providerId: 'organization',
+                profile:{avatar:user.avatar,fullName:user.displayName},
+                remoteId: user.username,
+              }));
+
+            }
+
+            this.$refs.addProjectDrawer.open();
+            window.setTimeout(() => this.$refs.addProjectTitle.querySelector('input').focus(), 200);
+
+          })
+        } else {
+          this.project=project
+          this.manager=[]
+          this.participator=[]
+          this.projectInformation={
+            name:'',
+            description:'',
+            id:'',
+          };
+          this.$refs.addProjectDrawer.open();
+          window.setTimeout(() => this.$refs.addProjectTitle.querySelector('input').focus(), 200);
         }
-
-        if (this.project.participator !== null && this.project.participator !== '' && this.project.participator !==undefined && this.project.participator.length > 0){
-          this.participator = this.project.participatorIdentities;
-          this.participator = this.participator.map(user => ({
-            id: `organization:${user.username}`,
-            providerId: 'organization',
-            profile:{avatar:user.avatar,fullName:user.displayName},
-            remoteId: user.username,
-          }));
-
-        }
-
-      this.$refs.addProjectDrawer.open();
-      window.setTimeout(() => this.$refs.addProjectTitle.querySelector('input').focus(), 200);
       },
       cancel() {
         if (this.project !== {}){
@@ -359,8 +356,8 @@
               projects.participator.push(user.remoteId)
             })
           }
-
-          if (typeof projects.id !== 'undefined') {
+          const managers = this.manager
+          if (typeof projects.id !== 'undefined' && projects.id!== '') {
             this.postProject = true;
             return this.$projectService.updateProjectInfo(projects).then(project => {
               this.$emit('update-cart', project);
@@ -368,7 +365,13 @@
               this.postProject = false;
               this.$refs.addProjectDrawer.close();
               this.showManager=true;
-            })
+            }).then(
+                    this.project.managerIdentities = managers.map(user => ({
+                      avatar: user.profile.avatar,
+                      displayName: user.profile.fullName || user.profile.fullname,
+                      username: user.remoteId,
+                    }))
+            ).then(this.$root.$emit('update-projects-list-avatar', this.project.managerIdentities))
                     .catch(e => {
                       console.debug("Error updating project", e);
                       this.$emit('error', e && e.message ? e.message : String(e));

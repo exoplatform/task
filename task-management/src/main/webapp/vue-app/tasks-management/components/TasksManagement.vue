@@ -24,8 +24,7 @@
       
     <task-drawer
       ref="taskDrawer"
-      :task="task" 
-      @closeDrawer="onCloseDrawer"/>
+      :task="task"/>
   </v-app>
 </template>
 <script>
@@ -52,8 +51,10 @@
        this.$refs.taskDrawer.open(task);
       });
      this.$root.$on('task-drawer-closed', task => {
-       this.task=task;
-       if(this.task.status.project){
+       if(this.tab==='tab-1'){
+         this.getMyTasks()
+       }
+       else if(task.status.project){
           document.dispatchEvent(new CustomEvent('showProjectTasks', {detail: this.task.status.project}));
           }else{
            this.tab='tab-1' 

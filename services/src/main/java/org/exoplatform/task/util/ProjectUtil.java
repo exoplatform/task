@@ -132,7 +132,7 @@ public final class ProjectUtil {
     } catch (Exception ex) {
       LOG.error("Can't load project list", ex);
     }
-    return ProjectUtil.buildRootProject(new LinkedList<ProjectDto>(tmp));
+    return new LinkedList<ProjectDto>(tmp);
   }
 
   public static List<ProjectDto> getProjectTree(List<String> memberships,String query, Identity identity , org.exoplatform.task.service.ProjectService projectService,int offset, int limit) {
@@ -153,7 +153,7 @@ public final class ProjectUtil {
     } catch (Exception ex) {
       LOG.error("Can't load project ", ex);
     }
-    return ProjectUtil.buildRootProject(new LinkedList<ProjectDto>(tmp));
+    return new LinkedList<ProjectDto>(tmp);
   }
 
   private static Collection<? extends Project> buildProxy(List<Project> projects, Identity user, boolean editable) {
@@ -217,36 +217,6 @@ public final class ProjectUtil {
     } while (!parents.isEmpty() && !childs.isEmpty());*/
 
     return new LinkedList<Project>(rootPRJs);
-  }
-
-  public static List<ProjectDto> buildRootProject(List<ProjectDto> projects) {
-    if (projects == null) return projects;
-
-    Map<Long, ProjectDto> maps = new HashMap<Long, ProjectDto>();
-    Set<ProjectDto> rootPRJs = new LinkedHashSet<ProjectDto>();
-    for (ProjectDto p : projects) {
-      while(true) {
-        if (!maps.containsKey(p.getId())) {
-          maps.put(p.getId(), p);
-        }
-        //ProjectDto parent = projectToDto(p.getParent());
-        if (p.getParent() == null) {
-          rootPRJs.add(p);
-          break;
-        } else {
-          ProjectDto parent = projectToDto(p.getParent());
-          if (maps.containsKey(parent.getId())) {
-            parent = maps.get(parent.getId());
-          }
-          if (!parent.getChildren().contains(p)) {
-            parent.getChildren().add(projectToEntity(p));
-          }
-          p = parent;
-        }
-      }
-    }
-
-    return new LinkedList<ProjectDto>(rootPRJs);
   }
 
   public static Project projectToEntity(ProjectDto projectDto) {

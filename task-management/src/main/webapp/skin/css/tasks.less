@@ -55,8 +55,8 @@
           }
           .listOfManager,.listOfParticipant {
 
-            .identitySuggester{
-              margin: 0 0 !important;
+            .listOfParticipantavatar{
+              margin-right: -2px!important;
             }
             .listOfManageravatar,.listOfParticipantavatar{
               float: left;
@@ -135,6 +135,10 @@
                 font-size: 10px;
                 color: @textLightColor;
                 font-style: italic;
+                margin-left: 30px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
                 i.uiIconInformation.uiIconProject:before {
                   content: "\ea93";
                   font-size: 13px;
@@ -914,7 +918,7 @@
                   color: @primaryColor;
                   font-style: normal;
                   font-weight: bold;
-                  font-size: 26px;
+                  font-size: 19px;
                   padding-right: 10px;
                   cursor: pointer;
                   &:before {
@@ -924,7 +928,14 @@
                 .uiIconValidate{
                   font-style: normal;
                   font-weight: bold;
-                  font-size: 20px;
+                  font-size: 19px;
+                  padding-right: 10px;
+                  cursor: pointer;
+                }
+                .uiIconValidate{
+                  font-style: normal;
+                  font-weight: bold;
+                  font-size: 19px;
                   padding-right: 10px;
                   cursor: pointer;
                 }
@@ -990,13 +1001,21 @@
                 color: @primaryColor;
                 font-style: normal;
                 font-weight: bold;
-                font-size: 26px;
+                font-size: 19px;
                 padding-top: 5px;
                 padding-right: 12px;
                 cursor: pointer;
                 &:before {
                   content: "\ea47";
                 }
+              }
+              .uiIconValidate{
+                font-style: normal;
+                font-weight: bold;
+                font-size: 19px;
+                padding-right: 10px;
+                cursor: pointer;
+                padding-top: 5px;
               }
             }
             .taskTitle {
@@ -1553,32 +1572,31 @@
 .taskDrawer {
   .taskProjectName {
     .inputTaskProjectName {
+      box-shadow: none!important;
+      border: none!important;
       .v-input__prepend-outer {
-        margin-top: 8px;
-        i {
-          color: @primaryColor;
-          font-size: 18px;
-        }
+          margin-top: 8px;
+          i {
+            color: @primaryColor;
+            font-size: 18px;
+          }
 
-      }
+        }
       .v-input__control {
-        min-height: 38px!important;
-        > .v-input__slot {
-          box-shadow: none!important;
-          padding: 0!important;
-          .v-select__slot {
-            label {
-              color: @greyColorLighten1;
+          min-height: 38px!important;
+          > .v-input__slot {
+            box-shadow: none!important;
+            padding: 0!important;
+            .v-select__slot {
+              label {
+                color: @greyColorLighten1;
+              }
             }
           }
+          .v-input__append-inner {
+            display: none;
+          }
         }
-        .v-input__append-inner {
-          display: none;
-        }
-      }
-      .v-menu__content {
-
-      }
     }
   }
   .taskTitleAndMark {
@@ -1620,26 +1638,30 @@
     }
   }
   .taskLabelsName {
-    .v-input__prepend-outer {
-      margin-top: 8px;
-      i {
-        color: @primaryColor;
-        font-size: 18px;
-      }
-    }
-    .v-input__control {
-      min-height: 38px!important;
-      > .v-input__slot {
-        box-shadow: none!important;
-        padding: 0!important;
-        .v-select__slot {
-          label {
-            color: @greyColorLighten1;
-          }
+    .inputTaskLabel{
+      box-shadow: none!important;
+      border: none!important;
+      .v-input__prepend-outer {
+        margin-top: 8px;
+        i {
+          color: @primaryColor;
+          font-size: 18px;
         }
       }
-      .v-input__append-inner {
-        display: none;
+      .v-input__control {
+        min-height: 38px!important;
+        > .v-input__slot {
+          box-shadow: none!important;
+          padding: 0!important;
+          .v-select__slot {
+            label {
+              color: @greyColorLighten1;
+            }
+          }
+        }
+        .v-input__append-inner {
+          display: none;
+        }
       }
     }
   }
@@ -1696,8 +1718,19 @@
         color: @errorColor!important;
       }
     }
+    .taskDueDateCalender {
+      /*.v-menu__content {
+        width: 290px!important;
+      }*/
+    }
+    .taskPlanDateCalender {
+      /*.v-menu__content {
+        width: 290px!important;
+      }*/
+    }
   }
   .taskStatusAndPriority {
+    justify-content: space-between;
     .v-input__control {
       > .v-input__slot {
         box-shadow: none!important;
@@ -1712,7 +1745,78 @@
         font-size: 22px;
       }
     }
-  }
+    .taskPriority {
+      .v-input__control {
+        > .v-input__slot {
+          .v-select__slot {
+            max-width: inherit!important;
+            width: auto!important;
+            flex-basis: 0!important;
+            min-width: 90px!important;
+            .v-input__append-inner {
+              position: absolute;
+              width: 100%;
+              height: 30px;
+              i {
+                position: absolute;
+                right: 0;
+                top: 4px;
+              }
+            }
+          }
+        }
+      }
+      .v-menu__content {
+        top: 40px !important;
+        .v-list {
+          padding: 0!important;
+          .v-list-item {
+            min-height: 40px;
+            .v-list-item__content {
+              padding: 0!important;
+            }
+          }
+        }
+      }
+    }
+    .taskStatus {
+      .v-input__control {
+        > .v-input__slot {
+          justify-content: flex-end!important;
+          .v-select__slot {
+            max-width: inherit!important;
+            width: auto!important;
+            flex-basis: 0!important;
+            min-width: 120px!important;
+            i {
+              font-size: 30px!important;
+            }
+            .v-input__append-inner {
+              position: absolute;
+              width: 100%;
+              height: 30px;
+              i {
+                position: absolute;
+                right: 0;
+              }
+            }
+          }
+          }
+        }
+        .v-menu__content {
+          top: 40px !important;
+          .v-list {
+            padding: 0!important;
+            .v-list-item {
+              min-height: 40px;
+              .v-list-item__content {
+                padding: 0!important;
+              }
+            }
+          }
+        }
+      }
+    }
   .taskDescription {
     .activityCharsCount.tooManyChars {
       position: absolute;
@@ -1743,6 +1847,25 @@
     padding: 16px;
   }
 }
+
+/*--------------Task priorities Colors ------------------*/
+
+.highPriorityColor {
+  color: @errorColor!important;
+}
+
+.normalPriorityColor {
+  color: @warningColor!important;
+}
+
+.lowPriorityColor {
+  color: @successColor!important;
+}
+
+.nonePriorityColor {
+  color: @infoColor!important;
+}
+
 
 /*--------------Task Project Colors ------------------*/
 

@@ -4,7 +4,6 @@
       pa-0
       fluid>
       <v-combobox
-        v-custom-click-outside="closeDropDownList"
         ref="select"
         :filter="filterProjects"
         v-model="projectModel"
@@ -14,7 +13,7 @@
         class="pt-0 mb-0 inputTaskProjectName taskInputArea"
         solo
         prepend-icon
-        @click="openProjectsList()"
+        @click="$emit('projectsListOpened')"
         @change="deleteProject()">
         <template v-slot:prepend>
           <i class="uiIconFolder uiIconBlue mr-1"></i>
@@ -28,7 +27,8 @@
             :title="$t('tooltip.clickToEdit')"
             label
             class="projectName"
-            small>
+            small
+            @click="$emit('projectsListOpened')">
             <span 
               class="px-4 body-2" 
               @click="parent.selectItem(item)">
@@ -53,64 +53,73 @@
 </template>
 
 <script>
-    import {getProjects, updateTask, getDefaultStatusByProjectId} from '../taskDrawerApi'
-
-    export default {
-        props: {
-            task: {
-                type: Object,
-                default: () => {
-                    return {};
-                }
-            },
-            projectsList: {
-              type: Boolean,
-              default: false
-            },
-        },
-        data() {
-            return {
-                projects: [],
-                projectModel:null,
-                search: null,
-            }
-        },
-        watch: {
-          projectModel () {
-            setTimeout(() => {
-              this.$refs.select.isMenuActive = false;
-            }, 50)
-          },
-          projectsList() {
-            this.closeDropDownList()
-          },
-          task(){
-            if (this.task && this.task.status) {
-              this.projectModel = this.task.status.project;
-            }else{
-              if(this.task.status.project){
-                    getDefaultStatusByProjectId(this.task.status.project.id).then((status) => {
-                    this.task.status = status;
-           
-
-                })
-                   }
-            }
+  import {getProjects, updateTask, getDefaultStatusByProjectId} from '../taskDrawerApi'
+  export default {
+    props: {
+      task: {
+        type: Object,
+        default: () => {
+          return {};
+        }
+      }/*,
+      projectsList: {
+        type: Boolean,
+        default: false
+      },*/
+    },
+    data() {
+      return {
+        projects: [],
+        projectModel:null,
+        search: null,
+      }
+    },
+    watch: {
+      projectModel () {
+        setTimeout(() => {
+          this.$refs.select.isMenuActive = false;
+          }, 50)
+      },
+      /*projectsList() {
+        this.closeDropDownList()
+      },*/
+      task() {
+        if (this.task && this.task.status) {
+          this.projectModel = this.task.status.project;
+        }
+        if(this.task && this.task.status && this.task.status.project && !this.task.status.name) {
+          getDefaultStatusByProjectId(this.task.status.project.id).then((status) => {
+            this.task.status = status;
+          })
+        }
+      }
+      },
+    created() {
+      this.getProjects();
+      $(document).on('mousedown', () => {
+        if (this.$refs.select.isMenuActive) {
+          window.setTimeout(() => {
+            this.$refs.select.isMenuActive = false;
+          }, 200);
+        }
+      });
+      document.addEventListener('closeProjectList',()=> {
+        setTimeout(() => {
+          if (typeof this.$refs.select !== 'undefined') {
+            this.$refs.select.isMenuActive = false;
           }
-        },
-        created() {
-            this.getProjects();
-            
-        },
-        methods: {
-            getProjects() {
-                getProjects().then((projects) => {
-                    this.projects = projects.projects;
-                })
-            },
-            filterProjects(item, queryText) {
-              return (
-                      item.name.toLocaleLowerCase().indexOf(queryText.toLocaleLowerCase()) >
+        }, 100);
+      })
+    },
+    methods: {
+      getProjects() {
+        getProjects().then((projects) => {
+          this.projects = projects.projects;
+        })
+      },
+      filterProjects(item, queryText) {
+        return (
+          item.name.toLocaleLowerCase().indexOf(queryText.toLocaleLowerCase()) >
                       -1 ||
                       item.name.toLocaleLowerCase().indexOf(queryText.toLocaleLowerCase()) > -1
               );
@@ -130,11 +139,11 @@
                 this.projectModel = null
                 this.updateTask();
             },
-            closeDropDownList() {
+            /*closeDropDownList() {
               if (typeof this.$refs.select !== 'undefined') {
                 this.$refs.select.isMenuActive = false;
               }
-            },
+            },*/
             openProjectsList() {
               this.$emit('openProjectsList')
             }

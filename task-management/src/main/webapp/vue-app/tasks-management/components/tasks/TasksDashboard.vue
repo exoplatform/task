@@ -52,6 +52,7 @@
         startSearchAfterInMilliseconds: 600,
         endTypingKeywordTimeout: 50,
         startTypingKeywordTimeout: 0,
+        showCompleteTasks: true,
       }
     },
     computed: {
@@ -89,6 +90,7 @@
       },
       filterTaskDashboard(e){
         this.tasks=e.tasks;
+        this.showCompleteTasks=e.showCompleteTasks;
       },
       changeSelectedTabItem() {
         this.isTasksTabChanged = !this.isTasksTabChanged;
@@ -98,6 +100,7 @@
           query: this.keyword,
           offset: this.offset,
           limit: this.limit,
+          showCompleteTasks:this.showCompleteTasks,
         };
         this.loadingTasks = true;
         return this.$tasksService.filterTasksList(tasks).then(data => {

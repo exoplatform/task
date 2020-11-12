@@ -86,8 +86,9 @@
         this.$emit('reset-filter-task-dashboard');
       },
       filterTasks(e){
-        this.tasks=e;
-        this.$emit('filter-task-dashboard', this.tasks);
+        this.tasks=e.tasks.tasks;
+        this.showCompleteTasks=e.showCompleteTasks;
+        this.$emit('filter-task-dashboard', { tasks:this.tasks,showCompleteTasks:this.showCompleteTasks });
       },
       openDrawer() {
         this.$refs.filterTasksDrawer.open();
