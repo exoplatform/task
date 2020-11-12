@@ -102,8 +102,9 @@ $(document).ready(function() {
     //
     $('body').suggester('addProvider', 'task:people', function(query, callback) {
         var _this = this;
+        var $projectId = $rightPanel.find('.breadcrumbCont > ul').data('value');
         $('[data-taskid]').jzAjax('UserController.findUsersToMention()', {
-            data: {query: query},
+            data: {query: query, projectId: $projectId},
             success: function(data) {
                 var result = [];
                 for (var i = 0; i < data.length; i++) {

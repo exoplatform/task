@@ -40,9 +40,11 @@ import org.exoplatform.task.domain.Label;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
 import org.exoplatform.task.domain.Project;
+import org.exoplatform.task.dto.ProjectDto;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.exception.NotAllowedOperationOnEntityException;
 import org.exoplatform.task.exception.UnAuthorizedOperationException;
+import org.exoplatform.task.legacy.service.ProjectService;
 import org.exoplatform.task.legacy.service.TaskService;
 import org.exoplatform.task.legacy.service.UserService;
 import org.exoplatform.task.util.ListUtil;
@@ -68,28 +70,25 @@ public class UserController extends AbstractController {
     @Inject
     private SpaceService sService;
 
+    @Inject
+    private ProjectService projectService;
+
     @Resource
     @Ajax
     @MimeType.JSON
-    public Response findUser(String query, String projectName) throws Exception { // NOSONAR
+    public Response findUser(String query, Long projectId) throws Exception { // NOSONAR
       ListAccess<org.exoplatform.task.model.User> list = userService.findUserByName(query);
       JSONArray array = new JSONArray();
+      Space space = projectService.getProject(projectId) != null ? sService.getSpaceByPrettyName(projectService.getProject(projectId).getName()) : null;
+      Space spaceProject = getSpaceProject(projectId);
       for(org.exoplatform.task.model.User u : list.load(0, UserUtil.SEARCH_LIMIT)) {
-          JSONObject json = new JSONObject();
-          Space space = sService.getSpaceByPrettyName(projectName);
-          if (space != null) {
-              if(sService.isMember(space, u.getUsername())) {
-                  json.put("id", u.getUsername());
-                  json.put("text", u.getDisplayName());
-                  json.put("avatar", u.getAvatar());
-                  array.put(json);
-              }
-              continue;
-          }
+        JSONObject json = new JSONObject();
+        if ((space == null || sService.isMember(space, u.getUsername())) && (spaceProject == null || sService.isMember(spaceProject, u.getUsername()))) {
           json.put("id", u.getUsername());
           json.put("text", u.getDisplayName());
           json.put("avatar", u.getAvatar());
           array.put(json);
+        }
       }
       return Response.ok(array.toString());
     }
@@ -97,17 +96,20 @@ public class UserController extends AbstractController {
     @Resource
     @Ajax
     @MimeType.JSON
-    public Response findUsersToMention(String query) throws Exception { // NOSONAR
+    public Response findUsersToMention(String query, Long projectId) throws Exception { // NOSONAR
       ListAccess<org.exoplatform.task.model.User> list = userService.findUserByName(query);
-      EntityEncoder encoder = HTMLEntityEncoder.getInstance();
       JSONArray array = new JSONArray();
+      Space space = projectService.getProject(projectId) != null ? sService.getSpaceByPrettyName(projectService.getProject(projectId).getName()) : null;
+      Space spaceProject = getSpaceProject(projectId);
       for(org.exoplatform.task.model.User u : list.load(0, UserUtil.SEARCH_LIMIT)) {
         JSONObject json = new JSONObject();
-        json.put("id", "@" + u.getUsername());
-        json.put("name", u.getDisplayName());
-        json.put("avatar", u.getAvatar());
-        json.put("type", "contact");
-        array.put(json);
+        if ((space == null || sService.isMember(space, u.getUsername())) && (spaceProject == null || sService.isMember(spaceProject, u.getUsername()))) {
+          json.put("id", "@" + u.getUsername());
+          json.put("name", u.getDisplayName());
+          json.put("avatar", u.getAvatar());
+          json.put("type", "contact");
+          array.put(json);
+        }
       }
       return Response.ok(array.toString());
     }
@@ -160,7 +162,7 @@ public class UserController extends AbstractController {
     @Ajax
     @MimeType.JSON
     public Response findLabel(SecurityContext securityContext) throws JSONException {
-      String username = securityContext.getRemoteUser();      
+      String username = securityContext.getRemoteUser();
       ListAccess<Label> tmp = taskService.findLabelsByUser(username);
       List<Label> labels = Arrays.asList(ListUtil.load(tmp, 0, -1));
 
@@ -177,5 +179,16 @@ public class UserController extends AbstractController {
         }
       }
       return Response.ok(array.toString()).withCharset(Tools.UTF_8);
+    }
+
+    private Space getSpaceProject(Long projectId) {
+      for (String manager : projectService.getManager(projectId)) {
+        int index = manager.indexOf(':');
+        if (index > -1) {
+          String projectGroupId = manager.substring(index + 1);
+          return sService.getSpaceByGroupId(projectGroupId);
+        }
+      }
+      return null;
     }
 }
