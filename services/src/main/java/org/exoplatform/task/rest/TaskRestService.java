@@ -490,6 +490,7 @@ public class TaskRestService implements ResourceContainer {
   public Response getTasksByProjectId(@ApiParam(value = "Id", required = true, defaultValue = "0") @PathParam("id") Long id,
                                       @ApiParam(value = "Offset", required = false, defaultValue = "0") @QueryParam("offset") int offset,
                                       @ApiParam(value = "Limit", required = false, defaultValue = "0") @QueryParam("limit") int limit,
+                                      @ApiParam(value = "Returning the Completed tasks", defaultValue = "false") @QueryParam("completed") boolean completed,
                                       @ApiParam(value = "Returning the number of tasks or not", defaultValue = "false") @QueryParam("returnSize") boolean returnSize,
                                       @ApiParam(value = "Returning All Details", defaultValue = "false") @QueryParam("returnDetails") boolean returnDetails) throws Exception {
     String currentUser = ConversationState.getCurrent().getIdentity().getUserId();
@@ -503,6 +504,7 @@ public class TaskRestService implements ResourceContainer {
       limit = -1;
     }
     taskQuery.setProjectIds(allProjectIds);
+    taskQuery.setCompleted(completed);
     tasks = taskService.findTasks(taskQuery,limit,offset);
 
     if (returnSize) {

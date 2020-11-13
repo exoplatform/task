@@ -52,7 +52,7 @@
         startSearchAfterInMilliseconds: 600,
         endTypingKeywordTimeout: 50,
         startTypingKeywordTimeout: 0,
-        showCompleteTasks: true,
+        showCompleteTasks: false,
       }
     },
     computed: {
