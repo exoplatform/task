@@ -980,7 +980,7 @@ public class TaskRestService implements ResourceContainer {
     } catch (Exception e) {
       LOG.warn("Error retrieving task '{}' labels", taskId, e);
     }*/
-    Space space = null;
+    SpaceEntity space = null;
     if (task.getStatus() != null && task.getStatus().getProject() != null) {
       space = getProjectSpace(task.getStatus().getProject());
     }
@@ -991,17 +991,17 @@ public class TaskRestService implements ResourceContainer {
     return taskEntity;
   }
 
-  private Space getProjectSpace(Project project) {
+  private SpaceEntity getProjectSpace(Project project) {
     for (String permission : projectService.getManager(project.getId())) {
       int index = permission.indexOf(':');
       if (index > -1) {
         String groupId = permission.substring(index + 1);
         Space space = spaceService.getSpaceByGroupId(groupId);
-        return space;
+        SpaceEntity spaceEntity = new SpaceEntity(space.getId(), space.getDisplayName(), space.getGroupId(), space.getUrl(), space.getPrettyName(), space.getAvatarUrl());
+        return spaceEntity;
 
       }
     }
-
     return null;
   }
 }
