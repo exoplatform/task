@@ -84,6 +84,7 @@
               </div>
               <project-assignee-manager
                 v-if="!showManager"
+                ref="assigneeManager"
                 :manager="manager"/>
             </div>
           </div>
@@ -173,7 +174,6 @@
     data() {
       return {
         MESSAGE_MAX_LENGTH:255,
-        defaultManager:[{avatar:"/portal/rest/v1/social/users/default-image/avatar"}],
         defaultParticipant:[{avatar:"/portal/rest/v1/social/users/default-image/avatar"}],
         listOfManager:[],
         listOfParticipant:[],
@@ -208,6 +208,10 @@
           return this.defaultParticipant;
         }
       },
+      currentUserAvatar() {
+        const urlAvatar = `/rest/v1/social/users/${eXo.env.portal.userName}/avatar`
+        return [{avatar:urlAvatar}];
+      },
       avatarManagerToDisplay () {
         this.getProjectManagers();
         if (this.listOfManager.length > this.maxAvatarToShow) {
@@ -215,7 +219,7 @@
         } else if(this.listOfManager.length>0){
           return this.listOfManager;
         }else {
-          return this.defaultManager;
+          return this.currentUserAvatar;
         }
 
       },
@@ -365,6 +369,7 @@
               this.postProject = false;
               this.$refs.addProjectDrawer.close();
               this.showManager=true;
+              this.showParticipant=true;
             }).then(
                     this.project.managerIdentities = managers.map(user => ({
                       avatar: user.profile.avatar,
@@ -384,6 +389,7 @@
              this.postProject = false;
                this.$refs.addProjectDrawer.close();
               this.showManager=true;
+              this.showParticipant=true;
             })
                     .catch(e => {
                       console.debug("Error saving project", e);
