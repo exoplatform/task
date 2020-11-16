@@ -17,7 +17,8 @@
             <task-view-card
               v-for="task in getTasksByStatus(tasksList,status.name)"
               :key="task.task.id"
-              :task="task"/>
+              :task="task"
+              @update-task-completed="updateTaskCompleted"/>
           </v-col>
         </v-row>
       </v-container>
@@ -47,6 +48,9 @@
           }
         });
         return tasksByStatus;
+      },
+      updateTaskCompleted(e){
+        this.tasksList = this.tasksList.filter((t) => t.task.id !== e.id);
       }
     }
   }
