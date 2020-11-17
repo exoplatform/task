@@ -717,6 +717,7 @@ public class TestTaskRestService {
     filter.setKeyword("exo");
 
     when(taskService.findTasks(any(), anyInt(), anyInt())).thenReturn(Collections.singletonList(task2));
+    when(taskService.countTasks(any())).thenReturn(1);
     when(viewStateService.getViewState(any())).thenReturn(viewState);
     when(viewStateService.getFilter(any())).thenReturn(filter);
     // When

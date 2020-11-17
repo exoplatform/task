@@ -468,15 +468,14 @@ public class TaskRestService implements ResourceContainer {
     }
 
     List<TaskDto> listTasks = null;
+    long tasksSize = 0;
     if ((spaceProjectIds != null  && spaceProjectIds.isEmpty()) || ( projectId == 0 && allProjectIds.isEmpty()) ||
             (noLblPermission && labelId != null && labelId > 0) || (noProjPermission &&  projectId > 0)) {
       listTasks = new ArrayList<>();
     } else {
       listTasks = taskService.findTasks(taskQuery,offset,limit);
+      tasksSize = taskService.countTasks(taskQuery);
     }
-
-    long tasksSize = listTasks.size();
-
     return Response.ok(new PaginatedTaskList(listTasks.stream().map(task -> getTaskDetails((TaskDto) task, currentUser)).collect(Collectors.toList()),tasksSize)).build();
   }
 
