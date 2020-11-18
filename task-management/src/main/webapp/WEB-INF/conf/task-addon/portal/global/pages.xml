@@ -25,23 +25,23 @@
   <page>
     <name>tasks</name>
     <title>Tasks</title>
-    <access-permissions>*:/platform/users</access-permissions>
+    <access-permissions>*:/platform/users;*:/platform/externals</access-permissions>
     <edit-permission>*:/platform/administrators</edit-permission>
     <container id="TasksParentContainer" template="system:/groovy/portal/webui/container/UIContainer.gtmpl">
-      <access-permissions>*:/platform/users</access-permissions>
+      <access-permissions>*:/platform/users;*:/platform/externals</access-permissions>
       <container id="top-tasks-container" template="system:/groovy/portal/webui/container/UIAddOnContainer.gtmpl">
         <name>top-task-container</name>
-        <access-permissions>*:/platform/users</access-permissions>
+        <access-permissions>*:/platform/users;*:/platform/externals</access-permissions>
         <factory-id>addonContainer</factory-id>
       </container>
       <container id="tasks-container" template="system:/groovy/portal/webui/container/UIAddOnContainer.gtmpl">
         <name>tasks-container</name>
-        <access-permissions>*:/platform/users</access-permissions>
+        <access-permissions>*:/platform/users;*:/platform/externals</access-permissions>
         <factory-id>addonContainer</factory-id>
       </container>
       <container id="bottom-tasks-container" template="system:/groovy/portal/webui/container/UIAddOnContainer.gtmpl">
         <name>bottom-tasks-container</name>
-        <access-permissions>*:/platform/users</access-permissions>
+        <access-permissions>*:/platform/users;*:/platform/externals</access-permissions>
         <factory-id>addonContainer</factory-id>
       </container>
     </container>
