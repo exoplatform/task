@@ -16,7 +16,7 @@
           </div>
           <a
             ref="tooltip"
-            class="text-color">
+            :class="getTitleTaskClass()">
             <ellipsis
               v-if="task.task.title "
               :title="task.task.title "
@@ -142,7 +142,7 @@
     },
     methods: {
       getTaskPriorityColor(priority) {
-        switch(priority) {
+        switch (priority) {
           case "HIGH":
             return "taskHighPriority";
           case "NORMAL":
@@ -154,11 +154,10 @@
         }
       },
       getTaskAssigneeAndCoworkers() {
-          if(this.task.assignee){
-        this.assigneeAndCoworkerArray.push(this.task.assignee);
-        } 
-        if (this.task.coworker || this.task.coworker.length > 0 )
-        {
+        if (this.task.assignee) {
+          this.assigneeAndCoworkerArray.push(this.task.assignee);
+        }
+        if (this.task.coworker || this.task.coworker.length > 0) {
           this.task.coworker.forEach((coworker) => {
             this.assigneeAndCoworkerArray.push(coworker);
           })
@@ -177,22 +176,20 @@
         this.$root.$emit('open-task-drawer', this.task.task)
       },
 
-      onCloseDrawer: function(drawer){
+      onCloseDrawer: function (drawer) {
         this.drawer = drawer;
       },
       getTaskCompleted() {
-        if(this.task.task.completed===true){
+        if (this.task.task.completed === true) {
           return 'uiIconValidate';
-        }
-        else {
+        } else {
           return 'uiIconCircle'
         }
       },
       getTaskCompletedTitle() {
-        if(this.task.task.completed===true){
+        if (this.task.task.completed === true) {
           return 'message.markAsUnCompleted';
-        }
-        else {
+        } else {
           return 'message.markAsCompleted'
         }
       },
@@ -217,13 +214,20 @@
 
 
       },
-      showCompleted(){
-        if(this.getTaskCompleted()==='uiIconValidate'){
-          this.showCompleteTasks=false
-        }else {
-          this.showCompleteTasks=true
+      showCompleted() {
+        if (this.getTaskCompleted() === 'uiIconValidate') {
+          this.showCompleteTasks = false
+        } else {
+          this.showCompleteTasks = true
         }
         return this.showCompleteTasks
+      },
+      getTitleTaskClass() {
+        if (this.task.task.completed === true) {
+          return 'text-color strikethrough';
+        } else {
+          return 'text-color'
+        }
       },
     }
   }

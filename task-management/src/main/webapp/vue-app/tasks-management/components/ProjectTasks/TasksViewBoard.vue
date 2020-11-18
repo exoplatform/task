@@ -50,7 +50,8 @@
         return tasksByStatus;
       },
       updateTaskCompleted(e){
-        this.tasksList = this.tasksList.filter((t) => t.task.id !== e.id);
+        window.setTimeout(() => this.tasksList = this.tasksList.filter((t) => t.task.id !== e.id), 500);
+
       }
     }
   }
