@@ -123,7 +123,23 @@
             this.$refs.selectLabel.isMenuActive = false;
           }
         }, 100);
-      })
+      });
+      document.addEventListener('loadTaskLabels', event => {
+        if (event && event.detail) {
+          const task = event.detail;
+          this.model = [];
+          if(task.id!=null) {
+            getTaskLabels(task.id).then((labels) => {
+              this.model = labels.map(function (el) {
+                const o = Object.assign({}, el);
+                o.text = o.name;
+                return o;
+              });
+              console.log(' this.model', this.model);
+            })
+          }
+        }
+      });
     },
     methods: {
       filter(item, queryText, itemText) {

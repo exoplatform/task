@@ -234,6 +234,7 @@
           document.dispatchEvent(new CustomEvent('loadDueDate', {detail: task}));
           document.dispatchEvent(new CustomEvent('loadProjectName', {detail: task}));
           document.dispatchEvent(new CustomEvent('loadPlanDates', {detail: task}));
+          document.dispatchEvent(new CustomEvent('loadTaskLabels', {detail: task}));
           document.dispatchEvent(new CustomEvent('loadAssignee', {detail: task}));},
         200)
       });

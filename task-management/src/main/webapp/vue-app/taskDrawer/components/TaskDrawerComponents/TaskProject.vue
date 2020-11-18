@@ -106,7 +106,6 @@
       });
       document.addEventListener('loadProjectName', event => {
         if (event && event.detail) {
-          console.log('event.detail',event.detail);
           const task = event.detail;
           if(task.id!=null && task.status && task.status.project) {
             this.projectModel = this.task.status.project;
