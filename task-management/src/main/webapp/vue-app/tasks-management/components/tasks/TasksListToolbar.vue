@@ -72,7 +72,10 @@
     data () {
       return {
         tasks:null,
-        task: {id:null,status:{}},
+        task: {
+          id:null,
+          status:{}
+          },
         drawer:null
       }
     },
@@ -94,7 +97,11 @@
         this.$refs.filterTasksDrawer.open();
       },
       openTaskDrawer() {
-        this.$root.$emit('open-task-drawer', this.task)
+        this.task = {
+          id:null,
+          status:{},
+        };
+        this.$root.$emit('open-task-drawer', this.task);
       },
     }
   }

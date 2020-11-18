@@ -11,8 +11,7 @@
       <template v-slot:activator="{ on }">
         <v-text-field
           v-model="date"
-          :placeholder="$t('label.chooseDate')"
-          :label="$t('label.dueDate')"
+          :placeholder="$t('label.dueDate')"
           class="pt-0 mt-0 dateFont"
           prepend-icon
           readonly

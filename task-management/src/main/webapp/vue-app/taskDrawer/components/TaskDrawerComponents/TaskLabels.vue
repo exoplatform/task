@@ -65,7 +65,7 @@
 </template>
 
 <script>
-  import {getMyAllLabels, getTaskLabels, addTaskToLabel, removeTaskFromLabel} from '../taskDrawerApi';
+  import {getMyAllLabels, getTaskLabels, addTaskToLabel, removeTaskFromLabel} from '../../taskDrawerApi';
   export default {
     props: {
       task: {

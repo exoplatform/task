@@ -18,7 +18,7 @@
   </div>
 </template>
 <script>
-  import { getStatusesByProjectId } from '../taskDrawerApi';
+  import { getStatusesByProjectId } from '../../taskDrawerApi';
   export default {
     props: {
       task: {

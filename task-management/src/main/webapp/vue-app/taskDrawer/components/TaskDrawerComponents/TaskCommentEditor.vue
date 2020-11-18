@@ -12,7 +12,7 @@
 </template>
 
 <script>
-  import {findUsersToMention} from '../taskDrawerApi';
+  import {findUsersToMention} from '../../taskDrawerApi';
 
   export default {
     props: {

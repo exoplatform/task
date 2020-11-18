@@ -126,7 +126,7 @@
 </template>
 
 <script>
-  import {addTaskSubComment, removeTaskComment, urlVerify} from '../taskDrawerApi';
+  import {addTaskSubComment, removeTaskComment, urlVerify} from '../../taskDrawerApi';
 
     export default {
         name: "TaskComments",

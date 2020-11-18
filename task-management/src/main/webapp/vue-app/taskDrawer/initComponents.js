@@ -1,15 +1,15 @@
 import TaskDrawer from '../taskDrawer/components/TaskDrawer.vue';
-import TaskLabels from '../taskDrawer/components/TaskLabels.vue';
-import TaskProjects from '../taskDrawer/components/TaskProject.vue';
-import TaskAssignment from '../taskDrawer/components/TaskAssignment.vue';
-import TaskCommentEditor from '../taskDrawer/components/TaskCommentEditor.vue';
-import TaskDescriptionEditor from '../taskDrawer/components/TaskDescriptionEditor.vue';
-import LogDetails from '../taskDrawer/components/LogDetails.vue';
-import TaskComments from '../taskDrawer/components/TaskComments.vue';
-import TaskPriority from '../taskDrawer/components/TaskPriority.vue';
-import TaskStatus from "./components/TasksStatus.vue";
-import TaskDueDate from "./components/TaskDueDate.vue";
-import TaskPlanDates from "./components/TaskPlanDates.vue";
+import TaskLabels from './components/TaskDrawerComponents/TaskLabels.vue';
+import TaskProjects from './components/TaskDrawerComponents/TaskProject.vue';
+import TaskAssignment from './components/TaskDrawerComponents/TaskAssignment.vue';
+import TaskCommentEditor from './components/TaskDrawerComponents/TaskCommentEditor.vue';
+import TaskDescriptionEditor from './components/TaskDrawerComponents/TaskDescriptionEditor.vue';
+import LogDetails from './components/TaskDrawerComponents/LogDetails.vue';
+import TaskComments from './components/TaskDrawerComponents/TaskComments.vue';
+import TaskPriority from './components/TaskDrawerComponents/TaskPriority.vue';
+import TaskStatus from "./components/TaskDrawerComponents/TasksStatus.vue";
+import TaskDueDate from "./components/TaskDrawerComponents/TaskDueDate.vue";
+import TaskPlanDates from "./components/TaskDrawerComponents/TaskPlanDates.vue";
 
 const components = {
     'task-drawer': TaskDrawer,
