@@ -1,6 +1,6 @@
 <template>
   <div class="taskStatus">
-    <div v-if="task.status.project != null">
+    <div v-if="task.status && task.status.project">
       <v-select
         id="selectStatus"
         ref="selectStatus"
@@ -18,7 +18,7 @@
   </div>
 </template>
 <script>
-  import { getStatusesByProjectId } from '../taskDrawerApi';
+  import { getStatusesByProjectId } from '../../taskDrawerApi';
   export default {
     props: {
       task: {
@@ -36,14 +36,14 @@
     },
     created() {
       $(document).on('mousedown', () => {
-        if (this.$refs.selectStatus.isMenuActive) {
+        if (this.$refs.selectStatus && this.$refs.selectStatus.isMenuActive) {
           window.setTimeout(() => {
             this.$refs.selectStatus.isMenuActive = false;
           }, 200);
         }
       });
       document.addEventListener('closeStatus',()=> {
-        if (this.$refs.selectStatus.isMenuActive) {
+        if (this.$refs.selectStatus && this.$refs.selectStatus.isMenuActive) {
           window.setTimeout(() => {
             this.$refs.selectStatus.isMenuActive = false;
         }, 100);
@@ -52,7 +52,7 @@
       document.addEventListener('loadProjectStatus', event => {
         if (event && event.detail) {
           const task = event.detail;
-          if(task.status.project) {
+          if(task.status!= null && task.status.project) {
             this.getStatusesByProjectId(task);
             if(task.status.name) {
               this.taskStatus = task.status.name;

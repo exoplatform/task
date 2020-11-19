@@ -8,7 +8,7 @@
         :filter="filterProjects"
         v-model="projectModel"
         :items="projects"
-        :label="$t('label.tapProject.name')"
+        :label="projectLabel"
         attach
         class="pt-0 mb-0 inputTaskProjectName taskInputArea"
         solo
@@ -25,10 +25,12 @@
             :color="`${item.color} lighten-3`"
             :input-value="selected"
             :title="$t('tooltip.clickToEdit')"
-            label
             class="projectName"
             small
-            @click="$emit('projectsListOpened')">
+            close
+            text-color="white"
+            @click="$emit('projectsListOpened')"
+            @click:close="deleteProject">
             <span 
               class="px-4 body-2" 
               @click="parent.selectItem(item)">
@@ -41,7 +43,8 @@
             <v-chip
               :color="`${item.color} lighten-3`"
               dark
-              label
+              close
+              text-color="white"
               small>
               {{ item.name }}
             </v-chip>
@@ -53,7 +56,7 @@
 </template>
 
 <script>
-  import {getProjects, updateTask, getDefaultStatusByProjectId} from '../taskDrawerApi'
+  import {getProjects, updateTask, getDefaultStatusByProjectId} from '../../taskDrawerApi'
   export default {
     props: {
       task: {
@@ -61,32 +64,23 @@
         default: () => {
           return {};
         }
-      }/*,
-      projectsList: {
-        type: Boolean,
-        default: false
-      },*/
+      }
     },
     data() {
       return {
         projects: [],
         projectModel:null,
         search: null,
+        projectLabel: ''
       }
     },
     watch: {
       projectModel () {
         setTimeout(() => {
           this.$refs.select.isMenuActive = false;
-          }, 50)
+          }, 50);
       },
-      /*projectsList() {
-        this.closeDropDownList()
-      },*/
       task() {
-        if (this.task && this.task.status) {
-          this.projectModel = this.task.status.project;
-        }
         if(this.task && this.task.status && this.task.status.project && !this.task.status.name) {
           getDefaultStatusByProjectId(this.task.status.project.id).then((status) => {
             this.task.status = status;
@@ -109,7 +103,22 @@
             this.$refs.select.isMenuActive = false;
           }
         }, 100);
-      })
+      });
+      document.addEventListener('loadProjectName', event => {
+        if (event && event.detail) {
+          const task = event.detail;
+          if(task.id!=null && task.status && task.status.project) {
+            this.projectModel = this.task.status.project;
+            this.projectLabel = this.$t('label.tapProject.name')
+          } else if (task.id==null && task.status && task.status.project){
+            this.projectModel = this.task.status.project;
+            this.projectLabel = this.$t('label.tapProject.name')
+          } else {
+            this.projectModel = null;
+            this.projectLabel = this.$t('label.noProject');
+          }
+        }
+      });
     },
     methods: {
       getProjects() {
@@ -118,35 +127,25 @@
         })
       },
       filterProjects(item, queryText) {
-        return (
-          item.name.toLocaleLowerCase().indexOf(queryText.toLocaleLowerCase()) >
-                      -1 ||
-                      item.name.toLocaleLowerCase().indexOf(queryText.toLocaleLowerCase()) > -1
-              );
-            },
-            updateTask() {
-                updateTask(this.task.id, this.task);
-            },
-            updateTaskProject(project) {
-                getDefaultStatusByProjectId(project.id).then((status) => {
-                    this.task.status = status;
-                    this.updateTask();
-                    this.projectModel = project;
-                })
-            },
-            deleteProject() {
-                this.task.status = null;
-                this.projectModel = null
-                this.updateTask();
-            },
-            /*closeDropDownList() {
-              if (typeof this.$refs.select !== 'undefined') {
-                this.$refs.select.isMenuActive = false;
-              }
-            },*/
-            openProjectsList() {
-              this.$emit('openProjectsList')
-            }
-        }
+        return ( item.name.toLocaleLowerCase().indexOf(queryText.toLocaleLowerCase()) >-1 || item.name.toLocaleLowerCase().indexOf(queryText.toLocaleLowerCase()) > -1 );},
+      updateTask() {
+        updateTask(this.task.id, this.task);
+        },
+      updateTaskProject(project) {
+        getDefaultStatusByProjectId(project.id).then((status) => {
+          this.task.status = status;
+          this.updateTask();
+          this.projectModel = project;
+        })
+      },
+      deleteProject(event) {
+        this.task.status = null;
+        this.projectModel = null;
+        this.projectLabel = this.$t('label.noProject');
+        this.updateTask();
+        event.preventDefault();
+        event.stopPropagation();
+        },
     }
+  }
 </script>

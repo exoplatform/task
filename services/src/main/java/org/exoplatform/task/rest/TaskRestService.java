@@ -468,15 +468,14 @@ public class TaskRestService implements ResourceContainer {
     }
 
     List<TaskDto> listTasks = null;
+    long tasksSize = 0;
     if ((spaceProjectIds != null  && spaceProjectIds.isEmpty()) || ( projectId == 0 && allProjectIds.isEmpty()) ||
             (noLblPermission && labelId != null && labelId > 0) || (noProjPermission &&  projectId > 0)) {
       listTasks = new ArrayList<>();
     } else {
       listTasks = taskService.findTasks(taskQuery,offset,limit);
+      tasksSize = taskService.countTasks(taskQuery);
     }
-
-    long tasksSize = listTasks.size();
-
     return Response.ok(new PaginatedTaskList(listTasks.stream().map(task -> getTaskDetails((TaskDto) task, currentUser)).collect(Collectors.toList()),tasksSize)).build();
   }
 
@@ -490,6 +489,7 @@ public class TaskRestService implements ResourceContainer {
   public Response getTasksByProjectId(@ApiParam(value = "Id", required = true, defaultValue = "0") @PathParam("id") Long id,
                                       @ApiParam(value = "Offset", required = false, defaultValue = "0") @QueryParam("offset") int offset,
                                       @ApiParam(value = "Limit", required = false, defaultValue = "0") @QueryParam("limit") int limit,
+                                      @ApiParam(value = "Returning the Completed tasks", defaultValue = "false") @QueryParam("completed") boolean completed,
                                       @ApiParam(value = "Returning the number of tasks or not", defaultValue = "false") @QueryParam("returnSize") boolean returnSize,
                                       @ApiParam(value = "Returning All Details", defaultValue = "false") @QueryParam("returnDetails") boolean returnDetails) throws Exception {
     String currentUser = ConversationState.getCurrent().getIdentity().getUserId();
@@ -503,6 +503,7 @@ public class TaskRestService implements ResourceContainer {
       limit = -1;
     }
     taskQuery.setProjectIds(allProjectIds);
+    taskQuery.setCompleted(completed);
     tasks = taskService.findTasks(taskQuery,limit,offset);
 
     if (returnSize) {
@@ -980,7 +981,7 @@ public class TaskRestService implements ResourceContainer {
     } catch (Exception e) {
       LOG.warn("Error retrieving task '{}' labels", taskId, e);
     }*/
-    Space space = null;
+    SpaceEntity space = null;
     if (task.getStatus() != null && task.getStatus().getProject() != null) {
       space = getProjectSpace(task.getStatus().getProject());
     }
@@ -991,17 +992,17 @@ public class TaskRestService implements ResourceContainer {
     return taskEntity;
   }
 
-  private Space getProjectSpace(Project project) {
+  private SpaceEntity getProjectSpace(Project project) {
     for (String permission : projectService.getManager(project.getId())) {
       int index = permission.indexOf(':');
       if (index > -1) {
         String groupId = permission.substring(index + 1);
         Space space = spaceService.getSpaceByGroupId(groupId);
-        return space;
+        SpaceEntity spaceEntity = new SpaceEntity(space.getId(), space.getDisplayName(), space.getGroupId(), space.getUrl(), space.getPrettyName(), space.getAvatarUrl());
+        return spaceEntity;
 
       }
     }
-
     return null;
   }
 }

@@ -2,13 +2,18 @@
   <div
     :class="getTaskPriorityColor(task.task.priority)"
     class="taskListItemView  px-4 py-3 d-flex align-center">
-    <div class="taskCheckBox">
-      <i :title="$t('message.markAsCompleted')" class="uiIcon uiIconCircle"></i>
+    <div class="taskCheckBox" @click="updateCompleted">
+      <v-switch
+        ref="autoFocusInput2"
+        class="d-none"
+        true-value="true"
+        false-value="false"/>
+      <i :title="$t(getTaskCompletedTitle())" :class="getTaskCompleted()"></i>
     </div>
     <div class="taskTitle pr-3">
       <a
         ref="tooltip"
-        class="text-color"
+        :class="getTitleTaskClass()"
         @click="openTaskDrawer()">
         <span>{{ task.task.title }}</span>
       </a>
@@ -146,6 +151,59 @@
       openTaskDrawer() {
        this.$root.$emit('open-task-drawer', this.task.task)
       },
+    getTaskCompleted() {
+      if(this.task.task.completed===true){
+        return 'uiIconValidate';
+      }
+      else {
+        return 'uiIconCircle'
+      }
+    },
+    getTaskCompletedTitle() {
+      if(this.task.task.completed===true){
+        return 'message.markAsUnCompleted';
+      }
+      else {
+        return 'message.markAsCompleted'
+      }
+    },
+    updateCompleted() {
+
+      const task = {
+        id: this.task.task.id,
+        showCompleteTasks: this.showCompleted(),
+      };
+
+
+      if (typeof task.id !== 'undefined') {
+        return this.$tasksService.updateCompleted(task).then(task => {
+          this.$emit('update-task-completed', task);
+        }).then(this.task.task.completed = task.showCompleteTasks)
+                .catch(e => {
+                  console.debug("Error updating project", e);
+                  this.$emit('error', e && e.message ? e.message : String(e));
+                  this.postProject = false;
+                });
+      }
+
+
+    },
+    showCompleted(){
+      if(this.getTaskCompleted()==='uiIconValidate'){
+        this.showCompleteTasks=false
+      }else {
+        this.showCompleteTasks=true
+      }
+      return this.showCompleteTasks
+    },
+    getTitleTaskClass() {
+      if(this.task.task.completed===true){
+        return 'text-color strikethrough';
+      }
+      else {
+        return 'text-color'
+      }
+    },
     }
   }
 </script>

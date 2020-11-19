@@ -19,7 +19,7 @@
 </template>
 
 <script>
-  import {urlVerify} from '../taskDrawerApi';
+  import {urlVerify} from '../../taskDrawerApi';
 
   export default {
         props: {

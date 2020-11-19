@@ -58,6 +58,20 @@
             .listOfParticipantavatar{
               margin-right: -2px!important;
             }
+            .listOfManageravatar{
+              a.flex-nowrap.flex-shrink-0.d-flex {
+                margin-right: 17px;
+              }
+            }
+            .listOfParticipantavatar{
+              a.flex-nowrap.flex-shrink-0.d-flex {
+                margin-right: 10px;
+              }
+              .seeMoreAvatars{
+                margin-right: 7px;
+              }
+            }
+
             .listOfManageravatar,.listOfParticipantavatar{
               float: left;
               display: flex;
@@ -102,7 +116,6 @@
               }
             }
             a.flex-nowrap.flex-shrink-0.d-flex {
-              margin-right: 17px;
               .v-avatar.pull-left.my-auto {
                 height: 30px;
                 min-width: 30px;
@@ -1597,6 +1610,11 @@
             display: none;
           }
         }
+      .v-menu__content {
+        .v-list-item {
+          min-height: 35px!important;
+        }
+      }
     }
   }
   .taskTitleAndMark {
@@ -1609,8 +1627,8 @@
           &:after {
             display: none!important;
           }
-          .v-text-field__slot {
-
+          #task-name {
+            font-size: 16px;
           }
         }
       }
@@ -1665,9 +1683,38 @@
       }
     }
   }
+  .taskAssignement {
+    .taskAssignItem {
+      .taskAssignBtn {
+        .uiAddAssignIcon {
+          &:before {
+            content: "\e6c4";
+            color: @greyColorLighten1Default;
+            font-size: 15px;
+          }
+        }
+      }
+    }
+    .identitySuggester {
+      margin: 8px 12px !important;
+      padding: 5px!important;
+      .v-input__control {
+        .v-input__slot {
+          height: auto!important;
+          .v-select__slot {
+            .v-select__selections {
+              padding-left: 0!important;
+              .identitySuggesterItem {
+                margin-bottom: 6px!important;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
   .taskDates {
     .v-input__control {
-      margin-top: 12px;
       > .v-input__slot {
         box-shadow: none!important;
         padding: 0!important;
@@ -1684,7 +1731,6 @@
           transform: translateY(-16px) scale(0.75)!important;
         }
         input {
-          margin-top: 10px!important;
           &::placeholder {
             font-size: 16px!important;
             font-style: italic!important;
@@ -1695,17 +1741,15 @@
     .v-input__prepend-outer {
       .uiIconCalendar {
         color: @primaryColor;
-        font-size: 30px;
-        margin-top:6px;
+        font-size: 20px;
         &:before {
           content: "\e619";
         }
       }
       .uiIconClock {
-        margin-top:6px;
         &:before {
           color: @primaryColor;
-          font-size: 30px;
+          font-size: 20px;
         }
       }
     }
@@ -1718,15 +1762,8 @@
         color: @errorColor!important;
       }
     }
-    .taskDueDateCalender {
-      /*.v-menu__content {
-        width: 290px!important;
-      }*/
-    }
     .taskPlanDateCalender {
-      /*.v-menu__content {
-        width: 290px!important;
-      }*/
+      margin-top: 4px;
     }
   }
   .taskStatusAndPriority {
@@ -1748,6 +1785,7 @@
     .taskPriority {
       .v-input__control {
         > .v-input__slot {
+          justify-content: flex-end!important;
           .v-select__slot {
             max-width: inherit!important;
             width: auto!important;
@@ -1823,10 +1861,6 @@
       bottom: 8px;
       right: 10px;
       color: @greyColorLighten1;
-    }
-    .cke_browser_webkit{
-      margin-top: 15px;
-      margin-left: 33px;
     }
     .cke_bottom.cke_reset_all {
       background-color: transparent;

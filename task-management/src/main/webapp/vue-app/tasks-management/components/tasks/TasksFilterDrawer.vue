@@ -142,7 +142,7 @@
         priority: [
           {name: ""},{name: "NONE"},{name: "LOW"},{name: "NORMAL"},{name: "HIGH"}
         ],
-        showCompleteTasks:true,
+        showCompleteTasks:false,
       }
     },
     computed: {

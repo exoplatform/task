@@ -52,7 +52,7 @@
         startSearchAfterInMilliseconds: 600,
         endTypingKeywordTimeout: 50,
         startTypingKeywordTimeout: 0,
-        showCompleteTasks: true,
+        showCompleteTasks: false,
       }
     },
     computed: {
@@ -99,7 +99,7 @@
         const tasks = {
           query: this.keyword,
           offset: this.offset,
-          limit: this.limit,
+          limit: this.limitToFetch,
           showCompleteTasks:this.showCompleteTasks,
         };
         this.loadingTasks = true;
@@ -120,7 +120,7 @@
         }
       },
       loadNextPage() {
-        this.originalLimitToFetch = this.limitToFetch += this.pageSize;
+        this.limitToFetch += this.pageSize;
       },
       waitForEndTyping() {
         window.setTimeout(() => {

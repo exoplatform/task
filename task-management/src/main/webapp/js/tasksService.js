@@ -14,7 +14,7 @@ export function getMyTasksList(query, offset, limit) {
 }
 
 export function filterTasksList(tasks, offset, limit) {
-    return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/tasks/filter?projectId=-2&query=${tasks.query || ''}&dueDate=${tasks.dueDate || ''}&priority=${tasks.priority || ''}&showCompleted=${tasks.showCompleteTasks || ''}&assignee=${tasks.assignee || ''}&offset=${offset || 0}&limit=${limit|| 0}`, {
+    return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/tasks/filter?projectId=-2&query=${tasks.query || ''}&dueDate=${tasks.dueDate || ''}&priority=${tasks.priority || ''}&showCompleted=${tasks.showCompleteTasks || ''}&assignee=${tasks.assignee || ''}&offset=${tasks.offset || 0}&limit=${tasks.limit|| 0}`, {
         method: 'GET',
         credentials: 'include',
     }).then(resp => {

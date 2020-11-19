@@ -85,6 +85,7 @@
     },
     methods:{
       reset() {
+        this.$refs.invitedAttendeeAutoComplete.focus();
         this.$emit('initialized');
       },
       removeAttendee(attendee) {

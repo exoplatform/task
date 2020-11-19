@@ -13,11 +13,6 @@
       {{ $t('label.drawer.header.add') }}
     </template>
     <template slot="content">
-      <div class="taskProjectName">
-        <task-projects
-          :task="task"
-          @projectsListOpened="closePriority(); closeStatus(); closeLabelsList(); closeDueDateCalendar();closePlanDatesCalendar();closeAssignements()"/>
-      </div>
       <div class="taskTitleAndMark d-flex">
         <v-btn
           id="check_btn"
@@ -37,6 +32,11 @@
           class="pl-0 pt-0 task-name"
           @change="updateTask"/>
       </div>
+      <div class="taskProjectName">
+        <task-projects
+          :task="task"
+          @projectsListOpened="closePriority(); closeStatus(); closeLabelsList(); closeDueDateCalendar();closePlanDatesCalendar();closeAssignements()"/>
+      </div>
       <div class="taskLabelsName">
         <task-labels
           :task="task"
@@ -48,31 +48,32 @@
           @assignmentsOpened="closePriority(); closeStatus(); closeProjectsList();closeDueDateCalendar();closePlanDatesCalendar(); closeLabelsList()"/>
       </div>
       <v-divider class="my-0" />
-      <div class="taskDates d-flex pt-4 pb-2">
-        <task-due-date
-          :task="task"
-          @dueDateOpened="closeLabelsList(); closeProjectsList(); closeStatus(); closePriority();closePlanDatesCalendar();closeAssignements()"/>
-        <task-plan-dates
-          @planDatesOpened="closePriority(); closeStatus(); closeProjectsList(); closeLabelsList(); closeDueDateCalendar();closeAssignements()"/>
-      </div>
-      <v-divider class="my-0" />
-      <div class="taskStatusAndPriority d-flex py-4">
-        <task-priority
-          :task="task"
-          @PriorityListOpened="closeStatus(); closeProjectsList(); closeLabelsList();closeDueDateCalendar(); closePlanDatesCalendar();closeAssignements()"
-          @updateTaskPriority="updateTask(task.id)"/>
-        <task-status
-          :task="task"
-          @statusListOpened="closePriority(); closeProjectsList();closeLabelsList();closeDueDateCalendar();closePlanDatesCalendar();closeAssignements()"
-          @updateTaskStatus="updateTaskStatus(task)"/>
+      <div class="d-flex  pt-4 pb-2">
+        <div class="taskDates">
+          <task-due-date
+            :task="task"
+            @dueDateOpened="closeLabelsList(); closeProjectsList(); closeStatus(); closePriority();closePlanDatesCalendar();closeAssignements()"/>
+          <task-plan-dates
+            @planDatesOpened="closePriority(); closeStatus(); closeProjectsList(); closeLabelsList(); closeDueDateCalendar();closeAssignements()"/>
+        </div>
+        <div class="taskStatusAndPriority">
+          <task-priority
+            :task="task"
+            @updateTaskPriority="updateTask(task.id)"
+            @PriorityListOpened="closeStatus(); closeProjectsList(); closeLabelsList();closeDueDateCalendar(); closePlanDatesCalendar();closeAssignements()"/>
+          <task-status
+            :task="task"
+            @statusListOpened="closePriority(); closeProjectsList();closeLabelsList();closeDueDateCalendar();closePlanDatesCalendar();closeAssignements()"
+            @updateTaskStatus="updateTaskStatus(task)"/>
+        </div>
       </div>
       <v-divider class="my-0" />
       <div class="taskDescription py-4">
-        <v-label
+        <!--<v-label
           class="pb-3"
           for="description">
           {{ $t('label.description') }}
-        </v-label>
+        </v-label>-->
         <exo-task-editor
           ref="richEditor"
           v-model="task.description"
@@ -169,7 +170,7 @@
   </exo-drawer>
 </template>
 <script>
-  import {updateTask, addTask, getTaskLogs, getTaskComments, addTaskComments, urlVerify} from '../taskDrawerApi';
+  import {updateTask, addTask, addTaskToLabel, getTaskLogs, getTaskComments, addTaskComments, urlVerify} from '../taskDrawerApi';
   export default {
     props: {
       task: {
@@ -186,7 +187,6 @@
         reset: false,
         disabledComment: true,
         dates: [],
-        assigneeMenu : false,
         showEditor : true,
         showSubEditor : false,
         commentPlaceholder : this.$t('comment.message.addYourComment'),
@@ -197,6 +197,8 @@
         logs:[],
         comments:[],
         subEditorIsOpen : false,
+        taskPriority: 'NORMAL',
+        labelsToAdd: []
       }
     },
     computed: {
@@ -228,11 +230,28 @@
     },
     created() {
       this.$root.$on('open-task-drawer', task => {
-          window.setTimeout(() => {
-        document.dispatchEvent(new CustomEvent('loadTaskPriority',{detail: task}));
-        document.dispatchEvent(new CustomEvent('loadProjectStatus', {detail: task}));
-        document.dispatchEvent(new CustomEvent('loadDueDate', {detail: task}));
-        document.dispatchEvent(new CustomEvent('loadPlanDates', {detail: task}));},200)
+        window.setTimeout(() => {
+          document.dispatchEvent(new CustomEvent('loadTaskPriority',{detail: task}));
+          document.dispatchEvent(new CustomEvent('loadProjectStatus', {detail: task}));
+          document.dispatchEvent(new CustomEvent('loadDueDate', {detail: task}));
+          document.dispatchEvent(new CustomEvent('loadProjectName', {detail: task}));
+          document.dispatchEvent(new CustomEvent('loadPlanDates', {detail: task}));
+          document.dispatchEvent(new CustomEvent('loadTaskLabels', {detail: task}));
+          document.dispatchEvent(new CustomEvent('loadAssignee', {detail: task}));},
+        200)
+      });
+      document.addEventListener('priorityChanged', event => {
+        if (event && event.detail) {
+          const priority = event.detail;
+          this.priority = priority;
+          this.task.priority = this.priority;
+        }
+      });
+      document.addEventListener('labelListChanged', event => {
+        if (event && event.detail) {
+          const label = event.detail;
+          this.labelsToAdd.push(label);
+        }
       });
     },
     destroyed: function() {
@@ -302,14 +321,19 @@
         }
       },
       addTask() {
+        this.task.priority = this.priority;
         addTask(this.task).then(task => {
+          this.labelsToAdd.forEach(item => {
+            addTaskToLabel(task.id, item);
+          });
           this.$emit('addTask', this.task);
           this.$root.$emit('task-added', this.task);
           this.showEditor=false;
           this.enableAutosave=false
           this.task={}
           this.$refs.addTaskDrawer.close();
-        })
+        });
+        this.task={}
       },
       autoSaveDescription() {
         if(this.task.id!=null && this.enableAutosave){

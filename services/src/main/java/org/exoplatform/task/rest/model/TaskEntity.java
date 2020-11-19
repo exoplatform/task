@@ -45,7 +45,7 @@ public class TaskEntity {
   private long commentCount;
   private List<CommentModel> comments;
   private User currentUser;
-  private Space space;
+  private SpaceEntity space;
   private List<LabelDto> labels = new ArrayList<LabelDto>();
 
   public TaskEntity() {

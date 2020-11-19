@@ -157,7 +157,7 @@ public class TestTaskRestService {
     allProjectIds.add((long) 1);
     when(taskService.findTasks(taskQuery,0,-1)).thenReturn(tasks);
     // When
-    Response response = taskRestService.getTasksByProjectId((long)1,0,-1,false,false);
+    Response response = taskRestService.getTasksByProjectId((long)1,0,-1,false,false, false);
     // Then
     assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
   }
@@ -717,6 +717,7 @@ public class TestTaskRestService {
     filter.setKeyword("exo");
 
     when(taskService.findTasks(any(), anyInt(), anyInt())).thenReturn(Collections.singletonList(task2));
+    when(taskService.countTasks(any())).thenReturn(1);
     when(viewStateService.getViewState(any())).thenReturn(viewState);
     when(viewStateService.getFilter(any())).thenReturn(filter);
     // When

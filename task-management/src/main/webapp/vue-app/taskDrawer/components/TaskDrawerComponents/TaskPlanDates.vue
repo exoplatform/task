@@ -9,13 +9,11 @@
         attach
         transition="scale-transition"
         offset-y
-        left
         min-width="290px">
         <template v-slot:activator="{ on }">
           <v-text-field
             v-model="dateRangeText"
-            :label="$t('label.noWorkPlan')"
-            :placeholder="$t('label.chooseDate')"
+            :placeholder="$t('label.noWorkPlan')"
             class="pt-0 pl-1 mt-0 dateFont"
             prepend-icon
             append-icon

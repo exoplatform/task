@@ -14,21 +14,21 @@ export function getUserInformations(userName) {
 
 export function updateTask(taskId, task) {
   return fetch(`/portal/rest/tasks/${taskId}`, {
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json'
-    },
     method: 'PUT',
     credentials: 'include',
-    body: JSON.stringify(task)
-  }).then((resp) => {
-    if(resp && resp.ok) {
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(task),
+  }).then(resp => {
+    if (!resp || !resp.ok) {
+      return resp.text().then((text) => {
+        throw new Error(text);
+      });
+    } else {
       return resp.json();
     }
-    else {
-      throw new Error ('Error when updating task');
-    }
-  })
+  });
 }
 
 export function addTask(task) {

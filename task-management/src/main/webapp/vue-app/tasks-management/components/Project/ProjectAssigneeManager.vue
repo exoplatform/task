@@ -85,6 +85,23 @@
     },
     methods:{
       reset() {
+        if (this.manager && !this.manager.length>0) { // In case of edit existing event
+          // Add current user as default attendee
+          if (this.currentUser) {
+            this.manager = [{
+                id: eXo.env.portal.userIdentityId,
+                providerId: 'organization',
+                remoteId: eXo.env.portal.userName,
+                profile: {
+                  avatar: this.currentUser.avatar,
+                  fullname: this.currentUser.fullname,
+                },
+              }];
+          } else {
+            this.manager = [];
+          }
+        }
+        this.$refs.invitedAttendeeAutoComplete.focus();
         this.$emit('initialized');
       },
       removeAttendee(attendee) {

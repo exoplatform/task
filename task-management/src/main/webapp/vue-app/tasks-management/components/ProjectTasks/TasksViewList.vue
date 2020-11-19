@@ -18,7 +18,8 @@
             <task-view-list-item
               v-for="task in getTasksByStatus(tasksList,status.name)"
               :key="task.task.id"
-              :task="task"/>
+              :task="task"
+              @update-task-completed="updateTaskCompleted"/>
           </div>
           <v-divider/>
         </div>
@@ -57,6 +58,9 @@
         });
         return tasksByStatus;
       },
+    updateTaskCompleted(e){
+      window.setTimeout(() => this.tasksList = this.tasksList.filter((t) => t.task.id !== e.id), 500);
+    }
     }
   }
 </script>

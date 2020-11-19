@@ -54,7 +54,8 @@
        if(this.tab==='tab-1'){
          this.getMyTasks()
        }
-       else if(task.status.project){
+
+       else if(task && task.status && task.status.project) {
           document.dispatchEvent(new CustomEvent('showProjectTasks', {detail: this.task.status.project}));
           }else{
            this.tab='tab-1' 
