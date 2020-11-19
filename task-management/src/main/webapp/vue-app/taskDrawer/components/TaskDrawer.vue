@@ -59,8 +59,8 @@
         <div class="taskStatusAndPriority">
           <task-priority
             :task="task"
-            @PriorityListOpened="closeStatus(); closeProjectsList(); closeLabelsList();closeDueDateCalendar(); closePlanDatesCalendar();closeAssignements()"
-            @updateTaskPriority="updateTask(task.id)"/>
+            @updateTaskPriority="updateTask(task.id)"
+            @PriorityListOpened="closeStatus(); closeProjectsList(); closeLabelsList();closeDueDateCalendar(); closePlanDatesCalendar();closeAssignements()"/>
           <task-status
             :task="task"
             @statusListOpened="closePriority(); closeProjectsList();closeLabelsList();closeDueDateCalendar();closePlanDatesCalendar();closeAssignements()"
@@ -170,7 +170,7 @@
   </exo-drawer>
 </template>
 <script>
-  import {updateTask, addTask, getTaskLogs, getTaskComments, addTaskComments, urlVerify} from '../taskDrawerApi';
+  import {updateTask, addTask, addTaskToLabel, getTaskLogs, getTaskComments, addTaskComments, urlVerify} from '../taskDrawerApi';
   export default {
     props: {
       task: {
@@ -197,6 +197,8 @@
         logs:[],
         comments:[],
         subEditorIsOpen : false,
+        taskPriority: 'NORMAL',
+        labelsToAdd: []
       }
     },
     computed: {
@@ -237,6 +239,18 @@
           document.dispatchEvent(new CustomEvent('loadTaskLabels', {detail: task}));
           document.dispatchEvent(new CustomEvent('loadAssignee', {detail: task}));},
         200)
+      });
+      document.addEventListener('priorityChanged', event => {
+        if (event && event.detail) {
+          const priority = event.detail;
+          this.priority = priority;
+        }
+      });
+      document.addEventListener('labelListChanged', event => {
+        if (event && event.detail) {
+          const label = event.detail;
+          this.labelsToAdd.push(label);
+        }
       });
     },
     destroyed: function() {
@@ -299,6 +313,7 @@
       },
       updateTask() {
         if(this.task.id!=null){
+          this.task.priority = this.priority;
           updateTask(this.task.id,this.task);
           window.setTimeout(() => {
              this.$root.$emit('task-added', this.task)
@@ -306,7 +321,12 @@
         }
       },
       addTask() {
+        this.task.priority = this.priority;
+
         addTask(this.task).then(task => {
+          this.labelsToAdd.forEach(item => {
+            addTaskToLabel(task.id, item);
+          });
           this.$emit('addTask', this.task);
           this.$root.$emit('task-added', this.task);
           this.showEditor=false;

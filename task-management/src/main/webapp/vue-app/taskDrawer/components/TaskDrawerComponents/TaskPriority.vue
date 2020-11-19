@@ -10,7 +10,7 @@
       solo
       dense
       class="pt-0 selectFont"
-      @change="updateTaskPriority"
+      @change="updateTaskPriority()"
       @click="$emit('PriorityListOpened')">
       <template v-slot:append>
         <v-icon :class="priorityDefaultColor" size="20">mdi-flag-variant</v-icon>
@@ -49,6 +49,11 @@
         ],
       }
     },
+    watch: {
+      priority() {
+        this.updateTaskPriority();
+      }
+    },
     created() {
       $(document).on('mousedown', () => {
         if (this.$refs.selectPriority.isMenuActive) {
@@ -64,7 +69,8 @@
             this.priority = task.priority;
             this.priorityDefaultColor = this.getTaskPriorityColor(task.priority);
           } else {
-            this.priority = {key:'NORMAL',value:this.$t('label.priority.normal')};
+            //this.priority = {key:'NORMAL',value:this.$t('label.priority.normal')};
+            this.priority = 'NORMAL';
             this.priorityDefaultColor = this.getTaskPriorityColor('NORMAL');
           }
         }
@@ -93,6 +99,7 @@
       updateTaskPriority() {
         this.priorityDefaultColor = this.getTaskPriorityColor(this.priority);
         this.$emit('updateTaskPriority');
+        document.dispatchEvent(new CustomEvent('priorityChanged', {detail: this.priority}));
       },
     }
   }

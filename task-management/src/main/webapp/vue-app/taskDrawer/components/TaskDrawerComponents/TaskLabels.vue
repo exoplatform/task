@@ -65,7 +65,7 @@
 </template>
 
 <script>
-  import {getMyAllLabels, getTaskLabels, addTaskToLabel, removeTaskFromLabel} from '../../taskDrawerApi';
+  import {getMyAllLabels, getTaskLabels, addTaskToLabel,removeTaskFromLabel} from '../../taskDrawerApi';
   export default {
     props: {
       task: {
@@ -109,7 +109,6 @@
     },
     created() {
       this.getMyAllLabels();
-      this.getTaskLabels();
       $(document).on('mousedown', () => {
         if (this.$refs.selectLabel.isMenuActive) {
           window.setTimeout(() => {
@@ -129,13 +128,13 @@
           const task = event.detail;
           this.model = [];
           if(task.id!=null) {
+            this.getTaskLabels();
             getTaskLabels(task.id).then((labels) => {
               this.model = labels.map(function (el) {
                 const o = Object.assign({}, el);
                 o.text = o.name;
                 return o;
               });
-              console.log(' this.model', this.model);
             })
           }
         }
@@ -172,7 +171,11 @@
         })
       },
       addTaskToLabel(label) {
-        addTaskToLabel(this.task.id, label)
+        if( this.task.id!= null ) {
+          addTaskToLabel(this.task.id, label);
+        } else {
+          document.dispatchEvent(new CustomEvent('labelListChanged', {detail: label}));
+        }
         this.model.push(label)
         document.getElementById('labelInput').focus()
       },
