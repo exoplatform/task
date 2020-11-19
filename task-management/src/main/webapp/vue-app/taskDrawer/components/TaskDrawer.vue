@@ -244,6 +244,7 @@
         if (event && event.detail) {
           const priority = event.detail;
           this.priority = priority;
+          this.task.priority = this.priority;
         }
       });
       document.addEventListener('labelListChanged', event => {
@@ -313,7 +314,6 @@
       },
       updateTask() {
         if(this.task.id!=null){
-          this.task.priority = this.priority;
           updateTask(this.task.id,this.task);
           window.setTimeout(() => {
              this.$root.$emit('task-added', this.task)
@@ -322,7 +322,6 @@
       },
       addTask() {
         this.task.priority = this.priority;
-
         addTask(this.task).then(task => {
           this.labelsToAdd.forEach(item => {
             addTaskToLabel(task.id, item);
