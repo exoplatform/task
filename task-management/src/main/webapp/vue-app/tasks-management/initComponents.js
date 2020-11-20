@@ -25,57 +25,60 @@ import TasksViewDashboard from "./components/ProjectTasks/TasksViewDashboard.vue
 import TasksViewToolbar from "./components/ProjectTasks/TasksViewToolbar.vue";
 import TasksViewBoard from "./components/ProjectTasks/TasksViewBoard.vue";
 import TasksViewList from './components/ProjectTasks/TasksViewList.vue';
+import TasksViewListColumn from './components/ProjectTasks/TasksViewListColumn.vue';
 import TaskViewGantt from './components/ProjectTasks/TasksViewGantt.vue';
 import TasksViewHeader from "./components/ProjectTasks/TasksViewHeader.vue";
 import TaskViewCard from "./components/ProjectTasks/TaskViewCard.vue";
 import TaskViewListItem from "./components/ProjectTasks/TaskViewListItem.vue";
+import TasksViewBoardColumn from "./components/ProjectTasks/TasksViewBoardColumn.vue";
 
 const components = {
-  'tasks-management': TasksManagement,
-  'project-dashboard': ProjectDashboard,
-  'project-list-toolbar': ProjectListToolbar,
-  'project-card-list': ProjectCardList,
-  'project-card': ProjectCard,
-  'project-card-front': ProjectCardFront,
-  'project-card-Reverse': ProjectCardReverse,
-  'add-project-drawer': AddProjectDrawer,
-  'exo-task-editor': ExoTaskEditor,
-  'project-manager-drawer': ProjectManagersDrawer,
-  'project-assignee-manager': ProjectAssigneeManager,
-  'project-event-form-assignee-and-participator-item': ProjectEventFormAssigneeAndParticipatorItem,
-  'project-assignee-participator': ProjectAssigneeParticipator,
+    'tasks-management': TasksManagement,
+    'project-dashboard': ProjectDashboard,
+    'project-list-toolbar': ProjectListToolbar,
+    'project-card-list': ProjectCardList,
+    'project-card': ProjectCard,
+    'project-card-front': ProjectCardFront,
+    'project-card-Reverse': ProjectCardReverse,
+    'add-project-drawer': AddProjectDrawer,
+    'exo-task-editor': ExoTaskEditor,
+    'project-manager-drawer': ProjectManagersDrawer,
+    'project-assignee-manager': ProjectAssigneeManager,
+    'project-event-form-assignee-and-participator-item': ProjectEventFormAssigneeAndParticipatorItem,
+    'project-assignee-participator': ProjectAssigneeParticipator,
 
-  'tasks-dashboard': TasksDashboard,
-  'tasks-list-toolbar': TasksListToolbar,
-  'tasks-list': TasksList,
-  'tasks-list-item': TasksListItem,
-  'tasks-cards-list': TasksCardsList,
-  'task-card': TaskCard,
-  'task-filter-drawer':TasksFilterDrawer,
-  'tasks-assignee-coworker-drawer': TasksAssigneeAndCoworkerDrawer,
+    'tasks-dashboard': TasksDashboard,
+    'tasks-list-toolbar': TasksListToolbar,
+    'tasks-list': TasksList,
+    'tasks-list-item': TasksListItem,
+    'tasks-cards-list': TasksCardsList,
+    'task-card': TaskCard,
+    'task-filter-drawer': TasksFilterDrawer,
+    'tasks-assignee-coworker-drawer': TasksAssigneeAndCoworkerDrawer,
 
 
-  'tasks-view-dashboard': TasksViewDashboard,
-  'tasks-view-toolbar': TasksViewToolbar,
-  'tasks-view-board': TasksViewBoard,
-  'tasks-view-list': TasksViewList,
-  'tasks-view-gantt': TaskViewGantt,
-  'tasks-view-header': TasksViewHeader,
-  'task-view-card': TaskViewCard,
-  'task-view-list-item': TaskViewListItem
-
+    'tasks-view-dashboard': TasksViewDashboard,
+    'tasks-view-toolbar': TasksViewToolbar,
+    'tasks-view-board': TasksViewBoard,
+    'tasks-view-board-column': TasksViewBoardColumn,
+    'tasks-view-list': TasksViewList,
+    'tasks-view-list-column': TasksViewListColumn,
+    'tasks-view-gantt': TaskViewGantt,
+    'tasks-view-header': TasksViewHeader,
+    'task-view-card': TaskViewCard,
+    'task-view-list-item': TaskViewListItem
 };
 
 for (const key in components) {
-  Vue.component(key, components[key]);
+    Vue.component(key, components[key]);
 }
 
 //get overrided components if exists
 if (extensionRegistry) {
-  const components = extensionRegistry.loadComponents('TasksManagement');
-  if (components && components.length > 0) {
-    components.forEach(cmp => {
-      Vue.component(cmp.componentName, cmp.componentOptions);
-    });
-  }
+    const components = extensionRegistry.loadComponents('TasksManagement');
+    if (components && components.length > 0) {
+        components.forEach(cmp => {
+            Vue.component(cmp.componentName, cmp.componentOptions);
+        });
+    }
 }

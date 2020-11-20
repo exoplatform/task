@@ -9,16 +9,12 @@
             v-for="(status, index) in statusList"
             :key="index"
             class="py-0 px-4 projectTaskItem">
-            <tasks-view-header
-              :status="status"
-              :view-type="'board'"
-              :tasks-number="getTasksByStatus(tasksList,status.name).length"/>
-            <v-divider/>
-            <task-view-card
-              v-for="task in getTasksByStatus(tasksList,status.name)"
-              :key="task.task.id"
-              :task="task"
-              @update-task-completed="updateTaskCompleted"/>
+            <tasks-view-board-column
+              v-col
+              :status="status"        
+              :tasks-list="getTasksByStatus(tasksList,status.name)"
+              @updateTaskCompleted="updateTaskCompleted"
+              @updateTaskStatus="updateTaskStatus" />
           </v-col>
         </v-row>
       </v-container>
@@ -26,6 +22,7 @@
   </v-card>
 </template>
 <script>
+import {updateTask} from '../../../taskDrawer/taskDrawerApi';
   export default {
     props: {
       statusList: {
@@ -52,7 +49,22 @@
       updateTaskCompleted(e){
         window.setTimeout(() => this.tasksList = this.tasksList.filter((t) => t.task.id !== e.id), 500);
 
-      }
+      },
+      updateTaskStatus(task,newStatus){
+              const status = this.statusList.find(s => s.name === newStatus);
+              if(status){
+               task.status = status;
+               this.updateTask(task)
+              } 
+      },
+      updateTask(task) {
+        if(task.id!=null){
+          updateTask(task.id,task);
+/*           window.setTimeout(() => {
+             this.$root.$emit('task-added', this.task)
+          }, 200); */
+        }
+      },
     }
   }
 </script>

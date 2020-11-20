@@ -208,6 +208,14 @@
     </depends>
   </module>
 
+  <module>
+    <name>vuedraggable</name>
+    <script>
+      <path>/js/vuedraggable.js</path>
+    </script>
+  </module>
+
+
   <portlet>
     <name>tasks</name>
     <module>
@@ -299,6 +307,9 @@
       </script>
       <depends>
         <module>commonVueComponents</module>
+      </depends>
+      <depends>
+        <module>vuedraggable</module>
       </depends>
       <depends>
         <module>vue</module>
