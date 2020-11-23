@@ -9,7 +9,8 @@
       v-model="tasksList" 
       :move="checkMove"
       group="people" 
-      @start="drag=true" 
+      class="draggable-palceholder" 
+      @start="drag=true"
       @end="drag=false">
       <task-view-card
         v-for="task in tasksList"

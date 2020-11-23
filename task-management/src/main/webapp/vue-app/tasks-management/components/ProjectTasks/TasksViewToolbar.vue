@@ -65,18 +65,17 @@
         default: ''
       },
     },
-    data () {
-      return {
-        task: {id:null,status:{},priority:'NONE'},
-      }
-    },
     methods: {
       openDrawer() {
         this.$refs.filterTasksDrawer.open();
       },
       openTaskDrawer() {
-        this.task.status.project=this.project;
-        this.$root.$emit('open-task-drawer', this.task)
+        const defaultTask= {id:null,
+        status:{project:this.project},
+        priority:'NONE',
+        description:'',
+        title:''}
+        this.$root.$emit('open-task-drawer', defaultTask)
       },
     }
   }

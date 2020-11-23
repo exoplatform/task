@@ -10,7 +10,6 @@
             :key="index"
             class="py-0 px-4 projectTaskItem">
             <tasks-view-board-column
-              v-col
               :status="status"        
               :tasks-list="getTasksByStatus(tasksList,status.name)"
               @updateTaskCompleted="updateTaskCompleted"

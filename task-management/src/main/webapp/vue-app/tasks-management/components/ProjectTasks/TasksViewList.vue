@@ -10,7 +10,6 @@
             :key="index"
             class="pt-0 pb-8 px-4 projectTaskItem">
             <tasks-view-list-column
-              v-col
               :status="status"        
               :tasks-list="getTasksByStatus(tasksList,status.name)"
               @updateTaskCompleted="updateTaskCompleted"

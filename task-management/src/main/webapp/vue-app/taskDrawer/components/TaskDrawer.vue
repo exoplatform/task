@@ -330,10 +330,8 @@
           this.$root.$emit('task-added', this.task);
           this.showEditor=false;
           this.enableAutosave=false
-          this.task={}
           this.$refs.addTaskDrawer.close();
         });
-        this.task={}
       },
       autoSaveDescription() {
         if(this.task.id!=null && this.enableAutosave){
