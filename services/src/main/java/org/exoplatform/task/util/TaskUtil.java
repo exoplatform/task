@@ -21,12 +21,15 @@ import java.text.*;
 import java.util.*;
 
 import org.exoplatform.task.dto.CommentDto;
+import org.exoplatform.task.dto.LabelDto;
 import org.exoplatform.task.dto.StatusDto;
 import org.exoplatform.task.dto.TaskDto;
 import org.exoplatform.task.legacy.service.ProjectService;
 import org.exoplatform.task.legacy.service.StatusService;
 import org.exoplatform.task.legacy.service.TaskService;
 import org.exoplatform.task.legacy.service.UserService;
+import org.exoplatform.task.rest.model.TaskEntity;
+import org.exoplatform.task.service.LabelService;
 import org.gatein.common.text.EntityEncoder;
 
 import org.exoplatform.commons.utils.HTMLEntityEncoder;
@@ -297,6 +300,21 @@ public final class TaskUtil {
         List<Task> list = maps.get(key);
         if(list == null) {
           list = new LinkedList<Task>();
+          maps.put(key, list);
+        }
+        list.add(task);
+      }
+    }
+    return maps;
+  }
+
+  public static Map<GroupKey, List<TaskEntity>> groupTasks(List<TaskEntity> tasks, String groupBy, String username, TimeZone userTimezone, LabelService labelService, UserService userService) throws EntityNotFoundException {
+    Map<GroupKey, List<TaskEntity>> maps = new TreeMap<GroupKey, List<TaskEntity>>();
+    for(TaskEntity task : tasks) {
+      for (GroupKey key : getGroupName(task, groupBy, username, userTimezone, labelService, userService)) {
+        List<TaskEntity> list = maps.get(key);
+        if(list == null) {
+          list = new LinkedList<TaskEntity>();
           maps.put(key, list);
         }
         list.add(task);
@@ -734,6 +752,64 @@ public final class TaskUtil {
         GroupKey[] keys = new GroupKey[labels.size()];
         for (int i = 0; i < keys.length; i++) {
           Label label = labels.get(i);
+          keys[i] = new GroupKey(label.getName(), label, (int)label.getId());
+        }
+        return keys;
+      }
+    }
+    return new GroupKey[0];
+  }
+
+  private static GroupKey[] getGroupName(TaskEntity task, String groupBy, String username, TimeZone userTimezone, LabelService labelService, UserService userService) throws EntityNotFoundException {
+    if("project".equalsIgnoreCase(groupBy)) {
+      Status s = task.getStatus();
+      if(s == null) {
+        return new GroupKey[] {new GroupKey("No project", null, Integer.MAX_VALUE)};
+      } else {
+        return new GroupKey[] {new GroupKey(s.getProject().getName(), s.getProject(), (int)s.getProject().getId())};
+      }
+    } else if("status".equalsIgnoreCase(groupBy)) {
+      Status s = task.getStatus();
+      if(s == null) {
+        return new GroupKey[] {new GroupKey("To do", null, Integer.MIN_VALUE)};
+      }
+    } else if ("assignee".equalsIgnoreCase(groupBy)) {
+      User user = task.getAssignee();
+
+      return ( user.getUsername() != "guest" && user.getUsername() != null) ? new GroupKey[]{new GroupKey(user.getUsername(), user, user.getUsername().hashCode())} : new GroupKey[]{new GroupKey("Unassigned", null, Integer.MAX_VALUE)};
+
+    } else if ("dueDate".equalsIgnoreCase(groupBy)) {
+      Date dueDate = task.getDueDate();
+      Calendar calendar = null;
+      if (dueDate != null) {
+        calendar = Calendar.getInstance(userTimezone);
+        calendar.setTime(dueDate);
+        if (DateUtil.isOverdue(calendar)) {
+          calendar.setTimeInMillis(System.currentTimeMillis());
+          calendar.add(Calendar.DATE, -1);
+        } else if (!DateUtil.isToday(calendar) && !DateUtil.isTomorrow(calendar)) {
+          //. is upcoming task
+          calendar.setTimeInMillis(System.currentTimeMillis());
+          calendar.add(Calendar.DATE, 7);
+        }
+        calendar.set(Calendar.HOUR, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        //
+        dueDate = calendar.getTime();
+      }
+      return new GroupKey[] {new GroupKey(DateUtil.getDueDateLabel(calendar), dueDate, calendar == null ? Integer.MAX_VALUE : (int)calendar.getTimeInMillis())};
+
+    } else if (TaskUtil.LABEL.equalsIgnoreCase(groupBy)) {
+      List<LabelDto> labels = labelService.findLabelsByTask(task.getId(), username,0,-1);
+      if (labels.isEmpty()) {
+        return new GroupKey[] {new GroupKey("No Label", null, Integer.MAX_VALUE)};
+      } else {
+        GroupKey[] keys = new GroupKey[labels.size()];
+        for (int i = 0; i < keys.length; i++) {
+          LabelDto label = labels.get(i);
           keys[i] = new GroupKey(label.getName(), label, (int)label.getId());
         }
         return keys;

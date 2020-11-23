@@ -11,13 +11,27 @@
       @changed="changeSelectedTabItem()"
       @filter-task-dashboard="filterTaskDashboard"
       @reset-filter-task-dashboard="resetFiltertaskDashboard"/>
-    <v-tabs-items>
+    <div v-if="filterActive">
+      <div v-for="(project,i) in tasksFilter.projectName" :key="project.name">
+        <span class="nameGroup">{{ $t(getGroupName(project.name)) }}</span>
+        <span class="amount-item">({{ tasksFilter.tasks[i].length }})</span>
+        <tasks-cards-list
+          v-show="isTasksTabChanged"
+          :tasks="tasksFilter.tasks[i]"/>
+        <tasks-list
+          v-show="!isTasksTabChanged"
+          :tasks="tasksFilter.tasks[i]"/>
+      </div>
+    </div>
+    <v-tabs-items v-show="!filterActive">
       <v-tab-item v-show="isTasksTabChanged" eager>
         <tasks-cards-list
+          v-show="isTasksTabChanged"
           :tasks="tasks"/>
       </v-tab-item>
       <v-tab-item v-show="!isTasksTabChanged" eager>
         <tasks-list
+          v-show="isTasksTabChanged"
           :tasks="tasks"/>
       </v-tab-item>
     </v-tabs-items>
@@ -53,6 +67,8 @@
         endTypingKeywordTimeout: 50,
         startTypingKeywordTimeout: 0,
         showCompleteTasks: false,
+        tasksFilter:null,
+        filterActive:false
       }
     },
     computed: {
@@ -83,14 +99,20 @@
       this.$root.$on('task-added', task => {
        this.searchTasks();
       });
+      this.$root.$on('filter-task-groupBy',tasks =>{
+        this.tasksFilter = tasks;
+        this.filterActive=true;
+      });
     },
     methods: {
       resetFiltertaskDashboard(){
         this.searchTasks();
+        this.filterActive=false;
       },
       filterTaskDashboard(e){
         this.tasks=e.tasks;
         this.showCompleteTasks=e.showCompleteTasks;
+        this.filterActive=false;
       },
       changeSelectedTabItem() {
         this.isTasksTabChanged = !this.isTasksTabChanged;
@@ -131,6 +153,30 @@
           }
         }, this.endTypingKeywordTimeout);
       },
+      getGroupName(name){
+        if (name==='No project'){
+          return 'label.noProject'
+        }
+        else if (name==='No Label'){
+          return 'label.noLabel'
+        }
+        else if (name==='No due date'){
+          return 'label.noDueDate'
+        }
+        else if (name==='Overdue'){
+          return 'label.overdue'
+        }
+        else if (name==='Today'){
+          return 'label.today'
+        }
+        else if (name==='Tomorrow'){
+          return 'label.tomorrow'
+        }
+        else if (name==='Upcoming'){
+          return 'label.upcoming'
+        }
+        return name;
+      }
     }
   }
 </script>

@@ -87,6 +87,24 @@ public class DateUtil {
     return bundle.getString("label.upcoming");
   }
 
+  public static String getDueDateLabel(Calendar calendar) {
+    if (calendar == null) {
+      return "No due date";
+    }
+    if (isOverdue(calendar)) {
+      return "Overdue";
+    }
+
+    if (isToday(calendar)) {
+      return "Today";
+    }
+    if (isTomorrow(calendar)) {
+      return "Tomorrow";
+    }
+
+    return "Upcoming";
+  }
+
   public static String formatDueDate(Calendar calendar, ResourceBundle bundle) {
     if (calendar == null) {
       return "";

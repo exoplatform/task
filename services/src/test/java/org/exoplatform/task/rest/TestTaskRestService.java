@@ -729,6 +729,10 @@ public class TestTaskRestService {
     assertNotNull(tasks.getTasks());
     assertEquals(1, tasks.getTasksNumber());
 
+    Response response1 = taskRestService.filterTasks(null, -2, "exo","", null, null, false,null,null,"project","priority",null,1,"",null,"",0,0,false,false);
+
+    assertEquals(Response.Status.OK.getStatusCode(), response1.getStatus());
+
 
   }
 

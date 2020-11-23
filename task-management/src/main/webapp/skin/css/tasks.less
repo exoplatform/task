@@ -205,7 +205,25 @@
     .tasksMenuParent {
       margin-bottom: 10px;
     }
+    .VuetifyApp .v-sheet.v-card:not(.v-sheet--outlined) {
+      box-shadow: none!important;
+    }
+    .taskFilter.v-card.v-sheet.theme--light{
+      box-shadow: none!important;
+      header.v-sheet.theme--light.v-toolbar {
+        box-shadow: none!important;
+      }
+    }
     .projectAndTasksContainer {
+      .nameGroup {
+        font-size: 18px;
+        font-weight: normal;
+        margin-left: 25px;
+      }
+      span.amount-item{
+        font-size: 18px;
+        font-weight: normal;
+      }
       .tasksToolbar {
         .addNewProjectButton {
           .uiIconPlus {
@@ -272,6 +290,14 @@
         }
       }
       .filterTasksDrawer {
+        .filterGroupTasksDrawer,.filterSortTasksDrawer{
+          form.mt-4{
+            margin-left: 9px;
+          }
+          .v-input--radio-group--column{
+            margin-left: 9px;
+          }
+        }
         hr.my-0.v-divider.theme--light{
           margin-left: -20px;
           padding-left: 20px;

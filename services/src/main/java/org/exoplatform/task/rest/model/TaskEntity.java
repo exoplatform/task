@@ -18,6 +18,7 @@
 package org.exoplatform.task.rest.model;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 import lombok.Data;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.task.domain.Label;
+import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.dto.LabelDto;
 import org.exoplatform.task.dto.TaskDto;
 import org.exoplatform.task.model.CommentModel;
@@ -33,6 +35,9 @@ import org.exoplatform.task.util.UserUtil;
 
 @Data
 public class TaskEntity {
+  long Id;
+  Date dueDate;
+  private Status status;
   private TaskDto task;
   private boolean readOnly;
   private boolean isWatched;
@@ -52,6 +57,9 @@ public class TaskEntity {
   }
 
   public TaskEntity(TaskDto task, long commentCount) {
+    this.Id=task.getId();
+    this.dueDate=task.getDueDate();
+    this.status=task.getStatus();
     this.task = task;
     this.commentCount = commentCount;
     this.assignee = UserUtil.getUser(task.getAssignee());
