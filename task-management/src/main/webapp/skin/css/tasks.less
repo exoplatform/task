@@ -1647,36 +1647,21 @@
     }
   }
   .taskTitleAndMark {
-    .v-textarea {
-      .v-input__control {
-        .v-input__slot {
-          &:before {
-            display: none;
-          }
-          &:after {
-            display: none!important;
-          }
-          #task-name {
-            font-size: 16px;
-          }
-        }
-      }
-    }
-    #task-name {
+    .task-name {
       border: none!important;
-      box-shadow: none!important;
-      padding: 3px 0px!important;
+      padding: 3px 6px!important;
+      width: 100%!important;
       &::placeholder {
         font-size: 16px!important;
       }
     }
-    #task-name::-moz-placeholder {
+    .task-name::-moz-placeholder {
       font-size: 16px!important;
     } /* Firefox 19+ */
-    #task-name:-moz-placeholder {
+    .task-name:-moz-placeholder {
       font-size: 16px!important;
     }
-    #task-name:-ms-input-placeholder {
+    .task-name:-ms-input-placeholder {
       font-size: 16px!important;
     } /* IE */
     .markAsCompletedBtn {
@@ -1716,6 +1701,8 @@
     .taskAssignItem {
       .taskAssignBtn {
         .uiAddAssignIcon {
+          margin-top: -4px !important;
+          padding-right: 6px;
           &:before {
             content: "\e6c4";
             color: @greyColorLighten1Default;
@@ -1727,6 +1714,20 @@
     .identitySuggester {
       margin: 8px 12px !important;
       padding: 5px!important;
+      max-height: 80px;
+      overflow-y: scroll;
+      &::-webkit-scrollbar {
+        width: 5px;
+      }
+      &::-webkit-scrollbar-track {
+        background: @primaryBackground;
+      }
+      &::-webkit-scrollbar-thumb {
+        background: @greyColorLighten1;
+      }
+      &::-webkit-scrollbar-thumb:hover {
+        background: @borderColorLight;
+      }
       .v-input__control {
         .v-input__slot {
           height: auto!important;
@@ -1734,7 +1735,7 @@
             .v-select__selections {
               padding-left: 0!important;
               .identitySuggesterItem {
-                margin-bottom: 6px!important;
+                margin-bottom: 3px!important;
               }
             }
           }
@@ -1760,6 +1761,7 @@
           transform: translateY(-16px) scale(0.75)!important;
         }
         input {
+          cursor: pointer;
           &::placeholder {
             font-size: 16px!important;
             font-style: italic!important;

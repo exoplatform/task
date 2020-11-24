@@ -22,15 +22,16 @@
           @click="markAsCompleted()">
           <v-icon class="markAsCompletedBtn">mdi-checkbox-marked-circle</v-icon>
         </v-btn>
-        <v-textarea
-          id="task-name"
+        <input
+          ref="autoFocusInput1"
           v-model="task.title"
           :class="{taskCompleted: task.completed}"
           :placeholder="$t('label.tapTask.name')"
-          auto-grow
-          rows="1"
+          type="text"
           class="pl-0 pt-0 task-name"
-          @change="updateTask"/>
+          required
+          autofocus
+          @change="resetCustomValidity">
       </div>
       <div class="taskProjectName">
         <task-projects
@@ -45,6 +46,8 @@
       <div class="taskAssignement pb-3">
         <task-assignment
           :task="task"
+          @updateTaskAssignement="updateTaskAssignee($event)"
+          @updateTaskCoworker="updateTaskCoworker($event)"
           @assignmentsOpened="closePriority(); closeStatus(); closeProjectsList();closeDueDateCalendar();closePlanDatesCalendar(); closeLabelsList()"/>
       </div>
       <v-divider class="my-0" />
@@ -69,11 +72,6 @@
       </div>
       <v-divider class="my-0" />
       <div class="taskDescription py-4">
-        <!--<v-label
-          class="pb-3"
-          for="description">
-          {{ $t('label.description') }}
-        </v-label>-->
         <exo-task-editor
           ref="richEditor"
           v-model="task.description"
@@ -161,6 +159,7 @@
           {{ $t('popup.cancel') }}
         </v-btn>
         <v-btn
+          :disabled="disableSaveButton"
           class="btn btn-primary"
           @click="addTask">
           {{ $t('label.save') }}
@@ -187,23 +186,26 @@
         reset: false,
         disabledComment: true,
         dates: [],
-        showEditor : true,
-        showSubEditor : false,
-        commentPlaceholder : this.$t('comment.message.addYourComment'),
-        descriptionPlaceholder : this.$t('editinline.taskDescription.empty'),
+        showEditor: true,
+        showSubEditor: false,
+        commentPlaceholder: this.$t('comment.message.addYourComment'),
+        descriptionPlaceholder: this.$t('editinline.taskDescription.empty'),
         chips: [],
         autoSaveDelay: 1000,
         saveDescription: '',
-        logs:[],
-        comments:[],
-        subEditorIsOpen : false,
+        logs: [],
+        comments: [],
+        subEditorIsOpen: false,
         taskPriority: 'NORMAL',
-        labelsToAdd: []
+        labelsToAdd: [],
+        assignee: '',
+        taskCoworkers: [],
+        saving: false
       }
     },
     computed: {
       taskLink() {
-        if(this.task==null||this.task.id==null){
+        if (this.task == null || this.task.id == null) {
           return ""
         }
         return `${eXo.env.portal.context}/${eXo.env.portal.portalName}/tasks/taskDetail/${this.task.id}`;
@@ -211,12 +213,21 @@
       currentUserAvatar() {
         return `/portal/rest/v1/social/users/${eXo.env.portal.userName}/avatar`;
       },
-      dateRangeAlerte () {
+      dateRangeAlerte() {
         return this.dates[1] > this.date
-      }
+      },
+      taskTitle() {
+        return this.task && this.task.title;
+      },
+      taskTitleValid() {
+        return this.taskTitle && this.taskTitle.length >= 5 && this.taskTitle.length < 1024;
+      },
+      disableSaveButton() {
+        return this.saving || !this.taskTitleValid;
+      },
     },
     watch: {
-      'task.description': function(newValue, oldValue) {
+      'task.description': function (newValue, oldValue) {
         if (newValue !== oldValue) {
           this.autoSaveDescription();
         }
@@ -231,14 +242,15 @@
     created() {
       this.$root.$on('open-task-drawer', task => {
         window.setTimeout(() => {
-          document.dispatchEvent(new CustomEvent('loadTaskPriority',{detail: task}));
-          document.dispatchEvent(new CustomEvent('loadProjectStatus', {detail: task}));
-          document.dispatchEvent(new CustomEvent('loadDueDate', {detail: task}));
-          document.dispatchEvent(new CustomEvent('loadProjectName', {detail: task}));
-          document.dispatchEvent(new CustomEvent('loadPlanDates', {detail: task}));
-          document.dispatchEvent(new CustomEvent('loadTaskLabels', {detail: task}));
-          document.dispatchEvent(new CustomEvent('loadAssignee', {detail: task}));},
-        200)
+            document.dispatchEvent(new CustomEvent('loadTaskPriority', {detail: task}));
+            document.dispatchEvent(new CustomEvent('loadProjectStatus', {detail: task}));
+            document.dispatchEvent(new CustomEvent('loadDueDate', {detail: task}));
+            document.dispatchEvent(new CustomEvent('loadProjectName', {detail: task}));
+            document.dispatchEvent(new CustomEvent('loadPlanDates', {detail: task}));
+            document.dispatchEvent(new CustomEvent('loadTaskLabels', {detail: task}));
+            document.dispatchEvent(new CustomEvent('loadAssignee', {detail: task}));
+          },
+          200)
       });
       document.addEventListener('priorityChanged', event => {
         if (event && event.detail) {
@@ -253,8 +265,18 @@
           this.labelsToAdd.push(label);
         }
       });
+      document.addEventListener('taskAssigneeChanged', event => {
+        if (event && event.detail) {
+          this.assignee = event.detail;
+        }
+      });
+      document.addEventListener('taskCoworkerChanged', event => {
+        if (event && event.detail) {
+          this.taskCoworkers = event.detail;
+        }
+      });
     },
-    destroyed: function() {
+    destroyed: function () {
       document.removeEventListener('keyup', this.escapeKeyListener);
     },
     methods: {
@@ -284,7 +306,7 @@
         this.subEditorIsOpen = true;
         this.editorData = null;
       },
-      OnUpdateEditorStatus : function(val){
+      OnUpdateEditorStatus: function (val) {
         this.showEditor = !val;
         if (val === false) {
           this.subEditorIsOpen = false;
@@ -321,7 +343,10 @@
         }
       },
       addTask() {
+        this.resetCustomValidity();
         this.task.priority = this.priority;
+        this.task.coworker = this.taskCoworkers;
+        this.task.assignee = this.assignee;
         addTask(this.task).then(task => {
           this.labelsToAdd.forEach(item => {
             addTaskToLabel(task.id, item);
@@ -330,8 +355,42 @@
           this.$root.$emit('task-added', this.task);
           this.showEditor=false;
           this.enableAutosave=false
+          this.task={}
           this.$refs.addTaskDrawer.close();
         });
+        this.task={}
+      },
+      updateTaskAssignee(value) {
+        if (this.task.id !== null) {
+          if(value) {
+            this.task.assignee = value;
+          } else {
+            this.task.assignee = ''
+          }
+          this.updateTask();
+        } else {
+          if(value) {
+            this.assignee = value;
+          } else {
+            this.assignee = ''
+          }
+        }
+      },
+      updateTaskCoworker(value) {
+        if( this.task.id !== null) {
+          if (value && value.length) {
+            this.task.coworker = value
+          } else {
+            this.task.coworker = []
+          }
+          this.updateTask();
+        } else {
+          if (value && value.length) {
+            this.taskCoworkers = value
+          } else {
+            this.taskCoworkers = []
+          }
+        }
       },
       autoSaveDescription() {
         if(this.task.id!=null && this.enableAutosave){
@@ -380,6 +439,11 @@
         this.enableAutosave=false;
         this.$root.$emit('task-drawer-closed', this.task)
         this.task={}
+      },
+      resetCustomValidity() {
+        if (this.$refs.autoFocusInput1) {
+          this.$refs.autoFocusInput1.setCustomValidity('');
+        }
       },
     }
   }
