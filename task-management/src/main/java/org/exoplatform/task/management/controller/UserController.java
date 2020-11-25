@@ -79,7 +79,7 @@ public class UserController extends AbstractController {
     public Response findUser(String query, Long projectId) throws Exception { // NOSONAR
       ListAccess<org.exoplatform.task.model.User> list = userService.findUserByName(query);
       JSONArray array = new JSONArray();
-      Space space = projectService.getProject(projectId) != null ? sService.getSpaceByPrettyName(projectService.getProject(projectId).getName()) : null;
+      Space space = projectId != 0 && projectService.getProject(projectId) != null ? sService.getSpaceByPrettyName(projectService.getProject(projectId).getName()) : null;
       Space spaceProject = getSpaceProject(projectId);
       for(org.exoplatform.task.model.User u : list.load(0, UserUtil.SEARCH_LIMIT)) {
         JSONObject json = new JSONObject();
@@ -99,7 +99,7 @@ public class UserController extends AbstractController {
     public Response findUsersToMention(String query, Long projectId) throws Exception { // NOSONAR
       ListAccess<org.exoplatform.task.model.User> list = userService.findUserByName(query);
       JSONArray array = new JSONArray();
-      Space space = projectService.getProject(projectId) != null ? sService.getSpaceByPrettyName(projectService.getProject(projectId).getName()) : null;
+      Space space = projectId != 0 && projectService.getProject(projectId) != null ? sService.getSpaceByPrettyName(projectService.getProject(projectId).getName()) : null;
       Space spaceProject = getSpaceProject(projectId);
       for(org.exoplatform.task.model.User u : list.load(0, UserUtil.SEARCH_LIMIT)) {
         JSONObject json = new JSONObject();
