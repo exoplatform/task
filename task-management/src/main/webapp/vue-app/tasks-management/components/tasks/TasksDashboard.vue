@@ -23,15 +23,13 @@
           :tasks="tasksFilter.tasks[i]"/>
       </div>
     </div>
-    <v-tabs-items v-show="!filterActive">
+    <v-tabs-items v-show="!filterActive" :key="id">
       <v-tab-item v-show="isTasksTabChanged" eager>
         <tasks-cards-list
-          v-show="isTasksTabChanged"
           :tasks="tasks"/>
       </v-tab-item>
       <v-tab-item v-show="!isTasksTabChanged" eager>
         <tasks-list
-          v-show="isTasksTabChanged"
           :tasks="tasks"/>
       </v-tab-item>
     </v-tabs-items>

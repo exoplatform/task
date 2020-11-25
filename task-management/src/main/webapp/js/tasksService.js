@@ -13,8 +13,8 @@ export function getMyTasksList(query, offset, limit) {
     });
 }
 
-export function filterTasksList(tasks,groupBy, sortBy, offset, limit) {
-    return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/tasks/filter?projectId=-2&query=${tasks.query || ''}&dueDate=${tasks.dueDate || ''}&priority=${tasks.priority || ''}&showCompleted=${tasks.showCompleteTasks || ''}&assignee=${tasks.assignee || ''}&groupBy=${groupBy || ''}&orderBy=${sortBy || ''}&offset=${offset || 0}&limit=${limit|| 0}`, {
+export function filterTasksList(tasks,groupBy, sortBy, filterLabelIds, offset, limit) {
+    return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/tasks/filter?projectId=-2&query=${tasks.query || ''}&dueDate=${tasks.dueDate || ''}&priority=${tasks.priority || ''}&showCompleted=${tasks.showCompleteTasks || ''}&assignee=${tasks.assignee || ''}&groupBy=${groupBy || ''}&orderBy=${sortBy || ''}&filterLabelIds=${filterLabelIds || ''}&offset=${offset || 0}&limit=${limit|| 0}`, {
         method: 'GET',
         credentials: 'include',
     }).then(resp => {

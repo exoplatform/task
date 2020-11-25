@@ -105,6 +105,13 @@
                     v-model="sortBy"/>
                 </v-card>
               </v-tab-item>
+              <v-tab-item>
+                <v-card >
+                  <tasks-labels-drawer
+                    ref="filterLabelsTasksDrawer"
+                    :labels="labels"/>
+                </v-card>
+              </v-tab-item>
             </v-tabs-items>
           </v-card>
         </template>
@@ -169,6 +176,7 @@
         items: [
           { tab: 'Filter'},
           { tab: 'Group and sort' },
+          { tab: 'Label' },
         ],
         dueDateSelected:'',
         prioritySelected:'',
@@ -182,6 +190,7 @@
           {name: ""},{name: "NONE"},{name: "LOW"},{name: "NORMAL"},{name: "HIGH"}
         ],
         showCompleteTasks:false,
+        labels:[],
       }
     },
     computed: {
@@ -191,6 +200,11 @@
           noDataLabel: this.$t('label.noDataLabel'),
         };
       }
+    },
+    created() {
+      this.$root.$on('filter-task-labels',labels =>{
+        this.labels = labels;
+      });
     },
     methods: {
       open() {
@@ -204,6 +218,7 @@
         this.prioritySelected='';
         this.groupBy='none';
         this.sortBy='';
+        this.labels='';
         this.showCompleteTasks=false;
         this.$root.$emit('reset-filter-task-group-sort',this.groupBy);
       },
@@ -214,6 +229,7 @@
         this.prioritySelected='';
         this.groupBy='';
         this.sortBy='';
+        this.labels='';
         this.showCompleteTasks=false;
         this.$root.$emit('reset-filter-task-group-sort',this.groupBy);
         this.$emit('reset-filter-task');
@@ -232,10 +248,18 @@
           groupBy: this.groupBy,
           sortBy: this.sortBy,
         };
+        const filterLabels = {
+          labels: [],
+        };
+        if(this.labels && this.labels!== null && this.labels !== ''){
+          this.labels.forEach(user => {
+            filterLabels.labels.push(user.id)
+          })
+        }
         if (this.assignee !== null && this.assignee !== undefined && this.assignee !== ''){
           tasks.assignee = this.assignee.remoteId;
         }
-        return this.$tasksService.filterTasksList(tasks,filterGroupSort.groupBy,filterGroupSort.sortBy).then((tasks) => {
+        return this.$tasksService.filterTasksList(tasks,filterGroupSort.groupBy,filterGroupSort.sortBy,filterLabels.labels).then((tasks) => {
           if (tasks.projectName){
             this.$root.$emit('filter-task-groupBy',tasks);
           }else {

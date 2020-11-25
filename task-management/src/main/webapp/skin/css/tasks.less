@@ -214,6 +214,27 @@
         box-shadow: none!important;
       }
     }
+    .filterLabelsTasksDrawer{
+      margin-top: 25px;
+      .inputTaskLabel{
+        box-shadow: none!important;
+        border: none!important;
+        .v-input__control {
+          > .v-input__slot {
+            border: Solid 1px var(--allPagesInputFocusBorder, #a6bad6)!important;
+            box-shadow: none!important;
+            .v-select__slot {
+              label {
+                color: @greyColorLighten1;
+              }
+            }
+          }
+          .v-input__append-inner {
+            display: none;
+          }
+        }
+      }
+    }
     .projectAndTasksContainer {
       .nameGroup {
         font-size: 18px;
