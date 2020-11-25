@@ -10,7 +10,7 @@
             :key="index"
             class="py-0 px-4 projectTaskItem">
             <tasks-view-board-column
-              :status="status"        
+              :status="status"
               :tasks-list="getTasksByStatus(tasksList,status.name)"
               @updateTaskCompleted="updateTaskCompleted"
               @updateTaskStatus="updateTaskStatus" />
@@ -31,6 +31,10 @@ import {updateTask} from '../../../taskDrawer/taskDrawerApi';
       tasksList: {
         type: Array,
         default: () => []
+      },
+      projectId: {
+        type: String,
+        default: ''
       }
     },
     methods: {

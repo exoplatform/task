@@ -560,6 +560,8 @@
                     overflow: hidden;
                     text-overflow: ellipsis;
                     max-width: 75%;
+                    width: 75%;
+                    cursor: pointer;
                   }
                 }
                 .noProjectColor {
@@ -571,7 +573,6 @@
                 .taskItemInfo {
                   .taskItemDescription {
                     min-height: 80px;
-                    cursor: pointer;
                     display: -webkit-box;
                     -webkit-line-clamp: 4;
                     -webkit-box-orient: vertical;
@@ -1633,6 +1634,40 @@
 
 /*----------- Task Drawer CSS ---------------*/
 .taskDrawer {
+  .drawerHeader {
+    .drawerTitle {
+      justify-content: space-between!important;
+      > * {
+        flex: unset!important;
+      }
+      > span {
+        margin-top: 6px;
+      }
+      #taskActionMenu {
+        .uiThreeDotsIcon {
+          cursor: pointer;
+          &:before {
+            content: "\e961";
+            color: @greyColorLighten1Default;
+            font-size: 24px;
+          }
+        }
+        .taskActionMenu {
+          right: 60px;
+          left: auto!important;
+          top: 45px!important;
+          background: white;
+          .v-list-item {
+            min-height: 40px!important;
+            cursor: pointer;
+          }
+        }
+      }
+    }
+    .drawerIcons {
+      margin-left: 2px!important;
+    }
+  }
   .taskProjectName {
     .inputTaskProjectName {
       box-shadow: none!important;
