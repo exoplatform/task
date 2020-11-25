@@ -74,7 +74,7 @@
             (projectStatuses) => {
               const status = projectStatuses.find(s => s.name === this.taskStatus);
               this.task.status = status;
-              this.$emit('updateTaskStatus',this.task);
+              this.$emit('updateTaskStatus',status);
             });
         }
       },

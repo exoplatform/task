@@ -1651,8 +1651,10 @@
       border: none!important;
       padding: 3px 6px!important;
       width: 100%!important;
+      font-size: 17px;
+      margin-top: -2px;
       &::placeholder {
-        font-size: 16px!important;
+        font-size: 17px!important;
       }
     }
     .task-name::-moz-placeholder {
@@ -1708,6 +1710,25 @@
             color: @greyColorLighten1Default;
             font-size: 15px;
           }
+        }
+      }
+    }
+    .assignTaskMenu {
+      .uiAssignToMeIcon {
+        margin-top: -4px;
+        &:before {
+          content: "\e6cc";
+          padding-right: 6px;
+          content: "\e6cc";
+          font-size: 16px;
+        }
+      }
+      .uiAddMeCoworkerIcon {
+        margin-top: -4px;
+        &:before {
+          content: "\e6cb";
+          font-size: 18px;
+          padding-right: 8px;
         }
       }
     }

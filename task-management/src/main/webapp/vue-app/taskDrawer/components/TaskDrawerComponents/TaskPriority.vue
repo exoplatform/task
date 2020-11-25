@@ -98,8 +98,7 @@
       },
       updateTaskPriority() {
         this.priorityDefaultColor = this.getTaskPriorityColor(this.priority);
-        this.$emit('updateTaskPriority');
-        document.dispatchEvent(new CustomEvent('priorityChanged', {detail: this.priority}));
+        this.$emit('updateTaskPriority',this.priority);
       },
     }
   }

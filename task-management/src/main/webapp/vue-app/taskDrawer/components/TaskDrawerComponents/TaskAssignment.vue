@@ -35,8 +35,12 @@
         </div>
       </template>
       <v-card class="pb-4">
-        <v-card-text class="pb-0">
-          {{ $t('label.assignTo') }} :
+        <v-card-text class="assignTaskMenu pb-0 d-flex justify-space-between">
+          <span>{{ $t('label.assignTo') }} :</span>
+          <a class="ml-4" @click="assignToMe()">
+            <i class="uiIcon uiAssignToMeIcon"></i>
+            <span>{{ $t('label.addMe') }}</span>
+          </a>
         </v-card-text>
         <exo-identity-suggester
           ref="autoFocusInput3"
@@ -48,10 +52,13 @@
           include-users
           @input="assigneeValueChanged($event)"
           @removeValue="removeAssignee()"/>
-        <a class="ml-4" @click="assignToMe()">{{ $t('label.assignToMe') }}</a>
-        <v-divider class="mt-2"/>
-        <v-card-text class="pb-0">
-          {{ $t('label.coworkers') }} :
+        <v-divider class="mt-4 mb-4"/>
+        <v-card-text class="assignTaskMenu pt-0 pb-0 d-flex justify-space-between">
+          <span>{{ $t('label.coworkers') }} :</span>
+          <a class="ml-4" @click="setMeAsCoworker()">
+            <i class="uiIcon uiAddMeCoworkerIcon"></i>
+            <span>{{ $t('label.addMe') }}</span>
+          </a>
         </v-card-text>
         <exo-identity-suggester
           ref="autoFocusInput3"
@@ -64,7 +71,7 @@
           multiple
           @input="coworkerValueChanged($event)"
           @removeValue="removeCoworker($event)"/>
-        <a class="ml-4" @click="setMeAsCoworker()">{{ $t('label.addMeAsCoworker') }}</a>
+
       </v-card>
     </v-menu>
   </div>

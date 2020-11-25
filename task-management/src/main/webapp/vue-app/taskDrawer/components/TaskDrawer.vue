@@ -19,7 +19,7 @@
           class="ml-n2"
           icon
           dark
-          @click="markAsCompleted()">
+          @click="task.completed =!task.completed">
           <v-icon class="markAsCompletedBtn">mdi-checkbox-marked-circle</v-icon>
         </v-btn>
         <input
@@ -62,12 +62,12 @@
         <div class="taskStatusAndPriority">
           <task-priority
             :task="task"
-            @updateTaskPriority="updateTask(task.id)"
+            @updateTaskPriority="task.priority = $event"
             @PriorityListOpened="closeStatus(); closeProjectsList(); closeLabelsList();closeDueDateCalendar(); closePlanDatesCalendar();closeAssignements()"/>
           <task-status
             :task="task"
             @statusListOpened="closePriority(); closeProjectsList();closeLabelsList();closeDueDateCalendar();closePlanDatesCalendar();closeAssignements()"
-            @updateTaskStatus="updateTaskStatus(task)"/>
+            @updateTaskStatus="task.status = $event"/>
         </div>
       </div>
       <v-divider class="my-0" />
@@ -89,7 +89,7 @@
       <v-flex
         v-if="task.id!=null"
         xs12
-        class="pt-2 px-4">
+        class="pt-2">
         <v-tabs color="#578DC9">
           <v-tab class="text-capitalize">{{ $t('label.comments') }}</v-tab>
           <v-tab class="text-capitalize">{{ $t('label.changes') }}</v-tab>
@@ -98,7 +98,7 @@
               <v-list-item
                 v-for="(item, i) in comments"
                 :key="i"
-                class="pr-0">
+                class="pr-0 pl-0">
                 <task-comments
                   :task="task"
                   :comment="item"
@@ -163,6 +163,22 @@
           class="btn btn-primary"
           @click="addTask">
           {{ $t('label.save') }}
+        </v-btn>
+      </div>
+    </template>
+    <template v-else slot="footer">
+      <div class="d-flex">
+        <v-spacer />
+        <v-btn
+          class="btn mr-2"
+          @click="cancel">
+          {{ $t('popup.cancel') }}
+        </v-btn>
+        <v-btn
+          :disabled="disableSaveButton"
+          class="btn btn-primary"
+          @click="updateTask">
+          {{ $t('label.edit') }}
         </v-btn>
       </div>
     </template>
@@ -252,13 +268,7 @@
           },
           200)
       });
-      document.addEventListener('priorityChanged', event => {
-        if (event && event.detail) {
-          const priority = event.detail;
-          this.priority = priority;
-          this.task.priority = this.priority;
-        }
-      });
+
       document.addEventListener('labelListChanged', event => {
         if (event && event.detail) {
           const label = event.detail;
@@ -326,25 +336,19 @@
       getUserAvatar(username) {
         return `/rest/v1/social/users/${username}/avatar`;
       },
-      markAsCompleted(){
-        this.task.completed = !this.task.completed;
-        this.updateTask()
-      },
-      updateTaskStatus(task){
-        this.task.status = task.status;
-        this.updateTask()
-      },
+
       updateTask() {
         if(this.task.id!=null){
+          this.resetCustomValidity();
           updateTask(this.task.id,this.task);
           window.setTimeout(() => {
              this.$root.$emit('task-added', this.task)
           }, 200);
         }
+        this.$refs.addTaskDrawer.close();
       },
       addTask() {
         this.resetCustomValidity();
-        this.task.priority = this.priority;
         this.task.coworker = this.taskCoworkers;
         this.task.assignee = this.assignee;
         addTask(this.task).then(task => {
@@ -355,10 +359,8 @@
           this.$root.$emit('task-added', this.task);
           this.showEditor=false;
           this.enableAutosave=false
-          this.task={}
           this.$refs.addTaskDrawer.close();
         });
-        this.task={}
       },
       updateTaskAssignee(value) {
         if (this.task.id !== null) {
@@ -367,7 +369,6 @@
           } else {
             this.task.assignee = ''
           }
-          this.updateTask();
         } else {
           if(value) {
             this.assignee = value;
@@ -383,7 +384,6 @@
           } else {
             this.task.coworker = []
           }
-          this.updateTask();
         } else {
           if (value && value.length) {
             this.taskCoworkers = value
