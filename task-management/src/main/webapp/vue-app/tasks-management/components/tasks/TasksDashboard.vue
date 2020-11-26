@@ -13,8 +13,22 @@
       @reset-filter-task-dashboard="resetFiltertaskDashboard"/>
     <div v-if="filterActive">
       <div v-for="(project,i) in tasksFilter.projectName" :key="project.name">
-        <span class="nameGroup">{{ $t(getGroupName(project.name)) }}</span>
-        <span class="amount-item">({{ tasksFilter.tasks[i].length }})</span>
+        <div v-if=" project.value && project.value.displayName" class="d-flex align-center assigneeFilter">
+          <exo-user-avatar
+            :username="project.value.username"
+            :fullname="project.value.displayName"
+            :avatar-url="project.value.avatar"
+            :title="project.value.displayName"
+            :size="26"
+            class="pr-2"/>
+          <span class="amount-item">({{ tasksFilter.tasks[i].length }})</span>
+
+        </div>
+        <div v-else>
+          <span class="nameGroup">{{ $t(getGroupName(project.name)) }}</span>
+          <span class="amount-item">({{ tasksFilter.tasks[i].length }})</span>
+        </div>
+
         <tasks-cards-list
           v-show="isTasksTabChanged"
           :tasks="tasksFilter.tasks[i]"/>

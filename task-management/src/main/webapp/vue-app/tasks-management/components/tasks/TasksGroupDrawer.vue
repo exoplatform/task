@@ -24,6 +24,9 @@
       <v-radio
         :label="$t('label.task.dueDate')"
         value="dueDate"/>
+      <v-radio
+        :label="$t('label.task.assignee')"
+        value="assignee"/>
     </v-radio-group>
 
 

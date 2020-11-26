@@ -219,6 +219,9 @@
       .inputTaskLabel{
         box-shadow: none!important;
         border: none!important;
+        .v-select__selections {
+          max-width: 100% !important;
+        }
         .v-input__control {
           > .v-input__slot {
             border: Solid 1px var(--allPagesInputFocusBorder, #a6bad6)!important;
@@ -240,6 +243,12 @@
         font-size: 18px;
         font-weight: normal;
         margin-left: 25px;
+      }
+      .assigneeFilter{
+        margin-left: 25px;
+        .text-truncate{
+          font-size: 18px!important;
+        }
       }
       span.amount-item{
         font-size: 18px;

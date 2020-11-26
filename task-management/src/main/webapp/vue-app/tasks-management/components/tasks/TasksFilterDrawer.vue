@@ -14,13 +14,24 @@
             <v-toolbar>
               <v-tabs
                 v-model="tab">
-                <v-tab class="text-capitalize">Filter</v-tab>
-                <v-tab v-if="!project" class="text-capitalize">Group and Sort</v-tab>
-                <v-tab v-if="!project" class="text-capitalize">Label</v-tab>
+                <v-tab v-if="!project" class="text-capitalize">{{ $t('label.filter.groupandsort') }}</v-tab>
+                <v-tab class="text-capitalize">{{ $t('label.filter.filter') }}</v-tab>
+                <v-tab v-if="!project" class="text-capitalize">{{ $t('label.filter.label') }}</v-tab>
               </v-tabs>
             </v-toolbar>
 
             <v-tabs-items v-model="tab">
+              <v-tab-item v-if="!project">
+                <v-card >
+                  <tasks-group-drawer
+                    ref="filterGroupTasksDrawer"
+                    v-model="groupBy"/>
+                  <tasks-sort-by-drawer
+                    ref="filterSortTasksDrawer"
+                    v-model="sortBy"/>
+                </v-card>
+              </v-tab-item>
+
               <v-tab-item>
                 <v-card >
                   <form ref="form1" class="mt-4">
@@ -93,16 +104,7 @@
                   </form>
                 </v-card>
               </v-tab-item>
-              <v-tab-item v-if="!project">
-                <v-card >
-                  <tasks-group-drawer
-                    ref="filterGroupTasksDrawer"
-                    v-model="groupBy"/>
-                  <tasks-sort-by-drawer
-                    ref="filterSortTasksDrawer"
-                    v-model="sortBy"/>
-                </v-card>
-              </v-tab-item>
+
               <v-tab-item v-if="!project">
                 <v-card >
                   <tasks-labels-drawer

@@ -20,6 +20,9 @@
         :label="$t('label.task.title')"
         value="title"/>
       <v-radio
+        :label="$t('label.task.dueDate')"
+        value="dueDate"/>
+      <v-radio
         :label="$t('label.task.priority')"
         value="priority"/>
       <v-radio
