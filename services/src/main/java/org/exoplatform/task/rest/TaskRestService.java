@@ -17,6 +17,7 @@ import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.dto.*;
 import org.exoplatform.task.legacy.service.UserService;
+import org.exoplatform.task.model.GroupKey;
 import org.exoplatform.task.model.User;
 import org.exoplatform.task.rest.model.*;
 import org.exoplatform.task.service.*;
@@ -362,7 +363,7 @@ public class TaskRestService implements ResourceContainer {
       taskQuery.setIsIncomingOf(currentUser);
       taskQuery.setOrderBy(Arrays.asList(order));
     } else if (projectId == ProjectUtil.TODO_PROJECT_ID) {
-      defGroupBys =  Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT, TaskUtil.LABEL, TaskUtil.DUEDATE);
+      defGroupBys =  Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT, TaskUtil.LABEL, TaskUtil.DUEDATE,TaskUtil.ASSIGNEE);
       defOrders =  Arrays.asList(TaskUtil.TITLE, TaskUtil.STATUS, TaskUtil.DUEDATE, TaskUtil.PRIORITY, TaskUtil.RANK);
 
       taskQuery.setIsTodoOf(currentUser);
@@ -476,6 +477,16 @@ public class TaskRestService implements ResourceContainer {
       listTasks = taskService.findTasks(taskQuery,offset,limit);
       tasksSize = taskService.countTasks(taskQuery);
     }
+
+    Map<GroupKey, List<TaskEntity>> groupTasks = new HashMap<GroupKey, List<TaskEntity>>();
+    if (groupBy != null && groupBy!= TaskUtil.DUEDATE && !groupBy.isEmpty() && !TaskUtil.NONE.equalsIgnoreCase(groupBy)) {
+      groupTasks = TaskUtil.groupTasks(listTasks.stream().map(task -> getTaskDetails((TaskDto) task, currentUser)).collect(Collectors.toList()), groupBy, currentUser, userTimezone, labelService, userService);
+      return Response.ok(new FiltreTaskList(groupTasks)).build();
+    }
+    if (groupTasks.isEmpty()) {
+      groupTasks.put(new GroupKey("", null, 0), listTasks.stream().map(task -> getTaskDetails((TaskDto) task, currentUser)).collect(Collectors.toList()));
+    }
+
     return Response.ok(new PaginatedTaskList(listTasks.stream().map(task -> getTaskDetails((TaskDto) task, currentUser)).collect(Collectors.toList()),tasksSize)).build();
   }
 

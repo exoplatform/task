@@ -9,26 +9,21 @@
             v-for="(status, index) in statusList"
             :key="index"
             class="pt-0 pb-8 px-4 projectTaskItem">
-            <tasks-view-header
-              :status="status"
-              :view-type="'list'"
-              :max-tasks-to-show="maxTasksToShow"
-              :tasks-number="getTasksByStatus(tasksList,status.name).length"/>
+            <tasks-view-list-column
+              :status="status"        
+              :tasks-list="getTasksByStatus(tasksList,status.name)"
+              @updateTaskCompleted="updateTaskCompleted"
+              @updateTaskStatus="updateTaskStatus" />
             <v-divider/>
-            <task-view-list-item
-              v-for="task in getTasksByStatus(tasksList,status.name)"
-              :key="task.task.id"
-              :task="task"
-              @update-task-completed="updateTaskCompleted"/>
           </div>
-          <v-divider/>
-        </div>
-      </v-item-group>
+      </div></v-item-group>
     </v-card>
   </v-app>
 </template>
 <script>
+import {updateTask} from '../../../taskDrawer/taskDrawerApi';
   export default {
+
     props: {
       statusList: {
         type: Array,
@@ -41,7 +36,7 @@
     },
     data () {
       return {
-        maxTasksToShow: 6,
+        
         tasksStatsStartValue:0,
       }
     },
@@ -60,7 +55,22 @@
       },
     updateTaskCompleted(e){
       window.setTimeout(() => this.tasksList = this.tasksList.filter((t) => t.task.id !== e.id), 500);
-    }
+    },
+       updateTaskStatus(task,newStatus){
+              const status = this.statusList.find(s => s.name === newStatus);
+              if(status){
+               task.status = status;
+               this.updateTask(task)
+              } 
+      },
+      updateTask(task) {
+        if(task.id!=null){
+          updateTask(task.id,task);
+/*           window.setTimeout(() => {
+             this.$root.$emit('task-added', this.task)
+          }, 200); */
+        }
+      },
     }
   }
 </script>

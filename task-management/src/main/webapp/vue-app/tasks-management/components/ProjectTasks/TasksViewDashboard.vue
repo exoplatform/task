@@ -14,7 +14,10 @@
       :task-list-tab-view="'#tasks-view-list'"
       :task-gantt-tab-view="'#tasks-view-gantt'"
       :tasks-view-tab-model="'tasks-view-board'"
-      @taskViewChangeTab="getChangeTabValue"/>
+      @keyword-changed="filterByKeyword"
+      @taskViewChangeTab="getChangeTabValue"
+      @filter-task-dashboard="filterTaskDashboard"
+      @reset-filter-task-dashboard="resetFiltertaskDashboard"/>
     <v-tabs-items
       v-if="tasksList && tasksList.length">
       <v-tab-item
@@ -59,6 +62,7 @@
     },
     data () {
       return {
+        keyword: null,
         taskViewTabName: 'board',
         statusList: [],
         tasksList: []
@@ -67,14 +71,15 @@
     watch:{
       project(){
       this.getStatusByProject(this.project.id);
-      this.getTasksByProject(this.project.id);
+      this.getTasksByProject(this.project.id,"");
       }
     },
     created() {
       this.$root.$on('task-added', task => {
-       this.getTasksByProject(this.project.id);
+       this.getTasksByProject(this.project.id,"");
       });
     },
+    
     methods : {
       hideProjectDetails() {
         window.history.pushState('myprojects', 'My Projects', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest?myprojects`);
@@ -88,10 +93,30 @@
           this.statusList = data;
         });
       },
-      getTasksByProject(ProjectId) {
-        return this.$tasksService.getTasksByProjectId(ProjectId).then(data => {
-          this.tasksList = data;
-        });
+      filterByKeyword(keyword){
+        this.getTasksByProject(this.project.id,keyword);
+      },
+      getTasksByProject(ProjectId,query) {
+        const tasks = {
+          query: query,
+          offset: 0,
+          limit: 0,
+          showCompleteTasks:false,
+        };
+        return this.$tasksService.filterTasksList(tasks,'','','',0,0,ProjectId).then(data => {
+          this.tasksList = data && data.tasks || [];
+        })
+
+      },
+      resetFiltertaskDashboard(){
+        this.getTasksByProject(this.project.id,"");
+      },
+      filterTaskDashboard(e){
+        const tasks=e.tasks;
+        tasks.showCompleteTasks=e.showCompleteTasks;
+        return this.$tasksService.filterTasksList(e.tasks,'','','',0,0,this.project.id).then(data => {
+          this.tasksList = data && data.tasks || [];
+        })
       },
     }
   }

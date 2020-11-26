@@ -3,7 +3,7 @@
     :class="project.color && project.color+'_border_bottom' || ''"
     class="tasksCardItem" 
     flat>
-    <div :class="project.color || 'noProjectColor'" class="taskItemToolbar d-flex px-2 py-3 align-center font-weight-bold">
+    <div :class="project.color || 'noProjectColor'" class="taskItemToolbar d-flex px-2 align-center font-weight-bold">
       <i
         :class="project.color && 'white--text' || 'toolbarNoColor'"
         icon
@@ -14,7 +14,8 @@
       <div class="spacer d-none d-sm-inline"></div>
       <span
         :class="project.color && 'white--text' || 'toolbarNoColor'"
-        class="projectCardTitle">
+        class="projectCardTitle py-3"
+        @click="showProjectTasksDetails(project)">
         {{ project.name }}
       </span>
       <v-spacer />
@@ -84,8 +85,7 @@
     </div>
     <div class="taskItemInfo pa-3">
       <div
-        class="taskItemDescription"
-        @click="showProjectTasksDetails(project)">
+        class="taskItemDescription">
         <p
           v-if="project.description">{{ getDescription() }}</p>
         <div v-else>
@@ -248,7 +248,7 @@
         document.dispatchEvent(new CustomEvent('showProjectTasks', {detail: project}));
       },
       openEditDrawer() {
-       this.$emit('openDrawer')
+       this.$emit('openDrawer');
       },
       onCloseDrawer: function (drawer) {
         this.drawer = drawer;

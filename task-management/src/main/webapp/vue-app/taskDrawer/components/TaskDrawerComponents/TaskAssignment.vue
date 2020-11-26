@@ -13,20 +13,20 @@
       bottom>
       <template v-slot:activator="{ on }">
         <div class="d-flex align-center taskAssignItem">
-          <div v-if="taskAssignee && taskAssignee.profile && taskAssignee.profile.fullname">
+          <div v-if="taskAssigneeObj && taskAssigneeObj.profile && taskAssigneeObj.profile.fullName">
             <exo-user-avatar
-              :username="taskAssignee.profile.username"
-              :fullname="taskAssignee.profile.fullname"
-              :avatar-url="taskAssignee.profile.avatar"
-              :title="taskAssignee.profile.fullname"
-              :size="26"/>
+              :username="taskAssigneeObj.profile.remoteId"
+              :fullname="taskAssigneeObj.profile.fullName"
+              :avatar-url="taskAssigneeObj.profile.avatarUrl"
+              :title="taskAssigneeObj.profile.fullName"
+              :size="26"
+              class="pr-2"/>
           </div>
           <span
             v-if="taskCoworkers.length > 0"
-            class="user-name pl-2 caption font-italic lighten-2"> +{{ taskCoworkers.length }} {{ $t('label.coworker') }}
+            class="user-name pr-2 caption font-italic lighten-2"> +{{ taskCoworkers.length }} {{ $t('label.coworker') }}
           </span>
           <a
-            :class="taskAssignee && taskAssignee.profile && taskAssignee.profile.fullname && 'pl-4' || ''"
             class="taskAssignBtn mt-n1"
             v-on="on">
             <i class="uiIcon uiAddAssignIcon"></i>
@@ -35,8 +35,12 @@
         </div>
       </template>
       <v-card class="pb-4">
-        <v-card-text class="pb-0">
-          {{ $t('label.assignTo') }} :
+        <v-card-text class="assignTaskMenu pb-0 d-flex justify-space-between">
+          <span>{{ $t('label.assignTo') }} :</span>
+          <a class="ml-4" @click="assignToMe()">
+            <i class="uiIcon uiAssignToMeIcon"></i>
+            <span>{{ $t('label.addMe') }}</span>
+          </a>
         </v-card-text>
         <exo-identity-suggester
           ref="autoFocusInput3"
@@ -46,11 +50,15 @@
           type-of-relations="user_to_invite"
           height="40"
           include-users
-          @removeValue="unassign"/>
-        <a class="ml-4" @click="assignToMe()">{{ $t('label.assignToMe') }}</a>
-        <v-divider class="mt-2"/>
-        <v-card-text class="pb-0">
-          {{ $t('label.coworkers') }} :
+          @input="assigneeValueChanged($event)"
+          @removeValue="removeAssignee()"/>
+        <v-divider class="mt-4 mb-4"/>
+        <v-card-text class="assignTaskMenu pt-0 pb-0 d-flex justify-space-between">
+          <span>{{ $t('label.coworkers') }} :</span>
+          <a class="ml-4" @click="setMeAsCoworker()">
+            <i class="uiIcon uiAddMeCoworkerIcon"></i>
+            <span>{{ $t('label.addMe') }}</span>
+          </a>
         </v-card-text>
         <exo-identity-suggester
           ref="autoFocusInput3"
@@ -60,15 +68,16 @@
           type-of-relations="user_to_invite"
           height="40"
           include-users
-          multiple/>
-        <a class="ml-4" @click="setMeAsCoworker()">{{ $t('label.addMeAsCoworker') }}</a>
+          multiple
+          @input="coworkerValueChanged($event)"
+          @removeValue="removeCoworker($event)"/>
+
       </v-card>
     </v-menu>
   </div>
 </template>
 
 <script>
-  import {updateTask} from '../../taskDrawerApi'
 
   export default {
     props: {
@@ -93,9 +102,8 @@
         taskAssigneeObj: {},
         taskCoworkerObj:[],
         taskCoworkers: [],
-        assigneeValueModel: {},
         currentUser: eXo.env.portal.userName,
-        menu: false,
+        menu: false
       }
     },
     computed: {
@@ -115,17 +123,14 @@
         }
       });
       document.addEventListener('loadAssignee', event => {
-        this.taskAssignee = {};
         this.taskAssigneeObj = {};
         this.taskCoworkers = [];
         this.taskCoworkerObj = [];
-        this.assigneeValueModel = {};
         if (event && event.detail) {
           const task = event.detail;
+          this.task = task;
           if(task.id==null && !task.status.project) {
-            this.assigneeValueModel = this.taskAssignee.identityValueSuggester;
             this.$identityService.getIdentityByProviderIdAndRemoteId('organization',this.currentUser).then(user => {
-              this.taskAssignee = user;
               this.taskAssigneeObj = {
                 id: `organization:${user.remoteId}`,
                 remoteId: user.remoteId,
@@ -137,10 +142,10 @@
               }
             })
           } else {
-            if (task.coworker) {
+            if (task.coworker && task.coworker.length) {
               for (let i = 0; i < task.coworker.length; i++) {
                 this.$identityService.getIdentityByProviderIdAndRemoteId('organization',task.coworker[i]).then(user => {
-                  this.taskCoworkers.push(user);
+                  this.taskCoworkers.push(user.remoteId);
                   const taskCoworker = {
                     id: `organization:${user.remoteId}`,
                     remoteId: user.remoteId,
@@ -153,11 +158,10 @@
                   this.taskCoworkerObj.push(taskCoworker)
                 })
               }
-              }
-            }
+             }
+          }
             if (task.assignee) {
               this.$identityService.getIdentityByProviderIdAndRemoteId('organization',task.assignee).then(user => {
-                this.taskAssignee = user;
                 this.taskAssigneeObj = {
                   id: `organization:${user.remoteId}`,
                   remoteId: user.remoteId,
@@ -173,38 +177,26 @@
       });
     },
     methods: {
-      updateTask(assignee) {
-        this.task.coworker = [];
-        if (typeof this.taskAssignee !== 'undefined') {
-          this.task.assignee = assignee;
-        } else {
-          this.task.assignee = '';
-        }
-        for (let i = 0; i < this.taskCoworkers.length; i++) {
-          this.task.coworker.push(this.taskCoworkers[i].username)
-        }
-        updateTask(this.task.id, this.task);
-      },
       assignToMe() {
-        this.$identityService.getIdentityByProviderIdAndRemoteId('organization',this.currentUser).then(user => {
-          this.taskAssignee = user;
-          this.taskAssigneeObj = {
-            id: `organization:${user.remoteId}`,
-            remoteId: user.remoteId,
-            providerId: 'organization',
-            profile: {
-              fullName: user.profile.fullname,
-              avatarUrl: user.profile.avatar,
-            },
-          }
-        })
-        this.updateTask(this.currentUser);
+        if( this.task.assignee !== this.currentUser ) {
+          this.$identityService.getIdentityByProviderIdAndRemoteId('organization',this.currentUser).then(user => {
+            this.taskAssigneeObj = {
+              id: `organization:${user.remoteId}`,
+              remoteId: user.remoteId,
+              providerId: 'organization',
+              profile: {
+                fullName: user.profile.fullname,
+                avatarUrl: user.profile.avatar,
+              },
+            }
+          })
+          this.$emit('updateTaskAssignement', this.currentUser);
+        }
       },
       setMeAsCoworker() {
-        if (!this.task.coworker.includes(this.currentUser)) {
-          this.taskCoworkers.push(this.currentUser);
+        if(this.task.id===null) {
           this.$identityService.getIdentityByProviderIdAndRemoteId('organization',this.currentUser).then(user => {
-            this.taskCoworkers.push(user);
+            this.taskCoworkers.push(this.currentUser);
             const taskCoworker = {
               id: `organization:${user.remoteId}`,
               remoteId: user.remoteId,
@@ -214,15 +206,56 @@
                 avatarUrl: user.profile.avatar,
               },
             }
-            this.taskCoworkerObj.push(taskCoworker)
-          })
+            this.taskCoworkerObj.push(taskCoworker);
+          }).then(() => {
+            document.dispatchEvent(new CustomEvent('taskCoworkerChanged',{detail: this.taskCoworkers}))
+            this.isNewTask = false;
+          });
+        } else {
+          if (!this.taskCoworkers.includes(this.currentUser)) {
+            this.$identityService.getIdentityByProviderIdAndRemoteId('organization',this.currentUser).then(user => {
+              this.taskCoworkers.push(this.currentUser);
+              const taskCoworker = {
+                id: `organization:${user.remoteId}`,
+                remoteId: user.remoteId,
+                providerId: 'organization',
+                profile: {
+                  fullName: user.profile.fullname,
+                  avatarUrl: user.profile.avatar,
+                },
+              }
+              this.taskCoworkerObj.push(taskCoworker);
+            }).then(() => {
+              this.$emit('updateTaskCoworker',this.taskCoworkers );
+            });
+          }
         }
-        this.updateTask(this.currentUser);
       },
-      unassign() {
-        this.taskAssignee = undefined;
-        this.updateTask();
-      }
+      assigneeValueChanged(value) {
+        if (value !== null) {
+          if (value.remoteId !== this.currentUser) {
+            this.taskAssigneeObj = value;
+            this.$emit('updateTaskAssignement', value.remoteId);
+          }
+        }
+      },
+      coworkerValueChanged(value) {
+          if (typeof value !== 'undefined') {
+            if(value && value.length && !this.taskCoworkers.includes(value[value.length-1].remoteId) ) {
+              this.taskCoworkers.push(value[value.length-1].remoteId);
+              this.$emit('updateTaskCoworker',this.taskCoworkers );
+              this.taskCoworkerObj.push(value[value.length-1]);
+            }
+          }
+        },
+      removeCoworker(value) {
+        this.taskCoworkers.splice(this.taskCoworkers.findIndex(taskCoworker => taskCoworker === value.remoteId), 1);
+        this.$emit('updateTaskCoworker',this.taskCoworkers);
+      },
+      removeAssignee() {
+        this.taskAssigneeObj = {};
+        this.$emit('updateTaskAssignement', '');
+      },
     }
   }
 </script>
