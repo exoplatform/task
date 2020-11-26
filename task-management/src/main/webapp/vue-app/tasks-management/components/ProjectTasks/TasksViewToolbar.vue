@@ -40,9 +40,31 @@
         </v-tabs>
       </div>
       <v-spacer/>
+      <v-scale-transition>
+        <v-text-field
+          v-model="keyword"
+          :placeholder=" $t('label.filterTask') "
+          prepend-inner-icon="fa-filter"
+          class="inputTasksFilter pa-0 mr-3 my-auto"/>
+      </v-scale-transition>
+      <v-scale-transition>
+        <v-btn
+          class="btn px-2 btn-primary filterTasksSetting"
+          outlined
+          @click="openDrawer">
+          <i class="uiIcon uiIconFilterSetting pr-3"></i>
+          <span class="d-none font-weight-regular caption d-sm-inline">
+            {{ $t('label.filter') }} (3)
+          </span>
+        </v-btn>
+      </v-scale-transition>
     </v-toolbar>
     <task-filter-drawer
-      ref="filterTasksDrawer"/>
+      ref="filterTasksDrawer"
+      :project="project.id"
+      :query="keyword"
+      @filter-task="filterTasks"
+      @reset-filter-task="resetFilterTask"/>
   </v-app>
 </template>
 <script>
@@ -65,6 +87,26 @@
         default: ''
       },
     },
+    data () {
+      return {
+        keyword: null,
+        awaitingSearch: false,
+        searchonkeyChange:true
+      }
+    },
+    watch: {
+      keyword() {
+         if(this.searchonkeyChange){
+        if (!this.awaitingSearch) {
+          setTimeout(() => {
+            this.$emit('keyword-changed', this.keyword);
+            this.awaitingSearch = false;
+          }, 1000); 
+        }
+        this.awaitingSearch = true;
+        }
+      },
+    },
     methods: {
       openDrawer() {
         this.$refs.filterTasksDrawer.open();
@@ -77,6 +119,19 @@
         title:''}
         this.$root.$emit('open-task-drawer', defaultTask)
       },
+      resetFilterTask(){
+        this.searchonkeyChange=false
+        this.keyword=""
+        this.searchonkeyChange=true
+        this.$emit('reset-filter-task-dashboard');
+      },
+      filterTasks(e){
+        this.searchonkeyChange=false
+        this.showCompleteTasks=e.showCompleteTasks;
+        this.keyword=e.tasks.query
+        this.searchonkeyChange=true
+        this.$emit('filter-task-dashboard', { tasks:e.tasks,showCompleteTasks:e.showCompleteTasks });
+      }
     }
   }
 </script>

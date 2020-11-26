@@ -14,11 +14,9 @@
             <v-toolbar>
               <v-tabs
                 v-model="tab">
-                <v-tab
-                  v-for="item in items"
-                  :key="item">
-                  {{ item.tab }}
-                </v-tab>
+                <v-tab class="text-capitalize">Filter</v-tab>
+                <v-tab v-if="!project" class="text-capitalize">Group and Sort</v-tab>
+                <v-tab v-if="!project" class="text-capitalize">Label</v-tab>
               </v-tabs>
             </v-toolbar>
 
@@ -95,7 +93,7 @@
                   </form>
                 </v-card>
               </v-tab-item>
-              <v-tab-item>
+              <v-tab-item v-if="!project">
                 <v-card >
                   <tasks-group-drawer
                     ref="filterGroupTasksDrawer"
@@ -105,7 +103,7 @@
                     v-model="sortBy"/>
                 </v-card>
               </v-tab-item>
-              <v-tab-item>
+              <v-tab-item v-if="!project">
                 <v-card >
                   <tasks-labels-drawer
                     ref="filterLabelsTasksDrawer"
@@ -169,18 +167,20 @@
         type: String,
         default:''
       },
+      project: {
+        type: String,
+        default:''
+      },
+      query: {
+        type: String,
+        default:''
+      },
     },
     data () {
       return {
         tab: null,
-        items: [
-          { tab: 'Filter'},
-          { tab: 'Group and sort' },
-          { tab: 'Label' },
-        ],
         dueDateSelected:'',
         prioritySelected:'',
-        query:'',
         assignee:'',
         assigneeTask:'',
         dueDate: [
@@ -259,6 +259,9 @@
         if (this.assignee !== null && this.assignee !== undefined && this.assignee !== ''){
           tasks.assignee = this.assignee.remoteId;
         }
+        if(this.project){
+          this.$emit('filter-task',{ tasks,showCompleteTasks:this.showCompleteTasks });
+        }else{
         return this.$tasksService.filterTasksList(tasks,filterGroupSort.groupBy,filterGroupSort.sortBy,filterLabels.labels).then((tasks) => {
           if (tasks.projectName){
             this.$root.$emit('filter-task-groupBy',tasks);
@@ -271,6 +274,7 @@
                   console.debug("Error updating project", e);
                   this.$emit('error', e && e.message ? e.message : String(e));
                 });
+      }
       }
     }
   }
