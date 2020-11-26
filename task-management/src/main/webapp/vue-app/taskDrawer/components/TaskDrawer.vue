@@ -207,7 +207,7 @@
             :disabled="disableSaveButton"
             class="btn btn-primary"
             @click="updateTask">
-            {{ $t('label.edit') }}
+            {{ $t('label.save') }}
           </v-btn>
         </div>
       </template>
@@ -250,7 +250,7 @@
         taskCoworkers: [],
         saving: false,
         deleteConfirmMessage: null,
-        isProjectView :true
+        isProjectView :true,
       }
     },
     computed: {
@@ -270,7 +270,7 @@
         return this.task && this.task.title;
       },
       taskTitleValid() {
-        return this.taskTitle && this.taskTitle.length >= 5 && this.taskTitle.length < 1024;
+        return this.taskTitle && this.taskTitle.trim() && this.taskTitle.trim().length >= 3 && this.taskTitle.length < 1024;
       },
       disableSaveButton() {
         return this.saving || !this.taskTitleValid;
