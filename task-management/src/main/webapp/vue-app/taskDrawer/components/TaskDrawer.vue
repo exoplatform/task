@@ -65,37 +65,37 @@
         <div class="taskProjectName">
           <task-projects
             :task="task"
-            @projectsListOpened="closePriority(); closeStatus(); closeLabelsList(); closeDueDateCalendar();closePlanDatesCalendar();closeAssignements()"/>
+            @projectsListOpened="closePriority(); closeStatus(); closeLabelsList(); closeTaskDates();closeAssignements()"/>
         </div>
         <div class="taskLabelsName">
           <task-labels
             :task="task"
-            @labelsListOpened="closePriority(); closeStatus(); closeProjectsList();closeDueDateCalendar();closePlanDatesCalendar();closeAssignements()"/>
+            @labelsListOpened="closePriority(); closeStatus(); closeProjectsList();closeTaskDates();closeAssignements()"/>
         </div>
         <div class="taskAssignement pb-3">
           <task-assignment
             :task="task"
             @updateTaskAssignement="updateTaskAssignee($event)"
             @updateTaskCoworker="updateTaskCoworker($event)"
-            @assignmentsOpened="closePriority(); closeStatus(); closeProjectsList();closeDueDateCalendar();closePlanDatesCalendar(); closeLabelsList()"/>
+            @assignmentsOpened="closePriority(); closeStatus(); closeProjectsList();closeTaskDates();closeLabelsList()"/>
         </div>
         <v-divider class="my-0" />
         <div class="d-flex  pt-4 pb-2">
           <div class="taskDates">
-            <task-due-date
+            <task-form-date-pickers
               :task="task"
-              @dueDateOpened="closeLabelsList(); closeProjectsList(); closeStatus(); closePriority();closePlanDatesCalendar();closeAssignements()"/>
-            <task-plan-dates
-              @planDatesOpened="closePriority(); closeStatus(); closeProjectsList(); closeLabelsList(); closeDueDateCalendar();closeAssignements()"/>
+              :date-picker-top="datePickerTop"
+              @startDateChanged="updateTaskStartDate($event)"
+              @dueDateChanged="updateTaskDueDate($event)"/>
           </div>
           <div class="taskStatusAndPriority">
             <task-priority
               :task="task"
               @updateTaskPriority="task.priority = $event"
-              @PriorityListOpened="closeStatus(); closeProjectsList(); closeLabelsList();closeDueDateCalendar(); closePlanDatesCalendar();closeAssignements()"/>
+              @PriorityListOpened="closeStatus(); closeProjectsList(); closeLabelsList();closeTaskDates();closeAssignements()"/>
             <task-status
               :task="task"
-              @statusListOpened="closePriority(); closeProjectsList();closeLabelsList();closeDueDateCalendar();closePlanDatesCalendar();closeAssignements()"
+              @statusListOpened="closePriority(); closeProjectsList();closeLabelsList();closeTaskDates();closeAssignements()"
               @updateTaskStatus="task.status = $event"/>
           </div>
         </div>
@@ -248,9 +248,12 @@
         labelsToAdd: [],
         assignee: '',
         taskCoworkers: [],
+        taskDueDate: null,
+        taskStartDate: null,
         saving: false,
         deleteConfirmMessage: null,
         isProjectView :true,
+        datePickerTop: true,
       }
     },
     computed: {
@@ -357,11 +360,8 @@
       closeLabelsList() {
         document.dispatchEvent(new CustomEvent('closeLabelsList'));
       },
-      closeDueDateCalendar() {
-        document.dispatchEvent(new CustomEvent('closeDueDate'));
-      },
-      closePlanDatesCalendar() {
-        document.dispatchEvent(new CustomEvent('closePlanDates'));
+      closeTaskDates() {
+        document.dispatchEvent(new CustomEvent('closeDates'));
       },
       closeAssignements() {
         document.dispatchEvent(new CustomEvent('closeAssignments'));
@@ -392,8 +392,21 @@
         return `/rest/v1/social/users/${username}/avatar`;
       },
 
+      updateTaskStartDate(value) {
+        if(value) {
+          this.taskStartDate = value;
+        }
+      },
+
+      updateTaskDueDate(value) {
+        if(value) {
+          this.taskDueDate =  value;
+        }
+      },
       updateTask() {
         if(this.task.id!=null){
+          this.task.startDate = this.taskStartDate;
+          this.task.dueDate = this.taskDueDate;
           this.resetCustomValidity();
           updateTask(this.task.id,this.task);
           window.setTimeout(() => {
@@ -406,6 +419,9 @@
         this.resetCustomValidity();
         this.task.coworker = this.taskCoworkers;
         this.task.assignee = this.assignee;
+        console.warn(this.taskStartDate);
+        this.task.startDate = this.taskStartDate;
+        this.task.dueDate = this.taskDueDate;
         addTask(this.task).then(task => {
           this.labelsToAdd.forEach(item => {
             addTaskToLabel(task.id, item);

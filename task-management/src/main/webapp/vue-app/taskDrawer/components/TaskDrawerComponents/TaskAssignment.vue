@@ -13,18 +13,20 @@
       bottom>
       <template v-slot:activator="{ on }">
         <div class="d-flex align-center taskAssignItem">
-          <div v-if="taskAssigneeObj && taskAssigneeObj.profile && taskAssigneeObj.profile.fullName">
+          <div v-if="taskAssigneeObj && taskAssigneeObj.profile && taskAssigneeObj.profile.fullName" v-on="on">
             <exo-user-avatar
               :username="taskAssigneeObj.profile.remoteId"
               :fullname="taskAssigneeObj.profile.fullName"
               :avatar-url="taskAssigneeObj.profile.avatarUrl"
               :title="taskAssigneeObj.profile.fullName"
               :size="26"
+              :url="null"
               class="pr-2"/>
           </div>
           <span
             v-if="taskCoworkers.length > 0"
-            class="user-name pr-2 caption font-italic lighten-2"> +{{ taskCoworkers.length }} {{ $t('label.coworker') }}
+            class="user-name pr-2 caption font-italic lighten-2"
+            v-on="on"> +{{ taskCoworkers.length }} {{ $t('label.coworker') }}
           </span>
           <a
             class="taskAssignBtn mt-n1"

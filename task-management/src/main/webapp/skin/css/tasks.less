@@ -1766,6 +1766,9 @@
   }
   .taskAssignement {
     .taskAssignItem {
+      .user-name {
+        cursor: pointer;
+      }
       .taskAssignBtn {
         .uiAddAssignIcon {
           margin-top: -4px !important;
@@ -1830,32 +1833,25 @@
     }
   }
   .taskDates {
-    .v-input__control {
-      > .v-input__slot {
-        box-shadow: none!important;
-        padding: 0!important;
-        &:before {
-          display: none;
-        }
-        &:after {
-          display: none!important;
-        }
-        .v-label {
-          font-size: 22px!important;
-        }
-        .v-label--active {
-          transform: translateY(-16px) scale(0.75)!important;
-        }
-        input {
-          cursor: pointer;
-          &::placeholder {
-            font-size: 16px!important;
-            font-style: italic!important;
-          }
+    max-width: 50%;
+    padding-right: 10px;
+    .datePickerComponent {
+      &:after {
+        display: none!important;
+      }
+      input {
+        max-width: 90%!important;
+        padding-right: 10px!important;
+        padding-left: 5px!important;
+        border: none;
+        box-shadow: none;
+        &::placeholder {
+          font-size: 16px!important;
         }
       }
     }
-    .v-input__prepend-outer {
+    .taskPlanDateCalender {
+      max-height: 40px;
       .uiIconCalendar {
         color: @primaryColor;
         font-size: 20px;
@@ -1863,6 +1859,9 @@
           content: "\e619";
         }
       }
+    }
+    .taskDueDateCalender {
+      max-height: 40px;
       .uiIconClock {
         &:before {
           color: @primaryColor;
@@ -1870,20 +1869,9 @@
         }
       }
     }
-    .v-input__append-inner {
-      .uiIconTrashMini.uiIconBlue {
-        cursor: pointer;
-        position: absolute;
-        top: -6px;
-        right: 10px;
-        color: @errorColor!important;
-      }
-    }
-    .taskPlanDateCalender {
-      margin-top: 4px;
-    }
   }
   .taskStatusAndPriority {
+    max-width: 50%;
     justify-content: space-between;
     .v-input__control {
       > .v-input__slot {
@@ -1939,12 +1927,8 @@
         > .v-input__slot {
           justify-content: flex-end!important;
           .v-select__slot {
-            max-width: inherit!important;
-            width: auto!important;
-            flex-basis: 0!important;
-            min-width: 120px!important;
             i {
-              font-size: 30px!important;
+              font-size: 28px!important;
             }
             .v-input__append-inner {
               position: absolute;
@@ -1955,9 +1939,20 @@
                 right: 0;
               }
             }
-          }
+            .v-select__selections {
+              margin-top: -6px;
+              max-width: 84%!important;
+              .v-select__selection {
+                max-width: 100%;
+                width: 100%;
+                text-align: right;
+                display: inline;
+                margin-right: 0!important;
+              }
+            }
           }
         }
+      }
         .v-menu__content {
           top: 40px !important;
           .v-list {
