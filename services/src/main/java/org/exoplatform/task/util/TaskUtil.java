@@ -774,7 +774,13 @@ public final class TaskUtil {
         return new GroupKey[] {new GroupKey("To do", null, Integer.MIN_VALUE)};
       }
     } else if ("assignee".equalsIgnoreCase(groupBy)) {
-      User user = task.getAssignee();
+      User user = null;
+      if (task.getAssignee()!=null){
+        user = task.getAssignee();
+      }
+      else {
+        user=userService.loadUser(null);
+      }
 
       return ( user.getUsername() != "guest" && user.getUsername() != null) ? new GroupKey[]{new GroupKey(user.getUsername(), user, user.getUsername().hashCode())} : new GroupKey[]{new GroupKey("Unassigned", null, Integer.MAX_VALUE)};
 

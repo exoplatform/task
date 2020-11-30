@@ -10,6 +10,7 @@
     </div>
     <tasks-view-toolbar
       :project="project"
+      :status-list="statusList"
       :task-card-tab-view="'#tasks-view-board'"
       :task-list-tab-view="'#tasks-view-list'"
       :task-gantt-tab-view="'#tasks-view-gantt'"

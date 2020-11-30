@@ -88,6 +88,23 @@
                         {{ $t('label.priority.'+item.name.toLowerCase()) }}
                       </option>
                     </select>
+
+                    <v-label v-if="project" for="status">
+                      <span class="font-weight-bold body-2">Status</span>
+                    </v-label>
+                    <select 
+                      v-if="project" 
+                      v-model="statusSelected"
+                      name="status"
+                      class="input-block-level ignore-vuetify-classes my-3">
+
+                      <option
+                        v-for="item in statusList"
+                        :key="item.id"
+                        :value="item.id">
+                        {{ item.name }}
+                      </option>
+                    </select>
                     <div class="showCompleteTasks d-flex flex-wrap pt-2">
                       <form class="switchEnabled">
                         <label class="col-form-label pt-0" max-rows="6">{{ $t(`filter.task.showCompleted`)
@@ -177,12 +194,17 @@
         type: String,
         default:''
       },
+      statusList: {
+        type: Array,
+        default: () =>[],
+      }
     },
     data () {
       return {
         tab: null,
         dueDateSelected:'',
         prioritySelected:'',
+        statusSelected:'',
         assignee:'',
         assigneeTask:'',
         dueDate: [
@@ -240,6 +262,7 @@
         const tasks = {
           query: this.query,
           assignee: '',
+          statusId: this.statusSelected,
           dueDate: this.dueDateSelected,
           priority: this.prioritySelected,
           showCompleteTasks: this.showCompleteTasks,
@@ -263,6 +286,7 @@
         }
         if(this.project){
           this.$emit('filter-task',{ tasks,showCompleteTasks:this.showCompleteTasks });
+          this.$refs.filterTasksDrawer.close();
         }else{
         return this.$tasksService.filterTasksList(tasks,filterGroupSort.groupBy,filterGroupSort.sortBy,filterLabels.labels).then((tasks) => {
           if (tasks.projectName){

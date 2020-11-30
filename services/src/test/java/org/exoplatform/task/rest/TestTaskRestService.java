@@ -14,8 +14,6 @@ import org.exoplatform.task.domain.Priority;
 import org.exoplatform.task.model.User;
 import org.exoplatform.task.rest.model.PaginatedTaskList;
 import org.exoplatform.task.rest.model.ViewState;
-import org.exoplatform.task.rest.model.ViewType;
-import org.exoplatform.task.service.impl.ViewStateService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,7 +32,7 @@ import org.exoplatform.task.service.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TestTaskRestService {
-  private static final ViewType LIST = null;
+
   @Mock
   TaskService    taskService;
 
@@ -56,8 +54,7 @@ public class TestTaskRestService {
   @Mock
   LabelService   labelService;
 
-  @Mock
-  ViewStateService viewStateService;
+
 
   @Before
   public void setup() {
@@ -694,8 +691,7 @@ public class TestTaskRestService {
             statusService,
             userService,
             spaceService,
-            labelService,
-            viewStateService);
+            labelService);
     Identity root = new Identity("root");
     ConversationState.setCurrent(new ConversationState(root));
     TaskDto task1 = new TaskDto();
@@ -705,23 +701,23 @@ public class TestTaskRestService {
     task2.setTitle("exo");
     task3.setPriority(Priority.NORMAL);
     String Id="due@null";
-    ViewType viewType=LIST;
     ViewState viewState=new ViewState(Id);
     viewState.setGroupBy(null);
     viewState.setOrderBy(null);
-    viewState.setViewType(viewType);
 
     ViewState.Filter filter=new ViewState.Filter(Id);
     filter.setAssignees(null);
     filter.setDue(null);
     filter.setKeyword("exo");
+    List<Long> labelIDs=new ArrayList<>();
+    List<String> assignee=new ArrayList<>();
 
-    when(taskService.findTasks(any(), anyInt(), anyInt())).thenReturn(Collections.singletonList(task2));
+
+    TasksList tasksList = new TasksList(Collections.singletonList(task2),1);
+    when(taskService.filterTasks("exo",-2,"exo",labelIDs,null,null,assignee,null,null,root,null,null,null,false,true,false,false,null,null,0,0)).thenReturn(tasksList);
     when(taskService.countTasks(any())).thenReturn(1);
-    when(viewStateService.getViewState(any())).thenReturn(viewState);
-    when(viewStateService.getFilter(any())).thenReturn(filter);
     // When
-    Response response = taskRestService.filterTasks(null, -2, "exo","", null, null, false,null,null,null,null,null,1,"",null,"",0,0,false,false);
+    Response response = taskRestService.filterTasks(null, -2, "exo",null, null, null, false,null,null,null,null,null,null,null,0,0,false,false);
 
     // Then
     assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -729,9 +725,20 @@ public class TestTaskRestService {
     assertNotNull(tasks.getTasks());
     assertEquals(1, tasks.getTasksNumber());
 
-    Response response1 = taskRestService.filterTasks(null, -2, "exo","", null, null, false,null,null,"project","priority",null,1,"",null,"",0,0,false,false);
+    when(taskService.filterTasks("exo",-2,"exo",labelIDs,null,null,assignee,null,null,root,null,null,null,false,true,false,false,"priority","project",0,0)).thenReturn(tasksList);
+    when(taskService.countTasks(any())).thenReturn(1);
+
+    Response response1 = taskRestService.filterTasks(null, -2, "exo",null, null, null, false,null,null,"project","priority",null,null,null,0,0,false,false);
 
     assertEquals(Response.Status.OK.getStatusCode(), response1.getStatus());
+
+
+    Identity exo = new Identity(null);
+    ConversationState.setCurrent(new ConversationState(exo));
+    Response response2 = taskRestService.filterTasks(null, -2, "exo",null, null, null, false,null,null,"project","priority",null,null,null,0,0,false,false);
+
+    // Then
+    assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response2.getStatus());
 
 
   }
@@ -745,8 +752,7 @@ public class TestTaskRestService {
             statusService,
             userService,
             spaceService,
-            labelService,
-            viewStateService);
+            labelService);
     Identity root = new Identity("root");
     ConversationState.setCurrent(new ConversationState(root));
     TaskDto task = new TaskDto();
