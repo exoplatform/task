@@ -91,7 +91,6 @@
         if (this.actualTask.id!=null) {
           this.startDate = null;
           this.dueDate = null;
-          console.log('this.actualTask.startDate!=null',this.actualTask.startDate!=null);
           if(this.actualTask.startDate!=null) {
             this.$nextTick().then(() => {
               this.startDate = this.toDate(this.actualTask.startDate.time);

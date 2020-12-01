@@ -3,6 +3,7 @@
     <v-menu
       id="assigneeMenu"
       v-model="globalMenu"
+      :content-class="menuId"
       :close-on-content-click="false"
       :nudge-left="0"
       :max-width="300"
@@ -94,7 +95,7 @@
         default: () => {
           return false;
         }
-      }
+      },
     },
     data() {
       return {
@@ -105,7 +106,10 @@
         taskCoworkerObj:[],
         taskCoworkers: [],
         currentUser: eXo.env.portal.userName,
-        menu: false
+        menu: false,
+        menuId: `AssigneeMenu${parseInt(Math.random() * 10000)
+          .toString()
+          .toString()}`,
       }
     },
     computed: {
@@ -115,6 +119,14 @@
           noDataLabel: this.$t('label.noDataLabel'),
         };
       }
+    },
+    mounted() {
+      // Force to close DatePickers when clicking outside
+      $(document).on('click', (e) => {
+        if (e.target && !$(e.target).parents(`.${this.menuId}`).length) {
+          this.globalMenu = false;
+        }
+      });
     },
     created() {
       document.addEventListener('closeAssignments',()=> {

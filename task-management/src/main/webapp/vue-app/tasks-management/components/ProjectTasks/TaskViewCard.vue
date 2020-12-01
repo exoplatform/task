@@ -1,7 +1,7 @@
 <template>
   <v-app id="taskCardItem" class="py-3">
     <v-card
-      :class="getTaskPriorityColor(task.task.priority)"
+      :class="[getTaskPriorityColor(task.task.priority), !taskDueDate && 'smallViewCard']"
       class="taskCard taskViewCard pa-3"
       flat>
       <div class="taskTitleId  d-flex justify-space-between">
@@ -73,24 +73,21 @@
       </div>
       <div class="taskActionsWrapper mb-3">
         <div class="taskActions d-flex align-center">
-          <div class="taskComment d-flex">
+          <div v-if="task.commentCount" class="taskComment d-flex">
             <i class="uiIcon uiCommentIcon"></i>
-            <span class="taskCommentNumber caption">4</span>
+            <span class="taskCommentNumber caption">{{ task.commentCount }}</span>
           </div>
-          <div class="taskAttachment  d-flex pl-3">
+          <!-- <div class="taskAttachment  d-flex pl-3">
             <i class="uiIcon uiAttachIcon"></i>
             <span class="taskAttachNumber caption">2</span>
-          </div>
+          </div>-->
         </div>
       </div>
-      <v-divider/>
-      <div class="taskStatusAndDate d-flex justify-end pt-2">
+      <v-divider v-if="taskDueDate"/>
+      <div v-if="taskDueDate" class="taskStatusAndDate d-flex justify-end pt-2">
         <div class="taskDueDate">
-          <div v-if="taskDueDate">
+          <div >
             <date-format :value="taskDueDate" :format="dateTimeFormat" />
-          </div>
-          <div v-else>
-            <span class="body-2 text-sub-title">{{ $t('label.noDueDate') }}</span>
           </div>
         </div>
       </div>

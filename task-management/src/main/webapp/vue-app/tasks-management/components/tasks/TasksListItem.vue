@@ -6,6 +6,7 @@
       <v-switch
         ref="autoFocusInput2"
         class="d-none"
+        reset
         true-value="true"
         false-value="false"/>
       <i :title="$t(getTaskCompletedTitle())" :class="getTaskCompleted()"></i>
@@ -14,43 +15,40 @@
       <a
         ref="tooltip"
         :class="getTitleTaskClass()"
+        class="text-truncate"
         @click="openTaskDrawer()">
-        <span>{{ task.task.title }}</span>
+        {{ task.task.title }}
       </a>
     </div>
-    <div class="taskProject pr-3">
-      <div v-if="isPersonnalTask" class="taskProjectName mr-3 pa-1">
-        <span class="body-2 text-sub-title">{{ $t('label.noProject') }}</span>
-      </div>
-      <div v-else class="projectSpaceDetails d-flex">
+    <div v-if="!isPersonnalTask" class="taskProject pr-4">
+      <div class="projectSpaceDetails d-flex align-center">
         <div class="spaceAvatar pr-1">
           <a
             v-if="task.space!==null"
             :href="spaceUrl(task.space.url)">
             <v-avatar
-              :size="32"
+              :size="30"
               tile>
               <v-img
                 :src="task.space.avatarUrl"
-                :height="31"
-                :width="31"
-                :max-height="31"
-                :max-width="31"
+                :height="30"
+                :width="30"
+                :max-height="30"
+                :max-width="30"
                 class="mx-auto spaceAvatarImg"/>
             </v-avatar>
           </a>
-          <v-avatar
-            v-else
-            :size="32"
-            tile
-            class="noSpaceAvatar">
-            <i class="uiIconEcmsNameSpace noSpaceProjectIcon"></i>
-          </v-avatar>
         </div>
-        <div
-          :class="getTaskColor()"
-          class="taskProjectName taskProjectNameCard pa-1">
-          <span class="font-weight-bold">{{ getNameProject() }}</span>
+        <div class="taskProjectNameChip">
+          <v-chip
+            :color="getTaskColor()"
+            text-color="white"
+            class="font-weight-bold"
+            small>
+            <span class="text-truncate">
+              {{ getNameProject() }}
+            </span>
+          </v-chip>
         </div>
       </div>
     </div>
@@ -89,28 +87,24 @@
       <span v-else class="noLabelText body-2"> {{ $t('label.noLabel') }}</span>
     </div>
     <div class="taskActions d-flex justify-center align-center">
-      <div class="taskComment d-flex">
+      <div v-if="task.commentCount" class="taskComment d-flex">
         <i class="uiIcon uiCommentIcon"></i>
-        <span class="taskCommentNumber caption">4</span>
+        <span class="taskCommentNumber caption">{{ task.commentCount }}</span>
       </div>
-      <div class="taskAttachment  d-flex pl-3">
+      <!-- <div class="taskAttachment  d-flex pl-3">
         <i class="uiIcon uiAttachIcon"></i>
         <span class="taskAttachNumber caption">2</span>
-      </div>
+      </div>-->
 
     </div>
     <div class="taskStat">
-      <span v-if="isPersonnalTask" class="body-2 text-sub-title">{{ $t('label.noStatus') }}</span>
-      <span v-else class="taskStatLabel pl-2">
-        {{ getTaskStatusLabel(getNameProject()) }}
+      <span v-if="task && task.task && task.task.status && task.task.status" class="taskStatLabel pl-2">
+        {{ getTaskStatusLabel(task.task.status.name) }}
       </span>
     </div>
     <div class="taskDueDate">
       <div v-if="taskDueDate">
         <date-format :value="taskDueDate" :format="dateTimeFormat" />
-      </div>
-      <div v-else>
-        <span class="body-2 text-sub-title">{{ $t('label.noDueDate') }}</span>
       </div>
     </div>
   </div>

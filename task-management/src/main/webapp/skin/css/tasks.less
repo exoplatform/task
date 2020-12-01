@@ -1038,10 +1038,32 @@
                 }
               }
             }
+            .taskActionsAndProject {
+              .taskProject {
+                max-width: 70%;
+                width: 70%;
+                .projectSpaceDetails {
+                  align-items: center;
+                  max-width: 80%;
+                  display: inherit;
+                  .taskProjectNameChip {
+                    max-width: 100%;
+                    width: 100%;
+                    .v-chip.v-size--small {
+                      height: auto!important;
+                    }
+                  }
+                }
+              }
+            }
           }
           .taskViewCard {
-            min-height: 180px;
-            height: 180px;
+            min-height: 170px;
+            height: 170px;
+          }
+          .smallViewCard {
+            min-height: 120px!important;
+            height: 120px!important;
           }
           .taskHighPriority {
             border-left: 10px solid @errorColor!important;
@@ -1066,6 +1088,9 @@
             background-color: @tableBackgroundAccent;
             border: 1px solid @tableBorder;
             border-radius: 4px;
+            &:last-child {
+              margin-bottom: 18px;
+            }
             .taskCheckBox {
               max-width: 3%;
               width: 3%;
@@ -1107,6 +1132,17 @@
               max-width: 16%;
               width: 16%;
               text-align: left;
+              .projectSpaceDetails {
+                .spaceAvatar {
+                  min-width: 30px;
+                }
+                .taskProjectNameChip {
+                  max-width: 80%;
+                  .v-chip.v-size--small {
+                    height: auto!important;
+                  }
+                }
+              }
               .taskProjectName {
                 max-width: 160px;
               }
@@ -1129,7 +1165,6 @@
             .taskStat {
               max-width: 12%;
               width: 12%;
-              text-align: center;
               .taskStatLabel {
 
               }
@@ -1203,109 +1238,88 @@
           }
         }
         .noProjectColor {
-          background: transparent!important;
+          background: @baseColorLight!important;
           border: 2px solid @baseColorLight;
-          color: @baseColorLight;
         }
         .beige {
-          background: transparent!important;
+          background: #FFE1BE!important;
           border: 2px solid #FFE1BE;
-          color: #FFE1BE;
         }
         .asparagus {
-          background: transparent!important;
+          background: #909958!important;
           border: 2px solid #909958;
-          color: #909958;
         }
         .laurel_green {
-          background: transparent!important;
+          background: #BED67E!important;
           border: 2px solid #BED67E;
-          color: #BED67E;
         }
         .moss_green {
-          background: transparent!important;
+          background: #98CC81!important;
           border: 2px solid #98CC81;
-          color: #98CC81;
         }
         .munsell_blue {
-          background: transparent!important;
+          background: #319AB3!important;
           border: 2px solid #319AB3;
-          color: #319AB3;
         }
         .sky_blue {
-          background: transparent!important;
+          background: #4DBED9!important;
           border: 2px solid #4DBED9;
-          color: #4DBED9;
         }
         .powder_blue {
-          background: transparent!important;
+          background: #9EE4F5!important;
           border: 2px solid #9EE4F5;
-          color: #9EE4F5;
         }
         .baby_blue {
-          background: transparent!important;
+          background: #B2E2FF!important;
           border: 2px solid #B2E2FF;
-          color: #B2E2FF;
         }
         .navy_blue {
-          background: transparent!important;
+          background: #4273C8!important;
           border: 2px solid #4273C8;
-          color: #4273C8;
         }
         .blue_gray {
-          background: transparent!important;
+          background: #8EB0EA!important;
           border: 2px solid #8EB0EA;
-          color: #8EB0EA;
         }
         .light_blue {
-          background: transparent!important;
+          background: #B3CFFF!important;
           border: 2px solid #B3CFFF;
-          color: #B3CFFF;
         }
         .light_gray {
-          background: transparent!important;
+          background: #CDCDCD!important;
           border: 2px solid #CDCDCD;
-          color: #CDCDCD;
         }
         .purple {
-          background: transparent!important;
+          background: #774EA9!important;
           border: 2px solid #774EA9;
-          color: #774EA9;
         }
         .light_purple {
-          background: transparent!important;
+          background: #BC99E7!important;
           border: 2px solid #BC99E7;
-          color: #BC99E7;
         }
         .pink {
-          background: transparent!important;
+          background: #FFC8F0!important;
           border: 2px solid #FFC8F0;
-          color: #FFC8F0;
         }
         .hot_pink {
-          background: transparent!important;
+          background: #F97575!important;
           border: 2px solid #F97575;
-          color: #F97575;
         }
         .Orange {
-          background: transparent!important;
+          background: #FFA500!important;
           border: 2px solid #FFA500;
-          color: #FFA500;
         }
         .light_brown {
-          background: transparent!important;
+          background: #C5B294!important;
           border: 2px solid #C5B294;
-          color: #C5B294;
         }
         .gray {
-          background: transparent!important;
+          background: #A39594!important;
           border: 2px solid #A39594;
-          color: #A39594;
         }
         .plum {
-          background: transparent!important;
+          background: #CEA6AC!important;
           border: 2px solid #CEA6AC;
-          color: #CEA6AC;
         }
       }
       .taskLabels {

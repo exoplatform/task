@@ -14,8 +14,8 @@
       <a
         ref="tooltip"
         :class="getTitleTaskClass()"
-        @click="openTaskDrawer()">
-        <span>{{ task.task.title }}</span>
+        class="text-truncate"
+        @click="openTaskDrawer()">{{ task.task.title }}
       </a>
     </div>
     <div class="taskAssignee d-flex flex-nowrap">
@@ -53,22 +53,19 @@
       <span v-else class="noLabelText body-2"> {{ $t('label.noLabel') }}</span>
     </div>
     <div class="taskActions d-flex justify-center align-center">
-      <div class="taskComment d-flex">
+      <div v-if="task.commentCount" class="taskComment d-flex">
         <i class="uiIcon uiCommentIcon"></i>
-        <span class="taskCommentNumber caption">4</span>
+        <span class="taskCommentNumber caption">{{ task.commentCount }}</span>
       </div>
-      <div class="taskAttachment  d-flex pl-3">
+      <!-- <div class="taskAttachment  d-flex pl-3">
         <i class="uiIcon uiAttachIcon"></i>
         <span class="taskAttachNumber caption">2</span>
-      </div>
+      </div>-->
 
     </div>
     <div class="taskDueDate">
       <div v-if="taskDueDate">
         <date-format :value="taskDueDate" :format="dateTimeFormat" />
-      </div>
-      <div v-else>
-        <span class="body-2 text-sub-title">{{ $t('label.noDueDate') }}</span>
       </div>
     </div>
 
