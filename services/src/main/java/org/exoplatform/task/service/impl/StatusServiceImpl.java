@@ -110,7 +110,17 @@ public class StatusServiceImpl implements StatusService {
 
     @Override
     @ExoTransactional
-    public StatusDto removeStatus(long statusID) throws EntityNotFoundException, NotAllowedOperationOnEntityException {
+    public StatusDto createStatus(ProjectDto project, String name, int rank) {
+        if (name == null || (name = name.trim()).isEmpty() || project == null) {
+            throw new IllegalArgumentException("project must be not null and status must not be null or empty");
+        }
+
+        return statusStorage.createStatus(project, name, rank);
+    }
+
+    @Override
+    @ExoTransactional
+    public StatusDto removeStatus(long statusID) throws Exception {
         return statusStorage.removeStatus(statusID);
     }
 
@@ -122,6 +132,16 @@ public class StatusServiceImpl implements StatusService {
         }
 
         return statusStorage.updateStatus(id, name);
+    }
+
+    @Override
+    @ExoTransactional
+    public StatusDto updateStatus(StatusDto statusDto) throws EntityNotFoundException, NotAllowedOperationOnEntityException {
+        String name = statusDto.getName();
+        if (name == null || (name = name.trim()).isEmpty()) {
+            throw new IllegalArgumentException("status name can't be null or empty");
+        }
+        return statusStorage.updateStatus(statusDto);
     }
 
 }

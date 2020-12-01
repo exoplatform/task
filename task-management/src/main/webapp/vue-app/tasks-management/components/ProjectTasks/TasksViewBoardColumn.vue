@@ -3,7 +3,12 @@
     <tasks-view-header
       :status="status"
       :view-type="'board'"
-      :tasks-number="tasksList.length"/>
+      :tasks-number="tasksList.length"
+      :index="index"
+      @delete-status="deleteStatus"
+      @add-status="createStatus"
+      @cancel-add-column="cancelAddColumn"
+      @add-column ="addColumn"/>
     <v-divider/>
     <draggable 
       v-model="tasksList" 
@@ -31,6 +36,10 @@
       status: {
         type: String,
         default: ""
+      },
+      index: {
+        type: Number,
+        default: 0
       }
     },
     data() {
@@ -58,7 +67,20 @@
        } 
       
     },
-
-    }
+    deleteStatus(status) {
+          this.$emit('delete-status', status);
+      },
+    createStatus() {
+          this.$emit('create-status');
+      },
+     
+    addColumn(index) {
+        this.$emit('add-column',index);
+      },
+    cancelAddColumn(index) {
+          this.$emit('cancel-add-column',index);         
+      },  
   }
+    }
+
 </script>

@@ -13,7 +13,7 @@ import java.util.*;
 @Data
 @NoArgsConstructor
 public class StatusDto implements Serializable {
-    private long id;
+    private Long id;
 
     private String name;
 
@@ -48,5 +48,24 @@ public class StatusDto implements Serializable {
         return status;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        StatusDto status = (StatusDto) o;
+
+        if (id != status.getId()) return false;
+        if (name != null ? !name.equals(status.getName()) : status.getName() != null) return false;
+        if (project != null ? !project.equals(status.getProject()) : status.getProject() != null) return false;
+        if (rank != null ? !rank.equals(status.getRank()) : status.getRank() != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, rank, project);
+    }
 
 }

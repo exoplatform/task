@@ -1,5 +1,12 @@
 <template>
   <v-app :id="'projectTask-'+project.id" class="projectTasksDashboard">
+    <exo-confirm-dialog
+      ref="deleteConfirmDialog"
+      :message="deleteConfirmMessage"
+      :title="$t('popup.deleteTask')"
+      :ok-label="$t('label.ok')"
+      :cancel-label="$t('popup.cancel')"
+      @ok="deleteConfirm()" />
     <div class="taskViewBreadcrumb pa-4">
       <a
         class="text-color"
@@ -26,7 +33,10 @@
         eager>
         <tasks-view-board
           :status-list="statusList"
-          :tasks-list="tasksList"/>
+          :tasks-list="tasksList"
+          @update-status="updateStatus"
+          @create-status="createStatus"
+          @delete-status="deleteStatus"/>
       </v-tab-item>
       <v-tab-item
         v-show="taskViewTabName == 'list'"
@@ -64,8 +74,10 @@
       return {
         keyword: null,
         taskViewTabName: 'board',
+        deleteConfirmMessage: null,
         statusList: [],
-        tasksList: []
+        tasksList: [],
+        status:null
       }
     },
     watch:{
@@ -118,6 +130,30 @@
           this.tasksList = data && data.tasks || [];
         })
       },
+      deleteStatus(status) {
+        this.deleteConfirmMessage = `${this.$t('popup.msg.deleteTask')} : ${status.name}? `;
+        this.status=status
+        this.$refs.deleteConfirmDialog.open();
+      },
+      deleteConfirm() {
+         return this.$statusService.deleteStatus(this.status.id)
+      },
+      updateStatus() {
+         return this.$statusService.updateStatus(this.status).then(resp => {
+           this.getStatusByProject(this.project.id) 
+        }) 
+      },
+      createStatus() {
+        this.statusList.forEach(function (element, index) {
+        if(!element.project){
+          element.project=this.project
+        }
+        element.rank=index
+        },  this);
+        return this.$statusService.createStatus(this.statusList).then(resp => {
+           this.getStatusByProject(this.project.id) 
+        }) 
+      },
     }
   }
-</script>9a
+</script>

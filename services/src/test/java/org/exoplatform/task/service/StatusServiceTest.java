@@ -30,6 +30,7 @@ import org.exoplatform.task.exception.NotAllowedOperationOnEntityException;
 import org.exoplatform.task.service.impl.StatusServiceImpl;
 import org.exoplatform.task.storage.ProjectStorage;
 import org.exoplatform.task.storage.StatusStorage;
+import org.exoplatform.task.storage.TaskStorage;
 import org.exoplatform.task.storage.impl.ProjectStorageImpl;
 import org.exoplatform.task.storage.impl.StatusStorageImpl;
 import org.junit.After;
@@ -61,6 +62,8 @@ public class StatusServiceTest {
 
     ProjectStorage projectStorage;
 
+    TaskStorage taskStorage;
+
     @Mock
     TaskHandler taskHandler;
     @Mock
@@ -81,7 +84,7 @@ public class StatusServiceTest {
         // Make sure the container is started to prevent the ExoTransactional annotation to fail
         PortalContainer.getInstance();
         projectStorage = new ProjectStorageImpl(daoHandler);
-        statusStorage = new StatusStorageImpl(daoHandler, projectStorage);
+        statusStorage = new StatusStorageImpl(daoHandler, projectStorage,taskStorage);
         statusService = new StatusServiceImpl(daoHandler, statusStorage);
 
         //Mock DAO handler to return Mocked DAO
