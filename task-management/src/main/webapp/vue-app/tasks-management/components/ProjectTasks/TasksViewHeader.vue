@@ -2,9 +2,31 @@
   <div
     :id="'task-'+viewType+'-'+status.name"
     class="tasksViewHeader d-flex justify-space-between align-center">
-    <div class="taskStatusName font-weight-bold text-color mb-1">{{ status.name }}</div>
-    <!--<div class="taskNumberAndActions d-flex align-center mb-1">
-      <span v-if="tasksNumber < maxTasksToShow" class="caption">{{ tasksNumber }}</span>
+    <div v-if="!status.edit" class="taskStatusName font-weight-bold text-color mb-1">{{ status.name }}</div>
+    <div 
+      v-if="status.edit" 
+      d-flex 
+      align-center 
+      mb-1>
+      <input         
+        ref="autoFocusInput1" 
+        v-model="status.name" 
+        placeholder="Status Name"
+        type="text"
+        class="pl-0 pt-0 status-name"
+        required  
+        autofocus>
+      <a class="taskAssignBtn mt-n1" @click="addStatus(index)">
+        <i class="uiIcon uiIconTick"></i>
+      </a>
+      <a class="taskAssignBtn mt-n1" @click="cancelAddColumn(index)">
+        <i class="uiIcon uiIconClose"></i>
+      </a>
+      
+    </div>
+    <div class="taskNumberAndActions d-flex align-center mb-1">
+      <span class="caption">{{ tasksNumber }}</span>
+      <!-- <span v-if="tasksNumber < maxTasksToShow" class="caption">{{ tasksNumber }}</span>
       <div v-else class="showTasksPagination">
         <span class="caption">
           {{ limitTasksToshow }} - {{ initialTasksToShow }} of {{ tasksNumber }}
@@ -17,7 +39,7 @@
           <i class="uiIcon uiIconArrowNext text-color"></i>
         </v-btn>
 
-      </div>
+      </div> -->
       <i
         class="uiIcon uiIconThreeDots"
         @click="displayActionMenu = true"></i>
@@ -35,26 +57,26 @@
             </v-list-item-title>
           </v-list-item>
           <v-list-item>
-            <v-list-item-title class="subtitle-2">
+            <v-list-item-title class="subtitle-2" @click="addColumn(index)">
               <i class="uiIcon uiIconBefore pr-1"></i>
               <span>{{ $t('label.status.before') }}</span>
             </v-list-item-title>
           </v-list-item>
           <v-list-item>
-            <v-list-item-title class="subtitle-2">
+            <v-list-item-title class="subtitle-2" @click="addColumn(index+1)">
               <i class="uiIcon uiIconAfter pr-1"></i>
               <span>{{ $t('label.status.after') }}</span>
             </v-list-item-title>
           </v-list-item>
           <v-list-item>
-            <v-list-item-title class="subtitle-2">
+            <v-list-item-title class="subtitle-2" @click="deleteStatus">
               <i class="uiIcon uiIconDelete pr-1"></i>
               <span>{{ $t('label.delete') }}</span>
             </v-list-item-title>
           </v-list-item>
         </v-list>
       </v-menu>
-    </div>-->
+    </div>
   </div>
 </template>
 <script>
@@ -75,6 +97,10 @@
       maxTasksToShow: {
         type: Number,
         default: 0
+      },
+      index: {
+        type: Number,
+        default: 0
       }
     },
     data() {
@@ -82,7 +108,7 @@
         displayActionMenu: false,
         tasksStatsStartValue:1,
         originalTasksToShow: this.maxTasksToShow,
-        disableBtnLoadMore: false
+        disableBtnLoadMore: false,
       }
     },
     computed: {
@@ -112,6 +138,19 @@
           this.originalTasksToShow = this.tasksNumber;
           this.disableBtnLoadMore = true;
         }
+      },
+      deleteStatus() {
+          this.$emit('delete-status', this.status);
+      },
+      addStatus(index) {
+        this.status.rank=index
+          this.$emit('add-status');
+      },
+      addColumn(index) {
+          this.$emit('add-column',index);         
+      },
+      cancelAddColumn(index) {
+          this.$emit('cancel-add-column',index);
       },
     }
   }
