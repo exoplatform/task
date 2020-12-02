@@ -135,7 +135,7 @@
         this.showCompleteTasks=e.showCompleteTasks;
         this.keyword=e.tasks.query
         this.searchonkeyChange=true
-        this.$emit('filter-task-dashboard', { tasks:e.tasks,showCompleteTasks:e.showCompleteTasks });
+        this.$emit('filter-task-dashboard', { tasks:e.tasks,filterLabels:e.filterLabels,showCompleteTasks:e.showCompleteTasks });
       }
     }
   }

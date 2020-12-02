@@ -69,6 +69,7 @@ public final class TaskUtil {
   public static final String ASSIGNEE = "assignee";
   public static final String PROJECT = "project";
   public static final String LABEL = "label";
+  public static final String COMPLETED = "completed";
   public static final String RANK = "rank";
   public static final String MEMBERSHIP = "membership";
   public static final String CREATED_BY = "createdBy";
@@ -819,6 +820,14 @@ public final class TaskUtil {
           keys[i] = new GroupKey(label.getName(), label, (int)label.getId());
         }
         return keys;
+      }
+    }
+    else if (TaskUtil.COMPLETED.equalsIgnoreCase(groupBy)) {
+
+      if(task.isCompleted() == false) {
+        return new GroupKey[] {new GroupKey("Uncompleted", null, Integer.MAX_VALUE)};
+      } else {
+        return new GroupKey[] {new GroupKey("Completed", null, Integer.MIN_VALUE)};
       }
     }
     return new GroupKey[0];

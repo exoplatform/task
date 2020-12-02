@@ -48,18 +48,16 @@
       </v-scale-transition>
     </v-toolbar>
     <task-filter-drawer
-      ref="filterTasksDrawer" 
+      ref="filterTasksDrawer"
+      :query="keyword"
       @filter-task="filterTasks"
-      @reset-filter-task="resetFilterTask"/>
+      @reset-filter-task="resetFilterTask"
+      @filter-task-query="filterTaskquery"/>
   </v-app>
 </template>
 <script>
   export default {
     props: {
-      keyword: {
-        type: String,
-        default: null,
-      },
       taskCardTab:{
         type: String,
         default: ''
@@ -72,6 +70,9 @@
     data () {
       return {
         tasks:null,
+        keyword: null,
+        awaitingSearch: false,
+        searchonkeyChange:true,
         task: {
           id:null,
           status:{}
@@ -81,12 +82,25 @@
     },
     watch: {
       keyword() {
-        this.$emit('keyword-changed', this.keyword);
-      }
+        if(this.searchonkeyChange){
+          if (!this.awaitingSearch) {
+            setTimeout(() => {
+              this.$emit('keyword-changed', this.keyword);
+              this.awaitingSearch = false;
+            }, 1000);
+          }
+          this.awaitingSearch = true;
+        }
+      },
     },
     methods: {
       resetFilterTask(){
         this.$emit('reset-filter-task-dashboard');
+      },filterTaskquery(e){
+        this.searchonkeyChange=false
+        this.showCompleteTasks=e.showCompleteTasks;
+        this.keyword=e.query
+        this.searchonkeyChange=true
       },
       filterTasks(e){
         this.tasks=e.tasks.tasks;
