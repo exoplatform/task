@@ -190,7 +190,7 @@
         }else if(name==='Uncompleted'){
           return 'label.task.uncompleted'
         }else
-          return name
+          {return name}
 
       }
     }
