@@ -67,7 +67,7 @@
             :task="task"
             @projectsListOpened="closePriority(); closeStatus(); closeLabelsList(); closeTaskDates();closeAssignements()"/>
         </div>
-        <div class="taskLabelsName">
+        <div class="taskLabelsName mb-3">
           <task-labels
             :task="task"
             @labelsListOpened="closePriority(); closeStatus(); closeProjectsList();closeTaskDates();closeAssignements()"/>
@@ -300,18 +300,6 @@
           }, 200);
         }
       });
-      this.$root.$on('open-task-drawer', task => {
-        window.setTimeout(() => {
-            document.dispatchEvent(new CustomEvent('loadTaskPriority', {detail: task}));
-            document.dispatchEvent(new CustomEvent('loadProjectStatus', {detail: task}));
-            document.dispatchEvent(new CustomEvent('loadDueDate', {detail: task}));
-            document.dispatchEvent(new CustomEvent('loadProjectName', {detail: task}));
-            document.dispatchEvent(new CustomEvent('loadPlanDates', {detail: task}));
-            document.dispatchEvent(new CustomEvent('loadTaskLabels', {detail: task}));
-            document.dispatchEvent(new CustomEvent('loadAssignee', {detail: task}));
-          },
-          200);
-      });
 
       document.addEventListener('labelListChanged', event => {
         if (event && event.detail) {
@@ -495,6 +483,15 @@
       open(task) {
         this.enableAutosave=false;
         this.task=task
+        window.setTimeout(() => {
+            document.dispatchEvent(new CustomEvent('loadTaskPriority', {detail: task}));
+            document.dispatchEvent(new CustomEvent('loadProjectStatus', {detail: task}));
+            document.dispatchEvent(new CustomEvent('loadProjectName', {detail: task}));
+            document.dispatchEvent(new CustomEvent('loadPlanDates', {detail: task}));
+            document.dispatchEvent(new CustomEvent('loadTaskLabels', {detail: task}));
+            document.dispatchEvent(new CustomEvent('loadAssignee', {detail: task}));
+          },
+          200);
         if(task.id!=null){
         this.retrieveTaskLogs();
         this.getTaskComments();

@@ -1787,6 +1787,7 @@
         > .v-input__slot {
           box-shadow: none!important;
           padding: 0!important;
+          margin-bottom: 0!important;
           .v-select__slot {
             label {
               color: @greyColorLighten1;
@@ -1816,6 +1817,12 @@
         }
       }
     }
+    .taskAssignMenu {
+      position: relative;
+      .v-menu__content {
+        top: 10px!important;
+      }
+    }
     .assignTaskMenu {
       .uiAssignToMeIcon {
         margin-top: -4px;
@@ -1838,8 +1845,6 @@
     .identitySuggester {
       margin: 8px 12px !important;
       padding: 5px!important;
-      max-height: 80px;
-      overflow-y: scroll;
       &::-webkit-scrollbar {
         width: 5px;
       }

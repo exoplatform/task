@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="assigneeParent">
     <v-menu
       id="assigneeMenu"
       v-model="globalMenu"
@@ -11,6 +11,8 @@
       transition="scale-transition"
       class="taskAssignMenu"
       offset-y
+      allow-overflow
+      eager
       bottom>
       <template v-slot:activator="{ on }">
         <div class="d-flex align-center taskAssignItem">
@@ -50,7 +52,7 @@
           :labels="suggesterLabels"
           :value="taskAssigneeObj"
           name="taskAssignee"
-          type-of-relations="user_to_invite"
+          type-of-relations="''"
           height="40"
           include-users
           @input="assigneeValueChanged($event)"
@@ -68,7 +70,7 @@
           :labels="suggesterLabels"
           :value="taskCoworkerObj"
           name="taskCoworkers"
-          type-of-relations="user_to_invite"
+          type-of-relations="''"
           height="40"
           include-users
           multiple
@@ -121,9 +123,8 @@
       }
     },
     mounted() {
-      // Force to close DatePickers when clicking outside
       $(document).on('click', (e) => {
-        if (e.target && !$(e.target).parents(`.${this.menuId}`).length) {
+        if (e.target && !$(e.target).parents(`.${this.menuId}`).length && !$(e.target).parents('.v-autocomplete__content').length) {
           this.globalMenu = false;
         }
       });
