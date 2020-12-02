@@ -495,9 +495,10 @@
       open(task) {
         this.enableAutosave=false;
         this.task=task
-        if(this.task.id!=null){
+        if(task.id!=null){
         this.retrieveTaskLogs();
         this.getTaskComments();
+        window.history.pushState('task', 'Task details', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest?taskId=${task.id}`);
       }
         this.$refs.addTaskDrawer.open();
       },

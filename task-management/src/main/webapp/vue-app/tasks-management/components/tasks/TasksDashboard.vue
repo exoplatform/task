@@ -109,7 +109,7 @@
       },
     },
     created() {
-      window.history.pushState('mytasks', 'My Tasks', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest?mytasks`);
+     // window.history.pushState('mytasks', 'My Tasks', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest?mytasks`);
       this.originalLimitToFetch = this.limitToFetch = this.limit;
       this.$root.$on('task-added', task => {
        this.searchTasks();

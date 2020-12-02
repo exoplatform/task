@@ -62,7 +62,7 @@
 
     <v-tabs-items
       v-show="!filterProjectActive"
-      v-if="tasksList && tasksList.length"
+      v-if="tasksList && tasksList.length && !loadingTasks"
       :key="id">
       <v-tab-item
         v-show="taskViewTabName == 'board'"
@@ -87,11 +87,22 @@
       </v-tab-item>-->
     </v-tabs-items>
     <div
-      v-else
+      v-if="(!tasksList || !tasksList.length) && !loadingTasks"
       class="noTasksProject">
       <div class="noTasksProjectIcon"><i class="uiIcon uiIconTask"></i></div>
       <div class="noTasksProjectLabel"><span>{{ $t('label.noTasks') }}</span></div>
       <div class="noTasksProjectLink"><a href="#">{{ $t('label.addTask') }}</a></div>
+    </div>
+    <div class="ma-0 border-box-sizing">
+      <v-btn
+        v-if="loadingTasks"
+        :loading="loadingTasks"
+        :disabled="loadingTasks"
+        class="loadMoreButton ma-auto mt-4 btn"
+        block
+        @click="loadNextPage">
+        {{ $t('spacesList.button.showMore') }}
+      </v-btn>
     </div>
     <tasks-assignee-coworker-drawer/>
   </v-app>
@@ -107,6 +118,7 @@
     data () {
       return {
         keyword: null,
+        loadingTasks: false,
         taskViewTabName: 'board',
         statusList: [],
         tasksList: [],
@@ -143,29 +155,32 @@
         this.getTasksByProject(this.project.id,keyword);
       },
       getTasksByProject(ProjectId,query) {
+        this.loadingTasks = true;
         const tasks = {
           query: query,
           offset: 0,
           limit: 0,
           showCompleteTasks:false,
         };
-        return this.$tasksService.filterTasksList(tasks,'','','',0,0,ProjectId).then(data => {
+        return this.$tasksService.filterTasksList(tasks,'','','',ProjectId).then(data => {
           this.tasksList = data && data.tasks || [];
           this.filterProjectActive=false;
 
         })
+        .finally(() => this.loadingTasks = false);
 
       },
       resetFiltertaskDashboard(){
         this.getTasksByProject(this.project.id,"");
       },
       filterTaskDashboard(e){
+        this.loadingTasks = true;
         const tasks=e.tasks;
         tasks.showCompleteTasks=e.showCompleteTasks;
         if (tasks.groupBy==='completed'){
           tasks.showCompleteTasks=true;
         }
-        return this.$tasksService.filterTasksList(e.tasks,'','',e.filterLabels.labels,0,0,this.project.id).then(data => {
+        return this.$tasksService.filterTasksList(e.tasks,'','',e.filterLabels.labels,this.project.id).then(data => {
           if(data.projectName){
             this.filterProjectActive=true
             this.tasksList = data && data.tasks || [];
@@ -177,6 +192,7 @@
           }
 
         })
+        .finally(() => this.loadingTasks = false);
       },
       getNameGroup(name){
         if (name==='Unassigned'){

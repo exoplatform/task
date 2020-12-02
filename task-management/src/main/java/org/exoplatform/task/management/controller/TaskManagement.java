@@ -218,13 +218,14 @@ public class TaskManagement {
     String listId = ViewState.buildId(currProject, (long) -1, "incoming");
     ViewState viewState = viewStateService.getViewState(listId);
     String orderBy = viewState.getOrderBy();
-    if (orderBy == null) {
+    if (orderBy == null ||  orderBy.equals("")) {
       orderBy = TaskUtil.CREATED_TIME;
     }
+
     taskQuery.setOrderBy(Arrays.asList(new OrderBy.DESC(orderBy)));
 
     String groupBy =  viewState.getGroupBy();
-    if (groupBy == null) {
+    if (groupBy == null ||  groupBy.equals("")) {
       groupBy = TaskUtil.NONE;
     }
 

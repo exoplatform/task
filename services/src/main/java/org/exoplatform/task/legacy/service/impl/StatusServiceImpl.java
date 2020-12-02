@@ -35,6 +35,7 @@ import org.exoplatform.task.dao.DAOHandler;
 import org.exoplatform.task.dao.StatusHandler;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
+import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.exception.NotAllowedOperationOnEntityException;
 import org.exoplatform.task.legacy.service.StatusService;
@@ -136,8 +137,12 @@ public class StatusServiceImpl implements StatusService {
       throw new NotAllowedOperationOnEntityException(statusID, Status.class, "Delete last status");
     }
     //
-    daoHandler.getTaskHandler().updateStatus(st, altStatus);
-
+    //daoHandler.getTaskHandler().updateStatus(st, altStatus);
+    List<Task> tasks = daoHandler.getTaskHandler().getByStatus(statusID);
+    for(Task task : tasks){
+      task.setStatus(altStatus);
+    }
+    daoHandler.getTaskHandler().updateAll(tasks);
     //
     st.setProject(null);
     handler.delete(st);

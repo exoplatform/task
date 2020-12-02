@@ -13,8 +13,8 @@ export function getMyTasksList(query, offset, limit) {
     });
 }
 
-export function filterTasksList(tasks, groupBy, sortBy, filterLabelIds, offset, limit, projectId) {
-    return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/tasks/filter?projectId=${projectId || -2}&query=${tasks.query || ''}&dueDate=${tasks.dueDate || ''}&priority=${tasks.priority || ''}&statusId=${tasks.statusId || ''}&showCompleted=${tasks.showCompleteTasks || ''}&assignee=${tasks.assignee || ''}&groupBy=${groupBy || tasks.groupBy || ''}&orderBy=${sortBy || tasks.orderBy || ''}&filterLabelIds=${filterLabelIds || tasks.filterLabelIds || ''}&&offset=${offset || 0}&limit=${limit|| 0}`, {
+export function filterTasksList(tasks, groupBy, sortBy, filterLabelIds, projectId) {
+    return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/tasks/filter?projectId=${projectId || -2}&query=${tasks.query || ''}&dueDate=${tasks.dueDate || ''}&priority=${tasks.priority || ''}&statusId=${tasks.statusId || ''}&showCompleted=${tasks.showCompleteTasks || ''}&assignee=${tasks.assignee || ''}&groupBy=${groupBy || tasks.groupBy || ''}&orderBy=${sortBy || tasks.orderBy || ''}&filterLabelIds=${filterLabelIds || tasks.filterLabelIds || ''}&&offset=${tasks.offset || 0}&limit=${tasks.limit|| 0}`, {
         method: 'GET',
         credentials: 'include',
     }).then(resp => {
