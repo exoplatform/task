@@ -14,7 +14,6 @@
               :tasks-list="getTasksByStatus(tasksList,status.name)"
               @updateTaskCompleted="updateTaskCompleted"
               @updateTaskStatus="updateTaskStatus" />
-            <v-divider/>
           </div>
       </div></v-item-group>
     </v-card>
