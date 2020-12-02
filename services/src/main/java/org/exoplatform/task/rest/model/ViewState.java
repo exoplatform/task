@@ -13,17 +13,9 @@ public class ViewState {
   private String id;
   private String orderBy;
   private String groupBy;
-  private ViewType viewType;
 
   public ViewState(String id) {
     this.id = id;
-  }
-
-  public ViewState(ViewState viewState) {
-    this.id = viewState.id;
-    this.orderBy = viewState.orderBy;
-    this.groupBy = viewState.groupBy;
-    this.viewType = viewState.viewType;
   }
 
   public String getId() {
@@ -60,16 +52,8 @@ public class ViewState {
     return groupBy;
   }
 
-  public void setViewType(ViewType viewType) {
-    this.viewType = viewType;
-  }
-
-  public ViewType getViewType() {
-    return viewType;
-  }
-
   public boolean isEmpty() {
-    return this.groupBy == null && this.orderBy == null && this.viewType == null;
+    return this.groupBy == null && this.orderBy == null;
   }
 
   @Override
@@ -79,13 +63,12 @@ public class ViewState {
     ViewState viewState = (ViewState) o;
     return Objects.equals(id, viewState.id) &&
             Objects.equals(orderBy, viewState.orderBy) &&
-            Objects.equals(groupBy, viewState.groupBy) &&
-            viewType == viewState.viewType;
+            Objects.equals(groupBy, viewState.groupBy);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, orderBy, groupBy, viewType);
+    return Objects.hash(id, orderBy, groupBy);
   }
 
   public static class Filter {

@@ -52,6 +52,7 @@ public class TaskEntity {
   private User currentUser;
   private SpaceEntity space;
   private List<LabelDto> labels = new ArrayList<LabelDto>();
+  private boolean completed;
 
   public TaskEntity() {
   }
@@ -61,6 +62,7 @@ public class TaskEntity {
     this.dueDate=task.getDueDate();
     this.status=task.getStatus();
     this.task = task;
+    this.completed = task.isCompleted();
     this.commentCount = commentCount;
     this.assignee = UserUtil.getUser(task.getAssignee());
     this.createdBy = UserUtil.getUser(task.getCreatedBy());

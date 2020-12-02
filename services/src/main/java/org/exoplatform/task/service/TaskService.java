@@ -1,16 +1,21 @@
 package org.exoplatform.task.service;
 
 import org.exoplatform.commons.utils.ListAccess;
+import org.exoplatform.services.security.Identity;
 import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.dao.TaskQuery;
+import org.exoplatform.task.domain.Priority;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.dto.ChangeLogEntry;
 import org.exoplatform.task.dto.LabelDto;
 import org.exoplatform.task.dto.TaskDto;
+import org.exoplatform.task.dto.TasksList;
 import org.exoplatform.task.exception.EntityNotFoundException;
+import org.exoplatform.task.util.TaskUtil;
 
 import java.util.List;
 import java.util.Set;
+import java.util.TimeZone;
 
 
 public interface TaskService {
@@ -134,4 +139,6 @@ public interface TaskService {
     long countTasks(String user, String query);
 
     List<Object[]> countTaskStatusByProject(long projectId);
-}
+
+    public TasksList filterTasks(String query, long projectId, String keyword, List<Long> labels, TaskUtil.DUE dueDate, Priority priority, List<String> assignees, Long labelId, Long statusId, Identity currIdentity, String dueCategory, String space_group_id , TimeZone userTimezone, boolean isShowCompleted, boolean advanceSearch, boolean noProjPermission, boolean noLblPermission, String orderBy, String groupBy, int offset, int limit) throws Exception;
+    }

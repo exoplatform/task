@@ -8,8 +8,7 @@ import LogDetails from './components/TaskDrawerComponents/LogDetails.vue';
 import TaskComments from './components/TaskDrawerComponents/TaskComments.vue';
 import TaskPriority from './components/TaskDrawerComponents/TaskPriority.vue';
 import TaskStatus from "./components/TaskDrawerComponents/TasksStatus.vue";
-import TaskDueDate from "./components/TaskDrawerComponents/TaskDueDate.vue";
-import TaskPlanDates from "./components/TaskDrawerComponents/TaskPlanDates.vue";
+import TaskFormDatePickers from "./components/TaskDrawerComponents/TaskFormDatePickers.vue";
 
 const components = {
     'task-drawer': TaskDrawer,
@@ -22,8 +21,7 @@ const components = {
     'task-comments': TaskComments,
     'task-priority' : TaskPriority,
     'task-status' : TaskStatus,
-    'task-due-date': TaskDueDate,
-    'task-plan-dates': TaskPlanDates
+    'task-form-date-pickers': TaskFormDatePickers
 };
 
 for (const key in components) {

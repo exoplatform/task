@@ -3,6 +3,7 @@
     <v-menu
       id="assigneeMenu"
       v-model="globalMenu"
+      :content-class="menuId"
       :close-on-content-click="false"
       :nudge-left="0"
       :max-width="300"
@@ -13,18 +14,20 @@
       bottom>
       <template v-slot:activator="{ on }">
         <div class="d-flex align-center taskAssignItem">
-          <div v-if="taskAssigneeObj && taskAssigneeObj.profile && taskAssigneeObj.profile.fullName">
+          <div v-if="taskAssigneeObj && taskAssigneeObj.profile && taskAssigneeObj.profile.fullName" v-on="on">
             <exo-user-avatar
               :username="taskAssigneeObj.profile.remoteId"
               :fullname="taskAssigneeObj.profile.fullName"
               :avatar-url="taskAssigneeObj.profile.avatarUrl"
               :title="taskAssigneeObj.profile.fullName"
               :size="26"
+              :url="null"
               class="pr-2"/>
           </div>
           <span
             v-if="taskCoworkers.length > 0"
-            class="user-name pr-2 caption font-italic lighten-2"> +{{ taskCoworkers.length }} {{ $t('label.coworker') }}
+            class="user-name pr-2 caption font-italic lighten-2"
+            v-on="on"> +{{ taskCoworkers.length }} {{ $t('label.coworker') }}
           </span>
           <a
             class="taskAssignBtn mt-n1"
@@ -92,7 +95,7 @@
         default: () => {
           return false;
         }
-      }
+      },
     },
     data() {
       return {
@@ -103,7 +106,10 @@
         taskCoworkerObj:[],
         taskCoworkers: [],
         currentUser: eXo.env.portal.userName,
-        menu: false
+        menu: false,
+        menuId: `AssigneeMenu${parseInt(Math.random() * 10000)
+          .toString()
+          .toString()}`,
       }
     },
     computed: {
@@ -113,6 +119,14 @@
           noDataLabel: this.$t('label.noDataLabel'),
         };
       }
+    },
+    mounted() {
+      // Force to close DatePickers when clicking outside
+      $(document).on('click', (e) => {
+        if (e.target && !$(e.target).parents(`.${this.menuId}`).length) {
+          this.globalMenu = false;
+        }
+      });
     },
     created() {
       document.addEventListener('closeAssignments',()=> {

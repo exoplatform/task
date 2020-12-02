@@ -23,6 +23,8 @@ import TasksAssigneeAndCoworkerDrawer from "./components/tasks/TasksAssigneeAndC
 import TasksGroupDrawer from "./components/tasks/TasksGroupDrawer.vue";
 import TasksSortByDrawer from "./components/tasks/TasksSortByDrawer.vue";
 import TasksLabelsDrawer from "./components/tasks/TasksLabelsDrawer.vue";
+import TasksGroupProjectDrawer from "./components/tasks/TasksGroupProjectDrawer.vue";
+import TasksSortByProjectDrawer from "./components/tasks/TasksSortByProjectDrawer.vue";
 
 import TasksViewDashboard from "./components/ProjectTasks/TasksViewDashboard.vue";
 import TasksViewToolbar from "./components/ProjectTasks/TasksViewToolbar.vue";
@@ -61,7 +63,8 @@ const components = {
     'tasks-group-drawer': TasksGroupDrawer,
     'tasks-sort-by-drawer': TasksSortByDrawer,
     'tasks-labels-drawer': TasksLabelsDrawer,
-
+    'tasks-group-project-drawer': TasksGroupProjectDrawer,
+    'tasks-sort-by-project-drawer': TasksSortByProjectDrawer,
 
     'tasks-view-dashboard': TasksViewDashboard,
     'tasks-view-toolbar': TasksViewToolbar,

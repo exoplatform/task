@@ -14,7 +14,6 @@
               :tasks-list="getTasksByStatus(tasksList,status.name)"
               @updateTaskCompleted="updateTaskCompleted"
               @updateTaskStatus="updateTaskStatus" />
-            <v-divider/>
           </div>
       </div></v-item-group>
     </v-card>
@@ -45,9 +44,11 @@ import {updateTask} from '../../../taskDrawer/taskDrawerApi';
       getTasksByStatus(items ,statusName) {
         const tasksByStatus = [];
         items.forEach((item) => {
-          if(item.task.status) {
-            if(item.task.status.name ===  statusName) {
-              tasksByStatus.push(item);
+          if(item.task) {
+            if (item.task.status) {
+              if (item.task.status.name === statusName) {
+                tasksByStatus.push(item);
+              }
             }
           }
         });

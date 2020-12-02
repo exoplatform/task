@@ -33,7 +33,7 @@
         </value-param>
         <value-param>
           <name>override</name>
-          <value>${exo.app-center.tasks.override:false}</value>
+          <value>${exo.app-center.tasks.override:true}</value>
         </value-param>
         <object-param>
           <name>application</name>
@@ -83,14 +83,14 @@
         </value-param>
         <value-param>
           <name>override</name>
-          <value>${exo.app-center.tasks.override:false}</value>
+          <value>${exo.app-center.tasks.override:true}</value>
         </value-param>
         <object-param>
           <name>application</name>
           <description>description</description>
           <object type="org.exoplatform.appcenter.dto.Application">
             <field name="title">
-              <string>New Tasks</string>
+              <string>Tasks V2 (beta)</string>
             </field>
             <field name="url">
               <string>./taskstest</string>
@@ -109,7 +109,7 @@
               <boolean>true</boolean>
             </field>
             <field name="isMandatory">
-              <boolean>true</boolean>
+              <boolean>false</boolean>
             </field>
             <field name="isMobile">
               <boolean>true</boolean>

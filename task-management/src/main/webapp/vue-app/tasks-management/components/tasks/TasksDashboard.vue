@@ -29,24 +29,27 @@
           <span class="amount-item">({{ tasksFilter.tasks[i].length }})</span>
         </div>
 
-        <tasks-cards-list
+        <!--<tasks-cards-list
           v-show="isTasksTabChanged"
-          :tasks="tasksFilter.tasks[i]"/>
+          :tasks="tasksFilter.tasks[i]"/>-->
         <tasks-list
-          v-show="!isTasksTabChanged"
           :tasks="tasksFilter.tasks[i]"/>
       </div>
     </div>
-    <v-tabs-items v-show="!filterActive" :key="id">
-      <v-tab-item v-show="isTasksTabChanged" eager>
-        <tasks-cards-list
+    <div v-show="!filterActive">
+      <tasks-list
+        :tasks="tasks"/>
+    </div>
+    <!--<v-tabs-items v-show="!filterActive" :key="id">
+      &lt;!&ndash;<v-tab-item v-show="isTasksTabChanged" eager>
+         <tasks-cards-list
           :tasks="tasks"/>
-      </v-tab-item>
-      <v-tab-item v-show="!isTasksTabChanged" eager>
+      </v-tab-item>&ndash;&gt;
+      <v-tab-item eager>
         <tasks-list
           :tasks="tasks"/>
       </v-tab-item>
-    </v-tabs-items>
+    </v-tabs-items>-->
     <v-row class="ma-0 border-box-sizing">
       <v-btn
         v-if="canShowMore"
@@ -106,7 +109,7 @@
       },
     },
     created() {
-      window.history.pushState('mytasks', 'My Tasks', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest?mytasks`);
+     // window.history.pushState('mytasks', 'My Tasks', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest?mytasks`);
       this.originalLimitToFetch = this.limitToFetch = this.limit;
       this.$root.$on('task-added', task => {
        this.searchTasks();

@@ -11,7 +11,6 @@ import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
-import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
@@ -21,7 +20,6 @@ import org.exoplatform.task.model.GroupKey;
 import org.exoplatform.task.model.User;
 import org.exoplatform.task.rest.model.*;
 import org.exoplatform.task.service.*;
-import org.exoplatform.task.service.impl.ViewStateService;
 import org.exoplatform.task.storage.CommentStorage;
 import org.exoplatform.task.storage.StatusStorage;
 import org.exoplatform.task.util.*;
@@ -62,8 +60,6 @@ public class TaskRestService implements ResourceContainer {
 
   private CommentStorage   commentStorage;
 
-  private ViewStateService viewStateService;
-
   public TaskRestService(TaskService taskService,
                          CommentService commentService,
                          ProjectService projectService,
@@ -78,24 +74,6 @@ public class TaskRestService implements ResourceContainer {
     this.userService = userService;
     this.spaceService = spaceService;
     this.labelService = labelService;
-  }
-
-  public TaskRestService(TaskService taskService,
-                         CommentService commentService,
-                         ProjectService projectService,
-                         StatusService statusService,
-                         UserService userService,
-                         SpaceService spaceService,
-                         LabelService labelService,
-                         ViewStateService viewStateService) {
-    this.taskService = taskService;
-    this.commentService = commentService;
-    this.projectService = projectService;
-    this.statusService = statusService;
-    this.userService = userService;
-    this.spaceService = spaceService;
-    this.labelService = labelService;
-    this.viewStateService=viewStateService;
   }
 
 
@@ -217,8 +195,6 @@ public class TaskRestService implements ResourceContainer {
                               @ApiParam(value = "groupBy term", required = false) @QueryParam("groupBy") String groupBy,
                               @ApiParam(value = "orderBy term", required = false) @QueryParam("orderBy") String orderBy,
                               @ApiParam(value = "dueDate term", required = false) @QueryParam("dueDate") String dueDate,
-                              @ApiParam(value = "page term", required = false) @QueryParam("page") Integer page,
-                              @ApiParam(value = "viewType", required = false) @QueryParam("viewType") String viewType,
                               @ApiParam(value = "labelId term", required = false) @QueryParam("labelId") Long labelId,
                               @ApiParam(value = "filterLabelIds term", required = false) @QueryParam("filterLabelIds") String filterLabelIds,
                               @ApiParam(value = "Offset", required = false, defaultValue = "0") @QueryParam("offset") int offset,
@@ -227,26 +203,8 @@ public class TaskRestService implements ResourceContainer {
                               @ApiParam(value = "Returning All Details", defaultValue = "false") @QueryParam("returnDetails") boolean returnDetails) throws Exception {
 
     String listId = ViewState.buildId(projectId, labelId, dueCategory);
-    ViewState viewState = viewStateService.getViewState(listId);
-    if (orderBy == null) {
-      orderBy = viewState.getOrderBy();
-    } else {
-      viewState.setOrderBy(orderBy);
-    }
-    if (groupBy == null) {
-      groupBy = viewState.getGroupBy();
-    } else {
-      viewState.setGroupBy(groupBy);
-    }
 
     Identity currIdentity = ConversationState.getCurrent().getIdentity();
-    ViewType vType;
-    if (projectId <= 0 || viewType == null || viewType.isEmpty()) {
-      vType = viewState.getViewType();
-    } else {
-      vType = ViewType.getViewType(viewType);
-      viewState.setViewType(vType);
-    }
 
     Long statusIdLong = null;
     if (org.apache.commons.lang.StringUtils.isNotBlank(statusId)) {
@@ -254,19 +212,15 @@ public class TaskRestService implements ResourceContainer {
       if (statusDto == null || !statusDto.getProject().canView(currIdentity)) {
         return Response.status(Response.Status.NOT_FOUND).build();
       }
+      statusIdLong=statusDto.getId();
     }
 
-    viewStateService.saveViewState(viewState);
-    boolean isBoardView = (ViewType.BOARD == vType);
-
-    ViewState.Filter filter = viewStateService.getFilter(listId);
+    ViewState.Filter filter = new ViewState.Filter(listId);
     filter.updateFilterData(filterLabelIds, statusId, dueDate, priority, assignee, showCompleted, query);
-    viewStateService.saveFilter(filter);
 
     ProjectDto project = null;
     boolean noProjPermission = false;
     boolean advanceSearch = true;
-    List<StatusDto> projectStatuses = Collections.emptyList();
     if ( projectId > 0) {
       project = projectService.getProject(projectId);
       if (!project.canView(currIdentity)) {
@@ -275,11 +229,8 @@ public class TaskRestService implements ResourceContainer {
         } else {
           return Response.status(Response.Status.NOT_FOUND).build();
         }
-      } else if (isBoardView) {
-        projectStatuses = statusService.getStatuses(projectId);
       }
     }
-    String currentLabelName = "";
     boolean noLblPermission = false;
     if (labelId != null && labelId > 0) {
       LabelDto label = labelService.getLabel(labelId);
@@ -289,205 +240,27 @@ public class TaskRestService implements ResourceContainer {
         } else {
           return Response.status(Response.Status.NOT_FOUND).build();
         }
-      } else {
-        currentLabelName = label.getName();
       }
     }
-
-    List<String> defOrders;
-    List<String> defGroupBys;
-    if (isBoardView) {
-      defGroupBys = Arrays.asList(TaskUtil.NONE, TaskUtil.LABEL, /*TaskUtil.DUEDATE,*/ TaskUtil.ASSIGNEE);
-      defOrders =  Arrays.asList(TaskUtil.DUEDATE, TaskUtil.PRIORITY, TaskUtil.RANK);
-      if (orderBy == null || !defOrders.contains(orderBy)) {
-        orderBy = TaskUtil.DUEDATE;
-      }
-      if (groupBy == null || !defGroupBys.contains(groupBy)) {
-        groupBy = TaskUtil.NONE;
-      }
-    } else {
-     /* defGroupBys = TaskUtil.getDefGroupBys(projectId, bundle);
-      defOrders = TaskUtil.getDefOrders(bundle);*/
-    }
-
-    String currentUser = ConversationState.getCurrent().getIdentity().getUserId();
+    String currentUser = currIdentity.getUserId();
     TimeZone userTimezone = userService.getUserTimezone(currentUser);
 
     if (currentUser == null || currentUser.isEmpty()) {
       return Response.status(Response.Status.NOT_FOUND).build();
     }
 
-    List<Long> spaceProjectIds = null;
-    if (space_group_id != null) {
-      spaceProjectIds = new LinkedList<Long>();
-      List<ProjectDto> projects = ProjectUtil.flattenTree(ProjectUtil.getProjectTree(space_group_id, projectService,offset,limit), projectService,offset,limit);
-      for (ProjectDto p : projects) {
-        if (p.canView(currIdentity)) {
-          spaceProjectIds.add(p.getId());
-        }
-      }
-    }
-    List<Long> allProjectIds = null;
-    if (projectId == 0) {
-      allProjectIds = new LinkedList<Long>();
-      List<ProjectDto> projects = ProjectUtil.flattenTree(ProjectUtil.getProjectTree(null, projectService,offset,limit), projectService,offset,limit);
-      for (ProjectDto p : projects) {
-        if (p.canView(currIdentity)) {
-          allProjectIds.add(p.getId());
-        }
-      }
-    }
-
-    OrderBy order = null;
-    if(orderBy != null && !orderBy.trim().isEmpty()) {
-      order = TaskUtil.TITLE.equals(orderBy) || TaskUtil.DUEDATE.equals(orderBy) ? new OrderBy.ASC(orderBy) : new OrderBy.DESC(orderBy);
-    }
-
-    TaskQuery taskQuery = new TaskQuery();
-    if (advanceSearch) {
-      StatusDto statusDto = filter.getStatus() != null ? statusService.getStatus(filter.getStatus()) : null;
-      TaskUtil.buildTaskQuery(taskQuery, filter.getKeyword(), filter.getLabel(), statusDto, filter.getDue(), filter.getPriority(), filter.getAssignees(), filter.isShowCompleted(), userTimezone);
-    } else {
-      taskQuery.setKeyword(query);
-      taskQuery.setCompleted(false);
-    }
-
-    //Get Tasks in good order
-    if(projectId == ProjectUtil.INCOMING_PROJECT_ID) {
-      //. Default order by CreatedDate
-      if (orderBy == null || orderBy.isEmpty()) {
-        orderBy = TaskUtil.CREATED_TIME;
-      }
-      order = new OrderBy.DESC(orderBy);
-
-      taskQuery.setIsIncomingOf(currentUser);
-      taskQuery.setOrderBy(Arrays.asList(order));
-    } else if (projectId == ProjectUtil.TODO_PROJECT_ID) {
-      defGroupBys =  Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT, TaskUtil.LABEL, TaskUtil.DUEDATE,TaskUtil.ASSIGNEE);
-      defOrders =  Arrays.asList(TaskUtil.TITLE, TaskUtil.STATUS, TaskUtil.DUEDATE, TaskUtil.PRIORITY, TaskUtil.RANK);
-
-      taskQuery.setIsTodoOf(currentUser);
-
-      //TODO: process fiter here
-      if ("overDue".equalsIgnoreCase(dueCategory)) {
-        defGroupBys = Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT, TaskUtil.LABEL);
-        defOrders = Arrays.asList(TaskUtil.TITLE, TaskUtil.PRIORITY, TaskUtil.DUEDATE);
-        groupBy = groupBy == null || !defGroupBys.contains(groupBy) ? TaskUtil.PROJECT : groupBy;
-      } else if ("today".equalsIgnoreCase(dueCategory)) {
-        defGroupBys =  Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT, TaskUtil.LABEL);
-        defOrders =  Arrays.asList(TaskUtil.TITLE, TaskUtil.PRIORITY, TaskUtil.RANK);
-        if (orderBy == null) {
-          order = new OrderBy.DESC(TaskUtil.PRIORITY);
-          orderBy = TaskUtil.PRIORITY;
-        }
-        groupBy = groupBy == null || !defGroupBys.contains(groupBy) ? TaskUtil.NONE : groupBy;
-      } else if ("tomorrow".equalsIgnoreCase(dueCategory)) {
-        defGroupBys = Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT, TaskUtil.LABEL);
-        defOrders = Arrays.asList(TaskUtil.TITLE, TaskUtil.PRIORITY, TaskUtil.RANK);
-        if (orderBy == null || !defOrders.contains(orderBy)) {
-          order = new OrderBy.DESC(TaskUtil.PRIORITY);
-          orderBy = TaskUtil.PRIORITY;
-        }
-        groupBy = groupBy == null || !defGroupBys.contains(groupBy) ? TaskUtil.NONE : groupBy;
-      } else if ("upcoming".equalsIgnoreCase(dueCategory)) {
-        defGroupBys = Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT, TaskUtil.LABEL);
-        defOrders =  Arrays.asList(TaskUtil.TITLE, TaskUtil.PRIORITY, TaskUtil.DUEDATE, TaskUtil.RANK);
-        groupBy = groupBy == null || !defGroupBys.contains(groupBy) ? TaskUtil.NONE : groupBy;
-      }
-
-      if (orderBy == null || !defOrders.contains(orderBy)) {
-        orderBy = TaskUtil.DUEDATE;
-        order = new OrderBy.ASC(TaskUtil.DUEDATE);
-      }
-      if (groupBy == null || !defGroupBys.contains(groupBy)) {
-        groupBy = TaskUtil.DUEDATE;
-      }
-
-      Date[] filterDate = TaskUtil.convertDueDate(dueCategory, userTimezone);
-      taskQuery.setDueDateFrom(filterDate[0]);
-      taskQuery.setDueDateTo(filterDate[1]);
-      taskQuery.setOrderBy(Arrays.asList(order));
-
-    } else if (projectId >= 0) {
-      if (projectId == 0) {
-        defGroupBys = Arrays.asList(TaskUtil.NONE, TaskUtil.ASSIGNEE, TaskUtil.PROJECT, TaskUtil.LABEL, TaskUtil.DUEDATE, TaskUtil.STATUS);
-
-        if (orderBy == null || orderBy.isEmpty()) {
-          orderBy = TaskUtil.DUEDATE;
-          order = new OrderBy.ASC(orderBy);
-        }
-
-        if (spaceProjectIds != null) {
-          taskQuery.setProjectIds(spaceProjectIds);
-        } else {
-          taskQuery.setProjectIds(allProjectIds);
-        }
-      } else {
-        //. Default order by CreatedDate
-        if (orderBy == null || orderBy.isEmpty()) {
-          orderBy = TaskUtil.DUEDATE;
-          order = new OrderBy.ASC(orderBy);
-        }
-        if (!noProjPermission) {
-          taskQuery.setProjectIds(Arrays.asList(projectId));
-        }
-      }
-      taskQuery.setOrderBy(Arrays.asList(order));
-
-    } else if (labelId != null && labelId >= 0) {
-      defOrders =  Arrays.asList(TaskUtil.TITLE, TaskUtil.CREATED_TIME, TaskUtil.DUEDATE, TaskUtil.PRIORITY);
-      if (orderBy == null || orderBy.isEmpty() || !defOrders.contains(orderBy)) {
-        orderBy = TaskUtil.DUEDATE;
-        order = new OrderBy.ASC(TaskUtil.DUEDATE);
-      }
-
-      if (labelId > 0) {
-        defGroupBys = Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT, TaskUtil.DUEDATE, TaskUtil.STATUS);
-        if (groupBy == null || groupBy.isEmpty() || !defGroupBys.contains(groupBy)) {
-          groupBy = TaskUtil.NONE;
-        }
-        if (!noLblPermission) {
-          taskQuery.setLabelIds(Arrays.asList(labelId));
-        }
-      } else {
-        defGroupBys = Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT, TaskUtil.LABEL, TaskUtil.DUEDATE, TaskUtil.STATUS);
-        if (groupBy == null || groupBy.isEmpty() || !defGroupBys.contains(groupBy)) {
-          groupBy = TaskUtil.LABEL;
-        }
-        taskQuery.setIsLabelOf(currentUser);
-      }
-
-      if (spaceProjectIds != null) {
-        taskQuery.setProjectIds(spaceProjectIds);
-      }
-      taskQuery.setOrderBy(Arrays.asList(order));
-    }
-
-    page = page == null ? 1 : page;
-    if (page <= 0) {
-      page = 1;
-    }
-
-    List<TaskDto> listTasks = null;
-    long tasksSize = 0;
-    if ((spaceProjectIds != null  && spaceProjectIds.isEmpty()) || ( projectId == 0 && allProjectIds.isEmpty()) ||
-            (noLblPermission && labelId != null && labelId > 0) || (noProjPermission &&  projectId > 0)) {
-      listTasks = new ArrayList<>();
-    } else {
-      listTasks = taskService.findTasks(taskQuery,offset,limit);
-      tasksSize = taskService.countTasks(taskQuery);
-    }
+    TasksList tasks =  taskService.filterTasks(query, projectId, filter.getKeyword(), filter.getLabel(), filter.getDue(),  filter.getPriority(), filter.getAssignees(), labelId, statusIdLong, currIdentity, dueCategory, space_group_id , userTimezone, filter.isShowCompleted(), advanceSearch, noProjPermission, noLblPermission, orderBy,  groupBy, offset, limit);
 
     Map<GroupKey, List<TaskEntity>> groupTasks = new HashMap<GroupKey, List<TaskEntity>>();
     if (groupBy != null && groupBy!= TaskUtil.DUEDATE && !groupBy.isEmpty() && !TaskUtil.NONE.equalsIgnoreCase(groupBy)) {
-      groupTasks = TaskUtil.groupTasks(listTasks.stream().map(task -> getTaskDetails((TaskDto) task, currentUser)).collect(Collectors.toList()), groupBy, currentUser, userTimezone, labelService, userService);
+      groupTasks = TaskUtil.groupTasks(tasks.getListTasks().stream().map(task -> getTaskDetails((TaskDto) task, currentUser)).collect(Collectors.toList()), groupBy, currentUser, userTimezone, labelService, userService);
       return Response.ok(new FiltreTaskList(groupTasks)).build();
     }
     if (groupTasks.isEmpty()) {
-      groupTasks.put(new GroupKey("", null, 0), listTasks.stream().map(task -> getTaskDetails((TaskDto) task, currentUser)).collect(Collectors.toList()));
+      groupTasks.put(new GroupKey("", null, 0), tasks.getListTasks().stream().map(task -> getTaskDetails((TaskDto) task, currentUser)).collect(Collectors.toList()));
     }
 
-    return Response.ok(new PaginatedTaskList(listTasks.stream().map(task -> getTaskDetails((TaskDto) task, currentUser)).collect(Collectors.toList()),tasksSize)).build();
+    return Response.ok(new PaginatedTaskList(tasks.getListTasks().stream().map(task -> getTaskDetails((TaskDto) task, currentUser)).collect(Collectors.toList()),tasks.getTasksSize())).build();
   }
 
 
@@ -887,7 +660,7 @@ public class TaskRestService implements ResourceContainer {
     return commentEntity;
   }
 
-  private JSONArray buildJSON(JSONArray projectsJsonArray, List<ProjectDto> projects) throws JSONException {
+  /*private JSONArray buildJSON(JSONArray projectsJsonArray, List<ProjectDto> projects) throws JSONException {
     Identity currentUser = ConversationState.getCurrent().getIdentity();
     for (ProjectDto project : projects) {
       if (project.canView(currentUser)) {
@@ -967,7 +740,7 @@ public class TaskRestService implements ResourceContainer {
       }
     }
     return projectsJsonArray;
-  }
+  }*/
   /*
    * private ChangeLogEntry changeLogToChangeLogEntry(ChangeLog changeLog) {
    * return new ChangeLogEntry(changeLog,userService); } private
@@ -987,11 +760,11 @@ public class TaskRestService implements ResourceContainer {
       commentCount = 0;
     }
     List<LabelDto> labels = new ArrayList<>();
- /*   try {
+    try {
       labels = labelService.findLabelsByTask(taskId, userName, 0, -1);
     } catch (Exception e) {
       LOG.warn("Error retrieving task '{}' labels", taskId, e);
-    }*/
+    }
     SpaceEntity space = null;
     if (task.getStatus() != null && task.getStatus().getProject() != null) {
       space = getProjectSpace(task.getStatus().getProject());

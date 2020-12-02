@@ -56,7 +56,8 @@
        }
 
        else if(task && task.status && task.status.project) {
-          document.dispatchEvent(new CustomEvent('showProjectTasks', {detail: this.task.status.project}));
+         // document.dispatchEvent(new CustomEvent('showProjectTasks', {detail: this.task.status.project}));
+         window.history.pushState('task', 'Task details', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest?projectId=${task.status.project.id}`);
           }else{
            this.tab='tab-1' 
           }
@@ -87,7 +88,7 @@
       if (taskId) {
           this.$tasksService.getTaskById(taskId).then(data => {
           this.task = data  
-          if(this.task.status.project){
+          if(this.task.status && this.task.status.project){
               document.dispatchEvent(new CustomEvent('showProjectTasks', {detail: this.task.status.project}));
           }else{
            this.tab='tab-1' 

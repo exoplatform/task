@@ -63,6 +63,7 @@
       ref="filterTasksDrawer"
       :project="project.id"
       :query="keyword"
+      :status-list="statusList"
       @filter-task="filterTasks"
       @reset-filter-task="resetFilterTask"/>
   </v-app>
@@ -73,6 +74,10 @@
       project:{
         type: Object,
         default: null
+      },
+      statusList: {
+        type: Array,
+        default: () => []
       },
       taskCardTabView:{
         type: String,
@@ -130,7 +135,7 @@
         this.showCompleteTasks=e.showCompleteTasks;
         this.keyword=e.tasks.query
         this.searchonkeyChange=true
-        this.$emit('filter-task-dashboard', { tasks:e.tasks,showCompleteTasks:e.showCompleteTasks });
+        this.$emit('filter-task-dashboard', { tasks:e.tasks,filterLabels:e.filterLabels,showCompleteTasks:e.showCompleteTasks });
       }
     }
   }

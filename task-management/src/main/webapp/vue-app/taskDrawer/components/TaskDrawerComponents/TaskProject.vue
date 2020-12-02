@@ -32,7 +32,7 @@
             @click="$emit('projectsListOpened')"
             @click:close="deleteProject">
             <span 
-              class="px-4 body-2" 
+              class="px-4 body-2 text-truncate"
               @click="parent.selectItem(item)">
               {{ item.name }}
             </span>
@@ -46,7 +46,9 @@
               close
               text-color="white"
               small>
-              {{ item.name }}
+              <span class="text-truncate">
+                {{ item.name }}
+              </span>
             </v-chip>
           </v-list-item>
         </template>
@@ -71,7 +73,10 @@
         projects: [],
         projectModel:null,
         search: null,
-        projectLabel: ''
+        projectLabel: '',
+        menuId: `ProjectMenu${parseInt(Math.random() * 10000)
+          .toString()
+          .toString()}`,
       }
     },
     watch: {

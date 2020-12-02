@@ -381,6 +381,13 @@ public class TaskDAOImpl extends CommonJPADAO<Task, Long> implements TaskHandler
     }
 
     @Override
+    public List<Task> getByStatus(long statusid) {
+        Query query = getEntityManager().createNamedQuery("Task.getByStatus", Task.class);
+        query.setParameter("statusid", statusid);
+        return cloneEntities(query.getResultList());
+    }
+
+    @Override
     public Long countUncompletedTasks(String user) {
         TypedQuery<Long> query = getEntityManager().createNamedQuery("Task.countUncompletedTasks", Long.class);
         query.setParameter("userName", user);
