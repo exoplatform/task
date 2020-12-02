@@ -760,11 +760,11 @@ public class TaskRestService implements ResourceContainer {
       commentCount = 0;
     }
     List<LabelDto> labels = new ArrayList<>();
- /*   try {
+    try {
       labels = labelService.findLabelsByTask(taskId, userName, 0, -1);
     } catch (Exception e) {
       LOG.warn("Error retrieving task '{}' labels", taskId, e);
-    }*/
+    }
     SpaceEntity space = null;
     if (task.getStatus() != null && task.getStatus().getProject() != null) {
       space = getProjectSpace(task.getStatus().getProject());

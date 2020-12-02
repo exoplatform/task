@@ -68,7 +68,6 @@
             class="labelText">
             {{ task.labels.length }} {{ $t('label.labels') }}
           </span>
-          <span v-else class="noLabelText body-2"> {{ $t('label.noLabel') }}</span>
         </div>
       </div>
       <div class="taskActionsAndProject d-flex justify-space-between my-3">
@@ -115,8 +114,8 @@
           </div>
         </div>
       </div>
-      <v-divider/>
-      <div class="taskStatusAndDate d-flex justify-space-between pt-3">
+      <v-divider v-if="task && task.task && task.task.status && task.task.status || taskDueDate"/>
+      <div v-if="task && task.task && task.task.status && task.task.status || taskDueDate" class="taskStatusAndDate d-flex justify-space-between pt-3">
         <div class="taskStat">
           <span v-if="task && task.task && task.task.status && task.task.status" class="taskStatLabel pl-2">{{ getTaskStatusLabel(task.task.status.name) }}</span>
         </div>

@@ -20,8 +20,8 @@
         {{ task.task.title }}
       </a>
     </div>
-    <div v-if="!isPersonnalTask" class="taskProject pr-4">
-      <div class="projectSpaceDetails d-flex align-center">
+    <div class="taskProject pr-4">
+      <div v-if="!isPersonnalTask" class="projectSpaceDetails d-flex align-center">
         <div class="spaceAvatar pr-1">
           <a
             v-if="task.space!==null"
@@ -84,7 +84,6 @@
         :title="getLabelsList(task.labels)"
         class="labelText">{{ task.labels.length }} {{ $t('label.labels') }}
       </span>
-      <span v-else class="noLabelText body-2"> {{ $t('label.noLabel') }}</span>
     </div>
     <div class="taskActions d-flex justify-center align-center">
       <div v-if="task.commentCount" class="taskComment d-flex">

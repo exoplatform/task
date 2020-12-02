@@ -50,7 +50,6 @@
         :title="getLabelsList(task.labels)"
         class="labelText">{{ task.labels.length }} {{ $t('label.labels') }}
       </span>
-      <span v-else class="noLabelText body-2"> {{ $t('label.noLabel') }}</span>
     </div>
     <div class="taskActions d-flex justify-center align-center">
       <div v-if="task.commentCount" class="taskComment d-flex">

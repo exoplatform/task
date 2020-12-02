@@ -1,7 +1,10 @@
 <template>
   <v-app id="taskCardItem" class="py-3">
     <v-card
-      :class="[getTaskPriorityColor(task.task.priority), !taskDueDate && 'smallViewCard']"
+      :class="[getTaskPriorityColor(task.task.priority),
+               ((!taskDueDate && !task.commentCount) || (!assigneeAndCoworkerArray.length && !task.labels.length )) && 'smallViewCard',
+               !taskDueDate && !task.commentCount && !assigneeAndCoworkerArray.length && !task.labels.length && !task.commentCount && 'x-smallViewCard',
+               !task.commentCount && 'normalViewCard']"
       class="taskCard taskViewCard pa-3"
       flat>
       <div class="taskTitleId  d-flex justify-space-between">
@@ -31,7 +34,9 @@
         </div>
       </div>
       <div class="taskLabelsAndWorker d-flex justify-space-between align-center my-3">
-        <div class="taskAssignee d-flex flex-nowrap">
+        <div
+          :class="assigneeAndCoworkerArray && !assigneeAndCoworkerArray.length && task && task.labels && !task.labels.length && 'hideTaskAssignee'"
+          class="taskAssignee d-flex flex-nowrap">
           <exo-user-avatar
             v-for="user in avatarToDisplay"
             :key="user"
@@ -68,7 +73,6 @@
             class="labelText">
             {{ task.labels.length }} {{ $t('label.labels') }}
           </span>
-          <span v-else class="noLabelText body-2"> {{ $t('label.noLabel') }}</span>
         </div>
       </div>
       <div class="taskActionsWrapper mb-3">
