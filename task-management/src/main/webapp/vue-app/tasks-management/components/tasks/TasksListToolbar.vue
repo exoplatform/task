@@ -42,7 +42,7 @@
           @click="openDrawer">
           <i class="uiIcon uiIconFilterSetting pr-3"></i>
           <span class="d-none font-weight-regular caption d-sm-inline">
-            {{ $t('label.filter') }} (3)
+            {{ $t('label.filter') }}
           </span>
         </v-btn>
       </v-scale-transition>
