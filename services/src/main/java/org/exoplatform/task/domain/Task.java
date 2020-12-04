@@ -87,7 +87,36 @@ import org.exoplatform.task.legacy.service.TaskBuilder;
                 "WHERE ta.completed = false " +
                 "AND (ta.assignee = :userName " +
                 "OR :userName in (select co FROM ta.coworker co) " +
-                ")"), 
+                ")"),
+    @NamedQuery(name = "Task.getCollaboratedTasks",
+        query = "SELECT ta FROM TaskTask ta " +
+                "WHERE ta.completed = false " +
+                "AND :userName in (select co FROM ta.coworker co) "),
+    @NamedQuery(name = "Task.countCollaboratedTasks",
+        query = "SELECT COUNT(ta) FROM TaskTask ta " +
+                "WHERE ta.completed = false " +
+                "AND :userName in (select co FROM ta.coworker co) "),
+
+   @NamedQuery(name = "Task.getAssignedTasks",
+        query = "SELECT ta FROM TaskTask ta " +
+                "WHERE ta.completed = false " +
+                "AND ta.assignee = :userName "),
+
+   @NamedQuery(name = "Task.countAssignedTasks",
+        query = "SELECT COUNT(ta)  FROM TaskTask ta " +
+                "WHERE ta.completed = false " +
+                "AND ta.assignee = :userName "),
+
+   @NamedQuery(name = "Task.getWatchedTasks",
+        query = "SELECT ta FROM TaskTask ta " +
+                "WHERE ta.completed = false " +
+                "AND :userName in (select wa FROM ta.watcher wa) "),
+
+   @NamedQuery(name = "Task.countWatchedTasks",
+        query = "SELECT COUNT(ta)  FROM TaskTask ta " +
+                "WHERE ta.completed = false " +
+                "AND :userName in (select wa FROM ta.watcher wa) "),
+
     @NamedQuery(name = "Task.getOverdueTasks",
         query = "SELECT ta FROM TaskTask ta " +
                 "WHERE ta.completed = false " +

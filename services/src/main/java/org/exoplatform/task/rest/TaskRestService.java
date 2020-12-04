@@ -78,7 +78,7 @@ public class TaskRestService implements ResourceContainer {
 
 
   private enum TaskType {
-    ALL, INCOMING, OVERDUE
+    ALL, INCOMING, OVERDUE, WATCHED, COLLABORATED, ASSIGNED
   }
 
 
@@ -140,6 +140,21 @@ public class TaskRestService implements ResourceContainer {
         tasksSize = taskService.countOverdueTasks(currentUser);
         break;
       }
+      case WATCHED: {
+        tasks = taskService.getWatchedTasks(currentUser, limit);
+        tasksSize = taskService.countWatchedTasks(currentUser);
+        break;
+      }
+        case COLLABORATED: {
+        tasks = taskService.getCollaboratedTasks(currentUser, limit);
+        tasksSize = taskService.countCollaboratedTasks(currentUser);
+        break;
+      }
+        case ASSIGNED: {
+        tasks = taskService.getAssignedTasks(currentUser, limit);
+        tasksSize = taskService.countAssignedTasks(currentUser);
+        break;
+      }
       default: {
         tasks = taskService.getUncompletedTasks(currentUser, limit);
         tasksSize = taskService.countUncompletedTasks(currentUser);
@@ -147,31 +162,9 @@ public class TaskRestService implements ResourceContainer {
       }
     } else {
       tasks = taskService.findTasks(currentUser, query, limit);
-      /*tasks = tasks.stream().map(task -> {
-        long taskId = ((TaskDto) task).getId();
-        int commentCount;
-        try {
-          commentCount = commentService.countComments(taskId);
-        } catch (Exception e) {
-          LOG.warn("Error retrieving task '{}' comments count", taskId, e);
-          commentCount = 0;
-        }
-        return new TaskEntity(((TaskDto) task), commentCount);
-      }).collect(Collectors.toList());*/
       tasksSize = taskService.countTasks(currentUser, query);
     }
-    if (returnSize) {
-      if (returnDetails) {
         return Response.ok(new PaginatedTaskList(tasks.stream().map(task -> getTaskDetails((TaskDto) task, currentUser)).collect(Collectors.toList()),tasksSize)).build();
-      } else {
-        return Response.ok(tasks.stream().map(task -> getTaskDetails((TaskDto) task, currentUser)).collect(Collectors.toList())).build();      }
-
-    } else {
-      if (returnDetails) {
-        return Response.ok(new PaginatedTaskList(tasks.stream().map(task -> getTaskDetails((TaskDto) task, currentUser)).collect(Collectors.toList()),tasksSize)).build();
-      }
-      return Response.ok(tasks).build();
-    }
   }
 
 
@@ -214,7 +207,6 @@ public class TaskRestService implements ResourceContainer {
       }
       statusIdLong=statusDto.getId();
     }
-
     ViewState.Filter filter = new ViewState.Filter(listId);
     filter.updateFilterData(filterLabelIds, statusId, dueDate, priority, assignee, showCompleted, query);
 
@@ -262,7 +254,6 @@ public class TaskRestService implements ResourceContainer {
 
     return Response.ok(new PaginatedTaskList(tasks.getListTasks().stream().map(task -> getTaskDetails((TaskDto) task, currentUser)).collect(Collectors.toList()),tasks.getTasksSize())).build();
   }
-
 
   @GET
   @Path("project/{id}")
