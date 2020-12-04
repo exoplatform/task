@@ -3,7 +3,7 @@
     :class="project.color && project.color+'_border_bottom' || ''"
     class="tasksCardItem" 
     flat>
-    <div :class="project.color || 'noProjectColor'" class="taskItemToolbar d-flex px-2 align-center font-weight-bold">
+    <div class="taskItemToolbar d-flex px-2 align-center font-weight-bold">
       <i
         :class="project.color && 'white--text' || 'toolbarNoColor'"
         icon
@@ -92,29 +92,22 @@
           <span class="noProjectDescription">{{ $t('label.noDescription') }}</span>
         </div>
       </div>
-      <v-divider class="pb-4 descriptionDivider"/>
       <div class="ProjectSpace">
         <div v-if="project.space">
           <v-list-item class="px-0">
             <v-list-item-avatar size="28" class="spaceAvatar py-1">
-              <v-img src="/portal/rest/v1/social/spaces/default-image/avatar"/>
+              <v-img :src="getSpaceAvatarURL"/>
             </v-list-item-avatar>
             <v-list-item-title class="body-2">
               <a href="#">{{ getSpaceName }}</a>
             </v-list-item-title>
           </v-list-item>
         </div>
-        <div v-else>
-          <v-list-item class="px-0">
-            <v-list-item-avatar size="28" class="spaceAvatar py-1">
-              <i class="uiIconEcmsNameSpace noSpaceProjectIcon"></i>
-            </v-list-item-avatar>
-            <v-list-item-title class="noSpaceLabel body-2">{{ $t('label.noSpace') }}</v-list-item-title>
-          </v-list-item>
-        </div>
       </div>
-      <v-divider class="d-sm-inline"/>
-      <div class="SpaceAdmin d-flex justify-space-between align-center">
+    </div>
+    <div class="SpaceAdmin">
+      <v-divider/>
+      <div class="spaceAdminContainer">
         <div class="spaceAdminWrapper">
           <v-list-item v-if="managerIdentities && managerIdentities.length === 1" class="px-0">
             <v-list-item-avatar size="28" class="userAvatar py-1">
@@ -129,7 +122,7 @@
           <div
             v-else
             :class="showAllAvatarList && 'AllManagerAvatar'"
-            class="managerAvatarsList d-flex flex-nowrap my-3">
+            class="managerAvatarsList d-flex flex-nowrap my-2">
             <exo-user-avatar
               v-for="manager in avatarToDisplay"
               :key="manager"
@@ -153,8 +146,8 @@
             </div>
           </div>
         </div>
-        <!--<i class="uiIcon uiIconStar"></i>-->
       </div>
+      <!--<i class="uiIcon uiIconStar"></i>-->
     </div>
     <exo-confirm-dialog
       ref="CancelSavingChangesDialog"
@@ -229,6 +222,10 @@
       getSpaceName(){
         const str=this.project.space
         return str.substr(0, str.indexOf(/spaces/)-2);
+      },
+      getSpaceAvatarURL() {
+        const str=this.project.space;
+        return `/portal/rest/v1/social/spaces/${ (str.substr(str.indexOf(/spaces/)+8)).slice(0,-1) }/avatar`;
       }
     },
     created() {
