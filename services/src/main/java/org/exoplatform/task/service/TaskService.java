@@ -66,6 +66,18 @@ public interface TaskService {
     TaskDto getTask(long taskId) throws EntityNotFoundException;
 
 
+    List<TaskDto> getWatchedTasks(String user, int limit);
+
+    Long countWatchedTasks(String user);
+
+    List<TaskDto> getAssignedTasks(String user, int limit);
+
+    Long countAssignedTasks(String user);
+
+    List<TaskDto> getCollaboratedTasks(String user, int limit);
+
+    Long countCollaboratedTasks(String user);
+
     List<TaskDto> findTasks(String user, String query, int limit);
 
 

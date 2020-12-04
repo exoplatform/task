@@ -54,7 +54,7 @@
           @click="openDrawer">
           <i class="uiIcon uiIconFilterSetting pr-3"></i>
           <span class="d-none font-weight-regular caption d-sm-inline">
-            {{ $t('label.filter') }}
+            {{ $t('label.filter') }} ({{ filterNumber }})
           </span>
         </v-btn>
       </v-scale-transition>
@@ -64,6 +64,7 @@
       :project="project.id"
       :query="keyword"
       :status-list="statusList"
+      @filter-num-changed="filterNumChanged"
       @filter-task="filterTasks"
       @reset-filter-task="resetFilterTask"/>
   </v-app>
@@ -96,20 +97,23 @@
       return {
         keyword: null,
         awaitingSearch: false,
+        filterNumber:0,
         searchonkeyChange:true
       }
     },
-    watch: {
-      keyword() {
-         if(this.searchonkeyChange){
-        if (!this.awaitingSearch) {
-          setTimeout(() => {
-            this.$emit('keyword-changed', this.keyword);
-            this.awaitingSearch = false;
-          }, 1000); 
-        }
-        this.awaitingSearch = true;
-        }
+    watch: {        
+       keyword() {  
+          if (!this.awaitingSearch) {
+            const searchonkeyChange = this.searchonkeyChange
+            setTimeout(() => {
+              this.$emit('keyword-changed', this.keyword,searchonkeyChange);
+              this.awaitingSearch = false;
+            }, 1000);
+          }
+          this.awaitingSearch = true;
+          if(this.searchonkeyChange){
+          this.resetFields("query") }      
+        this.searchonkeyChange= true;
       },
     },
     methods: {
@@ -134,8 +138,13 @@
         this.searchonkeyChange=false
         this.showCompleteTasks=e.showCompleteTasks;
         this.keyword=e.tasks.query
-        this.searchonkeyChange=true
         this.$emit('filter-task-dashboard', { tasks:e.tasks,filterLabels:e.filterLabels,showCompleteTasks:e.showCompleteTasks });
+      },
+      resetFields(activeField){
+          this.$refs.filterTasksDrawer.resetFields(activeField);
+      },
+      filterNumChanged(filtersnumber){
+        this.filterNumber=filtersnumber
       }
     }
   }

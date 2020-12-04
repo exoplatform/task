@@ -134,6 +134,43 @@ public class TaskStorageImpl implements TaskStorage {
     }
 
     @Override
+    public List<TaskDto> getAssignedTasks(String user, int limit) {
+        List<Task> taskEntities = daoHandler.getTaskHandler().getAssignedTasks(user, limit);
+        return taskEntities.stream().map(this::toDto).collect(Collectors.toList());
+    }
+
+    @Override
+    public Long countAssignedTasks(String user) {
+        return daoHandler.getTaskHandler().countAssignedTasks(user);
+    }
+
+
+    @Override
+    public List<TaskDto> getWatchedTasks(String user, int limit) {
+        List<Task> taskEntities = daoHandler.getTaskHandler().getWatchedTasks(user, limit);
+        return taskEntities.stream().map(this::toDto).collect(Collectors.toList());
+    }
+
+    @Override
+    public Long countWatchedTasks(String user) {
+        return daoHandler.getTaskHandler().countWatchedTasks(user);
+    }
+
+
+    @Override
+    public List<TaskDto> getCollaboratedTasks(String user, int limit) {
+        List<Task> taskEntities = daoHandler.getTaskHandler().getCollaboratedTasks(user, limit);
+        return taskEntities.stream().map(this::toDto).collect(Collectors.toList());
+    }
+
+
+    @Override
+    public Long countCollaboratedTasks(String user) {
+        return daoHandler.getTaskHandler().countCollaboratedTasks(user);
+    }
+
+
+    @Override
     public List<TaskDto> getIncomingTasks(String user, int offset, int limit) throws Exception {
         List<Task> taskEntities = Arrays.asList(daoHandler.getTaskHandler().getIncomingTasks(user).load(offset, limit));
         return taskEntities.stream().map(this::toDto).collect(Collectors.toList());

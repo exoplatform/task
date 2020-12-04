@@ -36,13 +36,28 @@
           class="inputTasksFilter pa-0 mr-3 my-auto"/>
       </v-scale-transition>
       <v-scale-transition>
+        <select
+          v-model="primaryFilterSelected"
+          name="primaryFilter"
+          class="selectPrimaryFilter input-block-level ignore-vuetify-classes  pa-0 mr-3 my-auto"
+          @change="changePrimaryFilter">
+
+          <option
+            v-for="item in primaryFilter"
+            :key="item.name"
+            :value="item.name">
+            {{ $t('label.dueDate.'+item.name.toLowerCase()) }}
+          </option>
+        </select>
+      </v-scale-transition>
+      <v-scale-transition>
         <v-btn
           class="btn px-2 btn-primary filterTasksSetting"
           outlined
           @click="openDrawer">
           <i class="uiIcon uiIconFilterSetting pr-3"></i>
           <span class="d-none font-weight-regular caption d-sm-inline">
-            {{ $t('label.filter') }}
+            {{ $t('label.filter') }} ({{ filterNumber }})
           </span>
         </v-btn>
       </v-scale-transition>
@@ -50,6 +65,7 @@
     <task-filter-drawer
       ref="filterTasksDrawer"
       :query="keyword"
+      @filter-num-changed="filterNumChanged"
       @filter-task="filterTasks"
       @reset-filter-task="resetFilterTask"
       @filter-task-query="filterTaskquery"/>
@@ -73,34 +89,42 @@
         keyword: null,
         awaitingSearch: false,
         searchonkeyChange:true,
+        filterNumber:0,
+        primaryFilterSelected:'ALL',
         task: {
           id:null,
           status:{}
           },
-        drawer:null
+        drawer:null,
+        primaryFilter: [
+          {name: "ALL"},{name: "ASSIGNED"},{name: "COLLABORATED"},{name: "WATCHED"},{name: "OVERDUE"},{name: "TODAY"},{name: "TOMORROW"}
+        ],
       }
     },
     watch: {
-      keyword() {
-        if(this.searchonkeyChange){
+      keyword() {  
           if (!this.awaitingSearch) {
+            const searchonkeyChange = this.searchonkeyChange
             setTimeout(() => {
-              this.$emit('keyword-changed', this.keyword);
+              this.$emit('keyword-changed', this.keyword,searchonkeyChange);
               this.awaitingSearch = false;
             }, 1000);
           }
           this.awaitingSearch = true;
-        }
+          if(this.searchonkeyChange){
+          this.primaryFilterSelected='ALL'
+          this.resetFields("query") }      
+        this.searchonkeyChange= true;
       },
     },
     methods: {
       resetFilterTask(){
         this.$emit('reset-filter-task-dashboard');
-      },filterTaskquery(e){
+      },
+      filterTaskquery(e){
         this.searchonkeyChange=false
         this.showCompleteTasks=e.showCompleteTasks;
         this.keyword=e.query
-        this.searchonkeyChange=true
       },
       filterTasks(e){
         this.tasks=e.tasks.tasks;
@@ -117,6 +141,20 @@
         };
         this.$root.$emit('open-task-drawer', this.task);
       },
+      changePrimaryFilter(){  
+       this.searchonkeyChange=false 
+       this.keyword=""   
+       this.$emit('primary-filter-task', this.primaryFilterSelected);     
+      },
+      resetFields(activeField){
+          this.$refs.filterTasksDrawer.resetFields(activeField);
+      },
+      filterNumChanged(filtersnumber,source){
+        this.filterNumber=filtersnumber
+        if(source!=="primary"){
+        this.primaryFilterSelected='ALL'
+        }
+      }
     }
   }
 </script>

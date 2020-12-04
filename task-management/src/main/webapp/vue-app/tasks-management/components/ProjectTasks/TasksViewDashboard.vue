@@ -151,8 +151,10 @@
           this.statusList = data;
         });
       },
-      filterByKeyword(keyword){
+      filterByKeyword(keyword,searchonkeyChange){
+        if(searchonkeyChange){
         this.getTasksByProject(this.project.id,keyword);
+        }
       },
       getTasksByProject(ProjectId,query) {
         this.loadingTasks = true;

@@ -52,6 +52,18 @@ public interface TaskHandler extends GenericDAO<Task, Long> {
 
   List<Task> getUncompletedTasks(String user, int limit);
 
+  List<Task> getWatchedTasks(String user, int limit);
+
+  Long countWatchedTasks(String user);
+
+  List<Task> getCollaboratedTasks(String user, int limit);
+
+  Long countCollaboratedTasks(String user);
+
+    List<Task> getAssignedTasks(String user, int limit);
+
+  Long countAssignedTasks(String user);
+
   List<Task> getByStatus(long statusid);
 
   Long countUncompletedTasks(String user);

@@ -4,12 +4,14 @@
     class="projectAndTasksContainer transparent"
     flat>
     <tasks-list-toolbar
+      ref="taskToolBar"
       :task-card-tab="'#tasks-cards'"
       :task-list-tab="'#tasks-list'"
       :keyword="keyword"
-      @keyword-changed="keyword = $event"
+      @keyword-changed="keywordChanged"
       @changed="changeSelectedTabItem()"
       @filter-task-dashboard="filterTaskDashboard"
+      @primary-filter-task="getTasksByPrimary"
       @reset-filter-task-dashboard="resetFiltertaskDashboard"/>
     <div v-if="filterActive">
       <div v-for="(project,i) in tasksFilter.projectName" :key="project.name">
@@ -92,18 +94,6 @@
       },
     },
     watch: {
-      keyword() {
-        if (!this.keyword) {
-          this.resetSearch();
-          this.searchTasks();
-          return;
-        }
-        this.startTypingKeywordTimeout = Date.now();
-        if (!this.loadingTasks) {
-          this.loadingTasks = true;
-          this.waitForEndTyping();
-        }
-      },
       limitToFetch() {
         this.searchTasks();
       },
@@ -120,6 +110,21 @@
       });
     },
     methods: {
+      keywordChanged(keyword,searchonkeyChange){
+        this.keyword=keyword
+        if(searchonkeyChange){
+        if (!this.keyword) {
+          this.resetSearch();
+          this.searchTasks();
+          return;
+        }
+        this.startTypingKeywordTimeout = Date.now();
+        if (!this.loadingTasks) {
+          this.loadingTasks = true;
+          this.waitForEndTyping();
+        }
+       }
+      },
       resetFiltertaskDashboard(){
         this.searchTasks();
         this.filterActive=false;
@@ -132,13 +137,15 @@
       changeSelectedTabItem() {
         this.isTasksTabChanged = !this.isTasksTabChanged;
       },
-      searchTasks() {
-        const tasks = {
+      searchTasks(tasks) {
+        if(!tasks){
+         tasks = {
           query: this.keyword,
           offset: this.offset,
           limit: this.limitToFetch,
           showCompleteTasks:this.showCompleteTasks,
         };
+        }
         this.loadingTasks = true;
         return this.$tasksService.filterTasksList(tasks).then(data => {
           this.tasks = data && data.tasks || [];
@@ -151,6 +158,43 @@
         })
           .finally(() => this.loadingTasks = false);
       },
+      getTasksByPrimary(primaryfilter) {
+      
+        if(primaryfilter && (primaryfilter === 'OVERDUE' || primaryfilter === 'TODAY' || primaryfilter === 'TOMORROW')){
+          const tasks = {
+            query: '',
+            assignee: '',
+            statusId: '',
+            dueDate: '',
+            priority: '',
+            showCompleteTasks: false,
+            groupBy: '',
+            orderBy: '',
+          };
+          tasks.dueDate=primaryfilter
+          this.searchTasks(tasks)
+        }else if(primaryfilter && (primaryfilter === 'ASSIGNED' || primaryfilter === 'WATCHED' || primaryfilter === 'COLLABORATED')){
+          this.loadingTasks = true;
+            return this.$tasksService.getMyTasksList(primaryfilter).then(data => {
+            this.tasks = data && data.tasks || [];
+              this.tasksSize = data && data.tasksNumber || 0;
+              return this.$nextTick();
+            }).then(() => {
+              if (this.keyword && this.tasks.length >= this.limitToFetch) {
+                this.limitToFetch += this.pageSize;
+              }
+            })
+              .finally(() => {
+              this.loadingTasks = false
+              this.filterActive=false
+              }
+              ); 
+        }else{
+          this.resetFiltertaskDashboard()
+        }
+        this.$refs.taskToolBar.resetFields("primary");
+      },
+
       resetSearch() {
         if (this.limitToFetch !== this.originalLimitToFetch) {
           this.limitToFetch = this.originalLimitToFetch;

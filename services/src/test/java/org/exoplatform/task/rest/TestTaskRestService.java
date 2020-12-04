@@ -106,19 +106,19 @@ public class TestTaskRestService {
 
     // Then
     assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-    List<TaskDto> tasks = (List<TaskDto>) response.getEntity();
+    PaginatedTaskList tasks = (PaginatedTaskList) response.getEntity();
     assertNotNull(tasks);
-    assertEquals(2, tasks.size());
+    assertEquals(2, tasks.getTasksNumber());
 
     assertEquals(Response.Status.OK.getStatusCode(), response1.getStatus());
-    List<TaskDto> tasks1 = (List<TaskDto>) response1.getEntity();
+    PaginatedTaskList tasks1 = (PaginatedTaskList) response1.getEntity();
     assertNotNull(tasks1);
-    assertEquals(2, tasks1.size());
+    assertEquals(2, tasks1.getTasksNumber());
 
     assertEquals(Response.Status.OK.getStatusCode(), response2.getStatus());
-    List<TaskDto> tasks2 = (List<TaskDto>) response2.getEntity();
+    PaginatedTaskList tasks2 = (PaginatedTaskList) response2.getEntity();
     assertNotNull(tasks2);
-    assertEquals(3, tasks2.size());
+    assertEquals(3, tasks2.getTasksNumber());
 
     assertEquals(Response.Status.OK.getStatusCode(), response3.getStatus());
     PaginatedTaskList tasks3 = (PaginatedTaskList) response3.getEntity();

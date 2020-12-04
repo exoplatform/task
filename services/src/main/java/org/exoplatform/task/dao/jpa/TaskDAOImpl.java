@@ -381,20 +381,85 @@ public class TaskDAOImpl extends CommonJPADAO<Task, Long> implements TaskHandler
     }
 
     @Override
-    public List<Task> getByStatus(long statusid) {
-        Query query = getEntityManager().createNamedQuery("Task.getByStatus", Task.class);
-        query.setParameter("statusid", statusid);
-        return cloneEntities(query.getResultList());
-    }
-
-    @Override
     public Long countUncompletedTasks(String user) {
         TypedQuery<Long> query = getEntityManager().createNamedQuery("Task.countUncompletedTasks", Long.class);
         query.setParameter("userName", user);
         Long result = query.getSingleResult();
         return result == null ? 0 : result;
     }
-    
+
+
+    @Override
+    public List<Task> getWatchedTasks(String user, int limit) {
+        Query query = getEntityManager().createNamedQuery("Task.getWatchedTasks", Task.class);
+        query.setParameter("userName", user);
+        if (limit > 0) {
+            query.setMaxResults(limit);
+        }
+        return cloneEntities(query.getResultList());
+    }
+
+
+    @Override
+    public Long countWatchedTasks(String user) {
+        TypedQuery<Long> query = getEntityManager().createNamedQuery("Task.countWatchedTasks", Long.class);
+        query.setParameter("userName", user);
+        Long result = query.getSingleResult();
+        return result == null ? 0 : result;
+    }
+
+
+
+    @Override
+    public List<Task> getCollaboratedTasks(String user, int limit) {
+        Query query = getEntityManager().createNamedQuery("Task.getCollaboratedTasks", Task.class);
+        query.setParameter("userName", user);
+        if (limit > 0) {
+            query.setMaxResults(limit);
+        }
+        return cloneEntities(query.getResultList());
+    }
+
+
+    @Override
+    public Long countCollaboratedTasks(String user) {
+        TypedQuery<Long> query = getEntityManager().createNamedQuery("Task.countCollaboratedTasks", Long.class);
+        query.setParameter("userName", user);
+        Long result = query.getSingleResult();
+        return result == null ? 0 : result;
+    }
+
+
+
+    @Override
+    public List<Task> getAssignedTasks(String user, int limit) {
+        Query query = getEntityManager().createNamedQuery("Task.getAssignedTasks", Task.class);
+        query.setParameter("userName", user);
+        if (limit > 0) {
+            query.setMaxResults(limit);
+        }
+        return cloneEntities(query.getResultList());
+    }
+
+
+    @Override
+    public Long countAssignedTasks(String user) {
+        TypedQuery<Long> query = getEntityManager().createNamedQuery("Task.countAssignedTasks", Long.class);
+        query.setParameter("userName", user);
+        Long result = query.getSingleResult();
+        return result == null ? 0 : result;
+    }
+
+
+
+    @Override
+    public List<Task> getByStatus(long statusid) {
+        Query query = getEntityManager().createNamedQuery("Task.getByStatus", Task.class);
+        query.setParameter("statusid", statusid);
+        return cloneEntities(query.getResultList());
+    }
+
+
     @Override
     public ListAccess<Task> getIncomingTasks(String user) {
         TaskQuery q = new TaskQuery();
