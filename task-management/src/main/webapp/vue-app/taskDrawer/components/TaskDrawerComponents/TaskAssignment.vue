@@ -15,8 +15,10 @@
       eager
       bottom>
       <template v-slot:activator="{ on }">
-        <div class="d-flex align-center taskAssignItem">
-          <div v-if="taskAssigneeObj && taskAssigneeObj.profile && taskAssigneeObj.profile.fullName" v-on="on">
+        <div class="d-flex align-center taskAssignItem" v-on="on">
+          <div 
+            v-if="taskAssigneeObj && taskAssigneeObj.profile && taskAssigneeObj.profile.fullName" 
+            class="assigneeName">
             <exo-user-avatar
               :username="taskAssigneeObj.profile.remoteId"
               :fullname="taskAssigneeObj.profile.fullName"
@@ -28,12 +30,10 @@
           </div>
           <span
             v-if="taskCoworkers.length > 0"
-            class="user-name pr-2 caption font-italic lighten-2"
-            v-on="on"> +{{ taskCoworkers.length }} {{ $t('label.coworker') }}
+            class="user-name coworkerNumber pr-2 caption font-italic lighten-2"> +{{ taskCoworkers.length }} {{ $t('label.coworker') }}
           </span>
           <a
-            class="taskAssignBtn mt-n1"
-            v-on="on">
+            class="taskAssignBtn mt-n1">
             <i class="uiIcon uiAddAssignIcon"></i>
             <span class="text-decoration-underline">{{ $t('label.assign') }}</span>
           </a>
@@ -128,6 +128,7 @@
           this.globalMenu = false;
         }
       });
+
     },
     created() {
       document.addEventListener('closeAssignments',()=> {

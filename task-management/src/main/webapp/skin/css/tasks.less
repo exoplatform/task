@@ -1165,10 +1165,10 @@
             }
           }
           .taskViewCard {
-            min-height: 180px;
-            height: 180px;
+            min-height: inherit;
+            height: inherit;
           }
-          .normalViewCard {
+          /*.normalViewCard {
             min-height: 170px!important;
             height: 170px!important;
           }
@@ -1180,7 +1180,7 @@
           .x-smallViewCard {
             min-height: 80px!important;
             height: 80px!important;
-          }
+          }*/
 
           .taskHighPriority {
             border-left: 10px solid @errorColor!important;
@@ -1510,7 +1510,7 @@
           }
         }
       }
-      .taskActions {
+      .taskActionsAndLabels {
         .taskComment {
           .uiCommentIcon {
             padding-right: 2px;
@@ -1521,6 +1521,18 @@
               color: @likeButtonColor;
               font-style: normal;
               font-size: 20px;
+            }
+          }
+        }
+        .taskTags {
+          .uiTagIcon {
+            padding-right: 2px;
+            &:before {
+              content: "\ead3";
+              font-family: "PLF-FONT-ICONS" !important;
+              color: @likeButtonColor;
+              font-style: normal;
+              font-size: 18px;
             }
           }
         }
