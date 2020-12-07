@@ -1,7 +1,8 @@
 <template>
   <div
     :class="getTaskPriorityColor(task.task.priority)"
-    class="taskListItemView  px-4 py-3 d-flex align-center">
+    class="taskListItemView  px-4 py-3 d-flex align-center" 
+    @click="openTaskDrawer()">
     <div class="taskCheckBox" @click="updateCompleted" >
       <v-switch
         ref="autoFocusInput2"
@@ -11,18 +12,30 @@
         false-value="false"/>
       <i :title="$t(getTaskCompletedTitle())" :class="getTaskCompleted()"></i>
     </div>
-    <div class="taskTitle pr-3">
+    <div class="taskTitleAndId pl-2 d-lg-none">
+      <div class="taskId">
+        <span class="caption text-sub-title">ID : {{ task.task.id }}</span>
+      </div>
+      <div class="taskTitle pr-3">
+        <a
+          ref="tooltip"
+          :class="getTitleTaskClass()"
+          class="text-truncate">
+          {{ task.task.title }}
+        </a>
+      </div>
+    </div>
+    <div class="taskTitle pr-3 d-lg-block d-md-none">
       <a
         ref="tooltip"
         :class="getTitleTaskClass()"
-        class="text-truncate"
-        @click="openTaskDrawer()">
+        class="text-truncate">
         {{ task.task.title }}
       </a>
     </div>
     <div class="taskProject pr-4">
       <div v-if="!isPersonnalTask" class="projectSpaceDetails d-flex align-center">
-        <div class="spaceAvatar pr-1">
+        <div class="spaceAvatar pr-1 d-lg-block d-md-none">
           <a
             v-if="task.space!==null"
             :href="spaceUrl(task.space.url)">
@@ -77,35 +90,50 @@
         </div>
       </div>
     </div>
-    <div class="taskLabels">
-      <span v-if="task.labels && task.labels.length == 1" class="labelText">{{ task.labels[0].name }}</span>
-      <span
+    <div class="taskLabels ">
+      <v-chip
+        v-if="task.labels && task.labels.length == 1"
+        :color="task.labels[0].color"
+        class="mx-1 white--text font-weight-bold"
+        label
+        small>
+        <span class="text-truncate">
+          {{ task.labels[0].name }}
+        </span>
+      </v-chip>
+      <div
         v-else-if="task.labels && task.labels.length > 1"
         :title="getLabelsList(task.labels)"
-        class="labelText">{{ task.labels.length }} {{ $t('label.labels') }}
-      </span>
+        class="taskTags d-flex">
+        <i class="uiIcon uiTagIcon"></i>
+        <span class="taskAttachNumber caption">{{ task.labels.length }}</span>
+      </div>
     </div>
     <div class="taskActions d-flex justify-center align-center">
       <div v-if="task.commentCount" class="taskComment d-flex">
         <i class="uiIcon uiCommentIcon"></i>
         <span class="taskCommentNumber caption">{{ task.commentCount }}</span>
       </div>
-      <!-- <div class="taskAttachment  d-flex pl-3">
-        <i class="uiIcon uiAttachIcon"></i>
-        <span class="taskAttachNumber caption">2</span>
-      </div>-->
 
     </div>
-    <div class="taskStat">
+    <div class="taskStat d-lg-block d-md-none">
       <span v-if="task && task.task && task.task.status && task.task.status" class="taskStatLabel pl-2">
         {{ getTaskStatusLabel(task.task.status.name) }}
       </span>
     </div>
-    <div class="taskDueDate">
-      <div v-if="taskDueDate">
-        <date-format :value="taskDueDate" :format="dateTimeFormat" />
+    <div class="taskDateAndStat">
+      <div class="taskStat d-lg-none">
+        <span v-if="task && task.task && task.task.status && task.task.status" class="taskStatLabel pl-2">
+          {{ getTaskStatusLabel(task.task.status.name) }}
+        </span>
+      </div>
+      <div class="taskDueDate">
+        <div v-if="taskDueDate">
+          <date-format :value="taskDueDate" :format="dateTimeFormat" />
+        </div>
       </div>
     </div>
+
   </div>
 </template>
 <script>

@@ -3,7 +3,8 @@
     <v-card
       :class="[getTaskPriorityColor(task.task.priority)]"
       class="taskCard taskViewCard pa-3"
-      flat>
+      flat
+      @click="openTaskDrawer()">
       <div class="taskTitleId  d-flex justify-space-between">
         <div class="taskTitle d-flex align-start">
           <div class="taskCheckBox" @click="updateCompleted" >
@@ -22,8 +23,7 @@
               :title="task.task.title "
               :data="task.task.title "
               :line-clamp="2"
-              end-char=".."
-              @click="openTaskDrawer()"/>
+              end-char=".."/>
           </a>
         </div>
         <div class="taskId">
@@ -73,7 +73,7 @@
             <v-chip
               v-if="task.labels && task.labels.length == 1"
               :color="task.labels[0].color"
-              class="mx-1"
+              class="mx-1 white--text font-weight-bold"
               label
               small>
               {{ task.labels[0].name }}

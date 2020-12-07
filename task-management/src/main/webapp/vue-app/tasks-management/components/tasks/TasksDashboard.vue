@@ -31,15 +31,21 @@
           <span class="amount-item">({{ tasksFilter.tasks[i].length }})</span>
         </div>
 
-        <!--<tasks-cards-list
+        <tasks-cards-list
           v-show="isTasksTabChanged"
-          :tasks="tasksFilter.tasks[i]"/>-->
+          :tasks="tasksFilter.tasks[i]"
+          class="d-md-none"/>
         <tasks-list
-          :tasks="tasksFilter.tasks[i]"/>
+          :tasks="tasksFilter.tasks[i]"
+          class="d-md-block d-none"/>
       </div>
     </div>
-    <div v-show="!filterActive">
+    <div v-show="!filterActive" class="d-md-block d-none">
       <tasks-list
+        :tasks="tasks"/>
+    </div>
+    <div v-show="!filterActive" class="d-md-none">
+      <tasks-cards-list
         :tasks="tasks"/>
     </div>
     <!--<v-tabs-items v-show="!filterActive" :key="id">

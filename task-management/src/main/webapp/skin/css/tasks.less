@@ -1078,8 +1078,6 @@
         #taskCardItem {
           .taskCard {
             border: 1px solid @tableBorder!important;
-            min-height: 200px;
-            height: 200px;
             background: @tableBackgroundAccent;
             .taskTitleId {
               min-height: 42px;
@@ -1168,24 +1166,14 @@
               }
             }
           }
+          .smallTaskCard {
+            min-height: 170px!important;
+            height: 170px!important;
+          }
           .taskViewCard {
             min-height: inherit;
             height: inherit;
           }
-          /*.normalViewCard {
-            min-height: 170px!important;
-            height: 170px!important;
-          }
-          .smallViewCard {
-            min-height: 130px!important;
-            height: 130px!important;
-          }
-
-          .x-smallViewCard {
-            min-height: 80px!important;
-            height: 80px!important;
-          }*/
-
           .taskHighPriority {
             border-left: 10px solid @errorColor!important;
           }
@@ -1212,6 +1200,7 @@
             .taskCheckBox {
               max-width: 3%;
               width: 3%;
+              align-self: flex-start!important;
               .uiIconCircle {
                 font-family: "PLF-FONT-ICONS" !important;
                 color: @primaryColor;
@@ -1246,6 +1235,17 @@
               text-overflow: ellipsis;
               white-space: nowrap;
             }
+            .taskTitleAndId {
+              width: 25%!important;
+              max-width: 25%!important;
+              .taskTitle {
+                width: 100%!important;
+                max-width: 100%!important;
+              }
+              .taskId {
+                text-align: left!important;
+              }
+            }
             .taskProject {
               max-width: 16%;
               width: 16%;
@@ -1275,6 +1275,17 @@
               max-width: 10%;
               width: 10%;
               text-align: center;
+              .taskTags {
+                .uiTagIcon {
+                  &:before {
+                    content: "\ead3";
+                    font-family: "PLF-FONT-ICONS" !important;
+                    color: @likeButtonColor;
+                    font-style: normal;
+                    font-size: 18px;
+                  }
+                }
+              }
             }
             .taskActions {
               max-width: 12%;
@@ -1292,6 +1303,21 @@
               max-width: 12%;
               width: 12%;
               text-align: right;
+            }
+            .taskDateAndStat {
+              max-width: 15%;
+              width: 15%;
+              text-align: right;
+              font-size: 14px;
+              .taskDueDate {
+                max-width: 100%;
+                width: 100%;
+              }
+              .taskStat {
+                font-size: 14px;
+                max-width: 100%;
+                width: 100%;
+              }
             }
           }
           .taskHighPriority {
@@ -1514,20 +1540,20 @@
           }
         }
       }
-      .taskActionsAndLabels {
-        .taskComment {
-          .uiCommentIcon {
-            padding-right: 2px;
-            margin-top: -2px;
-            &:before {
-              content: "\ea42";
-              font-family: "PLF-FONT-ICONS" !important;
-              color: @likeButtonColor;
-              font-style: normal;
-              font-size: 20px;
-            }
+      .taskComment {
+        .uiCommentIcon {
+          padding-right: 2px;
+          margin-top: -2px;
+          &:before {
+            content: "\ea42";
+            font-family: "PLF-FONT-ICONS" !important;
+            color: @likeButtonColor;
+            font-style: normal;
+            font-size: 20px;
           }
         }
+      }
+      .taskActionsAndLabels {
         .taskTags {
           .uiTagIcon {
             padding-right: 2px;
@@ -1558,6 +1584,33 @@
 
 
 /*---------------------Responsive Style ---------------------------*/
+
+@media (max-width: @maxLargeTabletWidth) {
+  #TasksParentContainer {
+    .projectAndTasksContainer {
+      .tasksList {
+        .tasksListItem {
+          .taskListItemView {
+            .taskAssignee {
+              width: 15%!important;
+              max-width: 15%!important;
+              padding-right: 12px;
+            }
+            .taskLabels {
+              .v-chip.v-size--small {
+                max-width: 80%;
+                padding: 0 4px;
+                margin: 0!important;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+}
+
 @media (max-width: @maxMobileWidth) {
   #TasksParentContainer {
     #TasksManagementPortlet {
@@ -1624,6 +1677,9 @@
         }
       }
     }
+  }
+  .taskDisplay {
+    display: none!important;
   }
 }
 
