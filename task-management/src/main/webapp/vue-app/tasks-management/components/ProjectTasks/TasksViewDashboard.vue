@@ -23,8 +23,24 @@
       <div v-for="(project,i) in groupName.projectName" :key="project.name">
 
         <div v-if=" project.value && project.value.displayName" class="d-flex align-center assigneeFilter">
-
+          <a
+            class="toggle-collapse-group"
+            style="margin-right: 10px"
+            href="#"
+            @click="showDetails = !showDetails,showDetailsTask(project.rank)">
+            <i
+              :id="'uiIconMiniArrowDown'+project.rank"
+              class="uiIcon uiIconMiniArrowDown"
+              style="display: block">
+            </i>
+            <i
+              :id="'uiIconMiniArrowRight'+project.rank"
+              class="uiIcon  uiIconMiniArrowRight"
+              style="display: none">
+            </i>
+          </a>
           <exo-user-avatar
+            v-if="project.value.avatar"
             :username="project.value.username"
             :fullname="project.value.displayName"
             :avatar-url="project.value.avatar"
@@ -37,48 +53,75 @@
         <div
           v-else
           class="d-flex align-center assigneeFilter">
+
+          <a
+            :id="'iconTask'+project.rank"
+            class="toggle-collapse-group"
+            style="margin-right: 10px"
+            href="#"
+            @click="showDetails = !showDetails,showDetailsTask(project.rank)"><!--<i :class="getClassShowDetails(id)"></i>-->
+            <i
+              :id="'uiIconMiniArrowDown'+project.rank"
+              class="uiIcon uiIconMiniArrowDown"
+              style="display: block">
+            </i>
+            <i
+              :id="'uiIconMiniArrowRight'+project.rank"
+              class="uiIcon  uiIconMiniArrowRight"
+              style="display: none">
+            </i>
+          </a>
+          <div v-if="project.name==='Unassigned'" class="defaultAvatar">
+            <img :src="defaultAvatar">
+          </div>
+
           <span class="nameGroup">{{ $t(getNameGroup(project.name)) }}</span>
           <span class="amount-item">({{ tasksList[i].length }})</span>
         </div>
+        <hr
+          role="separator"
+          aria-orientation="horizontal"
+          class="my-0 v-divider theme--light">
+        <div :id="'taskView'+project.rank">
+          <div
+            v-show="taskViewTabName == 'board'"
 
-        <div
-          v-show="taskViewTabName == 'board'"
-          style="display: block"
-          eager>
-          <tasks-view-board
-            :status-list="statusList"
-            :tasks-list="tasksList[i]"/>
-        </div>
-        <div
-          v-show="taskViewTabName == 'list'"
-          eager>
+            style="display: block"
+            eager>
+            <tasks-view-board
+              :status-list="statusList"
+              :tasks-list="tasksList[i]"/>
+          </div>
+          <div
+            v-show="taskViewTabName == 'list'"
+            eager>
 
-          <tasks-view-list
-            :status-list="statusList"
-            :tasks-list="tasksList[i]"/>
+            <tasks-view-list
+              :status-list="statusList"
+              :tasks-list="tasksList[i]"/>
+          </div>
         </div>
       </div>
     </div>
-
     <v-tabs-items
       v-show="!filterProjectActive"
       v-if="tasksList && tasksList.length && !loadingTasks"
       :key="id">
-      <v-tab-item
+      <div
         v-show="taskViewTabName == 'board'"
         style="display: block"
         eager>
         <tasks-view-board
           :status-list="statusList"
           :tasks-list="tasksList"/>
-      </v-tab-item>
-      <v-tab-item
+      </div>
+      <div
         v-show="taskViewTabName == 'list'"
         eager>
         <tasks-view-list
           :status-list="statusList"
           :tasks-list="tasksList"/>
-      </v-tab-item>
+      </div>
       <!--<v-tab-item
         v-show="taskViewTabName == 'gantt'"
         eager>
@@ -117,6 +160,7 @@
     },
     data () {
       return {
+        defaultAvatar:"/portal/rest/v1/social/users/default-image/avatar",
         keyword: null,
         loadingTasks: false,
         taskViewTabName: 'board',
@@ -124,6 +168,7 @@
         tasksList: [],
         groupName:null,
         filterProjectActive:false,
+        showDetails:true,
       }
     },
     watch:{
@@ -189,8 +234,8 @@
             this.groupName=data;
           }
           else {
-            this.tasksList = data && data.tasks || [];
             this.filterProjectActive=false
+            this.tasksList = data && data.tasks || [];
           }
 
         })
@@ -210,6 +255,20 @@
         }else
           {return name}
 
+      },
+      showDetailsTask(id){
+        const uiIconMiniArrowDown = document.querySelector(`#${`uiIconMiniArrowDown${id}`}`);
+        const uiIconMiniArrowRight = document.querySelector(`#${`uiIconMiniArrowRight${id}`}`);
+
+        const detailsTask = document.querySelector(`#${`taskView${id}`}`);
+        if (!this.showDetails) {
+          detailsTask.style.display = 'none';
+          uiIconMiniArrowDown.style.display = 'none';
+          uiIconMiniArrowRight.style.display = 'block'
+        }
+        else {detailsTask.style.display = 'block'
+          uiIconMiniArrowDown.style.display = 'block';
+          uiIconMiniArrowRight.style.display = 'none'}
       }
     }
   }

@@ -17,7 +17,24 @@
     <div v-if="filterActive">
       <div v-for="(project,i) in tasksFilter.projectName" :key="project.name">
         <div v-if=" project.value && project.value.displayName" class="d-flex align-center assigneeFilter">
+          <a
+            class="toggle-collapse-group"
+            style="margin-right: 10px"
+            href="#"
+            @click="showDetails = !showDetails,showDetailsTask(project.rank)">
+            <i
+              :id="'uiIconMiniArrowDown'+project.rank"
+              class="uiIcon uiIconMiniArrowDown"
+              style="display: block">
+            </i>
+            <i
+              :id="'uiIconMiniArrowRight'+project.rank"
+              class="uiIcon  uiIconMiniArrowRight"
+              style="display: none">
+            </i>
+          </a>
           <exo-user-avatar
+            v-if="project.value.avatar"
             :username="project.value.username"
             :fullname="project.value.displayName"
             :avatar-url="project.value.avatar"
@@ -27,18 +44,43 @@
           <span class="amount-item">({{ tasksFilter.tasks[i].length }})</span>
 
         </div>
-        <div v-else>
+        <div v-else class="d-flex align-center assigneeFilter">
+          <a
+            :id="'iconTask'+project.rank"
+            class="toggle-collapse-group"
+            style="margin-right: 10px"
+            href="#"
+            @click="showDetails = !showDetails,showDetailsTask(project.rank)"><!--<i :class="getClassShowDetails(id)"></i>-->
+            <i
+              :id="'uiIconMiniArrowDown'+project.rank"
+              class="uiIcon uiIconMiniArrowDown"
+              style="display: block">
+            </i>
+            <i
+              :id="'uiIconMiniArrowRight'+project.rank"
+              class="uiIcon  uiIconMiniArrowRight"
+              style="display: none">
+            </i>
+          </a>
+          <div v-if="project.name==='Unassigned'" class="defaultAvatar">
+            <img :src="defaultAvatar">
+          </div>
           <span class="nameGroup">{{ $t(getGroupName(project.name)) }}</span>
           <span class="amount-item">({{ tasksFilter.tasks[i].length }})</span>
         </div>
-
-        <tasks-cards-list
-          v-show="isTasksTabChanged"
-          :tasks="tasksFilter.tasks[i]"
-          class="d-md-none"/>
-        <tasks-list
-          :tasks="tasksFilter.tasks[i]"
-          class="d-md-block d-none"/>
+        <hr
+          role="separator"
+          aria-orientation="horizontal"
+          class="my-0 v-divider theme--light">
+        <div :id="'taskView'+project.rank" style="margin-left: 10px;">
+          <tasks-cards-list
+            v-show="isTasksTabChanged"
+            :tasks="tasksFilter.tasks[i]"
+            class="d-md-none"/>
+          <tasks-list
+            :tasks="tasksFilter.tasks[i]"
+            class="d-md-block d-none"/>
+        </div>
       </div>
     </div>
     <div v-else>
@@ -113,7 +155,9 @@
             offset: this.offset,
             limit: this.limitToFetch,
             showCompleteTasks:this.showCompleteTasks
-          }
+          },
+        defaultAvatar:"/portal/rest/v1/social/users/default-image/avatar",
+        showDetails:true,
       }
     },
     computed: {
@@ -345,6 +389,20 @@
           return 'label.upcoming'
         }
         return name;
+      },
+      showDetailsTask(id){
+        const uiIconMiniArrowDown = document.querySelector(`#${`uiIconMiniArrowDown${id}`}`);
+        const uiIconMiniArrowRight = document.querySelector(`#${`uiIconMiniArrowRight${id}`}`);
+
+        const detailsTask = document.querySelector(`#${`taskView${id}`}`);
+        if (!this.showDetails) {
+          detailsTask.style.display = 'none';
+          uiIconMiniArrowDown.style.display = 'none';
+          uiIconMiniArrowRight.style.display = 'block'
+        }
+        else {detailsTask.style.display = 'block'
+          uiIconMiniArrowDown.style.display = 'block';
+          uiIconMiniArrowRight.style.display = 'none'}
       }
     }
   }
