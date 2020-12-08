@@ -718,12 +718,17 @@
                     overflow: hidden;
                     text-overflow: ellipsis;
                     max-height: 50%;
+                    cursor: pointer;
                     p {
                       margin-bottom: 0;
                     }
                     .noProjectDescription {
                       color: @greyColorLighten1;
                     }
+                  }
+                  .largeDescriptionArea {
+                    min-height: 120px!important;
+                    margin-bottom: 0!important;
                   }
                   .ProjectSpace {
                     .v-list-item {
@@ -1080,6 +1085,13 @@
             }
           }
         }
+        .tasksViewBoard {
+          .projectTaskItem {
+            position: relative;
+            flex: 1 1 0;
+            width: 0;
+          }
+        }
         .noTasksProject {
           min-height: 50vh;
           height: 50vh;
@@ -1279,18 +1291,22 @@
               }
             }
             .taskProject {
-              max-width: 16%;
-              width: 16%;
+              max-width: 15%;
+              width: 15%;
+              min-width: 15%;
               text-align: left;
+              margin-right: 10px;
               .projectSpaceDetails {
+                cursor: pointer;
                 .spaceAvatar {
-                  min-width: 30px;
+                  //min-width: 30px;
                 }
                 .taskProjectNameChip {
-                  max-width: 80%;
+                  max-width: 90%;
                   .v-chip.v-size--small {
                     height: auto!important;
                     max-width: 80%;
+                    cursor: pointer;
                   }
                 }
               }
@@ -1307,6 +1323,7 @@
               max-width: 10%;
               width: 10%;
               text-align: center;
+              cursor: pointer;
               .taskTags {
                 .uiTagIcon {
                   &:before {
@@ -1323,10 +1340,12 @@
               max-width: 12%;
               width: 12%;
               text-align: center;
+              cursor: pointer;
             }
             .taskStat {
               max-width: 12%;
               width: 12%;
+              cursor: pointer;
               .taskStatLabel {
 
               }
@@ -1335,12 +1354,14 @@
               max-width: 12%;
               width: 12%;
               text-align: right;
+              cursor: pointer;
             }
             .taskDateAndStat {
               max-width: 15%;
               width: 15%;
               text-align: right;
               font-size: 14px;
+              cursor: pointer;
               .taskDueDate {
                 max-width: 100%;
                 width: 100%;
@@ -1377,6 +1398,9 @@
           .taskLabels {
             max-width: 20%!important;
             width: 20%!important;
+            .v-chip__content {
+              cursor: pointer;
+            }
           }
           .taskActions {
             max-width: 15%!important;
@@ -1617,32 +1641,6 @@
 
 /*---------------------Responsive Style ---------------------------*/
 
-@media (max-width: @maxLargeTabletWidth) {
-  #TasksParentContainer {
-    .projectAndTasksContainer {
-      .tasksList {
-        .tasksListItem {
-          .taskListItemView {
-            .taskAssignee {
-              width: 15%!important;
-              max-width: 15%!important;
-              padding-right: 12px;
-            }
-            .taskLabels {
-              .v-chip.v-size--small {
-                max-width: 80%;
-                padding: 0 4px;
-                margin: 0!important;
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-
-}
-
 @media (max-width: @maxMobileWidth) {
   #TasksParentContainer {
     #TasksManagementPortlet {
@@ -1708,12 +1706,58 @@
           }
         }
       }
+      .projectTasksDashboard {
+        .tasksViewBoard {
+          .projectTaskItem {
+            flex: 1 1 100%!important;
+            width: 100%!important;
+          }
+        }
+      }
     }
   }
   .taskDisplay {
     display: none!important;
   }
 }
+
+@media (max-width: @maxLargeTabletWidth) {
+  #TasksParentContainer {
+    .projectAndTasksContainer {
+      .tasksList {
+        .tasksListItem {
+          .taskListItemView {
+            .taskAssignee {
+              width: 15%!important;
+              max-width: 15%!important;
+              padding-right: 12px;
+            }
+            .taskLabels {
+              .v-chip.v-size--small {
+                max-width: 80%;
+                padding: 0 4px;
+                margin: 0!important;
+              }
+            }
+          }
+        }
+      }
+    }
+    #TasksManagementPortlet {
+      .projectAndTasksContainer {
+        .projectTasksDashboard {
+          .tasksViewBoard {
+            .projectTaskItem {
+              flex: 1 1 50%;
+              width: 50%;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
 
 /*--------------------------Tasks ---------------------------*/
 

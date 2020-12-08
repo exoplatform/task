@@ -1,8 +1,7 @@
 <template>
   <div
     :class="getTaskPriorityColor(task.task.priority)"
-    class="taskListItemView  px-4 py-3 d-flex align-center" 
-    @click="openTaskDrawer()">
+    class="taskListItemView  px-4 py-3 d-flex align-center">
     <div class="taskCheckBox" @click="updateCompleted" >
       <v-switch
         ref="autoFocusInput2"
@@ -12,7 +11,7 @@
         false-value="false"/>
       <i :title="$t(getTaskCompletedTitle())" :class="getTaskCompleted()"></i>
     </div>
-    <div class="taskTitleAndId pl-2 d-lg-none">
+    <div class="taskTitleAndId pl-2 d-lg-none" @click="openTaskDrawer()">
       <div class="taskId">
         <span class="caption text-sub-title">ID : {{ task.task.id }}</span>
       </div>
@@ -25,7 +24,7 @@
         </a>
       </div>
     </div>
-    <div class="taskTitle pr-3 d-lg-block d-md-none">
+    <div class="taskTitle pr-3 d-lg-block d-md-none" @click="openTaskDrawer()">
       <a
         ref="tooltip"
         :class="getTitleTaskClass()"
@@ -34,7 +33,10 @@
       </a>
     </div>
     <div class="taskProject pr-4">
-      <div v-if="!isPersonnalTask" class="projectSpaceDetails d-flex align-center">
+      <div 
+        v-if="!isPersonnalTask" 
+        class="projectSpaceDetails d-flex align-center TasksListViewProject" 
+        @click="openProjectTasks(task.status.project)">
         <div class="spaceAvatar pr-1 d-lg-block d-md-none">
           <a
             v-if="task.space!==null"
@@ -90,7 +92,7 @@
         </div>
       </div>
     </div>
-    <div class="taskLabels ">
+    <div class="taskLabels " @click="openTaskDrawer()">
       <v-chip
         v-if="task.labels && task.labels.length == 1"
         :color="task.labels[0].color"
@@ -104,30 +106,30 @@
       <div
         v-else-if="task.labels && task.labels.length > 1"
         :title="getLabelsList(task.labels)"
-        class="taskTags d-flex">
+        class="taskTags d-flex justify-center">
         <i class="uiIcon uiTagIcon"></i>
         <span class="taskAttachNumber caption">{{ task.labels.length }}</span>
       </div>
     </div>
-    <div class="taskActions d-flex justify-center align-center">
+    <div class="taskActions d-flex justify-center align-center" @click="openTaskDrawer()">
       <div v-if="task.commentCount" class="taskComment d-flex">
         <i class="uiIcon uiCommentIcon"></i>
         <span class="taskCommentNumber caption">{{ task.commentCount }}</span>
       </div>
 
     </div>
-    <div class="taskStat d-lg-block d-md-none">
+    <div class="taskStat d-lg-block d-md-none" @click="openTaskDrawer()">
       <span v-if="task && task.task && task.task.status && task.task.status" class="taskStatLabel pl-2">
         {{ getTaskStatusLabel(task.task.status.name) }}
       </span>
     </div>
-    <div class="taskDateAndStat">
+    <div class="taskDateAndStat" @click="openTaskDrawer()">
       <div class="taskStat d-lg-none">
         <span v-if="task && task.task && task.task.status && task.task.status" class="taskStatLabel pl-2">
           {{ getTaskStatusLabel(task.task.status.name) }}
         </span>
       </div>
-      <div class="taskDueDate">
+      <div class="taskDueDate" @click="openTaskDrawer()">
         <div v-if="taskDueDate">
           <date-format :value="taskDueDate" :format="dateTimeFormat" />
         </div>
@@ -307,6 +309,10 @@
           return '#';
         }
         return `${eXo.env.portal.context}/g/:spaces:${spaceUrl}/`;
+      },
+      openProjectTasks(project) {
+        window.history.pushState('project', project.name, `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest?projectId=${project.id}`);
+        window.location.reload(true);
       }
     }
   }

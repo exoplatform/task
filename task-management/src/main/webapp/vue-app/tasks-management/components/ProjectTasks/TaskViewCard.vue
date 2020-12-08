@@ -17,7 +17,8 @@
           </div>
           <a
             ref="tooltip"
-            :class="getTitleTaskClass()">
+            :class="getTitleTaskClass()"
+            class="taskCardViewTitle">
             <ellipsis
               v-if="task.task.title "
               :title="task.task.title "

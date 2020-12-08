@@ -8,6 +8,7 @@
         <v-btn
           class="btn px-2 btn-primary addNewProjectButton"
           @click="openTaskDrawer()">
+          <v-icon dark class="d-block d-sm-none">mdi-plus</v-icon>
           <span class="d-none font-weight-regular d-sm-inline">
             + {{ $t('label.addTask') }}
           </span>

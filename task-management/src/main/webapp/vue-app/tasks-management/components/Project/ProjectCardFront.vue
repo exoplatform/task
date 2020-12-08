@@ -85,7 +85,9 @@
     </div>
     <div class="taskItemInfo pa-3">
       <div
-        class="taskItemDescription">
+        :class="project && !project.space && 'largeDescriptionArea'"
+        class="taskItemDescription"
+        @click="showProjectTasksDetails(project)">
         <p
           v-if="project.description">{{ getDescription() }}</p>
         <div v-else>
