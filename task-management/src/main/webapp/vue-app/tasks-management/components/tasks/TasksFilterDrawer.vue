@@ -278,8 +278,8 @@
         this.$refs.filterTasksDrawer.close();
       },
       resetFields(source) {
-        this.query=this.task.query;
-        this.assignee=this.task.assignee;
+        this.query='';
+        this.assignee='';
         this.dueDateSelected='';
         this.prioritySelected='';
         this.statusSelected='';
@@ -287,6 +287,7 @@
         this.sortBy='';
         this.labels='';
         this.showCompleteTasks=false;
+        this.$root.$emit('reset-filter-task-group-sort',this.groupBy);
         this.getFilterNumber(source)
       },
       filterTasks(){
@@ -320,20 +321,10 @@
           this.getFilterNumber()
           this.$refs.filterTasksDrawer.close();
         }else{
-          this.$emit('filter-task-query', tasks);
-        return this.$tasksService.filterTasksList(tasks,filterGroupSort.groupBy,filterGroupSort.sortBy,filterLabels.labels).then((tasks) => {
-          if (tasks.projectName){
-            this.$root.$emit('filter-task-groupBy',tasks);
-          }else {
-            this.$emit('filter-task',{ tasks,showCompleteTasks:this.showCompleteTasks });
-          }
-          this.getFilterNumber()
+          this.$emit('filter-task-query', tasks,filterGroupSort,filterLabels);
+       
+        this.getFilterNumber()
           this.$refs.filterTasksDrawer.close();
-        })
-                .catch(e => {
-                  console.debug("Error updating project", e);
-                  this.$emit('error', e && e.message ? e.message : String(e));
-                });
       }
       },
       getFilterNumber(source){

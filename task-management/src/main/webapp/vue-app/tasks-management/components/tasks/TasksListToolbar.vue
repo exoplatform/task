@@ -57,7 +57,7 @@
           @click="openDrawer">
           <i class="uiIcon uiIconFilterSetting pr-3"></i>
           <span class="d-none font-weight-regular caption d-sm-inline">
-            {{ $t('label.filter') }} ({{ filterNumber }})
+            {{ $t('label.filter') }} {{ getFilterNum() }}
           </span>
         </v-btn>
       </v-scale-transition>
@@ -110,10 +110,7 @@
               this.awaitingSearch = false;
             }, 1000);
           }
-          this.awaitingSearch = true;
-          if(this.searchonkeyChange){
-          this.primaryFilterSelected='ALL'
-          this.resetFields("query") }      
+          this.awaitingSearch = true;  
         this.searchonkeyChange= true;
       },
     },
@@ -121,10 +118,11 @@
       resetFilterTask(){
         this.$emit('reset-filter-task-dashboard');
       },
-      filterTaskquery(e){
+      filterTaskquery(e,filterGroupSort,filterLabels){
         this.searchonkeyChange=false
         this.showCompleteTasks=e.showCompleteTasks;
         this.keyword=e.query
+        this.$emit('filter-task-query',e,filterGroupSort,filterLabels)
       },
       filterTasks(e){
         this.tasks=e.tasks.tasks;
@@ -147,14 +145,19 @@
        this.$emit('primary-filter-task', this.primaryFilterSelected);     
       },
       resetFields(activeField){
+        this.searchonkeyChange=false
+          this.keyword=''
           this.$refs.filterTasksDrawer.resetFields(activeField);
       },
       filterNumChanged(filtersnumber,source){
         this.filterNumber=filtersnumber
-        if(source!=="primary"){
-        this.primaryFilterSelected='ALL'
-        }
+      },
+      getFilterNum(){
+        if(this.filterNumber>0){
+          return `(${this.filterNumber})`
+        } return ''
       }
+
     }
   }
 </script>

@@ -11,6 +11,7 @@
       @keyword-changed="keywordChanged"
       @changed="changeSelectedTabItem()"
       @filter-task-dashboard="filterTaskDashboard"
+      @filter-task-query="filterTaskquery"
       @primary-filter-task="getTasksByPrimary"
       @reset-filter-task-dashboard="resetFiltertaskDashboard"/>
     <div v-if="filterActive">
@@ -40,13 +41,15 @@
           class="d-md-block d-none"/>
       </div>
     </div>
-    <div v-show="!filterActive" class="d-md-block d-none">
-      <tasks-list
-        :tasks="tasks"/>
-    </div>
-    <div v-show="!filterActive" class="d-md-none">
-      <tasks-cards-list
-        :tasks="tasks"/>
+    <div v-else>
+      <div class="d-md-block d-none">
+        <tasks-list
+          :tasks="tasks"/>
+      </div>
+      <div class="d-md-none">
+        <tasks-cards-list
+          :tasks="tasks"/>
+      </div>
     </div>
     <!--<v-tabs-items v-show="!filterActive" :key="id">
       &lt;!&ndash;<v-tab-item v-show="isTasksTabChanged" eager>
@@ -60,7 +63,7 @@
     </v-tabs-items>-->
     <v-row class="ma-0 border-box-sizing">
       <v-btn
-        v-if="canShowMore"
+        v-if="canShowMore && !filterActive"
         :loading="loadingTasks"
         :disabled="loadingTasks"
         class="loadMoreButton ma-auto mt-4 btn"
@@ -77,6 +80,7 @@
     data () {
       return {
         isTasksTabChanged: false,
+        primaryfilter:'ALL',
         tasks: [],
         keyword: null,
         loadingTasks: false,
@@ -91,7 +95,25 @@
         startTypingKeywordTimeout: 0,
         showCompleteTasks: false,
         tasksFilter:null,
-        filterActive:false
+        filterActive:false,
+        groupBy:null,
+        sortBy:null,
+        labels:[],
+        filterTasks : {
+            query: '',
+            assignee: '',
+            watcher:'',
+            coworker:'',
+            statusId: '',
+            dueDate: '',
+            priority: '',
+            projectId: -2,
+            groupBy: '',
+            orderBy: '',
+            offset: this.offset,
+            limit: this.limitToFetch,
+            showCompleteTasks:this.showCompleteTasks
+          }
       }
     },
     computed: {
@@ -119,43 +141,91 @@
       keywordChanged(keyword,searchonkeyChange){
         this.keyword=keyword
         if(searchonkeyChange){
-        if (!this.keyword) {
+          this.filterTasks.query=this.keyword
           this.resetSearch();
           this.searchTasks();
           return;
-        }
-        this.startTypingKeywordTimeout = Date.now();
+    
+       /*  this.startTypingKeywordTimeout = Date.now();
         if (!this.loadingTasks) {
           this.loadingTasks = true;
           this.waitForEndTyping();
-        }
+        } */
        }
       },
       resetFiltertaskDashboard(){
-        this.searchTasks();
+        //this.searchTasks();
+        this.groupBy=''
+        this.sortBy=''
         this.filterActive=false;
+        this.resetSearch();
+        this.getTasksByPrimary(this.primaryfilter)
       },
       filterTaskDashboard(e){
         this.tasks=e.tasks;
         this.showCompleteTasks=e.showCompleteTasks;
         this.filterActive=false;
       },
+
+      filterTaskquery(e,filterGroupSort,filterLabels){
+        this.groupBy=filterGroupSort.groupBy
+        this.sortBy=filterGroupSort.sortBy
+        this.labels=filterLabels.labels
+        if(this.primaryfilter==='ALL'){
+          this.tasksFilter=e;
+          this.resetSearch();
+          this.searchTasks()
+        }else{
+          if((this.primaryfilter === 'OVERDUE' || this.primaryfilter === 'TODAY' || this.primaryfilter === 'TOMORROW')&&e.dueDate&&e.dueDate!==this.primaryfilter){
+            this.tasks=[]
+            this.filterActive=false;
+          }else if(this.primaryfilter === 'ASSIGNED' && e.assignee){
+          this.tasks=[]
+            this.filterActive=false;
+          } else{
+            if(!this.primaryfilter === 'ASSIGNED'){
+              this.filterTasks.assignee=e.assignee 
+            }
+            if(!(this.primaryfilter === 'OVERDUE' || this.primaryfilter === 'TODAY' || this.primaryfilter === 'TOMORROW')){
+              this.filterTasks.dueDate=e.dueDate 
+            }
+            this.filterTasks.query=e.query           
+            this.filterTasks.statusId=e.statusId 
+            this.filterTasks.priority=e.priority 
+            this.filterTasks.showCompleteTasks=e.showCompleteTasks 
+            this.resetSearch();
+            this.searchTasks()
+        }
+        }
+      /*    return this.$tasksService.filterTasksList(e,filterGroupSort.groupBy,filterGroupSort.sortBy,filterLabels.labels).then((tasks) => {
+          if (tasks.projectName){
+             this.tasksFilter = tasks;
+             this.filterActive=true;
+          }else {
+            //this.filterTaskDashboard(e)
+            this.tasks=tasks.tasks;
+            this.showCompleteTasks=e.showCompleteTasks;
+            this.filterActive=false;
+          }         
+        }) */
+      },
       changeSelectedTabItem() {
         this.isTasksTabChanged = !this.isTasksTabChanged;
       },
       searchTasks(tasks) {
         if(!tasks){
-         tasks = {
-          query: this.keyword,
-          offset: this.offset,
-          limit: this.limitToFetch,
-          showCompleteTasks:this.showCompleteTasks,
-        };
+         tasks = this.filterTasks;
         }
         this.loadingTasks = true;
-        return this.$tasksService.filterTasksList(tasks).then(data => {
-          this.tasks = data && data.tasks || [];
-          this.tasksSize = data && data.tasksNumber || 0;
+        return this.$tasksService.filterTasksList(tasks,this.groupBy,this.sortBy,this.labels).then(data => {
+           if (data.projectName){
+             this.tasksFilter = data;
+             this.filterActive=true;
+          }else {
+            this.tasks = data && data.tasks || [];
+            this.tasksSize = data && data.tasksNumber || 0;
+            this.filterActive=false;
+          } 
           return this.$nextTick();
         }).then(() => {
           if (this.keyword && this.tasks.length >= this.limitToFetch) {
@@ -164,39 +234,73 @@
         })
           .finally(() => this.loadingTasks = false);
       },
-      getTasksByPrimary(primaryfilter) {
-      
+      getTasksByPrimary(primaryfilter) { 
+        this.primaryfilter=primaryfilter         
         if(primaryfilter && (primaryfilter === 'OVERDUE' || primaryfilter === 'TODAY' || primaryfilter === 'TOMORROW')){
-          const tasks = {
-            query: '',
-            assignee: '',
-            statusId: '',
-            dueDate: '',
-            priority: '',
-            showCompleteTasks: false,
-            groupBy: '',
-            orderBy: '',
-          };
-          tasks.dueDate=primaryfilter
-          this.searchTasks(tasks)
-        }else if(primaryfilter && (primaryfilter === 'ASSIGNED' || primaryfilter === 'WATCHED' || primaryfilter === 'COLLABORATED')){
-          this.loadingTasks = true;
-            return this.$tasksService.getMyTasksList(primaryfilter).then(data => {
-            this.tasks = data && data.tasks || [];
-              this.tasksSize = data && data.tasksNumber || 0;
-              return this.$nextTick();
-            }).then(() => {
-              if (this.keyword && this.tasks.length >= this.limitToFetch) {
-                this.limitToFetch += this.pageSize;
-              }
-            })
-              .finally(() => {
-              this.loadingTasks = false
-              this.filterActive=false
-              }
-              ); 
+          this.filterTasks.dueDate=primaryfilter
+          this.filterTasks.assignee=''
+          this.filterTasks.watcher=''
+          this.filterTasks.coworker=''
+         this.filterTasks.statusId=''
+         this.filterTasks.priority=''
+         this.filterTasks.query=''
+         this.groupBy=''
+         this.orderBy=''          
+         this.filterTasks.projectId=-2
+         this.resetSearch();
+          this.searchTasks()
+        }else if(primaryfilter && (primaryfilter === 'ASSIGNED')){
+        this.filterTasks.dueDate=''
+         this.filterTasks.assignee='ME'
+         this.filterTasks.watcher=''
+          this.filterTasks.coworker=''
+         this.filterTasks.statusId=''
+         this.filterTasks.priority=''
+         this.filterTasks.query=''
+         this.groupBy=''
+         this.orderBy=''
+         this.filterTasks.projectId=-3
+         this.resetSearch();
+          this.searchTasks()
+        }else if(primaryfilter && (primaryfilter === 'WATCHED')){
+          this.filterTasks.dueDate=''
+          this.filterTasks.assignee=''
+         this.filterTasks.watcher='ME'
+         this.filterTasks.coworker=''
+         this.filterTasks.statusId=''
+         this.filterTasks.priority=''
+         this.filterTasks.query=''
+         this.groupBy=''
+         this.orderBy=''
+         this.filterTasks.projectId=-3
+         this.resetSearch();
+          this.searchTasks()
+        }else if(primaryfilter && (primaryfilter === 'COLLABORATED')){
+         this.filterTasks.dueDate=''
+         this.filterTasks.assignee=''
+         this.filterTasks.watcher=''
+         this.filterTasks.coworker='ME'
+         this.filterTasks.statusId=''
+         this.filterTasks.priority=''
+         this.filterTasks.query=''
+         this.groupBy=''
+         this.orderBy=''
+         this.filterTasks.projectId=-3
+         this.resetSearch();
+          this.searchTasks()
         }else{
-          this.resetFiltertaskDashboard()
+         this.filterTasks.dueDate=''
+          this.filterTasks.assignee=''
+          this.filterTasks.watcher=''
+         this.filterTasks.coworker=''
+         this.filterTasks.statusId=''
+         this.filterTasks.priority=''
+         this.filterTasks.query=''
+         this.groupBy=''
+         this.orderBy=''
+         this.filterTasks.projectId=-2
+         this.resetSearch();
+         this.searchTasks() 
         }
         this.$refs.taskToolBar.resetFields("primary");
       },

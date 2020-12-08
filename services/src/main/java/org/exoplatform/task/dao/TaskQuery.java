@@ -39,15 +39,19 @@ public class TaskQuery extends Query implements Cloneable {
   //TODO: how to remove these two field
   private List<Long> projectIds = null;
   private List<String> assignee = null;
-  
+  private List<String> coworker = null;
+  private List<String> watchers = null;
+
   public TaskQuery() {
 
   }
 
-  TaskQuery(AggregateCondition condition, List<OrderBy> orderBies, List<Long> projectIds, List<String> assignee) {
+  TaskQuery(AggregateCondition condition, List<OrderBy> orderBies, List<Long> projectIds, List<String> assignee, List<String> coworker, List<String> watchers) {
     super(condition, orderBies);
     this.projectIds = projectIds;
     this.assignee = assignee;
+    this.coworker= coworker;
+    this.watchers= watchers;
   }
 
   public static TaskQuery or(TaskQuery... queries) {
@@ -94,6 +98,24 @@ public class TaskQuery extends Query implements Cloneable {
       this.add(in(TASK_ASSIGNEE, assignee));
     }
     this.assignee = assignee;
+  }
+
+  public List<String> getWatchers() {
+    return watchers;
+  }
+
+  public void setWatchers(List<String> watchers) {
+    if (watchers != null) {
+      this.add(in(TASK_WATCHER, watchers));
+    }
+    this.watchers = watchers;
+  }
+
+  public void setCoworker(List<String> coworker) {
+    if (coworker != null) {
+      this.add(in(TASK_COWORKER, coworker));
+    }
+    this.coworker = coworker;
   }
 
   public void setAssigneeOrCoworker(List<String> assignee) {
@@ -228,7 +250,7 @@ public class TaskQuery extends Query implements Cloneable {
 
   public TaskQuery clone() {
     Condition condition = getCondition();
-    return new TaskQuery(condition != null ? (AggregateCondition)condition.clone() : null, getOrderBy(), projectIds != null ? new ArrayList<Long>(projectIds) : null, assignee);
+    return new TaskQuery(condition != null ? (AggregateCondition)condition.clone() : null, getOrderBy(), projectIds != null ? new ArrayList<Long>(projectIds) : null, assignee,coworker,watchers);
   }
 
 }

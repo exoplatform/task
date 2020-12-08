@@ -308,7 +308,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public TasksList filterTasks(String query, long projectId, String keyword, List<Long> labels, TaskUtil.DUE dueDate, Priority priority, List<String> assignees, Long labelId, Long statusId, Identity currIdentity, String dueCategory, String space_group_id , TimeZone userTimezone, boolean isShowCompleted, boolean advanceSearch, boolean noProjPermission, boolean noLblPermission, String orderBy, String groupBy, int offset, int limit) throws Exception {
+    public TasksList filterTasks(String query, long projectId, String keyword, List<Long> labels, TaskUtil.DUE dueDate, Priority priority, List<String> assignees, List<String> coworker, List<String> watchers, Long labelId, Long statusId, Identity currIdentity, String dueCategory, String space_group_id , TimeZone userTimezone, boolean isShowCompleted, boolean advanceSearch, boolean noProjPermission, boolean noLblPermission, String orderBy, String groupBy, int offset, int limit) throws Exception {
 
         List<String> defOrders;
         List<String> defGroupBys;
@@ -342,7 +342,7 @@ public class TaskServiceImpl implements TaskService {
         TaskQuery taskQuery = new TaskQuery();
         if (advanceSearch) {
             Status status = statusId != null ? daoHandler.getStatusHandler().find(statusId) : null;
-            TaskUtil.buildTaskQuery(taskQuery, keyword, labels, status, dueDate, priority, assignees, isShowCompleted, userTimezone);
+            TaskUtil.buildTaskQuery(taskQuery, keyword, labels, status, dueDate, priority, assignees, coworker, watchers, isShowCompleted, userTimezone);
         } else {
             taskQuery.setKeyword(query);
             taskQuery.setCompleted(false);

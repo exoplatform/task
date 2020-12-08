@@ -182,6 +182,8 @@ public class TaskRestService implements ResourceContainer {
                               @ApiParam(value = "dueCategory term", required = false) @QueryParam("dueCategory") String dueCategory,
                               @ApiParam(value = "priority term", required = false) @QueryParam("priority") String priority,
                               @ApiParam(value = "assignee term", required = false) @QueryParam("assignee") String assignee,
+                              @ApiParam(value = "coworker term", required = false) @QueryParam("coworker") String coworker,
+                              @ApiParam(value = "watchers term", required = false) @QueryParam("watcher") String watcher,
                               @ApiParam(value = "showCompleted term", defaultValue = "false") @QueryParam("showCompleted") boolean showCompleted,
                               @ApiParam(value = "statusId term", required = false) @QueryParam("statusId") String statusId,
                               @ApiParam(value = "space_group_id term", required = false) @QueryParam("space_group_id") String space_group_id,
@@ -199,6 +201,18 @@ public class TaskRestService implements ResourceContainer {
 
     Identity currIdentity = ConversationState.getCurrent().getIdentity();
 
+    if(assignee!=null && assignee.equals("ME")){
+      assignee=currIdentity.getUserId();
+    }
+
+    if(coworker!=null && coworker.equals("ME")){
+      coworker=currIdentity.getUserId();
+    }
+
+    if(watcher!=null && watcher.equals("ME")){
+      watcher=currIdentity.getUserId();
+    }
+
     Long statusIdLong = null;
     if (org.apache.commons.lang.StringUtils.isNotBlank(statusId)) {
       StatusDto statusDto = statusService.getStatus(Long.parseLong(statusId));
@@ -208,7 +222,7 @@ public class TaskRestService implements ResourceContainer {
       statusIdLong=statusDto.getId();
     }
     ViewState.Filter filter = new ViewState.Filter(listId);
-    filter.updateFilterData(filterLabelIds, statusId, dueDate, priority, assignee, showCompleted, query);
+    filter.updateFilterData(filterLabelIds, statusId, dueDate, priority, assignee, coworker, watcher, showCompleted, query);
 
     ProjectDto project = null;
     boolean noProjPermission = false;
@@ -241,7 +255,7 @@ public class TaskRestService implements ResourceContainer {
       return Response.status(Response.Status.NOT_FOUND).build();
     }
 
-    TasksList tasks =  taskService.filterTasks(query, projectId, filter.getKeyword(), filter.getLabel(), filter.getDue(),  filter.getPriority(), filter.getAssignees(), labelId, statusIdLong, currIdentity, dueCategory, space_group_id , userTimezone, filter.isShowCompleted(), advanceSearch, noProjPermission, noLblPermission, orderBy,  groupBy, offset, limit);
+    TasksList tasks =  taskService.filterTasks(query, projectId, filter.getKeyword(), filter.getLabel(), filter.getDue(),  filter.getPriority(), filter.getAssignees(), filter.getCoworkers(), filter.getWatchers(), labelId, statusIdLong, currIdentity, dueCategory, space_group_id , userTimezone, filter.isShowCompleted(), advanceSearch, noProjPermission, noLblPermission, orderBy,  groupBy, offset, limit);
 
     Map<GroupKey, List<TaskEntity>> groupTasks = new HashMap<GroupKey, List<TaskEntity>>();
     if (groupBy != null && groupBy!= TaskUtil.DUEDATE && !groupBy.isEmpty() && !TaskUtil.NONE.equalsIgnoreCase(groupBy)) {

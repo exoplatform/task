@@ -160,6 +160,48 @@ public final class TaskUtil {
   }
 
   public static TaskQuery buildTaskQuery(TaskQuery query, String keyword,
+                                   List<Long> searchLabelIds,
+                                   Status status,
+                                   DUE dueDate,
+                                   Priority priority,
+                                   List<String> searchAssignee,
+                                   List<String> searchCoworker,
+                                   List<String> searchWatcher,
+                                   Boolean showCompleted, TimeZone timezone) {
+    if (keyword != null && !keyword.trim().isEmpty()) {
+      query.setKeyword(keyword);
+    }
+    if (searchLabelIds != null && !searchLabelIds.isEmpty()) {
+      query.setLabelIds(searchLabelIds);
+    }
+    if (status != null) {
+      query.setStatus(status);
+    }
+    if (dueDate != null) {
+      Date[] due = TaskUtil.convertDueDate(dueDate.name(), timezone);
+      query.setDueDateFrom(due[0]);
+      query.setDueDateTo(due[1]);
+    }
+    if (priority != null) {
+      query.setPriority(priority);
+    }
+    if (searchAssignee != null && !searchAssignee.isEmpty()) {
+      query.setAssignee(searchAssignee);
+    }
+    if (searchCoworker != null && !searchCoworker.isEmpty()) {
+      query.setCoworker(searchCoworker);
+    }
+    if (searchWatcher != null && !searchWatcher.isEmpty()) {
+      query.setWatchers(searchWatcher);
+    }
+    if (showCompleted != null && !showCompleted) {
+      query.setCompleted(showCompleted);
+    }
+
+    return query;
+  }
+
+  public static TaskQuery buildTaskQuery(TaskQuery query, String keyword,
                                          List<Long> searchLabelIds,
                                          StatusDto status,
                                          DUE dueDate,

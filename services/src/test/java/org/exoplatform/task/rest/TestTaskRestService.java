@@ -711,13 +711,15 @@ public class TestTaskRestService {
     filter.setKeyword("exo");
     List<Long> labelIDs=new ArrayList<>();
     List<String> assignee=new ArrayList<>();
+    List<String> coworkers=new ArrayList<>();
+    List<String> watchers=new ArrayList<>();
 
 
     TasksList tasksList = new TasksList(Collections.singletonList(task2),1);
-    when(taskService.filterTasks("exo",-2,"exo",labelIDs,null,null,assignee,null,null,root,null,null,null,false,true,false,false,null,null,0,0)).thenReturn(tasksList);
+    when(taskService.filterTasks("exo",-2,"exo",labelIDs,null,null,assignee,coworkers, watchers,null,null,root,null,null,null,false,true,false,false,null,null,0,0)).thenReturn(tasksList);
     when(taskService.countTasks(any())).thenReturn(1);
     // When
-    Response response = taskRestService.filterTasks(null, -2, "exo",null, null, null, false,null,null,null,null,null,null,null,0,0,false,false);
+    Response response = taskRestService.filterTasks(null, -2, "exo",null, null, null, null, null, false,null,null,null,null,null,null,null,0,0,false,false);
 
     // Then
     assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -725,17 +727,17 @@ public class TestTaskRestService {
     assertNotNull(tasks.getTasks());
     assertEquals(1, tasks.getTasksNumber());
 
-    when(taskService.filterTasks("exo",-2,"exo",labelIDs,null,null,assignee,null,null,root,null,null,null,false,true,false,false,"priority","project",0,0)).thenReturn(tasksList);
+    when(taskService.filterTasks("exo",-2,"exo",labelIDs,null,null,assignee,coworkers, watchers,null,null,root,null,null,null,false,true,false,false,"priority","project",0,0)).thenReturn(tasksList);
     when(taskService.countTasks(any())).thenReturn(1);
 
-    Response response1 = taskRestService.filterTasks(null, -2, "exo",null, null, null, false,null,null,"project","priority",null,null,null,0,0,false,false);
+    Response response1 = taskRestService.filterTasks(null, -2, "exo",null, null, null, null, null, false,null,null,"project","priority",null,null,null,0,0,false,false);
 
     assertEquals(Response.Status.OK.getStatusCode(), response1.getStatus());
 
 
     Identity exo = new Identity(null);
     ConversationState.setCurrent(new ConversationState(exo));
-    Response response2 = taskRestService.filterTasks(null, -2, "exo",null, null, null, false,null,null,"project","priority",null,null,null,0,0,false,false);
+    Response response2 = taskRestService.filterTasks(null, -2, "exo",null, null, null, null, null, false,null,null,"project","priority",null,null,null,0,0,false,false);
 
     // Then
     assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response2.getStatus());

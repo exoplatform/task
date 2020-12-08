@@ -280,11 +280,11 @@
       },
     },
     watch: {
-      'task.description': function (newValue, oldValue) {
+      /* 'task.description': function (newValue, oldValue) {
         if (newValue !== oldValue) {
           this.autoSaveDescription();
         }
-      },
+      }, */
       editorData(val) {
         this.disabledComment = val === '';
       },
