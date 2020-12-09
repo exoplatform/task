@@ -206,6 +206,45 @@ public class TaskServiceImpl implements TaskService {
         return taskStorage.countUncompletedTasks(user);
     }
 
+
+    @Override
+    public List<TaskDto> getWatchedTasks(String user, int limit) {
+        return taskStorage.getWatchedTasks(user, limit);
+    }
+
+
+    @Override
+    public Long countWatchedTasks(String user) {
+        return taskStorage.countWatchedTasks(user);
+    }
+
+
+
+    @Override
+    public List<TaskDto> getAssignedTasks(String user, int limit) {
+        return taskStorage.getAssignedTasks(user, limit);
+    }
+
+
+    @Override
+    public Long countAssignedTasks(String user) {
+        return taskStorage.countWatchedTasks(user);
+    }
+
+
+    @Override
+    public List<TaskDto> getCollaboratedTasks(String user, int limit) {
+        return taskStorage.getCollaboratedTasks(user, limit);
+    }
+
+
+    @Override
+    public Long countCollaboratedTasks(String user) {
+        return taskStorage.countCollaboratedTasks(user);
+    }
+
+
+
     @Override
     public List<TaskDto> findTasks(String user, String query, int limit) {
         if (StringUtils.isBlank(user)) {
@@ -269,7 +308,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public TasksList filterTasks(String query, long projectId, String keyword, List<Long> labels, TaskUtil.DUE dueDate, Priority priority, List<String> assignees, Long labelId, Long statusId, Identity currIdentity, String dueCategory, String space_group_id , TimeZone userTimezone, boolean isShowCompleted, boolean advanceSearch, boolean noProjPermission, boolean noLblPermission, String orderBy, String groupBy, int offset, int limit) throws Exception {
+    public TasksList filterTasks(String query, long projectId, String keyword, List<Long> labels, TaskUtil.DUE dueDate, Priority priority, List<String> assignees, List<String> coworker, List<String> watchers, Long labelId, Long statusId, Identity currIdentity, String dueCategory, String space_group_id , TimeZone userTimezone, boolean isShowCompleted, boolean advanceSearch, boolean noProjPermission, boolean noLblPermission, String orderBy, String groupBy, int offset, int limit) throws Exception {
 
         List<String> defOrders;
         List<String> defGroupBys;
@@ -303,7 +342,7 @@ public class TaskServiceImpl implements TaskService {
         TaskQuery taskQuery = new TaskQuery();
         if (advanceSearch) {
             Status status = statusId != null ? daoHandler.getStatusHandler().find(statusId) : null;
-            TaskUtil.buildTaskQuery(taskQuery, keyword, labels, status, dueDate, priority, assignees, isShowCompleted, userTimezone);
+            TaskUtil.buildTaskQuery(taskQuery, keyword, labels, status, dueDate, priority, assignees, coworker, watchers, isShowCompleted, userTimezone);
         } else {
             taskQuery.setKeyword(query);
             taskQuery.setCompleted(false);

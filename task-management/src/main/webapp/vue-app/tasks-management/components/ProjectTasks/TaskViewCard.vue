@@ -1,12 +1,10 @@
 <template>
   <v-app id="taskCardItem" class="py-3">
     <v-card
-      :class="[getTaskPriorityColor(task.task.priority),
-               ((!taskDueDate && !task.commentCount) || (!assigneeAndCoworkerArray.length && !task.labels.length )) && 'smallViewCard',
-               !taskDueDate && !task.commentCount && !assigneeAndCoworkerArray.length && !task.labels.length && !task.commentCount && 'x-smallViewCard',
-               !task.commentCount && 'normalViewCard']"
+      :class="[getTaskPriorityColor(task.task.priority)]"
       class="taskCard taskViewCard pa-3"
-      flat>
+      flat
+      @click="openTaskDrawer()">
       <div class="taskTitleId  d-flex justify-space-between">
         <div class="taskTitle d-flex align-start">
           <div class="taskCheckBox" @click="updateCompleted" >
@@ -19,21 +17,23 @@
           </div>
           <a
             ref="tooltip"
-            :class="getTitleTaskClass()">
+            :class="getTitleTaskClass()"
+            class="taskCardViewTitle">
             <ellipsis
               v-if="task.task.title "
               :title="task.task.title "
               :data="task.task.title "
               :line-clamp="2"
-              end-char=".."
-              @click="openTaskDrawer()"/>
+              end-char=".."/>
           </a>
         </div>
         <div class="taskId">
           <span class="caption text-sub-title">ID : {{ task.task.id }}</span>
         </div>
       </div>
-      <div class="taskLabelsAndWorker d-flex justify-space-between align-center my-3">
+      <div 
+        v-if="assigneeAndCoworkerArray && assigneeAndCoworkerArray.length"
+        class="taskWorker d-flex justify-space-between align-center my-3">
         <div
           :class="assigneeAndCoworkerArray && !assigneeAndCoworkerArray.length && task && task.labels && !task.labels.length && 'hideTaskAssignee'"
           class="taskAssignee d-flex flex-nowrap">
@@ -61,37 +61,38 @@
             </div>
           </div>
         </div>
-        <div class="taskLabels">
-          <span
-            v-if="task.labels && task.labels.length == 1"
-            class="labelText">
-            {{ task.labels[0].name }}
-          </span>
-          <span
-            v-else-if="task.labels && task.labels.length > 1"
-            :title="getLabelsList(task.labels)"
-            class="labelText">
-            {{ task.labels.length }} {{ $t('label.labels') }}
-          </span>
-        </div>
+
       </div>
-      <div class="taskActionsWrapper mb-3">
-        <div class="taskActions d-flex align-center">
-          <div v-if="task.commentCount" class="taskComment d-flex">
+      <v-divider v-if="taskDueDate || (task.labels && task.labels.length)"/>
+      <div class="taskActionsAndDate d-flex justify-space-between pt-3">
+        <div class="taskActionsAndLabels d-flex align-center">
+          <div v-if="task.commentCount" class="taskComment d-flex pr-2">
             <i class="uiIcon uiCommentIcon"></i>
             <span class="taskCommentNumber caption">{{ task.commentCount }}</span>
           </div>
-          <!-- <div class="taskAttachment  d-flex pl-3">
-            <i class="uiIcon uiAttachIcon"></i>
-            <span class="taskAttachNumber caption">2</span>
-          </div>-->
+          <div v-if="task.labels && task.labels.length" class="taskLabels ">
+            <v-chip
+              v-if="task.labels && task.labels.length == 1"
+              :color="task.labels[0].color"
+              class="mx-1 white--text font-weight-bold"
+              label
+              small>
+              {{ task.labels[0].name }}
+            </v-chip>
+            <div
+              v-else-if="task.labels && task.labels.length > 1"
+              :title="getLabelsList(task.labels)"
+              class="taskTags d-flex">
+              <i class="uiIcon uiTagIcon"></i>
+              <span class="taskAttachNumber caption">{{ task.labels.length }}</span>
+            </div>
+          </div>
         </div>
-      </div>
-      <v-divider v-if="taskDueDate"/>
-      <div v-if="taskDueDate" class="taskStatusAndDate d-flex justify-end pt-2">
-        <div class="taskDueDate">
-          <div >
-            <date-format :value="taskDueDate" :format="dateTimeFormat" />
+        <div v-if="taskDueDate" class="taskStatusAndDate">
+          <div class="taskDueDate">
+            <div >
+              <date-format :value="taskDueDate" :format="dateTimeFormat" />
+            </div>
           </div>
         </div>
       </div>

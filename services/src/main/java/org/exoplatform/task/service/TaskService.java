@@ -66,6 +66,18 @@ public interface TaskService {
     TaskDto getTask(long taskId) throws EntityNotFoundException;
 
 
+    List<TaskDto> getWatchedTasks(String user, int limit);
+
+    Long countWatchedTasks(String user);
+
+    List<TaskDto> getAssignedTasks(String user, int limit);
+
+    Long countAssignedTasks(String user);
+
+    List<TaskDto> getCollaboratedTasks(String user, int limit);
+
+    Long countCollaboratedTasks(String user);
+
     List<TaskDto> findTasks(String user, String query, int limit);
 
 
@@ -140,5 +152,5 @@ public interface TaskService {
 
     List<Object[]> countTaskStatusByProject(long projectId);
 
-    public TasksList filterTasks(String query, long projectId, String keyword, List<Long> labels, TaskUtil.DUE dueDate, Priority priority, List<String> assignees, Long labelId, Long statusId, Identity currIdentity, String dueCategory, String space_group_id , TimeZone userTimezone, boolean isShowCompleted, boolean advanceSearch, boolean noProjPermission, boolean noLblPermission, String orderBy, String groupBy, int offset, int limit) throws Exception;
+    public TasksList filterTasks(String query, long projectId, String keyword, List<Long> labels, TaskUtil.DUE dueDate, Priority priority, List<String> assignees, List<String> coworkers, List<String> watchers, Long labelId, Long statusId, Identity currIdentity, String dueCategory, String space_group_id , TimeZone userTimezone, boolean isShowCompleted, boolean advanceSearch, boolean noProjPermission, boolean noLblPermission, String orderBy, String groupBy, int offset, int limit) throws Exception;
     }

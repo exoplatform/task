@@ -43,6 +43,10 @@
      this.$root.$on('open-project-drawer', project => {
        this.$refs.addProjectDrawer.open(project);
       });
+    this.$root.$on('show-project-details-tasks',project =>{
+      document.dispatchEvent(new CustomEvent('showProjectTasks', {detail: project}))
+      this.tab='tab-2';
+    });
      this.$root.$on('open-task-drawer', task => {
        this.task=task;
        if(task.id){

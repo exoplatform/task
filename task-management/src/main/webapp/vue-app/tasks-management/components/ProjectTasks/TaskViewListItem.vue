@@ -1,7 +1,7 @@
 <template>
   <div
     :class="getTaskPriorityColor(task.task.priority)"
-    class="taskListItemView  px-4 py-3 d-flex align-center">
+    class="taskListItemView px-4 py-3 d-flex align-center">
     <div class="taskCheckBox" @click="updateCompleted">
       <v-switch
         ref="autoFocusInput2"
@@ -43,26 +43,32 @@
         </div>
       </div>
     </div>
-    <div class="taskLabels">
-      <span v-if="task.labels && task.labels.length == 1" class="labelText">{{ task.labels[0].name }}</span>
-      <span
+    <div class="taskLabels " @click="openTaskDrawer()">
+      <v-chip
+        v-if="task.labels && task.labels.length == 1"
+        :color="task.labels[0].color"
+        class="mx-1 white--text font-weight-bold"
+        label
+        small>
+        <span class="text-truncate">
+          {{ task.labels[0].name }}
+        </span>
+      </v-chip>
+      <div
         v-else-if="task.labels && task.labels.length > 1"
         :title="getLabelsList(task.labels)"
-        class="labelText">{{ task.labels.length }} {{ $t('label.labels') }}
-      </span>
+        class="taskTags d-flex justify-center">
+        <i class="uiIcon uiTagIcon"></i>
+        <span class="taskAttachNumber caption">{{ task.labels.length }}</span>
+      </div>
     </div>
-    <div class="taskActions d-flex justify-center align-center">
+    <div class="taskActions d-flex justify-center align-center" @click="openTaskDrawer()">
       <div v-if="task.commentCount" class="taskComment d-flex">
         <i class="uiIcon uiCommentIcon"></i>
         <span class="taskCommentNumber caption">{{ task.commentCount }}</span>
       </div>
-      <!-- <div class="taskAttachment  d-flex pl-3">
-        <i class="uiIcon uiAttachIcon"></i>
-        <span class="taskAttachNumber caption">2</span>
-      </div>-->
-
     </div>
-    <div class="taskDueDate">
+    <div class="taskDueDate" @click="openTaskDrawer()">
       <div v-if="taskDueDate">
         <date-format :value="taskDueDate" :format="dateTimeFormat" />
       </div>

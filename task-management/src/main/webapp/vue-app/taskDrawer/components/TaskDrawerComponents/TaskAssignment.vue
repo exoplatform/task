@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="assigneeParent">
     <v-menu
       id="assigneeMenu"
       v-model="globalMenu"
@@ -11,10 +11,14 @@
       transition="scale-transition"
       class="taskAssignMenu"
       offset-y
+      allow-overflow
+      eager
       bottom>
       <template v-slot:activator="{ on }">
-        <div class="d-flex align-center taskAssignItem">
-          <div v-if="taskAssigneeObj && taskAssigneeObj.profile && taskAssigneeObj.profile.fullName" v-on="on">
+        <div class="d-flex align-center taskAssignItem" v-on="on">
+          <div 
+            v-if="taskAssigneeObj && taskAssigneeObj.profile && taskAssigneeObj.profile.fullName" 
+            class="assigneeName">
             <exo-user-avatar
               :username="taskAssigneeObj.profile.remoteId"
               :fullname="taskAssigneeObj.profile.fullName"
@@ -26,12 +30,10 @@
           </div>
           <span
             v-if="taskCoworkers.length > 0"
-            class="user-name pr-2 caption font-italic lighten-2"
-            v-on="on"> +{{ taskCoworkers.length }} {{ $t('label.coworker') }}
+            class="user-name coworkerNumber pr-2 caption font-italic lighten-2"> +{{ taskCoworkers.length }} {{ $t('label.coworker') }}
           </span>
           <a
-            class="taskAssignBtn mt-n1"
-            v-on="on">
+            class="taskAssignBtn mt-n1">
             <i class="uiIcon uiAddAssignIcon"></i>
             <span class="text-decoration-underline">{{ $t('label.assign') }}</span>
           </a>
@@ -50,7 +52,7 @@
           :labels="suggesterLabels"
           :value="taskAssigneeObj"
           name="taskAssignee"
-          type-of-relations="user_to_invite"
+          type-of-relations="''"
           height="40"
           include-users
           @input="assigneeValueChanged($event)"
@@ -68,7 +70,7 @@
           :labels="suggesterLabels"
           :value="taskCoworkerObj"
           name="taskCoworkers"
-          type-of-relations="user_to_invite"
+          type-of-relations="''"
           height="40"
           include-users
           multiple
@@ -121,12 +123,12 @@
       }
     },
     mounted() {
-      // Force to close DatePickers when clicking outside
       $(document).on('click', (e) => {
-        if (e.target && !$(e.target).parents(`.${this.menuId}`).length) {
+        if (e.target && !$(e.target).parents(`.${this.menuId}`).length && !$(e.target).parents('.v-autocomplete__content').length) {
           this.globalMenu = false;
         }
       });
+
     },
     created() {
       document.addEventListener('closeAssignments',()=> {

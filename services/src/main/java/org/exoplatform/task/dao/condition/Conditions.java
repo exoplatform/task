@@ -33,6 +33,7 @@ public class Conditions {
   public static String TASK_PRIORITY = "priority";
   public static String TASK_ASSIGNEE = "assignee";
   public static String TASK_COWORKER = "coworker";
+  public static String TASK_WATCHER = "watcher";
   public static String TASK_CREATOR = "createdBy";
   public static String TASK_STATUS = "status";
   public static String TASK_DUEDATE = "dueDate";

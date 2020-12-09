@@ -79,6 +79,8 @@ public class ViewState {
     private boolean completed;
     private List<Long> labels = Collections.emptyList();
     private List<String> assignees = Collections.emptyList();
+    private List<String> coworkers = Collections.emptyList();
+    private List<String> watchers = Collections.emptyList();
     private TaskUtil.DUE due;
     private Priority priority;
 
@@ -119,6 +121,14 @@ public class ViewState {
       List<String> otherAssignees = other.getAssignees();
       if (thisAssignees == null ? otherAssignees != null : !thisAssignees.equals(otherAssignees))
         return false;
+      List<String> thisCoworkers = this.getCoworkers();
+      List<String> otherCoworkers = other.getCoworkers();
+      if (thisCoworkers == null ? otherCoworkers != null : !thisCoworkers.equals(otherCoworkers))
+        return false;
+      List<String> thisWatchers = this.getWatchers();
+      List<String> otherWatchers = other.getWatchers();
+      if (thisWatchers == null ? otherWatchers != null : !thisWatchers.equals(otherWatchers))
+        return false;
       TaskUtil.DUE thisDue = this.getDue();
       TaskUtil.DUE otherDue = other.getDue();
       if (thisDue == null ? otherDue != null : !thisDue.equals(otherDue))
@@ -148,6 +158,10 @@ public class ViewState {
       result = result * PRIME + (thisLabels == null ? 43 : thisLabels.hashCode());
       List<String> thisAssignees = this.getAssignees();
       result = result * PRIME + (thisAssignees == null ? 43 : thisAssignees.hashCode());
+      List<String> thisCoworkers = this.getCoworkers();
+      result = result * PRIME + (thisCoworkers == null ? 43 : thisCoworkers.hashCode());
+       List<String> thisWatchers = this.getWatchers();
+      result = result * PRIME + (thisWatchers == null ? 43 : thisWatchers.hashCode());
       TaskUtil.DUE thisDue = this.getDue();
       result = result * PRIME + (thisDue == null ? 43 : thisDue.hashCode());
       Priority thisPriority = this.getPriority();
@@ -218,6 +232,13 @@ public class ViewState {
       return assignees;
     }
 
+    public List<String> getCoworkers() {
+      return coworkers;
+    }
+    public List<String> getWatchers() {
+      return watchers;
+    }
+
     public String getAssigneesInString() {
       if (assignees != null) {
         return String.join(",", assignees);
@@ -234,6 +255,37 @@ public class ViewState {
           }
         }
         this.assignees = searchAssignee;
+      }
+    }
+
+    public String getCoworkersInString() {
+      if (coworkers != null) {
+        return String.join(",", coworkers);
+      }
+      return null;
+    }
+
+    public void setCoworkers(String coworkers) {
+      if (coworkers != null) {
+        List<String> searchCoworkers = new ArrayList<>();
+        for (String u : coworkers.split(",")) {
+          if (!(u = u.trim()).isEmpty()) {
+            searchCoworkers.add(u);
+          }
+        }
+        this.coworkers = searchCoworkers;
+      }
+    }
+
+    public void setWatchers(String watchers) {
+      if (watchers != null) {
+        List<String> searchWatchers = new ArrayList<>();
+        for (String u : watchers.split(",")) {
+          if (!(u = u.trim()).isEmpty()) {
+            searchWatchers.add(u);
+          }
+        }
+        this.watchers = searchWatchers;
       }
     }
 
@@ -266,6 +318,8 @@ public class ViewState {
                                  String dueDate,
                                  String priority,
                                  String assignee,
+                                 String coworker,
+                                 String watcher,
                                  Boolean showCompleted,
                                  String keyword) {
       if (filterLabelIds!=null) {
@@ -277,6 +331,16 @@ public class ViewState {
         this.setAssignees(assignee);
       }else {
         this.getAssignees().clear();
+      }
+      if (coworker!=null) {
+        this.setCoworkers(coworker);
+      }else {
+        this.getCoworkers().clear();
+      }
+      if (watcher!=null) {
+        this.setWatchers(watcher);
+      }else {
+        this.getWatchers().clear();
       }
       if (keyword != null) {
         this.setKeyword(keyword);

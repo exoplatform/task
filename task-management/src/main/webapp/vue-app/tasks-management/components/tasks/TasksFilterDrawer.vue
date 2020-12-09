@@ -259,6 +259,7 @@
         this.sortBy='';
         this.labels='';
         this.showCompleteTasks=false;
+        this.getFilterNumber()
         this.$root.$emit('reset-filter-task-group-sort',this.groupBy);
       },
       reset() {
@@ -271,8 +272,23 @@
         this.sortBy='';
         this.labels='';
         this.showCompleteTasks=false;
+        this.getFilterNumber()
         this.$root.$emit('reset-filter-task-group-sort',this.groupBy);
         this.$emit('reset-filter-task');
+        this.$refs.filterTasksDrawer.close();
+      },
+      resetFields(source) {
+        this.query='';
+        this.assignee='';
+        this.dueDateSelected='';
+        this.prioritySelected='';
+        this.statusSelected='';
+        this.groupBy='';
+        this.sortBy='';
+        this.labels='';
+        this.showCompleteTasks=false;
+        this.$root.$emit('reset-filter-task-group-sort',this.groupBy);
+        this.getFilterNumber(source)
       },
       filterTasks(){
         const tasks = {
@@ -302,23 +318,41 @@
         }
         if(this.project){
           this.$emit('filter-task',{ tasks,filterLabels,showCompleteTasks:this.showCompleteTasks });
+          this.getFilterNumber()
           this.$refs.filterTasksDrawer.close();
         }else{
-          this.$emit('filter-task-query', tasks);
-        return this.$tasksService.filterTasksList(tasks,filterGroupSort.groupBy,filterGroupSort.sortBy,filterLabels.labels).then((tasks) => {
-          if (tasks.projectName){
-            this.$root.$emit('filter-task-groupBy',tasks);
-          }else {
-            this.$emit('filter-task',{ tasks,showCompleteTasks:this.showCompleteTasks });
-          }
+          this.$emit('filter-task-query', tasks,filterGroupSort,filterLabels);
+       
+        this.getFilterNumber()
           this.$refs.filterTasksDrawer.close();
-        })
-                .catch(e => {
-                  console.debug("Error updating project", e);
-                  this.$emit('error', e && e.message ? e.message : String(e));
-                });
       }
+      },
+      getFilterNumber(source){
+        let filtersnumber = 0
+        if(this.query){
+          filtersnumber++
+        }
+        if(this.assignee){
+          filtersnumber++
+        }
+        if(this.dueDateSelected){
+          filtersnumber++
+        }
+        if(this.prioritySelected){
+          filtersnumber++
+        }
+        if(this.statusSelected){
+          filtersnumber++
+        }
+        if(this.labels&&this.labels.length>0){
+          filtersnumber++
+        }
+        if(this.showCompleteTasks){
+          filtersnumber++
+        }
+        this.$emit('filter-num-changed',filtersnumber,source)
       }
+
     }
   }
 </script>

@@ -78,7 +78,7 @@ public class TaskRestService implements ResourceContainer {
 
 
   private enum TaskType {
-    ALL, INCOMING, OVERDUE
+    ALL, INCOMING, OVERDUE, WATCHED, COLLABORATED, ASSIGNED
   }
 
 
@@ -140,6 +140,21 @@ public class TaskRestService implements ResourceContainer {
         tasksSize = taskService.countOverdueTasks(currentUser);
         break;
       }
+      case WATCHED: {
+        tasks = taskService.getWatchedTasks(currentUser, limit);
+        tasksSize = taskService.countWatchedTasks(currentUser);
+        break;
+      }
+        case COLLABORATED: {
+        tasks = taskService.getCollaboratedTasks(currentUser, limit);
+        tasksSize = taskService.countCollaboratedTasks(currentUser);
+        break;
+      }
+        case ASSIGNED: {
+        tasks = taskService.getAssignedTasks(currentUser, limit);
+        tasksSize = taskService.countAssignedTasks(currentUser);
+        break;
+      }
       default: {
         tasks = taskService.getUncompletedTasks(currentUser, limit);
         tasksSize = taskService.countUncompletedTasks(currentUser);
@@ -147,31 +162,9 @@ public class TaskRestService implements ResourceContainer {
       }
     } else {
       tasks = taskService.findTasks(currentUser, query, limit);
-      /*tasks = tasks.stream().map(task -> {
-        long taskId = ((TaskDto) task).getId();
-        int commentCount;
-        try {
-          commentCount = commentService.countComments(taskId);
-        } catch (Exception e) {
-          LOG.warn("Error retrieving task '{}' comments count", taskId, e);
-          commentCount = 0;
-        }
-        return new TaskEntity(((TaskDto) task), commentCount);
-      }).collect(Collectors.toList());*/
       tasksSize = taskService.countTasks(currentUser, query);
     }
-    if (returnSize) {
-      if (returnDetails) {
         return Response.ok(new PaginatedTaskList(tasks.stream().map(task -> getTaskDetails((TaskDto) task, currentUser)).collect(Collectors.toList()),tasksSize)).build();
-      } else {
-        return Response.ok(tasks.stream().map(task -> getTaskDetails((TaskDto) task, currentUser)).collect(Collectors.toList())).build();      }
-
-    } else {
-      if (returnDetails) {
-        return Response.ok(new PaginatedTaskList(tasks.stream().map(task -> getTaskDetails((TaskDto) task, currentUser)).collect(Collectors.toList()),tasksSize)).build();
-      }
-      return Response.ok(tasks).build();
-    }
   }
 
 
@@ -189,6 +182,8 @@ public class TaskRestService implements ResourceContainer {
                               @ApiParam(value = "dueCategory term", required = false) @QueryParam("dueCategory") String dueCategory,
                               @ApiParam(value = "priority term", required = false) @QueryParam("priority") String priority,
                               @ApiParam(value = "assignee term", required = false) @QueryParam("assignee") String assignee,
+                              @ApiParam(value = "coworker term", required = false) @QueryParam("coworker") String coworker,
+                              @ApiParam(value = "watchers term", required = false) @QueryParam("watcher") String watcher,
                               @ApiParam(value = "showCompleted term", defaultValue = "false") @QueryParam("showCompleted") boolean showCompleted,
                               @ApiParam(value = "statusId term", required = false) @QueryParam("statusId") String statusId,
                               @ApiParam(value = "space_group_id term", required = false) @QueryParam("space_group_id") String space_group_id,
@@ -206,6 +201,18 @@ public class TaskRestService implements ResourceContainer {
 
     Identity currIdentity = ConversationState.getCurrent().getIdentity();
 
+    if(assignee!=null && assignee.equals("ME")){
+      assignee=currIdentity.getUserId();
+    }
+
+    if(coworker!=null && coworker.equals("ME")){
+      coworker=currIdentity.getUserId();
+    }
+
+    if(watcher!=null && watcher.equals("ME")){
+      watcher=currIdentity.getUserId();
+    }
+
     Long statusIdLong = null;
     if (org.apache.commons.lang.StringUtils.isNotBlank(statusId)) {
       StatusDto statusDto = statusService.getStatus(Long.parseLong(statusId));
@@ -214,9 +221,8 @@ public class TaskRestService implements ResourceContainer {
       }
       statusIdLong=statusDto.getId();
     }
-
     ViewState.Filter filter = new ViewState.Filter(listId);
-    filter.updateFilterData(filterLabelIds, statusId, dueDate, priority, assignee, showCompleted, query);
+    filter.updateFilterData(filterLabelIds, statusId, dueDate, priority, assignee, coworker, watcher, showCompleted, query);
 
     ProjectDto project = null;
     boolean noProjPermission = false;
@@ -249,7 +255,7 @@ public class TaskRestService implements ResourceContainer {
       return Response.status(Response.Status.NOT_FOUND).build();
     }
 
-    TasksList tasks =  taskService.filterTasks(query, projectId, filter.getKeyword(), filter.getLabel(), filter.getDue(),  filter.getPriority(), filter.getAssignees(), labelId, statusIdLong, currIdentity, dueCategory, space_group_id , userTimezone, filter.isShowCompleted(), advanceSearch, noProjPermission, noLblPermission, orderBy,  groupBy, offset, limit);
+    TasksList tasks =  taskService.filterTasks(query, projectId, filter.getKeyword(), filter.getLabel(), filter.getDue(),  filter.getPriority(), filter.getAssignees(), filter.getCoworkers(), filter.getWatchers(), labelId, statusIdLong, currIdentity, dueCategory, space_group_id , userTimezone, filter.isShowCompleted(), advanceSearch, noProjPermission, noLblPermission, orderBy,  groupBy, offset, limit);
 
     Map<GroupKey, List<TaskEntity>> groupTasks = new HashMap<GroupKey, List<TaskEntity>>();
     if (groupBy != null && groupBy!= TaskUtil.DUEDATE && !groupBy.isEmpty() && !TaskUtil.NONE.equalsIgnoreCase(groupBy)) {
@@ -262,7 +268,6 @@ public class TaskRestService implements ResourceContainer {
 
     return Response.ok(new PaginatedTaskList(tasks.getListTasks().stream().map(task -> getTaskDetails((TaskDto) task, currentUser)).collect(Collectors.toList()),tasks.getTasksSize())).build();
   }
-
 
   @GET
   @Path("project/{id}")

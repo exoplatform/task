@@ -22,9 +22,27 @@
     <div v-if="filterProjectActive">
       <div v-for="(project,i) in groupName.projectName" :key="project.name">
 
-        <div v-if=" project.value && project.value.displayName" class="d-flex align-center assigneeFilter">
-
+        <div
+          v-if=" project.value && project.value.displayName"
+          class="d-flex align-center assigneeFilter pointer"
+          @click="showDetailsTask(project.rank)">
+          <a
+            class="toggle-collapse-group"
+            style="margin-right: 10px"
+            href="#">
+            <i
+              :id="'uiIconMiniArrowDown'+project.rank"
+              class="uiIcon uiIconMiniArrowDown"
+              style="display: block">
+            </i>
+            <i
+              :id="'uiIconMiniArrowRight'+project.rank"
+              class="uiIcon  uiIconMiniArrowRight"
+              style="display: none">
+            </i>
+          </a>
           <exo-user-avatar
+            v-if="project.value.avatar"
             :username="project.value.username"
             :fullname="project.value.displayName"
             :avatar-url="project.value.avatar"
@@ -36,49 +54,76 @@
         </div>
         <div
           v-else
-          class="d-flex align-center assigneeFilter">
+          class="d-flex align-center assigneeFilter pointer"
+          @click="showDetailsTask(project.rank)">
+
+          <a
+            :id="'iconTask'+project.rank"
+            class="toggle-collapse-group"
+            style="margin-right: 10px"
+            href="#">
+            <i
+              :id="'uiIconMiniArrowDown'+project.rank"
+              class="uiIcon uiIconMiniArrowDown"
+              style="display: block">
+            </i>
+            <i
+              :id="'uiIconMiniArrowRight'+project.rank"
+              class="uiIcon  uiIconMiniArrowRight"
+              style="display: none">
+            </i>
+          </a>
+          <div v-if="project.name==='Unassigned'" class="defaultAvatar">
+            <img :src="defaultAvatar">
+          </div>
+
           <span class="nameGroup">{{ $t(getNameGroup(project.name)) }}</span>
           <span class="amount-item">({{ tasksList[i].length }})</span>
         </div>
+        <hr
+          role="separator"
+          aria-orientation="horizontal"
+          class="my-0 v-divider theme--light">
+        <div :id="'taskView'+project.rank" style="display: block">
+          <div
+            v-show="taskViewTabName == 'board'"
 
-        <div
-          v-show="taskViewTabName == 'board'"
-          style="display: block"
-          eager>
-          <tasks-view-board
-            :status-list="statusList"
-            :tasks-list="tasksList[i]"/>
-        </div>
-        <div
-          v-show="taskViewTabName == 'list'"
-          eager>
+            style="display: block"
+            eager>
+            <tasks-view-board
+              :status-list="statusList"
+              :tasks-list="tasksList[i]"/>
+          </div>
+          <div
+            v-show="taskViewTabName == 'list'"
+            eager>
 
-          <tasks-view-list
-            :status-list="statusList"
-            :tasks-list="tasksList[i]"/>
+            <tasks-view-list
+              :status-list="statusList"
+              :tasks-list="tasksList[i]"/>
+          </div>
         </div>
       </div>
     </div>
-
     <v-tabs-items
       v-show="!filterProjectActive"
       v-if="tasksList && tasksList.length && !loadingTasks"
       :key="id">
-      <v-tab-item
+      <div
         v-show="taskViewTabName == 'board'"
         style="display: block"
         eager>
         <tasks-view-board
           :status-list="statusList"
           :tasks-list="tasksList"/>
-      </v-tab-item>
-      <v-tab-item
+      </div>
+      <div
         v-show="taskViewTabName == 'list'"
         eager>
         <tasks-view-list
           :status-list="statusList"
           :tasks-list="tasksList"/>
-      </v-tab-item>
+      </div>
       <!--<v-tab-item
         v-show="taskViewTabName == 'gantt'"
         eager>
@@ -91,7 +136,7 @@
       class="noTasksProject">
       <div class="noTasksProjectIcon"><i class="uiIcon uiIconTask"></i></div>
       <div class="noTasksProjectLabel"><span>{{ $t('label.noTasks') }}</span></div>
-      <div class="noTasksProjectLink"><a href="#">{{ $t('label.addTask') }}</a></div>
+      <!-- <div class="noTasksProjectLink"><a href="#">{{ $t('label.addTask') }}</a></div> -->
     </div>
     <div class="ma-0 border-box-sizing">
       <v-btn
@@ -117,6 +162,7 @@
     },
     data () {
       return {
+        defaultAvatar:"/portal/rest/v1/social/users/default-image/avatar",
         keyword: null,
         loadingTasks: false,
         taskViewTabName: 'board',
@@ -151,8 +197,10 @@
           this.statusList = data;
         });
       },
-      filterByKeyword(keyword){
+      filterByKeyword(keyword,searchonkeyChange){
+        if(searchonkeyChange){
         this.getTasksByProject(this.project.id,keyword);
+        }
       },
       getTasksByProject(ProjectId,query) {
         this.loadingTasks = true;
@@ -187,8 +235,8 @@
             this.groupName=data;
           }
           else {
-            this.tasksList = data && data.tasks || [];
             this.filterProjectActive=false
+            this.tasksList = data && data.tasks || [];
           }
 
         })
@@ -208,6 +256,20 @@
         }else
           {return name}
 
+      },
+      showDetailsTask(id){
+        const uiIconMiniArrowDown = document.querySelector(`#${`uiIconMiniArrowDown${id}`}`);
+        const uiIconMiniArrowRight = document.querySelector(`#${`uiIconMiniArrowRight${id}`}`);
+
+        const detailsTask = document.querySelector(`#${`taskView${id}`}`);
+        if (detailsTask.style.display !== 'none') {
+          detailsTask.style.display = 'none';
+          uiIconMiniArrowDown.style.display = 'none';
+          uiIconMiniArrowRight.style.display = 'block'
+        }
+        else {detailsTask.style.display = 'block'
+          uiIconMiniArrowDown.style.display = 'block';
+          uiIconMiniArrowRight.style.display = 'none'}
       }
     }
   }

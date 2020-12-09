@@ -76,7 +76,19 @@ public interface TaskStorage {
 
     List<TaskDto> getUncompletedTasks(String user, int limit);
 
+    List<TaskDto> getAssignedTasks(String user, int limit);
+
+    Long countAssignedTasks(String user);
+
+    List<TaskDto> getWatchedTasks(String user, int limit);
+
     Long countUncompletedTasks(String user);
+
+    Long countWatchedTasks(String user);
+
+    List<TaskDto> getCollaboratedTasks(String user, int limit);
+
+    Long countCollaboratedTasks(String user);
 
     List<TaskDto> getIncomingTasks(String user, int offset, int limit) throws Exception;
 

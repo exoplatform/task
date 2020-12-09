@@ -74,16 +74,13 @@
       this.actualTask = this.task;
       this.reset();
       document.addEventListener('closeDates',()=> {
-        if (this.$refs.taskStartDate.menu) {
-          window.setTimeout(() => {
-            this.$refs.taskStartDate.menu = false;
-          }, 100);
-        }
-        if (this.$refs.taskDueDate.menu) {
-          window.setTimeout(() => {
-            this.$refs.taskDueDate.menu = false;
-          }, 100);
-        }
+        this.$refs.taskStartDate.menu = false;
+        this.$refs.taskDueDate.menu = false;
+      });
+
+      $('.taskAssignItem').off('click').on('click', (event) => {
+        this.$refs.taskStartDate.menu = false;
+        this.$refs.taskDueDate.menu = false;
       });
     },
     methods: {

@@ -1,9 +1,10 @@
 <template>
   <v-app id="taskCardItem" class="pa-3">
     <v-card
-      :class="getTaskPriorityColor(task.task.priority)"
+      :class="[getTaskPriorityColor(task.task.priority)]"
       class="taskCard pa-3"
-      flat>
+      flat
+      @click="openTaskDrawer()">
       <div class="taskTitleId d-flex justify-space-between">
         <div class="taskTitle d-flex align-start">
           <div class="taskCheckBox" @click="updateCompleted" >
@@ -16,8 +17,7 @@
           </div>
           <a
             ref="tooltip"
-            :class="getTitleTaskClass()"
-            @click="openTaskDrawer()">
+            :class="getTitleTaskClass()">
             <ellipsis
               v-if="task.task.title "
               :title="task.task.title "
@@ -56,68 +56,33 @@
             </div>
           </div>
         </div>
-        <div class="taskLabels">
-          <span
-            v-if="task.labels && task.labels.length == 1"
-            class="labelText">
-            {{ task.labels[0].name }}
-          </span>
-          <span
-            v-else-if="task.labels && task.labels.length > 1"
-            :title="getLabelsList(task.labels)"
-            class="labelText">
-            {{ task.labels.length }} {{ $t('label.labels') }}
-          </span>
-        </div>
       </div>
-      <div class="taskActionsAndProject d-flex justify-space-between my-3">
-        <div class="taskActions d-flex justify-center align-center">
-          <div v-if="task.commentCount" class="taskComment d-flex">
+      <v-divider v-if="task && commentCount || task && task.labels && task.labels.length || taskDueDate"/>
+      <div 
+        v-if="task && commentCount || task && task.labels && task.labels.length || taskDueDate"
+        class="taskStatusAndDate d-flex justify-space-between pt-3">
+        <div class="taskActionsAndLabels d-flex align-center">
+          <div v-if="task.commentCount" class="taskComment d-flex pr-2">
             <i class="uiIcon uiCommentIcon"></i>
             <span class="taskCommentNumber caption">{{ task.commentCount }}</span>
           </div>
-          <!--<div class="taskAttachment  d-flex pl-3">
-            <i class="uiIcon uiAttachIcon"></i>
-            <span class="taskAttachNumber caption">2</span>
-          </div>-->
-        </div>
-        <div class="taskProject d-flex justify-end">
-          <div v-if="!isPersonnalTask" class="projectSpaceDetails">
-            <div class="spaceAvatar pr-1">
-              <a
-                v-if="task.space!==null"
-                :href="spaceUrl(task.space.url)">
-                <v-avatar
-                  :size="30"
-                  tile>
-                  <v-img
-                    :src="task.space.avatarUrl"
-                    :height="30"
-                    :width="30"
-                    :max-height="30"
-                    :max-width="30"
-                    class="mx-auto spaceAvatarImg"/>
-                </v-avatar>
-              </a>
-            </div>
-            <div class="taskProjectNameChip">
-              <v-chip
-                :color="getTaskColor()"
-                text-color="white"
-                class="font-weight-bold"
-                small>
-                <span class="text-truncate">
-                  {{ getNameProject() }}
-                </span>
-              </v-chip>
+          <div v-if="task.labels && task.labels.length" class="taskLabels ">
+            <v-chip
+              v-if="task.labels && task.labels.length == 1"
+              :color="task.labels[0].color"
+              class="mx-1 white--text font-weight-bold"
+              label
+              small>
+              {{ task.labels[0].name }}
+            </v-chip>
+            <div
+              v-else-if="task.labels && task.labels.length > 1"
+              :title="getLabelsList(task.labels)"
+              class="taskTags d-flex">
+              <i class="uiIcon uiTagIcon"></i>
+              <span class="taskAttachNumber caption">{{ task.labels.length }}</span>
             </div>
           </div>
-        </div>
-      </div>
-      <v-divider v-if="task && task.task && task.task.status && task.task.status || taskDueDate"/>
-      <div v-if="task && task.task && task.task.status && task.task.status || taskDueDate" class="taskStatusAndDate d-flex justify-space-between pt-3">
-        <div class="taskStat">
-          <span v-if="task && task.task && task.task.status && task.task.status" class="taskStatLabel pl-2">{{ getTaskStatusLabel(task.task.status.name) }}</span>
         </div>
         <div class="taskDueDate">
           <div v-if="taskDueDate">

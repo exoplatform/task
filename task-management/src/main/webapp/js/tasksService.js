@@ -1,7 +1,7 @@
 import { tasksConstants } from "./tasksConstants";
 
-export function getMyTasksList(query, offset, limit) {
-    return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/tasks?q=${query || ''}&offset=${offset || 0}&limit=${limit|| 0}&returnDetails=true`, {
+export function getMyTasksList(type, query, offset, limit) {
+    return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/tasks?status=${type || ''}&q=${query || ''}&offset=${offset || 0}&limit=${limit|| 0}&returnDetails=true`, {
         method: 'GET',
         credentials: 'include',
     }).then(resp => {
@@ -14,7 +14,7 @@ export function getMyTasksList(query, offset, limit) {
 }
 
 export function filterTasksList(tasks, groupBy, sortBy, filterLabelIds, projectId) {
-    return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/tasks/filter?projectId=${projectId || -2}&query=${tasks.query || ''}&dueDate=${tasks.dueDate || ''}&priority=${tasks.priority || ''}&statusId=${tasks.statusId || ''}&showCompleted=${tasks.showCompleteTasks || ''}&assignee=${tasks.assignee || ''}&groupBy=${groupBy || tasks.groupBy || ''}&orderBy=${sortBy || tasks.orderBy || ''}&filterLabelIds=${filterLabelIds || tasks.filterLabelIds || ''}&&offset=${tasks.offset || 0}&limit=${tasks.limit|| 0}`, {
+    return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/tasks/filter?projectId=${projectId || tasks.projectId || -2}&query=${tasks.query || ''}&dueDate=${tasks.dueDate || ''}&priority=${tasks.priority || ''}&statusId=${tasks.statusId || ''}&showCompleted=${tasks.showCompleteTasks || ''}&assignee=${tasks.assignee || ''}&watcher=${tasks.watcher || ''}&coworker=${tasks.coworker || ''}&groupBy=${groupBy || tasks.groupBy || ''}&orderBy=${sortBy || tasks.orderBy || ''}&filterLabelIds=${filterLabelIds || tasks.filterLabelIds || ''}&offset=${tasks.offset || 0}&limit=${tasks.limit|| 0}`, {
         method: 'GET',
         credentials: 'include',
     }).then(resp => {
@@ -25,6 +25,7 @@ export function filterTasksList(tasks, groupBy, sortBy, filterLabelIds, projectI
         }
     });
 }
+
 
 export function getLabelsByTaskId(taskId) {
     return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/tasks/labels/${taskId}`, {
