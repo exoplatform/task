@@ -18,10 +18,10 @@
       <div v-for="(project,i) in tasksFilter.projectName" :key="project.name">
         <div v-if=" project.value && project.value.displayName" class="d-flex align-center assigneeFilter">
           <a
-            class="toggle-collapse-group"
+            class="toggle-collapse-group pointer"
             style="margin-right: 10px"
             href="#"
-            @click="showDetails = !showDetails,showDetailsTask(project.rank)">
+            @click="showDetailsTask(project.rank)">
             <i
               :id="'uiIconMiniArrowDown'+project.rank"
               class="uiIcon uiIconMiniArrowDown"
@@ -47,10 +47,10 @@
         <div v-else class="d-flex align-center assigneeFilter">
           <a
             :id="'iconTask'+project.rank"
-            class="toggle-collapse-group"
+            class="toggle-collapse-group pointer"
             style="margin-right: 10px"
             href="#"
-            @click="showDetails = !showDetails,showDetailsTask(project.rank)"><!--<i :class="getClassShowDetails(id)"></i>-->
+            @click="showDetailsTask(project.rank)">
             <i
               :id="'uiIconMiniArrowDown'+project.rank"
               class="uiIcon uiIconMiniArrowDown"
@@ -72,7 +72,7 @@
           role="separator"
           aria-orientation="horizontal"
           class="my-0 v-divider theme--light">
-        <div :id="'taskView'+project.rank" style="margin-left: 10px;">
+        <div :id="'taskView'+project.rank" style="margin-left: 10px; display: block">
           <tasks-cards-list
             v-show="isTasksTabChanged"
             :tasks="tasksFilter.tasks[i]"
@@ -157,7 +157,6 @@
             showCompleteTasks:this.showCompleteTasks
           },
         defaultAvatar:"/portal/rest/v1/social/users/default-image/avatar",
-        showDetails:true,
       }
     },
     computed: {
@@ -395,7 +394,7 @@
         const uiIconMiniArrowRight = document.querySelector(`#${`uiIconMiniArrowRight${id}`}`);
 
         const detailsTask = document.querySelector(`#${`taskView${id}`}`);
-        if (!this.showDetails) {
+        if (detailsTask.style.display !== 'none') {
           detailsTask.style.display = 'none';
           uiIconMiniArrowDown.style.display = 'none';
           uiIconMiniArrowRight.style.display = 'block'

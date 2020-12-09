@@ -22,12 +22,14 @@
     <div v-if="filterProjectActive">
       <div v-for="(project,i) in groupName.projectName" :key="project.name">
 
-        <div v-if=" project.value && project.value.displayName" class="d-flex align-center assigneeFilter">
+        <div
+          v-if=" project.value && project.value.displayName"
+          class="d-flex align-center assigneeFilter pointer"
+          @click="showDetailsTask(project.rank)">
           <a
             class="toggle-collapse-group"
             style="margin-right: 10px"
-            href="#"
-            @click="showDetails = !showDetails,showDetailsTask(project.rank)">
+            href="#">
             <i
               :id="'uiIconMiniArrowDown'+project.rank"
               class="uiIcon uiIconMiniArrowDown"
@@ -52,14 +54,14 @@
         </div>
         <div
           v-else
-          class="d-flex align-center assigneeFilter">
+          class="d-flex align-center assigneeFilter pointer"
+          @click="showDetailsTask(project.rank)">
 
           <a
             :id="'iconTask'+project.rank"
             class="toggle-collapse-group"
             style="margin-right: 10px"
-            href="#"
-            @click="showDetails = !showDetails,showDetailsTask(project.rank)"><!--<i :class="getClassShowDetails(id)"></i>-->
+            href="#">
             <i
               :id="'uiIconMiniArrowDown'+project.rank"
               class="uiIcon uiIconMiniArrowDown"
@@ -82,7 +84,7 @@
           role="separator"
           aria-orientation="horizontal"
           class="my-0 v-divider theme--light">
-        <div :id="'taskView'+project.rank">
+        <div :id="'taskView'+project.rank" style="display: block">
           <div
             v-show="taskViewTabName == 'board'"
 
@@ -168,7 +170,6 @@
         tasksList: [],
         groupName:null,
         filterProjectActive:false,
-        showDetails:true,
       }
     },
     watch:{
@@ -261,7 +262,7 @@
         const uiIconMiniArrowRight = document.querySelector(`#${`uiIconMiniArrowRight${id}`}`);
 
         const detailsTask = document.querySelector(`#${`taskView${id}`}`);
-        if (!this.showDetails) {
+        if (detailsTask.style.display !== 'none') {
           detailsTask.style.display = 'none';
           uiIconMiniArrowDown.style.display = 'none';
           uiIconMiniArrowRight.style.display = 'block'

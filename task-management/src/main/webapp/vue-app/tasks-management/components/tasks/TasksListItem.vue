@@ -33,10 +33,9 @@
       </a>
     </div>
     <div class="taskProject pr-4">
-      <div 
-        v-if="!isPersonnalTask" 
-        class="projectSpaceDetails d-flex align-center TasksListViewProject" 
-        @click="openProjectTasks(task.status.project)">
+      <div
+        v-if="!isPersonnalTask"
+        class="projectSpaceDetails d-flex align-center TasksListViewProject">
         <div class="spaceAvatar pr-1 d-lg-block d-md-none">
           <a
             v-if="task.space!==null"
@@ -59,7 +58,8 @@
             :color="getTaskColor()"
             text-color="white"
             class="font-weight-bold"
-            small>
+            small
+            @click="showProjectTasksDetails()">
             <span class="text-truncate">
               {{ getNameProject() }}
             </span>
@@ -310,10 +310,9 @@
         }
         return `${eXo.env.portal.context}/g/:spaces:${spaceUrl}/`;
       },
-      openProjectTasks(project) {
-        window.history.pushState('project', project.name, `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest?projectId=${project.id}`);
-        window.location.reload(true);
-      }
+      showProjectTasksDetails() {
+      this.$root.$emit('show-project-details-tasks', this.task.task.status.project);
+    },
     }
   }
 </script>
