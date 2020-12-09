@@ -98,7 +98,7 @@
           },
         drawer:null,
         primaryFilter: [
-          {name: "ALL"},{name: "ASSIGNED"},{name: "COLLABORATED"},{name: "WATCHED"},{name: "OVERDUE"},{name: "TODAY"},{name: "TOMORROW"}
+          {name: "ALL"},{name: "ASSIGNED"},{name: "COLLABORATED"},{name: "OVERDUE"},{name: "TODAY"},{name: "TOMORROW"}
         ],
       }
     },

@@ -14,83 +14,92 @@
       @filter-task-query="filterTaskquery"
       @primary-filter-task="getTasksByPrimary"
       @reset-filter-task-dashboard="resetFiltertaskDashboard"/>
-    <div v-if="filterActive">
-      <div v-for="(project,i) in tasksFilter.projectName" :key="project.name">
-        <div v-if=" project.value && project.value.displayName" class="d-flex align-center assigneeFilter">
-          <a
-            class="toggle-collapse-group pointer"
-            style="margin-right: 10px"
-            href="#"
-            @click="showDetailsTask(project.rank)">
-            <i
-              :id="'uiIconMiniArrowDown'+project.rank"
-              class="uiIcon uiIconMiniArrowDown"
-              style="display: block">
-            </i>
-            <i
-              :id="'uiIconMiniArrowRight'+project.rank"
-              class="uiIcon  uiIconMiniArrowRight"
-              style="display: none">
-            </i>
-          </a>
-          <exo-user-avatar
-            v-if="project.value.avatar"
-            :username="project.value.username"
-            :fullname="project.value.displayName"
-            :avatar-url="project.value.avatar"
-            :title="project.value.displayName"
-            :size="26"
-            class="pr-2"/>
-          <span class="amount-item">({{ tasksFilter.tasks[i].length }})</span>
-
-        </div>
-        <div v-else class="d-flex align-center assigneeFilter">
-          <a
-            :id="'iconTask'+project.rank"
-            class="toggle-collapse-group pointer"
-            style="margin-right: 10px"
-            href="#"
-            @click="showDetailsTask(project.rank)">
-            <i
-              :id="'uiIconMiniArrowDown'+project.rank"
-              class="uiIcon uiIconMiniArrowDown"
-              style="display: block">
-            </i>
-            <i
-              :id="'uiIconMiniArrowRight'+project.rank"
-              class="uiIcon  uiIconMiniArrowRight"
-              style="display: none">
-            </i>
-          </a>
-          <div v-if="project.name==='Unassigned'" class="defaultAvatar">
-            <img :src="defaultAvatar">
-          </div>
-          <span class="nameGroup">{{ $t(getGroupName(project.name)) }}</span>
-          <span class="amount-item">({{ tasksFilter.tasks[i].length }})</span>
-        </div>
-        <hr
-          role="separator"
-          aria-orientation="horizontal"
-          class="my-0 v-divider theme--light">
-        <div :id="'taskView'+project.rank" style="margin-left: 10px; display: block">
-          <tasks-cards-list
-            v-show="isTasksTabChanged"
-            :tasks="tasksFilter.tasks[i]"
-            class="d-md-none"/>
-          <tasks-list
-            :tasks="tasksFilter.tasks[i]"
-            class="d-md-block d-none"/>
-        </div>
-      </div>
+    <div
+      v-if="(!tasks || !tasks.length) && !loadingTasks"
+      class="noTasksProject">
+      <div class="noTasksProjectIcon"><i class="uiIcon uiIconTask"></i></div>
+      <div class="noTasksProjectLabel"><span>{{ $t('label.noTask') }}</span></div>
+      <!-- <div class="noTasksProjectLink"><a href="#">{{ $t('label.addTask') }}</a></div> -->
     </div>
     <div v-else>
-      <div class="d-md-block d-none">
-        <tasks-list
-          :tasks="tasks"/>
+      <div v-if="filterActive">
+        <div v-for="(project,i) in tasksFilter.projectName" :key="project.name">
+          <div v-if=" project.value && project.value.displayName" class="d-flex align-center assigneeFilter">
+            <a
+              class="toggle-collapse-group pointer"
+              style="margin-right: 10px"
+              href="#"
+              @click="showDetailsTask(project.rank)">
+              <i
+                :id="'uiIconMiniArrowDown'+project.rank"
+                class="uiIcon uiIconMiniArrowDown"
+                style="display: block">
+              </i>
+              <i
+                :id="'uiIconMiniArrowRight'+project.rank"
+                class="uiIcon  uiIconMiniArrowRight"
+                style="display: none">
+              </i>
+            </a>
+            <exo-user-avatar
+              v-if="project.value.avatar"
+              :username="project.value.username"
+              :fullname="project.value.displayName"
+              :avatar-url="project.value.avatar"
+              :title="project.value.displayName"
+              :size="26"
+              class="pr-2"/>
+            <span class="amount-item">({{ tasksFilter.tasks[i].length }})</span>
+
+          </div>
+          <div v-else class="d-flex align-center assigneeFilter">
+            <a
+              :id="'iconTask'+project.rank"
+              class="toggle-collapse-group pointer"
+              style="margin-right: 10px"
+              href="#"
+              @click="showDetailsTask(project.rank)">
+              <i
+                :id="'uiIconMiniArrowDown'+project.rank"
+                class="uiIcon uiIconMiniArrowDown"
+                style="display: block">
+              </i>
+              <i
+                :id="'uiIconMiniArrowRight'+project.rank"
+                class="uiIcon  uiIconMiniArrowRight"
+                style="display: none">
+              </i>
+            </a>
+            <div v-if="project.name==='Unassigned'" class="defaultAvatar">
+              <img :src="defaultAvatar">
+            </div>
+            <span class="nameGroup">{{ $t(getGroupName(project.name)) }}</span>
+            <span class="amount-item">({{ tasksFilter.tasks[i].length }})</span>
+          </div>
+          <hr
+            role="separator"
+            aria-orientation="horizontal"
+            class="my-0 v-divider theme--light">
+          <div :id="'taskView'+project.rank" style="margin-left: 10px; display: block">
+            <tasks-cards-list
+              v-show="isTasksTabChanged"
+              :tasks="tasksFilter.tasks[i]"
+              class="d-md-none"/>
+            <tasks-list
+              :tasks="tasksFilter.tasks[i]"
+              class="d-md-block d-none"/>
+          </div>
+        </div>
       </div>
-      <div class="d-md-none">
-        <tasks-cards-list
-          :tasks="tasks"/>
+      <div v-else>
+        <div class="d-md-block d-none">
+          <tasks-list
+            :tasks="tasks"/>
+        </div>
+        <div class="d-md-none">
+          <tasks-cards-list
+            :tasks="tasks"/>
+        </div>
       </div>
     </div>
     <!--<v-tabs-items v-show="!filterActive" :key="id">
