@@ -55,7 +55,7 @@
           @click="openDrawer">
           <i class="uiIcon uiIconFilterSetting pr-3"></i>
           <span class="d-none font-weight-regular caption d-sm-inline">
-            {{ $t('label.filter') }} ({{ filterNumber }})
+            {{ $t('label.filter') }} {{ getFilterNum() }}
           </span>
         </v-btn>
       </v-scale-transition>
@@ -146,6 +146,11 @@
       },
       filterNumChanged(filtersnumber){
         this.filterNumber=filtersnumber
+      },
+      getFilterNum(){
+        if(this.filterNumber>0){
+          return `(${this.filterNumber})`
+        } return ''
       }
     }
   }

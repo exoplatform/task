@@ -226,7 +226,7 @@
         if(this.primaryfilter==='ALL'){
           this.tasksFilter=e;
           this.resetSearch();
-          this.searchTasks()
+          this.searchTasks(this.tasksFilter)
         }else{
           if((this.primaryfilter === 'OVERDUE' || this.primaryfilter === 'TODAY' || this.primaryfilter === 'TOMORROW')&&e.dueDate&&e.dueDate!==this.primaryfilter){
             this.tasks=[]
@@ -246,7 +246,7 @@
             this.filterTasks.priority=e.priority 
             this.filterTasks.showCompleteTasks=e.showCompleteTasks 
             this.resetSearch();
-            this.searchTasks()
+            this.searchTasks(this.tasksFilter)
         }
         }
       /*    return this.$tasksService.filterTasksList(e,filterGroupSort.groupBy,filterGroupSort.sortBy,filterLabels.labels).then((tasks) => {
@@ -269,6 +269,9 @@
          tasks = this.filterTasks;
         }
         this.loadingTasks = true;
+        if(tasks.assignee){
+          tasks.projectId=-3
+        }
         return this.$tasksService.filterTasksList(tasks,this.groupBy,this.sortBy,this.labels).then(data => {
            if (data.projectName){
              this.tasksFilter = data;

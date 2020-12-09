@@ -47,7 +47,7 @@
     <div v-else class="noTasksProject">
       <div class="noTasksProjectIcon"><i class="uiIcon uiIconTask"></i></div>
       <div class="noTasksProjectLabel"><span>{{ $t('label.noTasks') }}</span></div>
-      <div class="noTasksProjectLink"><a href="#">{{ $t('label.addTask') }}</a></div>
+      <!-- <div class="noTasksProjectLink"><a href="#">{{ $t('label.addTask') }}</a></div> -->
     </div>
   </v-card>
 </template>
