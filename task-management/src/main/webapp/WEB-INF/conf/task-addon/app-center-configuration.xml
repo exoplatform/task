@@ -33,7 +33,7 @@
         </value-param>
         <value-param>
           <name>override</name>
-          <value>${exo.app-center.tasks.override:false}</value>
+          <value>${exo.app-center.tasks.override:true}</value>
         </value-param>
         <value-param>
           <name>override-mode</name>
@@ -52,6 +52,16 @@
             <field name="description">
               <string>Tasks application</string>
             </field>
+            <field name="permissions">
+              <collection type="java.util.ArrayList" item-type="java.lang.String">
+                <value>
+                  <string>*:/platform/users</string>
+                </value>
+				<value>
+                  <string>*:/platform/externals</string>
+                </value>
+              </collection>
+			</field>
             <field name="active">
               <boolean>true</boolean>
             </field>
@@ -77,14 +87,14 @@
         </value-param>
         <value-param>
           <name>override</name>
-          <value>${exo.app-center.tasks.override:false}</value>
+          <value>${exo.app-center.tasks.override:true}</value>
         </value-param>
         <object-param>
           <name>application</name>
           <description>description</description>
           <object type="org.exoplatform.appcenter.dto.Application">
             <field name="title">
-              <string>New Tasks</string>
+              <string>Tasks V2 (beta)</string>
             </field>
             <field name="url">
               <string>./taskstest</string>
@@ -103,7 +113,7 @@
               <boolean>true</boolean>
             </field>
             <field name="isMandatory">
-              <boolean>true</boolean>
+              <boolean>false</boolean>
             </field>
             <field name="isMobile">
               <boolean>true</boolean>
