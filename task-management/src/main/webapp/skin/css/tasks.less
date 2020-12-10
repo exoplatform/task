@@ -1124,8 +1124,8 @@
             border: 1px solid @tableBorder!important;
             background: @tableBackgroundAccent;
             .taskTitleId {
-              min-height: 42px;
-              height: 42px;
+              min-height: 50px;
+              height: 50px;
               .taskTitle {
                 width: 75%;
                 max-width: 75%;
@@ -1918,24 +1918,25 @@
   }
   .taskTitleAndMark {
     .task-name {
-      border: none!important;
-      padding: 3px 6px!important;
-      width: 100%!important;
-      font-size: 17px;
-      margin-top: -2px;
-      &::placeholder {
-        font-size: 17px!important;
+      .v-input__slot {
+        &:before {
+          border: none!important;
+        }
+        &:after {
+          border: none!important;
+        }
+        textarea {
+          border: none!important;
+          padding: 3px 6px!important;
+          width: 100%!important;
+          font-size: 17px;
+          margin-top: -2px;
+          &::placeholder {
+            font-size: 17px!important;
+          }
+        }
       }
     }
-    .task-name::-moz-placeholder {
-      font-size: 16px!important;
-    } /* Firefox 19+ */
-    .task-name:-moz-placeholder {
-      font-size: 16px!important;
-    }
-    .task-name:-ms-input-placeholder {
-      font-size: 16px!important;
-    } /* IE */
     .markAsCompletedBtn {
       color: @primaryColor!important;
       font-size: 22px!important;
@@ -2078,6 +2079,13 @@
           font-size: 20px;
         }
       }
+      .v-picker__actions.v-card__actions {
+        border-top: 1px solid  @borderColor;
+        margin-top: 4px;
+        .dateFooter {
+          width: 100%;
+        }
+      }
     }
   }
   .taskStatusAndPriority {
@@ -2102,10 +2110,6 @@
         > .v-input__slot {
           justify-content: flex-end!important;
           .v-select__slot {
-            max-width: inherit!important;
-            width: auto!important;
-            flex-basis: 0!important;
-            min-width: 90px!important;
             .v-input__append-inner {
               position: absolute;
               width: 100%;
@@ -2114,6 +2118,17 @@
                 position: absolute;
                 right: 0;
                 top: 4px;
+              }
+            }
+            .v-select__selections {
+              margin-top: -6px;
+              max-width: 84%!important;
+              .v-select__selection {
+                max-width: 100%;
+                width: 100%;
+                text-align: right;
+                display: inline;
+                margin-right: 0!important;
               }
             }
           }
@@ -2178,11 +2193,13 @@
       }
     }
   .taskDescription {
+
     .activityCharsCount.tooManyChars {
-      position: absolute;
+      display: none;
+      /*position: absolute;
       bottom: 8px;
       right: 10px;
-      color: @greyColorLighten1;
+      color: @greyColorLighten1;*/
     }
     .cke_bottom.cke_reset_all {
       background-color: transparent;
@@ -2196,6 +2213,63 @@
       color: @primaryColor;
       &:before {
         content: "\e910";
+      }
+    }
+    .cke_bottom {
+      display: none;
+    }
+    .cke_chrome {
+      border: none!important;
+      body.cke_editable {
+        margin: 0!important;
+      }
+      .cke_editable {
+        margin: 4px!important;
+      }
+    }
+    .cke_focus {
+      border: 1px solid @borderColor !important;
+      body.cke_editable {
+        margin: 10px!important;
+      }
+      .cke_bottom {
+        display: block;
+      }
+    }
+  }
+  .emptyEditor {
+    .cke_bottom {
+      display: block;
+    }
+    .cke_chrome {
+      border: 1px solid @borderColor !important;
+      .cke_bottom {
+        display: block;
+      }
+    }
+  }
+  .taskCommentsAndChanges {
+    .taskComments {
+      .commentItem {
+        width: 100%;
+        .commentHeader {
+          width: 100%;
+          .removeCommentBtn {
+            margin-left: auto;
+            margin-top: -4px;
+          }
+        }
+        .commentBody {
+          display: inline-block;
+          .taskContentComment {
+            background: @commentBackgroundColor;
+            padding: 10px;
+            border-radius: 10px;
+          }
+        }
+      }
+      .editorContent {
+        width: 100%;
       }
     }
   }

@@ -51,16 +51,25 @@
             @click="task.completed =!task.completed">
             <v-icon class="markAsCompletedBtn">mdi-checkbox-marked-circle</v-icon>
           </v-btn>
-          <input
-            ref="autoFocusInput1"
+          <v-textarea
+            ref="autoFocusInput4"
             v-model="task.title"
             :class="{taskCompleted: task.completed}"
             :placeholder="$t('label.tapTask.name')"
             type="text"
             class="pl-0 pt-0 task-name"
+            auto-grow
+            rows="1"
+            row-height="13"
             required
-            autofocus
-            @change="resetCustomValidity">
+            @change="updateTaskTitle()"/>
+        </div>
+        <div class="taskAssignement pb-3">
+          <task-assignment
+            :task="task"
+            @updateTaskAssignement="updateTaskAssignee($event)"
+            @updateTaskCoworker="updateTaskCoworker($event)"
+            @assignmentsOpened="closePriority(); closeStatus(); closeProjectsList();closeTaskDates();closeLabelsList()"/>
         </div>
         <div class="taskProjectName">
           <task-projects
@@ -71,13 +80,6 @@
           <task-labels
             :task="task"
             @labelsListOpened="closePriority(); closeStatus(); closeProjectsList();closeTaskDates();closeAssignements()"/>
-        </div>
-        <div class="taskAssignement pb-3">
-          <task-assignment
-            :task="task"
-            @updateTaskAssignement="updateTaskAssignee($event)"
-            @updateTaskCoworker="updateTaskCoworker($event)"
-            @assignmentsOpened="closePriority(); closeStatus(); closeProjectsList();closeTaskDates();closeLabelsList()"/>
         </div>
         <v-divider class="my-0" />
         <div class="d-flex  pt-4 pb-2">
@@ -104,30 +106,22 @@
           <exo-task-editor
             ref="richEditor"
             v-model="task.description"
-            :max-length="MESSAGE_MAX_LENGTH"
             :id="task.id"
             :placeholder="$t('editinline.taskDescription.empty')"/>
         </div>
-        <v-container v-show="dateRangeAlerte" py-0>
-          <v-flex xs12>
-            <v-alert type="warning" class="mb-0 pa-2 dueDateAlert">
-              {{ $t('message.dueDateBeforeEndDate') }}
-            </v-alert>
-          </v-flex>
-        </v-container>
         <v-flex
           v-if="task.id!=null"
           xs12
-          class="pt-2">
+          class="pt-2 taskCommentsAndChanges">
           <v-tabs color="#578DC9">
             <v-tab class="text-capitalize">{{ $t('label.comments') }}</v-tab>
             <v-tab class="text-capitalize">{{ $t('label.changes') }}</v-tab>
-            <v-tab-item class="pt-5">
-              <v-list>
-                <v-list-item
+            <v-tab-item class="pt-5 taskComments">
+              <div>
+                <div
                   v-for="(item, i) in comments"
                   :key="i"
-                  class="pr-0 pl-0">
+                  class="pr-0 pl-0 TaskCommentItem">
                   <task-comments
                     :task="task"
                     :comment="item"
@@ -136,21 +130,20 @@
                     :close-editor="subEditorIsOpen"
                     @isOpen="OnCloseAllEditor()"
                     @showSubEditor="OnUpdateEditorStatus"/>
-                </v-list-item>
-                <v-list-item v-if="showEditor" class="comment">
-                  <v-list-item-avatar
-                    class="mt-0"
-                    size="30"
-                    tile>
-                    <v-img :src="currentUserAvatar"/>
-                  </v-list-item-avatar>
-                  <v-layout row class="editorContent ml-0">
+                </div>
+                <div v-if="showEditor" class="comment d-flex align-start">
+                  <exo-user-avatar
+                    :username="currentUserName"
+                    :avatar-url="currentUserAvatar"
+                    :size="30"
+                    :url="null"/>
+                  <div class="editorContent ml-2">
                     <task-comment-editor
                       ref="commentEditor"
                       v-model="editorData"
                       :placeholder="commentPlaceholder"
                       :reset="reset"
-                      class="mr-4 comment"/>
+                      class="comment"/>
                     <v-btn
                       :disabled="disabledComment"
                       depressed
@@ -158,15 +151,15 @@
                       dark
                       class="mt-1 mb-2 commentBtn"
                       @click="addTaskComment()">{{ $t('comment.label.comment') }}</v-btn>
-                  </v-layout>
-                </v-list-item>
+                  </div>
+                </div>
                 <a
                   v-else
                   class="pl-4"
                   @click="openEditor">{{ $t('comment.label.comment') }}</a>
-              </v-list>
+              </div>
             </v-tab-item>
-            <v-tab-item class="pt-5">
+            <v-tab-item class="pt-5 taskChanges">
               <v-list class="py-0">
                 <v-list-item
                   v-for="(item, i) in logs"
@@ -195,7 +188,7 @@
           </v-btn>
         </div>
       </template>
-      <template v-else slot="footer">
+      <!-- <template v-else slot="footer">
         <div class="d-flex">
           <v-spacer />
           <v-btn
@@ -210,7 +203,7 @@
             {{ $t('label.save') }}
           </v-btn>
         </div>
-      </template>
+      </template>-->
     </exo-drawer>
   </div>
 
@@ -254,6 +247,8 @@
         deleteConfirmMessage: null,
         isProjectView :true,
         datePickerTop: true,
+        currentUserName: eXo.env.portal.userName,
+        TaskIsChanged: false,
       }
     },
     computed: {
@@ -266,9 +261,6 @@
       currentUserAvatar() {
         return `/portal/rest/v1/social/users/${eXo.env.portal.userName}/avatar`;
       },
-      dateRangeAlerte() {
-        return this.dates[1] > this.date
-      },
       taskTitle() {
         return this.task && this.task.title;
       },
@@ -280,11 +272,11 @@
       },
     },
     watch: {
-      /* 'task.description': function (newValue, oldValue) {
+       'task.description': function (newValue, oldValue) {
         if (newValue !== oldValue) {
           this.autoSaveDescription();
         }
-      }, */
+      },
       editorData(val) {
         this.disabledComment = val === '';
       },
@@ -380,31 +372,43 @@
         return `/rest/v1/social/users/${username}/avatar`;
       },
 
-      updateTaskStartDate(value) {
-        if(value) {
-          this.taskStartDate = value;
+      updateTaskTitle() {
+        if(this.task.id!=null){
+          updateTask(this.task.id,this.task);
+          this.TaskIsChanged =true;
         }
       },
-
+      updateTaskStartDate(value) {
+        if(value) {
+          if(this.task.id!=null){
+            this.task.startDate = value;
+            updateTask(this.task.id,this.task);
+            this.TaskIsChanged =true;
+          } else {
+            this.taskStartDate = value;
+          }
+        }
+      },
       updateTaskDueDate(value) {
         if(value) {
-          this.taskDueDate =  value;
+          if(this.task.id!=null){
+            this.task.dueDate = value;
+            updateTask(this.task.id,this.task);
+            this.TaskIsChanged =true;
+          } else {
+            this.taskDueDate = value;
+          }
         }
       },
       updateTask() {
         if(this.task.id!=null){
-          this.task.startDate = this.taskStartDate;
-          this.task.dueDate = this.taskDueDate;
-          this.resetCustomValidity();
           updateTask(this.task.id,this.task);
           window.setTimeout(() => {
              this.$root.$emit('task-added', this.task)
           }, 200);
         }
-        this.$refs.addTaskDrawer.close();
       },
       addTask() {
-        this.resetCustomValidity();
         this.task.coworker = this.taskCoworkers;
         this.task.assignee = this.assignee;
         console.warn(this.taskStartDate);
@@ -417,7 +421,7 @@
           this.$emit('addTask', this.task);
           this.$root.$emit('task-added', this.task);
           this.showEditor=false;
-          this.enableAutosave=false
+          //this.enableAutosave=false
           this.$refs.addTaskDrawer.close();
         });
       },
@@ -425,9 +429,12 @@
         if (this.task.id !== null) {
           if(value) {
             this.task.assignee = value;
+            this.TaskIsChanged =true;
           } else {
             this.task.assignee = ''
           }
+          updateTask(this.task.id,this.task);
+          this.TaskIsChanged =true;
         } else {
           if(value) {
             this.assignee = value;
@@ -440,9 +447,11 @@
         if( this.task.id !== null) {
           if (value && value.length) {
             this.task.coworker = value
+            this.TaskIsChanged =true;
           } else {
             this.task.coworker = []
           }
+          updateTask(this.task.id,this.task);
         } else {
           if (value && value.length) {
             this.taskCoworkers = value
@@ -455,7 +464,9 @@
         if(this.task.id!=null && this.enableAutosave){
           clearTimeout(this.saveDescription);
           this.saveDescription = setTimeout(() => {
-            Vue.nextTick(() => this.updateTask(this.task.id));
+            //Vue.nextTick(() => this.updateTask(this.task.id));
+            updateTask(this.task.id,this.task);
+            this.TaskIsChanged =true;
           }, this.autoSaveDelay);
         }
         this.enableAutosave=true
@@ -481,7 +492,7 @@
         return urlVerify(text);
       },
       open(task) {
-        this.enableAutosave=false;
+        this.enableAutosave=true;
         this.task=task
         window.setTimeout(() => {
             document.dispatchEvent(new CustomEvent('loadTaskPriority', {detail: task}));
@@ -505,14 +516,15 @@
         this.$refs.addTaskDrawer.close();
       },
       onCloseDrawer() {
+        if(this.TaskIsChanged) {
+          window.setTimeout(() => {
+            this.$root.$emit('task-added', this.task)
+          }, 200);
+        }
         this.enableAutosave=false;
         this.$root.$emit('task-drawer-closed', this.task)
         this.task={}
-      },
-      resetCustomValidity() {
-        if (this.$refs.autoFocusInput1) {
-          this.$refs.autoFocusInput1.setCustomValidity('');
-        }
+        this.TaskIsChanged = false
       },
       deleteTask() {
         this.deleteConfirmMessage = `${this.$t('popup.msg.deleteTask')} : ${this.task.title}? `;
