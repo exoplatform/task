@@ -116,20 +116,38 @@ public class ProjectStorageImpl implements ProjectStorage {
     }
 
     @Override
-    public List<ProjectDto> findCollaboratedProjects(String userName, String keyword){
+    public List<ProjectDto> findCollaboratedProjects(String userName, String keyword,int offset ,int limit){
         try {
-            return daoHandler.getProjectHandler().findCollaboratedProjects(userName,keyword).stream().map(this::projectToDto).collect(Collectors.toList());
+            return daoHandler.getProjectHandler().findCollaboratedProjects(userName,keyword,offset, limit).stream().map(this::projectToDto).collect(Collectors.toList());
         } catch (Exception e) {
             return new ArrayList<ProjectDto>();
         }
     }
 
     @Override
-    public List<ProjectDto> findNotEmptyProjects(List<String> memberships, String keyword) {
+    public List<ProjectDto> findNotEmptyProjects(List<String> memberships, String keyword,int offset ,int limit) {
         try {
-            return daoHandler.getProjectHandler().findNotEmptyProjects(memberships,keyword).stream().map(this::projectToDto).collect(Collectors.toList());
+            return daoHandler.getProjectHandler().findNotEmptyProjects(memberships,keyword,offset, limit).stream().map(this::projectToDto).collect(Collectors.toList());
         } catch (Exception e) {
             return new ArrayList<ProjectDto>();
+        }
+    }
+
+    @Override
+    public int countCollaboratedProjects(String userName, String keyword){
+        try {
+            return daoHandler.getProjectHandler().countCollaboratedProjects(userName,keyword);
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
+    @Override
+    public int countNotEmptyProjects(List<String> memberships, String keyword) {
+        try {
+            return daoHandler.getProjectHandler().countNotEmptyProjects(memberships,keyword);
+        } catch (Exception e) {
+            return 0;
         }
     }
 
