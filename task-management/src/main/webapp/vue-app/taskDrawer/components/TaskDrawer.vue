@@ -18,7 +18,14 @@
         v-if="task.id!=null" 
         slot="title" 
         class="d-flex justify-space-between">
-        <span>{{ $t('label.drawer.header') }}</span>
+        <div class="drawerTitleAndProject d-flex">
+          <span>{{ $t('label.drawer.header') }}</span>
+          <div class="taskProjectName">
+            <task-projects
+              :task="task"
+              @projectsListOpened="closePriority(); closeStatus(); closeLabelsList(); closeTaskDates();closeAssignements()"/>
+          </div>
+        </div>
         <div v-if="isProjectView" id="taskActionMenu">
           <i class="uiIcon uiThreeDotsIcon" @click="displayActionMenu = true"></i>
           <v-menu
@@ -39,7 +46,14 @@
         </div>
       </template>
       <template v-else slot="title">
-        {{ $t('label.drawer.header.add') }}
+        <div class="drawerTitleAndProject d-flex">
+          <span>{{ $t('label.drawer.header.add') }}</span>
+          <div class="taskProjectName">
+            <task-projects
+              :task="task"
+              @projectsListOpened="closePriority(); closeStatus(); closeLabelsList(); closeTaskDates();closeAssignements()"/>
+          </div>
+        </div>
       </template>
       <template slot="content">
         <div class="taskTitleAndMark d-flex">
@@ -64,22 +78,12 @@
             required
             @change="updateTaskTitle()"/>
         </div>
-        <div class="taskAssignement pb-3">
+        <div class="taskAssignement ml-8 pb-3">
           <task-assignment
             :task="task"
             @updateTaskAssignement="updateTaskAssignee($event)"
             @updateTaskCoworker="updateTaskCoworker($event)"
             @assignmentsOpened="closePriority(); closeStatus(); closeProjectsList();closeTaskDates();closeLabelsList()"/>
-        </div>
-        <div class="taskProjectName">
-          <task-projects
-            :task="task"
-            @projectsListOpened="closePriority(); closeStatus(); closeLabelsList(); closeTaskDates();closeAssignements()"/>
-        </div>
-        <div class="taskLabelsName mb-3">
-          <task-labels
-            :task="task"
-            @labelsListOpened="closePriority(); closeStatus(); closeProjectsList();closeTaskDates();closeAssignements()"/>
         </div>
         <v-divider class="my-0" />
         <div class="d-flex  pt-4 pb-2">
@@ -93,12 +97,12 @@
           <div class="taskStatusAndPriority">
             <task-priority
               :task="task"
-              @updateTaskPriority="task.priority = $event"
+              @updateTaskPriority="updateTaskPriority($event)"
               @PriorityListOpened="closeStatus(); closeProjectsList(); closeLabelsList();closeTaskDates();closeAssignements()"/>
             <task-status
               :task="task"
               @statusListOpened="closePriority(); closeProjectsList();closeLabelsList();closeTaskDates();closeAssignements()"
-              @updateTaskStatus="task.status = $event"/>
+              @updateTaskStatus="updateTaskStatus($event)"/>
           </div>
         </div>
         <v-divider class="my-0" />
@@ -108,6 +112,11 @@
             v-model="task.description"
             :id="task.id"
             :placeholder="$t('editinline.taskDescription.empty')"/>
+        </div>
+        <div class="taskLabelsName mt-3 mb-3">
+          <task-labels
+            :task="task"
+            @labelsListOpened="closePriority(); closeStatus(); closeProjectsList();closeTaskDates();closeAssignements()"/>
         </div>
         <v-flex
           v-if="task.id!=null"
@@ -188,22 +197,6 @@
           </v-btn>
         </div>
       </template>
-      <!-- <template v-else slot="footer">
-        <div class="d-flex">
-          <v-spacer />
-          <v-btn
-            class="btn mr-2"
-            @click="cancel">
-            {{ $t('popup.cancel') }}
-          </v-btn>
-          <v-btn
-            :disabled="disableSaveButton"
-            class="btn btn-primary"
-            @click="updateTask">
-            {{ $t('label.save') }}
-          </v-btn>
-        </div>
-      </template>-->
     </exo-drawer>
   </div>
 
@@ -248,7 +241,6 @@
         isProjectView :true,
         datePickerTop: true,
         currentUserName: eXo.env.portal.userName,
-        TaskIsChanged: false,
       }
     },
     computed: {
@@ -375,7 +367,22 @@
       updateTaskTitle() {
         if(this.task.id!=null){
           updateTask(this.task.id,this.task);
-          this.TaskIsChanged =true;
+        }
+      },
+      updateTaskPriority(value) {
+        if(value) {
+          if (this.task.id != null) {
+            this.task.priority = value;
+            updateTask(this.task.id, this.task);
+          }
+        }
+      },
+      updateTaskStatus(value) {
+        if(value) {
+          if (this.task.id != null) {
+            this.task.status = value;
+            updateTask(this.task.id, this.task);
+          }
         }
       },
       updateTaskStartDate(value) {
@@ -383,7 +390,6 @@
           if(this.task.id!=null){
             this.task.startDate = value;
             updateTask(this.task.id,this.task);
-            this.TaskIsChanged =true;
           } else {
             this.taskStartDate = value;
           }
@@ -394,7 +400,6 @@
           if(this.task.id!=null){
             this.task.dueDate = value;
             updateTask(this.task.id,this.task);
-            this.TaskIsChanged =true;
           } else {
             this.taskDueDate = value;
           }
@@ -429,12 +434,10 @@
         if (this.task.id !== null) {
           if(value) {
             this.task.assignee = value;
-            this.TaskIsChanged =true;
           } else {
             this.task.assignee = ''
           }
           updateTask(this.task.id,this.task);
-          this.TaskIsChanged =true;
         } else {
           if(value) {
             this.assignee = value;
@@ -447,7 +450,6 @@
         if( this.task.id !== null) {
           if (value && value.length) {
             this.task.coworker = value
-            this.TaskIsChanged =true;
           } else {
             this.task.coworker = []
           }
@@ -466,7 +468,6 @@
           this.saveDescription = setTimeout(() => {
             //Vue.nextTick(() => this.updateTask(this.task.id));
             updateTask(this.task.id,this.task);
-            this.TaskIsChanged =true;
           }, this.autoSaveDelay);
         }
         this.enableAutosave=true
@@ -516,15 +517,9 @@
         this.$refs.addTaskDrawer.close();
       },
       onCloseDrawer() {
-        if(this.TaskIsChanged) {
-          window.setTimeout(() => {
-            this.$root.$emit('task-added', this.task)
-          }, 200);
-        }
-        this.enableAutosave=false;
         this.$root.$emit('task-drawer-closed', this.task)
+        this.enableAutosave=false;
         this.task={}
-        this.TaskIsChanged = false
       },
       deleteTask() {
         this.deleteConfirmMessage = `${this.$t('popup.msg.deleteTask')} : ${this.task.title}? `;

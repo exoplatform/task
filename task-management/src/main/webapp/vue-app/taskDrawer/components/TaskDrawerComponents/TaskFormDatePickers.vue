@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="taskPlanDateCalender d-flex align-center">
-      <i class="uiIconCalendar uiIconBlue"></i>
+      <i class="uiIconStartDate uiIconBlue"></i>
       <date-picker
         ref="taskStartDate"
         v-model="startDate"
@@ -12,7 +12,7 @@
         @input="emitStartDate(startDate)"/>
     </div>
     <div class="taskDueDateCalender d-flex align-center">
-      <i class="uiIconClock uiIconBlue"></i>
+      <i class="uiIconDueDate uiIconBlue"></i>
       <date-picker
         ref="taskDueDate"
         v-model="dueDate"
