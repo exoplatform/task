@@ -10,9 +10,9 @@
         :title="comment.author.displayName"
         :size="30"
         :url="comment.author.url"/>
-      <div class="commentContent pl-3">
+      <div class="commentContent pl-3 d-flex align-center">
         <a
-          class="primary-color--text font-weight-bold subtitle-2 d-block"
+          class="primary-color--text font-weight-bold subtitle-2 pr-2"
           v-html="comment.author.displayName"></a>
         <span :title="absoluteTime()" class="dateTime caption font-italic d-block">{{ relativeTime }}</span>
       </div>
