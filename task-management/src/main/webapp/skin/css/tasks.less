@@ -1641,6 +1641,41 @@
 
 /*---------------------Responsive Style ---------------------------*/
 
+@media (max-width: 420px) {
+  .taskDrawer {
+    .text-header-title {
+      font-size: 16px !important;
+    }
+    .taskDrawer .drawerHeader .drawerTitle #taskActionMenu .uiThreeDotsIcon:before {
+      font-size: 22px!important;
+    }
+    .drawerTitle .drawerTitleAndProject .taskProjectName .projectName {
+      max-width: 130px!important;
+    }
+    .icon-ArrowRight:before {
+      font-size: 14px!important;
+    }
+    .taskProjectName .inputTaskProjectName .v-input__control > .v-input__slot .v-select__slot .v-select__selections {
+      max-width: 60%!important;
+    }
+    .mdi-close {
+      font-size: 22px!important;
+      width: 22px!important;
+      height: 23px!important;
+    }
+    .drawerTitleAndProject {
+      max-width: 240px!important;
+    }
+    .taskAssignItem {
+      .assigneeName {
+        p.text-truncate {
+          max-width: 70px!important;
+        }
+      }
+    }
+  }
+}
+
 @media (max-width: @maxMobileWidth) {
   #TasksParentContainer {
     #TasksManagementPortlet {
