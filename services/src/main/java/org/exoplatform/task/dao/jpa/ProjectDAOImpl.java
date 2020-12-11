@@ -169,7 +169,7 @@ public class ProjectDAOImpl extends CommonJPADAO<Project, Long> implements Proje
   }
 
  @Override
-  public List<Project> findCollaboratedProjects(String userName, String keyword) {
+  public List<Project> findCollaboratedProjects(String userName, String keyword,int offset ,int limit) {
    Query q = getEntityManager().createNativeQuery(
            "SELECT DISTINCT(p.PROJECT_ID) FROM TASK_PROJECTS p \n" +
                    "where \n" +
@@ -208,6 +208,9 @@ public class ProjectDAOImpl extends CommonJPADAO<Project, Long> implements Proje
                    "))");
      q.setParameter("keyword", keyword);
      q.setParameter("userName", userName);
+     if (limit > 0) {
+         q.setFirstResult(offset).setMaxResults(limit);
+     }
    List<Object> ids = q.getResultList();
    if(ids.isEmpty()) {
      return new ArrayList<Project>();
@@ -217,7 +220,7 @@ public class ProjectDAOImpl extends CommonJPADAO<Project, Long> implements Proje
  }
 
     @Override
-    public List<Project> findNotEmptyProjects(List<String> memberships, String keyword) {
+    public List<Project> findNotEmptyProjects(List<String> memberships, String keyword,int offset ,int limit) {
    Query q = getEntityManager().createNativeQuery(
            "SELECT DISTINCT(p.PROJECT_ID) FROM TASK_PROJECTS p \n" +
                    "where \n" +
@@ -246,12 +249,93 @@ public class ProjectDAOImpl extends CommonJPADAO<Project, Long> implements Proje
                    ")\n");
    q.setParameter("keyword", keyword);
    q.setParameter("memberships", memberships);
+   if (limit > 0) {
+       q.setFirstResult(offset).setMaxResults(limit);
+   }
    List<Object> ids = q.getResultList();
    if(ids.isEmpty()) {
      return new ArrayList<Project>();
    }
    List<Long> idsLong = ids.stream().map(i -> Long.parseLong(i.toString())).collect(Collectors.toList());
    return findIdentitiesByIDs(idsLong);
+  }
+
+ @Override
+  public int countCollaboratedProjects(String userName, String keyword) {
+   Query q = getEntityManager().createNativeQuery(
+           "SELECT DISTINCT(p.PROJECT_ID) FROM TASK_PROJECTS p \n" +
+                   "where \n" +
+                   "lower(p.NAME) LIKE lower(concat('%', :keyword, '%'))\n" +
+                   "AND\n" +
+                   "(p.PROJECT_ID in (\n" +
+                   "SELECT distinct(ts.PROJECT_ID)\n" +
+                   "FROM TASK_STATUS AS ts\n" +
+                   "WHERE ts.STATUS_ID IN\n" +
+                   "   ( \n" +
+                   "SELECT task.STATUS_ID\n" +
+                   "FROM TASK_TASKS AS task\n" +
+                   "WHERE task.COMPLETED = false\n" +
+                   "AND (task.ASSIGNEE = :userName\n" +
+                   "  OR task.TASK_ID IN (\n" +
+                   "SELECT com.TASK_ID\n" +
+                   "FROM TASK_COMMENTS AS com\n" +
+                   "WHERE com.TASK_ID = task.TASK_ID\n" +
+                   "AND (com.AUTHOR = :userName\n" +
+                   " OR com.COMMENT_ID IN (\n" +
+                   "SELECT cmention.COMMENT_ID\n" +
+                   "FROM TASK_COMMENT_MENTIONED_USERS AS cmention\n" +
+                   "WHERE com.COMMENT_ID = cmention.COMMENT_ID\n" +
+                   "AND cmention.MENTIONED_USERS = :userName\n" +
+                   ")\n" +
+                   ")\n" +
+                   " )\n" +
+                   "         OR task.TASK_ID IN (\n" +
+                   "SELECT coworker.TASK_ID\n" +
+                   "            FROM TASK_TASK_COWORKERS AS coworker\n" +
+                   "            WHERE coworker.TASK_ID = task.TASK_ID\n" +
+                   " AND coworker.COWORKER = :userName\n" +
+                   "         )\n" +
+                   "    )\n" +
+                   " )\n" +
+                   "))");
+     q.setParameter("keyword", keyword);
+     q.setParameter("userName", userName);
+     int result = Integer.parseInt(q.getSingleResult().toString());
+      return result ;
+ }
+
+    @Override
+    public int countNotEmptyProjects(List<String> memberships, String keyword) {
+   Query q = getEntityManager().createNativeQuery(
+           "SELECT DISTINCT(p.PROJECT_ID) FROM TASK_PROJECTS p \n" +
+                   "where \n" +
+                   "lower(p.NAME) LIKE lower(concat('%', :keyword , '%'))\n" +
+                   "AND\n" +
+                   "(p.PROJECT_ID in (\n" +
+                   "SELECT man.PROJECT_ID\n" +
+                   "            FROM TASK_PROJECT_MANAGERS AS man\n" +
+                   "            WHERE man.MANAGER IN (:memberships) \t\t    \n" +
+                   ") or \n" +
+                   "p.PROJECT_ID in (\n" +
+                   "SELECT part.PROJECT_ID\n" +
+                   "            FROM TASK_PROJECT_PARTICIPATORS AS part\n" +
+                   "            WHERE part.PARTICIPATOR IN (:memberships) \n" +
+                   ") ) AND p.PROJECT_ID in (\n" +
+                   "SELECT distinct(ts.PROJECT_ID)\n" +
+                   "FROM TASK_STATUS AS ts\n" +
+                   "WHERE ts.STATUS_ID IN(\n" +
+                   "SELECT tcol.STATUS_ID FROM  \n" +
+                   "(SELECT task.STATUS_ID AS STATUS_ID , COUNT(*) \n" +
+                   "FROM TASK_TASKS AS task \n" +
+                   "WHERE task.COMPLETED = false\n" +
+                   "GROUP BY task.STATUS_ID\n" +
+                   "HAVING COUNT(*)> 0) AS tcol\n" +
+                   ") \n" +
+                   ")\n");
+   q.setParameter("keyword", keyword);
+   q.setParameter("memberships", memberships);
+        int result = Integer.parseInt(q.getSingleResult().toString());
+        return result ;
   }
 
   protected List<Project> findIdentitiesByIDs(List<Long> ids) {

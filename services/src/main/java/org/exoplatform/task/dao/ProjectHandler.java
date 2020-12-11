@@ -12,9 +12,13 @@ import org.exoplatform.task.domain.Project;
  */
 public interface ProjectHandler extends GenericDAO<Project, Long> {
 
-    List<Project> findCollaboratedProjects(String userName, String keyword);
+    List<Project> findCollaboratedProjects(String userName, String keyword,int offset ,int limit);
 
-    List<Project> findNotEmptyProjects(List<String> memberships, String keyword);
+    List<Project> findNotEmptyProjects(List<String> memberships, String keyword,int offset ,int limit);
+
+    int countCollaboratedProjects(String userName, String keyword);
+
+    int countNotEmptyProjects(List<String> memberships, String keyword);
 
     public <T> List<T> selectProjectField(ProjectQuery query, String fieldName);
   

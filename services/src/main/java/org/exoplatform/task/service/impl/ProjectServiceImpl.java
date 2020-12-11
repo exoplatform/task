@@ -214,13 +214,23 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   @Override
-  public List<ProjectDto> findCollaboratedProjects(String userName, String keyword) {
-    return projectStorage.findCollaboratedProjects(userName,keyword);
+  public List<ProjectDto> findCollaboratedProjects(String userName, String keyword, int offset, int limit) {
+    return projectStorage.findCollaboratedProjects(userName,keyword, offset, limit);
   }
 
   @Override
-  public List<ProjectDto> findNotEmptyProjects(List<String> memberships, String keyword)  {
-    return projectStorage.findNotEmptyProjects(memberships,keyword);
+  public List<ProjectDto> findNotEmptyProjects(List<String> memberships, String keyword, int offset, int limit)  {
+    return projectStorage.findNotEmptyProjects(memberships,keyword, offset, limit);
+  }
+
+  @Override
+  public int countCollaboratedProjects(String userName, String keyword) {
+    return projectStorage.countCollaboratedProjects(userName,keyword);
+  }
+
+  @Override
+  public int countNotEmptyProjects(List<String> memberships, String keyword)  {
+    return projectStorage.countNotEmptyProjects(memberships,keyword);
   }
 
   @Override
