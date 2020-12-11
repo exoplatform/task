@@ -116,6 +116,24 @@ public class ProjectStorageImpl implements ProjectStorage {
     }
 
     @Override
+    public List<ProjectDto> findCollaboratedProjects(String userName, String keyword){
+        try {
+            return daoHandler.getProjectHandler().findCollaboratedProjects(userName,keyword).stream().map(this::projectToDto).collect(Collectors.toList());
+        } catch (Exception e) {
+            return new ArrayList<ProjectDto>();
+        }
+    }
+
+    @Override
+    public List<ProjectDto> findNotEmptyProjects(List<String> memberships, String keyword) {
+        try {
+            return daoHandler.getProjectHandler().findNotEmptyProjects(memberships,keyword).stream().map(this::projectToDto).collect(Collectors.toList());
+        } catch (Exception e) {
+            return new ArrayList<ProjectDto>();
+        }
+    }
+
+    @Override
     public int countProjects(List<String> memberships, String keyword) {
         try {
             return daoHandler.getProjectHandler().findAllByMembershipsAndKeyword(memberships, keyword,null).getSize();

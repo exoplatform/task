@@ -6,9 +6,12 @@
     <div v-show="!displayDetails">
       <project-list-toolbar
         :keyword="keyword"
-        @keyword-changed="keyword = $event"/>
+        :project-filter-selected="projectFilterSelected"
+        @keyword-changed="keyword = $event"
+        @filter-changed="projectFilterSelected = $event"/>
       <project-card-list
         :keyword="keyword"
+        :project-filter-selected="projectFilterSelected"
         :loading-projects="loadingProjects"/>
     </div>
     <div v-show="displayDetails">
@@ -25,6 +28,7 @@
         project: '',
         keyword: null,
         loadingProjects: false,
+        projectFilterSelected: 'ALL',
       }
     },
     created() {

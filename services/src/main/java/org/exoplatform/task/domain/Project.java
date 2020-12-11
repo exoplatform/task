@@ -48,6 +48,10 @@ import java.util.*;
               query = "SELECT DISTINCT p FROM TaskProject p WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :name, '%'))"
   ),
   @NamedQuery(
+              name = "TaskProject.findProjectsByIDs",
+              query = "SELECT DISTINCT p FROM TaskProject p WHERE p.id in (:ids))"
+  ),
+  @NamedQuery(
               name = "TaskProject.countProjectsByKeyword",
               query = "SELECT count(p) FROM TaskProject p WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :name, '%'))"
   ),

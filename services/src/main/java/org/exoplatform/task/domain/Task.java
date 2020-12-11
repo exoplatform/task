@@ -146,6 +146,7 @@ import org.exoplatform.task.legacy.service.TaskBuilder;
     ),
         @NamedQuery(name = "Task.countTaskStatusByProject",
                 query = "SELECT m.status.name AS name, COUNT(m) AS total FROM TaskTask AS m where m.status.project.id = :projectId GROUP BY m.status.name ORDER BY m.status.name ASC"),
+
         @NamedQuery(name = "Task.getByStatus",
                 query = "SELECT t FROM TaskTask t  WHERE t.status.id = :statusid")
 })

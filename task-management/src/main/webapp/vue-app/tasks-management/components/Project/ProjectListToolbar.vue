@@ -22,19 +22,19 @@
           prepend-inner-icon="fa-filter"
           class="inputTasksFilter pa-0 mr-3 my-auto"/>
       </v-scale-transition>
-      <!--<v-scale-transition>
+      <v-scale-transition>
         <select
+          v-model="projectFilterSelected"
+          name="projectFilter"
           class="selectTasksFilter my-auto mr-2 subtitle-1 ignore-vuetify-classes d-none d-sm-inline">
           <option
-            value="allProjects">
-            {{ $t('label.allProject') }}
-          </option>
-          <option
-            value="favorites">
-            Favorites
+            v-for="item in projectFilter"
+            :key="item.name"
+            :value="item.name">
+            {{ $t('label.project.filter.'+item.name.toLowerCase()) }}
           </option>
         </select>
-      </v-scale-transition>-->
+      </v-scale-transition>
     </v-toolbar>
 
   </v-app>
@@ -46,10 +46,24 @@
         type: String,
         default: null,
       },
+      projectFilterSelected: {
+        type: String,
+        default: 'ALL',
+      },
+    },
+    data () {
+      return {
+        projectFilter: [
+          {name: "ALL"},{name: "MANAGED"},{name: "COLLABORATED"},{name: "WITH_TASKS"}
+        ],
+      }
     },
     watch: {
       keyword() {
         this.$emit('keyword-changed', this.keyword);
+      },
+      projectFilterSelected() {
+        this.$emit('filter-changed', this.projectFilterSelected);
       }
     },
     methods: {

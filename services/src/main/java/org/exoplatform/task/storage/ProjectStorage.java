@@ -89,6 +89,10 @@ public interface ProjectStorage {
 
     List<ProjectDto> findProjects(List<String> memberships, String keyword, OrderBy order,int offset ,int limit);
 
+    List<ProjectDto> findCollaboratedProjects(String userName, String keyword);
+
+    List<ProjectDto> findNotEmptyProjects(List<String> memberships, String keyword);
+
     int countProjects(List<String> memberships, String keyword);
 
     Project projectToEntity(ProjectDto projectDto);
