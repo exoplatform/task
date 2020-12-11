@@ -156,6 +156,17 @@ public final class ProjectUtil {
     return new LinkedList<ProjectDto>(tmp);
   }
 
+  public static List<ProjectDto> getProjectTree(List<ProjectDto> projects, Identity identity) {
+
+    Set<ProjectDto> tmp = new HashSet<ProjectDto>();
+    try {
+      tmp.addAll(buildProxyDto(projects, identity, false));
+    } catch (Exception ex) {
+      LOG.error("Can't load project ", ex);
+    }
+    return new LinkedList<ProjectDto>(tmp);
+  }
+
   private static Collection<? extends Project> buildProxy(List<Project> projects, Identity user, boolean editable) {
     List<Project> tmp = new LinkedList<Project>();
     for (Project p : projects) {

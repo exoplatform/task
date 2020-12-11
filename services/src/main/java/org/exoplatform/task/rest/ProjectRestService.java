@@ -10,6 +10,7 @@ import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
+import org.exoplatform.task.dao.ProjectQuery;
 import org.exoplatform.task.dto.ProjectDto;
 import org.exoplatform.task.dto.StatusDto;
 import org.exoplatform.task.exception.EntityNotFoundException;
@@ -82,6 +83,7 @@ public class ProjectRestService implements ResourceContainer {
   @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled"),
       @ApiResponse(code = 500, message = "Internal server error") })
   public Response getProjects(@ApiParam(value = "Search term", required = false, defaultValue = "null") @QueryParam("q") String query,
+                              @ApiParam(value = "Filter", required = false, defaultValue = "") @QueryParam("projectsFilter") String projectsFilter,
                               @ApiParam(value = "Offset", required = false, defaultValue = "0") @QueryParam("offset") int offset,
                               @ApiParam(value = "Limit", required = false, defaultValue = "-1") @QueryParam("limit") int limit,
                               @ApiParam(value = "Participator Need", required = false, defaultValue = "false") @QueryParam("participatorParam") boolean participatorParam) {
@@ -92,11 +94,35 @@ public class ProjectRestService implements ResourceContainer {
     List<String> memberships = new LinkedList<String>();
     ConversationState state = ConversationState.getCurrent();
     Identity identity = state.getIdentity();
-    memberships.addAll(UserUtil.getMemberships(identity));
-    List<ProjectDto> projects = ProjectUtil.getProjectTree( memberships,query, identity , projectService,offset,limit);
-    int projectNumber = projectService.countProjects(memberships,query);
-    JSONObject global = new JSONObject();
+    List<ProjectDto> projects = new ArrayList<>();
+    int projectNumber = 0;
+    if(projectsFilter!=null && projectsFilter.equals("MANAGED")){
+      List<String> managers = new ArrayList<>();
+      managers.add(identity.getUserId());
+      ProjectQuery projectQuery = new ProjectQuery();
+      projectQuery.setManager(managers);
+      projectQuery.setKeyword(query);
+      List<ProjectDto> projectDtoList = projectService.findProjects(projectQuery, offset, limit);
+      projectNumber = projectService.countProjects(projectQuery);
+      projects = ProjectUtil.getProjectTree(projectDtoList, identity);
+    }else if(projectsFilter!=null && projectsFilter.equals("COLLABORATED")){
+      List<ProjectDto> projectDtoList = projectService.findCollaboratedProjects(identity.getUserId(),query);
+      projectNumber = projectDtoList.size();
+      projects = ProjectUtil.getProjectTree(projectDtoList, identity);
+    }else if(projectsFilter!=null && projectsFilter.equals("WITH_TASKS")){
+      memberships.addAll(UserUtil.getMemberships(identity));
+      List<ProjectDto> projectDtoList = projectService.findNotEmptyProjects(memberships,query);
+      projectNumber = projectDtoList.size();
+      projects = ProjectUtil.getProjectTree(projectDtoList, identity);
+    }else if(projectsFilter!=null && projectsFilter.equals("HIDDEN")){
 
+    }else {
+      memberships.addAll(UserUtil.getMemberships(identity));
+      List<ProjectDto> projectDtoList = projectService.findProjects(memberships,query,null,offset, limit);
+      projects = ProjectUtil.getProjectTree(projectDtoList, identity);
+      projectNumber = projectService.countProjects(memberships, query);
+    }
+    JSONObject global = new JSONObject();
     JSONArray projectsJsonArray = new JSONArray();
     try {
       projectsJsonArray = buildJSON(projectsJsonArray, projects, participatorParam);
@@ -239,7 +265,7 @@ public class ProjectRestService implements ResourceContainer {
           if (index > -1) {
             String groupId = permission.substring(index + 1);
             space = spaceService.getSpaceByGroupId(groupId);
-            managers.addAll(Arrays.asList(space.getManagers()));
+            if(space!=null) managers.addAll(Arrays.asList(space.getManagers()));
           } else {
             managers.add(permission);
           }
@@ -252,7 +278,7 @@ public class ProjectRestService implements ResourceContainer {
         if (index > -1) {
           String groupId = permission.substring(index + 1);
           space = spaceService.getSpaceByGroupId(groupId);
-          participators.addAll(Arrays.asList(space.getMembers()));
+          if(space!=null)  participators.addAll(Arrays.asList(space.getMembers()));
         } else {
           participators.add(permission);
         }

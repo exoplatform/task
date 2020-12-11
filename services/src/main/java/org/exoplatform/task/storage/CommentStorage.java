@@ -11,6 +11,8 @@ public interface CommentStorage {
 
   CommentDto getComment(long commentId);
 
+  List<CommentDto> getCommentsWithSubs(long taskId, int offset, int limit);
+
   List<CommentDto> getComments(long taskId, int offset, int limit);
 
   int countComments(long taskId);
@@ -25,8 +27,9 @@ public interface CommentStorage {
    * Fetch sub comments of designed comments
    *
    * @param listComments the given list of comments.
+   * @return
    */
-  void loadSubComments(List<CommentDto> listComments);
+  List<CommentDto> loadSubComments(List<CommentDto> listComments);
 
   Comment commentToEntity(CommentDto commentDto);
 

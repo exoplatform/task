@@ -16,12 +16,12 @@
 */
 package org.exoplatform.task.dao.jpa;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -33,6 +33,7 @@ import javax.persistence.criteria.Root;
 import org.apache.commons.lang.StringUtils;
 
 import org.exoplatform.commons.utils.ListAccess;
+import org.exoplatform.social.core.jpa.storage.entity.IdentityEntity;
 import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.dao.ProjectHandler;
 import org.exoplatform.task.dao.ProjectQuery;
@@ -166,7 +167,99 @@ public class ProjectDAOImpl extends CommonJPADAO<Project, Long> implements Proje
     }
     return super.buildPath(condition, root);
   }
-  
+
+ @Override
+  public List<Project> findCollaboratedProjects(String userName, String keyword) {
+   Query q = getEntityManager().createNativeQuery(
+           "SELECT DISTINCT(p.PROJECT_ID) FROM TASK_PROJECTS p \n" +
+                   "where \n" +
+                   "lower(p.NAME) LIKE lower(concat('%', :keyword, '%'))\n" +
+                   "AND\n" +
+                   "(p.PROJECT_ID in (\n" +
+                   "SELECT distinct(ts.PROJECT_ID)\n" +
+                   "FROM TASK_STATUS AS ts\n" +
+                   "WHERE ts.STATUS_ID IN\n" +
+                   "   ( \n" +
+                   "SELECT task.STATUS_ID\n" +
+                   "FROM TASK_TASKS AS task\n" +
+                   "WHERE task.COMPLETED = false\n" +
+                   "AND (task.ASSIGNEE = :userName\n" +
+                   "  OR task.TASK_ID IN (\n" +
+                   "SELECT com.TASK_ID\n" +
+                   "FROM TASK_COMMENTS AS com\n" +
+                   "WHERE com.TASK_ID = task.TASK_ID\n" +
+                   "AND (com.AUTHOR = :userName\n" +
+                   " OR com.COMMENT_ID IN (\n" +
+                   "SELECT cmention.COMMENT_ID\n" +
+                   "FROM TASK_COMMENT_MENTIONED_USERS AS cmention\n" +
+                   "WHERE com.COMMENT_ID = cmention.COMMENT_ID\n" +
+                   "AND cmention.MENTIONED_USERS = :userName\n" +
+                   ")\n" +
+                   ")\n" +
+                   " )\n" +
+                   "         OR task.TASK_ID IN (\n" +
+                   "SELECT coworker.TASK_ID\n" +
+                   "            FROM TASK_TASK_COWORKERS AS coworker\n" +
+                   "            WHERE coworker.TASK_ID = task.TASK_ID\n" +
+                   " AND coworker.COWORKER = :userName\n" +
+                   "         )\n" +
+                   "    )\n" +
+                   " )\n" +
+                   "))");
+     q.setParameter("keyword", keyword);
+     q.setParameter("userName", userName);
+   List<Object> ids = q.getResultList();
+   if(ids.isEmpty()) {
+     return new ArrayList<Project>();
+   }
+   List<Long> idsLong = ids.stream().map(i -> Long.parseLong(i.toString())).collect(Collectors.toList());
+   return findIdentitiesByIDs(idsLong);
+ }
+
+    @Override
+    public List<Project> findNotEmptyProjects(List<String> memberships, String keyword) {
+   Query q = getEntityManager().createNativeQuery(
+           "SELECT DISTINCT(p.PROJECT_ID) FROM TASK_PROJECTS p \n" +
+                   "where \n" +
+                   "lower(p.NAME) LIKE lower(concat('%', :keyword , '%'))\n" +
+                   "AND\n" +
+                   "(p.PROJECT_ID in (\n" +
+                   "SELECT man.PROJECT_ID\n" +
+                   "            FROM TASK_PROJECT_MANAGERS AS man\n" +
+                   "            WHERE man.MANAGER IN (:memberships) \t\t    \n" +
+                   ") or \n" +
+                   "p.PROJECT_ID in (\n" +
+                   "SELECT part.PROJECT_ID\n" +
+                   "            FROM TASK_PROJECT_PARTICIPATORS AS part\n" +
+                   "            WHERE part.PARTICIPATOR IN (:memberships) \n" +
+                   ") ) AND p.PROJECT_ID in (\n" +
+                   "SELECT distinct(ts.PROJECT_ID)\n" +
+                   "FROM TASK_STATUS AS ts\n" +
+                   "WHERE ts.STATUS_ID IN(\n" +
+                   "SELECT tcol.STATUS_ID FROM  \n" +
+                   "(SELECT task.STATUS_ID AS STATUS_ID , COUNT(*) \n" +
+                   "FROM TASK_TASKS AS task \n" +
+                   "WHERE task.COMPLETED = false\n" +
+                   "GROUP BY task.STATUS_ID\n" +
+                   "HAVING COUNT(*)> 0) AS tcol\n" +
+                   ") \n" +
+                   ")\n");
+   q.setParameter("keyword", keyword);
+   q.setParameter("memberships", memberships);
+   List<Object> ids = q.getResultList();
+   if(ids.isEmpty()) {
+     return new ArrayList<Project>();
+   }
+   List<Long> idsLong = ids.stream().map(i -> Long.parseLong(i.toString())).collect(Collectors.toList());
+   return findIdentitiesByIDs(idsLong);
+  }
+
+  protected List<Project> findIdentitiesByIDs(List<Long> ids) {
+    TypedQuery<Project> query = getEntityManager().createNamedQuery("TaskProject.findProjectsByIDs", Project.class);
+      query.setParameter("ids", ids);
+      return query.getResultList();
+  }
+
   public <T> List<T> selectProjectField(ProjectQuery query, String fieldName) {
     EntityManager em = getEntityManager();
     CriteriaBuilder cb = em.getCriteriaBuilder();
