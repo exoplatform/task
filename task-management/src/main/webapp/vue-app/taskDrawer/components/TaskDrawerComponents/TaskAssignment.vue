@@ -24,7 +24,7 @@
               :fullname="taskAssigneeObj.profile.fullName"
               :avatar-url="taskAssigneeObj.profile.avatarUrl"
               :title="taskAssigneeObj.profile.fullName"
-              :size="26"
+              :size="24"
               :url="null"
               class="pr-2"/>
           </div>

@@ -1851,6 +1851,7 @@
   .drawerHeader {
     .drawerTitle {
       justify-content: space-between!important;
+      align-items: center!important;
       > * {
         flex: unset!important;
       }
@@ -1877,6 +1878,24 @@
           }
         }
       }
+      .drawerTitleAndProject {
+        max-width: 340px;
+        align-items: center;
+        .taskProjectName {
+          .icon-ArrowRight {
+            margin-top: 6px;
+            margin-left: 10px;
+            &:before {
+              content: '\e9cb';
+              font-size: 16px;
+              color: @btnDisableColor!important;
+            }
+          }
+          .projectName {
+            max-width: 200px;
+          }
+        }
+      }
     }
     .drawerIcons {
       margin-left: 2px!important;
@@ -1895,7 +1914,8 @@
 
         }
       .v-input__control {
-          min-height: 38px!important;
+          min-height: 27px!important;
+          height: 27px;
           > .v-input__slot {
             box-shadow: none!important;
             padding: 0!important;
@@ -1903,12 +1923,33 @@
               label {
                 color: @greyColorLighten1;
               }
+              .v-select__selections {
+                max-width: 90%!important;
+              }
             }
           }
           .v-input__append-inner {
             display: none;
           }
         }
+      .v-menu__content {
+        position: fixed!important;
+        max-width: 70%!important;
+        left: 100px!important;
+        top: 50px!important;
+        &::-webkit-scrollbar {
+          width: 5px;
+        }
+        &::-webkit-scrollbar-track {
+          background: @primaryBackground;
+        }
+        &::-webkit-scrollbar-thumb {
+          background: @greyColorLighten1;
+        }
+        &::-webkit-scrollbar-thumb:hover {
+          background: @borderColorLight;
+        }
+      }
       .v-menu__content {
         .v-list-item {
           min-height: 35px!important;
@@ -1929,17 +1970,18 @@
           border: none!important;
           padding: 3px 6px!important;
           width: 100%!important;
-          font-size: 17px;
-          margin-top: -2px;
+          font-size: 20px;
+          margin-top: -4px;
+          color: @textColor!important;
           &::placeholder {
-            font-size: 17px!important;
+            font-size: 19px!important;
           }
         }
       }
     }
     .markAsCompletedBtn {
       color: @primaryColor!important;
-      font-size: 22px!important;
+      font-size: 30px!important;
     }
   }
   .taskLabelsName {
@@ -1960,6 +2002,9 @@
           padding: 0!important;
           margin-bottom: 0!important;
           .v-select__slot {
+            .v-select__selections {
+              max-width: 100%!important;
+            }
             label {
               color: @greyColorLighten1;
             }
@@ -2063,20 +2108,22 @@
     }
     .taskPlanDateCalender {
       max-height: 40px;
-      .uiIconCalendar {
+      .uiIconStartDate {
         color: @primaryColor;
-        font-size: 20px;
+        font-size: 24px;
+        margin-left: -2px;
         &:before {
-          content: "\e619";
+          content: "\ebf3";
         }
       }
     }
     .taskDueDateCalender {
       max-height: 40px;
-      .uiIconClock {
+      .uiIconDueDate {
         &:before {
+          content: "\ebf2";
           color: @primaryColor;
-          font-size: 20px;
+          font-size: 22px;
         }
       }
       .v-picker__actions.v-card__actions {
@@ -2215,38 +2262,6 @@
         content: "\e910";
       }
     }
-    .cke_bottom {
-      display: none;
-    }
-    .cke_chrome {
-      border: none!important;
-      body.cke_editable {
-        margin: 0!important;
-      }
-      .cke_editable {
-        margin: 4px!important;
-      }
-    }
-    .cke_focus {
-      border: 1px solid @borderColor !important;
-      body.cke_editable {
-        margin: 10px!important;
-      }
-      .cke_bottom {
-        display: block;
-      }
-    }
-  }
-  .emptyEditor {
-    .cke_bottom {
-      display: block;
-    }
-    .cke_chrome {
-      border: 1px solid @borderColor !important;
-      .cke_bottom {
-        display: block;
-      }
-    }
   }
   .taskCommentsAndChanges {
     .taskComments {
@@ -2265,6 +2280,9 @@
             background: @commentBackgroundColor;
             padding: 10px;
             border-radius: 10px;
+            p {
+              margin-bottom: 0!important;
+            }
           }
         }
       }

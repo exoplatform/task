@@ -2,7 +2,9 @@
   <div>
     <v-container
       pa-0
-      fluid>
+      fluid
+      d-flex>
+      <i class="uiIcon icon-ArrowRight uiIconLightGray mr-1"></i>
       <v-combobox
         ref="select"
         :filter="filterProjects"
@@ -15,9 +17,6 @@
         prepend-icon
         @click="$emit('projectsListOpened')"
         @change="deleteProject()">
-        <template v-slot:prepend>
-          <i class="uiIconFolder uiIconBlue mr-1"></i>
-        </template>
         <template v-slot:selection="{ attrs, item, parent, selected }">
           <v-chip
             v-if="item === Object(item)"
@@ -32,7 +31,7 @@
             @click="$emit('projectsListOpened')"
             @click:close="deleteProject">
             <span 
-              class="px-4 body-2 text-truncate"
+              class="body-2 text-truncate"
               @click="parent.selectItem(item)">
               {{ item.name }}
             </span>
