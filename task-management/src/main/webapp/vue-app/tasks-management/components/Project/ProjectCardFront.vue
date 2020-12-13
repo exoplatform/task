@@ -20,6 +20,7 @@
       </span>
       <v-spacer />
       <i
+        v-if="project.canManage"
         :class="project.color && 'white--text' || 'toolbarNoColor'"
         icon
         small
