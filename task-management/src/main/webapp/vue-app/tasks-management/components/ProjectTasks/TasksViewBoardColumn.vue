@@ -51,7 +51,6 @@
     return {
       drag: false,
       task:null,
-      scurrentIdex:-1,
       newStatus:null
     };
   },
@@ -80,11 +79,7 @@
           this.$emit('create-status');
       },
      
-    addColumn(index) {
-      if(this.currentIdex!==-1){
-            this.cancelAddColumn(this.currentIdex)            
-          } 
-        this.currentIdex=index     
+    addColumn(index) {  
         this.$emit('add-column',index);
       },
     cancelAddColumn(index) {
