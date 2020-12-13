@@ -10,10 +10,16 @@
             :key="index"
             class="py-0 px-4 projectTaskItem">
             <tasks-view-board-column
+              :project="project"
               :status="status"
               :tasks-list="getTasksByStatus(tasksList,status.name)"
+              :index="index"
               @updateTaskCompleted="updateTaskCompleted"
-              @updateTaskStatus="updateTaskStatus" />
+              @updateTaskStatus="updateTaskStatus"
+              @delete-status="deleteStatus"
+              @add-column="addColumn"
+              @cancel-add-column="cancelAddColumn"
+              @create-status="createStatus"/>
           </v-col>
         </v-row>
       </v-container>
@@ -32,9 +38,9 @@ import {updateTask} from '../../../taskDrawer/taskDrawerApi';
         type: Array,
         default: () => []
       },
-      projectId: {
-        type: String,
-        default: ''
+      project: {
+        type: Number,
+        default: 0
       }
     },
     methods: {
@@ -70,6 +76,21 @@ import {updateTask} from '../../../taskDrawer/taskDrawerApi';
           }, 200); */
         }
       },
+      deleteStatus(status) {
+          this.$emit('delete-status', status);
+      },
+      createStatus() {
+          this.$emit('create-status');
+      },
+      addColumn(index) {
+        const newStatus = {name:""}
+        newStatus.edit=true;
+        this.statusList.splice( index, 0, newStatus)
+      },
+      cancelAddColumn(index) {
+        this.statusList.splice( index, 1)       
+      },
+
     }
   }
 </script>

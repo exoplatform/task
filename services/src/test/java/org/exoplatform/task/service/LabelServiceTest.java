@@ -99,7 +99,7 @@ public class LabelServiceTest {
         PortalContainer.getInstance();
         projectStorage = new ProjectStorageImpl(daoHandler);
         taskStorage = new TaskStorageImpl(daoHandler,userService);
-        statusStorage = new StatusStorageImpl(daoHandler, projectStorage);
+        statusStorage = new StatusStorageImpl(daoHandler, projectStorage,taskStorage);
         statusService = new StatusServiceImpl(daoHandler, statusStorage);
         labelStorage = new LabelStorageImpl(daoHandler);
         labelService = new LabelServiceImpl(labelStorage, taskStorage, daoHandler);

@@ -35,6 +35,7 @@ import org.exoplatform.task.exception.ParameterEntityException;
 import org.exoplatform.task.service.impl.ProjectServiceImpl;
 import org.exoplatform.task.storage.ProjectStorage;
 import org.exoplatform.task.storage.StatusStorage;
+import org.exoplatform.task.storage.TaskStorage;
 import org.exoplatform.task.storage.impl.ProjectStorageImpl;
 import org.exoplatform.task.storage.impl.StatusStorageImpl;
 import org.exoplatform.task.util.ProjectUtil;
@@ -63,6 +64,7 @@ public class ProjectServiceTest {
     ProjectService projectService;
     ProjectStorage projectStorage;
     StatusStorage statusStorage;
+    TaskStorage taskStorage;
     @Mock
     StatusService statusService;
     @Mock
@@ -91,7 +93,7 @@ public class ProjectServiceTest {
         PortalContainer.getInstance();
 
         projectStorage = new ProjectStorageImpl(daoHandler);
-        statusStorage = new StatusStorageImpl(daoHandler, projectStorage);
+        statusStorage = new StatusStorageImpl(daoHandler, projectStorage,taskStorage);
         projectService = new ProjectServiceImpl(statusService, taskService, daoHandler, projectStorage, statusStorage);
         //Mock DAO handler to return Mocked DAO
         when(daoHandler.getTaskHandler()).thenReturn(taskHandler);

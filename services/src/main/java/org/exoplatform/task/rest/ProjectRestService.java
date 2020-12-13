@@ -338,6 +338,7 @@ public class ProjectRestService implements ResourceContainer {
       projectJson.put("calendarIntegrated", project.isCalendarIntegrated());
       projectJson.put("description", project.getDescription());
       projectJson.put("status", statusService.getStatus(projectId));
+      projectJson.put("canManage", project.canEdit(ConversationState.getCurrent().getIdentity()));
       return projectJson;
   }
 

@@ -12,13 +12,16 @@ import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.task.dao.DAOHandler;
 import org.exoplatform.task.dao.StatusHandler;
+import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
+import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.dto.ProjectDto;
 import org.exoplatform.task.dto.StatusDto;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.exception.NotAllowedOperationOnEntityException;
 import org.exoplatform.task.storage.ProjectStorage;
 import org.exoplatform.task.storage.StatusStorage;
+import org.exoplatform.task.storage.TaskStorage;
 
 public class StatusStorageImpl implements StatusStorage {
 
@@ -31,10 +34,12 @@ public class StatusStorageImpl implements StatusStorage {
 
   @Inject
   private final ProjectStorage projectStorage;
+  private final TaskStorage taskStorage;
 
-  public StatusStorageImpl(DAOHandler daoHandler, ProjectStorage projectStorage) {
+  public StatusStorageImpl(DAOHandler daoHandler, ProjectStorage projectStorage, TaskStorage taskStorage) {
     this.daoHandler = daoHandler;
     this.projectStorage = projectStorage;
+    this.taskStorage = taskStorage;
   }
 
   @Override
@@ -76,25 +81,44 @@ public class StatusStorageImpl implements StatusStorage {
   }
 
   @Override
-  public StatusDto removeStatus(long statusId) throws EntityNotFoundException, NotAllowedOperationOnEntityException {
+  public StatusDto createStatus(ProjectDto project, String status, int rank) {
+    //
+    List<StatusDto> statuses = getStatuses(project.getId());
+    if (statuses != null) {
+      for (StatusDto st : statuses) {
+        if (st.getName().equalsIgnoreCase(status)) {
+          LOG.warn("Status {} has already exists", status);
+          return st;
+        }
+      }
+    }
     StatusHandler handler = daoHandler.getStatusHandler();
-    StatusDto st = statusToDTO(handler.find(statusId));
+    Status st = new Status(status, rank, projectStorage.projectToEntity(project));
+    handler.create(st);
+    return statusToDTO(st);
+  }
+
+  @Override
+  public void removeStatus(long statusId) throws Exception {
+    StatusHandler handler = daoHandler.getStatusHandler();
+    Status st = handler.find(statusId);
     if (st == null) {
       throw new EntityNotFoundException(statusId, Status.class);
     }
 
-    ProjectDto project = projectStorage.projectToDto(st.getProject());
-    StatusDto altStatus = findAltStatus(st, project);
+    Project project = st.getProject();
+    Status altStatus = findAltStatus(st, project);
     if (altStatus == null) {
       throw new NotAllowedOperationOnEntityException(statusId, Status.class, "Delete last status");
     }
-    //
-    daoHandler.getTaskHandler().updateStatus(statusToEntity(st), statusToEntity(altStatus));
-
+    List<Task> tasks = daoHandler.getTaskHandler().getByStatus(statusId);
+    for(Task task : tasks){
+      task.setStatus(altStatus);
+    }
+    daoHandler.getTaskHandler().updateAll(tasks);
     //
     st.setProject(null);
-    handler.delete(statusToEntity(st));
-    return st;
+    handler.delete(st);
   }
 
   @Override
@@ -112,6 +136,21 @@ public class StatusStorageImpl implements StatusStorage {
 
     status.setName(statusName);
     return statusToDTO(daoHandler.getStatusHandler().update(statusToEntity(status)));
+  }
+
+  @Override
+  public StatusDto updateStatus(StatusDto statusDto) throws EntityNotFoundException,
+                                                                  NotAllowedOperationOnEntityException {
+    StatusHandler handler = daoHandler.getStatusHandler();
+    StatusDto status = statusToDTO(handler.find(statusDto.getId()));
+    if (status == null) {
+      throw new EntityNotFoundException(statusDto.getId(), Status.class);
+    }
+    StatusDto curr = statusToDTO(handler.findByName(statusDto.getName(), status.getProject().getId()));
+    if (curr != null && !status.equals(curr)) {
+      throw new NotAllowedOperationOnEntityException(status.getId(), StatusDto.class, "duplicate status name");
+    }
+    return statusToDTO(daoHandler.getStatusHandler().update(statusToEntity(statusDto)));
   }
 
   @Override
@@ -155,11 +194,11 @@ public class StatusStorageImpl implements StatusStorage {
   }
 
 
-  private StatusDto findAltStatus(StatusDto st, ProjectDto project) {
-    List<StatusDto> allSt = new LinkedList<StatusDto>(getStatuses(project.getId()));
-    Collections.sort(allSt.stream().map(this::statusToEntity).collect(Collectors.toList()));
+  private Status findAltStatus(Status st, Project project) {
+    List<Status> allSt = new LinkedList<Status>(daoHandler.getStatusHandler().getStatuses(project.getId()));
+    Collections.sort(allSt);
 
-    StatusDto other = null;
+    Status other = null;
     for (int i = 0; i < allSt.size(); i++) {
       if (allSt.get(i).equals(st)) {
         if (i > 0) {
