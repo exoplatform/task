@@ -936,19 +936,11 @@ public final class ProjectUtil {
     }
 
     public boolean canView(Identity user) {
-      if (user != null && user.getUserId().equals(identity.getUserId())) {
-        return true;
-      } else {
         return project.canView(user);
-      }
     }
 
     public boolean canEdit(Identity user) {
-      if (user != null && user.getUserId().equals(identity.getUserId())) {
-        return editable;
-      } else {
         return project.canEdit(user);
-      }
     }
 
     public int hashCode() {

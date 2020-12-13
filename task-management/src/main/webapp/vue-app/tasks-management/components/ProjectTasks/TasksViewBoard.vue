@@ -43,6 +43,11 @@ import {updateTask} from '../../../taskDrawer/taskDrawerApi';
         default: 0
       }
     },
+    data() {
+    return {
+      index: -1,
+    };
+  },
     methods: {
       getTasksByStatus(items ,statusName) {
         const tasksByStatus = [];
@@ -78,14 +83,20 @@ import {updateTask} from '../../../taskDrawer/taskDrawerApi';
       },
       deleteStatus(status) {
           this.$emit('delete-status', status);
+          this.index=-1
       },
       createStatus() {
           this.$emit('create-status');
+          this.index=-1
       },
       addColumn(index) {
+        if(this.index!==-1){
+         this.statusList.splice( this.index, 1)  
+        }
         const newStatus = {name:""}
         newStatus.edit=true;
         this.statusList.splice( index, 0, newStatus)
+        this.index=index
       },
       cancelAddColumn(index) {
         this.statusList.splice( index, 1)       
