@@ -19,144 +19,26 @@
             <v-flex
               d-flex
               xs12>
-              <v-card
-                flat
-                color="transparent">
-                <a @click="navigateTo('tasks/my-task')"><v-card-text class="body-1 text-uppercase color-title px-0">
-                  {{ $t('label.tasks.header') }}
-                </v-card-text></a>
-              </v-card>
+              <v-flex class="d-flex mx-3 my-2">
+                <div class="d-flex align-center">
+                  <a class="body-1 text-uppercase color-title px-0" @click="navigateTo('taskstest?mytasks')">
+                    {{ $t('label.tasks.header') }}
+                  </a>
+                </div>
+                <v-spacer />
+                <v-btn
+                  :title="$t('label.addTask')"
+                  icon
+                  text
+                  @click="openTaskDrawer">
+                  <v-icon>mdi-plus</v-icon>
+                </v-btn>
+              </v-flex>
             </v-flex>
           </v-layout>
         </v-flex>
         <v-flex
-          xs12
-          px-3>
-          <v-layout
-            row
-            mx-0
-            align-center>
-            <v-flex
-              d-flex
-              xs12>
-              <v-layout mx-0>
-                <v-flex 
-                  v-if="tasks.length > 0" 
-                  xs12 
-                  style="cursor: pointer" 
-                  @click="navigateTo('tasks')">
-                  <v-card
-                    class="mx-auto"
-                    flat
-                    color="#F7FAFD">
-                    <v-layout>
-                      <v-flex>
-                        <v-layout
-                          row
-                          mx-0
-                          justify-center>
-                          <v-flex
-                            xs12
-                            d-flex>
-                            <v-layout mx-0 pl-2>
-                              <v-flex
-                                d-flex
-                                xs4>
-                                <v-layout
-                                  mx-0
-                                  justify-center
-                                  class="py-2">
-                                  <template>
-                                    <div class="text-center">
-                                      <v-avatar tile color="#F7FAFD">
-                                        <i class="uiIconEcmsViewTimeline iconlarge"></i>
-                                      </v-avatar>
-                                    </div>
-                                  </template>
-                                </v-layout>
-                              </v-flex>
-                              <v-flex
-                                d-flex
-                                xs8>
-                                <v-card
-                                  class="py-1"
-                                  flat
-                                  color="#F7FAFD">
-                                  <div class="title">{{ incomingTasksSize }} {{ $t('label.tasks.tasks') }}</div>
-                                  <div class="caption color-title">{{ $t('label.incoming') }}</div>
-                                </v-card>
-                              </v-flex>
-                            </v-layout>
-                          </v-flex>
-                        </v-layout>
-                      </v-flex>
-                    </v-layout>
-                  </v-card>
-                </v-flex>
-                <v-divider 
-                  vertical 
-                  inset 
-                  class="mt-2"/>
-                <v-flex 
-                  v-if="tasks.length > 0" 
-                  xs12 
-                  style="cursor: pointer" 
-                  @click="navigateTo('tasks/my-task/overdue')">
-                  <v-card
-                    class="mx-auto"
-                    flat
-                    color="#F7FAFD">
-                    <v-layout>
-                      <v-flex>
-                        <v-layout
-                          row
-                          mx-0
-                          justify-center>
-                          <v-flex
-                            xs12
-                            d-flex>
-                            <v-layout mx-0>
-                              <v-flex
-                                d-flex
-                                xs5>
-                                <v-layout
-                                  mx-0
-                                  justify-center
-                                  class="pa-2">
-                                  <template>
-                                    <div class="text-center">
-                                      <v-avatar tile color="#F7FAFD">
-                                        <v-icon
-                                          size="50"
-                                          color="#D07B7B">mdi-alarm</v-icon>
-                                      </v-avatar>
-                                    </div>
-                                  </template>
-                                </v-layout>
-                              </v-flex>
-                              <v-flex
-                                d-flex
-                                xs7>
-                                <v-card
-                                  class="py-1"
-                                  flat
-                                  color="#F7FAFD">
-                                  <div class="title">{{ overdueTasksSize }} {{ $t('label.tasks.tasks') }}</div>
-                                  <div class="caption color-title">{{ $t('label.overdue') }}</div>
-                                </v-card>
-                              </v-flex>
-                            </v-layout>
-                          </v-flex>
-                        </v-layout>
-                      </v-flex>
-                    </v-layout>
-                  </v-card>
-                </v-flex>
-              </v-layout>
-          </v-flex></v-layout>
-        </v-flex>
-        <v-flex
-          :class="tasks.length > 0 && 'pl-2 pt-4'"
+          :class="tasks.length > 0 && 'pl-2'"
           d-flex
           xs12>
           <v-layout
@@ -165,15 +47,72 @@
             <v-flex
               xs12
               class="pt-2">
-              <transition-group name="list">
-                <span
-                  v-for="task in tasks"
-                  :key="task.id"
-                  class="list-item">
-                  <task-details :task="task" @removeTask="removeTask"/>
-                </span>
-              </transition-group>
-              <div v-if="!loadingTasks && tasks.length === 0" class="noTasks">
+              <div v-if="tasks.length>0">
+                <div>
+                  <div class="nameGroup">
+                    <span class="nameGroup">{{ $t('label.overdue') }}</span>
+                    <div class="amount-item">{{ tasksOverdue.length }}</div>
+                    <hr
+                      role="separator"
+                      aria-orientation="horizontal"
+                      class="v-divider theme&#45;&#45;light separator">
+                  </div>
+                  <div
+                    v-for="task in tasksOverdue"
+                    :key="task.id"
+                    class="list-item">
+                    <task-details :task="task" @removeTask="removeTask"/>
+                  </div>
+                </div>
+                <div>
+                  <div class="nameGroup">
+                    <span class="nameGroup">{{ $t('label.today') }}</span>
+                    <div class="amount-item">{{ tasksToday.length }}</div>
+                    <hr
+                      role="separator"
+                      aria-orientation="horizontal"
+                      class="v-divider theme&#45;&#45;light separator">
+                  </div>
+
+                  <div
+                    v-for="task in tasksToday"
+                    :key="task.id"
+                    class="list-item">
+                    <task-details :task="task" @removeTask="removeTask"/>
+                  </div>
+                </div>
+
+                <div>
+                  <div class="nameGroup">
+                    <span class="nameGroup">{{ $t('label.tomorrow') }}</span>
+                    <div class="amount-item">{{ tasksTomorrow.length }}</div>
+                    <hr
+                      role="separator"
+                      aria-orientation="horizontal"
+                      class="v-divider theme&#45;&#45;light separator">
+                  </div>
+
+                  <div
+                    v-for="task in tasksTomorrow"
+                    :key="task.id"
+                    class="list-item">
+                    <task-details :task="task" @removeTask="removeTask"/>
+                  </div>
+                </div>
+
+                <div>
+                  <div class="nameGroup">
+                    <span class="nameGroup">{{ $t('label.upcoming') }}</span>
+                    <div class="amount-item">{{ tasksUpcoming.length }}</div>
+                    <hr
+                      role="separator"
+                      aria-orientation="horizontal"
+                      class="v-divider theme&#45;&#45;light separator">
+                  </div>
+                </div>
+              </div>
+
+              <div v-if="!loadingTasks && tasks.length===0" class="noTasks">
                 <div class="noTasksContent">
                   <i class="uiNoTaskIcon"></i>
                   <div class="noTasksTitle">{{ $t('label.noTask') }}</div>
@@ -181,12 +120,15 @@
               </div>
         </v-flex></v-layout></v-flex>
       </v-layout>
+      <task-drawer
+        ref="taskDrawer"
+        :task="task"/>
     </v-container>
   </v-app>
 </template>
 
 <script>
-  import {getMyAllTasks, getMyIncomingTasks, getMyOverdueTasks} from '../tasksApi'
+  import {filterTasksList} from '../../../js/tasksService'
 
   export default {
 
@@ -194,50 +136,97 @@
       return {
         placeholder: '',
         tasks: [],
+        tasksOverdue: [],
+        tasksToday: [],
+        tasksTomorrow: [],
+        tasksUpcoming: [],
         loadingTasks: true,
-        incomingTasksSize:'',
-        overdueTasksSize:''
+        TasksWithoutUpcomingSize:'',
+        TasksSize:'',
+        task: {
+          id:null,
+          status:{project:this.project},
+          priority:'NONE',
+          description:'',
+          title:''
+        },
       }
     },
     created(){
       this.itemsLimit = this.$parent.$data.itemsLimit;
-      this.getMyAllTasks();
-      this.getMyIncomingTasksSize();
-      this.getMyOverdueTasksSize();
+      this.getMyOverDueTasks();
+      this.getMyTodayTasks();
+      this.getMyTomorrowTasks();
+      this.getMyUpcomingTasks();
     },
     methods: {
-      getMyAllTasks() {
-        getMyAllTasks(this.itemsLimit).then(
-          (tasks) => {
-            let tasksWithDuedate = [];
-            let tasksWithoutDuedate = [];
-            for (let i = 0; i < tasks.length; i++) {
-              if (tasks[i].dueDate) {
-                tasksWithDuedate.push(tasks[i])
-              } else {
-                tasksWithoutDuedate.push(tasks[i])
-              }
-            }
-            tasksWithDuedate = tasksWithDuedate.sort((a, b) => ((a.dueDate.time - b.dueDate.time)));
-            tasksWithoutDuedate = tasksWithoutDuedate.sort((a, b) => ((a.createdTime - b.createdTime)));
-            this.tasks = tasksWithDuedate.concat(tasksWithoutDuedate);
-            this.loadingTasks = false
-          }
+      getMyOverDueTasks() {
+        const task = {
+          dueCategory: 'overDue',
+          offset: 0,
+          limit: 2,
+          showCompleteTasks:false,
+        };
+        filterTasksList(task,'','priority','','-2').then(
+                (data) => {
+                  this.tasksOverdue = data.tasks;
+                  this.tasks = this.tasks.concat(this.tasksOverdue);
+                  this.loadingTasks = false
+                }
         )
       },
-      getMyIncomingTasksSize() {
-        getMyIncomingTasks(this.itemsLimit).then(
-          (data) => {
-            this.incomingTasksSize = data.size;
-          }
+      getMyTodayTasks() {
+        const task = {
+          dueCategory: 'today',
+          offset: 0,
+          limit: 6,
+          showCompleteTasks:false,
+        };
+        filterTasksList(task,'','priority','','-2').then(
+                (data) => {
+                  this.tasksToday = data.tasks;
+                  this.tasks = this.tasks.concat(this.tasksToday);
+                  this.loadingTasks = false
+                }
+        )
+      },getMyTomorrowTasks() {
+        const task = {
+          dueCategory: 'tomorrow',
+          offset: 0,
+          limit: 2,
+          showCompleteTasks:false,
+        };
+        filterTasksList(task,'','priority','','-2').then(
+                (data) => {
+                  this.tasksTomorrow = data.tasks;
+                  this.tasks = this.tasks.concat(this.tasksTomorrow);
+                  this.loadingTasks = false
+                }
+        )
+      },getMyUpcomingTasks() {
+        const task = {
+          dueCategory: 'upcoming',
+          offset: 0,
+          showCompleteTasks:false,
+        };
+        filterTasksList(task,'','priority','','-2').then(
+                (data) => {
+                  this.tasksUpcoming = data.tasks;
+                  this.tasks = this.tasks.concat(this.tasksUpcoming);
+                  this.loadingTasks = false
+                }
         )
       },
-      getMyOverdueTasksSize() {
-        getMyOverdueTasks(this.itemsLimit).then(
-          (data) => {
-            this.overdueTasksSize = data.size;
-          }
-        )
+      openTaskDrawer() {
+        const defaultTask={
+          id:null,
+          status:{project:this.project},
+          priority:'NONE',
+          description:'',
+          title:''
+        }
+        this.$root.$emit('open-task-drawer', defaultTask);
+        this.$refs.taskDrawer.open(defaultTask);
       },
       removeTask(value) {
         this.tasks.splice(this.tasks.findIndex(function(i){
