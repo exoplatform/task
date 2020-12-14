@@ -3,8 +3,7 @@
     <v-card
       :class="[getTaskPriorityColor(task.task.priority)]"
       class="taskCard taskViewCard pa-3"
-      flat
-      @click="openTaskDrawer()">
+      flat>
       <div class="taskTitleId  d-flex justify-space-between">
         <div class="taskTitle d-flex align-start">
           <div class="taskCheckBox" @click="updateCompleted" >
@@ -18,7 +17,8 @@
           <a
             ref="tooltip"
             :class="getTitleTaskClass()"
-            class="taskCardViewTitle">
+            class="taskCardViewTitle"
+            @click="openTaskDrawer()">
             <ellipsis
               v-if="task.task.title "
               :title="task.task.title "
@@ -27,13 +27,14 @@
               end-char=".."/>
           </a>
         </div>
-        <div class="taskId">
+        <div class="taskId" @click="openTaskDrawer()">
           <span class="caption text-sub-title">ID : {{ task.task.id }}</span>
         </div>
       </div>
       <div 
         v-if="assigneeAndCoworkerArray && assigneeAndCoworkerArray.length"
-        class="taskWorker d-flex justify-space-between align-center my-3">
+        class="taskWorker d-flex justify-space-between align-center my-3"
+        @click="openTaskDrawer()">
         <div
           :class="assigneeAndCoworkerArray && !assigneeAndCoworkerArray.length && task && task.labels && !task.labels.length && 'hideTaskAssignee'"
           class="taskAssignee d-flex flex-nowrap">
@@ -65,7 +66,9 @@
       </div>
       <v-divider v-if="taskDueDate || (task.labels && task.labels.length)"/>
       <div class="taskActionsAndDate d-flex justify-space-between pt-3">
-        <div class="taskActionsAndLabels d-flex align-center">
+        <div 
+          class="taskActionsAndLabels d-flex align-center"
+          @click="openTaskDrawer()">
           <div v-if="task.commentCount" class="taskComment d-flex pr-2">
             <i class="uiIcon uiCommentIcon"></i>
             <span class="taskCommentNumber caption">{{ task.commentCount }}</span>
