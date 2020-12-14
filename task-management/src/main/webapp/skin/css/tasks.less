@@ -1807,11 +1807,30 @@
   }
 
   .projectCard {
-    border-radius: 5px 0px 0px 5px;
+    border-radius: 15px 15px 15px 15px;
+    margin-right: 10px;
+    border: thin solid rgba(0, 0, 0, 0.12);
+  }
+  .amount-item{
+    border-radius: 10px;
+    background: #c7e5f9c9;
+    border-color:@primaryColor!important;
+    color: @primaryColor;
+    border: thin solid rgba(0, 0, 0, 0.12);
+    width: 30px;
+    height: 20px;
+    margin-left: 5px;
+    text-align: center;
+    margin-top: 5px;
+    margin-block-end: 5px;
+  }
+  .separator{
+    margin-block-start: 15px;
+    margin-left: 5px;
+    margin-right: 50px;
   }
 
   .flagCard {
-    border-radius: 0px 5px 5px 0px;
   }
   .color-title {
     color: @greyColorLighten1;
@@ -1822,6 +1841,16 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    margin-left: 25px;
+    span {
+      margin-left: 10px;
+    }
+  }
+  .nameGroup{
+    margin-left: 10px;
+    display: flex;
+    margin-top: 5px;
+    margin-block-end: 5px;
   }
   .iconlarge {
     font-size: 40px;
@@ -1872,7 +1901,6 @@
     display: flex;
     width: 100%;
     margin-right: 10px;
-    min-height: 48px!important;
   }
   .list-leave-active {
     transition: all 1s;
@@ -1882,7 +1910,6 @@
     transform: translateY(30px);
   }
 }
-
 /*----------- Task Drawer CSS ---------------*/
 .taskDrawer {
   .drawerHeader {
