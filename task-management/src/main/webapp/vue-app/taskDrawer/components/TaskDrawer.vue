@@ -63,7 +63,8 @@
             icon
             dark
             @click="task.completed =!task.completed">
-            <v-icon class="markAsCompletedBtn">mdi-checkbox-marked-circle</v-icon>
+            <v-icon v-if="task.completed" class="markAsCompletedBtn">mdi-checkbox-marked-circle</v-icon>
+            <v-icon v-else class="markAsCompletedBtn">mdi-checkbox-blank-circle-outline</v-icon>
           </v-btn>
           <v-textarea
             ref="autoFocusInput4"
@@ -153,6 +154,12 @@
                       :placeholder="commentPlaceholder"
                       :reset="reset"
                       class="comment"/>
+                    <!--<exo-task-editor
+                      ref="commentEditor"
+                      v-model="editorData"
+                      :id="`commentTask${task.id}`"
+                      :placeholder="commentPlaceholder"
+                      class="comment"/>-->
                     <v-btn
                       :disabled="disabledComment"
                       depressed
