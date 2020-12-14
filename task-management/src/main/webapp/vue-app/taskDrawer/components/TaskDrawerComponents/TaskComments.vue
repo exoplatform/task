@@ -24,8 +24,10 @@
             <v-btn
               v-show="showDeleteButtom"
               :title="$t('label.remove')"
+              :size="32"
               class="deleteComment"
               icon
+              small
               v-on="on">
               <i class="uiIconTrashMini uiIconLightGray "></i>
             </v-btn>
