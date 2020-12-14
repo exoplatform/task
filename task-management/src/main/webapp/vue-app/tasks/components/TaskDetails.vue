@@ -25,9 +25,6 @@
                 v-text="task.task.title"/>
               <v-list-item-subtitle><div class="color-title">{{ dateFormatter(task.dueDate) }}</div></v-list-item-subtitle>
             </a>
-            <task-drawer
-              ref="taskDrawer"
-              :task="task.task"/>
           </v-list-item-content>
         </v-flex>
         <v-flex
@@ -108,7 +105,6 @@
       },
       openTaskDrawer() {
         this.$root.$emit('open-task-drawer', this.task.task);
-        this.$refs.taskDrawer.open(this.task.task);
       },
     }
   }

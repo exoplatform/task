@@ -153,6 +153,9 @@
       }
     },
     created(){
+      this.$root.$on('open-task-drawer', task => {
+        this.$refs.taskDrawer.open(task);
+      });
       this.itemsLimit = this.$parent.$data.itemsLimit;
       this.getMyOverDueTasks();
       this.getMyTodayTasks();
@@ -226,7 +229,6 @@
           title:''
         }
         this.$root.$emit('open-task-drawer', defaultTask);
-        this.$refs.taskDrawer.open(defaultTask);
       },
       removeTask(value) {
         this.tasks.splice(this.tasks.findIndex(function(i){
