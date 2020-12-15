@@ -49,10 +49,22 @@
       document.dispatchEvent(new CustomEvent('showProjectTasks', {detail: project}))
       this.tab='tab-2';
     });
+    this.$root.$on('set-url',context =>{
+      
+      if(context.type==="task"){
+          this.setTaskUrl(context.id)
+      }
+      if(context.type==="project"){
+          this.setProjectUrl(context.id)
+      }
+      if(context.type==="myProjects"){
+        this.getMyProjects() 
+      }
+    });
      this.$root.$on('open-task-drawer', task => {
        this.task=task;
        if(task.id){
-       window.history.pushState('task', 'Task details', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest?taskId=${task.id}`);
+         this.setTaskUrl(task.id)
        }
        this.$refs.taskDrawer.open(task);
       });
@@ -62,63 +74,65 @@
        }
 
        else if(task && task.status && task.status.project) {
-         // document.dispatchEvent(new CustomEvent('showProjectTasks', {detail: this.task.status.project}));
-         window.history.pushState('task', 'Task details', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest?projectId=${task.status.project.id}`);
+         this.setProjectUrl(task.status.project.id)
           }else{
            this.tab='tab-1' 
           }
       });
     const urlPath = document.location.pathname
     if(urlPath.includes('g/:spaces')){
-      this.spaceName = document.location.pathname.split('g/:spaces:')[1].split('/')[0]
+      this.spaceName = urlPath.split('g/:spaces:')[1].split('/')[0]
       this.tab='tab-2'
     }else{
-           let search = document.location.search.substring(1);
-     if(search.includes('mytasks')){
-        search = this.tab='tab-1'
-        search.replace('mytasks','')
+        if(urlPath.includes('myTasks')){
+        this.tab='tab-1'
      }
-     if(search.includes('myprojects')){
+     if(urlPath.includes('myProjects')){
         this.tab='tab-2'
-        search = search.replace('myprojects','')
      }
-    if(search) {
-      const parameters = JSON.parse(
-        `{"${decodeURI(search)
-          .replace(/"/g, '\\"')
-          .replace(/&/g, '","')
-          .replace(/=/g, '":"')}"}`
-      );
-      const taskId = parameters.taskId && Number(parameters.taskId) || 0;
-      const projectId = parameters.projectId && Number(parameters.projectId) || 0;
-      if (projectId) {
-          this.$projectService.getProject(projectId).then(data => {
-          document.dispatchEvent(new CustomEvent('showProjectTasks', {detail: data}));
-        })
-      } 
+    }
+      if(urlPath.includes('taskDetail')){
+      let taskId = urlPath.split('taskDetail/')[1].split(/[^0-9]/)[0]
+      taskId = taskId && Number(taskId) || 0;
       if (taskId) {
           this.$tasksService.getTaskById(taskId).then(data => {
           this.task = data  
           if(this.task.status && this.task.status.project){
               document.dispatchEvent(new CustomEvent('showProjectTasks', {detail: this.task.status.project}));
-          }else{
-           this.tab='tab-1' 
           }
           this.$refs.taskDrawer.open(this.task);
-         // window.history.pushState('task', 'Task details', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest?taskId=${taskId}`);
         })
       } 
-
-    }
-
-    }
+      }
+      if(urlPath.includes('projectDetail')){
+      let projectId = urlPath.split('projectDetail/')[1].split(/[^0-9]/)[0]
+      projectId = projectId && Number(projectId) || 0;
+      if (projectId) {
+          this.$projectService.getProject(projectId).then(data => {
+          document.dispatchEvent(new CustomEvent('showProjectTasks', {detail: data}));
+        })
+      }
+      }
   },
   methods: {
       getMyTasks(){
-      window.history.pushState('mytasks', 'My Tasks', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest?mytasks`);
+      window.history.pushState('mytasks', 'My Tasks', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/tasks/myTasks`);
       },
       getMyProjects(){
-        window.history.pushState('myprojects', 'My Projects', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest?myprojects`);
+        const urlPath = document.location.pathname
+          if(urlPath.includes('g/:spaces')){
+           window.history.pushState('task', 'Task details', `${urlPath.split('tasks')[0]}tasks`); 
+          }else{
+            window.history.pushState('myprojects', 'My Projects', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/tasks/myProjects`);
+          }       
+      },
+      setTaskUrl(id){
+        const urlPath = document.location.pathname
+        window.history.pushState('task', 'Task details', `${urlPath.split('tasks')[0]}tasks/taskDetail/${id}`);
+      },
+      setProjectUrl(id){
+        const urlPath = document.location.pathname
+        window.history.pushState('task', 'Task details', `${urlPath.split('tasks')[0]}tasks/projectDetail/${id}`); 
       }
 }
    }

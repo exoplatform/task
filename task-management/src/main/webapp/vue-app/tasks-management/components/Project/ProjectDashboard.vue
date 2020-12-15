@@ -44,7 +44,7 @@
         if (event && event.detail) {
           this.displayDetails = true;
           this.project =  event.detail;
-          window.history.pushState('project', this.project.name, `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest?projectId=${this.project.id}`);
+          this.$root.$emit('set-url', {type:"project",id:this.project.id})
         }
       });
       document.addEventListener('hideProjectTasks', (event) => {
