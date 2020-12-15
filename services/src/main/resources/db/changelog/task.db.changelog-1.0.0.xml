@@ -469,4 +469,10 @@
       <column name="WATCHER" type="NVARCHAR(50)"/>
     </createIndex>
   </changeSet>
+
+  <changeSet author="task" id="1.0.0-32">
+    <dropColumn tableName="TASK_PROJECTS" columnName="CALENDAR_INTEGRATED"></dropColumn>
+    <dropColumn tableName="TASK_TASKS" columnName="CALENDAR_INTEGRATED"></dropColumn>
+  </changeSet>
+
 </databaseChangeLog>

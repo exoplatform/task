@@ -389,7 +389,6 @@ public class TaskManagement {
     return index.with()
         .currentProjectId(currProject)
         .taskId(taskId)
-        .useCalendar(TaskUtil.isCalendarEnabled())
         .taskModel(taskModel)
         .orders(defOrders)
         .groups(defGroupBys)

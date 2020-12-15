@@ -8,6 +8,5 @@
   <import>war:/conf/task-addon/app-center-configuration.xml</import>
   <import>war:/conf/task-addon/search-configuration.xml</import>
 
-  <import profiles="calendar">war:/conf/task-addon/calendar-integration-configuration.xml</import>
   <import profiles="gamification">war:/conf/task-addon/gamification-integration-configuration.xml</import>
 </configuration>

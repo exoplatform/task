@@ -1,7 +1,6 @@
 #{param name=parent/}
 #{param name=user/}
 #{param name=breadcumbs/}
-#{param name=useCalendar/}
 
 <%
 	import org.exoplatform.commons.utils.HTMLEntityEncoder;
@@ -37,14 +36,6 @@
        <div class="">
            <textarea name="description" placeholder="&{label.description}" style="width: 100%"></textarea>
        </div>
-       <% if(useCalendar) { %>
-       <div class="uiGroupBoundCheckBox">
-       <label class="uiCheckbox"><input type="checkbox" title="&{message.enableCalendarIntegration}" class="checkbox calInteg"><span>&{message.enableCalendarIntegration}</span></label></div>
-       <div class="viewInCal" style="display: none">
-           <i class="uiIconPLFCalendar"></i>
-           <a data-placement="bottom" data-toggle="tooltip" href="#" data-original-title="View in Calendar">Sub Project 1</a>
-       </div>
-	     <% } %>
 
 		<div class="uiAction uiActionBorder">
 		  <button type="submit" class="btn btn-primary saveLabel" disabled>&{label.save}</button>

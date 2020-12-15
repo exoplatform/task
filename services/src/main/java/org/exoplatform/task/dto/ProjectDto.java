@@ -28,8 +28,6 @@ public class ProjectDto implements Serializable {
 
     private String    color;
 
-    private boolean calendarIntegrated = false;
-
     private Set<Status> status ;
 
     private Set<String> manager;
@@ -63,7 +61,6 @@ public class ProjectDto implements Serializable {
         if (this.getParent() != null) {
             project.setParent(getParent().clone(false));
         }
-        project.setCalendarIntegrated(isCalendarIntegrated());
         project.status = new HashSet<Status>();
         project.children = new LinkedList<Project>();
 

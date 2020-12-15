@@ -156,14 +156,6 @@ public class TaskQuery extends Query implements Cloneable {
     add(lte(TASK_START_DATE, endDate));
   }
 
-  public void setCalendarIntegrated(Boolean calendarIntegrated) {
-    if (calendarIntegrated) {
-      add(isTrue(TASK_CALENDAR_INTEGRATED));
-    } else {
-      add(isFalse(TASK_CALENDAR_INTEGRATED));
-    }
-  }
-
   public void setMemberships(List<String> permissions) {
     add(Conditions.or(in(TASK_PARTICIPATOR, permissions), in(TASK_MANAGER, permissions)));
   }

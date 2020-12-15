@@ -26,7 +26,6 @@ import static org.mockito.Mockito.mock;
 import java.util.*;
 
 import org.exoplatform.services.idgenerator.IDGeneratorService;
-import org.exoplatform.services.jcr.util.IdGenerator;
 import org.exoplatform.task.legacy.service.impl.TaskServiceImpl;
 import org.junit.After;
 import org.junit.Before;
@@ -86,8 +85,6 @@ public class TaskUtilsTest {
   @Mock
   private UserService userService;
   @Mock
-  IdGenerator idGenerator;
-  @Mock
   private IDGeneratorService idGeneratorService;
 
   //ArgumentCaptors are how you can retrieve objects that were passed into a method call
@@ -123,7 +120,6 @@ public class TaskUtilsTest {
     when(statusHandler.find(TestUtils.EXISTING_STATUS_ID)).thenReturn(TestUtils.getDefaultStatus());
     when(commentHandler.find(TestUtils.EXISTING_COMMENT_ID)).thenReturn(TestUtils.getDefaultComment());
     when(commentHandler.findMentionedUsersOfTask(anyLong())).thenReturn(Collections.emptySet());
-    IdGenerator idGenerator = new IdGenerator(idGeneratorService);
     when(idGeneratorService.generateStringID(any(String.class))).thenReturn(Long.toString(System.currentTimeMillis()));
             when(userService.loadUser(any())).thenAnswer(new Answer<User>() {
               @Override

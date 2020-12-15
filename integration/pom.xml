@@ -30,7 +30,7 @@
   <packaging>jar</packaging>
   <name>eXo Add-on:: Task Management - Integration</name>
   <properties>
-    <exo.test.coverage.ratio>0.14</exo.test.coverage.ratio>
+    <exo.test.coverage.ratio>0.13</exo.test.coverage.ratio>
   </properties>
   <dependencies>
     <dependency>
@@ -82,11 +82,6 @@
     <dependency>
       <groupId>org.exoplatform.social</groupId>
       <artifactId>social-component-notification</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.exoplatform.calendar</groupId>
-      <artifactId>calendar-service</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>

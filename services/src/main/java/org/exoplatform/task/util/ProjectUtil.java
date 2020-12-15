@@ -572,8 +572,6 @@ public final class ProjectUtil {
         project.setDescription(val);
       } else if ("color".equalsIgnoreCase(fieldName)) {
         project.setColor(val);
-      } else if ("calendarIntegrated".equalsIgnoreCase(fieldName)) {
-        project.setCalendarIntegrated(Boolean.parseBoolean(val));
       } else if ("parent".equalsIgnoreCase(fieldName)) {
         try {
           long pId = Long.parseLong(val);
@@ -656,8 +654,6 @@ public final class ProjectUtil {
         project.setDescription(val);
       } else if ("color".equalsIgnoreCase(fieldName)) {
         project.setColor(val);
-      } else if ("calendarIntegrated".equalsIgnoreCase(fieldName)) {
-        project.setCalendarIntegrated(Boolean.parseBoolean(val));
       } else if ("parent".equalsIgnoreCase(fieldName)) {
         try {
           long pId = Long.parseLong(val);
@@ -780,14 +776,6 @@ public final class ProjectUtil {
 
     public void setColor(String color) {
       project.setColor(color);
-    }
-
-    public boolean isCalendarIntegrated() {
-      return project.isCalendarIntegrated();
-    }
-
-    public void setCalendarIntegrated(boolean calendarIntegrated) {
-      project.setCalendarIntegrated(calendarIntegrated);
     }
 
     public Project getParent() {
@@ -914,14 +902,6 @@ public final class ProjectUtil {
 
     public void setColor(String color) {
       project.setColor(color);
-    }
-
-    public boolean isCalendarIntegrated() {
-      return project.isCalendarIntegrated();
-    }
-
-    public void setCalendarIntegrated(boolean calendarIntegrated) {
-      project.setCalendarIntegrated(calendarIntegrated);
     }
 
     public Project getParent() {

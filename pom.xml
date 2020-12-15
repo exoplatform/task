@@ -47,7 +47,6 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <org.exoplatform.social.version>6.1.x-SNAPSHOT</org.exoplatform.social.version>
-    <addon.exo.calendar.version>6.1.x-SNAPSHOT</addon.exo.calendar.version>
     <addon.exo.gamification.version>2.1.x-SNAPSHOT</addon.exo.gamification.version>
     <org.juzu.version>1.2.x-SNAPSHOT</org.juzu.version>
     <org.antlr.version>3.4</org.antlr.version>
@@ -67,13 +66,6 @@
         <groupId>org.exoplatform.social</groupId>
         <artifactId>social</artifactId>
         <version>${org.exoplatform.social.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.exoplatform.calendar</groupId>
-        <artifactId>calendar</artifactId>
-        <version>${addon.exo.calendar.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>

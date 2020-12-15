@@ -27,7 +27,6 @@
 #{param name=showCompleted/}
 #{param name=paging/}
 #{param name=errorMessage/}
-#{param name=useCalendar/}
 
 <!-- Consider this -->
 #{param name=taskService/}

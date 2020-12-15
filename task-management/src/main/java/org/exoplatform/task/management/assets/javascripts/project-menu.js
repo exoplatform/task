@@ -185,7 +185,6 @@ define('project-menu', ['SHARED/jquery', 'SHARED/taskLocale', 'ta_edit_inline', 
       }
       
       params.description = $modalPlace.find('[data-name="description"]').data('editable').value;
-      params.calendarIntegrated = $modalPlace.find('[name="calendarIntegrated"]').is(':checked');
       
       var d = new $.Deferred;
       var data = params;
