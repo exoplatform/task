@@ -44,6 +44,8 @@ public class ProjectDto implements Serializable {
 
     private Set<UserSetting> hiddenOn;
 
+    private String spaceName;
+
     public ProjectDto(String name, String description, HashSet<Status> statuses, Set<String> managers, Set<String> participators) {
         this.name=name;
         this.description=description;

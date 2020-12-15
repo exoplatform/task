@@ -202,7 +202,7 @@
 
     methods : {
       hideProjectDetails() {
-        window.history.pushState('myprojects', 'My Projects', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest?myprojects`);
+        this.$root.$emit('set-url', {type:"myProjects",id:""})
         document.dispatchEvent(new CustomEvent('hideProjectTasks'));
       },
       getChangeTabValue(value) {

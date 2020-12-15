@@ -21,7 +21,7 @@
               xs12>
               <v-flex class="d-flex mx-3 my-2">
                 <div class="d-flex align-center">
-                  <a class="body-1 text-uppercase color-title px-0" @click="navigateTo('taskstest?mytasks')">
+                  <a class="body-1 text-uppercase color-title px-0" @click="navigateTo('tasks/myTasks')">
                     {{ $t('label.tasks.header') }}
                   </a>
                 </div>
