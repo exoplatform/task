@@ -77,6 +77,7 @@
             rows="1"
             row-height="13"
             required
+            autofocus
             @change="updateTaskTitle()"/>
         </div>
         <div class="taskAssignement ml-8 pb-3">
