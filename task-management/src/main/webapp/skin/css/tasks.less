@@ -2176,7 +2176,15 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-
+  .btn-show{
+    color: @primaryColor!important;
+    margin-block-end: 5px;
+    border:none!important;
+  }
+  .btn-show:hover {
+    color: @primaryColor!important;
+    background-color: #f2f2f2!important;
+  }
   .projectCard {
     border-radius: 15px 15px 15px 15px;
     margin-right: 10px;
@@ -2194,11 +2202,12 @@
     text-align: center;
     margin-top: 5px;
     margin-block-end: 5px;
+    cursor: pointer;
   }
   .separator{
     margin-block-start: 15px;
     margin-left: 5px;
-    margin-right: 50px;
+    margin-right: 25px;
   }
 
   .flagCard {
@@ -2212,13 +2221,12 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    margin-left: 25px;
+    margin-right: 10px;
     span {
       margin-left: 10px;
     }
   }
   .nameGroup{
-    margin-left: 10px;
     display: flex;
     margin-top: 5px;
     margin-block-end: 5px;
@@ -2255,6 +2263,16 @@
         font-size: 15px;
         color: @greyColorLighten1;
       }
+    }
+  }
+  @media (max-width: 1200px) {
+    .theme--light.v-navigation-drawer {
+      width: 60% !important;
+    }
+  }
+  @media (max-width: 599px) {
+    .theme--light.v-navigation-drawer {
+      width: 100% !important;
     }
   }
 
