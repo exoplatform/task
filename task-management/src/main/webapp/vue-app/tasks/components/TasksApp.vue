@@ -6,12 +6,11 @@
     <v-container pa-0>
       <v-layout
         row
-        mx-0
+        mx-3
         class="white">
         <v-flex
           d-flex
-          xs12
-          px-3>
+          xs12>
           <v-layout
             row
             mx-0
@@ -19,9 +18,12 @@
             <v-flex
               d-flex
               xs12>
-              <v-flex class="d-flex mx-3 my-2">
+              <v-flex class="d-flex my-2">
                 <div class="d-flex align-center">
-                  <a class="body-1 text-uppercase color-title px-0" @click="navigateTo('tasks/myTasks')">
+                  <a
+                    :title="$t('label.addTask')"
+                    class="body-1 text-uppercase color-title px-0"
+                    @click="navigateTo('taskstest?mytasks')">
                     {{ $t('label.tasks.header') }}
                   </a>
                 </div>
@@ -38,27 +40,26 @@
           </v-layout>
         </v-flex>
         <v-flex
-          :class="tasks.length > 0 && 'pl-2'"
+          :class="tasks.length > 0"
           d-flex
           xs12>
           <v-layout
             row
             mx-0>
             <v-flex
-              xs12
-              class="pt-2">
+              xs12>
               <div v-if="tasks.length>0">
                 <div>
                   <div class="nameGroup">
                     <span class="nameGroup">{{ $t('label.overdue') }}</span>
-                    <div class="amount-item">{{ tasksOverdue.length }}</div>
+                    <div class="amount-item pointer" @click="navigateTo('taskstest?mytasks')">{{ tasksOverdueSize }}</div>
                     <hr
                       role="separator"
                       aria-orientation="horizontal"
                       class="v-divider theme&#45;&#45;light separator">
                   </div>
                   <div
-                    v-for="task in tasksOverdue"
+                    v-for="task in tasksOverdueList"
                     :key="task.id"
                     class="list-item">
                     <task-details :task="task" @removeTask="removeTask"/>
@@ -67,7 +68,7 @@
                 <div>
                   <div class="nameGroup">
                     <span class="nameGroup">{{ $t('label.today') }}</span>
-                    <div class="amount-item">{{ tasksToday.length }}</div>
+                    <div class="amount-item pointer" @click="navigateTo('taskstest?mytasks')">{{ tasksTodaySize }}</div>
                     <hr
                       role="separator"
                       aria-orientation="horizontal"
@@ -75,7 +76,7 @@
                   </div>
 
                   <div
-                    v-for="task in tasksToday"
+                    v-for="task in tasksTodayList"
                     :key="task.id"
                     class="list-item">
                     <task-details :task="task" @removeTask="removeTask"/>
@@ -85,7 +86,7 @@
                 <div>
                   <div class="nameGroup">
                     <span class="nameGroup">{{ $t('label.tomorrow') }}</span>
-                    <div class="amount-item">{{ tasksTomorrow.length }}</div>
+                    <div class="amount-item pointer" @click="navigateTo('taskstest?mytasks')">{{ tasksTomorrowSize }}</div>
                     <hr
                       role="separator"
                       aria-orientation="horizontal"
@@ -93,7 +94,7 @@
                   </div>
 
                   <div
-                    v-for="task in tasksTomorrow"
+                    v-for="task in tasksTomorrowList"
                     :key="task.id"
                     class="list-item">
                     <task-details :task="task" @removeTask="removeTask"/>
@@ -103,12 +104,26 @@
                 <div>
                   <div class="nameGroup">
                     <span class="nameGroup">{{ $t('label.upcoming') }}</span>
-                    <div class="amount-item">{{ tasksUpcoming.length }}</div>
+                    <div class="amount-item pointer" @click="navigateTo('taskstest?mytasks')">{{ tasksUpcomingSize }}</div>
                     <hr
                       role="separator"
                       aria-orientation="horizontal"
                       class="v-divider theme&#45;&#45;light separator">
                   </div>
+
+                  <div
+                    v-for="task in tasksUpcomingList"
+                    :key="task.id"
+                    class="list-item">
+                    <task-details :task="task" @removeTask="removeTask"/>
+                  </div>
+                </div>
+
+                <div class="text-center">
+                  <button
+                    type="button"
+                    class="btn color-title btn-show"
+                    @click="navigateTo('taskstest?mytasks')">{{ $t('label.tasks.btn.show') }}</button>
                 </div>
               </div>
 
@@ -140,6 +155,10 @@
         tasksToday: [],
         tasksTomorrow: [],
         tasksUpcoming: [],
+        tasksOverdueSize:'',
+        tasksTodaySize:'',
+        tasksTomorrowSize:'',
+        tasksUpcomingSize:'',
         loadingTasks: true,
         TasksWithoutUpcomingSize:'',
         TasksSize:'',
@@ -150,8 +169,44 @@
           description:'',
           title:''
         },
+        priorityStatus :['High', 'In Normal', 'Low', 'None', null],
       }
+    },computed:{
+    tasksOverdueList(){
+      if(this.tasksOverdue){
+        if(this.tasksOverdue.length>10){
+          return  this.tasksOverdue.slice(0, 10);
+        }else {
+          return this.tasksOverdue;
+        }
+      }
+      else {return this.tasksOverdue;}
     },
+    tasksTodayList(){
+      if(this.tasksToday){
+        if(this.tasksToday.length>1){
+          if(this.tasksOverdueList.length<10){
+            return  this.tasksToday.slice(0, 10-this.tasksOverdueList.length);
+          }
+        }
+      }else {return this.tasksToday;}
+
+    },
+    tasksTomorrowList(){
+      if(this.tasksTomorrow){
+        if(this.tasksTomorrow.length>1){
+          return  this.tasksTomorrow.slice(0, 10-this.tasksOverdueList.length-this.tasksTodayList.length);
+        }
+      }else {return this.tasksTomorrow;}
+    },
+    tasksUpcomingList(){
+      if(this.tasksUpcoming){
+        if(this.tasksUpcoming.length>1){
+          return  this.tasksUpcoming.slice(0, 10-this.tasksOverdueList.length-this.tasksTodayList.length-this.tasksTomorrowList.length);
+        }
+      }else {return this.tasksUpcoming;}
+    },
+  },
     created(){
       this.$root.$on('open-task-drawer', task => {
         this.$refs.taskDrawer.open(task);
@@ -167,12 +222,16 @@
         const task = {
           dueCategory: 'overDue',
           offset: 0,
-          limit: 2,
+          limit: 0,
           showCompleteTasks:false,
         };
         filterTasksList(task,'','priority','','-2').then(
                 (data) => {
                   this.tasksOverdue = data.tasks;
+                  this.tasksOverdue=this.tasksOverdue.sort((a, b) => {
+                    return this.priorityStatus.indexOf(a.task.priority) - this.priorityStatus.indexOf(b.task.priority);
+                  });
+                  this.tasksOverdueSize=data.tasksNumber;
                   this.tasks = this.tasks.concat(this.tasksOverdue);
                   this.loadingTasks = false
                 }
@@ -182,12 +241,16 @@
         const task = {
           dueCategory: 'today',
           offset: 0,
-          limit: 6,
+          limit: 0,
           showCompleteTasks:false,
         };
         filterTasksList(task,'','priority','','-2').then(
                 (data) => {
                   this.tasksToday = data.tasks;
+                  this.tasksToday=this.tasksToday.sort((a, b) => {
+                    return this.priorityStatus.indexOf(a.task.priority) - this.priorityStatus.indexOf(b.task.priority);
+                  });
+                  this.tasksTodaySize=data.tasksNumber;
                   this.tasks = this.tasks.concat(this.tasksToday);
                   this.loadingTasks = false
                 }
@@ -196,12 +259,16 @@
         const task = {
           dueCategory: 'tomorrow',
           offset: 0,
-          limit: 2,
+          limit: 0,
           showCompleteTasks:false,
         };
         filterTasksList(task,'','priority','','-2').then(
                 (data) => {
                   this.tasksTomorrow = data.tasks;
+                  this.tasksTomorrow=this.tasksTomorrow.sort((a, b) => {
+                    return this.priorityStatus.indexOf(a.task.priority) - this.priorityStatus.indexOf(b.task.priority);
+                  });
+                  this.tasksTomorrowSize=data.tasksNumber;
                   this.tasks = this.tasks.concat(this.tasksTomorrow);
                   this.loadingTasks = false
                 }
@@ -215,6 +282,10 @@
         filterTasksList(task,'','priority','','-2').then(
                 (data) => {
                   this.tasksUpcoming = data.tasks;
+                  this.tasksUpcoming=this.tasksUpcoming.sort((a, b) => {
+                    return this.priorityStatus.indexOf(a.task.priority) - this.priorityStatus.indexOf(b.task.priority);
+                  });
+                  this.tasksUpcomingSize=data.tasksNumber;
                   this.tasks = this.tasks.concat(this.tasksUpcoming);
                   this.loadingTasks = false
                 }
