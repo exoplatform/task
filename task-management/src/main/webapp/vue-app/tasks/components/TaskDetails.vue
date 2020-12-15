@@ -31,7 +31,7 @@
           v-if="(task.status != null)"
           mt-n2
           d-flex
-          xs5
+          xs6
           justify-end
           align>
           <v-card
@@ -40,7 +40,8 @@
             flex
             width="200"
             class="my-3 projectCard text-center flexCard taskTitle"
-            flat>
+            flat
+            @click="navigateTo(task.status.project.id)">
             <span>{{ task.status.project.name }}</span>
           </v-card>
           <v-card
@@ -49,7 +50,8 @@
             height="21"
             class="my-3 flagCard"
             flat
-            center>
+            center
+            @click="openTaskDrawer()">
             <v-icon
               :color="getTaskPriorityColor(task.task.priority)"
               class="ml-n1">mdi-flag-variant</v-icon>
@@ -105,6 +107,9 @@
       },
       openTaskDrawer() {
         this.$root.$emit('open-task-drawer', this.task.task);
+      },
+      navigateTo(pagelink) {
+        location.href=`${ eXo.env.portal.context }/${ eXo.env.portal.portalName }/taskstest?projectId=${ pagelink }` ;
       },
     }
   }
