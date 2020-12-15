@@ -1,6 +1,7 @@
 <template>
   <v-app id="TasksManagementPortlet">
     <v-tabs 
+      v-if="!spaceName"
       v-model="tab" 
       slider-size="4" 
       class="tasksMenuParent white">
@@ -16,7 +17,7 @@
         <tasks-dashboard/>
       </v-tab-item>
       <v-tab-item value="tab-2">
-        <project-dashboard/>
+        <project-dashboard :space-name="spaceName"/>
       </v-tab-item>
     </v-tabs-items>
     <add-project-drawer
@@ -32,6 +33,7 @@
     data () {
       return {
         tab: 'tab-2',
+        spaceName: '',
         task: {
         type: Object,
         default: () => ({}),
@@ -66,7 +68,12 @@
            this.tab='tab-1' 
           }
       });
-     let search = document.location.search.substring(1);
+    const urlPath = document.location.pathname
+    if(urlPath.includes('g/:spaces')){
+      this.spaceName = document.location.pathname.split('g/:spaces:')[1].split('/')[0]
+      this.tab='tab-2'
+    }else{
+           let search = document.location.search.substring(1);
      if(search.includes('mytasks')){
         search = this.tab='tab-1'
         search.replace('mytasks','')
@@ -101,6 +108,9 @@
          // window.history.pushState('task', 'Task details', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest?taskId=${taskId}`);
         })
       } 
+
+    }
+
     }
   },
   methods: {

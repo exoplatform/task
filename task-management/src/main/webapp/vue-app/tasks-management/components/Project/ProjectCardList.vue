@@ -36,6 +36,10 @@
 <script>
   export default {
     props: {
+      spaceName: {
+        type: String,
+        default: '',
+      },
       keyword: {
         type: String,
         default: null,
@@ -100,7 +104,7 @@
     methods: {
       searchProjects() {
         this.loadingProjects = true;
-        return this.$projectService.getProjectsList(this.keyword,this.projectFilterSelected,this.offset, this.limitToFetch).then(data => {
+        return this.$projectService.getProjectsList(this.spaceName,this.keyword,this.projectFilterSelected,this.offset, this.limitToFetch).then(data => {
           //this.projects.push(...data.projects);
           this.projects = data && data.projects || [];
           this.projectSize = data && data.projectNumber || 0;

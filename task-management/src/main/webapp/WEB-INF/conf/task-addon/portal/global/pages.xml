@@ -46,23 +46,4 @@
       </container>
     </container>
   </page>
-  <page>
-    <name>taskstest</name>
-    <title>TasksTest</title>
-    <access-permissions>*:/platform/users</access-permissions>
-    <edit-permission>*:/platform/administrators</edit-permission>
-    <container id="TasksParentContainer" template="system:/groovy/portal/webui/container/UIContainer.gtmpl">
-      <access-permissions>*:/platform/users</access-permissions>
-      <portlet-application>
-        <portlet>
-          <application-ref>task-management</application-ref>
-          <portlet-ref>TasksManagement</portlet-ref>
-        </portlet>
-        <title>Tasks Management</title>
-        <access-permissions>*:/platform/users</access-permissions>
-        <show-info-bar>false</show-info-bar>
-        <show-application-state>false</show-application-state>
-      </portlet-application>
-    </container>
-  </page>
 </page-set>
