@@ -63,7 +63,8 @@
             icon
             dark
             @click="task.completed =!task.completed">
-            <v-icon class="markAsCompletedBtn">mdi-checkbox-marked-circle</v-icon>
+            <v-icon v-if="task.completed" class="markAsCompletedBtn">mdi-checkbox-marked-circle</v-icon>
+            <v-icon v-else class="markAsCompletedBtn">mdi-checkbox-blank-circle-outline</v-icon>
           </v-btn>
           <v-textarea
             ref="autoFocusInput4"
@@ -107,10 +108,8 @@
         </div>
         <v-divider class="my-0" />
         <div class="taskDescription py-4">
-          <exo-task-editor
-            ref="richEditor"
+          <task-description-editor
             v-model="task.description"
-            :id="task.id"
             :placeholder="$t('editinline.taskDescription.empty')"/>
         </div>
         <div class="taskLabelsName mt-3 mb-3">
@@ -140,7 +139,7 @@
                     @isOpen="OnCloseAllEditor()"
                     @showSubEditor="OnUpdateEditorStatus"/>
                 </div>
-                <div v-if="showEditor" class="comment d-flex align-start">
+                <div v-if="showEditor" class="comment commentEditor d-flex align-start">
                   <exo-user-avatar
                     :username="currentUserName"
                     :avatar-url="currentUserAvatar"
@@ -416,7 +415,6 @@
       addTask() {
         this.task.coworker = this.taskCoworkers;
         this.task.assignee = this.assignee;
-        console.warn(this.taskStartDate);
         this.task.startDate = this.taskStartDate;
         this.task.dueDate = this.taskDueDate;
         addTask(this.task).then(task => {
@@ -519,6 +517,8 @@
       onCloseDrawer() {
         this.$root.$emit('task-drawer-closed', this.task)
         this.enableAutosave=false;
+        this.showEditor=false;
+        document.dispatchEvent(new CustomEvent('drawerClosed'));
         this.task={}
       },
       deleteTask() {
