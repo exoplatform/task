@@ -20,6 +20,13 @@
     <css-path>/skin/css/tasks.css</css-path>
   </portlet-skin>
 
+  <portlet-skin>
+    <application-name>task-management</application-name>
+    <portlet-name>tasks</portlet-name>
+    <skin-name>Enterprise</skin-name>
+    <css-path>/skin/css/tasks.css</css-path>
+  </portlet-skin>
+
   <javascript>
     <param>
       <js-module>taskChatPlugin</js-module>
@@ -231,6 +238,19 @@
       <depends>
         <module>tasksBundle</module>
       </depends>
+      <depends>
+        <module>vue</module>
+      </depends>
+      <depends>
+        <module>vuetify</module>
+      </depends>
+      <depends>
+        <module>eXoVueI18n</module>
+      </depends>
+      <depends>
+        <module>jquery</module>
+        <as>$</as>
+      </depends>
     </module>
   </portlet>
 
@@ -245,6 +265,9 @@
     </depends>
     <depends>
       <module>eXoVueI18n</module>
+    </depends>
+    <depends>
+      <module>extensionRegistry</module>
     </depends>
     <depends>
       <module>jquery</module>
