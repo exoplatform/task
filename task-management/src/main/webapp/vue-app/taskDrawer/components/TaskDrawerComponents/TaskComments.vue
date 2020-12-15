@@ -106,7 +106,7 @@
             ref="subCommentEditor"
             v-model="editorData"
             :placeholder="commentPlaceholder"
-            class="subComment"
+            class="subComment subCommentEditor"
             @subShowEditor="openEditor"/>
           <v-btn
             :disabled="disabledComment"
@@ -114,7 +114,7 @@
             small
             dark
             class="commentBtn mt-1 mb-2"
-            @click="addTaskSubComment()">{{ $t('comment.label.comment') }}
+            @click="addTaskSubComment(comment)">{{ $t('comment.label.comment') }}
           </v-btn>
         </div>
       </div>
@@ -215,11 +215,11 @@
                 this.$emit('openSubEditor')
               }
             },
-            addTaskSubComment() {
+            addTaskSubComment(commentItem) {
               let subComment = this.$refs.subCommentEditor.getMessage();
               subComment = this.urlVerify(subComment);
-              console.warn('this.comment.id',this.comment.id);
-              addTaskSubComment(this.task.id, this.comment.id, subComment).then((comment => {
+              console.warn('this.comment.id',commentItem.comment.id);
+              addTaskSubComment(this.task.id, commentItem.comment.id, subComment).then((comment => {
                         this.comment.subComments = this.comment.subComments || [];
                         this.comment.subComments.push(comment)
                       })

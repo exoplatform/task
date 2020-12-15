@@ -108,11 +108,14 @@
         </div>
         <v-divider class="my-0" />
         <div class="taskDescription py-4">
-          <exo-task-editor
+          <!-- <exo-task-editor
             ref="richEditor"
             v-model="task.description"
             :id="task.id"
-            :placeholder="$t('editinline.taskDescription.empty')"/>
+            :placeholder="$t('editinline.taskDescription.empty')"/>-->
+          <task-description-editor
+            v-model="task.description"
+            :placeholder="descriptionPlaceholder"/>
         </div>
         <div class="taskLabelsName mt-3 mb-3">
           <task-labels
@@ -141,7 +144,7 @@
                     @isOpen="OnCloseAllEditor()"
                     @showSubEditor="OnUpdateEditorStatus"/>
                 </div>
-                <div v-if="showEditor" class="comment d-flex align-start">
+                <div v-if="showEditor" class="comment commentEditor d-flex align-start">
                   <exo-user-avatar
                     :username="currentUserName"
                     :avatar-url="currentUserAvatar"

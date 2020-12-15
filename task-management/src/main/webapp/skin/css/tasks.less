@@ -2310,6 +2310,17 @@
       }
     }
   .taskDescription {
+    #cke_descriptionContent {
+      display: none;
+    }
+
+    .cke_toolbar:last-child {
+      display: none;
+    }
+
+    .cke_toolbar {
+      border-right: none!important;
+    }
 
     .activityCharsCount.tooManyChars {
       display: none;
@@ -2320,7 +2331,7 @@
     }
     .cke_bottom.cke_reset_all {
       background-color: transparent;
-      height: 30px;
+      height: 30px!important;
     }
     .cke_bottom .cke_button_icon {
       filter: opacity(0.2);
@@ -2331,6 +2342,15 @@
       &:before {
         content: "\e910";
       }
+    }
+  }
+
+  .taskDescription.active {
+    .taskDescriptionToShow {
+      display: none!important;
+    }
+    #cke_descriptionContent {
+      display: block;
     }
   }
   .taskCommentsAndChanges {
@@ -2358,6 +2378,16 @@
       }
       .editorContent {
         width: 100%;
+        .cke_bottom.cke_reset_all {
+          background-color: transparent;
+          height: 30px!important;
+        }
+        .cke_toolbar {
+          border-right: none!important;
+        }
+        .cke_bottom .cke_button_icon {
+          filter: opacity(0.2);
+        }
       }
     }
   }
