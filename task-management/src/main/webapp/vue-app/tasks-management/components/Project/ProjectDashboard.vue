@@ -7,10 +7,12 @@
       <project-list-toolbar
         :keyword="keyword"
         :project-filter-selected="projectFilterSelected"
+        :space-name="spaceName"
         @keyword-changed="keyword = $event"
         @filter-changed="projectFilterSelected = $event"/>
       <project-card-list
         :keyword="keyword"
+        :space-name="spaceName"
         :project-filter-selected="projectFilterSelected"
         :loading-projects="loadingProjects"/>
     </div>
@@ -22,6 +24,12 @@
 </template>
 <script>
   export default {
+    props: {
+      spaceName: {
+        type: String,
+        default: '',
+      }
+    },
     data () {
       return {
         displayDetails : false,
