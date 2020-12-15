@@ -1089,14 +1089,32 @@
           }
         }
         .tasksViewBoard {
-          .projectTaskItem {
-            position: relative;
-            flex: 1 1 0;
-            width: 0;
+          .tasksViewBoardRowContainer {
+            flex-wrap: nowrap!important;
+            overflow-x: scroll;
+            &::-webkit-scrollbar {
+              height: 5px;
+            }
+            &::-webkit-scrollbar-track {
+              background: @primaryBackground;
+            }
+            &::-webkit-scrollbar-thumb {
+              background: @greyColorLighten1;
+              border-radius: 10px;
+            }
+            &::-webkit-scrollbar-thumb:hover {
+              background: @borderColorLight;
+            }
+            .projectTaskItem {
+              position: relative;
+              flex: 1 1 0;
+              width: 0;
+              min-width: 340px;
+            }
           }
         }     
       }
-      }
+    }
 
     }
     .projectAndTasksContainer {
@@ -2310,6 +2328,11 @@
       }
     }
   .taskDescription {
+    [contentEditable=true]:empty:not(:focus):before{
+      content:attr(data-text);
+      color: @greyColorLighten1Default;
+      font-size: 16px;
+    }
     #cke_descriptionContent {
       display: none;
     }

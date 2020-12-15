@@ -4,12 +4,14 @@
     :class="editorReady && 'active'"
     class="taskDescription">
     <div
-      :placeholder="placeholder"
+      :data-text="placeholder"
       :title="$t('tooltip.clickToEdit')"
-      contenteditable="true"
+      contentEditable="true"
       class="py-1 px-2 taskDescriptionToShow"
       @click="showDescriptionEditor()"
-      v-html="inputVal ? urlVerify(inputVal) : inputVal">{{ placeholder }}</div>
+      v-html="inputVal ? urlVerify(inputVal) : inputVal">
+      {{ placeholder }}
+    </div>
     <textarea
       id="descriptionContent"
       ref="editor"
@@ -48,6 +50,18 @@
       inputVal(val) {
         this.$emit('input', val);
       },
+      value(val) {
+        this.inputVal = val;
+        const editorData = CKEDITOR.instances['descriptionContent'].getData();
+        if (editorData != null && val !== editorData) {
+          if (val === '') {
+            CKEDITOR.instances['descriptionContent'].setData('');
+            this.initCKEditor();
+          } else {
+            CKEDITOR.instances['descriptionContent'].setData(val);
+          }
+        }
+      },
       editorReady(val) {
         const ckeContent = document.querySelectorAll('[id=cke_descriptionContent]');
         if (val === true) {
@@ -69,8 +83,13 @@
       },
       reset() {
         CKEDITOR.instances['descriptionContent'].destroy(true);
-        this.initCKEditor();
+        this.editorReady = false;
       },
+    },
+    created() {
+      document.addEventListener('drawerClosed', () => {
+        this.editorReady = false;
+      });
     },
     methods: {
       initCKEditor: function () {
@@ -78,7 +97,6 @@
         const windowWidth = $(window).width();
         const windowHeight = $(window).height();
         if (windowWidth > windowHeight && windowWidth < 768) {
-          // Disable suggester on smart-phone landscape
           extraPlugins = 'simpleLink,selectImage';
         }
         CKEDITOR.basePath = '/commons-extension/ckeditor/';
@@ -91,12 +109,10 @@
           toolbarLocation: 'bottom',
           autoGrow_onStartup: true,
           on: {
-            focus: function() {
-              console.log('test');
-            },
-            blur: function () {
+            blur: function (evt) {
               $(document.body).trigger('click');
               const newData = CKEDITOR.instances['descriptionContent'].getData();
+              const newData1 = evt.editor.getData();
               this.inputVal = newData;
               self.editorReady = !self.editorReady;
             },
@@ -111,7 +127,7 @@
         });
       },
       showDescriptionEditor:function () {
-        this.editorReady = true;
+        this.editorReady = !this.editorReady;
       },
       urlVerify(text) {
         return urlVerify(text);

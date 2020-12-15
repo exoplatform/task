@@ -4,7 +4,7 @@
     flat>
     <v-item-group class="pa-4">
       <v-container class="pa-0">
-        <v-row class="ma-0 border-box-sizing">
+        <v-row class="ma-0 border-box-sizing tasksViewBoardRowContainer">
           <v-col
             v-for="(status, index) in statusList"
             :key="index"

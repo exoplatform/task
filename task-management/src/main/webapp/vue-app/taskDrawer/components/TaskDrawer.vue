@@ -108,14 +108,9 @@
         </div>
         <v-divider class="my-0" />
         <div class="taskDescription py-4">
-          <!-- <exo-task-editor
-            ref="richEditor"
-            v-model="task.description"
-            :id="task.id"
-            :placeholder="$t('editinline.taskDescription.empty')"/>-->
           <task-description-editor
             v-model="task.description"
-            :placeholder="descriptionPlaceholder"/>
+            :placeholder="$t('editinline.taskDescription.empty')"/>
         </div>
         <div class="taskLabelsName mt-3 mb-3">
           <task-labels
@@ -157,12 +152,6 @@
                       :placeholder="commentPlaceholder"
                       :reset="reset"
                       class="comment"/>
-                    <!--<exo-task-editor
-                      ref="commentEditor"
-                      v-model="editorData"
-                      :id="`commentTask${task.id}`"
-                      :placeholder="commentPlaceholder"
-                      class="comment"/>-->
                     <v-btn
                       :disabled="disabledComment"
                       depressed
@@ -426,7 +415,6 @@
       addTask() {
         this.task.coworker = this.taskCoworkers;
         this.task.assignee = this.assignee;
-        console.warn(this.taskStartDate);
         this.task.startDate = this.taskStartDate;
         this.task.dueDate = this.taskDueDate;
         addTask(this.task).then(task => {
@@ -529,6 +517,8 @@
       onCloseDrawer() {
         this.$root.$emit('task-drawer-closed', this.task)
         this.enableAutosave=false;
+        this.showEditor=false;
+        document.dispatchEvent(new CustomEvent('drawerClosed'));
         this.task={}
       },
       deleteTask() {
