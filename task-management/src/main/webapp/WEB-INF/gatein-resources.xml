@@ -14,7 +14,7 @@
 -->
 
   <portlet-skin>
-    <application-name>tasks</application-name>
+    <application-name>task-management</application-name>
     <portlet-name>TasksManagement</portlet-name>
     <skin-name>Enterprise</skin-name>
     <css-path>/skin/css/tasks.css</css-path>

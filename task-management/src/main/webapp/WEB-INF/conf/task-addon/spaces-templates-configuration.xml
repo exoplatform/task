@@ -165,7 +165,7 @@
                                 <value>
                                     <object type="org.exoplatform.social.core.space.SpaceApplication">
                                         <field name="portletApp">
-                                            <string>TasksManagement</string>
+                                            <string>task-management</string>
                                         </field>
                                         <field name="portletName">
                                             <string>TasksManagement</string>
