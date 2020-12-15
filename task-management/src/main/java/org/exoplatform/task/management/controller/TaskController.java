@@ -143,7 +143,6 @@ public class TaskController extends AbstractController {
   return detail.with()
       .taskModel(model)
       .userTimezone(userTimezone)
-      .useCalendar(TaskUtil.isCalendarEnabled())
       .bundle(bundle)
       .ok().withCharset(Tools.UTF_8);
   }
@@ -942,7 +941,6 @@ public class TaskController extends AbstractController {
         throw new EntityNotFoundException(projectId, Project.class);
       }
       task.setStatus(status);
-      task.setCalendarIntegrated(project.isCalendarIntegrated());
     } else if (labelId == null || labelId < 0) {
       task.setAssignee(currentUser);
       
@@ -1017,7 +1015,6 @@ public class TaskController extends AbstractController {
       if (status != null) {
         task.setStatus(status);
       }
-      task.setCalendarIntegrated(project.isCalendarIntegrated());
     }
 
     taskService.createTask(task);

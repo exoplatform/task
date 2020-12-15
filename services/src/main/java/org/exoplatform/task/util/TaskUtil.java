@@ -1142,8 +1142,6 @@ public final class TaskUtil {
             taskService.addTaskToLabel(task.getId(), labelId);            
           }
         }
-      } else if ("calendarIntegrated".equalsIgnoreCase(param)) {
-        task.setCalendarIntegrated(Boolean.parseBoolean(value));
       } else {
         LOG.info("Field name: " + param + " is not supported for entity Task");
         throw new ParameterEntityException(task.getId(), Task.class, param, value, "is not supported for the entity Task", null);

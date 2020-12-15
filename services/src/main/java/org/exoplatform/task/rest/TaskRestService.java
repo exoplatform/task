@@ -734,7 +734,6 @@ public class TaskRestService implements ResourceContainer {
         projectJson.put("manager", projectService.getManager(projectId));
         projectJson.put("children", projectService.getSubProjects(projectId, 0, -1));
         projectJson.put("dueDate", project.getDueDate());
-        projectJson.put("calendarIntegrated", project.isCalendarIntegrated());
         projectJson.put("description", project.getDescription());
         projectJson.put("status", statusService.getStatus(projectId));
         projectsJsonArray.put(projectJson);

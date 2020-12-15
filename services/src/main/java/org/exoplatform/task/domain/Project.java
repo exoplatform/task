@@ -95,9 +95,6 @@ public class Project {
   private String    description;
 
   private String    color;
-  
-  @Column(name = "CALENDAR_INTEGRATED")
-  private boolean calendarIntegrated = false;
 
   //TODO: should remove cascade ALL on this field
   @OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE, orphanRemoval = true)
@@ -214,14 +211,6 @@ public class Project {
     this.color = color;
   }
 
-  public boolean isCalendarIntegrated() {
-    return calendarIntegrated;
-  }
-
-  public void setCalendarIntegrated(boolean calendarIntegrated) {
-    this.calendarIntegrated = calendarIntegrated;
-  }
-
   public Project getParent() {
     return parent;
   }
@@ -261,7 +250,6 @@ public class Project {
     if (this.getParent() != null) {
       project.setParent(getParent().clone(false));
     }
-    project.setCalendarIntegrated(isCalendarIntegrated());
 
     //
     project.status = new HashSet<Status>();

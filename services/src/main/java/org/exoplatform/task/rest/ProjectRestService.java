@@ -311,7 +311,6 @@ public class ProjectRestService implements ResourceContainer {
       projectJson.put("manager", projectService.getManager(projectId));
       //projectJson.put("children", projectService.getSubProjects(projectId, 0, -1));
       projectJson.put("dueDate", project.getDueDate());
-      projectJson.put("calendarIntegrated", project.isCalendarIntegrated());
       projectJson.put("description", project.getDescription());
       projectJson.put("status", statusService.getStatus(projectId));
       return projectJson;
@@ -380,9 +379,6 @@ public class ProjectRestService implements ResourceContainer {
     }else{
       project = ProjectUtil.newProjectInstanceDto(projectDto.getName(), description, currentUser);
     }
-    boolean calInteg = projectDto.isCalendarIntegrated();
-    calInteg = projectDto.isCalendarIntegrated() ? false : calInteg;
-    project.setCalendarIntegrated(calInteg);
     if (projectDto.getParent() != null) {
       Long parentId = projectDto.getParent().getId();
       ProjectDto parent = projectService.getProject(parentId);
@@ -462,7 +458,6 @@ public class ProjectRestService implements ResourceContainer {
       fields.put("participator", array);
     }
 
-    fields.put("calendarIntegrated", new String[]{String.valueOf(projectDto.isCalendarIntegrated())});
     ProjectDto project = ProjectUtil.saveProjectField(projectService, projectId, fields);
     projectService.updateProject(project);
     return Response.ok(Response.Status.OK).build();

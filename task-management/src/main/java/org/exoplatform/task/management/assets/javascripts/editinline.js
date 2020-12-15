@@ -592,24 +592,6 @@ define('ta_edit_inline',
                 editInline.initWorkPlan(taskId);
             }
 
-            var calIcon = $('.date-work-plan .uiIconPLFCalendar');
-            if (!calIcon.hasClass('readOnly')) {
-              calIcon.click(function() {
-                if (calIcon.data('integrated')) {
-                  calIcon.data('integrated', false);
-                  calIcon.removeClass('uiIconPLFBlue');
-                  calIcon.attr('data-original-title', calIcon.data('title-add'));
-                } else {
-                  calIcon.data('integrated', true);
-                  calIcon.addClass('uiIconPLFBlue');
-                  calIcon.attr('data-original-title', calIcon.data('title-remove'));
-                }
-                calIcon.tooltip('show');
-
-                editInline.saveTaskDetailFunction({'name': 'calendarIntegrated', 'value': calIcon.data('integrated')});
-              });
-            }
-            
             //tabs in task detail
             $('.taskTabs a').click(function(e) {
                 e.preventDefault();

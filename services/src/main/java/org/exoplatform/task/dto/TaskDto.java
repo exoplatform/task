@@ -17,7 +17,6 @@ public class TaskDto  implements Serializable {
     private Status status;
     private int         rank;
     private boolean completed;
-    private boolean calendarIntegrated;
     private Set<String> coworker;
     private Set<String> watcher;
     private String      createdBy;
@@ -53,7 +52,6 @@ public class TaskDto  implements Serializable {
         newTask.setEndDate(this.getEndDate());
         newTask.setStartDate(this.getStartDate());
         newTask.setDueDate(this.getDueDate());
-        newTask.setCalendarIntegrated(isCalendarIntegrated());
         newTask.setCreatedTime(getCreatedTime());
         newTask.setActivityId(getActivityId());
         newTask.setCompleted(isCompleted());

@@ -144,7 +144,6 @@ public class ProjectController extends AbstractController {
     return form
         .with()
         .breadcumbs(ProjectUtil.buildBreadcumbs(parent.getId(), projectService, bundle))
-        .useCalendar(TaskUtil.isCalendarEnabled())
         .parent(parent)        
         .user(user)
         .ok().withCharset(Tools.UTF_8);
@@ -180,9 +179,6 @@ public class ProjectController extends AbstractController {
       //project = projectService.createDefaultStatusProjectWithManager(name, description, parentId, currentUser); //Can throw ProjectNotFoundException
     }
     
-    calInteg = calInteg == null ? false : calInteg;
-    project.setCalendarIntegrated(calInteg);
-
     if (parentId != null && parentId > 0) {
       Project parent = projectService.getProject(parentId);
       if (!parent.canEdit(ConversationState.getCurrent().getIdentity())) {
@@ -559,7 +555,6 @@ public class ProjectController extends AbstractController {
     return detail
         .with()
         .breadcumbs(ProjectUtil.buildBreadcumbs(parent.getId(), projectService, bundle))
-        .useCalendar(TaskUtil.isCalendarEnabled())
         .parent(parent)
         .project(project)
         .userMap(users)
@@ -571,7 +566,7 @@ public class ProjectController extends AbstractController {
   @Resource
   @Ajax
   @MimeType("text/plain")
-  public Response saveProjectInfo(Long projectId, String parent, String name, String description, String calendarIntegrated) 
+  public Response saveProjectInfo(Long projectId, String parent, String name, String description) 
         throws EntityNotFoundException, ParameterEntityException, UnAuthorizedOperationException {
     if(name == null) {
       return Response.status(406).body("Field name is required");
@@ -597,7 +592,6 @@ public class ProjectController extends AbstractController {
     description = StringUtil.encodeInjectedHtmlTag(description);
     fields.put("description", new String[] {description});
     fields.put("parent", new String[] {parent});
-    fields.put("calendarIntegrated", new String[] {calendarIntegrated});
     Project project = ProjectUtil.saveProjectField(projectService, projectId, fields);
     //Can throw ProjectNotFoundException & NotAllowedOperationOnEntityException
     projectService.updateProject(project); 

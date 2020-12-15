@@ -1,7 +1,6 @@
 #{param name=taskModel/}
 #{param name=userTimezone/}
 #{param name=bundle/}
-#{param name=useCalendar/}
 
 <%
 import java.text.SimpleDateFormat;
@@ -310,19 +309,7 @@ data-startdate="<%=df.format(startDate)%>" data-duration="${duration}">
 </div>
 <% }%>
             <div class="date-work-plan">
-            <% if(useCalendar) {
-            	def inCal = task.isCalendarIntegrated();
-            	def iconIntegCal = inCal ? "uiIconPLFBlue" : "";
-            	def title = inCal ? bundle.getString("tooltip.removeFromCalendar") : bundle.getString("tooltip.addToCalendar");
-            %>
-              <i class="uiIconPLFCalendar pull-left ${iconIntegCal} ${readOnlyClass}"
-                <% if (!readOnly) {%>
-                rel="tooltip" title="${title}"
-                <% }%>
-                data-integrated="${inCal}" data-title-add="&{tooltip.addToCalendar}" data-title-remove="&{tooltip.removeFromCalendar}"></i>
-            <% } else { %>
-              <i class="uiIconPLFCalendar pull-left"></i>
-            <% } %>
+            <i class="uiIconPLFCalendar pull-left"></i>
 <span
     <% if (!readOnly) {%>
     data-original-title="&{tooltip.clickToEdit}" rel="tooltip" data-placement="bottom"

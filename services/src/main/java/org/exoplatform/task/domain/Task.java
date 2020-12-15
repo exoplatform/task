@@ -178,9 +178,6 @@ public class Task {
   private int         rank;
 
   private boolean completed = false;
-  
-  @Column(name = "CALENDAR_INTEGRATED")
-  private boolean calendarIntegrated = false;
 
   @ElementCollection(fetch = FetchType.LAZY)
   @CollectionTable(name = "TASK_TASK_COWORKERS",
@@ -301,14 +298,6 @@ public class Task {
     this.completed = completed;
   }
 
-  public boolean isCalendarIntegrated() {
-    return calendarIntegrated;
-  }
-
-  public void setCalendarIntegrated(boolean calendarIntegrated) {
-    this.calendarIntegrated = calendarIntegrated;
-  }
-
   public String getCreatedBy() {
     return createdBy;
   }
@@ -396,7 +385,6 @@ public class Task {
         .withStatus(this.getStatus() != null ? this.getStatus().clone() : null)
         .build();
 
-    newTask.setCalendarIntegrated(isCalendarIntegrated());
     newTask.setCreatedTime(getCreatedTime());
     newTask.setActivityId(getActivityId());
     newTask.setCompleted(isCompleted());
