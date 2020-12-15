@@ -1095,21 +1095,36 @@
             &::-webkit-scrollbar {
               height: 5px;
             }
-            &::-webkit-scrollbar-track {
-              background: @primaryBackground;
-            }
             &::-webkit-scrollbar-thumb {
-              background: @greyColorLighten1;
+              background: white;
               border-radius: 10px;
             }
             &::-webkit-scrollbar-thumb:hover {
-              background: @borderColorLight;
+              background: white;
             }
+            &:hover {
+              overflow-x: scroll!important;
+              &::-webkit-scrollbar {
+                height: 5px;
+              }
+              /*&::-webkit-scrollbar-track {
+                background: @primaryBackground;
+              }*/
+              &::-webkit-scrollbar-thumb {
+                background: @greyColorLighten1;
+                border-radius: 10px;
+              }
+              &::-webkit-scrollbar-thumb:hover {
+                background: @borderColorLight;
+              }
+            }
+
             .projectTaskItem {
               position: relative;
-              flex: 1 1 0;
+              flex: 1 1 340px;
               width: 0;
               min-width: 340px;
+              max-width: 340px;
             }
           }
         }     
