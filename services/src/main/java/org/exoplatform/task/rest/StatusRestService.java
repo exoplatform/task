@@ -104,7 +104,7 @@ public class StatusRestService implements ResourceContainer {
     if (!projectDto.canEdit(identity)) {
       return Response.status(Response.Status.UNAUTHORIZED).build();
     }
-    statusService.updateStatus(projectDto.getId(), statusDto.getName());
+    statusService.updateStatus(statusDto.getId(), statusDto.getName());
     return Response.ok(Response.Status.OK).build();
   }
 

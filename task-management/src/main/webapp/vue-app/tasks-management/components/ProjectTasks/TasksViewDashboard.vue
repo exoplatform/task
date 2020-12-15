@@ -297,8 +297,8 @@
            this.getStatusByProject(this.project.id)
         })
       },
-      updateStatus() {
-         return this.$statusService.updateStatus(this.status).then(resp => {
+      updateStatus(status) {
+         return this.$statusService.updateStatus(status).then(resp => {
            this.getStatusByProject(this.project.id)
         })
       },

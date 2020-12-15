@@ -1,10 +1,9 @@
 <template>
   <div
-    :id="'task-'+viewType+'-'+status.name"
+    :id="'task-'+viewType+'-'+status.id"
     class="tasksViewHeader d-flex justify-space-between align-center">
-    <div v-if="!status.edit" class="taskStatusName font-weight-bold text-color mb-1">{{ status.name }}</div>
     <input 
-      v-else       
+      v-if="editStatus || status.edit"      
       ref="autoFocusInput1" 
       v-model="status.name" 
       placeholder="Status Name"
@@ -12,7 +11,11 @@
       class="taskStatusName font-weight-bold text-color mb-1"
       required  
       autofocus
-      @keyup="checkImput($event,index)">    
+      @keyup="checkImput($event,index)">     
+    <div 
+      v-else
+      class="taskStatusName font-weight-bold text-color mb-1" 
+      @dblclick="editStatus = true">{{ status.name }}</div>   
     <div class="taskNumberAndActions d-flex align-center mb-1">
       <span class="caption">{{ tasksNumber }}</span>
       <!-- <span v-if="tasksNumber < maxTasksToShow" class="caption">{{ tasksNumber }}</span>
@@ -37,7 +40,7 @@
       </i>
       <v-menu
         v-model="displayActionMenu"
-        :attach="`#task-${viewType}-${status.name}`"
+        :attach="`#task-${viewType}-${status.id}`"
         transition="slide-x-reverse-transition"
         content-class="taskStatusActionMenu"
         offset-y>
@@ -113,6 +116,7 @@
     data() {
       return {
         displayActionMenu: false,
+        editStatus: false,
         tasksStatsStartValue:1,
         originalTasksToShow: this.maxTasksToShow,
         disableBtnLoadMore: false,
@@ -133,6 +137,11 @@
             this.displayActionMenu = false;
           }, 200);
         }
+/*         if (this.editStatus || this.status.edit) {
+          window.setTimeout(() => {
+            this.cancelAddColumn(this.index);
+          }, 200);
+        } */
       });
     },
     methods: {
@@ -156,7 +165,7 @@
       },
       checkImput: function(e,index) {
       if (e.keyCode === 13) {
-        this.addStatus(index)
+        this.saveStatus(index)
       } 
       if (e.keyCode === 27) {
         this.cancelAddColumn(index)
@@ -166,16 +175,27 @@
       deleteStatus() {
           this.$emit('delete-status', this.status);
       },
-      addStatus(index) {
-        this.status.rank=index
+      saveStatus(index) {
+        if(this.status.id){
+          this.$emit('update-status', this.status);
+          this.editStatus=false
+        }else{
+          this.status.rank=index
           this.$emit('add-status');
+          this.editStatus=false
+        }
       },
       addColumn(index) {       
           this.$emit('add-column',index);    
       },
       cancelAddColumn(index) {
+        if(this.status.id){
+          this.editStatus=false
+          this.status.edit=false
+        }else{
           this.$emit('cancel-add-column',index);
-      },
+        }
+      }
     }
   }
 </script>

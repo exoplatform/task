@@ -17,6 +17,7 @@
               @updateTaskCompleted="updateTaskCompleted"
               @updateTaskStatus="updateTaskStatus"
               @delete-status="deleteStatus"
+              @update-status="updateStatus"
               @add-column="addColumn"
               @cancel-add-column="cancelAddColumn"
               @create-status="createStatus"/>
@@ -83,6 +84,10 @@ import {updateTask} from '../../../taskDrawer/taskDrawerApi';
       },
       deleteStatus(status) {
           this.$emit('delete-status', status);
+          this.index=-1
+      },
+      updateStatus(status) {
+          this.$emit('update-status', status);
           this.index=-1
       },
       createStatus() {

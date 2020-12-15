@@ -1,6 +1,6 @@
 <template>
 
-  <div :id="status.name">
+  <div :id="status.id">
     <tasks-view-header
       :status="status"
       :view-type="'list'"
