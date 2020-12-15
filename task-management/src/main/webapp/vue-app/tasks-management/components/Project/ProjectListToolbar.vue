@@ -22,7 +22,7 @@
           prepend-inner-icon="fa-filter"
           class="inputTasksFilter pa-0 mr-3 my-auto"/>
       </v-scale-transition>
-      <v-scale-transition>
+      <v-scale-transition v-if="!spaceName">
         <select
           v-model="projectFilterSelected"
           name="projectFilter"
@@ -45,6 +45,10 @@
       keyword: {
         type: String,
         default: null,
+      },
+       spaceName: {
+        type: String,
+        default: '',
       },
       projectFilterSelected: {
         type: String,

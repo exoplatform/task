@@ -1,6 +1,7 @@
 package org.exoplatform.task.rest;
 
 import io.swagger.annotations.*;
+import org.apache.commons.lang3.StringUtils;
 import org.exoplatform.commons.utils.HTMLEntityEncoder;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.log.ExoLogger;
@@ -83,6 +84,7 @@ public class ProjectRestService implements ResourceContainer {
   @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled"),
       @ApiResponse(code = 500, message = "Internal server error") })
   public Response getProjects(@ApiParam(value = "Search term", required = false, defaultValue = "null") @QueryParam("q") String query,
+                              @ApiParam(value = "Space Name", required = false, defaultValue = "null") @QueryParam("spaceName") String spaceName,
                               @ApiParam(value = "Filter", required = false, defaultValue = "") @QueryParam("projectsFilter") String projectsFilter,
                               @ApiParam(value = "Offset", required = false, defaultValue = "0") @QueryParam("offset") int offset,
                               @ApiParam(value = "Limit", required = false, defaultValue = "-1") @QueryParam("limit") int limit,
@@ -115,7 +117,14 @@ public class ProjectRestService implements ResourceContainer {
       projectNumber = projectService.countNotEmptyProjects(memberships,query);
       projects = ProjectUtil.getProjectTree(projectDtoList, identity);
     }else {
-      memberships.addAll(UserUtil.getMemberships(identity));
+      if(StringUtils.isNoneEmpty(spaceName)){
+        Space space = spaceService.getSpaceByPrettyName(spaceName);
+        if(space!=null){
+          memberships.addAll(UserUtil.getSpaceMemberships(space.getGroupId()));
+        }
+      }else{
+        memberships.addAll(UserUtil.getMemberships(identity));
+      }
       List<ProjectDto> projectDtoList = projectService.findProjects(memberships,query,null,offset, limit);
       projects = ProjectUtil.getProjectTree(projectDtoList, identity);
       projectNumber = projectService.countProjects(memberships, query);
