@@ -342,6 +342,7 @@
       },
       saveProject() {
         if (this.validateForm()) {
+
           const projects = {
             id: this.projectInformation.id,
             name: this.projectInformation.name,
@@ -349,6 +350,11 @@
             manager: [],
             participator: [],
           };
+          const urlPath = document.location.pathname
+          if(urlPath.includes('g/:spaces')){
+            const spaceName = urlPath.split('g/:spaces:')[1].split('/')[0]
+            projects.spaceName=spaceName
+          }
           if (this.manager && this.manager.length) {
             this.manager.forEach(user => {
               projects.manager.push(user.remoteId)

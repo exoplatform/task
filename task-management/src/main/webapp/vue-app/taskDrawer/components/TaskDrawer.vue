@@ -506,7 +506,7 @@
         if(task.id!=null){
         this.retrieveTaskLogs();
         this.getTaskComments();
-        window.history.pushState('task', 'Task details', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest?taskId=${task.id}`);
+        this.$root.$emit('set-url', {type:"task",id:task.id})
       }
         this.$refs.addTaskDrawer.open();
       },

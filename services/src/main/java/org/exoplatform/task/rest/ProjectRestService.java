@@ -350,21 +350,6 @@ public class ProjectRestService implements ResourceContainer {
       return projectJson;
   }
 
-
-  private Space getProjectSpace(ProjectDto project, SpaceService spaceService) {
-    for (String permission : projectService.getManager(project.getId())) {
-      int index = permission.indexOf(':');
-      if (index > -1) {
-        String groupId = permission.substring(index + 1);
-        Space space = spaceService.getSpaceByGroupId(groupId);
-        return space;
-
-      }
-    }
-
-    return null;
-  }
-
   @POST
   @Path("createproject")
   @RolesAllowed("users")
@@ -383,12 +368,12 @@ public class ProjectRestService implements ResourceContainer {
     if (projectDto.getName() == null || projectDto.getName().isEmpty()) {
       return Response.status(Response.Status.NOT_FOUND).build();
     }
-
-
     String description = StringUtil.encodeInjectedHtmlTag(projectDto.getDescription());
-
     ProjectDto project;
-    Space space = getProjectSpace(projectDto, spaceService);
+    Space space = null;
+    if(StringUtils.isNotBlank(projectDto.getSpaceName())){
+      space = spaceService.getSpaceByPrettyName(projectDto.getSpaceName());
+    }
     if (space != null) {
       List<String> memberships = UserUtil.getSpaceMemberships(space.getId());
       Set<String> managers = new HashSet<String>(Arrays.asList(currentUser, memberships.get(0)));
