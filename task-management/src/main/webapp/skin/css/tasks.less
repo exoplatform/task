@@ -9,7 +9,7 @@
 #TasksParentContainer {
   margin: 25px;
 }
-  #TasksManagementPortlet {
+#TasksManagementPortlet {
     .addProjectDrawer {
       hr.my-0.v-divider.theme--light{
         margin-top: 5px!important;
@@ -1117,7 +1117,7 @@
     }
 
     }
-    .projectAndTasksContainer {
+.projectAndTasksContainer {
       .noTasksProject {
         min-height: 50vh;
         height: 50vh;
@@ -1657,279 +1657,9 @@
         }
       }
     }
-  
 
-
-/*---------------------Responsive Style ---------------------------*/
-
-@media (max-width: 420px) {
-  .taskDrawer {
-    .text-header-title {
-      font-size: 16px !important;
-    }
-    .taskDrawer .drawerHeader .drawerTitle #taskActionMenu .uiThreeDotsIcon:before {
-      font-size: 22px!important;
-    }
-    .drawerTitle .drawerTitleAndProject .taskProjectName .projectName {
-      max-width: 130px!important;
-    }
-    .icon-ArrowRight:before {
-      font-size: 14px!important;
-    }
-    .taskProjectName .inputTaskProjectName .v-input__control > .v-input__slot .v-select__slot .v-select__selections {
-      max-width: 60%!important;
-    }
-    .mdi-close {
-      font-size: 22px!important;
-      width: 22px!important;
-      height: 23px!important;
-    }
-    .drawerTitleAndProject {
-      max-width: 240px!important;
-    }
-    .taskAssignItem {
-      .assigneeName {
-        p.text-truncate {
-          max-width: 70px!important;
-        }
-      }
-    }
-  }
-}
-
-@media (max-width: @maxMobileWidth) {
-  #TasksParentContainer {
-    #TasksManagementPortlet {
-      .projectAndTasksContainer {
-        .tasksListContainer {
-          .projectItem {
-            .taskCardFlip {
-              min-height: 190px !important;
-              margin-bottom: 16px;
-              .taskCardFront {
-                height: auto;
-                max-height: inherit;
-                .tasksCardItem {
-                  height: 190px!important;
-                  max-height: 190px!important;
-                  background-color: transparent!important;
-                  border-bottom-width: 5px;
-                  border-bottom-style: solid;
-                  .taskItemToolbar {
-                    background-color: transparent !important;
-                    i {
-                      color: @greyColorLighten1!important;
-                    }
-                    .projectCardTitle {
-                      color: @textColor!important;
-                      padding-left: 8px;
-                    }
-                  }
-                  .taskItemInfo {
-                    padding: 8px!important;
-                    .descriptionDivider {
-                      display: none!important;
-                    }
-                    .taskItemDescription {
-                      min-height: inherit;
-                    }
-                  }
-                }
-              }
-              .tasksCardBack {
-                height: auto;
-                max-height: inherit;
-                .tasksCardItem {
-                  height: auto;
-                  max-height: inherit;
-                  .noTasksProject {
-                    padding-top: 24px;
-                    padding-bottom: 24px;
-                    .noTasksProjectIcon {
-                      .uiIconTask {
-                        font-size: 30px;
-                      }
-                    }
-                  }
-                  .echartStatsContent {
-                    .echartPieContent {
-                      height: 130px!important;
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-      .projectTasksDashboard {
-        .tasksViewBoard {
-          .projectTaskItem {
-            flex: 1 1 100%!important;
-            width: 100%!important;
-          }
-        }
-      }
-    }
-  }
-  .taskDisplay {
-    display: none!important;
-  }
-}
-
-@media (max-width: @maxLargeTabletWidth) {
-  #TasksParentContainer {
-    .projectAndTasksContainer {
-      .tasksList {
-        .tasksListItem {
-          .taskListItemView {
-            .taskAssignee {
-              width: 15%!important;
-              max-width: 15%!important;
-              padding-right: 12px;
-            }
-            .taskLabels {
-              .v-chip.v-size--small {
-                max-width: 80%;
-                padding: 0 4px;
-                margin: 0!important;
-              }
-            }
-          }
-        }
-      }
-    }
-    #TasksManagementPortlet {
-      .projectAndTasksContainer {
-        .projectTasksDashboard {
-          .tasksViewBoard {
-            .projectTaskItem {
-              flex: 1 1 50%;
-              width: 50%;
-            }
-          }
-        }
-      }
-    }
-  }
-}
-
-
-/*--------------------------Tasks ---------------------------*/
-
-#tasks {
-  .flexCard {
-    flex: 1 1 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .projectCard {
-    border-radius: 15px 15px 15px 15px;
-    margin-right: 10px;
-    border: thin solid rgba(0, 0, 0, 0.12);
-  }
-  .amount-item{
-    border-radius: 10px;
-    background: #c7e5f9c9;
-    border-color:@primaryColor!important;
-    color: @primaryColor;
-    border: thin solid rgba(0, 0, 0, 0.12);
-    width: 30px;
-    height: 20px;
-    margin-left: 5px;
-    text-align: center;
-    margin-top: 5px;
-    margin-block-end: 5px;
-  }
-  .separator{
-    margin-block-start: 15px;
-    margin-left: 5px;
-    margin-right: 50px;
-  }
-
-  .flagCard {
-  }
-  .color-title {
-    color: @greyColorLighten1;
-  }
-  .taskTitle {
-    color: black;
-    flex: 1 1 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    margin-left: 25px;
-    span {
-      margin-left: 10px;
-    }
-  }
-  .nameGroup{
-    margin-left: 10px;
-    display: flex;
-    margin-top: 5px;
-    margin-block-end: 5px;
-  }
-  .iconlarge {
-    font-size: 40px;
-    color:@successColorLight;
-  }
-  .noTasks {
-    display: flex;
-    height: 370px;
-    align-items: center;
-    justify-content: center;
-    .noTasksContent {
-      text-align: center;
-      margin: auto;
-      .uiNoTaskIcon {
-        color: #6d7d9821;
-        font-size: 60px;
-        font-style: normal;
-        font-weight: normal;
-        &:before {
-          font-family: 'PLF-FONT-ICONS';
-          content: "\e690" !important;
-        }
-      }
-      .noTasksTitle {
-        color: #4d5466;
-        font-weight: normal;
-        font-size: 22px;
-      }
-      p {
-        font-weight: normal;
-        font-size: 15px;
-        color: @greyColorLighten1;
-      }
-    }
-  }
-  @media (max-width: 1200px) {
-    .theme--light.v-navigation-drawer {
-      width: 60% !important;
-    }
-  }
-  @media (max-width: 599px) {
-    .theme--light.v-navigation-drawer {
-      width: 100% !important;
-    }
-  }
-
-  .list-item {
-    display: flex;
-    width: 100%;
-    margin-right: 10px;
-  }
-  .list-leave-active {
-    transition: all 1s;
-  }
-  .list-leave-to {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-}
 /*----------- Task Drawer CSS ---------------*/
+
 .taskDrawer {
   .drawerHeader {
     .drawerTitle {
@@ -1989,32 +1719,32 @@
       box-shadow: none!important;
       border: none!important;
       .v-input__prepend-outer {
-          margin-top: 8px;
-          i {
-            color: @primaryColor;
-            font-size: 18px;
-          }
-
+        margin-top: 8px;
+        i {
+          color: @primaryColor;
+          font-size: 18px;
         }
+
+      }
       .v-input__control {
-          min-height: 27px!important;
-          height: 27px;
-          > .v-input__slot {
-            box-shadow: none!important;
-            padding: 0!important;
-            .v-select__slot {
-              label {
-                color: @greyColorLighten1;
-              }
-              .v-select__selections {
-                max-width: 90%!important;
-              }
+        min-height: 27px!important;
+        height: 27px;
+        > .v-input__slot {
+          box-shadow: none!important;
+          padding: 0!important;
+          .v-select__slot {
+            label {
+              color: @greyColorLighten1;
+            }
+            .v-select__selections {
+              max-width: 90%!important;
             }
           }
-          .v-input__append-inner {
-            display: none;
-          }
         }
+        .v-input__append-inner {
+          display: none;
+        }
+      }
       .v-menu__content {
         position: fixed!important;
         max-width: 70%!important;
@@ -2313,20 +2043,20 @@
           }
         }
       }
-        .v-menu__content {
-          top: 40px !important;
-          .v-list {
-            padding: 0!important;
-            .v-list-item {
-              min-height: 40px;
-              .v-list-item__content {
-                padding: 0!important;
-              }
+      .v-menu__content {
+        top: 40px !important;
+        .v-list {
+          padding: 0!important;
+          .v-list-item {
+            min-height: 40px;
+            .v-list-item__content {
+              padding: 0!important;
             }
           }
         }
       }
     }
+  }
   .taskDescription {
     [contentEditable=true]:empty:not(:focus):before{
       content:attr(data-text);
@@ -2418,6 +2148,280 @@
     padding: 16px;
   }
 }
+
+
+/*----------- Task Snapshot CSS ---------------*/
+
+#tasks {
+  .flexCard {
+    flex: 1 1 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .projectCard {
+    border-radius: 15px 15px 15px 15px;
+    margin-right: 10px;
+    border: thin solid rgba(0, 0, 0, 0.12);
+  }
+  .amount-item{
+    border-radius: 10px;
+    background: #c7e5f9c9;
+    border-color:@primaryColor!important;
+    color: @primaryColor;
+    border: thin solid rgba(0, 0, 0, 0.12);
+    width: 30px;
+    height: 20px;
+    margin-left: 5px;
+    text-align: center;
+    margin-top: 5px;
+    margin-block-end: 5px;
+  }
+  .separator{
+    margin-block-start: 15px;
+    margin-left: 5px;
+    margin-right: 50px;
+  }
+
+  .flagCard {
+  }
+  .color-title {
+    color: @greyColorLighten1;
+  }
+  .taskTitle {
+    color: black;
+    flex: 1 1 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-left: 25px;
+    span {
+      margin-left: 10px;
+    }
+  }
+  .nameGroup{
+    margin-left: 10px;
+    display: flex;
+    margin-top: 5px;
+    margin-block-end: 5px;
+  }
+  .iconlarge {
+    font-size: 40px;
+    color:@successColorLight;
+  }
+  .noTasks {
+    display: flex;
+    height: 370px;
+    align-items: center;
+    justify-content: center;
+    .noTasksContent {
+      text-align: center;
+      margin: auto;
+      .uiNoTaskIcon {
+        color: #6d7d9821;
+        font-size: 60px;
+        font-style: normal;
+        font-weight: normal;
+        &:before {
+          font-family: 'PLF-FONT-ICONS';
+          content: "\e690" !important;
+        }
+      }
+      .noTasksTitle {
+        color: #4d5466;
+        font-weight: normal;
+        font-size: 22px;
+      }
+      p {
+        font-weight: normal;
+        font-size: 15px;
+        color: @greyColorLighten1;
+      }
+    }
+  }
+
+  .list-item {
+    display: flex;
+    width: 100%;
+    margin-right: 10px;
+  }
+  .list-leave-active {
+    transition: all 1s;
+  }
+  .list-leave-to {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+}
+  
+
+
+/*---------------------Responsive Style ---------------------------*/
+
+@media (max-width: 420px) {
+  .taskDrawer {
+    .text-header-title {
+      font-size: 16px !important;
+    }
+    .taskDrawer .drawerHeader .drawerTitle #taskActionMenu .uiThreeDotsIcon:before {
+      font-size: 22px!important;
+    }
+    .drawerTitle .drawerTitleAndProject .taskProjectName .projectName {
+      max-width: 130px!important;
+    }
+    .icon-ArrowRight:before {
+      font-size: 14px!important;
+    }
+    .taskProjectName .inputTaskProjectName .v-input__control > .v-input__slot .v-select__slot .v-select__selections {
+      max-width: 60%!important;
+    }
+    .mdi-close {
+      font-size: 22px!important;
+      width: 22px!important;
+      height: 23px!important;
+    }
+    .drawerTitleAndProject {
+      max-width: 240px!important;
+    }
+    .taskAssignItem {
+      .assigneeName {
+        p.text-truncate {
+          max-width: 70px!important;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: @maxMobileWidth) {
+  #TasksParentContainer {
+    #TasksManagementPortlet {
+      .projectAndTasksContainer {
+        .tasksListContainer {
+          .projectItem {
+            .taskCardFlip {
+              min-height: 190px !important;
+              margin-bottom: 16px;
+              .taskCardFront {
+                height: auto;
+                max-height: inherit;
+                .tasksCardItem {
+                  height: 190px!important;
+                  max-height: 190px!important;
+                  background-color: transparent!important;
+                  border-bottom-width: 5px;
+                  border-bottom-style: solid;
+                  .taskItemToolbar {
+                    background-color: transparent !important;
+                    i {
+                      color: @greyColorLighten1!important;
+                    }
+                    .projectCardTitle {
+                      color: @textColor!important;
+                      padding-left: 8px;
+                    }
+                  }
+                  .taskItemInfo {
+                    padding: 8px!important;
+                    .descriptionDivider {
+                      display: none!important;
+                    }
+                    .taskItemDescription {
+                      min-height: inherit;
+                    }
+                  }
+                }
+              }
+              .tasksCardBack {
+                height: auto;
+                max-height: inherit;
+                .tasksCardItem {
+                  height: auto;
+                  max-height: inherit;
+                  .noTasksProject {
+                    padding-top: 24px;
+                    padding-bottom: 24px;
+                    .noTasksProjectIcon {
+                      .uiIconTask {
+                        font-size: 30px;
+                      }
+                    }
+                  }
+                  .echartStatsContent {
+                    .echartPieContent {
+                      height: 130px!important;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      .projectTasksDashboard {
+        .tasksViewBoard {
+          .projectTaskItem {
+            flex: 1 1 100%!important;
+            width: 100%!important;
+          }
+        }
+      }
+    }
+  }
+  .taskDisplay {
+    display: none!important;
+  }
+}
+
+@media (max-width: @maxLargeTabletWidth) {
+  #TasksParentContainer {
+    .projectAndTasksContainer {
+      .tasksList {
+        .tasksListItem {
+          .taskListItemView {
+            .taskAssignee {
+              width: 15%!important;
+              max-width: 15%!important;
+              padding-right: 12px;
+            }
+            .taskLabels {
+              .v-chip.v-size--small {
+                max-width: 80%;
+                padding: 0 4px;
+                margin: 0!important;
+              }
+            }
+          }
+        }
+      }
+    }
+    #TasksManagementPortlet {
+      .projectAndTasksContainer {
+        .projectTasksDashboard {
+          .tasksViewBoard {
+            .projectTaskItem {
+              flex: 1 1 50%;
+              width: 50%;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 1200px) {
+  .theme--light.v-navigation-drawer {
+    width: 60% !important;
+  }
+}
+@media (max-width: 599px) {
+  .theme--light.v-navigation-drawer {
+    width: 100% !important;
+  }
+}
+
 
 /*--------------Task priorities Colors ------------------*/
 
