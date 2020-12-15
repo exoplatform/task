@@ -1,5 +1,5 @@
 <template>
-  <div :id="status.name">
+  <div :id="status.id">
     <tasks-view-header
       :status="status"
       :project="project"
@@ -7,6 +7,7 @@
       :tasks-number="tasksList.length"
       :index="index"
       @delete-status="deleteStatus"
+      @update-status="updateStatus"
       @add-status="createStatus"
       @cancel-add-column="cancelAddColumn"
       @add-column ="addColumn"/>
@@ -74,6 +75,9 @@
     },
     deleteStatus(status) {
           this.$emit('delete-status', status);
+      },
+    updateStatus(status) {
+          this.$emit('update-status', status);
       },
     createStatus() {
           this.$emit('create-status');
