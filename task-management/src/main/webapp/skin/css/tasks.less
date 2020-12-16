@@ -2456,6 +2456,26 @@
     width: 100% !important;
   }
 }
+@media (max-width: 599px) {
+  #TasksManagementPortlet .projectAndTasksContainer .tasksToolbar{
+    .v-input__icon.v-input__icon--prepend-inner {
+      display: none;
+    }
+    .selectPrimaryFilter {
+      max-width: 51px!important;;
+    }
+    .v-toolbar__title {
+      min-width: 40px!important;
+      margin-right: 5px;
+    }
+    button.btn.px-2.btn-primary.addNewProjectButton.v-btn.v-btn--contained.theme--light.v-size--default {
+      min-width: auto!important;
+    }
+    button.btn.px-2.btn-primary.filterTasksSetting.v-btn.v-btn--depressed.v-btn--flat.v-btn--outlined.theme--light.v-size--default {
+      min-width: auto!important;
+    }
+  }
+}
 
 
 /*--------------Task priorities Colors ------------------*/

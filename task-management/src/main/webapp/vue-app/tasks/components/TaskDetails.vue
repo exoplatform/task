@@ -109,7 +109,7 @@
         this.$root.$emit('open-task-drawer', this.task.task);
       },
       navigateTo(pagelink) {
-        location.href=`${ eXo.env.portal.context }/${ eXo.env.portal.portalName }/taskstest?projectId=${ pagelink }` ;
+        location.href=`${ eXo.env.portal.context }/${ eXo.env.portal.portalName }/tasks?projectId=${ pagelink }` ;
       },
     }
   }

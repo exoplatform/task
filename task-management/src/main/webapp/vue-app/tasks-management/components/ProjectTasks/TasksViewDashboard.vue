@@ -30,7 +30,7 @@
       <div v-for="(project,i) in groupName.projectName" :key="project.name">
 
         <div
-          v-if=" project.value && project.value.displayName"
+          v-if=" project.value && project.value.displayName && project.name!==''"
           class="d-flex align-center assigneeFilter pointer"
           @click="showDetailsTask(project.rank)">
           <a
@@ -80,7 +80,7 @@
               style="display: none">
             </i>
           </a>
-          <div v-if="project.name==='Unassigned'" class="defaultAvatar">
+          <div v-if="project.name==='Unassigned' || project.name===''" class="defaultAvatar">
             <img :src="defaultAvatar">
           </div>
 
@@ -259,7 +259,7 @@
         .finally(() => this.loadingTasks = false);
       },
       getNameGroup(name){
-        if (name==='Unassigned'){
+        if (name==='Unassigned' || name===''){
           return 'label.unassigned'
         }else if(name==='No Label'){
           return 'label.noLabel'
