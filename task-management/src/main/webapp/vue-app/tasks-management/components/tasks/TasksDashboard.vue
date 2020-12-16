@@ -227,7 +227,7 @@
           this.resetSearch();
           this.searchTasks(this.tasksFilter)
         }else{
-          if((this.primaryfilter === 'OVERDUE' || this.primaryfilter === 'TODAY' || this.primaryfilter === 'TOMORROW')&&e.dueDate&&e.dueDate!==this.primaryfilter){
+          if((this.primaryfilter === 'OVERDUE' || this.primaryfilter === 'TODAY' || this.primaryfilter === 'TOMORROW' || this.primaryfilter === 'UPCOMING')&&e.dueDate&&e.dueDate!==this.primaryfilter){
             this.tasks=[]
             this.filterActive=false;
           }else if(this.primaryfilter === 'ASSIGNED' && e.assignee){
@@ -237,7 +237,7 @@
             if(!this.primaryfilter === 'ASSIGNED'){
               this.filterTasks.assignee=e.assignee 
             }
-            if(!(this.primaryfilter === 'OVERDUE' || this.primaryfilter === 'TODAY' || this.primaryfilter === 'TOMORROW')){
+            if(!(this.primaryfilter === 'OVERDUE' || this.primaryfilter === 'TODAY' || this.primaryfilter === 'TOMORROW' || this.primaryfilter === 'UPCOMING')){
               this.filterTasks.dueDate=e.dueDate 
             }
             this.filterTasks.query=e.query           
@@ -290,7 +290,7 @@
       },
       getTasksByPrimary(primaryfilter) { 
         this.primaryfilter=primaryfilter         
-        if(primaryfilter && (primaryfilter === 'OVERDUE' || primaryfilter === 'TODAY' || primaryfilter === 'TOMORROW')){
+        if(primaryfilter && (primaryfilter === 'OVERDUE' || primaryfilter === 'TODAY' || primaryfilter === 'TOMORROW' || primaryfilter === 'UPCOMING')){
           this.filterTasks.dueDate=primaryfilter
           this.filterTasks.assignee=''
           this.filterTasks.watcher=''

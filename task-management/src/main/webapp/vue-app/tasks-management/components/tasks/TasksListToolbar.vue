@@ -114,7 +114,9 @@
           this.awaitingSearch = true;  
         this.searchonkeyChange= true;
       },
-    },
+    },created() {
+    this.primaryFilterSelected = localStorage.getItem('primary-filter-tasks');
+  },
     methods: {
       resetFilterTask(){
         this.$emit('reset-filter-task-dashboard');

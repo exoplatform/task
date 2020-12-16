@@ -22,7 +22,7 @@
                 <div class="d-flex align-center">
                   <a
                     class="body-1 text-uppercase color-title px-0"
-                    @click="navigateTo('tasks/myTasks')">
+                    @click="navigateTo('tasks/myTasks','ALL')">
                     {{ $t('label.tasks.header') }}
                   </a>
                 </div>
@@ -51,7 +51,7 @@
                 <div>
                   <div class="nameGroup">
                     <span class="nameGroup">{{ $t('label.overdue') }}</span>
-                    <div class="amount-item pointer" @click="navigateTo('tasks/myTasks')">{{ tasksOverdueSize }}</div>
+                    <div class="amount-item pointer" @click="navigateTo('tasks/myTasks','OVERDUE')">{{ tasksOverdueSize }}</div>
                     <hr
                       role="separator"
                       aria-orientation="horizontal"
@@ -67,7 +67,7 @@
                 <div>
                   <div class="nameGroup">
                     <span class="nameGroup">{{ $t('label.today') }}</span>
-                    <div class="amount-item pointer" @click="navigateTo('tasks/myTasks')">{{ tasksTodaySize }}</div>
+                    <div class="amount-item pointer" @click="navigateTo('tasks/myTasks','TODAY')">{{ tasksTodaySize }}</div>
                     <hr
                       role="separator"
                       aria-orientation="horizontal"
@@ -85,7 +85,7 @@
                 <div>
                   <div class="nameGroup">
                     <span class="nameGroup">{{ $t('label.tomorrow') }}</span>
-                    <div class="amount-item pointer" @click="navigateTo('tasks/myTasks')">{{ tasksTomorrowSize }}</div>
+                    <div class="amount-item pointer" @click="navigateTo('tasks/myTasks','TOMORROW')">{{ tasksTomorrowSize }}</div>
                     <hr
                       role="separator"
                       aria-orientation="horizontal"
@@ -103,7 +103,7 @@
                 <div>
                   <div class="nameGroup">
                     <span class="nameGroup">{{ $t('label.upcoming') }}</span>
-                    <div class="amount-item pointer" @click="navigateTo('tasks/myTasks')">{{ tasksUpcomingSize }}</div>
+                    <div class="amount-item pointer" @click="navigateTo('tasks/myTasks','UPCOMING')">{{ tasksUpcomingSize }}</div>
                     <hr
                       role="separator"
                       aria-orientation="horizontal"
@@ -122,7 +122,7 @@
                   <button
                     type="button"
                     class="btn color-title btn-show"
-                    @click="navigateTo('tasks/myTasks')">{{ $t('label.tasks.btn.show') }}</button>
+                    @click="navigateTo('tasks/myTasks','ALL')">{{ $t('label.tasks.btn.show') }}</button>
                 </div>
               </div>
 
@@ -158,6 +158,7 @@
         tasksTodaySize:'',
         tasksTomorrowSize:'',
         tasksUpcomingSize:'',
+        primaryFilterSelected:'ALL',
         loadingTasks: true,
         TasksWithoutUpcomingSize:'',
         TasksSize:'',
@@ -306,8 +307,11 @@
         }), 1);
         document.body.style.overflow = 'auto';
       },
-      navigateTo(pagelink) {
+      navigateTo(pagelink,primaryFilterSelected) {
+        this.primaryFilterSelected=primaryFilterSelected;
+        localStorage.setItem('primary-filter-tasks', this.primaryFilterSelected);
         location.href=`${ eXo.env.portal.context }/${ eXo.env.portal.portalName }/${ pagelink }` ;
+
       },
     }
   }
