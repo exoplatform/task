@@ -11,6 +11,7 @@ import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
+import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.dao.ProjectQuery;
 import org.exoplatform.task.dto.ProjectDto;
 import org.exoplatform.task.dto.StatusDto;
@@ -104,18 +105,17 @@ public class ProjectRestService implements ResourceContainer {
       ProjectQuery projectQuery = new ProjectQuery();
       projectQuery.setManager(managers);
       projectQuery.setKeyword(query);
-      List<ProjectDto> projectDtoList = projectService.findProjects(projectQuery, offset, limit);
+      OrderBy orderBy = new OrderBy.DESC("lastModifiedDate");
+      projectQuery.setOrderBy(Arrays.asList(orderBy));
+      projects = projectService.findProjects(projectQuery, offset, limit);
       projectNumber = projectService.countProjects(projectQuery);
-      projects = ProjectUtil.getProjectTree(projectDtoList, identity);
     }else if(projectsFilter!=null && projectsFilter.equals("COLLABORATED")){
-      List<ProjectDto> projectDtoList = projectService.findCollaboratedProjects(identity.getUserId(),query,offset, limit);
+      projects = projectService.findCollaboratedProjects(identity.getUserId(),query,offset, limit);
       projectNumber = projectService.countCollaboratedProjects(identity.getUserId(),query);
-      projects = ProjectUtil.getProjectTree(projectDtoList, identity);
     }else if(projectsFilter!=null && projectsFilter.equals("WITH_TASKS")){
       memberships.addAll(UserUtil.getMemberships(identity));
-      List<ProjectDto> projectDtoList = projectService.findNotEmptyProjects(memberships,query,offset, limit);
+      projects = projectService.findNotEmptyProjects(memberships,query,offset, limit);
       projectNumber = projectService.countNotEmptyProjects(memberships,query);
-      projects = ProjectUtil.getProjectTree(projectDtoList, identity);
     }else {
       if(StringUtils.isNoneEmpty(spaceName)){
         Space space = spaceService.getSpaceByPrettyName(spaceName);
@@ -125,8 +125,8 @@ public class ProjectRestService implements ResourceContainer {
       }else{
         memberships.addAll(UserUtil.getMemberships(identity));
       }
-      List<ProjectDto> projectDtoList = projectService.findProjects(memberships,query,null,offset, limit);
-      projects = ProjectUtil.getProjectTree(projectDtoList, identity);
+      OrderBy orderBy = new OrderBy.DESC("lastModifiedDate");
+      projects = projectService.findProjects(memberships,query,orderBy ,offset, limit);
       projectNumber = projectService.countProjects(memberships, query);
     }
     JSONObject global = new JSONObject();
@@ -397,7 +397,7 @@ public class ProjectRestService implements ResourceContainer {
       space = spaceService.getSpaceByPrettyName(projectDto.getSpaceName());
     }
     if (space != null) {
-      List<String> memberships = UserUtil.getSpaceMemberships(space.getId());
+      List<String> memberships = UserUtil.getSpaceMemberships(space.getGroupId());
       Set<String> managers = new HashSet<String>(Arrays.asList(currentUser, memberships.get(0)));
       Set<String> participators = new HashSet<String>(Arrays.asList(memberships.get(1)));
       project = ProjectUtil.newProjectInstanceDto(projectDto.getName(), description, managers, participators);

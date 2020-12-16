@@ -8,7 +8,10 @@ import org.exoplatform.social.core.identity.model.Identity;
 import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
 import org.exoplatform.social.core.service.LinkProvider;
 import org.exoplatform.task.dao.DAOHandler;
+import org.exoplatform.task.domain.Comment;
+import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.dto.CommentDto;
+import org.exoplatform.task.dto.ProjectDto;
 import org.exoplatform.task.dto.TaskDto;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.service.CommentService;
@@ -98,10 +101,14 @@ public class CommentServiceImpl implements CommentService {
             }
             newComment.setParentComment(parentComment);
         }
-        CommentDto obj = commentStorage.commentToDto(daoHandler.getCommentHandler().create(commentStorage.commentToEntity(newComment)));
+        Comment commentEntity = daoHandler.getCommentHandler().create(commentStorage.commentToEntity(newComment));
+        CommentDto obj = commentStorage.commentToDto(commentEntity);
 
         try {
-            listenerService.broadcast(TASK_COMMENT_CREATION, null, obj);
+            listenerService.broadcast(TASK_COMMENT_CREATION, null, commentEntity);
+            if(obj.getTask().getStatus()!=null){
+                listenerService.broadcast("exo.project.projectModified", null, obj.getTask().getStatus().getProject() );
+            }
         } catch (Exception e) {
             LOG.error("Error while broadcasting task creation event", e);
         }

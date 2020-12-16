@@ -18,6 +18,7 @@ package org.exoplatform.task.service.impl;
 
 import org.exoplatform.commons.api.persistence.ExoTransactional;
 import org.exoplatform.commons.utils.PropertyManager;
+import org.exoplatform.services.listener.ListenerService;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.task.dao.DAOHandler;
@@ -26,6 +27,7 @@ import org.exoplatform.task.dto.StatusDto;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.exception.NotAllowedOperationOnEntityException;
 import org.exoplatform.task.service.StatusService;
+import org.exoplatform.task.storage.ProjectStorage;
 import org.exoplatform.task.storage.StatusStorage;
 
 import javax.inject.Inject;
@@ -44,13 +46,20 @@ public class StatusServiceImpl implements StatusService {
     @Inject
     private StatusStorage statusStorage;
 
+    @Inject
+    private ProjectStorage projectStorage;
+
+    private ListenerService listenerService;
+
     private String[] DEFAULT_STATUS = {"ToDo", "InProgress", "WaitingOn", "Done"};
 
     private static Log LOG = ExoLogger.getExoLogger(org.exoplatform.task.legacy.service.impl.StatusServiceImpl.class);
 
-    public StatusServiceImpl(DAOHandler daoHandler, StatusStorage statusStorage) {
+    public StatusServiceImpl(DAOHandler daoHandler, StatusStorage statusStorage, ProjectStorage projectStorage, ListenerService listenerService) {
         this.daoHandler = daoHandler;
         this.statusStorage = statusStorage;
+        this.projectStorage = projectStorage;
+        this.listenerService = listenerService;
     }
 
     public StatusServiceImpl(DAOHandler daoHandler) {
@@ -104,7 +113,11 @@ public class StatusServiceImpl implements StatusService {
         if (name == null || (name = name.trim()).isEmpty() || project == null) {
             throw new IllegalArgumentException("project must be not null and status must not be null or empty");
         }
-
+        try {
+            listenerService.broadcast("exo.project.projectModified", null, projectStorage.projectToEntity(project));
+        } catch (Exception e) {
+            LOG.error("Error while broadcasting status creation event", e);
+        }
         return statusStorage.createStatus(project, name);
     }
 
@@ -114,7 +127,11 @@ public class StatusServiceImpl implements StatusService {
         if (name == null || (name = name.trim()).isEmpty() || project == null) {
             throw new IllegalArgumentException("project must be not null and status must not be null or empty");
         }
-
+        try {
+            listenerService.broadcast("exo.project.projectModified", this, projectStorage.projectToEntity(project));
+        } catch (Exception e) {
+            LOG.error("Error while broadcasting status creation event", e);
+        }
         return statusStorage.createStatus(project, name, rank);
     }
 
@@ -130,8 +147,13 @@ public class StatusServiceImpl implements StatusService {
         if (name == null || (name = name.trim()).isEmpty()) {
             throw new IllegalArgumentException("status name can't be null or empty");
         }
-
-        return statusStorage.updateStatus(id, name);
+        StatusDto statusDto = statusStorage.updateStatus(id, name);
+        try {
+            listenerService.broadcast("exo.project.projectModified", this, statusDto);
+        } catch (Exception e) {
+            LOG.error("Error while broadcasting status update event", e);
+        }
+        return statusDto;
     }
 
     @Override
@@ -141,7 +163,13 @@ public class StatusServiceImpl implements StatusService {
         if (name == null || (name = name.trim()).isEmpty()) {
             throw new IllegalArgumentException("status name can't be null or empty");
         }
-        return statusStorage.updateStatus(statusDto);
+        statusDto = statusStorage.updateStatus(statusDto);
+        try {
+            listenerService.broadcast("exo.project.projectModified", this, statusDto.getProject());
+        } catch (Exception e) {
+            LOG.error("Error while broadcasting status update event", e);
+        }
+        return statusDto;
     }
 
 }

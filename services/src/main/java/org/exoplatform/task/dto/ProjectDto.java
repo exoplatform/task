@@ -38,6 +38,8 @@ public class ProjectDto implements Serializable {
 
     private Date dueDate;
 
+    private Long lastModifiedDate;;
+
     private Project parent;
 
     private List<Project> children;
