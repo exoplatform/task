@@ -104,7 +104,7 @@ $(document).ready(function() {
         var _this = this;
         var $projectId = $rightPanel.find('.breadcrumbCont > ul').data('value');
         $('[data-taskid]').jzAjax('UserController.findUsersToMention()', {
-            data: {query: query, projectId: $projectId},
+            data: {query: query, projectId: $projectId, lang: eXo.env.portal.language},
             success: function(data) {
                 var result = [];
                 for (var i = 0; i < data.length; i++) {

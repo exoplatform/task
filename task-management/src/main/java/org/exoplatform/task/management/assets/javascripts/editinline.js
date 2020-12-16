@@ -397,7 +397,7 @@ define('ta_edit_inline',
                 if (!query || !query.length) return callback(defaultOptionValues);
                 $.ajax({
                     url: $rightPanel.jzURL('UserController.findUser'),
-                    data: {query: query, projectId: $projectId},
+                    data: {query: query, projectId: $projectId, lang: eXo.env.portal.language},
                     type: 'GET',
                     error: function() {
                         callback();

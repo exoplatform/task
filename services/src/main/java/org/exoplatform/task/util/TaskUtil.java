@@ -20,6 +20,8 @@ package org.exoplatform.task.util;
 import java.text.*;
 import java.util.*;
 
+import org.exoplatform.commons.utils.CommonsUtils;
+import org.exoplatform.services.resources.ResourceBundleService;
 import org.exoplatform.task.dto.CommentDto;
 import org.exoplatform.task.dto.LabelDto;
 import org.exoplatform.task.dto.StatusDto;
@@ -74,6 +76,7 @@ public final class TaskUtil {
   public static final String MEMBERSHIP = "membership";
   public static final String CREATED_BY = "createdBy";
   public static final String COWORKER = "coworker";
+  public static final String EXTERNAL_GROUP    = "/platform/externals";
   
   public static final ListAccess<Task> EMPTY_TASK_LIST = new ListAccess<Task>() {
 
@@ -123,6 +126,34 @@ public final class TaskUtil {
       labels.put(k, label);
     }
     return labels;
+  }
+
+  /**
+   * Check if the user is a member of the external group
+   *
+   * @return
+   */
+  public static boolean isMemberOfExternalGroup(String userId) throws Exception{
+    OrganizationService organizationService = CommonsUtils.getService(OrganizationService.class);
+    return organizationService.getMembershipHandler().findMembershipsByUserAndGroup(userId, EXTERNAL_GROUP).size() > 0;
+  }
+
+
+  public static String getResourceBundleLabel(Locale locale, String label) {
+    ResourceBundle resourceBundle = TaskUtil.getSharedResourceBundle(locale);
+    return resourceBundle.getString(label);
+  }
+
+  public static ResourceBundle getSharedResourceBundle(Locale locale) {
+    return getResourceBundleService().getResourceBundle(getSharedResources(), locale);
+  }
+
+  public static ResourceBundleService getResourceBundleService() {
+    return ExoContainerContext.getService(ResourceBundleService.class);
+  }
+
+  public static String[] getSharedResources() {
+    return getResourceBundleService().getSharedResourceBundleNames();
   }
   
   public static TaskQuery buildTaskQuery(TaskQuery query, String keyword,

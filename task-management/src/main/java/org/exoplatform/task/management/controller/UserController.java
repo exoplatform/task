@@ -23,6 +23,7 @@ import javax.inject.Inject;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 import juzu.MimeType;
 import juzu.Resource;
@@ -31,8 +32,10 @@ import juzu.impl.common.Tools;
 import juzu.request.SecurityContext;
 
 import org.exoplatform.commons.juzu.ajax.Ajax;
+import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.commons.utils.HTMLEntityEncoder;
 import org.exoplatform.commons.utils.ListAccess;
+import org.exoplatform.portal.config.DataStorage;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
@@ -48,6 +51,7 @@ import org.exoplatform.task.legacy.service.ProjectService;
 import org.exoplatform.task.legacy.service.TaskService;
 import org.exoplatform.task.legacy.service.UserService;
 import org.exoplatform.task.util.ListUtil;
+import org.exoplatform.task.util.TaskUtil;
 import org.exoplatform.task.util.UserUtil;
 import org.gatein.common.text.EntityEncoder;
 import org.json.JSONArray;
@@ -76,16 +80,22 @@ public class UserController extends AbstractController {
     @Resource
     @Ajax
     @MimeType.JSON
-    public Response findUser(String query, Long projectId) throws Exception { // NOSONAR
+    public Response findUser(String query, Long projectId, String lang) throws Exception { // NOSONAR
       ListAccess<org.exoplatform.task.model.User> list = userService.findUserByName(query);
       JSONArray array = new JSONArray();
       Space space = projectId != 0 && projectService.getProject(projectId) != null ? sService.getSpaceByPrettyName(projectService.getProject(projectId).getName()) : null;
       Space spaceProject = getSpaceProject(projectId);
       for(org.exoplatform.task.model.User u : list.load(0, UserUtil.SEARCH_LIMIT)) {
         JSONObject json = new JSONObject();
+        String fullName = u.getDisplayName();
+        try {
+          fullName = TaskUtil.isMemberOfExternalGroup(u.getUsername()) ? fullName + " " + TaskUtil.getResourceBundleLabel(new Locale(lang), "external.label.tag"): fullName ;
+        } catch (Exception e) {
+          LOG.error("Error when checking external user", e);
+        }
         if ((space == null || sService.isMember(space, u.getUsername())) && (spaceProject == null || sService.isMember(spaceProject, u.getUsername()))) {
           json.put("id", u.getUsername());
-          json.put("text", u.getDisplayName());
+          json.put("text", fullName);
           json.put("avatar", u.getAvatar());
           array.put(json);
         }
@@ -96,16 +106,22 @@ public class UserController extends AbstractController {
     @Resource
     @Ajax
     @MimeType.JSON
-    public Response findUsersToMention(String query, Long projectId) throws Exception { // NOSONAR
+    public Response findUsersToMention(String query, Long projectId, String lang) throws Exception { // NOSONAR
       ListAccess<org.exoplatform.task.model.User> list = userService.findUserByName(query);
       JSONArray array = new JSONArray();
       Space space = projectId != 0 && projectService.getProject(projectId) != null ? sService.getSpaceByPrettyName(projectService.getProject(projectId).getName()) : null;
       Space spaceProject = getSpaceProject(projectId);
       for(org.exoplatform.task.model.User u : list.load(0, UserUtil.SEARCH_LIMIT)) {
         JSONObject json = new JSONObject();
+        String fullName = u.getDisplayName();
+        try {
+          fullName = TaskUtil.isMemberOfExternalGroup(u.getUsername()) ? fullName + " " + TaskUtil.getResourceBundleLabel(new Locale(lang), "external.label.tag"): fullName ;
+        } catch (Exception e) {
+          LOG.error("Error when checking external user", e);
+        }
         if ((space == null || sService.isMember(space, u.getUsername())) && (spaceProject == null || sService.isMember(spaceProject, u.getUsername()))) {
           json.put("id", "@" + u.getUsername());
-          json.put("name", u.getDisplayName());
+          json.put("name", fullName);
           json.put("avatar", u.getAvatar());
           json.put("type", "contact");
           array.put(json);
