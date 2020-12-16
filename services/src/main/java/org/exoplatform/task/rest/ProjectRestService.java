@@ -210,6 +210,40 @@ public class ProjectRestService implements ResourceContainer {
   }
 
   @GET
+  @Path("project/statistics/{id}")
+  @RolesAllowed("users")
+  @Produces(MediaType.APPLICATION_JSON)
+  @ApiOperation(value = "Gets users by query and project name", httpMethod = "GET", response = Response.class, notes = "This returns users by query and project name")
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled") })
+  public Response getProjectsStatistics(@ApiParam(value = "id", required = true) @PathParam("id") long id ) throws Exception {
+
+    HashMap<String, Integer> hm = new HashMap<String, Integer>();
+     for(StatusDto statusDto : statusService.getStatuses(id)){
+       hm.put(statusDto.getName(),0);
+     }
+    int tasksNum = 0;
+    JSONObject projectJson = new JSONObject();
+    List<Object[]> statusObjects = taskService.countTaskStatusByProject(id);
+    JSONArray statusStats = new JSONArray();
+    if (statusObjects != null && statusObjects.size() > 0) {
+
+      for (Object[] result : statusObjects) {
+        hm.put((String) result[0],((Number) result[1]).intValue());
+        tasksNum+=((Number) result[1]).intValue();
+      }
+      for (Map.Entry me : hm.entrySet()) {
+        JSONObject statJson = new JSONObject();
+        statJson.put("name",me.getKey());
+        statJson.put("value",  me.getValue());
+        statusStats.put(statJson);      }
+    }
+    projectJson.put("statusStats", statusStats);
+    projectJson.put("totalNumberTasks", tasksNum);
+    return Response.ok(projectJson.toString()).build();
+  }
+
+
+  @GET
   @Path("users/{query}/{projectName}")
   @RolesAllowed("users")
   @Produces(MediaType.APPLICATION_JSON)
@@ -246,25 +280,12 @@ public class ProjectRestService implements ResourceContainer {
   private JSONObject buildJsonProject(ProjectDto project, boolean participatorParam) throws JSONException{
     
       long projectId = project.getId();
-      JSONObject projectJson = new JSONObject();
-      List<Object[]> statusObjects = taskService.countTaskStatusByProject(projectId);
-      JSONArray statusStats = new JSONArray();
-      if (statusObjects != null && statusObjects.size() > 0) {
-
-        for (Object[] result : statusObjects) {
-          JSONObject statJson = new JSONObject();
-          statJson.put("status", (String) result[0]);
-          statJson.put("taskNumber", ((Number) result[1]).intValue());
-          statusStats.put(statJson);
-        }
-
-      }
-      projectJson.put("statusStats", statusStats);
       Space space = null;
       Set<String> projectManagers = projectService.getManager(projectId);
       Set<String> managers = new LinkedHashSet();
       Set<String> projectParticipators = projectService.getParticipator(projectId);
       Set<String> participators = new LinkedHashSet();
+    JSONObject projectJson = new JSONObject();
 
     if (projectManagers.size() > 0) {
         for (String permission : projectService.getManager(projectId)) {
