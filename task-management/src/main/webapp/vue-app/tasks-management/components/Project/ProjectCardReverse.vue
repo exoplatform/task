@@ -25,9 +25,12 @@
           <span class="text-body-2 totalLabel">{{ $t('exo.tasks.label.leftTasks') }}</span>
         </div>
       </div>
-      <div class="projectStatusNumber pl-4">
-        <p v-for="item in statistics" :key="item.name" class="d-flex justify-space-between mb-1 taskToDoLabel">
-          <span class="caption">{{ item.name }}</span>
+      <div v-if="statistics.length < maxStatusToShow" class="projectStatusNumber pl-4">
+        <p 
+          v-for="item in statistics" 
+          :key="item.name" 
+          class="d-flex justify-space-between mb-1 taskToDoLabel">
+          <span class="caption text-truncate">{{ item.name }}</span>
           <span>{{ item.value }}</span>
         </p>
         
@@ -52,6 +55,7 @@
       return {
         totalLeftTasks: 0,
         statistics: [],
+        maxStatusToShow:7,
         option : {
           tooltip: {
             trigger: 'item',
