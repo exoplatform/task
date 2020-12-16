@@ -13,6 +13,19 @@ export function getProjectsList(spaceName, query, projectFilter, offset, limit, 
     });
 }
 
+export function getProjectStats(id) {
+    return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/projects/project/statistics/${id}`, {
+        method: 'GET',
+        credentials: 'include',
+    }).then(resp => {
+        if (!resp || !resp.ok) {
+            throw new Error('Response code indicates a server error', resp);
+        } else {
+            return resp.json();
+        }
+    });
+}
+
 export function getProject(id, participatorParam) {
     return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/projects/projects/${id}?&participatorParam=${participatorParam|| false}`, {
         method: 'GET',
