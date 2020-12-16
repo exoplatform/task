@@ -3,8 +3,7 @@
     <v-card
       :class="[getTaskPriorityColor(task.task.priority)]"
       class="taskCard pa-3"
-      flat
-      @click="openTaskDrawer()">
+      flat>
       <div class="taskTitleId d-flex justify-space-between">
         <div class="taskTitle d-flex align-start">
           <div class="taskCheckBox" @click="updateCompleted" >
@@ -26,11 +25,13 @@
               end-char=".."/>
           </a>
         </div>
-        <div class="taskId">
+        <div 
+          class="taskId"
+          @click="openTaskDrawer()">
           <span class="caption text-sub-title">ID : {{ task.task.id }}</span>
         </div>
       </div>
-      <div class="taskAssigneeAndLabels d-flex justify-space-between align-center mt-3">
+      <div class="taskAssigneeAndLabels d-flex justify-space-between align-center mt-3" @click="openTaskDrawer()">
         <div class="taskAssignee d-flex flex-nowrap">
           <exo-user-avatar
             v-for="user in avatarToDisplay"
@@ -60,7 +61,8 @@
       <v-divider v-if="task && commentCount || task && task.labels && task.labels.length || taskDueDate"/>
       <div 
         v-if="task && commentCount || task && task.labels && task.labels.length || taskDueDate"
-        class="taskStatusAndDate d-flex justify-space-between pt-3">
+        class="taskStatusAndDate d-flex justify-space-between pt-3" 
+        @click="openTaskDrawer()">
         <div class="taskActionsAndLabels d-flex align-center">
           <div v-if="task.commentCount" class="taskComment d-flex pr-2">
             <i class="uiIcon uiCommentIcon"></i>

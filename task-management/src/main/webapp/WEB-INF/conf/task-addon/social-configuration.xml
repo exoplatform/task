@@ -85,6 +85,11 @@
       <set-method>addListener</set-method>
       <type>org.exoplatform.task.integration.TaskCommentNotificationListener</type>
     </component-plugin>
+    <component-plugin>
+      <name>exo.project.projectModified</name>
+      <set-method>addListener</set-method>
+      <type>org.exoplatform.task.integration.ProjectModifiedListener</type>
+    </component-plugin>
   </external-component-plugins>
 
   <external-component-plugins>
@@ -127,94 +132,6 @@
         </value-param>
       </init-params>
     </component-plugin>
-  </external-component-plugins>
-
-  <external-component-plugins>
-    <target-component>org.exoplatform.social.core.space.spi.SpaceTemplateService</target-component>
-    <!-- Community space template -->
-    <component-plugin>
-      <name>Space Template Extension</name>
-      <set-method>extendSpaceTemplatePlugin</set-method>
-      <type>org.exoplatform.social.core.space.SpaceTemplateConfigPlugin</type>
-      <init-params>
-        <object-param>
-          <name>template</name>
-          <description>Space Template</description>
-          <object type="org.exoplatform.social.core.space.SpaceTemplate">
-            <field name="name"><string>community</string></field>
-            <field name="applications">
-              <collection type="java.util.ArrayList">
-                <value>
-                  <object type="org.exoplatform.social.core.space.SpaceApplication">
-                    <field name="portletApp">
-                      <string>task-management</string>
-                    </field>
-                    <field name="portletName">
-                      <string>TaskManagementApplication</string>
-                    </field>
-                    <field name="appTitle">
-                      <string>abcd</string>
-                    </field>
-                    <field name="removable">
-                      <boolean>true</boolean>
-                    </field>
-                    <field name="order">
-                      <int>400</int>
-                    </field>
-                    <field name="uri">
-                      <string>tasks</string>
-                    </field>
-                  </object>
-                </value>
-              </collection>
-            </field>
-          </object>
-        </object-param>
-      </init-params>
-    </component-plugin>
-    <!-- end Community space template -->
-    <!-- Project space template -->
-    <component-plugin>
-      <name>Space Template Configuration</name>
-      <set-method>extendSpaceTemplatePlugin</set-method>
-      <type>org.exoplatform.social.core.space.SpaceTemplateConfigPlugin</type>
-      <init-params>
-        <object-param>
-          <name>template</name>
-          <description>Space Template</description>
-          <object type="org.exoplatform.social.core.space.SpaceTemplate">
-            <field name="name"><string>project</string></field>
-            <field name="applications">
-              <collection type="java.util.ArrayList">
-                <value>
-                  <object type="org.exoplatform.social.core.space.SpaceApplication">
-                    <field name="portletApp">
-                      <string>task-management</string>
-                    </field>
-                    <field name="portletName">
-                      <string>TaskManagementApplication</string>
-                    </field>
-                    <field name="appTitle">
-                      <string>abcd</string>
-                    </field>
-                    <field name="removable">
-                      <boolean>true</boolean>
-                    </field>
-                    <field name="order">
-                      <int>300</int>
-                    </field>
-                    <field name="uri">
-                      <string>tasks</string>
-                    </field>
-                  </object>
-                </value>
-              </collection>
-            </field>
-          </object>
-        </object-param>
-      </init-params>
-    </component-plugin>
-    <!-- end Project space template -->
   </external-component-plugins>
 
 </configuration>

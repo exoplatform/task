@@ -36,9 +36,17 @@
 <script>
   export default {
     props: {
+      spaceName: {
+        type: String,
+        default: '',
+      },
       keyword: {
         type: String,
         default: null,
+      },
+      projectFilterSelected: {
+        type: String,
+        default: 'ALL',
       },
       loadingProjects: {
         type: Boolean,
@@ -82,6 +90,10 @@
       limitToFetch() {
         this.searchProjects();
       },
+      projectFilterSelected() {
+        this.searchProjects();
+      },
+
     },
     created() {
       this.originalLimitToFetch = this.limitToFetch = this.limit;
@@ -92,7 +104,7 @@
     methods: {
       searchProjects() {
         this.loadingProjects = true;
-        return this.$projectService.getProjectsList(this.keyword,this.offset, this.limitToFetch).then(data => {
+        return this.$projectService.getProjectsList(this.spaceName,this.keyword,this.projectFilterSelected,this.offset, this.limitToFetch).then(data => {
           //this.projects.push(...data.projects);
           this.projects = data && data.projects || [];
           this.projectSize = data && data.projectNumber || 0;

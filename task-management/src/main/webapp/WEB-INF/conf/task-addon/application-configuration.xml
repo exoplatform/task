@@ -75,7 +75,7 @@
                 <value>
                   <object type="org.exoplatform.application.registry.Application">
                     <field name="applicationName">
-                      <string>TaskManagementApplication</string>
+                      <string>TasksManagement</string>
                     </field>
                     <field name="categoryName">
                       <string>spacesApplications</string>
@@ -90,7 +90,7 @@
                       <string>portlet</string>
                     </field>
                     <field name="contentId">
-                      <string>task-management/TaskManagementApplication</string>
+                      <string>task-management/TasksManagement</string>
                     </field>
                     <field name="accessPermissions">
                       <collection type="java.util.ArrayList">
@@ -139,7 +139,7 @@
                     <field name="displayName"><string>Tasks</string></field>
                     <field name="description"><string>Task management application</string></field>
                     <field name="type"><string>portlet</string></field>
-                    <field name="contentId"><string>task-management/TaskManagementApplication</string></field>
+                    <field name="contentId"><string>task-management/TasksManagement</string></field>
                     <field name="accessPermissions">
                       <collection type="java.util.ArrayList" item-type="java.lang.String">
                         <value><string>*:/platform/users</string></value>

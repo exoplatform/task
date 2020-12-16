@@ -16,6 +16,8 @@
 
 package org.exoplatform.task.service;
 
+import org.exoplatform.container.ExoContainer;
+import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.services.listener.ListenerService;
 import org.exoplatform.task.TestUtils;
@@ -29,6 +31,7 @@ import org.exoplatform.task.model.User;
 import org.exoplatform.task.service.impl.CommentServiceImpl;
 import org.exoplatform.task.service.impl.StatusServiceImpl;
 import org.exoplatform.task.storage.CommentStorage;
+import org.exoplatform.task.storage.ProjectStorage;
 import org.exoplatform.task.storage.StatusStorage;
 import org.exoplatform.task.storage.TaskStorage;
 import org.exoplatform.task.storage.impl.CommentStorageImpl;
@@ -56,13 +59,16 @@ public class CommentServiceTest {
 
   StatusStorage           statusStorage;
 
+  ProjectStorage projectStorage;
+
   CommentStorage          commentStorage;
 
   TaskStorage             taskStorage;
 
   ListenerService         listenerService;
 
-
+  @Mock
+  ExoContainer container;
 
   @Mock
   TaskHandler             taskHandler;
@@ -89,10 +95,9 @@ public class CommentServiceTest {
   public void setUp() {
     // Make sure the container is started to prevent the ExoTransactional annotation
     // to fail
-    PortalContainer.getInstance();
     taskStorage = new TaskStorageImpl(daoHandler,userService);
     commentStorage = new CommentStorageImpl(daoHandler);
-    statusService = new StatusServiceImpl(daoHandler, statusStorage);
+    statusService = new StatusServiceImpl(daoHandler, statusStorage, projectStorage, listenerService);
     commentService = new CommentServiceImpl(taskStorage, commentStorage, daoHandler, listenerService);
     // Mock DAO handler to return Mocked DAO
     when(daoHandler.getTaskHandler()).thenReturn(taskHandler);

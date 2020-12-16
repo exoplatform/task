@@ -16,7 +16,10 @@
 
 package org.exoplatform.task.service;
 
+import org.exoplatform.container.ExoContainer;
+import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.PortalContainer;
+import org.exoplatform.services.listener.ListenerService;
 import org.exoplatform.task.TestDtoUtils;
 import org.exoplatform.task.TestUtils;
 import org.exoplatform.task.dao.*;
@@ -30,6 +33,7 @@ import org.exoplatform.task.exception.NotAllowedOperationOnEntityException;
 import org.exoplatform.task.service.impl.StatusServiceImpl;
 import org.exoplatform.task.storage.ProjectStorage;
 import org.exoplatform.task.storage.StatusStorage;
+import org.exoplatform.task.storage.TaskStorage;
 import org.exoplatform.task.storage.impl.ProjectStorageImpl;
 import org.exoplatform.task.storage.impl.StatusStorageImpl;
 import org.junit.After;
@@ -61,6 +65,11 @@ public class StatusServiceTest {
 
     ProjectStorage projectStorage;
 
+    TaskStorage taskStorage;
+
+    @Mock
+    ListenerService listenerService;
+
     @Mock
     TaskHandler taskHandler;
     @Mock
@@ -81,8 +90,8 @@ public class StatusServiceTest {
         // Make sure the container is started to prevent the ExoTransactional annotation to fail
         PortalContainer.getInstance();
         projectStorage = new ProjectStorageImpl(daoHandler);
-        statusStorage = new StatusStorageImpl(daoHandler, projectStorage);
-        statusService = new StatusServiceImpl(daoHandler, statusStorage);
+        statusStorage = new StatusStorageImpl(daoHandler, projectStorage,taskStorage);
+        statusService = new StatusServiceImpl(daoHandler, statusStorage, projectStorage, listenerService);
 
         //Mock DAO handler to return Mocked DAO
         when(daoHandler.getTaskHandler()).thenReturn(taskHandler);
@@ -128,7 +137,7 @@ public class StatusServiceTest {
     }
 
     @Test
-    public void testDeleteLastStatus() throws EntityNotFoundException, NotAllowedOperationOnEntityException {
+    public void testDeleteLastStatus() throws EntityNotFoundException, NotAllowedOperationOnEntityException, Exception {
         Project project = TestUtils.getDefaultProject();
 
         Status s1 = TestUtils.getDefaultStatus();
@@ -151,7 +160,6 @@ public class StatusServiceTest {
 
         statusService.removeStatus(s2.getId());
 
-        verify(taskHandler, times(1)).updateStatus(s2, s1);
         verify(statusHandler, times(1)).delete(statusCaptor.capture());
     }
 

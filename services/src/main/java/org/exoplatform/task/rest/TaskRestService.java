@@ -512,15 +512,13 @@ public class TaskRestService implements ResourceContainer {
     if (limit == 0) {
       limit = -1;
     }
-    List<CommentDto> comments = commentService.getComments(id, offset, limit);
-    commentService.loadSubComments(comments);
-
+    List<CommentDto> comments = commentService.getCommentsWithSubs(id, offset, limit);
     List<CommentEntity> commentModelsList = new ArrayList<CommentEntity>();
     for (CommentDto comment : comments) {
       CommentEntity commentModel = addCommentModel(comment, commentModelsList);
       if (comment.getSubComments()!=null&&!comment.getSubComments().isEmpty()) {
         List<CommentEntity> subCommentsModelsList = new ArrayList<>();
-        for (CommentDto subComment : commentStorage.listCommentsToDtos(comment.getSubComments())) {
+        for (CommentDto subComment :comment.getSubComments()) {
           addCommentModel(subComment, subCommentsModelsList);
         }
         commentModel.setSubComments(subCommentsModelsList);

@@ -74,6 +74,9 @@ public class TaskServiceImpl implements TaskService {
         TaskPayload event = new TaskPayload(null, taskStorage.toEntity(result));
         try {
             listenerService.broadcast(TASK_CREATION, null, event);
+            if(result.getStatus()!=null){
+                listenerService.broadcast("exo.project.projectModified", null, taskStorage.toEntity(result).getStatus().getProject() );
+            }
         } catch (Exception e) {
             LOG.error("Error while broadcasting task creation event", e);
         }
@@ -93,6 +96,9 @@ public class TaskServiceImpl implements TaskService {
         TaskPayload event = new TaskPayload(taskStorage.toEntity(oldTaskEntity), taskStorage.toEntity(newTaskEntity));
         try {
             listenerService.broadcast(TASK_UPDATE, null, event);
+            if(task.getStatus()!=null){
+                listenerService.broadcast("exo.project.projectModified", null, taskStorage.toEntity(task).getStatus().getProject() );
+            }
         } catch (Exception e) {
             LOG.error("Error while broadcasting task creation event", e);
         }

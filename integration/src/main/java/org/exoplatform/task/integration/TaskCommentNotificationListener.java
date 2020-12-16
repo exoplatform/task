@@ -49,7 +49,6 @@ public class TaskCommentNotificationListener extends Listener<TaskService, Comme
   public void onEvent(Event<TaskService, Comment> event) throws Exception {
     TaskService taskService = event.getSource();
     Comment comment = event.getData();
-
     //. How to send notification
     NotificationContext ctx = buildContext(taskService, comment);
     dispatch(ctx, TaskCommentPlugin.ID, TaskMentionPlugin.ID);

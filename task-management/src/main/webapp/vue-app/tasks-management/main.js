@@ -3,20 +3,25 @@ import '../taskDrawer/initComponents.js';
 import { tasksConstants } from '../../js/tasksConstants.js';
 import * as tasksService from '../../js/tasksService.js';
 import * as projectService from '../../js/projectService.js';
+import * as statusService from '../../js/statusService.js';
 
 Vue.use(Vuetify);
 Vue.use(VueEllipsis);
 const vuetify = new Vuetify({
-  dark: true,
-  iconfont: '',
+    dark: true,
+    iconfont: '',
 })
 
 window.Object.defineProperty(Vue.prototype, '$tasksService', {
-  value: tasksService,
+    value: tasksService,
 });
 
 window.Object.defineProperty(Vue.prototype, '$projectService', {
-  value: projectService,
+    value: projectService,
+});
+
+window.Object.defineProperty(Vue.prototype, '$statusService', {
+    value: statusService,
 });
 
 
@@ -27,12 +32,12 @@ const lang = eXo && tasksConstants.LANG || 'en';
 const url = `${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/i18n/bundle/locale.portlet.taskManagement-${lang}.json`;
 
 export function init() {
-  exoi18n.loadLanguageAsync(lang, url).then(i18n => {
-    // init Vue app when locale ressources are ready
-    new Vue({
-      template: '<tasks-management></tasks-management>',
-      i18n,
-      vuetify,
-    }).$mount('#tasksManagement');
-  });
+    exoi18n.loadLanguageAsync(lang, url).then(i18n => {
+        // init Vue app when locale ressources are ready
+        new Vue({
+            template: '<tasks-management></tasks-management>',
+            i18n,
+            vuetify,
+        }).$mount('#tasksManagement');
+    });
 }

@@ -46,9 +46,13 @@ public interface StatusService {
 
     StatusDto createStatus(ProjectDto project, String status);
 
-    StatusDto removeStatus(long statusId) throws EntityNotFoundException, NotAllowedOperationOnEntityException;
+    StatusDto createStatus(ProjectDto project, String status, int rank);
+
+    void removeStatus(long statusId) throws EntityNotFoundException, NotAllowedOperationOnEntityException, Exception;
 
     StatusDto updateStatus(long statusId, String statusName) throws EntityNotFoundException, NotAllowedOperationOnEntityException;
+
+    StatusDto updateStatus(StatusDto statusDto) throws EntityNotFoundException, NotAllowedOperationOnEntityException;
 
 
 }

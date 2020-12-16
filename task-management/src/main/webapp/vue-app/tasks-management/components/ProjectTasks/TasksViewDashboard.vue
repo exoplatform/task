@@ -1,5 +1,12 @@
 <template>
   <v-app :id="'projectTask-'+project.id" class="projectTasksDashboard">
+    <exo-confirm-dialog
+      ref="deleteConfirmDialog"
+      :message="deleteConfirmMessage"
+      :title="$t('popup.deleteStatus')"
+      :ok-label="$t('label.ok')"
+      :cancel-label="$t('popup.cancel')"
+      @ok="deleteConfirm()" />
     <div class="taskViewBreadcrumb pa-4">
       <a
         class="text-color"
@@ -23,7 +30,7 @@
       <div v-for="(project,i) in groupName.projectName" :key="project.name">
 
         <div
-          v-if=" project.value && project.value.displayName"
+          v-if=" project.value && project.value.displayName && project.name!==''"
           class="d-flex align-center assigneeFilter pointer"
           @click="showDetailsTask(project.rank)">
           <a
@@ -73,7 +80,7 @@
               style="display: none">
             </i>
           </a>
-          <div v-if="project.name==='Unassigned'" class="defaultAvatar">
+          <div v-if="project.name==='Unassigned' || project.name===''" class="defaultAvatar">
             <img :src="defaultAvatar">
           </div>
 
@@ -87,17 +94,19 @@
         <div :id="'taskView'+project.rank" style="display: block">
           <div
             v-show="taskViewTabName == 'board'"
-
             style="display: block"
             eager>
             <tasks-view-board
+              :project="project" 
               :status-list="statusList"
-              :tasks-list="tasksList[i]"/>
+              :tasks-list="tasksList[i]"
+              @update-status="updateStatus"
+              @create-status="createStatus"
+              @delete-status="deleteStatus"/>
           </div>
           <div
             v-show="taskViewTabName == 'list'"
             eager>
-
             <tasks-view-list
               :status-list="statusList"
               :tasks-list="tasksList[i]"/>
@@ -114,15 +123,20 @@
         style="display: block"
         eager>
         <tasks-view-board
+          :project="project" 
           :status-list="statusList"
-          :tasks-list="tasksList"/>
+          :tasks-list="tasksList"
+          @update-status="updateStatus"
+          @create-status="createStatus"
+          @delete-status="deleteStatus"/>
       </div>
       <div
         v-show="taskViewTabName == 'list'"
         eager>
         <tasks-view-list
           :status-list="statusList"
-          :tasks-list="tasksList"/>
+          :tasks-list="tasksList"
+          @update-status="updateStatus"/>
       </div>
       <!--<v-tab-item
         v-show="taskViewTabName == 'gantt'"
@@ -166,10 +180,12 @@
         keyword: null,
         loadingTasks: false,
         taskViewTabName: 'board',
+        deleteConfirmMessage: null,
         statusList: [],
         tasksList: [],
         groupName:null,
         filterProjectActive:false,
+        status:null
       }
     },
     watch:{
@@ -186,7 +202,7 @@
 
     methods : {
       hideProjectDetails() {
-        window.history.pushState('myprojects', 'My Projects', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest?myprojects`);
+        this.$root.$emit('set-url', {type:"myProjects",id:""})
         document.dispatchEvent(new CustomEvent('hideProjectTasks'));
       },
       getChangeTabValue(value) {
@@ -243,7 +259,7 @@
         .finally(() => this.loadingTasks = false);
       },
       getNameGroup(name){
-        if (name==='Unassigned'){
+        if (name==='Unassigned' || name===''){
           return 'label.unassigned'
         }else if(name==='No Label'){
           return 'label.noLabel'
@@ -270,7 +286,33 @@
         else {detailsTask.style.display = 'block'
           uiIconMiniArrowDown.style.display = 'block';
           uiIconMiniArrowRight.style.display = 'none'}
-      }
+      },
+      deleteStatus(status) {
+        this.deleteConfirmMessage = `${this.$t('popup.msg.deleteStatus')} : ${status.name}? `;
+        this.status=status
+        this.$refs.deleteConfirmDialog.open();
+      },
+      deleteConfirm() {
+         return this.$statusService.deleteStatus(this.status.id).then(resp => {
+           this.getStatusByProject(this.project.id)
+        })
+      },
+      updateStatus(status) {
+         return this.$statusService.updateStatus(status).then(resp => {
+           this.getStatusByProject(this.project.id)
+        })
+      },
+      createStatus() {
+        this.statusList.forEach(function (element, index) {
+        if(!element.project){
+          element.project=this.project
+        }
+        element.rank=index
+        },  this);
+        return this.$statusService.createStatus(this.statusList).then(resp => {
+           this.getStatusByProject(this.project.id)
+        })
+      },
     }
   }
 </script>
