@@ -128,7 +128,7 @@ public class StatusServiceImpl implements StatusService {
             throw new IllegalArgumentException("project must be not null and status must not be null or empty");
         }
         try {
-            listenerService.broadcast("exo.project.projectModified", this, projectStorage.projectToEntity(project));
+            listenerService.broadcast("exo.project.projectModified", null, projectStorage.projectToEntity(project));
         } catch (Exception e) {
             LOG.error("Error while broadcasting status creation event", e);
         }
@@ -149,7 +149,7 @@ public class StatusServiceImpl implements StatusService {
         }
         StatusDto statusDto = statusStorage.updateStatus(id, name);
         try {
-            listenerService.broadcast("exo.project.projectModified", this, statusDto);
+            listenerService.broadcast("exo.project.projectModified", null, statusDto.getProject());
         } catch (Exception e) {
             LOG.error("Error while broadcasting status update event", e);
         }
