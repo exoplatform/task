@@ -248,7 +248,7 @@
         }
       },
       assigneeValueChanged(value) {
-        if (value !== null) {
+        if (value && value.id) {
           if (value.remoteId !== this.currentUser) {
             this.taskAssigneeObj = value;
             this.$emit('updateTaskAssignement', value.remoteId);
