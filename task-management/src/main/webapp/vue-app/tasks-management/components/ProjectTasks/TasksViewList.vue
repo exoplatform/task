@@ -6,12 +6,10 @@
       <v-item-group class="pa-4">
         <div class="ma-0 border-box-sizing">
           <div
-            v-for="(status, index) in statusList"
-            :key="index"
             class="pt-0 pb-8 px-4 projectTaskItem">
             <tasks-view-list-column
-              :status="status"        
-              :tasks-list="getTasksByStatus(tasksList,status.name)"
+              :status="statusList"
+              :tasks-list="tasksList"
               @updateTaskCompleted="updateTaskCompleted"
               @updateTaskStatus="updateTaskStatus" />
           </div>
