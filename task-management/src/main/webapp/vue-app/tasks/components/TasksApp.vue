@@ -21,9 +21,8 @@
               <v-flex class="d-flex my-2">
                 <div class="d-flex align-center">
                   <a
-                    :title="$t('label.addTask')"
                     class="body-1 text-uppercase color-title px-0"
-                    @click="navigateTo('taskstest?mytasks')">
+                    @click="navigateTo('tasks/myTasks')">
                     {{ $t('label.tasks.header') }}
                   </a>
                 </div>
@@ -52,7 +51,7 @@
                 <div>
                   <div class="nameGroup">
                     <span class="nameGroup">{{ $t('label.overdue') }}</span>
-                    <div class="amount-item pointer" @click="navigateTo('taskstest?mytasks')">{{ tasksOverdueSize }}</div>
+                    <div class="amount-item pointer" @click="navigateTo('tasks/myTasks')">{{ tasksOverdueSize }}</div>
                     <hr
                       role="separator"
                       aria-orientation="horizontal"
@@ -68,7 +67,7 @@
                 <div>
                   <div class="nameGroup">
                     <span class="nameGroup">{{ $t('label.today') }}</span>
-                    <div class="amount-item pointer" @click="navigateTo('taskstest?mytasks')">{{ tasksTodaySize }}</div>
+                    <div class="amount-item pointer" @click="navigateTo('tasks/myTasks')">{{ tasksTodaySize }}</div>
                     <hr
                       role="separator"
                       aria-orientation="horizontal"
@@ -86,7 +85,7 @@
                 <div>
                   <div class="nameGroup">
                     <span class="nameGroup">{{ $t('label.tomorrow') }}</span>
-                    <div class="amount-item pointer" @click="navigateTo('taskstest?mytasks')">{{ tasksTomorrowSize }}</div>
+                    <div class="amount-item pointer" @click="navigateTo('tasks/myTasks')">{{ tasksTomorrowSize }}</div>
                     <hr
                       role="separator"
                       aria-orientation="horizontal"
@@ -104,7 +103,7 @@
                 <div>
                   <div class="nameGroup">
                     <span class="nameGroup">{{ $t('label.upcoming') }}</span>
-                    <div class="amount-item pointer" @click="navigateTo('taskstest?mytasks')">{{ tasksUpcomingSize }}</div>
+                    <div class="amount-item pointer" @click="navigateTo('tasks/myTasks')">{{ tasksUpcomingSize }}</div>
                     <hr
                       role="separator"
                       aria-orientation="horizontal"
@@ -123,7 +122,7 @@
                   <button
                     type="button"
                     class="btn color-title btn-show"
-                    @click="navigateTo('taskstest?mytasks')">{{ $t('label.tasks.btn.show') }}</button>
+                    @click="navigateTo('tasks/myTasks')">{{ $t('label.tasks.btn.show') }}</button>
                 </div>
               </div>
 
