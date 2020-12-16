@@ -52,6 +52,14 @@
                 @click="addBtnDate(7)">
                 {{ $t('label.nextweek') }}
               </v-btn>
+
+              <v-btn
+                value="right"
+                class="my-0"
+                small
+                @click="resetDueDate()">
+                {{ $t('label.none') }}
+              </v-btn>
             </v-btn-toggle>
           </div>
         </template>
@@ -198,6 +206,10 @@
         } else {
           this.dueDate = new Date();
         }
+        this.$refs.taskDueDate.menu = false;
+      },
+      resetDueDate() {
+        this.dueDate = null;
         this.$refs.taskDueDate.menu = false;
       },
       emitStartDate(date) {
