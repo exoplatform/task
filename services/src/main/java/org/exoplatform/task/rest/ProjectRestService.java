@@ -1,6 +1,7 @@
 package org.exoplatform.task.rest;
 
 import io.swagger.annotations.*;
+import org.apache.commons.lang3.StringUtils;
 import org.exoplatform.commons.utils.HTMLEntityEncoder;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.log.ExoLogger;
@@ -10,6 +11,8 @@ import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
+import org.exoplatform.task.dao.OrderBy;
+import org.exoplatform.task.dao.ProjectQuery;
 import org.exoplatform.task.dto.ProjectDto;
 import org.exoplatform.task.dto.StatusDto;
 import org.exoplatform.task.exception.EntityNotFoundException;
@@ -82,6 +85,8 @@ public class ProjectRestService implements ResourceContainer {
   @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled"),
       @ApiResponse(code = 500, message = "Internal server error") })
   public Response getProjects(@ApiParam(value = "Search term", required = false, defaultValue = "null") @QueryParam("q") String query,
+                              @ApiParam(value = "Space Name", required = false, defaultValue = "null") @QueryParam("spaceName") String spaceName,
+                              @ApiParam(value = "Filter", required = false, defaultValue = "") @QueryParam("projectsFilter") String projectsFilter,
                               @ApiParam(value = "Offset", required = false, defaultValue = "0") @QueryParam("offset") int offset,
                               @ApiParam(value = "Limit", required = false, defaultValue = "-1") @QueryParam("limit") int limit,
                               @ApiParam(value = "Participator Need", required = false, defaultValue = "false") @QueryParam("participatorParam") boolean participatorParam) {
@@ -92,11 +97,39 @@ public class ProjectRestService implements ResourceContainer {
     List<String> memberships = new LinkedList<String>();
     ConversationState state = ConversationState.getCurrent();
     Identity identity = state.getIdentity();
-    memberships.addAll(UserUtil.getMemberships(identity));
-    List<ProjectDto> projects = ProjectUtil.getProjectTree( memberships,query, identity , projectService,offset,limit);
-    int projectNumber = projectService.countProjects(memberships,query);
+    List<ProjectDto> projects = new ArrayList<>();
+    int projectNumber = 0;
+    if(projectsFilter!=null && projectsFilter.equals("MANAGED")){
+      List<String> managers = new ArrayList<>();
+      managers.add(identity.getUserId());
+      ProjectQuery projectQuery = new ProjectQuery();
+      projectQuery.setManager(managers);
+      projectQuery.setKeyword(query);
+      OrderBy orderBy = new OrderBy.DESC("lastModifiedDate");
+      projectQuery.setOrderBy(Arrays.asList(orderBy));
+      projects = projectService.findProjects(projectQuery, offset, limit);
+      projectNumber = projectService.countProjects(projectQuery);
+    }else if(projectsFilter!=null && projectsFilter.equals("COLLABORATED")){
+      projects = projectService.findCollaboratedProjects(identity.getUserId(),query,offset, limit);
+      projectNumber = projectService.countCollaboratedProjects(identity.getUserId(),query);
+    }else if(projectsFilter!=null && projectsFilter.equals("WITH_TASKS")){
+      memberships.addAll(UserUtil.getMemberships(identity));
+      projects = projectService.findNotEmptyProjects(memberships,query,offset, limit);
+      projectNumber = projectService.countNotEmptyProjects(memberships,query);
+    }else {
+      if(StringUtils.isNoneEmpty(spaceName)){
+        Space space = spaceService.getSpaceByPrettyName(spaceName);
+        if(space!=null){
+          memberships.addAll(UserUtil.getSpaceMemberships(space.getGroupId()));
+        }
+      }else{
+        memberships.addAll(UserUtil.getMemberships(identity));
+      }
+      OrderBy orderBy = new OrderBy.DESC("lastModifiedDate");
+      projects = projectService.findProjects(memberships,query,orderBy ,offset, limit);
+      projectNumber = projectService.countProjects(memberships, query);
+    }
     JSONObject global = new JSONObject();
-
     JSONArray projectsJsonArray = new JSONArray();
     try {
       projectsJsonArray = buildJSON(projectsJsonArray, projects, participatorParam);
@@ -177,6 +210,40 @@ public class ProjectRestService implements ResourceContainer {
   }
 
   @GET
+  @Path("project/statistics/{id}")
+  @RolesAllowed("users")
+  @Produces(MediaType.APPLICATION_JSON)
+  @ApiOperation(value = "Gets users by query and project name", httpMethod = "GET", response = Response.class, notes = "This returns users by query and project name")
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled") })
+  public Response getProjectsStatistics(@ApiParam(value = "id", required = true) @PathParam("id") long id ) throws Exception {
+
+    HashMap<String, Integer> hm = new HashMap<String, Integer>();
+     for(StatusDto statusDto : statusService.getStatuses(id)){
+       hm.put(statusDto.getName(),0);
+     }
+    int tasksNum = 0;
+    JSONObject projectJson = new JSONObject();
+    List<Object[]> statusObjects = taskService.countTaskStatusByProject(id);
+    JSONArray statusStats = new JSONArray();
+    if (statusObjects != null && statusObjects.size() > 0) {
+
+      for (Object[] result : statusObjects) {
+        hm.put((String) result[0],((Number) result[1]).intValue());
+        tasksNum+=((Number) result[1]).intValue();
+      }
+      for (Map.Entry me : hm.entrySet()) {
+        JSONObject statJson = new JSONObject();
+        statJson.put("name",me.getKey());
+        statJson.put("value",  me.getValue());
+        statusStats.put(statJson);      }
+    }
+    projectJson.put("statusStats", statusStats);
+    projectJson.put("totalNumberTasks", tasksNum);
+    return Response.ok(projectJson.toString()).build();
+  }
+
+
+  @GET
   @Path("users/{query}/{projectName}")
   @RolesAllowed("users")
   @Produces(MediaType.APPLICATION_JSON)
@@ -213,25 +280,12 @@ public class ProjectRestService implements ResourceContainer {
   private JSONObject buildJsonProject(ProjectDto project, boolean participatorParam) throws JSONException{
     
       long projectId = project.getId();
-      JSONObject projectJson = new JSONObject();
-      List<Object[]> statusObjects = taskService.countTaskStatusByProject(projectId);
-      JSONArray statusStats = new JSONArray();
-      if (statusObjects != null && statusObjects.size() > 0) {
-
-        for (Object[] result : statusObjects) {
-          JSONObject statJson = new JSONObject();
-          statJson.put("status", (String) result[0]);
-          statJson.put("taskNumber", ((Number) result[1]).intValue());
-          statusStats.put(statJson);
-        }
-
-      }
-      projectJson.put("statusStats", statusStats);
       Space space = null;
       Set<String> projectManagers = projectService.getManager(projectId);
       Set<String> managers = new LinkedHashSet();
       Set<String> projectParticipators = projectService.getParticipator(projectId);
       Set<String> participators = new LinkedHashSet();
+    JSONObject projectJson = new JSONObject();
 
     if (projectManagers.size() > 0) {
         for (String permission : projectService.getManager(projectId)) {
@@ -239,7 +293,7 @@ public class ProjectRestService implements ResourceContainer {
           if (index > -1) {
             String groupId = permission.substring(index + 1);
             space = spaceService.getSpaceByGroupId(groupId);
-            managers.addAll(Arrays.asList(space.getManagers()));
+            if(space!=null) managers.addAll(Arrays.asList(space.getManagers()));
           } else {
             managers.add(permission);
           }
@@ -252,7 +306,7 @@ public class ProjectRestService implements ResourceContainer {
         if (index > -1) {
           String groupId = permission.substring(index + 1);
           space = spaceService.getSpaceByGroupId(groupId);
-          participators.addAll(Arrays.asList(space.getMembers()));
+          if(space!=null)  participators.addAll(Arrays.asList(space.getMembers()));
         } else {
           participators.add(permission);
         }
@@ -313,22 +367,8 @@ public class ProjectRestService implements ResourceContainer {
       projectJson.put("dueDate", project.getDueDate());
       projectJson.put("description", project.getDescription());
       projectJson.put("status", statusService.getStatus(projectId));
+      projectJson.put("canManage", project.canEdit(ConversationState.getCurrent().getIdentity()));
       return projectJson;
-  }
-
-
-  private Space getProjectSpace(ProjectDto project, SpaceService spaceService) {
-    for (String permission : projectService.getManager(project.getId())) {
-      int index = permission.indexOf(':');
-      if (index > -1) {
-        String groupId = permission.substring(index + 1);
-        Space space = spaceService.getSpaceByGroupId(groupId);
-        return space;
-
-      }
-    }
-
-    return null;
   }
 
   @POST
@@ -349,14 +389,14 @@ public class ProjectRestService implements ResourceContainer {
     if (projectDto.getName() == null || projectDto.getName().isEmpty()) {
       return Response.status(Response.Status.NOT_FOUND).build();
     }
-
-
     String description = StringUtil.encodeInjectedHtmlTag(projectDto.getDescription());
-
     ProjectDto project;
-    Space space = getProjectSpace(projectDto, spaceService);
+    Space space = null;
+    if(StringUtils.isNotBlank(projectDto.getSpaceName())){
+      space = spaceService.getSpaceByPrettyName(projectDto.getSpaceName());
+    }
     if (space != null) {
-      List<String> memberships = UserUtil.getSpaceMemberships(space.getId());
+      List<String> memberships = UserUtil.getSpaceMemberships(space.getGroupId());
       Set<String> managers = new HashSet<String>(Arrays.asList(currentUser, memberships.get(0)));
       Set<String> participators = new HashSet<String>(Arrays.asList(memberships.get(1)));
       project = ProjectUtil.newProjectInstanceDto(projectDto.getName(), description, managers, participators);

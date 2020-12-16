@@ -6,9 +6,9 @@
 @taskCardParentMaxHeight: @taskCardParentMargin + @taskCardMaxHeight;
 
 /*----------------------Tasks Management ---------------------*/
-#TasksParentContainer {
+
+#TasksManagementPortlet {
   margin: 25px;
-  #TasksManagementPortlet {
     .addProjectDrawer {
       hr.my-0.v-divider.theme--light{
         margin-top: 5px!important;
@@ -1075,6 +1075,8 @@
                 top: 35px!important;
                 .v-list-item {
                   min-height: 30px!important;
+                  text-align: left!important;
+                  max-width: 100%!important;
                 }
               }
             }
@@ -1086,17 +1088,50 @@
           }
         }
         .tasksViewBoard {
-          .projectTaskItem {
-            position: relative;
-            flex: 1 1 0;
-            width: 0;
+          .tasksViewBoardRowContainer {
+            flex-wrap: nowrap!important;
+            overflow-x: scroll;
+            &::-webkit-scrollbar {
+              height: 5px;
+            }
+            &::-webkit-scrollbar-thumb {
+              background: white;
+              border-radius: 10px;
+            }
+            &::-webkit-scrollbar-thumb:hover {
+              background: white;
+            }
+            &:hover {
+              overflow-x: scroll!important;
+              &::-webkit-scrollbar {
+                height: 5px;
+              }
+              /*&::-webkit-scrollbar-track {
+                background: @primaryBackground;
+              }*/
+              &::-webkit-scrollbar-thumb {
+                background: @greyColorLighten1;
+                border-radius: 10px;
+              }
+              &::-webkit-scrollbar-thumb:hover {
+                background: @borderColorLight;
+              }
+            }
+
+            .projectTaskItem {
+              position: relative;
+              flex: 1 1 340px;
+              width: 0;
+              min-width: 340px;
+              max-width: 340px;
+            }
           }
         }     
       }
-      }
+    }
 
     }
-    .projectAndTasksContainer {
+.projectAndTasksContainer {
       .noTasksProject {
         min-height: 50vh;
         height: 50vh;
@@ -1110,7 +1145,7 @@
           }
         }
         .noTasksProjectLabel {
-          font-size: 1.3rem;
+          font-size: 1.1rem;
           color: @greyColorLighten1;
         }
         .noTasksProjectLink {
@@ -1124,8 +1159,8 @@
             border: 1px solid @tableBorder!important;
             background: @tableBackgroundAccent;
             .taskTitleId {
-              min-height: 42px;
-              height: 42px;
+              min-height: 50px;
+              height: 50px;
               .taskTitle {
                 width: 75%;
                 max-width: 75%;
@@ -1636,10 +1671,663 @@
         }
       }
     }
+
+/*----------- Task Drawer CSS ---------------*/
+
+.taskDrawer {
+  .drawerHeader {
+    .drawerTitle {
+      justify-content: space-between!important;
+      align-items: center!important;
+      > * {
+        flex: unset!important;
+      }
+      > span {
+        margin-top: 6px;
+      }
+      #taskActionMenu {
+        .uiThreeDotsIcon {
+          cursor: pointer;
+          &:before {
+            content: "\e961";
+            color: @greyColorLighten1Default;
+            font-size: 24px;
+          }
+        }
+        .taskActionMenu {
+          right: 60px;
+          left: auto!important;
+          top: 45px!important;
+          background: white;
+          .v-list-item {
+            min-height: 40px!important;
+            cursor: pointer;
+          }
+        }
+      }
+      .drawerTitleAndProject {
+        max-width: 340px;
+        align-items: center;
+        .taskProjectName {
+          .icon-ArrowRight {
+            margin-top: 6px;
+            margin-left: 10px;
+            &:before {
+              content: '\e9cb';
+              font-size: 16px;
+              color: @btnDisableColor!important;
+            }
+          }
+          .projectName {
+            max-width: 200px;
+          }
+        }
+      }
+    }
+    .drawerIcons {
+      margin-left: 2px!important;
+    }
   }
+  .taskProjectName {
+    .inputTaskProjectName {
+      box-shadow: none!important;
+      border: none!important;
+      .v-input__prepend-outer {
+        margin-top: 8px;
+        i {
+          color: @primaryColor;
+          font-size: 18px;
+        }
+
+      }
+      .v-input__control {
+        min-height: 27px!important;
+        height: 27px;
+        > .v-input__slot {
+          box-shadow: none!important;
+          padding: 0!important;
+          .v-select__slot {
+            label {
+              color: @greyColorLighten1;
+            }
+            .v-select__selections {
+              max-width: 90%!important;
+            }
+          }
+        }
+        .v-input__append-inner {
+          display: none;
+        }
+      }
+      .v-menu__content {
+        position: fixed!important;
+        max-width: 70%!important;
+        left: 100px!important;
+        top: 50px!important;
+        &::-webkit-scrollbar {
+          width: 5px;
+        }
+        &::-webkit-scrollbar-track {
+          background: @primaryBackground;
+        }
+        &::-webkit-scrollbar-thumb {
+          background: @greyColorLighten1;
+        }
+        &::-webkit-scrollbar-thumb:hover {
+          background: @borderColorLight;
+        }
+      }
+      .v-menu__content {
+        .v-list-item {
+          min-height: 35px!important;
+        }
+      }
+    }
+  }
+  .taskTitleAndMark {
+    .task-name {
+      .v-input__slot {
+        &:before {
+          border: none!important;
+        }
+        &:after {
+          border: none!important;
+        }
+        textarea {
+          border: none!important;
+          padding: 3px 6px!important;
+          width: 100%!important;
+          font-size: 20px;
+          margin-top: -4px;
+          color: @textColor!important;
+          &::placeholder {
+            font-size: 19px!important;
+          }
+          &:focus {
+            box-shadow: none!important;
+          }
+        }
+      }
+    }
+    .taskCompleted {
+      textarea {
+        text-decoration: line-through;
+      }
+    }
+    .markAsCompletedBtn {
+      color: @primaryColor!important;
+      font-size: 30px!important;
+    }
+  }
+  .taskLabelsName {
+    .inputTaskLabel{
+      box-shadow: none!important;
+      border: none!important;
+      .v-input__prepend-outer {
+        margin-top: 8px;
+        i {
+          color: @primaryColor;
+          font-size: 18px;
+        }
+      }
+      .v-input__control {
+        min-height: 38px!important;
+        > .v-input__slot {
+          box-shadow: none!important;
+          padding: 0!important;
+          margin-bottom: 0!important;
+          .v-select__slot {
+            .v-select__selections {
+              max-width: 100%!important;
+            }
+            label {
+              color: @greyColorLighten1;
+            }
+          }
+        }
+        .v-input__append-inner {
+          display: none;
+        }
+      }
+    }
+  }
+  .taskAssignement {
+    .taskAssignItem {
+      .user-name {
+        cursor: pointer;
+      }
+      .taskAssignBtn {
+        .uiAddAssignIcon {
+          margin-top: -4px !important;
+          padding-right: 6px;
+          &:before {
+            content: "\e6c4";
+            color: @greyColorLighten1Default;
+            font-size: 15px;
+          }
+        }
+      }
+    }
+    .taskAssignMenu {
+      position: relative;
+      .v-menu__content {
+        top: 10px!important;
+      }
+    }
+    .assignTaskMenu {
+      .uiAssignToMeIcon {
+        margin-top: -4px;
+        &:before {
+          content: "\e6cc";
+          padding-right: 6px;
+          content: "\e6cc";
+          font-size: 16px;
+        }
+      }
+      .uiAddMeCoworkerIcon {
+        margin-top: -4px;
+        &:before {
+          content: "\e6cb";
+          font-size: 18px;
+          padding-right: 8px;
+        }
+      }
+    }
+    .identitySuggester {
+      margin: 8px 12px !important;
+      padding: 5px!important;
+      &::-webkit-scrollbar {
+        width: 5px;
+      }
+      &::-webkit-scrollbar-track {
+        background: @primaryBackground;
+      }
+      &::-webkit-scrollbar-thumb {
+        background: @greyColorLighten1;
+      }
+      &::-webkit-scrollbar-thumb:hover {
+        background: @borderColorLight;
+      }
+      .v-input__control {
+        .v-input__slot {
+          height: auto!important;
+          .v-select__slot {
+            .v-select__selections {
+              padding-left: 0!important;
+              .identitySuggesterItem {
+                margin-bottom: 3px!important;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  .taskDates {
+    max-width: 50%;
+    padding-right: 10px;
+    .datePickerComponent {
+      &:after {
+        display: none!important;
+      }
+      input {
+        max-width: 90%!important;
+        padding-right: 10px!important;
+        padding-left: 5px!important;
+        border: none;
+        box-shadow: none;
+        &::placeholder {
+          font-size: 16px!important;
+        }
+      }
+    }
+    .taskPlanDateCalender {
+      max-height: 40px;
+      .uiIconStartDate {
+        color: @primaryColor;
+        font-size: 24px;
+        margin-left: -2px;
+        &:before {
+          content: "\ebf3";
+        }
+      }
+    }
+    .taskDueDateCalender {
+      max-height: 40px;
+      .uiIconDueDate {
+        &:before {
+          content: "\ebf2";
+          color: @primaryColor;
+          font-size: 22px;
+        }
+      }
+      .v-picker__actions.v-card__actions {
+        border-top: 1px solid  @borderColor;
+        margin-top: 4px;
+        .dateFooter {
+          width: 100%;
+        }
+      }
+    }
+  }
+  .taskStatusAndPriority {
+    max-width: 50%;
+    justify-content: space-between;
+    .v-input__control {
+      > .v-input__slot {
+        box-shadow: none!important;
+        padding: 0!important;
+      }
+    }
+    .v-input__prepend-outer {
+      margin-top: 8px;
+
+      i {
+        color: @primaryColor;
+        font-size: 22px;
+      }
+    }
+    .taskPriority {
+      .v-input__control {
+        > .v-input__slot {
+          justify-content: flex-end!important;
+          .v-select__slot {
+            .v-input__append-inner {
+              position: absolute;
+              width: 100%;
+              height: 30px;
+              i {
+                position: absolute;
+                right: 0;
+                top: 4px;
+              }
+            }
+            .v-select__selections {
+              margin-top: -6px;
+              max-width: 84%!important;
+              .v-select__selection {
+                max-width: 100%;
+                width: 100%;
+                text-align: right;
+                display: inline;
+                margin-right: 0!important;
+              }
+            }
+          }
+        }
+      }
+      .v-menu__content {
+        top: 40px !important;
+        .v-list {
+          padding: 0!important;
+          .v-list-item {
+            min-height: 40px;
+            .v-list-item__content {
+              padding: 0!important;
+            }
+          }
+        }
+      }
+    }
+    .taskStatus {
+      .v-input__control {
+        > .v-input__slot {
+          justify-content: flex-end!important;
+          .v-select__slot {
+            i {
+              font-size: 28px!important;
+            }
+            .v-input__append-inner {
+              position: absolute;
+              width: 100%;
+              height: 30px;
+              i {
+                position: absolute;
+                right: 0;
+              }
+            }
+            .v-select__selections {
+              margin-top: -6px;
+              max-width: 84%!important;
+              .v-select__selection {
+                max-width: 100%;
+                width: 100%;
+                text-align: right;
+                display: inline;
+                margin-right: 0!important;
+              }
+            }
+          }
+        }
+      }
+      .v-menu__content {
+        top: 40px !important;
+        .v-list {
+          padding: 0!important;
+          .v-list-item {
+            min-height: 40px;
+            .v-list-item__content {
+              padding: 0!important;
+            }
+          }
+        }
+      }
+    }
+  }
+  .taskDescription {
+    [contentEditable=true]:empty:not(:focus):before{
+      content:attr(data-text);
+      color: @greyColorLighten1Default;
+      font-size: 16px;
+    }
+    #cke_descriptionContent {
+      display: none;
+    }
+
+    .cke_toolbar:last-child {
+      display: none;
+    }
+
+    .cke_toolbar {
+      border-right: none!important;
+    }
+
+    .activityCharsCount.tooManyChars {
+      display: none;
+      /*position: absolute;
+      bottom: 8px;
+      right: 10px;
+      color: @greyColorLighten1;*/
+    }
+    .cke_bottom.cke_reset_all {
+      background-color: transparent;
+      height: 30px!important;
+    }
+    .cke_bottom .cke_button_icon {
+      filter: opacity(0.2);
+    }
+    .uiIconMessageLength {
+      font-size: 14px;
+      color: @primaryColor;
+      &:before {
+        content: "\e910";
+      }
+    }
+  }
+
+  .taskDescription.active {
+    .taskDescriptionToShow {
+      display: none!important;
+    }
+    #cke_descriptionContent {
+      display: block;
+    }
+  }
+  .taskCommentsAndChanges {
+    .taskComments {
+      .commentItem {
+        width: 100%;
+        .commentHeader {
+          width: 100%;
+          .removeCommentBtn {
+            margin-left: auto;
+            margin-top: -4px;
+          }
+        }
+        .commentBody {
+          display: inline-block;
+          .taskContentComment {
+            background: @commentBackgroundColor;
+            padding: 10px;
+            border-radius: 10px;
+            p {
+              margin-bottom: 0!important;
+            }
+          }
+        }
+      }
+      .editorContent {
+        width: 100%;
+        .cke_bottom.cke_reset_all {
+          background-color: transparent;
+          height: 30px!important;
+        }
+        .cke_toolbar {
+          border-right: none!important;
+        }
+        .cke_bottom .cke_button_icon {
+          filter: opacity(0.2);
+        }
+      }
+    }
+  }
+  .drawerContent {
+    padding: 16px;
+  }
+}
+
+
+/*----------- Task Snapshot CSS ---------------*/
+
+#tasks {
+  .flexCard {
+    flex: 1 1 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .btn-show{
+    color: @primaryColor!important;
+    margin-block-end: 5px;
+    border:none!important;
+  }
+  .btn-show:hover {
+    color: @primaryColor!important;
+    background-color: #f2f2f2!important;
+  }
+  .projectCard {
+    border-radius: 15px 15px 15px 15px;
+    margin-right: 10px;
+    border: thin solid rgba(0, 0, 0, 0.12);
+  }
+  .amount-item{
+    border-radius: 10px;
+    background: #c7e5f9c9;
+    border-color:@primaryColor!important;
+    color: @primaryColor;
+    border: thin solid rgba(0, 0, 0, 0.12);
+    width: 30px;
+    height: 20px;
+    margin-left: 5px;
+    text-align: center;
+    margin-top: 5px;
+    margin-block-end: 5px;
+    cursor: pointer;
+  }
+  .separator{
+    margin-block-start: 15px;
+    margin-left: 5px;
+    margin-right: 25px;
+  }
+
+  .flagCard {
+  }
+  .color-title {
+    color: @greyColorLighten1;
+  }
+  .taskTitle {
+    color: black;
+    flex: 1 1 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-right: 10px;
+    span {
+      margin-left: 10px;
+    }
+  }
+  .nameGroup{
+    display: flex;
+    margin-top: 5px;
+    margin-block-end: 5px;
+  }
+  .iconlarge {
+    font-size: 40px;
+    color:@successColorLight;
+  }
+  .noTasks {
+    display: flex;
+    height: 370px;
+    align-items: center;
+    justify-content: center;
+    .noTasksContent {
+      text-align: center;
+      margin: auto;
+      .uiNoTaskIcon {
+        color: #6d7d9821;
+        font-size: 60px;
+        font-style: normal;
+        font-weight: normal;
+        &:before {
+          font-family: 'PLF-FONT-ICONS';
+          content: "\e690" !important;
+        }
+      }
+      .noTasksTitle {
+        color: #4d5466;
+        font-weight: normal;
+        font-size: 22px;
+      }
+      p {
+        font-weight: normal;
+        font-size: 15px;
+        color: @greyColorLighten1;
+      }
+    }
+  }
+  @media (max-width: 1200px) {
+    .theme--light.v-navigation-drawer {
+      width: 60% !important;
+    }
+  }
+  @media (max-width: 599px) {
+    .theme--light.v-navigation-drawer {
+      width: 100% !important;
+    }
+  }
+
+  .list-item {
+    display: flex;
+    width: 100%;
+    margin-right: 10px;
+  }
+  .list-leave-active {
+    transition: all 1s;
+  }
+  .list-leave-to {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+}
+  
 
 
 /*---------------------Responsive Style ---------------------------*/
+
+@media (max-width: 420px) {
+  .taskDrawer {
+    .text-header-title {
+      font-size: 16px !important;
+    }
+    .taskDrawer .drawerHeader .drawerTitle #taskActionMenu .uiThreeDotsIcon:before {
+      font-size: 22px!important;
+    }
+    .drawerTitle .drawerTitleAndProject .taskProjectName .projectName {
+      max-width: 130px!important;
+    }
+    .icon-ArrowRight:before {
+      font-size: 14px!important;
+    }
+    .taskProjectName .inputTaskProjectName .v-input__control > .v-input__slot .v-select__slot .v-select__selections {
+      max-width: 60%!important;
+    }
+    .mdi-close {
+      font-size: 22px!important;
+      width: 22px!important;
+      height: 23px!important;
+    }
+    .drawerTitleAndProject {
+      max-width: 240px!important;
+    }
+    .taskAssignItem {
+      .assigneeName {
+        p.text-truncate {
+          max-width: 70px!important;
+        }
+      }
+    }
+  }
+}
 
 @media (max-width: @maxMobileWidth) {
   #TasksParentContainer {
@@ -1758,451 +2446,37 @@
   }
 }
 
-
-/*--------------------------Tasks ---------------------------*/
-
-#tasks {
-  .flexCard {
-    flex: 1 1 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+@media (max-width: 1200px) {
+  .theme--light.v-navigation-drawer {
+    width: 60% !important;
   }
-
-  .projectCard {
-    border-radius: 5px 0px 0px 5px;
+}
+@media (max-width: 599px) {
+  .theme--light.v-navigation-drawer {
+    width: 100% !important;
   }
-
-  .flagCard {
-    border-radius: 0px 5px 5px 0px;
-  }
-  .color-title {
-    color: @greyColorLighten1;
-  }
-  .taskTitle {
-    color: black;
-    flex: 1 1 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .iconlarge {
-    font-size: 40px;
-    color:@successColorLight;
-  }
-  .noTasks {
-    display: flex;
-    height: 370px;
-    align-items: center;
-    justify-content: center;
-    .noTasksContent {
-      text-align: center;
-      margin: auto;
-      .uiNoTaskIcon {
-        color: #6d7d9821;
-        font-size: 60px;
-        font-style: normal;
-        font-weight: normal;
-        &:before {
-          font-family: 'PLF-FONT-ICONS';
-          content: "\e690" !important;
-        }
-      }
-      .noTasksTitle {
-        color: #4d5466;
-        font-weight: normal;
-        font-size: 22px;
-      }
-      p {
-        font-weight: normal;
-        font-size: 15px;
-        color: @greyColorLighten1;
-      }
+}
+@media (max-width: 599px) {
+  #TasksManagementPortlet .projectAndTasksContainer .tasksToolbar{
+    .v-input__icon.v-input__icon--prepend-inner {
+      display: none;
     }
-  }
-  @media (max-width: 1200px) {
-    .theme--light.v-navigation-drawer {
-      width: 60% !important;
+    .selectPrimaryFilter {
+      max-width: 51px!important;;
     }
-  }
-  @media (max-width: 599px) {
-    .theme--light.v-navigation-drawer {
-      width: 100% !important;
+    .v-toolbar__title {
+      min-width: 40px!important;
+      margin-right: 5px;
     }
-  }
-
-  .list-item {
-    display: flex;
-    width: 100%;
-    margin-right: 10px;
-    min-height: 48px!important;
-  }
-  .list-leave-active {
-    transition: all 1s;
-  }
-  .list-leave-to {
-    opacity: 0;
-    transform: translateY(30px);
+    button.btn.px-2.btn-primary.addNewProjectButton.v-btn.v-btn--contained.theme--light.v-size--default {
+      min-width: auto!important;
+    }
+    button.btn.px-2.btn-primary.filterTasksSetting.v-btn.v-btn--depressed.v-btn--flat.v-btn--outlined.theme--light.v-size--default {
+      min-width: auto!important;
+    }
   }
 }
 
-/*----------- Task Drawer CSS ---------------*/
-.taskDrawer {
-  .drawerHeader {
-    .drawerTitle {
-      justify-content: space-between!important;
-      > * {
-        flex: unset!important;
-      }
-      > span {
-        margin-top: 6px;
-      }
-      #taskActionMenu {
-        .uiThreeDotsIcon {
-          cursor: pointer;
-          &:before {
-            content: "\e961";
-            color: @greyColorLighten1Default;
-            font-size: 24px;
-          }
-        }
-        .taskActionMenu {
-          right: 60px;
-          left: auto!important;
-          top: 45px!important;
-          background: white;
-          .v-list-item {
-            min-height: 40px!important;
-            cursor: pointer;
-          }
-        }
-      }
-    }
-    .drawerIcons {
-      margin-left: 2px!important;
-    }
-  }
-  .taskProjectName {
-    .inputTaskProjectName {
-      box-shadow: none!important;
-      border: none!important;
-      .v-input__prepend-outer {
-          margin-top: 8px;
-          i {
-            color: @primaryColor;
-            font-size: 18px;
-          }
-
-        }
-      .v-input__control {
-          min-height: 38px!important;
-          > .v-input__slot {
-            box-shadow: none!important;
-            padding: 0!important;
-            .v-select__slot {
-              label {
-                color: @greyColorLighten1;
-              }
-            }
-          }
-          .v-input__append-inner {
-            display: none;
-          }
-        }
-      .v-menu__content {
-        .v-list-item {
-          min-height: 35px!important;
-        }
-      }
-    }
-  }
-  .taskTitleAndMark {
-    .task-name {
-      border: none!important;
-      padding: 3px 6px!important;
-      width: 100%!important;
-      font-size: 17px;
-      margin-top: -2px;
-      &::placeholder {
-        font-size: 17px!important;
-      }
-    }
-    .task-name::-moz-placeholder {
-      font-size: 16px!important;
-    } /* Firefox 19+ */
-    .task-name:-moz-placeholder {
-      font-size: 16px!important;
-    }
-    .task-name:-ms-input-placeholder {
-      font-size: 16px!important;
-    } /* IE */
-    .markAsCompletedBtn {
-      color: @primaryColor!important;
-      font-size: 22px!important;
-    }
-  }
-  .taskLabelsName {
-    .inputTaskLabel{
-      box-shadow: none!important;
-      border: none!important;
-      .v-input__prepend-outer {
-        margin-top: 8px;
-        i {
-          color: @primaryColor;
-          font-size: 18px;
-        }
-      }
-      .v-input__control {
-        min-height: 38px!important;
-        > .v-input__slot {
-          box-shadow: none!important;
-          padding: 0!important;
-          margin-bottom: 0!important;
-          .v-select__slot {
-            label {
-              color: @greyColorLighten1;
-            }
-          }
-        }
-        .v-input__append-inner {
-          display: none;
-        }
-      }
-    }
-  }
-  .taskAssignement {
-    .taskAssignItem {
-      .user-name {
-        cursor: pointer;
-      }
-      .taskAssignBtn {
-        .uiAddAssignIcon {
-          margin-top: -4px !important;
-          padding-right: 6px;
-          &:before {
-            content: "\e6c4";
-            color: @greyColorLighten1Default;
-            font-size: 15px;
-          }
-        }
-      }
-    }
-    .taskAssignMenu {
-      position: relative;
-      .v-menu__content {
-        top: 10px!important;
-      }
-    }
-    .assignTaskMenu {
-      .uiAssignToMeIcon {
-        margin-top: -4px;
-        &:before {
-          content: "\e6cc";
-          padding-right: 6px;
-          content: "\e6cc";
-          font-size: 16px;
-        }
-      }
-      .uiAddMeCoworkerIcon {
-        margin-top: -4px;
-        &:before {
-          content: "\e6cb";
-          font-size: 18px;
-          padding-right: 8px;
-        }
-      }
-    }
-    .identitySuggester {
-      margin: 8px 12px !important;
-      padding: 5px!important;
-      &::-webkit-scrollbar {
-        width: 5px;
-      }
-      &::-webkit-scrollbar-track {
-        background: @primaryBackground;
-      }
-      &::-webkit-scrollbar-thumb {
-        background: @greyColorLighten1;
-      }
-      &::-webkit-scrollbar-thumb:hover {
-        background: @borderColorLight;
-      }
-      .v-input__control {
-        .v-input__slot {
-          height: auto!important;
-          .v-select__slot {
-            .v-select__selections {
-              padding-left: 0!important;
-              .identitySuggesterItem {
-                margin-bottom: 3px!important;
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-  .taskDates {
-    max-width: 50%;
-    padding-right: 10px;
-    .datePickerComponent {
-      &:after {
-        display: none!important;
-      }
-      input {
-        max-width: 90%!important;
-        padding-right: 10px!important;
-        padding-left: 5px!important;
-        border: none;
-        box-shadow: none;
-        &::placeholder {
-          font-size: 16px!important;
-        }
-      }
-    }
-    .taskPlanDateCalender {
-      max-height: 40px;
-      .uiIconCalendar {
-        color: @primaryColor;
-        font-size: 20px;
-        &:before {
-          content: "\e619";
-        }
-      }
-    }
-    .taskDueDateCalender {
-      max-height: 40px;
-      .uiIconClock {
-        &:before {
-          color: @primaryColor;
-          font-size: 20px;
-        }
-      }
-    }
-  }
-  .taskStatusAndPriority {
-    max-width: 50%;
-    justify-content: space-between;
-    .v-input__control {
-      > .v-input__slot {
-        box-shadow: none!important;
-        padding: 0!important;
-      }
-    }
-    .v-input__prepend-outer {
-      margin-top: 8px;
-
-      i {
-        color: @primaryColor;
-        font-size: 22px;
-      }
-    }
-    .taskPriority {
-      .v-input__control {
-        > .v-input__slot {
-          justify-content: flex-end!important;
-          .v-select__slot {
-            max-width: inherit!important;
-            width: auto!important;
-            flex-basis: 0!important;
-            min-width: 90px!important;
-            .v-input__append-inner {
-              position: absolute;
-              width: 100%;
-              height: 30px;
-              i {
-                position: absolute;
-                right: 0;
-                top: 4px;
-              }
-            }
-          }
-        }
-      }
-      .v-menu__content {
-        top: 40px !important;
-        .v-list {
-          padding: 0!important;
-          .v-list-item {
-            min-height: 40px;
-            .v-list-item__content {
-              padding: 0!important;
-            }
-          }
-        }
-      }
-    }
-    .taskStatus {
-      .v-input__control {
-        > .v-input__slot {
-          justify-content: flex-end!important;
-          .v-select__slot {
-            i {
-              font-size: 28px!important;
-            }
-            .v-input__append-inner {
-              position: absolute;
-              width: 100%;
-              height: 30px;
-              i {
-                position: absolute;
-                right: 0;
-              }
-            }
-            .v-select__selections {
-              margin-top: -6px;
-              max-width: 84%!important;
-              .v-select__selection {
-                max-width: 100%;
-                width: 100%;
-                text-align: right;
-                display: inline;
-                margin-right: 0!important;
-              }
-            }
-          }
-        }
-      }
-        .v-menu__content {
-          top: 40px !important;
-          .v-list {
-            padding: 0!important;
-            .v-list-item {
-              min-height: 40px;
-              .v-list-item__content {
-                padding: 0!important;
-              }
-            }
-          }
-        }
-      }
-    }
-  .taskDescription {
-    .activityCharsCount.tooManyChars {
-      position: absolute;
-      bottom: 8px;
-      right: 10px;
-      color: @greyColorLighten1;
-    }
-    .cke_bottom.cke_reset_all {
-      background-color: transparent;
-      height: 30px;
-    }
-    .cke_bottom .cke_button_icon {
-      filter: opacity(0.2);
-    }
-    .uiIconMessageLength {
-      font-size: 14px;
-      color: @primaryColor;
-      &:before {
-        content: "\e910";
-      }
-    }
-  }
-  .drawerContent {
-    padding: 16px;
-  }
-}
 
 /*--------------Task priorities Colors ------------------*/
 

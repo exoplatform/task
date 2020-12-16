@@ -24,7 +24,7 @@
               :fullname="taskAssigneeObj.profile.fullName"
               :avatar-url="taskAssigneeObj.profile.avatarUrl"
               :title="taskAssigneeObj.profile.fullName"
-              :size="26"
+              :size="24"
               :url="null"
               class="pr-2"/>
           </div>
@@ -248,7 +248,7 @@
         }
       },
       assigneeValueChanged(value) {
-        if (value !== null) {
+        if (value && value.id) {
           if (value.remoteId !== this.currentUser) {
             this.taskAssigneeObj = value;
             this.$emit('updateTaskAssignement', value.remoteId);

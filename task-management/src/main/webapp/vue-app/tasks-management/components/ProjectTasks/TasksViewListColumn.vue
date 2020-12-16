@@ -1,12 +1,6 @@
 <template>
 
-  <div :id="status.name">
-    <tasks-view-header
-      :status="status"
-      :view-type="'list'"
-      :max-tasks-to-show="maxTasksToShow"
-      :tasks-number="tasksList.length"/>
-    <v-divider/>
+  <div :id="status.id">
     <draggable 
       v-model="tasksList" 
       :move="checkMove"

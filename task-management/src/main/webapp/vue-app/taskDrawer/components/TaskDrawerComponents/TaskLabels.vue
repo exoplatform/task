@@ -37,8 +37,9 @@
           v-bind="attrs"
           :color="`${item.color} lighten-3`"
           :input-value="selected"
-          class="pr-1"
+          class="pr-1 font-weight-bold"
           label
+          dark
           small>
           <span class="pr-2">
             {{ item.text }}

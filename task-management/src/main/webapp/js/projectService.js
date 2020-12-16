@@ -1,7 +1,7 @@
 import { tasksConstants } from "./tasksConstants";
 
-export function getProjectsList(query, offset, limit,participatorParam) {
-    return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/projects/projects?q=${query || ''}&offset=${offset || 0}&limit=${limit|| 0}&participatorParam=${participatorParam|| false}`, {
+export function getProjectsList(spaceName, query, projectFilter, offset, limit, participatorParam) {
+    return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/projects/projects?q=${query || ''}&spaceName=${spaceName || ''}&projectsFilter=${projectFilter || ''}&offset=${offset || 0}&limit=${limit|| 0}&participatorParam=${participatorParam|| false}`, {
         method: 'GET',
         credentials: 'include',
     }).then(resp => {
@@ -13,7 +13,20 @@ export function getProjectsList(query, offset, limit,participatorParam) {
     });
 }
 
-export function getProject(id,participatorParam) {
+export function getProjectStats(id) {
+    return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/projects/project/statistics/${id}`, {
+        method: 'GET',
+        credentials: 'include',
+    }).then(resp => {
+        if (!resp || !resp.ok) {
+            throw new Error('Response code indicates a server error', resp);
+        } else {
+            return resp.json();
+        }
+    });
+}
+
+export function getProject(id, participatorParam) {
     return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/projects/projects/${id}?&participatorParam=${participatorParam|| false}`, {
         method: 'GET',
         credentials: 'include',

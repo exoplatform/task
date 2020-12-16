@@ -1,5 +1,8 @@
 <template>
-  <div class="projectDescription" style="position: relative">
+  <div 
+    :class="charsCount > 0 ? '' : 'emptyEditor'"
+    class="projectDescription" 
+    style="position: relative">
     <textarea
       ref="editor"
       :id="descriptionTaskContent"
@@ -50,7 +53,7 @@
         descriptionTaskContent:'',
         inputVal: this.value,
         charsCount: 0,
-        editorReady: false
+        editorReady: false,
       };
     },
     watch: {
@@ -113,8 +116,8 @@
             ['Bold', 'Italic', 'BulletedList', 'NumberedList', 'Blockquote'],
           ],
           typeOfRelation: 'mention_activity_stream',
-          autoGrow_onStartup: false,
-          autoGrow_maxHeight: 300,
+          autoGrow_onStartup: true,
+          //autoGrow_maxHeight: 300,
           on: {
             instanceReady: function() {
               self.editorReady = true;
@@ -143,7 +146,7 @@
       getMessage: function() {
         const newData = CKEDITOR.instances[this.descriptionTaskContent].getData();
         return newData ? newData : '';
-      }
+      },
     }
   };
 </script>

@@ -116,6 +116,42 @@ public class ProjectStorageImpl implements ProjectStorage {
     }
 
     @Override
+    public List<ProjectDto> findCollaboratedProjects(String userName, String keyword,int offset ,int limit){
+        try {
+            return daoHandler.getProjectHandler().findCollaboratedProjects(userName,keyword,offset, limit).stream().map(this::projectToDto).collect(Collectors.toList());
+        } catch (Exception e) {
+            return new ArrayList<ProjectDto>();
+        }
+    }
+
+    @Override
+    public List<ProjectDto> findNotEmptyProjects(List<String> memberships, String keyword,int offset ,int limit) {
+        try {
+            return daoHandler.getProjectHandler().findNotEmptyProjects(memberships,keyword,offset, limit).stream().map(this::projectToDto).collect(Collectors.toList());
+        } catch (Exception e) {
+            return new ArrayList<ProjectDto>();
+        }
+    }
+
+    @Override
+    public int countCollaboratedProjects(String userName, String keyword){
+        try {
+            return daoHandler.getProjectHandler().countCollaboratedProjects(userName,keyword);
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
+    @Override
+    public int countNotEmptyProjects(List<String> memberships, String keyword) {
+        try {
+            return daoHandler.getProjectHandler().countNotEmptyProjects(memberships,keyword);
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
+    @Override
     public int countProjects(List<String> memberships, String keyword) {
         try {
             return daoHandler.getProjectHandler().findAllByMembershipsAndKeyword(memberships, keyword,null).getSize();
@@ -136,6 +172,7 @@ public class ProjectStorageImpl implements ProjectStorage {
         project.setParent(projectDto.getParent());
         project.setColor(projectDto.getColor());
         project.setDueDate(projectDto.getDueDate());
+        project.setLastModifiedDate(projectDto.getLastModifiedDate());
         project.setParticipator(projectDto.getParticipator());
         project.setManager(projectDto.getManager());
         project.setParent(projectDto.getParent());
@@ -157,6 +194,7 @@ public class ProjectStorageImpl implements ProjectStorage {
         projectDto.setParent(project.getParent());
         projectDto.setColor(project.getColor());
         projectDto.setDueDate(project.getDueDate());
+        projectDto.setLastModifiedDate(project.getLastModifiedDate());
         projectDto.setParticipator(getParticipator(project.getId()));
         projectDto.setManager(getManager(project.getId()));
         projectDto.setParent(project.getParent());

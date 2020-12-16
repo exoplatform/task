@@ -39,6 +39,24 @@ public class CommentStorageImpl implements CommentStorage {
     }
 
     @Override
+    public List<CommentDto> getCommentsWithSubs(long taskId, int offset, int limit) {
+        try {
+            List<Comment>  comments =  Arrays.asList(daoHandler.getCommentHandler().findComments(taskId).load(offset, limit));
+            List<Comment> subComments = daoHandler.getCommentHandler().getSubComments(comments);
+            List<CommentDto> commentsDto = comments.stream().map(this::commentToDto).collect(Collectors.toList());
+            List<CommentDto> subCommentsDto = subComments.stream().map(this::commentToDto).collect(Collectors.toList());
+            for (CommentDto comment : commentsDto) {
+                comment.setSubComments(subCommentsDto.stream()
+                        .filter(subComment -> subComment.getParentComment().getId() == comment.getId())
+                        .collect(Collectors.toList()));
+            }
+        return commentsDto;
+        } catch (Exception e) {
+            return new ArrayList<CommentDto>();
+        }
+    }
+
+    @Override
     public List<CommentDto> getComments(long taskId, int offset, int limit) {
         try {
         return Arrays.asList(daoHandler.getCommentHandler().findComments(taskId).load(offset, limit)).stream().map(this::commentToDto).collect(Collectors.toList());
@@ -72,9 +90,10 @@ public class CommentStorageImpl implements CommentStorage {
     }
 
     @Override
-    public void loadSubComments(List<CommentDto> listComments) {
+    public List<CommentDto> loadSubComments(List<CommentDto> listComments) {
         List<Comment> comments = listComments.stream().map(this::commentToEntity).collect(Collectors.toList());
-        daoHandler.getCommentHandler().getSubComments(comments);
+        comments = daoHandler.getCommentHandler().getSubComments(comments);
+        return  comments.stream().map(this::commentToDto).collect(Collectors.toList());
     }
 
     @Override
@@ -86,6 +105,7 @@ public class CommentStorageImpl implements CommentStorage {
         comment.setId(commentDto.getId());
         comment.setAuthor(commentDto.getAuthor());
         comment.setComment(commentDto.getComment());
+        if (commentDto.getParentComment()!=null) comment.setParentComment(commentToEntity(commentDto.getParentComment()));
         comment.setCreatedTime(commentDto.getCreatedTime());
         comment.setTask(commentDto.getTask());
         return comment;
@@ -100,6 +120,7 @@ public class CommentStorageImpl implements CommentStorage {
         commentDto.setId(comment.getId());
         commentDto.setAuthor(comment.getAuthor());
         commentDto.setComment(comment.getComment());
+        if (comment.getParentComment()!=null) commentDto.setParentComment(commentToDto(comment.getParentComment()));
         commentDto.setCreatedTime(comment.getCreatedTime());
         commentDto.setTask(comment.getTask());
         return commentDto;

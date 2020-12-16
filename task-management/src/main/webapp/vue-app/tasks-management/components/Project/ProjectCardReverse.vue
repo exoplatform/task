@@ -25,23 +25,15 @@
           <span class="text-body-2 totalLabel">{{ $t('exo.tasks.label.leftTasks') }}</span>
         </div>
       </div>
-      <div class="projectStatusNumber pl-4">
-        <p class="d-flex justify-space-between mb-1 taskToDoLabel">
-          <span class="caption">{{ $t('exo.tasks.status.todo') }}</span>
-          <span>{{ getStatusValue('ToDo') }}</span>
+      <div v-if="statistics.length < maxStatusToShow" class="projectStatusNumber pl-4">
+        <p 
+          v-for="item in statistics" 
+          :key="item.name" 
+          class="d-flex justify-space-between mb-1 taskToDoLabel">
+          <span class="caption text-truncate">{{ item.name }}</span>
+          <span>{{ item.value }}</span>
         </p>
-        <p class="d-flex justify-space-between mb-1 taskInProgressLabel">
-          <span class="caption">{{ $t('exo.tasks.status.inprogress') }}</span>
-          <span>{{ getStatusValue('InProgress') }}</span>
-        </p>
-        <p class="d-flex justify-space-between mb-1 taskWaitingOnLabel">
-          <span class="caption">{{ $t('exo.tasks.status.waitingon') }}</span>
-          <span>{{ getStatusValue('WaitingOn') }}</span>
-        </p>
-        <p class="d-flex justify-space-between mb-1 taskDoneLabel">
-          <span class="caption">{{ $t('exo.tasks.status.done') }}</span>
-          <span>{{ getStatusValue('Done') }}</span>
-        </p>
+        
       </div>
     </div>
     <div v-else class="noTasksProject">
@@ -62,6 +54,8 @@
     data() {
       return {
         totalLeftTasks: 0,
+        statistics: [],
+        maxStatusToShow:7,
         option : {
           tooltip: {
             trigger: 'item',
@@ -87,40 +81,33 @@
                 labelLine: {
                   show: false
                 },
-                data: [
-                  {value: this.getStatusValue('ToDo') , name: this.$t('exo.tasks.status.todo'),},
-                  {value: this.getStatusValue('InProgress'), name: this.$t('exo.tasks.status.inprogress')},
-                  {value: this.getStatusValue('WaitingOn'), name: this.$t('exo.tasks.status.waitingon')},
-                  {value: this.getStatusValue('Done') , name: this.$t('exo.tasks.status.done')}
-                ],
+                data: [],
               }
             ],
           color: ['#476a9c', '#ffb441', '#bc4343', '#2eb58c']
           }
         }
     },
-    mounted() {
-      if(this.project.statusStats && this.project.statusStats.length) {
-        window.setTimeout(() => {
-          this.initChart(this.option);
-        },200);
-      }
-    },
-    created() {
-      this.totalLeftTasks = this.getStatusValue('ToDo') + this.getStatusValue('InProgress') + this.getStatusValue('WaitingOn')+ this.getStatusValue('Done');
-    },
+
     methods :{
       initChart(option,id) {
-          const chart = echarts.init($(`#echartProjectTasks${this.project.id}`)[0]);
-          chart.setOption(option, true);
+          const holder_chart = $(`#echartProjectTasks${this.project.id}`)[0]
+          if(holder_chart){
+          const chart = echarts.init(holder_chart);
+          chart.setOption(option, true);}
       },
-      getStatusValue(status) {
-        if(this.project.statusStats && this.project.statusStats.length ) {
-          const statusTaskNumber = this.project.statusStats.filter( elem => elem.status === status);
-          return statusTaskNumber && statusTaskNumber.length ? statusTaskNumber[0].taskNumber : 0;
-        } else {
-          return '';
-        }
+      getStats(project){
+      this.$projectService.getProjectStats(project.id).then(data => {
+          this.statistics = data.statusStats || [];
+          this.totalLeftTasks = data.totalNumberTasks || 0;
+
+                 if(this.statistics && this.statistics.length) {
+                   this.option.series[0].data=this.statistics
+                   window.setTimeout(() => {
+          this.initChart(this.option);
+          },200);
+      }
+        })
       }
     }
   }

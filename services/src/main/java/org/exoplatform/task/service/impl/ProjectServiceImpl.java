@@ -16,16 +16,14 @@
  */
 package org.exoplatform.task.service.impl;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.exoplatform.commons.api.persistence.ExoTransactional;
 import org.exoplatform.commons.utils.ListAccess;
+import org.exoplatform.services.listener.ListenerService;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.task.dao.DAOHandler;
@@ -64,6 +62,8 @@ public class ProjectServiceImpl implements ProjectService {
   @Inject
   DAOHandler                 daoHandler;
 
+  private ListenerService listenerService;
+
   public ProjectServiceImpl() {
   }
 
@@ -72,12 +72,14 @@ public class ProjectServiceImpl implements ProjectService {
                             TaskService taskService,
                             DAOHandler daoHandler,
                             ProjectStorage projectStorage,
-                            StatusStorage statusStorage) {
+                            StatusStorage statusStorage,
+                            ListenerService listenerService) {
     this.daoHandler = daoHandler;
     this.statusService = statusService;
     this.taskService = taskService;
     this.projectStorage = projectStorage;
     this.statusStorage = statusStorage;
+    this.listenerService = listenerService;
   }
 
   @Override
@@ -101,8 +103,8 @@ public class ProjectServiceImpl implements ProjectService {
       project.setManager(new HashSet<String>(parentProject.getManager()));
 
       // persist project
+      project.setLastModifiedDate(System.currentTimeMillis());
       project = createProject(project);
-
       // inherit status from parent
       List<StatusDto> prSt = statusService.getStatuses(parentProject.getId());
       for (StatusDto st : prSt) {
@@ -118,8 +120,8 @@ public class ProjectServiceImpl implements ProjectService {
   @Override
   @ExoTransactional
   public ProjectDto updateProject(ProjectDto proj) {
-    ProjectDto obj = projectStorage.updateProject(proj);
-    return obj;
+    proj.setLastModifiedDate(System.currentTimeMillis());
+    return projectStorage.updateProject(proj);
   }
 
   @Override
@@ -149,7 +151,6 @@ public class ProjectServiceImpl implements ProjectService {
     newProject.setId(0);
     newProject.setName(PREFIX_CLONE + newProject.getName());
     newProject = createProject(newProject);
-
     // . Get all Status of project
     List<StatusDto> statuses = statusService.getStatuses(id);
     ListAccess<TaskDto> tasks;
@@ -211,6 +212,26 @@ public class ProjectServiceImpl implements ProjectService {
   @Override
   public List<ProjectDto> findProjects(List<String> memberships, String keyword, OrderBy order, int offset, int limit) {
     return projectStorage.findProjects(memberships, keyword, order, offset, limit);
+  }
+
+  @Override
+  public List<ProjectDto> findCollaboratedProjects(String userName, String keyword, int offset, int limit) {
+    return projectStorage.findCollaboratedProjects(userName,keyword, offset, limit);
+  }
+
+  @Override
+  public List<ProjectDto> findNotEmptyProjects(List<String> memberships, String keyword, int offset, int limit)  {
+    return projectStorage.findNotEmptyProjects(memberships,keyword, offset, limit);
+  }
+
+  @Override
+  public int countCollaboratedProjects(String userName, String keyword) {
+    return projectStorage.countCollaboratedProjects(userName,keyword);
+  }
+
+  @Override
+  public int countNotEmptyProjects(List<String> memberships, String keyword)  {
+    return projectStorage.countNotEmptyProjects(memberships,keyword);
   }
 
   @Override

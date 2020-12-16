@@ -21,6 +21,14 @@ public interface ProjectService {
      */
     ProjectDto getProject(Long projectId) throws EntityNotFoundException;
 
+    List<ProjectDto> findCollaboratedProjects(String userName, String keyword, int offset, int limit);
+
+    List<ProjectDto> findNotEmptyProjects(List<String> memberships, String keyword, int offset, int limit);
+
+    int countCollaboratedProjects(String userName, String keyword);
+
+    int countNotEmptyProjects(List<String> memberships, String keyword);
+
     int countProjects(List<String> memberships, String keyword);
 
     Set<String> getManager(long projectId);

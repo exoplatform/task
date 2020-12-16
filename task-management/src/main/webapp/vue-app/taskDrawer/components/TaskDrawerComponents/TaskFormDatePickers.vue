@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="taskPlanDateCalender d-flex align-center">
-      <i class="uiIconCalendar uiIconBlue"></i>
+      <i class="uiIconStartDate uiIconBlue"></i>
       <date-picker
         ref="taskStartDate"
         v-model="startDate"
@@ -12,7 +12,7 @@
         @input="emitStartDate(startDate)"/>
     </div>
     <div class="taskDueDateCalender d-flex align-center">
-      <i class="uiIconClock uiIconBlue"></i>
+      <i class="uiIconDueDate uiIconBlue"></i>
       <date-picker
         ref="taskDueDate"
         v-model="dueDate"
@@ -20,7 +20,50 @@
         :placeholder="$t('label.dueDate')"
         :min-value="minimumEndDate"
         class="flex-grow-1 my-auto"
-        @input="emitDueDate(dueDate)" />
+        @input="emitDueDate(dueDate)">
+        <template slot="footer">
+          <div class="dateFooter">
+            <v-btn-toggle
+              class="d-flex justify-space-between"
+              tile
+              color="primary"
+              background-color="primary"
+              group>
+              <v-btn
+                value="left"
+                class="my-0"
+                small
+                @click="addBtnDate()">
+                {{ $t('label.today') }}
+              </v-btn>
+
+              <v-btn
+                value="center"
+                class="my-0"
+                small
+                @click="addBtnDate(1)">
+                {{ $t('label.tomorrow') }}
+              </v-btn>
+
+              <v-btn
+                value="right"
+                class="my-0"
+                small
+                @click="addBtnDate(7)">
+                {{ $t('label.nextweek') }}
+              </v-btn>
+
+              <v-btn
+                value="right"
+                class="my-0"
+                small
+                @click="resetDueDate()">
+                {{ $t('label.none') }}
+              </v-btn>
+            </v-btn-toggle>
+          </div>
+        </template>
+      </date-picker>
     </div>
   </div>
 </template>
@@ -42,12 +85,21 @@
         default: false,
       },
     },
-    data: () => ({
-      startDate: null,
-      dueDate: null,
-      actualDueDate: {},
-      actualTask: {},
-    }),
+    data () {
+      return {
+        startDate: null,
+        dueDate: null,
+        actualDueDate: {},
+        actualTask: {},
+        dateShortCutItems: [
+          {key:'today',value:this.$t('label.today')},
+          {key:'tomorrow',value:this.$t('label.tomorrow')},
+          {key:'nextweek',value:this.$t('label.nextweek')},
+          {key:'datePicker',value:this.$t('label.pickDate')}
+        ],
+        dateItem: ''
+      }
+    },
     computed: {
       minimumEndDate() {
         if (!this.startDate) {
@@ -145,6 +197,20 @@
           newDateObject.date = date.getDate();
           return newDateObject;
         }
+      },
+      addBtnDate(days) {
+        if(days) {
+          const date = new Date();
+          date.setDate(date.getDate() + days);
+          this.dueDate = date;
+        } else {
+          this.dueDate = new Date();
+        }
+        this.$refs.taskDueDate.menu = false;
+      },
+      resetDueDate() {
+        this.dueDate = null;
+        this.$refs.taskDueDate.menu = false;
       },
       emitStartDate(date) {
         if(date!== null) {

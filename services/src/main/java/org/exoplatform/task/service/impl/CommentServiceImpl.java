@@ -1,7 +1,6 @@
 package org.exoplatform.task.service.impl;
 
 import org.exoplatform.commons.api.persistence.ExoTransactional;
-import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.listener.ListenerService;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -9,7 +8,10 @@ import org.exoplatform.social.core.identity.model.Identity;
 import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
 import org.exoplatform.social.core.service.LinkProvider;
 import org.exoplatform.task.dao.DAOHandler;
+import org.exoplatform.task.domain.Comment;
+import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.dto.CommentDto;
+import org.exoplatform.task.dto.ProjectDto;
 import org.exoplatform.task.dto.TaskDto;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.service.CommentService;
@@ -21,6 +23,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class CommentServiceImpl implements CommentService {
     private static final Log LOG = ExoLogger.getExoLogger(CommentServiceImpl.class);
@@ -57,17 +60,29 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    public List<CommentDto> getCommentsWithSubs(long taskId, int offset, int limit){
+        return commentStorage.getCommentsWithSubs(taskId,offset,limit);
+    }
+
+    @Override
     public int countComments(long taskId) {
         return commentStorage.countComments(taskId);
     }
 
     @Override
-    public void loadSubComments(List<CommentDto> listComments) {
+    public List<CommentDto> loadSubComments(List<CommentDto> listComments) {
         if (listComments == null || listComments.isEmpty()) {
-            return;
+            return null;
         }
         listComments.forEach(comment -> comment.setComment(substituteUsernames(comment.getComment())));
-        commentStorage.loadSubComments(listComments);
+        List<CommentDto> subComments = commentStorage.loadSubComments(listComments);
+        for (CommentDto comment : listComments) {
+            subComments.forEach(subComment -> subComment.setComment(substituteUsernames(subComment.getComment())));
+            comment.setSubComments(subComments.stream()
+                    .filter(subComment -> subComment.getParentComment().getId() == comment.getId())
+                    .collect(Collectors.toList()));
+        }
+        return listComments;
     }
 
     @Override
@@ -82,14 +97,18 @@ public class CommentServiceImpl implements CommentService {
         if (parentCommentId > 0) {
             CommentDto parentComment = commentStorage.getComment(parentCommentId);
             if (parentComment.getParentComment() != null) {
-                parentComment = commentStorage.commentToDto(parentComment.getParentComment());
+                parentComment = parentComment.getParentComment();
             }
-            newComment.setParentComment(commentStorage.commentToEntity(parentComment));
+            newComment.setParentComment(parentComment);
         }
-        CommentDto obj = commentStorage.commentToDto(daoHandler.getCommentHandler().create(commentStorage.commentToEntity(newComment)));
+        Comment commentEntity = daoHandler.getCommentHandler().create(commentStorage.commentToEntity(newComment));
+        CommentDto obj = commentStorage.commentToDto(commentEntity);
 
         try {
-            listenerService.broadcast(TASK_COMMENT_CREATION, null, obj);
+            listenerService.broadcast(TASK_COMMENT_CREATION, null, commentEntity);
+            if(obj.getTask().getStatus()!=null){
+                listenerService.broadcast("exo.project.projectModified", null, obj.getTask().getStatus().getProject() );
+            }
         } catch (Exception e) {
             LOG.error("Error while broadcasting task creation event", e);
         }

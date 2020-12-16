@@ -161,7 +161,7 @@ public class TestProjectRestService {
     projectService.createProject(project3);
 
     // When
-    Response response = projectRestService.getProjects(null, -1, -1,false);
+    Response response = projectRestService.getProjects(null,"", "ALL", -1, -1,false);
 
     // Then
     assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -186,7 +186,7 @@ public class TestProjectRestService {
     manager.add("john");
     project.setManager(manager);
     StatusDto status = new StatusDto();
-    status.setId(1);
+    status.setId(Long.valueOf(1));
     status.setName("status 1");
 
     when(projectService.getProject(1L)).thenReturn(project);

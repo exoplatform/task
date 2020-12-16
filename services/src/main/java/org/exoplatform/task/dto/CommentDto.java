@@ -20,9 +20,9 @@ public class CommentDto implements Serializable {
 
     private Task task;
 
-    private Comment parentComment;
+    private CommentDto parentComment;
 
-    private List<Comment> subComments;
+    private List<CommentDto> subComments;
 
     private Set<String> mentionedUsers;
 
@@ -31,6 +31,7 @@ public class CommentDto implements Serializable {
         commentDto.setId(this.getId());
         commentDto.setAuthor(this.getAuthor());
         commentDto.setComment(this.getComment());
+        commentDto.setSubComments(this.getSubComments());
         commentDto.setCreatedTime(this.getCreatedTime());
         commentDto.setTask(this.getTask().clone());
 
