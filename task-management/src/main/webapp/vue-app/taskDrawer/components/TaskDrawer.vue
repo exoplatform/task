@@ -374,6 +374,8 @@
           if (this.task.id != null) {
             this.task.priority = value;
             updateTask(this.task.id, this.task);
+          } else {
+            this.taskPriority = value;
           }
         }
       },
@@ -418,6 +420,7 @@
         this.task.assignee = this.assignee;
         this.task.startDate = this.taskStartDate;
         this.task.dueDate = this.taskDueDate;
+        this.task.priority = this.taskPriority;
         addTask(this.task).then(task => {
           this.labelsToAdd.forEach(item => {
             addTaskToLabel(task.id, item);
