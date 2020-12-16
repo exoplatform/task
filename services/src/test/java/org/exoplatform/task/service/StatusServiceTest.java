@@ -16,7 +16,10 @@
 
 package org.exoplatform.task.service;
 
+import org.exoplatform.container.ExoContainer;
+import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.PortalContainer;
+import org.exoplatform.services.listener.ListenerService;
 import org.exoplatform.task.TestDtoUtils;
 import org.exoplatform.task.TestUtils;
 import org.exoplatform.task.dao.*;
@@ -65,6 +68,9 @@ public class StatusServiceTest {
     TaskStorage taskStorage;
 
     @Mock
+    ListenerService listenerService;
+
+    @Mock
     TaskHandler taskHandler;
     @Mock
     StatusHandler statusHandler;
@@ -85,7 +91,7 @@ public class StatusServiceTest {
         PortalContainer.getInstance();
         projectStorage = new ProjectStorageImpl(daoHandler);
         statusStorage = new StatusStorageImpl(daoHandler, projectStorage,taskStorage);
-        statusService = new StatusServiceImpl(daoHandler, statusStorage);
+        statusService = new StatusServiceImpl(daoHandler, statusStorage, projectStorage, listenerService);
 
         //Mock DAO handler to return Mocked DAO
         when(daoHandler.getTaskHandler()).thenReturn(taskHandler);

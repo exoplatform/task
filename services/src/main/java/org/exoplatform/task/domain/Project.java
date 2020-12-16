@@ -37,7 +37,7 @@ import java.util.*;
 @NamedQueries({
   @NamedQuery(
           name = "TaskProject.findAllProjects",
-          query = "SELECT DISTINCT p FROM TaskProject p"
+          query = "SELECT DISTINCT p FROM TaskProject p ORDER BY p.lastModifiedDate DESC"
   ),
   @NamedQuery(
               name = "TaskProject.countAllProjects",
@@ -45,11 +45,11 @@ import java.util.*;
   ),
   @NamedQuery(
               name = "TaskProject.findProjectsByKeyword",
-              query = "SELECT DISTINCT p FROM TaskProject p WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :name, '%'))"
+              query = "SELECT DISTINCT p FROM TaskProject p WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :name, '%')) order by p.lastModifiedDate desc"
   ),
   @NamedQuery(
               name = "TaskProject.findProjectsByIDs",
-              query = "SELECT DISTINCT p FROM TaskProject p WHERE p.id in (:ids))"
+              query = "SELECT DISTINCT p FROM TaskProject p WHERE p.id in (:ids) order by p.lastModifiedDate desc"
   ),
   @NamedQuery(
               name = "TaskProject.countProjectsByKeyword",
@@ -61,6 +61,7 @@ import java.util.*;
                   + " LEFT JOIN p.manager manager "
                   + " LEFT JOIN p.participator participator "
                   + " WHERE manager IN (:memberships) OR participator IN (:memberships)"
+                  + " order by p.lastModifiedDate desc"
   ),
   @NamedQuery(
               name = "TaskProject.countProjectsByMemberships",
@@ -75,6 +76,7 @@ import java.util.*;
                   + " LEFT JOIN p.manager manager "
                   + " LEFT JOIN p.participator participator "
                   + " WHERE (manager IN (:memberships) OR participator IN (:memberships)) AND LOWER(p.name) LIKE LOWER(CONCAT('%', :name, '%'))"
+                  + " ORDER BY p.lastModifiedDate DESC"
   ),
   @NamedQuery(
               name = "TaskProject.countProjectsByMembershipsByKeyword",
@@ -128,6 +130,10 @@ public class Project {
   // This field is used for remove cascade
   @ManyToMany(mappedBy = "hiddenProjects", fetch = FetchType.LAZY)
   private Set<UserSetting> hiddenOn = new HashSet<UserSetting>();
+
+
+  @Column(name = "LAST_MODIFIED_DATE")
+  private Long lastModifiedDate;
 
   public Project() {
   }
@@ -221,6 +227,14 @@ public class Project {
 
   public void setParent(Project parent) {
     this.parent = parent;
+  }
+
+  public Long getLastModifiedDate() {
+    return lastModifiedDate;
+  }
+
+  public void setLastModifiedDate(Long lastModifiedDate) {
+    this.lastModifiedDate = lastModifiedDate;
   }
 
   @Deprecated
