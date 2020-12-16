@@ -100,7 +100,7 @@ public class LabelServiceTest {
         projectStorage = new ProjectStorageImpl(daoHandler);
         taskStorage = new TaskStorageImpl(daoHandler,userService);
         statusStorage = new StatusStorageImpl(daoHandler, projectStorage,taskStorage);
-        statusService = new StatusServiceImpl(daoHandler, statusStorage);
+        statusService = new StatusServiceImpl(daoHandler, statusStorage, projectStorage, listenerService);
         labelStorage = new LabelStorageImpl(daoHandler);
         labelService = new LabelServiceImpl(labelStorage, taskStorage, daoHandler);
         taskService =new TaskServiceImpl(taskStorage, daoHandler, listenerService);

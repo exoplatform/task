@@ -85,6 +85,11 @@
       <set-method>addListener</set-method>
       <type>org.exoplatform.task.integration.TaskCommentNotificationListener</type>
     </component-plugin>
+    <component-plugin>
+      <name>exo.project.projectModified</name>
+      <set-method>addListener</set-method>
+      <type>org.exoplatform.task.integration.ProjectModifiedListener</type>
+    </component-plugin>
   </external-component-plugins>
 
   <external-component-plugins>

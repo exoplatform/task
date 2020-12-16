@@ -17,7 +17,10 @@
 package org.exoplatform.task.service;
 
 import org.exoplatform.commons.utils.ListAccess;
+import org.exoplatform.container.ExoContainer;
+import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.PortalContainer;
+import org.exoplatform.services.listener.ListenerService;
 import org.exoplatform.task.TestDtoUtils;
 import org.exoplatform.task.TestUtils;
 import org.exoplatform.task.dao.ProjectHandler;
@@ -65,6 +68,10 @@ public class ProjectServiceTest {
     ProjectStorage projectStorage;
     StatusStorage statusStorage;
     TaskStorage taskStorage;
+
+    @Mock
+    ListenerService listenerService;
+
     @Mock
     StatusService statusService;
     @Mock
@@ -91,10 +98,9 @@ public class ProjectServiceTest {
     public void setUp() {
         // Make sure the container is started to prevent the ExoTransactional annotation to fail
         PortalContainer.getInstance();
-
         projectStorage = new ProjectStorageImpl(daoHandler);
         statusStorage = new StatusStorageImpl(daoHandler, projectStorage,taskStorage);
-        projectService = new ProjectServiceImpl(statusService, taskService, daoHandler, projectStorage, statusStorage);
+        projectService = new ProjectServiceImpl(statusService, taskService, daoHandler, projectStorage, statusStorage, listenerService);
         //Mock DAO handler to return Mocked DAO
         when(daoHandler.getTaskHandler()).thenReturn(taskHandler);
         when(daoHandler.getProjectHandler()).thenReturn(projectHandler);

@@ -15,7 +15,7 @@
     <div 
       v-else
       class="taskStatusName font-weight-bold text-color mb-1" 
-      @dblclick="editStatus = true">{{ status.name }}</div>   
+      @click="editStatus = true">{{ status.name }}</div>   
     <div class="taskNumberAndActions d-flex align-center mb-1">
       <span class="caption">{{ tasksNumber }}</span>
       <!-- <span v-if="tasksNumber < maxTasksToShow" class="caption">{{ tasksNumber }}</span>

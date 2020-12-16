@@ -172,6 +172,7 @@ public class ProjectStorageImpl implements ProjectStorage {
         project.setParent(projectDto.getParent());
         project.setColor(projectDto.getColor());
         project.setDueDate(projectDto.getDueDate());
+        project.setLastModifiedDate(projectDto.getLastModifiedDate());
         project.setParticipator(projectDto.getParticipator());
         project.setManager(projectDto.getManager());
         project.setParent(projectDto.getParent());
@@ -193,6 +194,7 @@ public class ProjectStorageImpl implements ProjectStorage {
         projectDto.setParent(project.getParent());
         projectDto.setColor(project.getColor());
         projectDto.setDueDate(project.getDueDate());
+        projectDto.setLastModifiedDate(project.getLastModifiedDate());
         projectDto.setParticipator(getParticipator(project.getId()));
         projectDto.setManager(getManager(project.getId()));
         projectDto.setParent(project.getParent());

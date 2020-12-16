@@ -88,6 +88,8 @@ public class TestDtoUtils {
     liquibase.update((String) null);
     liquibase = new Liquibase("db/changelog/task.db.changelog-3.0.0.xml", new ClassLoaderResourceAccessor(), database);
     liquibase.update((String) null);
+    liquibase = new Liquibase("db/changelog/task.db.changelog-3.1.0.xml", new ClassLoaderResourceAccessor(), database);
+    liquibase.update((String) null);
   }
 
   public static void closeDB() throws LiquibaseException, SQLException {
@@ -135,6 +137,7 @@ public class TestDtoUtils {
     project.setName("Default project");
     project.setDescription("The default project");
     project.setDueDate(new Date());
+    project.setLastModifiedDate(System.currentTimeMillis());
     Set<String> participator = new HashSet<String>();
     participator.add("Tib");
     project.setParticipator(participator);
