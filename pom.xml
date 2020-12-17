@@ -28,7 +28,7 @@
   </parent>
   <groupId>org.exoplatform.addons.task</groupId>
   <artifactId>task-management-parent</artifactId>
-  <version>3.3.x-SNAPSHOT</version>
+  <version>3.3.x-maintenance-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>eXo Add-on:: Task management</name>
   <description>Task management add-on</description>
@@ -45,8 +45,8 @@
     <url>https://github.com/exoplatform/task</url>
   </scm>
   <properties>
-    <org.exoplatform.social.version>6.3.x-SNAPSHOT</org.exoplatform.social.version>
-    <addon.exo.gamification.version>2.3.x-SNAPSHOT</addon.exo.gamification.version>
+    <org.exoplatform.social.version>6.3.x-maintenance-SNAPSHOT</org.exoplatform.social.version>
+    <addon.exo.gamification.version>2.3.x-maintenance-SNAPSHOT</addon.exo.gamification.version>
 
     <!-- Sonar properties -->
     <sonar.organization>exoplatform</sonar.organization>
