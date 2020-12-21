@@ -68,7 +68,8 @@ import {updateTask} from '../../../taskDrawer/taskDrawerApi';
 
       },
       updateTaskStatus(task,newStatus){
-              const status = this.statusList.find(s => s.name === newStatus);
+              // eslint-disable-next-line eqeqeq
+              const status = this.statusList.find(s => s.id == newStatus);
               if(status){
                task.status = status;
                this.updateTask(task)
