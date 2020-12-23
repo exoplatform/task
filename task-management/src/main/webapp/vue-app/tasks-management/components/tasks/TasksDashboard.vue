@@ -290,7 +290,7 @@
       },
       getTasksByPrimary(primaryfilter) { 
         this.primaryfilter=primaryfilter         
-        if(primaryfilter && (primaryfilter === 'OVERDUE' || primaryfilter === 'TODAY' || primaryfilter === 'TOMORROW' || primaryfilter === 'UPCOMING' || primaryfilter === 'UPCOMING')){
+        if(primaryfilter && (primaryfilter === 'OVERDUE' || primaryfilter === 'TODAY' || primaryfilter === 'TOMORROW' || primaryfilter === 'UPCOMING')){
           this.filterTasks.dueDate=primaryfilter
           this.filterTasks.assignee=''
           this.filterTasks.watcher=''
