@@ -270,7 +270,7 @@
       },
       removeAssignee() {
         this.taskAssigneeObj = {};
-        this.$emit('updateTaskAssignement', '');
+        this.$emit('updateTaskAssignement', null);
       },
     }
   }
