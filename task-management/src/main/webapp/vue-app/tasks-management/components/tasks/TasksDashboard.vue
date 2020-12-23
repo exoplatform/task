@@ -290,7 +290,7 @@
       },
       getTasksByPrimary(primaryfilter) { 
         this.primaryfilter=primaryfilter         
-        if(primaryfilter && (primaryfilter === 'OVERDUE' || primaryfilter === 'TODAY' || primaryfilter === 'TOMORROW' || primaryfilter === 'UPCOMING')){
+        if(primaryfilter && (primaryfilter === 'OVERDUE' || primaryfilter === 'TODAY' || primaryfilter === 'TOMORROW' || primaryfilter === 'UPCOMING' || primaryfilter === 'UPCOMING')){
           this.filterTasks.dueDate=primaryfilter
           this.filterTasks.assignee=''
           this.filterTasks.watcher=''
@@ -356,7 +356,9 @@
          this.resetSearch();
          this.searchTasks() 
         }
-        this.$refs.taskToolBar.resetFields("primary");
+        if(this.$refs.taskToolBar){
+          this.$refs.taskToolBar.resetFields("primary");
+        }
       },
 
       resetSearch() {
