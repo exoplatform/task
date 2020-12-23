@@ -1,6 +1,5 @@
 package org.exoplatform.task.service;
 
-import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.dao.TaskQuery;
@@ -153,4 +152,6 @@ public interface TaskService {
     List<Object[]> countTaskStatusByProject(long projectId);
 
     public TasksList filterTasks(String query, long projectId, String keyword, List<Long> labels, TaskUtil.DUE dueDate, Priority priority, List<String> assignees, List<String> coworkers, List<String> watchers, Long labelId, Long statusId, Identity currIdentity, String dueCategory, String space_group_id , TimeZone userTimezone, boolean isShowCompleted, boolean advanceSearch, boolean noProjPermission, boolean noLblPermission, String orderBy, String groupBy, int offset, int limit) throws Exception;
-    }
+    
+    public boolean isExternal(String userId);
+}

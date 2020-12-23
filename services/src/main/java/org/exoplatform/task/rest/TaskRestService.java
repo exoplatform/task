@@ -28,7 +28,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.annotation.security.RolesAllowed;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.URLDecoder;
@@ -609,18 +611,22 @@ public class TaskRestService implements ResourceContainer {
   }
 
   @GET
-  @Path("usersToMention/{query}")
+  @Path("usersToMention/{query}/{lang}")
   @RolesAllowed("users")
   @Produces(MediaType.APPLICATION_JSON)
   @ApiOperation(value = "Gets users to mention in comment", httpMethod = "GET", response = Response.class, notes = "This returns users to mention in comment")
   @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled") })
-  public Response findUsersToMention(@ApiParam(value = "Query", required = true) @PathParam("query") String query) throws Exception {
+  public Response findUsersToMention(@ApiParam(value = "Query", required = true) @PathParam("query") String query, @ApiParam(value = "Lang", required = true) @PathParam("lang") String lang) throws Exception {
     ListAccess<User> list = userService.findUserByName(query);
     JSONArray usersJsonArray = new JSONArray();
     for (User user : list.load(0, UserUtil.SEARCH_LIMIT)) {
       JSONObject userJson = new JSONObject();
+      String fullName = user.getDisplayName();
+      if(taskService.isExternal(user.getUsername())){
+        fullName += " " + "(" + TaskUtil.getResourceBundleLabel(new Locale(lang), "external.label.tag") + ")";
+      }
       userJson.put("id", "@" + user.getUsername());
-      userJson.put("name", user.getDisplayName());
+      userJson.put("name", fullName);
       userJson.put("avatar", user.getAvatar());
       userJson.put("type", "contact");
       usersJsonArray.put(userJson);
