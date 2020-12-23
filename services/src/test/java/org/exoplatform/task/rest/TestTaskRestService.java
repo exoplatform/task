@@ -577,7 +577,8 @@ public class TestTaskRestService {
     };
 
     when(userService.findUserByName("root")).thenReturn(lists);
-    Response response = taskRestService.findUsersToMention("root");
+    when(taskService.isExternal("root")).thenReturn(false);
+    Response response = taskRestService.findUsersToMention("root", "EN");
     assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
   }
 

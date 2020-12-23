@@ -20,6 +20,7 @@ package org.exoplatform.task.util;
 import java.text.*;
 import java.util.*;
 
+import org.exoplatform.services.resources.ResourceBundleService;
 import org.exoplatform.task.dto.CommentDto;
 import org.exoplatform.task.dto.LabelDto;
 import org.exoplatform.task.dto.StatusDto;
@@ -46,7 +47,6 @@ import org.exoplatform.task.domain.*;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.exception.ParameterEntityException;
 import org.exoplatform.task.model.*;
-import org.exoplatform.task.legacy.service.*;
 import org.exoplatform.web.controller.router.Router;
 
 /**
@@ -74,7 +74,7 @@ public final class TaskUtil {
   public static final String MEMBERSHIP = "membership";
   public static final String CREATED_BY = "createdBy";
   public static final String COWORKER = "coworker";
-  
+
   public static final ListAccess<Task> EMPTY_TASK_LIST = new ListAccess<Task>() {
 
     @Override
@@ -1288,6 +1288,11 @@ public final class TaskUtil {
       container = ((RootContainer)container).getPortalContainer(PortalContainer.getCurrentPortalContainerName());
     }
     return container.getComponentInstanceOfType(TaskService.class);
+  }
+
+  public static String getResourceBundleLabel(Locale locale, String label) {
+    ResourceBundleService resourceBundleService =  ExoContainerContext.getService(ResourceBundleService.class);
+    return resourceBundleService.getResourceBundle(resourceBundleService.getSharedResourceBundleNames(), locale).getString(label);
   }
 
   /**
