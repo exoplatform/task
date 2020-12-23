@@ -18,11 +18,15 @@ package org.exoplatform.task.service.impl;
 
 import org.apache.commons.lang3.StringUtils;
 import org.exoplatform.commons.api.persistence.ExoTransactional;
+import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.listener.ListenerService;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.security.Identity;
+import org.exoplatform.social.core.identity.model.Profile;
+import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
+import org.exoplatform.social.core.manager.IdentityManager;
 import org.exoplatform.task.dao.DAOHandler;
 import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.dao.TaskQuery;
@@ -479,6 +483,12 @@ public class TaskServiceImpl implements TaskService {
        return new TasksList(listTasks,tasksSize);
     }
 
-
+    @Override
+    public boolean isExternal(String userId) {
+        IdentityManager identityManager = CommonsUtils.getService(IdentityManager.class);
+        org.exoplatform.social.core.identity.model.Identity userIdentity =  identityManager.getOrCreateIdentity(
+            OrganizationIdentityProvider.NAME, userId);
+        return userIdentity.getProfile() != null && userIdentity.getProfile().getProperty(Profile.EXTERNAL) != null && userIdentity.getProfile().getProperty(Profile.EXTERNAL).equals("true");
+    }
 
 }
