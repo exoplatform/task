@@ -584,5 +584,36 @@ public class ProjectRestService implements ResourceContainer {
     return Response.ok(Response.Status.OK).build();
   }
 
+  @GET
+  @Path("projectParticipants/{idProject}")
+  @RolesAllowed("users")
+  @Produces(MediaType.APPLICATION_JSON)
+  @ApiOperation(value = "Gets participants", httpMethod = "GET", response = Response.class, notes = "This returns participants in project")
+  @ApiResponses(value = {@ApiResponse(code = 200, message = "Request fulfilled")})
+  public Response getProjectParticipants(@ApiParam(value = "Project id", required = true) @PathParam("idProject") long idProject) throws Exception {
+    Set<String> participants = projectService.getParticipator(idProject);
+    JSONArray usersJsonArray = new JSONArray();
+    Set<String> members = new HashSet<String>();
+    JSONObject userJson = new JSONObject();
+    for (String participant : participants) {
+      int index = participant.indexOf(':');
+      if (index > -1) {
+        String groupId = participant.substring(index + 1);
+        Space space = spaceService.getSpaceByGroupId(groupId);
+        if (space != null) members.addAll(Arrays.asList(space.getMembers()));
+      } else {
+        members.add(participant);
+      }
+      for (String member : members) {
+        User user = UserUtil.getUser(member);
+        userJson.put("id", "@" + user.getUsername());
+        userJson.put("name", user.getDisplayName());
+        userJson.put("avatar", user.getAvatar());
+        userJson.put("type", "contact");
+        usersJsonArray.put(userJson);
+      }
+    }
+    return Response.ok(usersJsonArray.toString()).build();
+  }
 
 }
