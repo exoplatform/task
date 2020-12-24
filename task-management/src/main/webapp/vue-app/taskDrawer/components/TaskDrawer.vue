@@ -26,7 +26,7 @@
               @projectsListOpened="closePriority(); closeStatus(); closeLabelsList(); closeTaskDates();closeAssignements()"/>
           </div>
         </div>
-        <div v-if="isProjectView" id="taskActionMenu">
+        <div v-if="menuActions.length" id="taskActionMenu">
           <i class="uiIcon uiThreeDotsIcon" @click="displayActionMenu = true"></i>
           <v-menu
             v-model="displayActionMenu"
@@ -35,10 +35,10 @@
             content-class="taskActionMenu"
             offset-y>
             <v-list class="pa-0" dense>
-              <v-list-item>
-                <v-list-item-title class="subtitle-2" @click="deleteTask">
-                  <i class="uiIcon uiIconTrash pr-1"></i>
-                  <span>{{ $t('label.delete') }}</span>
+              <v-list-item v-for="menuAction in menuActions" :key="menuAction.title">
+                <v-list-item-title class="subtitle-2" @click="menuAction.action">
+                  <i :class="`uiIcon ${menuAction.uiIcon} pr-2`"></i>
+                  <span>{{ menuAction.title }}</span>
                 </v-list-item-title>
               </v-list-item>
             </v-list>
@@ -202,7 +202,7 @@
 
 </template>
 <script>
-  import {updateTask, addTask, addTaskToLabel, getTaskLogs, getTaskComments, addTaskComments, urlVerify} from '../taskDrawerApi';
+  import {updateTask, addTask, addTaskToLabel, getTaskLogs, getTaskComments, addTaskComments, urlVerify, cloneTask} from '../taskDrawerApi';
   export default {
     props: {
       task: {
@@ -215,6 +215,7 @@
     data() {
       return {
         displayActionMenu: false,
+        menuActions: [],
         enableAutosave: true,
         editorData: null,
         reset: false,
@@ -238,7 +239,8 @@
         taskStartDate: null,
         saving: false,
         deleteConfirmMessage: null,
-        isProjectView :true,
+        isManager :false,
+        isParticipator :false,
         datePickerTop: true,
         currentUserName: eXo.env.portal.userName,
       }
@@ -305,12 +307,15 @@
         if (event && event.detail) {
           if(event.detail === 'projectView') {
             if (this.task.status.project.id) {
-              let projectManager = []
-              this.$projectService.getProject(this.task.status.project.id).then(data => {
-                projectManager = data.managerIdentities.filter( manager =>  manager.username === eXo.env.portal.userName )
-              }).then(() => {
-                this.isProjectView = projectManager && projectManager.length ? true : false;
-              })
+              this.$projectService.getProject(this.task.status.project.id, true).then(data => {
+                this.isManager = data.managerIdentities.some(manager => manager.username === eXo.env.portal.userName);
+                this.isParticipator = this.isManager || data.participatorIdentities.some(participator => participator.username === eXo.env.portal.userName);
+                // add menu actions
+                this.menuActions = [];
+                this.addMenuAction(this.$t('label.delete'), 'uiIconTrash', this.isManager, 'deleteTask');
+                this.addMenuAction(this.$t('label.clone'), 'uiIconCloneNode', this.isParticipator, 'cloneTask');
+                this.menuActions = this.menuActions.filter(menuAction => menuAction.enabled);
+              });
             }
           }
         }
@@ -529,6 +534,11 @@
         this.deleteConfirmMessage = `${this.$t('popup.msg.deleteTask')} : ${this.task.title}? `;
         this.$refs.deleteConfirmDialog.open();
       },
+      cloneTask() {
+        cloneTask(this.task.id).then(task => {
+          this.$root.$emit('open-task-drawer', task);
+        });
+      },
       deleteConfirm() {
         return fetch(`${eXo.env.portal.context}/${eXo.env.portal.rest}/tasks/${this.task.id}`, {
           method: 'DELETE',
@@ -538,6 +548,14 @@
             throw new Error('error message');
           }
         })
+      },
+      addMenuAction(title, uiIcon, enabled, actionFunctionName) {
+        this.menuActions.push({
+          title: title,
+          uiIcon: uiIcon,
+          enabled: enabled,
+          action: this[actionFunctionName]
+        });
       },
     }
   }
