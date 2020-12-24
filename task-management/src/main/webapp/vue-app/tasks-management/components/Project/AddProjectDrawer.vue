@@ -419,6 +419,7 @@
                 if(manager_el.providerId ==='space') {
                   projects.spaceName=manager_el.remoteId;
                   projects.manager.push(`manager:/spaces/${manager_el.remoteId}`);
+                  projects.participator.push(`member:/spaces/${manager_el.remoteId}`);
                 } else {
                   projects.manager.push(manager_el.remoteId)
                 }
@@ -437,17 +438,11 @@
           }
 
           if (this.participator && this.participator.length) {
-            if (this.participator.filter(e => e.providerId === 'space').length > 0) {
+            if (this.participator.filter(e => e.providerId !== 'space').length > 0) {
               this.participator.forEach(participator_el => {
-                if(participator_el.providerId ==='space') {
-                  projects.participator.push(`member:/spaces/${participator_el.remoteId}`);
-                } else {
+                if(participator_el.providerId !=='space') {
                   projects.participator.push(participator_el.remoteId)
                 }
-              })
-            } else {
-              this.participator.forEach(user => {
-                projects.participator.push(user.remoteId)
               })
             }
           }
