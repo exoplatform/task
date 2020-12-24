@@ -22,9 +22,10 @@ import org.exoplatform.task.rest.model.*;
 import org.exoplatform.task.service.*;
 import org.exoplatform.task.storage.CommentStorage;
 import org.exoplatform.task.storage.StatusStorage;
-import org.exoplatform.task.util.*;
+import org.exoplatform.task.util.CommentUtil;
+import org.exoplatform.task.util.TaskUtil;
+import org.exoplatform.task.util.UserUtil;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.annotation.security.RolesAllowed;
@@ -320,7 +321,7 @@ public class TaskRestService implements ResourceContainer {
   @POST
   @Produces(MediaType.APPLICATION_JSON)
   @RolesAllowed("users")
-  @ApiOperation(value = "Add a new task", httpMethod = "POT", response = Response.class, notes = "This adds a new task.")
+  @ApiOperation(value = "Add a new task", httpMethod = "POST", response = Response.class, notes = "This adds a new task.")
   @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled"),
       @ApiResponse(code = 400, message = "Invalid query input"), @ApiResponse(code = 403, message = "Unauthorized operation"),
       @ApiResponse(code = 404, message = "Resource not found") })
@@ -341,6 +342,30 @@ public class TaskRestService implements ResourceContainer {
     }
     task = taskService.createTask(task);
     return Response.ok(task).build();
+  }
+
+  @POST
+  @Path("clone/{taskId}")
+  @Produces(MediaType.APPLICATION_JSON)
+  @RolesAllowed("users")
+  @ApiOperation(value = "Clones a specific task by id", httpMethod = "POST", response = Response.class, notes = "This clones the task if the authenticated user has permissions to edit the objects linked to this task.")
+  @ApiResponses(value = {@ApiResponse(code = 200, message = "Request fulfilled"),
+          @ApiResponse(code = 400, message = "Invalid query input"), @ApiResponse(code = 403, message = "Unauthorized operation"),
+          @ApiResponse(code = 404, message = "Resource not found")})
+  public Response cloneTask(@ApiParam(value = "Task id", required = true) @PathParam("taskId") long taskId) throws Exception {
+    TaskDto task = taskService.getTask(taskId);
+    if (task == null) {
+      return Response.status(Response.Status.BAD_REQUEST).build();
+    }
+    if (!TaskUtil.hasEditPermission(task)) {
+      return Response.status(Response.Status.FORBIDDEN).build();
+    }
+    TaskDto newTask = taskService.cloneTask(taskId);
+    if (newTask == null) {
+      return Response.status(Response.Status.NOT_FOUND).build();
+    }
+    
+    return Response.ok(newTask).build();
   }
 
   @PUT
