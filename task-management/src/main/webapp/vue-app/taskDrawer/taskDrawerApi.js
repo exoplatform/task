@@ -297,7 +297,7 @@ export function urlVerify(text) {
           }
           let url = matchedText;
           if (url.indexOf('www.') === 0) {
-            url = `http://${url}`;
+            url = `//${url}`;
           }
           return `<a href="${url}" target="_blank">${matchedText}</a>`;
         });
