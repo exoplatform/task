@@ -9,8 +9,11 @@ import org.exoplatform.services.log.Log;
 import org.exoplatform.services.rest.resource.ResourceContainer;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
+import org.exoplatform.social.core.manager.IdentityManager;
+import org.exoplatform.social.core.profile.ProfileFilter;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
+import org.exoplatform.social.core.identity.SpaceMemberFilterListAccess.Type;
 import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.dao.ProjectQuery;
 import org.exoplatform.task.dto.ProjectDto;
@@ -56,13 +59,16 @@ public class ProjectRestService implements ResourceContainer {
 
   private CommentService commentService;
 
+  private IdentityManager  identityManager;
+
   public ProjectRestService(TaskService taskService,
                             CommentService commentService,
                             ProjectService projectService,
                             StatusService statusService,
                             UserService userService,
                             SpaceService spaceService,
-                            LabelService labelService) {
+                            LabelService labelService,
+                            IdentityManager identityManager) {
     this.taskService = taskService;
     this.commentService = commentService;
     this.projectService = projectService;
@@ -70,6 +76,7 @@ public class ProjectRestService implements ResourceContainer {
     this.userService = userService;
     this.spaceService = spaceService;
     this.labelService = labelService;
+    this.identityManager = identityManager;
   }
 
   private enum TaskType {
@@ -585,33 +592,46 @@ public class ProjectRestService implements ResourceContainer {
   }
 
   @GET
-  @Path("projectParticipants/{idProject}")
+  @Path("projectParticipants/{idProject}/{term}")
   @RolesAllowed("users")
   @Produces(MediaType.APPLICATION_JSON)
   @ApiOperation(value = "Gets participants", httpMethod = "GET", response = Response.class, notes = "This returns participants in project")
-  @ApiResponses(value = {@ApiResponse(code = 200, message = "Request fulfilled")})
-  public Response getProjectParticipants(@ApiParam(value = "Project id", required = true) @PathParam("idProject") long idProject) throws Exception {
-    Set<String> participants = projectService.getParticipator(idProject);
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled") })
+  public Response getProjectParticipants(@ApiParam(value = "Project id", required = true) @PathParam("idProject") long idProject,
+                                         @ApiParam(value = "User name search information", required = false) @PathParam("term") String term) throws Exception { Set<String> participants = projectService.getParticipator(idProject);
     JSONArray usersJsonArray = new JSONArray();
-    Set<String> members = new HashSet<String>();
-    JSONObject userJson = new JSONObject();
+    Set<String> members = new HashSet<>();
+    Type type = Type.valueOf(Type.MEMBER.name().toUpperCase());
+    ProfileFilter profileFilter = new ProfileFilter();
+    profileFilter.setName(term);
     for (String participant : participants) {
       int index = participant.indexOf(':');
       if (index > -1) {
         String groupId = participant.substring(index + 1);
         Space space = spaceService.getSpaceByGroupId(groupId);
-        if (space != null) members.addAll(Arrays.asList(space.getMembers()));
+        ListAccess<org.exoplatform.social.core.identity.model.Identity> spaceIdentitiesListAccess =
+                                                                                                  identityManager.getSpaceIdentityByProfileFilter(space,
+                                                                                                                                                  profileFilter,
+                                                                                                                                                  type,
+                                                                                                                                                  true);
+        org.exoplatform.social.core.identity.model.Identity[] spaceIdentities = spaceIdentitiesListAccess.load(0, 21);
+        if (spaceIdentities.length > 0) {
+          for (int i = 0; i < spaceIdentities.length; i++) {
+            members.addAll(Arrays.asList(spaceIdentities[i].getRemoteId()));
+          }
+        }
       } else {
         members.add(participant);
       }
-      for (String member : members) {
-        User user = UserUtil.getUser(member);
-        userJson.put("id", "@" + user.getUsername());
-        userJson.put("name", user.getDisplayName());
-        userJson.put("avatar", user.getAvatar());
-        userJson.put("type", "contact");
-        usersJsonArray.put(userJson);
-      }
+    }
+    for (String member : members) {
+      User user = UserUtil.getUser(member);
+      JSONObject json = new JSONObject();
+      json.put("id", "@" + user.getUsername());
+      json.put("name", user.getDisplayName());
+      json.put("avatar", user.getAvatar());
+      json.put("type", "contact");
+      usersJsonArray.put(json);
     }
     return Response.ok(usersJsonArray.toString()).build();
   }

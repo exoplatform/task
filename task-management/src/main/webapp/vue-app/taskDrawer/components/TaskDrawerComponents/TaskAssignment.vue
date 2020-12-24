@@ -125,7 +125,7 @@
       },
       searchOptions() {
         return {
-          projectId: this.task.status.project.id
+          searchUrl: '/portal/rest/projects/projectParticipants/'.concat(this.task.status.project.id).concat('/')
         };
       },
     },
