@@ -522,8 +522,11 @@
         this.$root.$emit('task-drawer-closed', this.task)
         this.enableAutosave=false;
         this.showEditor=false;
-        document.dispatchEvent(new CustomEvent('drawerClosed'));
-        this.task={}
+        this.$nextTick(() => {
+          document.dispatchEvent(new CustomEvent('drawerClosed'));
+        }).then(()=>{
+          this.task={}
+        })
       },
       deleteTask() {
         this.deleteConfirmMessage = `${this.$t('popup.msg.deleteTask')} : ${this.task.title}? `;
