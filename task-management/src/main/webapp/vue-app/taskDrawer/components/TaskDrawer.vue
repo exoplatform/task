@@ -309,7 +309,7 @@
             if (this.task.status.project.id) {
               this.$projectService.getProject(this.task.status.project.id, true).then(data => {
                 this.isManager = data.managerIdentities.some(manager => manager.username === eXo.env.portal.userName);
-                this.isParticipator = this.isManager ? true : data.participatorIdentities.some(participator => participator.username === eXo.env.portal.userName);
+                this.isParticipator = this.isManager || data.participatorIdentities.some(participator => participator.username === eXo.env.portal.userName);
                 // add menu actions
                 this.menuActions = [];
                 this.addMenuAction(this.$t('label.delete'), 'uiIconTrash', this.isManager, 'deleteTask');
