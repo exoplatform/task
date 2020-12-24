@@ -7,6 +7,7 @@
       :search-options="searchOptions"
       :ignore-items="ignoredMembers"
       name="inviteAttendee"
+      type-of-relations="''"
       include-users
       include-spaces />
     <div v-if="manager" class="identitySuggester no-border mt-0">
@@ -32,7 +33,7 @@
     data() {
       return {
         currentUser: null,
-        invitedAttendee: [],
+        invitedAttendee: []
       };
     },
     computed: {
@@ -90,9 +91,21 @@
       reset() {
         if (this.manager && !this.manager.length>0) { // In case of edit existing event
           // Add current user as default attendee
-          if (this.currentUser) {
+          const urlPath = document.location.pathname
+          if(urlPath.includes('g/:spaces')) {
             this.manager = [{
-                id: eXo.env.portal.userIdentityId,
+              id: `space:${eXo.env.portal.spaceName}`,
+              providerId: 'space',
+              remoteId: eXo.env.portal.spaceName,
+              profile: {
+                avatar: `/portal/rest/v1/social/spaces/${eXo.env.portal.spaceName}/avatar`,
+                fullname: eXo.env.portal.spaceDisplayName,
+              },
+            }];
+          } else {
+            if (this.currentUser) {
+              this.manager = [{
+                id: `organization:${eXo.env.portal.userIdentityId}`,
                 providerId: 'organization',
                 remoteId: eXo.env.portal.userName,
                 profile: {
@@ -100,8 +113,9 @@
                   fullname: this.currentUser.fullname,
                 },
               }];
-          } else {
-            this.manager = [];
+            } else {
+              this.manager = [];
+            }
           }
         }
         this.$refs.invitedAttendeeAutoComplete.focus();
@@ -115,6 +129,7 @@
         if (index >= 0) {
           this.manager.splice(index, 1);
         }
+        this.$root.$emit('task-project-manager',this.manager);
       },
     }
   };

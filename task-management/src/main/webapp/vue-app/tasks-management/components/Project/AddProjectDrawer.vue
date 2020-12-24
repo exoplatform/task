@@ -269,16 +269,47 @@
             if (this.project.description !== null || this.project.description !== ''){
               this.projectInformation.description = this.project.description;
             }
-
             if (this.project.manager !== null && this.project.manager !== '' && this.project.manager !==undefined ){
-              this.manager = this.project.managerIdentities;
-              this.manager = this.manager.map(user => ({
-                id: `organization:${user.username}`,
-                providerId: 'organization',
-                profile:{avatar:user.avatar,fullName:user.displayName},
-                remoteId: user.username,
-              }));
-
+              this.manager = this.project.manager;
+               const managerIdentity = this.project.managerIdentities;
+              if(this.project && this.project.space) {
+                this.manager = this.manager.map((item) => {
+                  if(item.includes('manager:/spaces/')) {
+                    const spacePrettyName = item.substr((item.indexOf(/spaces/)+8)).slice(0,item.length);
+                    const spaceFullName = this.project.space.substr(0, this.project.space.indexOf(/spaces/)-2);
+                    return {
+                      id: `space:${spacePrettyName}`,
+                      remoteId: spacePrettyName,
+                      providerId: 'space',
+                      profile: {
+                        fullName: spaceFullName,
+                        avatarUrl: `/portal/rest/v1/social/spaces/${spacePrettyName}/avatar`,
+                      },
+                    }
+                  } else {
+                    const managerIdentityElement = managerIdentity.filter(element => element.username === item)
+                    return {
+                      id: `organization:${item}`,
+                      remoteId: item,
+                      providerId: 'organization',
+                      profile: {
+                        fullName: managerIdentityElement[0].displayName,
+                        avatarUrl: managerIdentityElement[0].avatar,
+                      },
+                    }
+                  }
+                });
+              } else {
+                this.manager = managerIdentity.map(user => ({
+                  id: `organization:${user.username}`,
+                  remoteId: user.username,
+                  providerId: 'organization',
+                  profile: {
+                    fullName: user.displayName,
+                    avatarUrl: user.avatar,
+                  },
+                }))
+              }
             }
 
             if (this.project.participator !== null && this.project.participator !== '' && this.project.participator !==undefined && this.project.participator.length > 0){
@@ -298,7 +329,7 @@
           })
         } else {
           this.project=project
-          this.manager=[]
+          this.manager=[];
           this.participator=[]
           this.projectInformation={
             name:'',
@@ -343,7 +374,6 @@
       },
       saveProject() {
         if (this.validateForm()) {
-
           const projects = {
             id: this.projectInformation.id,
             name: this.projectInformation.name,
@@ -351,17 +381,28 @@
             manager: [],
             participator: [],
           };
-          const urlPath = document.location.pathname
-          if(urlPath.includes('g/:spaces')){
-            const spaceName = urlPath.split('g/:spaces:')[1].split('/')[0]
-            projects.spaceName=spaceName
+          if( this.manager && this.manager.length ) {
+            if (this.manager.filter(e => e.providerId === 'space').length > 0) {
+              this.manager.forEach(manager_el => {
+                if(manager_el.providerId ==='space') {
+                  projects.spaceName=manager_el.remoteId;
+                  projects.manager.push(`manager:/spaces/${manager_el.remoteId}`);
+                } else {
+                  projects.manager.push(manager_el.remoteId)
+                }
+              })
+            } else {
+              this.manager.forEach(user => {
+                projects.manager.push(user.remoteId)
+              })
+            }
+          } else {
+            const urlPath = document.location.pathname
+            if(urlPath.includes('g/:spaces')) {
+              const spaceName = urlPath.split('g/:spaces:')[1].split('/')[0]
+              projects.spaceName=spaceName
+            }
           }
-          if (this.manager && this.manager.length) {
-            this.manager.forEach(user => {
-              projects.manager.push(user.remoteId)
-            })
-          }
-
           if (this.participator && this.participator.length) {
             this.participator.forEach(user => {
               projects.participator.push(user.remoteId)
@@ -377,13 +418,15 @@
               this.$refs.addProjectDrawer.close();
               this.showManager=true;
               this.showParticipant=true;
-            }).then(
-                    this.project.managerIdentities = managers.map(user => ({
-                      avatar: user.profile.avatar,
-                      displayName: user.profile.fullName || user.profile.fullname,
-                      username: user.remoteId,
-                    }))
-            ).then(this.$root.$emit('update-projects-list-avatar', this.project.managerIdentities))
+            }).then(() => {
+                this.project.managerIdentities = managers.map(user => ({
+                  avatar: user.profile.avatarUrl,
+                  displayName: user.profile.fullName || user.profile.fullname,
+                  username: user.remoteId,
+                }))
+            }).then(() => {
+              this.$root.$emit('update-projects-list-avatar', this.project.managerIdentities)
+            })
                     .catch(e => {
                       console.debug("Error updating project", e);
                       this.$emit('error', e && e.message ? e.message : String(e));
