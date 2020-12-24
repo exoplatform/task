@@ -1,3 +1,5 @@
+import {tasksConstants} from "../../js/tasksConstants";
+
 export function getUserInformations(userName) {
   return fetch(`/portal/rest/v1/social/users/${userName}`, {
     method: 'GET',
@@ -282,7 +284,7 @@ export function getUser(username) {
     else {
       throw new Error ('Error when getting user');
     }
-  })
+  });
 }
 
 export function urlVerify(text) {
@@ -295,8 +297,21 @@ export function urlVerify(text) {
           }
           let url = matchedText;
           if (url.indexOf('www.') === 0) {
-            url = 'http://' + url;
+            url = `//${url}`;
           }
-          return '<a href="' + url + '" target="_blank">' + matchedText + '</a>';
+          return `<a href="${url}" target="_blank">${matchedText}</a>`;
         });
+}
+
+export function cloneTask(taskId) {
+  return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/tasks/clone/${taskId}`, {
+    credentials: 'include',
+    method: 'POST',
+  }).then(resp => {
+    if(resp && resp.ok) {
+      return resp.json();
+    } else {
+      throw new Error ('Error when cloning task');
+    }
+  });
 }
