@@ -437,14 +437,14 @@
           if(value) {
             this.task.assignee = value;
           } else {
-            this.task.assignee = ''
+            this.task.assignee = null
           }
           updateTask(this.task.id,this.task);
         } else {
           if(value) {
             this.assignee = value;
           } else {
-            this.assignee = ''
+            this.assignee = null
           }
         }
       },
@@ -522,8 +522,11 @@
         this.$root.$emit('task-drawer-closed', this.task)
         this.enableAutosave=false;
         this.showEditor=false;
-        document.dispatchEvent(new CustomEvent('drawerClosed'));
-        this.task={}
+        this.$nextTick(() => {
+          document.dispatchEvent(new CustomEvent('drawerClosed'));
+        }).then(()=>{
+          this.task={}
+        })
       },
       deleteTask() {
         this.deleteConfirmMessage = `${this.$t('popup.msg.deleteTask')} : ${this.task.title}? `;
