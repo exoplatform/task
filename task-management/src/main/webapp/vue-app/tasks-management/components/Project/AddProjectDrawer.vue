@@ -313,14 +313,46 @@
             }
 
             if (this.project.participator !== null && this.project.participator !== '' && this.project.participator !==undefined && this.project.participator.length > 0){
-              this.participator = this.project.participatorIdentities;
-              this.participator = this.participator.map(user => ({
-                id: `organization:${user.username}`,
-                providerId: 'organization',
-                profile:{avatar:user.avatar,fullName:user.displayName},
-                remoteId: user.username,
-              }));
-
+              this.participator = this.project.participator;
+              const participatorIdentity = this.project.participatorIdentities;
+              if(this.project && this.project.space) {
+                this.participator = this.participator.map((item) => {
+                  if(item.includes('member:/spaces/')) {
+                    const spacePrettyName = item.substr((item.indexOf(/spaces/)+8)).slice(0,item.length);
+                    const spaceFullName = this.project.space.substr(0, this.project.space.indexOf(/spaces/)-2);
+                    return {
+                      id: `space:${spacePrettyName}`,
+                      remoteId: spacePrettyName,
+                      providerId: 'space',
+                      profile: {
+                        fullName: spaceFullName,
+                        avatarUrl: `/portal/rest/v1/social/spaces/${spacePrettyName}/avatar`,
+                      },
+                    }
+                  } else {
+                    const participatorIdentityElement = participatorIdentity.filter(element => element.username === item)
+                    return {
+                      id: `organization:${item}`,
+                      remoteId: item,
+                      providerId: 'organization',
+                      profile: {
+                        fullName: participatorIdentityElement[0].displayName,
+                        avatarUrl: participatorIdentityElement[0].avatar,
+                      },
+                    }
+                  }
+                });
+              } else {
+                this.participator = participatorIdentity.map(user => ({
+                  id: `organization:${user.username}`,
+                  remoteId: user.username,
+                  providerId: 'organization',
+                  profile: {
+                    fullName: user.displayName,
+                    avatarUrl: user.avatar,
+                  },
+                }))
+              }
             }
 
             this.$refs.addProjectDrawer.open();
@@ -403,10 +435,21 @@
               projects.spaceName=spaceName
             }
           }
+
           if (this.participator && this.participator.length) {
-            this.participator.forEach(user => {
-              projects.participator.push(user.remoteId)
-            })
+            if (this.participator.filter(e => e.providerId === 'space').length > 0) {
+              this.participator.forEach(participator_el => {
+                if(participator_el.providerId ==='space') {
+                  projects.participator.push(`member:/spaces/${participator_el.remoteId}`);
+                } else {
+                  projects.participator.push(participator_el.remoteId)
+                }
+              })
+            } else {
+              this.participator.forEach(user => {
+                projects.participator.push(user.remoteId)
+              })
+            }
           }
           const managers = this.manager
           if (typeof projects.id !== 'undefined' && projects.id!== '') {
