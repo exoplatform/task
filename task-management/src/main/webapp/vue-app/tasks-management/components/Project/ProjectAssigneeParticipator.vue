@@ -7,6 +7,7 @@
       :search-options="{currentUser: ''}"
       :ignore-items="ignoredMembers"
       name="inviteAttendee"
+      type-of-relations="''"
       include-users
       include-spaces />
     <div v-if="participator" class="identitySuggester no-border mt-0">
@@ -85,6 +86,35 @@
     },
     methods:{
       reset() {
+        if (this.participator && !this.participator.length>0) { // In case of edit existing event
+          // Add current user as default attendee
+          const urlPath = document.location.pathname
+          if(urlPath.includes('g/:spaces')) {
+            this.participator = [{
+              id: `space:${eXo.env.portal.spaceName}`,
+              providerId: 'space',
+              remoteId: eXo.env.portal.spaceName,
+              profile: {
+                avatar: `/portal/rest/v1/social/spaces/${eXo.env.portal.spaceName}/avatar`,
+                fullname: eXo.env.portal.spaceDisplayName,
+              },
+            }];
+          } else {
+            if (this.currentUser) {
+              this.participator = [{
+                id: `organization:${eXo.env.portal.userIdentityId}`,
+                providerId: 'organization',
+                remoteId: eXo.env.portal.userName,
+                profile: {
+                  avatar: this.currentUser.avatar,
+                  fullname: this.currentUser.fullname,
+                },
+              }];
+            } else {
+              this.participator = [];
+            }
+          }
+        }
         this.$refs.invitedAttendeeAutoComplete.focus();
         this.$emit('initialized');
       },
@@ -96,6 +126,7 @@
         if (index >= 0) {
           this.participator.splice(index, 1);
         }
+        this.$root.$emit('task-project-participator',this.participator);
       },
     }
   };
