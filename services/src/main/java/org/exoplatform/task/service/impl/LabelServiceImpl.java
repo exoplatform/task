@@ -95,7 +95,7 @@ public class LabelServiceImpl implements LabelService {
     @ExoTransactional
     public void addTaskToLabel(TaskDto task, Long labelId) throws EntityNotFoundException {
         LabelTaskMapping mapping = new LabelTaskMapping();
-        mapping.setLabel(labelStorage.labelToEntity(getLabel(labelId)));
+        mapping.setLabel(labelStorage.mappingLabelToEntity(getLabel(labelId)));
         mapping.setTask(taskStorage.toEntity(task));
         daoHandler.getLabelTaskMappingHandler().create(mapping);
     }

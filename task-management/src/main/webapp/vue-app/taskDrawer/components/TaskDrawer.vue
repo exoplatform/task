@@ -435,6 +435,7 @@
           this.showEditor=false;
           //this.enableAutosave=false
           this.$refs.addTaskDrawer.close();
+          this.labelsToAdd = [];
         });
       },
       updateTaskAssignee(value) {
