@@ -227,7 +227,7 @@
               this.showEditor = false;
             },
             removeTaskComment: function () {
-              removeTaskComment(this.comment.id);
+              removeTaskComment(this.comment.comment.id);
                 for (let i = 0; i < this.comments.length; i++) {
                     if (this.comments[i] === this.comment) {
                         this.comments.splice(i, 1);
