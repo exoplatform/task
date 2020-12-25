@@ -46,7 +46,7 @@ if (PROJECT_NAME != null && !PROJECT_NAME.isEmpty()) {
 msg += " " + _ctx.appRes("Notification.message.inProject", "<b>" + PROJECT_NAME + "</b>");
 }
 %>
-<div class="contentSmall" data-link="$PROJECT_URL">
+<div class="contentSmall" data-link="$TASK_URL">
 <div class="status"><%=msg%></div>
         <%if (TASK_TITLE != null && !TASK_TITLE.isEmpty()) {%>
         <div class="content"><i class="uiIcon uiIconTick uiIconLightGray"></i>$TASK_TITLE</div>
