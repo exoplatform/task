@@ -51,6 +51,7 @@
           ref="autoFocusInput3"
           :labels="suggesterLabels"
           :value="taskAssigneeObj"
+          :search-options="searchOptions"
           name="taskAssignee"
           type-of-relations="''"
           height="40"
@@ -69,6 +70,7 @@
           ref="autoFocusInput3"
           :labels="suggesterLabels"
           :value="taskCoworkerObj"
+          :search-options="searchOptions"
           name="taskCoworkers"
           type-of-relations="''"
           height="40"
@@ -120,7 +122,12 @@
           placeholder: this.$t('label.assignee'),
           noDataLabel: this.$t('label.noDataLabel'),
         };
-      }
+      },
+      searchOptions() {
+        return {
+          searchUrl: '/portal/rest/projects/projectParticipants/'.concat(this.task.status.project.id).concat('/')
+        };
+      },
     },
     mounted() {
       $(document).on('click', (e) => {

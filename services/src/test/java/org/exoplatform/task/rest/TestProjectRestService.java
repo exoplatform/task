@@ -9,6 +9,7 @@ import java.util.*;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.RuntimeDelegate;
 
+import org.exoplatform.social.core.manager.IdentityManager;
 import org.exoplatform.task.rest.model.PaginatedTaskList;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,6 +61,9 @@ public class TestProjectRestService {
 
   @Mock
   LabelService   labelService;
+
+  @Mock
+  IdentityManager identityManager;
 
   @Before
   public void setup() {
@@ -146,7 +150,8 @@ public class TestProjectRestService {
                                                                    statusService,
                                                                    userService,
                                                                    spaceService,
-                                                                   labelService);
+                                                                   labelService,
+                                                                   identityManager);
     Identity root = new Identity("root");
     ConversationState.setCurrent(new ConversationState(root));
 
@@ -177,7 +182,8 @@ public class TestProjectRestService {
                                                                    statusService,
                                                                    userService,
                                                                    spaceService,
-                                                                   labelService);
+                                                                   labelService,
+                                                                   identityManager);
     Identity john = new Identity("john");
     ConversationState.setCurrent(new ConversationState(john));
     ProjectDto project = new ProjectDto();
@@ -207,7 +213,8 @@ public class TestProjectRestService {
                                                                    statusService,
                                                                    userService,
                                                                    spaceService,
-                                                                   labelService);
+                                                                   labelService,
+                                                                   identityManager);
     Identity john = new Identity("john");
     ConversationState.setCurrent(new ConversationState(john));
     ProjectDto project = new ProjectDto();
@@ -235,7 +242,8 @@ public class TestProjectRestService {
                                                                    statusService,
                                                                    userService,
                                                                    spaceService,
-                                                                   labelService);
+                                                                   labelService,
+                                                                   identityManager);
     Identity john = new Identity("john");
     ConversationState.setCurrent(new ConversationState(john));
     Set<String> manager = new HashSet<String>();
@@ -271,7 +279,8 @@ public class TestProjectRestService {
                                                                    statusService,
                                                                    userService,
                                                                    spaceService,
-                                                                   labelService);
+                                                                   labelService,
+                                                                   identityManager);
     Identity john = new Identity("john");
     Identity exo = new Identity("exo");
     ConversationState.setCurrent(new ConversationState(john));
@@ -318,7 +327,8 @@ public class TestProjectRestService {
                                                                    statusService,
                                                                    userService,
                                                                    spaceService,
-                                                                   labelService);
+                                                                   labelService,
+                                                                   identityManager);
     Identity root = new Identity("root");
     ConversationState.setCurrent(new ConversationState(root));
 
@@ -390,7 +400,8 @@ public class TestProjectRestService {
                                                                    statusService,
                                                                    userService,
                                                                    spaceService,
-                                                                   labelService);
+                                                                   labelService,
+                                                                   identityManager);
 
     Identity root = new Identity("root");
     ConversationState.setCurrent(new ConversationState(root));
@@ -428,7 +439,8 @@ public class TestProjectRestService {
                                                                    statusService,
                                                                    userService,
                                                                    spaceService,
-                                                                   labelService);
+                                                                   labelService,
+                                                                   identityManager);
     Identity john = new Identity("john");
     ConversationState.setCurrent(new ConversationState(john));
     Set<String> manager = new HashSet<String>();
@@ -454,7 +466,8 @@ public class TestProjectRestService {
                                                                    statusService,
                                                                    userService,
                                                                    spaceService,
-                                                                   labelService);
+                                                                   labelService,
+                                                                   identityManager);
     Identity john = new Identity("john");
     ConversationState.setCurrent(new ConversationState(john));
     Set<String> manager = new HashSet<String>();
@@ -486,7 +499,8 @@ public class TestProjectRestService {
                                                                    statusService,
                                                                    userService,
                                                                    spaceService,
-                                                                   labelService);
+                                                                   labelService,
+                                                                   identityManager);
     Identity john = new Identity("john");
     ConversationState.setCurrent(new ConversationState(john));
     Set<String> manager = new HashSet<String>();
