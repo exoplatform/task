@@ -275,7 +275,6 @@
         this.getFilterNumber()
         this.$root.$emit('reset-filter-task-group-sort',this.groupBy);
         this.$emit('reset-filter-task');
-        this.$refs.filterTasksDrawer.close();
       },
       resetFields(source) {
         this.query='';
