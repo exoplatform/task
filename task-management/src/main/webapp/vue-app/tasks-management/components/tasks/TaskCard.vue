@@ -31,7 +31,7 @@
           <span class="caption text-sub-title">ID : {{ task.task.id }}</span>
         </div>
       </div>
-      <div class="taskAssigneeAndLabels d-flex justify-space-between align-center mt-3" @click="openTaskDrawer()">
+      <div class="taskAssigneeAndLabels d-flex justify-space-between align-center mt-3">
         <div class="taskAssignee d-flex flex-nowrap">
           <exo-user-avatar
             v-for="user in avatarToDisplay"
