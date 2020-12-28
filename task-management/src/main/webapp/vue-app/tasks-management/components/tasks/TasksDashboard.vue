@@ -123,7 +123,6 @@
         {{ $t('spacesList.button.showMore') }}
       </v-btn>
     </v-row>
-    <tasks-assignee-coworker-drawer/>
   </v-app>
 </template>
 <script>
