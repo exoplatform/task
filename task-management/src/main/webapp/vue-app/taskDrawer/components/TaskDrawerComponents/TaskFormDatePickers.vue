@@ -213,12 +213,12 @@
         this.$refs.taskDueDate.menu = false;
       },
       emitStartDate(date) {
-        if(date!== null) {
+        if(date && this.actualTask.startDate && date !== this.actualTask.startDate.time) {
           this.$emit('startDateChanged',this.toDateObject(date));
         }
       },
       emitDueDate(date) {
-        if(date!== null) {
+        if(date && this.actualTask.dueDate && date !== this.actualTask.dueDate.time) {
           this.$emit('dueDateChanged',this.toDateObject(date));
         }
       },
