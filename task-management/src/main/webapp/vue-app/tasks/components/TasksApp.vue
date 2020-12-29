@@ -206,6 +206,7 @@
     },
   },
     created(){
+      this.$root.$on('task-added', this.retrieveTask);
       this.$root.$on('open-task-drawer', task => {
         this.$refs.taskDrawer.open(task);
       });
@@ -310,6 +311,12 @@
         localStorage.setItem('primary-filter-tasks', this.primaryFilterSelected);
         location.href=`${ eXo.env.portal.context }/${ eXo.env.portal.portalName }/${ pagelink }` ;
 
+      },
+      retrieveTask(){
+        this.getMyOverDueTasks();
+        this.getMyTodayTasks();
+        this.getMyTomorrowTasks();
+        this.getMyUpcomingTasks();
       },
     }
   }
