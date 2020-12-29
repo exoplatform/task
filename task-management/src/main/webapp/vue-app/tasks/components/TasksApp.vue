@@ -206,6 +206,9 @@
     },
   },
     created(){
+      this.$root.$on('task-added', task => {
+        this.retrieveTask(task);
+      });
       this.$root.$on('open-task-drawer', task => {
         this.$refs.taskDrawer.open(task);
       });
@@ -310,6 +313,33 @@
         localStorage.setItem('primary-filter-tasks', this.primaryFilterSelected);
         location.href=`${ eXo.env.portal.context }/${ eXo.env.portal.portalName }/${ pagelink }` ;
 
+      },
+      dateFormatter(dueDate) {
+        if (dueDate) {
+          const date = new Date(dueDate.time);
+          const day = date.getDate();
+          const month = date.getMonth()+1;
+          const year = date.getFullYear();
+          const formattedTime = `${day  }-${  month  }-${  year}`;
+          return formattedTime
+        }
+      },
+      retrieveTask(task){
+        if(task.dueDate){
+          const Today = new Date();
+          const formattedTimeToday = `${Today.getDate()  }-${  Today.getMonth()+1  }-${  Today.getFullYear()}`;
+          const formattedTimeTomorrow = `${Today.getDate()+1  }-${  Today.getMonth()+1  }-${  Today.getFullYear()}`;
+          const date = this.dateFormatter(task.dueDate);
+          if(new Date(date) < new Date(formattedTimeToday)){
+           return  this.getMyOverDueTasks();
+          }else if (date===formattedTimeToday){
+            return this.getMyTodayTasks();
+          }else if (date===formattedTimeTomorrow){
+            return this.getMyTomorrowTasks();
+          }else {
+            return this.getMyUpcomingTasks();
+          }
+        }
       },
     }
   }
