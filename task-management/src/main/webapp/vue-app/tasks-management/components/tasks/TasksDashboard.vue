@@ -356,7 +356,9 @@
          this.resetSearch();
          this.searchTasks() 
         }
-        this.$refs.taskToolBar.resetFields("primary");
+        if(this.$refs.taskToolBar){
+          this.$refs.taskToolBar.resetFields("primary");
+        }
       },
 
       resetSearch() {
