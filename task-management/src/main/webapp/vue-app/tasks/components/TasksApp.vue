@@ -174,7 +174,7 @@
     },computed:{
     tasksOverdueList(){
       if(this.tasksOverdue){
-        if(this.tasksOverdue.length>10){
+        if(this.tasksOverdueSize>10){
           return  this.tasksOverdue.slice(0, 10);
         }else {
           return this.tasksOverdue;
@@ -184,25 +184,23 @@
     },
     tasksTodayList(){
       if(this.tasksToday){
-        if(this.tasksToday.length>1){
-          if(this.tasksOverdueList.length<10){
-            return  this.tasksToday.slice(0, 10-this.tasksOverdueList.length);
-          }
+        if(this.tasksTodaySize){
+            return  this.tasksToday.slice(0, 10-this.tasksOverdueSize);
         }
       }else {return this.tasksToday;}
 
     },
     tasksTomorrowList(){
       if(this.tasksTomorrow){
-        if(this.tasksTomorrow.length>1){
-          return  this.tasksTomorrow.slice(0, 10-this.tasksOverdueList.length-this.tasksTodayList.length);
+        if(this.tasksTomorrowSize){
+          return  this.tasksTomorrow.slice(0, 10-this.tasksOverdueSize-this.tasksTodaySize);
         }
       }else {return this.tasksTomorrow;}
     },
     tasksUpcomingList(){
       if(this.tasksUpcoming){
-        if(this.tasksUpcoming.length>1){
-          return  this.tasksUpcoming.slice(0, 10-this.tasksOverdueList.length-this.tasksTodayList.length-this.tasksTomorrowList.length);
+        if(this.tasksUpcomingSize){
+          return  this.tasksUpcoming.slice(0, 10-this.tasksOverdueSize-this.tasksTodaySize-this.tasksTomorrowSize);
         }
       }else {return this.tasksUpcoming;}
     },
