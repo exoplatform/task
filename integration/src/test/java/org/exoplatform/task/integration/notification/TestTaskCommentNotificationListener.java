@@ -28,6 +28,7 @@ import org.exoplatform.commons.api.notification.service.storage.NotificationServ
 import org.exoplatform.commons.api.settings.ExoFeatureService;
 import org.exoplatform.commons.notification.impl.setting.NotificationPluginContainer;
 import org.exoplatform.commons.persistence.impl.EntityManagerService;
+import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.commons.utils.ListAccessImpl;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.PortalContainer;
@@ -45,6 +46,7 @@ import org.exoplatform.task.integration.TaskCommentNotificationListener;
 import org.exoplatform.task.integration.notification.mock.MockNotificationCompletionService;
 import org.exoplatform.task.legacy.service.TaskService;
 import org.exoplatform.task.legacy.service.impl.TaskServiceImpl;
+import org.exoplatform.task.service.CommentService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -105,6 +107,9 @@ public class TestTaskCommentNotificationListener {
   @Mock
   private CommentHandler commentHandler;
 
+  @Mock
+  private CommentService commentService;
+
   private ListenerService listenerService;
   private TaskService taskService;
 
@@ -163,6 +168,7 @@ public class TestTaskCommentNotificationListener {
     when(container.getComponentInstanceOfType(NotificationService.class)).thenReturn(notificationService);
     when(container.getComponentInstanceOfType(NotificationCompletionService.class)).thenReturn(new MockNotificationCompletionService(new InitParams()));
     when(container.getComponentInstanceOfType(ExoFeatureService.class)).thenReturn(exoFeatureService);
+    when(container.getComponentInstanceOfType(CommentService.class)).thenReturn(commentService);
 
     when(daoHandler.getTaskHandler()).thenReturn(taskHandler);
     when(daoHandler.getCommentHandler()).thenReturn(commentHandler);
