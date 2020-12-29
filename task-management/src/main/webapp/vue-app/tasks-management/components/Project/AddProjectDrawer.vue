@@ -3,7 +3,8 @@
     ref="addProjectDrawer"
     class="addProjectDrawer"
     body-classes="hide-scroll decrease-z-index-more"
-    right>
+    right
+    @closed="cancel">
     <template slot="title">
       {{ labelDrawer }}
     </template>
