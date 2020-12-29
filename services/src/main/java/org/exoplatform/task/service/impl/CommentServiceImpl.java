@@ -105,7 +105,7 @@ public class CommentServiceImpl implements CommentService {
         CommentDto obj = commentStorage.commentToDto(commentEntity);
 
         try {
-            listenerService.broadcast(TASK_COMMENT_CREATION, null, commentEntity);
+            listenerService.broadcast(TASK_COMMENT_CREATION, commentEntity.getTask(), commentEntity);
             if(obj.getTask().getStatus()!=null){
                 listenerService.broadcast("exo.project.projectModified", null, obj.getTask().getStatus().getProject() );
             }
