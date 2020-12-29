@@ -4,7 +4,7 @@
       ref="invitedAttendeeAutoComplete"
       v-model="invitedAttendee"
       :labels="participantSuggesterLabels"
-      :search-options="{currentUser: ''}"
+      :search-options="searchOptions"
       :ignore-items="ignoredMembers"
       name="inviteAttendee"
       include-users
@@ -36,6 +36,9 @@
       };
     },
     computed: {
+      searchOptions(){
+        return this.currentUser;
+      },
       participantSuggesterLabels() {
         return {
           searchPlaceholder: this.$t('label.searchPlaceholder'),
