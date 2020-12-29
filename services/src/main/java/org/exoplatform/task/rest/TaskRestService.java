@@ -333,7 +333,9 @@ public class TaskRestService implements ResourceContainer {
     task.setCreatedBy(currentUser);
     task.setCreatedTime(new Date());
     if(task.getStatus()==null||task.getStatus().getProject()==null){
-      task.setAssignee(currentUser);
+      if (task.getAssignee() == null) {
+        task.setAssignee(currentUser);
+      }
       task.setStatus(null);
     }
     if(task.getStatus()!=null&&task.getStatus().getId()==0&&task.getStatus().getProject()!=null) {
