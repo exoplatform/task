@@ -233,7 +233,7 @@
         subEditorIsOpen: false,
         taskPriority: 'NORMAL',
         labelsToAdd: [],
-        assignee: '',
+        assignee: null,
         taskCoworkers: [],
         taskDueDate: null,
         taskStartDate: null,
