@@ -57,7 +57,7 @@
   },
     watch: {
       drag(val) {
-        if(!val&&this.task&&this.newStatus&&this.task.status.name !== this.newStatus){
+        if(!val&&this.task&&this.newStatus&&this.task.status.id !== this.newStatus){
              this.$emit('updateTaskStatus', this.task,this.newStatus);
         }
       },
