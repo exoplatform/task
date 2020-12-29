@@ -47,8 +47,8 @@
             mx-0>
             <v-flex
               xs12>
-              <div v-if="tasks.length>0">
-                <div v-if="tasksOverdueSize>0">
+              <div v-if="tasks.length > 0">
+                <div v-if="tasksOverdueSize > 0">
                   <div class="nameGroup">
                     <span class="nameGroup">{{ $t('label.overdue') }}</span>
                     <div class="amount-item pointer" @click="navigateTo('tasks/myTasks','OVERDUE')">{{ tasksOverdueSize }}</div>
@@ -64,7 +64,7 @@
                     <task-details :task="task" @removeTask="removeTask"/>
                   </div>
                 </div>
-                <div v-if="tasksTodaySize>0">
+                <div v-if="tasksTodaySize > 0">
                   <div class="nameGroup">
                     <span class="nameGroup">{{ $t('label.today') }}</span>
                     <div class="amount-item pointer" @click="navigateTo('tasks/myTasks','TODAY')">{{ tasksTodaySize }}</div>
@@ -82,7 +82,7 @@
                   </div>
                 </div>
 
-                <div v-if="tasksTomorrowSize>0">
+                <div v-if="tasksTomorrowSize > 0">
                   <div class="nameGroup">
                     <span class="nameGroup">{{ $t('label.tomorrow') }}</span>
                     <div class="amount-item pointer" @click="navigateTo('tasks/myTasks','TOMORROW')">{{ tasksTomorrowSize }}</div>
@@ -100,7 +100,7 @@
                   </div>
                 </div>
 
-                <div v-if="tasksUpcomingSize>0">
+                <div v-if="tasksUpcomingSize > 0">
                   <div class="nameGroup">
                     <span class="nameGroup">{{ $t('label.upcoming') }}</span>
                     <div class="amount-item pointer" @click="navigateTo('tasks/myTasks','UPCOMING')">{{ tasksUpcomingSize }}</div>
