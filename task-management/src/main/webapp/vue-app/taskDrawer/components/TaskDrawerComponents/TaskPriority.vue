@@ -51,7 +51,9 @@
     },
     watch: {
       priority() {
-        this.updateTaskPriority();
+        if(this.task.priority !== this.priority) {
+         this.updateTaskPriority();
+         }
       }
     },
     created() {
