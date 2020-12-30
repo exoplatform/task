@@ -276,10 +276,6 @@ public class TaskRestService implements ResourceContainer {
       groupTasks = TaskUtil.groupTasks(tasks.getListTasks().stream().map(task -> getTaskDetails((TaskDto) task, currentUser)).collect(Collectors.toList()), groupBy, currentUser, userTimezone, labelService, userService);
       return Response.ok(new FiltreTaskList(groupTasks)).build();
     }
-    if (groupTasks.isEmpty()) {
-      groupTasks.put(new GroupKey("", null, 0), tasks.getListTasks().stream().map(task -> getTaskDetails((TaskDto) task, currentUser)).collect(Collectors.toList()));
-    }
-
     return Response.ok(new PaginatedTaskList(tasks.getListTasks().stream().map(task -> getTaskDetails((TaskDto) task, currentUser)).collect(Collectors.toList()),tasks.getTasksSize())).build();
   } catch (Exception e) {
         LOG.error("Can't filter Tasks", e);
