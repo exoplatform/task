@@ -209,7 +209,7 @@
 
         if (typeof task.id !== 'undefined') {
           return this.$tasksService.updateCompleted(task).then(task => {
-            this.$emit('update-cart', task);
+            this.$emit('update-taskCompleted', task);
           }).then(this.task.task.completed = task.showCompleteTasks)
                   .catch(e => {
                     console.debug("Error updating project", e);
