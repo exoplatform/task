@@ -18,10 +18,26 @@
         default: () => [],
       }
     },
+  data () {
+    return {
+      filterTaskCompletedActive: false,
+    }
+    },
     methods:{
       updateTaskCompleted(e){
-        window.setTimeout(() => this.tasks = this.tasks.filter((t) => t.task.id !== e.id), 500);
+        this.filterCompletedActive();
+        if(!this.filterTaskCompletedActive){
+          window.setTimeout(() => this.tasks = this.tasks.filter((t) => t.task.id !== e.id), 500);
+        }
       },
+      filterCompletedActive(){
+        this.tasks.forEach(task_elm => {
+          while (task_elm.completed===true){
+            this.filterTaskCompletedActive=true;
+            break;
+          }
+        })
+      }
     }
   }
 
