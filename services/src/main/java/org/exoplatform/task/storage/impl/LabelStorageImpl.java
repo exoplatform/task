@@ -103,13 +103,12 @@ public class LabelStorageImpl implements LabelStorage {
     if(label==null){
       return null;
     }
-    LabelDto labelDto = new LabelDto(label);
+    LabelDto labelDto = new LabelDto();
     labelDto.setId(label.getId());
     labelDto.setUsername(label.getUsername());
     labelDto.setName(label.getName());
     labelDto.setColor(label.getColor());
     labelDto.setHidden(label.isHidden());
-    labelDto.setParent(label.getParent());
     return labelDto;
   }
 }
