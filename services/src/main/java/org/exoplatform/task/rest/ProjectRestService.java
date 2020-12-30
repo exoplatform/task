@@ -345,14 +345,16 @@ public class ProjectRestService implements ResourceContainer {
         for (String usr : participators) {
           JSONObject participator = new JSONObject();
           User user_ = UserUtil.getUser(usr);
-          participator.put("username", user_.getUsername());
-          participator.put("email", user_.getEmail());
-          participator.put("displayName", user_.getDisplayName());
-          participator.put("avatar", user_.getAvatar());
-          participator.put("url", user_.getUrl());
-          participator.put("enable", user_.isEnable());
-          participator.put("deleted", user_.isDeleted());
-          participatorsJsonArray.put(participator);
+          if (user_ != null) {
+            participator.put("username", user_.getUsername());
+            participator.put("email", user_.getEmail());
+            participator.put("displayName", user_.getDisplayName());
+            participator.put("avatar", user_.getAvatar());
+            participator.put("url", user_.getUrl());
+            participator.put("enable", user_.isEnable());
+            participator.put("deleted", user_.isDeleted());
+            participatorsJsonArray.put(participator);
+          }
         }
         projectJson.put("participatorIdentities", participatorsJsonArray);
       }
@@ -362,14 +364,16 @@ public class ProjectRestService implements ResourceContainer {
         for (String usr : managers) {
           JSONObject manager = new JSONObject();
           User user_ = UserUtil.getUser(usr);
-          manager.put("username", user_.getUsername());
-          manager.put("email", user_.getEmail());
-          manager.put("displayName", user_.getDisplayName());
-          manager.put("avatar", user_.getAvatar());
-          manager.put("url", user_.getUrl());
-          manager.put("enable", user_.isEnable());
-          manager.put("deleted", user_.isDeleted());
-          managersJsonArray.put(manager);
+          if (user_ != null) {
+            manager.put("username", user_.getUsername());
+            manager.put("email", user_.getEmail());
+            manager.put("displayName", user_.getDisplayName());
+            manager.put("avatar", user_.getAvatar());
+            manager.put("url", user_.getUrl());
+            manager.put("enable", user_.isEnable());
+            manager.put("deleted", user_.isDeleted());
+            managersJsonArray.put(manager);
+          }
         }
         projectJson.put("managerIdentities", managersJsonArray);
       }
@@ -395,7 +399,7 @@ public class ProjectRestService implements ResourceContainer {
       //projectJson.put("children", projectService.getSubProjects(projectId, 0, -1));
       projectJson.put("dueDate", project.getDueDate());
       projectJson.put("description", project.getDescription());
-      projectJson.put("status", statusService.getStatus(projectId));
+      //projectJson.put("status", statusService.getStatus(projectId));
       projectJson.put("canManage", project.canEdit(ConversationState.getCurrent().getIdentity()));
       return projectJson;
   }
