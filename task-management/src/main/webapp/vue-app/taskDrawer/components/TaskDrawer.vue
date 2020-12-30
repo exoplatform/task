@@ -267,7 +267,7 @@
     },
     watch: {
        'task.description': function (newValue, oldValue) {
-        if (newValue !== oldValue) {
+        if (newValue !== this.task.description) {
           this.autoSaveDescription();
         }
       },
