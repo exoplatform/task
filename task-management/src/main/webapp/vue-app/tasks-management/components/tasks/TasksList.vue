@@ -18,26 +18,26 @@
         default: () => [],
       }
     },
-  data () {
-    return {
-      filterTaskCompletedActive: false,
-    }
+    data() {
+      return {
+        filterTaskCompletedActive: false,
+      }
     },
-    methods:{
-      updateTaskCompleted(e){
+    methods: {
+      updateTaskCompleted(e) {
         this.filterCompletedActive();
-        if(!this.filterTaskCompletedActive){
+        if (!this.filterTaskCompletedActive) {
           window.setTimeout(() => this.tasks = this.tasks.filter((t) => t.task.id !== e.id), 500);
         }
       },
-      filterCompletedActive(){
+      filterCompletedActive() {
         this.tasks.forEach(task_elm => {
-          while (task_elm.completed===true){
-            this.filterTaskCompletedActive=true;
+          while (task_elm.completed === true) {
+            this.filterTaskCompletedActive = true;
             break;
           }
         })
-      }
+      },
     }
   }
 
