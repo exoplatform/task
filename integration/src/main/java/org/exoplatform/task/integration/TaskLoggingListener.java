@@ -17,6 +17,7 @@
   
 package org.exoplatform.task.integration;
 
+import org.apache.commons.lang.StringUtils;
 import org.exoplatform.commons.api.notification.NotificationContext;
 import org.exoplatform.commons.api.notification.model.PluginKey;
 import org.exoplatform.commons.notification.impl.NotificationContextImpl;
@@ -40,11 +41,17 @@ import java.util.Set;
  */
 public class TaskLoggingListener extends Listener<TaskService, TaskPayload> {
 
+  private org.exoplatform.task.service.TaskService taskService;
+
+  public TaskLoggingListener(org.exoplatform.task.service.TaskService taskService) {
+    this.taskService = taskService;
+  }
+
   @Override
   public void onEvent(Event<TaskService, TaskPayload> event) throws Exception {
     TaskService service = event.getSource();
-    if(service==null){
-      service= CommonsUtils.getService(TaskService.class);
+    if(service == null){
+      service = CommonsUtils.getService(TaskService.class);
     }
     String username = ConversationState.getCurrent().getIdentity().getUserId();
     TaskPayload data = event.getData();
@@ -54,7 +61,8 @@ public class TaskLoggingListener extends Listener<TaskService, TaskPayload> {
 
     if (oldTask == null && newTask != null) {
       service.addTaskLog(newTask.getId(), username, "created", "");
-      notifyCoworker(null, newTask);
+      notifyAssignee(null, newTask, username);
+      notifyCoworker(null, newTask, username);
     }
 
     if (oldTask != null && newTask != null) {
@@ -103,18 +111,10 @@ public class TaskLoggingListener extends Listener<TaskService, TaskPayload> {
       NotificationContext ctx = buildContext(after);
       dispatch(ctx, TaskCompletedPlugin.ID);
     }
-    if (isDiff(before.getAssignee(), after.getAssignee())) {
-      if (after.getAssignee() != null && !after.getAssignee().trim().isEmpty()) {
-        service.addTaskLog(after.getId(), username, "assign", after.getAssignee());
-      } else {
-        service.addTaskLog(after.getId(), username, "unassign", before.getAssignee());
-      }
-
-      NotificationContext ctx = buildContext(after);
-      dispatch(ctx, TaskAssignPlugin.ID);
-    }
+    // Notify assignee if any
+    notifyAssignee(before, after, username);
     // Notify coworker if any
-    notifyCoworker(before, after);
+    notifyCoworker(before, after, username);
 
     if (isProjectChange(before, after)) {
       if (after.getStatus() != null) {
@@ -129,6 +129,20 @@ public class TaskLoggingListener extends Listener<TaskService, TaskPayload> {
       NotificationContext ctx = buildContext(after);
       ctx.append(NotificationUtils.ACTION_NAME, "edit_status");
       dispatch(ctx,TaskEditionPlugin.ID);
+    }
+  }
+
+  private void notifyAssignee(Task before, Task after, String username) throws EntityNotFoundException {
+    if (before == null || isDiff(before.getAssignee(), after.getAssignee())) {
+      if (StringUtils.isNotBlank(after.getAssignee())) {
+        taskService.addTaskLog(after.getId(), username, "assign", after.getAssignee());
+      } else if(before != null){
+        taskService.addTaskLog(after.getId(), username, "unassign", before.getAssignee());
+      }
+      if(after.getAssignee() != null && !username.equals(after.getAssignee())) {
+        NotificationContext ctx = buildContext(after);
+        dispatch(ctx, TaskAssignPlugin.ID);
+      }
     }
   }
 
@@ -153,7 +167,7 @@ public class TaskLoggingListener extends Listener<TaskService, TaskPayload> {
     if (before != null) {
       return !before.equals(after);
     } else {
-      return !after.equals(before);
+      return true;
     }
   }
   
@@ -170,7 +184,7 @@ public class TaskLoggingListener extends Listener<TaskService, TaskPayload> {
                                  .execute(ctx);
   }
 
-  private void notifyCoworker(Task before, Task after) {
+  private void notifyCoworker(Task before, Task after, String username) {
     if (after.getCoworker() != null && !after.getCoworker().isEmpty()) {
       Set<String> receiver = new HashSet<String>();
       Set<String> coworkers = new HashSet<String>();
@@ -181,7 +195,7 @@ public class TaskLoggingListener extends Listener<TaskService, TaskPayload> {
         }
       }
       for (String user : after.getCoworker()) {
-        if (!coworkers.contains(user)) {
+        if (!coworkers.contains(user) && !user.equals(username)) {
           receiver.add(user);
         }
       }
