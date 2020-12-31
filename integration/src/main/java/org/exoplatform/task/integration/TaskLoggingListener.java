@@ -25,6 +25,7 @@ import org.exoplatform.services.listener.Event;
 import org.exoplatform.services.listener.Listener;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.dto.TaskDto;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.integration.notification.*;
 import org.exoplatform.task.legacy.service.TaskPayload;
@@ -48,11 +49,12 @@ public class TaskLoggingListener extends Listener<TaskService, TaskPayload> {
     String username = ConversationState.getCurrent().getIdentity().getUserId();
     TaskPayload data = event.getData();
 
-    Object oldTask = data.before();
-    Object newTask = data.after();
+    Task oldTask = data.before();
+    Task newTask = data.after();
 
     if (oldTask == null && newTask != null) {
-      service.addTaskLog(((Task)newTask).getId(), username, "created", "");
+      service.addTaskLog(newTask.getId(), username, "created", "");
+      notifyCoworker(null, newTask);
     }
 
     if (oldTask != null && newTask != null) {
@@ -111,25 +113,8 @@ public class TaskLoggingListener extends Listener<TaskService, TaskPayload> {
       NotificationContext ctx = buildContext(after);
       dispatch(ctx, TaskAssignPlugin.ID);
     }
-
-    if (after.getCoworker() != null && !after.getCoworker().isEmpty()) {
-      Set<String> receiver = new HashSet<String>();
-      Set<String> coworkers = before.getCoworker();
-      if (coworkers == null) {
-        coworkers = Collections.emptySet();
-      }
-      for (String user : after.getCoworker()) {
-        if (!coworkers.contains(user)) {
-          receiver.add(user);
-        }
-      }
-
-      if (!receiver.isEmpty()) {
-        NotificationContext ctx = buildContext(after);
-        ctx.append(NotificationUtils.COWORKER, receiver);
-        dispatch(ctx, TaskCoworkerPlugin.ID);
-      }
-    }
+    // Notify coworker if any
+    notifyCoworker(before, after);
 
     if (isProjectChange(before, after)) {
       if (after.getStatus() != null) {
@@ -183,5 +168,29 @@ public class TaskLoggingListener extends Listener<TaskService, TaskPayload> {
   private void dispatch(NotificationContext ctx, String pluginId) {    
     ctx.getNotificationExecutor().with(ctx.makeCommand(PluginKey.key(pluginId)))
                                  .execute(ctx);
+  }
+
+  private void notifyCoworker(Task before, Task after) {
+    if (after.getCoworker() != null && !after.getCoworker().isEmpty()) {
+      Set<String> receiver = new HashSet<String>();
+      Set<String> coworkers = new HashSet<String>();
+      if(before != null) {
+        coworkers = before.getCoworker();
+        if (coworkers == null) {
+          coworkers = Collections.emptySet();
+        }
+      }
+      for (String user : after.getCoworker()) {
+        if (!coworkers.contains(user)) {
+          receiver.add(user);
+        }
+      }
+
+      if (!receiver.isEmpty()) {
+        NotificationContext ctx = buildContext(after);
+        ctx.append(NotificationUtils.COWORKER, receiver);
+        dispatch(ctx, TaskCoworkerPlugin.ID);
+      }
+    }
   }
 }
