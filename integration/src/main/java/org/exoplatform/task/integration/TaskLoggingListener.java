@@ -33,6 +33,7 @@ import org.exoplatform.task.legacy.service.TaskPayload;
 import org.exoplatform.task.legacy.service.TaskService;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -71,7 +72,7 @@ public class TaskLoggingListener extends Listener<TaskService, TaskPayload> {
   }
 
   private void logTaskUpdate(TaskService service, String username, Task before, Task after) throws EntityNotFoundException {
-    if (isDiff(before.getStartDate(), after.getStartDate()) || isDiff(before.getEndDate(), after.getEndDate())) {
+    if (isDateDiff(before.getStartDate(), after.getStartDate()) || isDateDiff(before.getEndDate(), after.getEndDate())) {
       service.addTaskLog(after.getId(), username, "edit_workplan", "");
 
       NotificationContext ctx = buildContext(after);
@@ -85,7 +86,7 @@ public class TaskLoggingListener extends Listener<TaskService, TaskPayload> {
       dispatch(ctx, TaskEditionPlugin.ID);
       ctx.append(NotificationUtils.ACTION_NAME, "edit_title");
     }
-    if (isDiff(before.getDueDate(), after.getDueDate())) {
+    if (isDateDiff(before.getDueDate(), after.getDueDate())) {
       service.addTaskLog(after.getId(), username, "edit_duedate", "");
 
       NotificationContext ctx = buildContext(after);
@@ -130,6 +131,19 @@ public class TaskLoggingListener extends Listener<TaskService, TaskPayload> {
       ctx.append(NotificationUtils.ACTION_NAME, "edit_status");
       dispatch(ctx,TaskEditionPlugin.ID);
     }
+  }
+
+  private boolean isDateDiff(Date dateBefore, Date dateAfter) {
+    if(dateBefore != null && dateAfter == null) {
+      return true;
+    }
+    if(dateBefore == null && dateAfter != null) {
+      return true;
+    }
+    if(dateBefore != null) {
+      return dateBefore.getTime() != dateAfter.getTime();
+    }
+    return false;
   }
 
   private void notifyAssignee(Task before, Task after, String username) throws EntityNotFoundException {
@@ -185,26 +199,26 @@ public class TaskLoggingListener extends Listener<TaskService, TaskPayload> {
   }
 
   private void notifyCoworker(Task before, Task after, String username) {
-    if (after.getCoworker() != null && !after.getCoworker().isEmpty()) {
-      Set<String> receiver = new HashSet<String>();
-      Set<String> coworkers = new HashSet<String>();
-      if(before != null) {
-        coworkers = before.getCoworker();
-        if (coworkers == null) {
-          coworkers = Collections.emptySet();
-        }
+    Set<String> receiver = new HashSet<String>();
+    Set<String> coworkers = new HashSet<String>();
+    if(before != null) {
+      coworkers = before.getCoworker();
+      if (coworkers == null) {
+        coworkers = Collections.emptySet();
       }
+    }
+    if (after.getCoworker() != null && !after.getCoworker().isEmpty()) {
       for (String user : after.getCoworker()) {
         if (!coworkers.contains(user) && !user.equals(username)) {
           receiver.add(user);
         }
       }
+    }
 
-      if (!receiver.isEmpty()) {
-        NotificationContext ctx = buildContext(after);
-        ctx.append(NotificationUtils.COWORKER, receiver);
-        dispatch(ctx, TaskCoworkerPlugin.ID);
-      }
+    if (!receiver.isEmpty()) {
+      NotificationContext ctx = buildContext(after);
+      ctx.append(NotificationUtils.COWORKER, receiver);
+      dispatch(ctx, TaskCoworkerPlugin.ID);
     }
   }
 }
