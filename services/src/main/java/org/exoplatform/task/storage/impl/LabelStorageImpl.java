@@ -94,7 +94,7 @@ public class LabelStorageImpl implements LabelStorage {
     label.setName(labelDto.getName());
     label.setColor(labelDto.getColor());
     label.setHidden(labelDto.isHidden());
-    label.setParent(labelDto.getParent());
+    label.setParent(labelToEntity(labelDto.getParent()));
     return label;
   }
 
@@ -109,6 +109,7 @@ public class LabelStorageImpl implements LabelStorage {
     labelDto.setName(label.getName());
     labelDto.setColor(label.getColor());
     labelDto.setHidden(label.isHidden());
+    labelDto.setParent(labelToDto(label.getParent()));
     return labelDto;
   }
 }
