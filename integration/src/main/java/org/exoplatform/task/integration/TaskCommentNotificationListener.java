@@ -23,16 +23,22 @@ import org.exoplatform.commons.api.notification.NotificationContext;
 import org.exoplatform.commons.api.notification.command.NotificationCommand;
 import org.exoplatform.commons.api.notification.model.PluginKey;
 import org.exoplatform.commons.notification.impl.NotificationContextImpl;
+import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.commons.utils.ListAccess;
+import org.exoplatform.commons.utils.PortalPrinter;
+import org.exoplatform.container.PortalContainer;
+import org.exoplatform.portal.config.model.PortalConfig;
 import org.exoplatform.services.listener.Event;
 import org.exoplatform.services.listener.Listener;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.dto.CommentDto;
 import org.exoplatform.task.integration.notification.NotificationUtils;
 import org.exoplatform.task.integration.notification.TaskCommentPlugin;
 import org.exoplatform.task.integration.notification.TaskMentionPlugin;
 import org.exoplatform.task.legacy.service.TaskService;
+import org.exoplatform.task.service.CommentService;
 import org.exoplatform.task.util.ListUtil;
 
 import java.util.ArrayList;
@@ -43,20 +49,18 @@ import java.util.Set;
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
-public class TaskCommentNotificationListener extends Listener<TaskService, Comment> {
+public class TaskCommentNotificationListener extends Listener<Task, Comment> {
 
   @Override
-  public void onEvent(Event<TaskService, Comment> event) throws Exception {
-    TaskService taskService = event.getSource();
+  public void onEvent(Event<Task, Comment> event) throws Exception {
+    Task task = event.getSource();
     Comment comment = event.getData();
     //. How to send notification
-    NotificationContext ctx = buildContext(taskService, comment);
+    NotificationContext ctx = buildContext(task, comment);
     dispatch(ctx, TaskCommentPlugin.ID, TaskMentionPlugin.ID);
   }
 
-  private NotificationContext buildContext(TaskService taskService, Comment comment) {
-    Task task = comment.getTask();
-
+  private NotificationContext buildContext(Task task, Comment comment) {
     NotificationContext ctx = NotificationContextImpl.cloneInstance()
             .append(NotificationUtils.COMMENT, comment)
             .append(NotificationUtils.TASK, task);
@@ -74,23 +78,24 @@ public class TaskCommentNotificationListener extends Listener<TaskService, Comme
     if (task.getAssignee() != null && !task.getAssignee().isEmpty()) {
       receiver.add(task.getAssignee());
     }
-    Set<String> coworker = taskService.getCoworker(task.getId());
+    Set<String> coworker = task.getCoworker();
     if (coworker != null && coworker.size() > 0) {
       receiver.addAll(coworker);
     }
-    Set<String> watcher = taskService.getWatchersOfTask(task) ;
+    Set<String> watcher = task.getWatcher() ;
     if (watcher != null && watcher.size() > 0) {
       receiver.addAll(watcher);
     }
 
     // All user who commented on this task
-    ListAccess<Comment> comments = taskService.getComments(task.getId());
-    if (comments != null && ListUtil.getSize(comments) > 0) {
-      for (Comment c : ListUtil.load(comments, 0, -1)) {
+    CommentService commentService = PortalContainer.getInstance().getComponentInstanceOfType(CommentService.class);
+    List<CommentDto> comments = commentService.getComments(task.getId(), 0, 0);
+    if (comments != null && comments.size() > 0) {
+      for (CommentDto c : comments) {
         receiver.add(c.getAuthor());
-        List<Comment> subComments = c.getSubComments();
+        List<CommentDto> subComments = c.getSubComments();
         if (subComments != null) {
-          for (Comment subComment : subComments) {
+          for (CommentDto subComment : subComments) {
             receiver.add(subComment.getAuthor());
           }
         }

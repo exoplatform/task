@@ -150,36 +150,33 @@
 
     </template>
     <template slot="footer">
-      <div class="d-flex">
+      <div class="VuetifyApp flex d-flex">
+        <v-btn
+          class="reset"
+          @click="reset">
+          <template>
+            <i class="fas fa-redo"></i>
+            {{ $t('popup.reset') }}
+          </template>
+        </v-btn>
         <v-spacer />
-        <div class="VuetifyApp d-flex">
+        <div class="d-btn">
           <v-btn
-            class="reset"
-            @click="reset">
+            class="btn mr-2"
+            @click="cancel">
             <template>
-              <i class="fas fa-redo"></i>
-              {{ $t('popup.reset') }}
+              {{ $t('popup.cancel') }}
             </template>
           </v-btn>
-          <div class="d-btn">
-            <v-btn
-              class="btn mr-2"
-              @click="cancel">
-              <template>
-                {{ $t('popup.cancel') }}
-              </template>
-            </v-btn>
 
-            <v-btn
-              :loading="postProject"
-              class="btn btn-primary"
-              @click="filterTasks">
-              <template>
-                {{ $t('label.confirm') }}
-              </template>
-            </v-btn>
-          </div>
-
+          <v-btn
+            :loading="postProject"
+            class="btn btn-primary"
+            @click="filterTasks">
+            <template>
+              {{ $t('label.confirm') }}
+            </template>
+          </v-btn>
         </div>
       </div>
     </template>
@@ -275,7 +272,6 @@
         this.getFilterNumber()
         this.$root.$emit('reset-filter-task-group-sort',this.groupBy);
         this.$emit('reset-filter-task');
-        this.$refs.filterTasksDrawer.close();
       },
       resetFields(source) {
         this.query='';

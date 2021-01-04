@@ -33,8 +33,7 @@
       </div>
       <div 
         v-if="assigneeAndCoworkerArray && assigneeAndCoworkerArray.length"
-        class="taskWorker d-flex justify-space-between align-center my-3"
-        @click="openTaskDrawer()">
+        class="taskWorker d-flex justify-space-between align-center my-3">
         <div
           :class="assigneeAndCoworkerArray && !assigneeAndCoworkerArray.length && task && task.labels && !task.labels.length && 'hideTaskAssignee'"
           class="taskAssignee d-flex flex-nowrap">

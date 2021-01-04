@@ -83,7 +83,7 @@ import java.util.*;
               query = "SELECT count(p) FROM TaskProject p "
                   + " LEFT JOIN p.manager manager "
                   + " LEFT JOIN p.participator participator "
-                  + " WHERE (manager IN (:memberships) OR participator IN :memberships) AND LOWER(p.name) LIKE LOWER(CONCAT('%', :name, '%'))"
+                  + " WHERE (manager IN (:memberships) OR participator IN (:memberships)) AND LOWER(p.name) LIKE LOWER(CONCAT('%', :name, '%'))"
   )
 })
 public class Project {

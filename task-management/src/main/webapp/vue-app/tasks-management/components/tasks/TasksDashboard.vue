@@ -123,7 +123,6 @@
         {{ $t('spacesList.button.showMore') }}
       </v-btn>
     </v-row>
-    <tasks-assignee-coworker-drawer/>
   </v-app>
 </template>
 <script>
@@ -356,7 +355,9 @@
          this.resetSearch();
          this.searchTasks() 
         }
-        this.$refs.taskToolBar.resetFields("primary");
+        if(this.$refs.taskToolBar){
+          this.$refs.taskToolBar.resetFields("primary");
+        }
       },
 
       resetSearch() {

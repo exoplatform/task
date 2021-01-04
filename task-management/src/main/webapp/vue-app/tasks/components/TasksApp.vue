@@ -47,8 +47,8 @@
             mx-0>
             <v-flex
               xs12>
-              <div v-if="tasks.length>0">
-                <div>
+              <div v-if="tasks.length > 0">
+                <div v-if="tasksOverdueSize > 0">
                   <div class="nameGroup">
                     <span class="nameGroup">{{ $t('label.overdue') }}</span>
                     <div class="amount-item pointer" @click="navigateTo('tasks/myTasks','OVERDUE')">{{ tasksOverdueSize }}</div>
@@ -64,7 +64,7 @@
                     <task-details :task="task" @removeTask="removeTask"/>
                   </div>
                 </div>
-                <div>
+                <div v-if="tasksTodaySize > 0">
                   <div class="nameGroup">
                     <span class="nameGroup">{{ $t('label.today') }}</span>
                     <div class="amount-item pointer" @click="navigateTo('tasks/myTasks','TODAY')">{{ tasksTodaySize }}</div>
@@ -82,7 +82,7 @@
                   </div>
                 </div>
 
-                <div>
+                <div v-if="tasksTomorrowSize > 0">
                   <div class="nameGroup">
                     <span class="nameGroup">{{ $t('label.tomorrow') }}</span>
                     <div class="amount-item pointer" @click="navigateTo('tasks/myTasks','TOMORROW')">{{ tasksTomorrowSize }}</div>
@@ -100,7 +100,7 @@
                   </div>
                 </div>
 
-                <div>
+                <div v-if="tasksUpcomingSize > 0">
                   <div class="nameGroup">
                     <span class="nameGroup">{{ $t('label.upcoming') }}</span>
                     <div class="amount-item pointer" @click="navigateTo('tasks/myTasks','UPCOMING')">{{ tasksUpcomingSize }}</div>
@@ -174,7 +174,7 @@
     },computed:{
     tasksOverdueList(){
       if(this.tasksOverdue){
-        if(this.tasksOverdue.length>10){
+        if(this.tasksOverdueSize>10){
           return  this.tasksOverdue.slice(0, 10);
         }else {
           return this.tasksOverdue;
@@ -184,27 +184,25 @@
     },
     tasksTodayList(){
       if(this.tasksToday){
-        if(this.tasksToday.length>1){
-          if(this.tasksOverdueList.length<10){
-            return  this.tasksToday.slice(0, 10-this.tasksOverdueList.length);
-          }
+        if(this.tasksTodaySize && this.tasksOverdueSize<11){
+            return  this.tasksToday.slice(0, 10-this.tasksOverdueSize);
         }
-      }else {return this.tasksToday;}
+      }else {return this.tasksToday.slice(0, 0);}
 
     },
     tasksTomorrowList(){
       if(this.tasksTomorrow){
-        if(this.tasksTomorrow.length>1){
-          return  this.tasksTomorrow.slice(0, 10-this.tasksOverdueList.length-this.tasksTodayList.length);
+        if(this.tasksTomorrowSize && this.tasksOverdueSize+this.tasksTodaySize<11){
+          return  this.tasksTomorrow.slice(0, 10-this.tasksOverdueSize-this.tasksTodaySize);
         }
-      }else {return this.tasksTomorrow;}
+      }else {return this.tasksTomorrow.slice(0, 0);}
     },
     tasksUpcomingList(){
       if(this.tasksUpcoming){
-        if(this.tasksUpcoming.length>1){
-          return  this.tasksUpcoming.slice(0, 10-this.tasksOverdueList.length-this.tasksTodayList.length-this.tasksTomorrowList.length);
+        if(this.tasksUpcomingSize && this.tasksOverdueSize+this.tasksTodaySize+this.tasksTomorrowSize<11){
+          return  this.tasksUpcoming.slice(0, 10-this.tasksOverdueSize-this.tasksTodaySize-this.tasksTomorrowSize);
         }
-      }else {return this.tasksUpcoming;}
+      }else {return this.tasksUpcoming.slice(0, 0);}
     },
   },
     created(){

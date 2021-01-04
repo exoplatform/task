@@ -98,7 +98,7 @@
           },
         drawer:null,
         primaryFilter: [
-          {name: "ALL"},{name: "ASSIGNED"},{name: "COLLABORATED"},{name: "OVERDUE"},{name: "TODAY"},{name: "TOMORROW"}
+          {name: "ALL"},{name: "ASSIGNED"},{name: "COLLABORATED"},{name: "OVERDUE"},{name: "TODAY"},{name: "TOMORROW"},{name: "UPCOMING"}
         ],
       }
     },
@@ -116,6 +116,7 @@
       },
     },created() {
     this.primaryFilterSelected = localStorage.getItem('primary-filter-tasks');
+    this.changePrimaryFilter();
   },
     methods: {
       resetFilterTask(){
