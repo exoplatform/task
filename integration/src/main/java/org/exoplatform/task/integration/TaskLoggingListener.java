@@ -17,6 +17,7 @@
   
 package org.exoplatform.task.integration;
 
+import org.apache.commons.lang.StringUtils;
 import org.exoplatform.commons.api.notification.NotificationContext;
 import org.exoplatform.commons.api.notification.model.PluginKey;
 import org.exoplatform.commons.notification.impl.NotificationContextImpl;
@@ -25,12 +26,14 @@ import org.exoplatform.services.listener.Event;
 import org.exoplatform.services.listener.Listener;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.dto.TaskDto;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.integration.notification.*;
 import org.exoplatform.task.legacy.service.TaskPayload;
 import org.exoplatform.task.legacy.service.TaskService;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -39,20 +42,28 @@ import java.util.Set;
  */
 public class TaskLoggingListener extends Listener<TaskService, TaskPayload> {
 
+  private org.exoplatform.task.service.TaskService taskService;
+
+  public TaskLoggingListener(org.exoplatform.task.service.TaskService taskService) {
+    this.taskService = taskService;
+  }
+
   @Override
   public void onEvent(Event<TaskService, TaskPayload> event) throws Exception {
     TaskService service = event.getSource();
-    if(service==null){
-      service= CommonsUtils.getService(TaskService.class);
+    if(service == null){
+      service = CommonsUtils.getService(TaskService.class);
     }
     String username = ConversationState.getCurrent().getIdentity().getUserId();
     TaskPayload data = event.getData();
 
-    Object oldTask = data.before();
-    Object newTask = data.after();
+    Task oldTask = data.before();
+    Task newTask = data.after();
 
     if (oldTask == null && newTask != null) {
-      service.addTaskLog(((Task)newTask).getId(), username, "created", "");
+      service.addTaskLog(newTask.getId(), username, "created", "");
+      notifyAssignee(null, newTask, username);
+      notifyCoworker(null, newTask, username);
     }
 
     if (oldTask != null && newTask != null) {
@@ -61,7 +72,7 @@ public class TaskLoggingListener extends Listener<TaskService, TaskPayload> {
   }
 
   private void logTaskUpdate(TaskService service, String username, Task before, Task after) throws EntityNotFoundException {
-    if (isDiff(before.getStartDate(), after.getStartDate()) || isDiff(before.getEndDate(), after.getEndDate())) {
+    if (isDateDiff(before.getStartDate(), after.getStartDate()) || isDateDiff(before.getEndDate(), after.getEndDate())) {
       service.addTaskLog(after.getId(), username, "edit_workplan", "");
 
       NotificationContext ctx = buildContext(after);
@@ -75,7 +86,7 @@ public class TaskLoggingListener extends Listener<TaskService, TaskPayload> {
       dispatch(ctx, TaskEditionPlugin.ID);
       ctx.append(NotificationUtils.ACTION_NAME, "edit_title");
     }
-    if (isDiff(before.getDueDate(), after.getDueDate())) {
+    if (isDateDiff(before.getDueDate(), after.getDueDate())) {
       service.addTaskLog(after.getId(), username, "edit_duedate", "");
 
       NotificationContext ctx = buildContext(after);
@@ -101,35 +112,10 @@ public class TaskLoggingListener extends Listener<TaskService, TaskPayload> {
       NotificationContext ctx = buildContext(after);
       dispatch(ctx, TaskCompletedPlugin.ID);
     }
-    if (isDiff(before.getAssignee(), after.getAssignee())) {
-      if (after.getAssignee() != null && !after.getAssignee().trim().isEmpty()) {
-        service.addTaskLog(after.getId(), username, "assign", after.getAssignee());
-      } else {
-        service.addTaskLog(after.getId(), username, "unassign", before.getAssignee());
-      }
-
-      NotificationContext ctx = buildContext(after);
-      dispatch(ctx, TaskAssignPlugin.ID);
-    }
-
-    if (after.getCoworker() != null && !after.getCoworker().isEmpty()) {
-      Set<String> receiver = new HashSet<String>();
-      Set<String> coworkers = before.getCoworker();
-      if (coworkers == null) {
-        coworkers = Collections.emptySet();
-      }
-      for (String user : after.getCoworker()) {
-        if (!coworkers.contains(user)) {
-          receiver.add(user);
-        }
-      }
-
-      if (!receiver.isEmpty()) {
-        NotificationContext ctx = buildContext(after);
-        ctx.append(NotificationUtils.COWORKER, receiver);
-        dispatch(ctx, TaskCoworkerPlugin.ID);
-      }
-    }
+    // Notify assignee if any
+    notifyAssignee(before, after, username);
+    // Notify coworker if any
+    notifyCoworker(before, after, username);
 
     if (isProjectChange(before, after)) {
       if (after.getStatus() != null) {
@@ -144,6 +130,33 @@ public class TaskLoggingListener extends Listener<TaskService, TaskPayload> {
       NotificationContext ctx = buildContext(after);
       ctx.append(NotificationUtils.ACTION_NAME, "edit_status");
       dispatch(ctx,TaskEditionPlugin.ID);
+    }
+  }
+
+  private boolean isDateDiff(Date dateBefore, Date dateAfter) {
+    if(dateBefore != null && dateAfter == null) {
+      return true;
+    }
+    if(dateBefore == null && dateAfter != null) {
+      return true;
+    }
+    if(dateBefore != null) {
+      return dateBefore.getTime() != dateAfter.getTime();
+    }
+    return false;
+  }
+
+  private void notifyAssignee(Task before, Task after, String username) throws EntityNotFoundException {
+    if (before == null || isDiff(before.getAssignee(), after.getAssignee())) {
+      if (StringUtils.isNotBlank(after.getAssignee())) {
+        taskService.addTaskLog(after.getId(), username, "assign", after.getAssignee());
+      } else if(before != null){
+        taskService.addTaskLog(after.getId(), username, "unassign", before.getAssignee());
+      }
+      if(after.getAssignee() != null && !username.equals(after.getAssignee())) {
+        NotificationContext ctx = buildContext(after);
+        dispatch(ctx, TaskAssignPlugin.ID);
+      }
     }
   }
 
@@ -168,7 +181,7 @@ public class TaskLoggingListener extends Listener<TaskService, TaskPayload> {
     if (before != null) {
       return !before.equals(after);
     } else {
-      return !after.equals(before);
+      return true;
     }
   }
   
@@ -183,5 +196,29 @@ public class TaskLoggingListener extends Listener<TaskService, TaskPayload> {
   private void dispatch(NotificationContext ctx, String pluginId) {    
     ctx.getNotificationExecutor().with(ctx.makeCommand(PluginKey.key(pluginId)))
                                  .execute(ctx);
+  }
+
+  private void notifyCoworker(Task before, Task after, String username) {
+    Set<String> receiver = new HashSet<String>();
+    Set<String> coworkers = new HashSet<String>();
+    if(before != null) {
+      coworkers = before.getCoworker();
+      if (coworkers == null) {
+        coworkers = Collections.emptySet();
+      }
+    }
+    if (after.getCoworker() != null && !after.getCoworker().isEmpty()) {
+      for (String user : after.getCoworker()) {
+        if (!coworkers.contains(user) && !user.equals(username)) {
+          receiver.add(user);
+        }
+      }
+    }
+
+    if (!receiver.isEmpty()) {
+      NotificationContext ctx = buildContext(after);
+      ctx.append(NotificationUtils.COWORKER, receiver);
+      dispatch(ctx, TaskCoworkerPlugin.ID);
+    }
   }
 }

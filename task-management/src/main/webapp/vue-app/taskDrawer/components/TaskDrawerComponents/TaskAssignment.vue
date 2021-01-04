@@ -124,9 +124,11 @@
         };
       },
       searchOptions() {
-        return {
-          searchUrl: '/portal/rest/projects/projectParticipants/'.concat(this.task.status.project.id).concat('/')
-        };
+      if(this.task && this.task.status) {
+          return {
+            searchUrl: '/portal/rest/projects/projectParticipants/'.concat(this.task.status.project.id).concat('/')
+          };
+        }
       },
     },
     mounted() {
