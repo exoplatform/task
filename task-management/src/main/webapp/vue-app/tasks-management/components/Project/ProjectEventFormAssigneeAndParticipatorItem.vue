@@ -13,6 +13,8 @@
 </template>
 
 <script>
+import {getUser} from '../../../../js/tasksService'
+
 export default {
   props: {
     attendee: {
@@ -23,6 +25,11 @@ export default {
       type: Object,
       default: () => ({}),
     },
+  },
+   data () {
+      return {
+        isExternal : false,
+      }
   },
   computed: {
     canRemoveAttendee() {
@@ -38,8 +45,15 @@ export default {
     },
     displayName() {
       const profile = this.attendee && (this.attendee.profile || this.attendee.space);
-      return profile && (profile.displayName || profile.fullname || profile.fullName);
+      const fullName = profile && (profile.displayName || profile.fullname || profile.fullName);
+      return this.isExternal ? fullName.concat(' (').concat(this.$t('label.external')).concat(')') : fullName;
     },
+  },
+  created() {
+    getUser(this.attendee.id.replace('organization:', ''))
+      .then(user => {
+        this.isExternal = user.external === 'true';
+      });
   },
 };
 </script>
