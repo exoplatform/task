@@ -578,7 +578,7 @@ public class TaskRestService implements ResourceContainer {
     if (addedComment != null) {
       addedComment = commentService.getComment(addedComment.getId());
     }
-    CommentEntity commentEntity = new CommentEntity(addedComment, userService.loadUser(currentUser), commentText);
+    CommentEntity commentEntity = new CommentEntity(addedComment, userService.loadUser(currentUser), CommentUtil.formatMention(commentText, userService));
     return Response.ok(commentEntity).build();
   }
 
@@ -610,7 +610,7 @@ public class TaskRestService implements ResourceContainer {
     if (addedComment != null) {
       addedComment = commentService.getComment(addedComment.getId());
     }
-    CommentEntity commentEntity = new CommentEntity(addedComment, userService.loadUser(currentUser), commentText);
+    CommentEntity commentEntity = new CommentEntity(addedComment, userService.loadUser(currentUser), CommentUtil.formatMention(commentText, userService));
     return Response.ok(commentEntity).build();
   }
 
