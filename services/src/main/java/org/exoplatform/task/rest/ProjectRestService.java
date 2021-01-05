@@ -100,7 +100,7 @@ public class ProjectRestService implements ResourceContainer {
     if (limit == 0) {
       limit = -1;
     }
-
+    try {
     List<String> memberships = new LinkedList<String>();
     ConversationState state = ConversationState.getCurrent();
     Identity identity = state.getIdentity();
@@ -138,15 +138,14 @@ public class ProjectRestService implements ResourceContainer {
     }
     JSONObject global = new JSONObject();
     JSONArray projectsJsonArray = new JSONArray();
-    try {
       projectsJsonArray = buildJSON(projectsJsonArray, projects, participatorParam);
       global.put("projects",projectsJsonArray);
       global.put("projectNumber",projectNumber);
-    } catch (Exception e) {
-      LOG.error("Error getting projects", e);
-      return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-    }
     return Response.ok(global.toString()).build();
+  } catch (Exception e) {
+    LOG.warn("Error getting projects", e);
+    return Response.serverError().entity(e.getMessage()).build();
+  }
   }
 
 
@@ -158,7 +157,8 @@ public class ProjectRestService implements ResourceContainer {
   @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled"),
       @ApiResponse(code = 403, message = "Unauthorized operation"), @ApiResponse(code = 500, message = "Internal server error") })
   public Response getProjectById(@ApiParam(value = "Project id", required = true) @PathParam("id") long id,
-                                 @ApiParam(value = "Participator Need", required = false, defaultValue = "false") @QueryParam("participatorParam") boolean participatorParam) throws EntityNotFoundException {
+                                 @ApiParam(value = "Participator Need", required = false, defaultValue = "false") @QueryParam("participatorParam") boolean participatorParam)  {
+    try{
     Identity currentUser = ConversationState.getCurrent().getIdentity();
     ProjectDto project = projectService.getProject(id);
     if (project == null) {
@@ -167,12 +167,11 @@ public class ProjectRestService implements ResourceContainer {
     if (!project.canView(currentUser)) {
       return Response.status(Response.Status.UNAUTHORIZED).build();
     }
-    try{
     return Response.ok(buildJsonProject(project, participatorParam).toString()).build();
-    } catch (JSONException e) {
-      LOG.error("Canit get Project with id {}, id",e);
-    }
-    return Response.status(Response.Status.NOT_FOUND).build();
+  } catch (Exception e) {
+    LOG.error("Can't get Project with id {}", id,e);
+    return Response.serverError().entity(e.getMessage()).build();
+  }
   }
 
   @GET
@@ -182,7 +181,8 @@ public class ProjectRestService implements ResourceContainer {
   @ApiOperation(value = "Gets the default status by project id", httpMethod = "GET", response = Response.class, notes = "This returns the default status by project id")
   @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled"),
           @ApiResponse(code = 403, message = "Unauthorized operation"), @ApiResponse(code = 500, message = "Internal server error") })
-  public Response getDefaultStatusByProjectId(@ApiParam(value = "Project id", required = true) @PathParam("id") long id) throws EntityNotFoundException {
+  public Response getDefaultStatusByProjectId(@ApiParam(value = "Project id", required = true) @PathParam("id") long id) {
+    try{
     Identity currentUser = ConversationState.getCurrent().getIdentity();
     ProjectDto project = projectService.getProject(id);
     if (project == null) {
@@ -193,6 +193,10 @@ public class ProjectRestService implements ResourceContainer {
     }
     StatusDto status = statusService.getDefaultStatus(id);
     return Response.ok(status).build();
+  } catch (Exception e) {
+    LOG.error("Can't get Default StatusBy Project id {}", id,e);
+    return Response.serverError().entity(e.getMessage()).build();
+  }
   }
 
 
@@ -203,17 +207,23 @@ public class ProjectRestService implements ResourceContainer {
   @ApiOperation(value = "Gets the statuses by project id", httpMethod = "GET", response = Response.class, notes = "This returns the statuses by project id")
   @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled"),
       @ApiResponse(code = 403, message = "Unauthorized operation"), @ApiResponse(code = 404, message = "Resource not found") })
-  public Response getStatusesByProjectId(@ApiParam(value = "Project id", required = true) @PathParam("id") long id) throws EntityNotFoundException {
-    Identity currentUser = ConversationState.getCurrent().getIdentity();
-    ProjectDto project = projectService.getProject(id);
-    if (project == null) {
-      return Response.status(Response.Status.NOT_FOUND).build();
+  public Response getStatusesByProjectId(@ApiParam(value = "Project id", required = true) @PathParam("id") long id) {
+    try {
+      Identity currentUser = ConversationState.getCurrent().getIdentity();
+      ProjectDto project = projectService.getProject(id);
+      if (project == null) {
+        return Response.status(Response.Status.NOT_FOUND).build();
+      }
+      if (!project.canView(currentUser)) {
+        return Response.status(Response.Status.UNAUTHORIZED).build();
+      }
+      List<StatusDto> projectStatuses = statusService.getStatuses(id);
+      return Response.ok(projectStatuses).build();
     }
-    if (!project.canView(currentUser)) {
-      return Response.status(Response.Status.UNAUTHORIZED).build();
+    catch (Exception e) {
+        LOG.error("Can't get Statuses for ProjectId {}", id,e);
+        return Response.serverError().entity(e.getMessage()).build();
     }
-    List<StatusDto> projectStatuses = statusService.getStatuses(id);
-    return Response.ok(projectStatuses).build();
   }
 
   @GET
@@ -222,8 +232,8 @@ public class ProjectRestService implements ResourceContainer {
   @Produces(MediaType.APPLICATION_JSON)
   @ApiOperation(value = "Gets users by query and project name", httpMethod = "GET", response = Response.class, notes = "This returns users by query and project name")
   @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled") })
-  public Response getProjectsStatistics(@ApiParam(value = "id", required = true) @PathParam("id") long id ) throws Exception {
-
+  public Response getProjectsStatistics(@ApiParam(value = "id", required = true) @PathParam("id") long id ){
+    try {
     HashMap<String, Integer> hm = new HashMap<String, Integer>();
      for(StatusDto statusDto : statusService.getStatuses(id)){
        hm.put(statusDto.getName(),0);
@@ -248,6 +258,11 @@ public class ProjectRestService implements ResourceContainer {
     projectJson.put("totalNumberTasks", tasksNum);
     return Response.ok(projectJson.toString()).build();
   }
+    catch (Exception e) {
+    LOG.error("Can't get Statistics for project {}", id,e);
+    return Response.serverError().entity(e.getMessage()).build();
+  }
+  }
 
 
   @GET
@@ -257,7 +272,8 @@ public class ProjectRestService implements ResourceContainer {
   @ApiOperation(value = "Gets users by query and project name", httpMethod = "GET", response = Response.class, notes = "This returns users by query and project name")
   @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled") })
   public Response getUsersByQueryAndProjectName(@ApiParam(value = "Query", required = true) @PathParam("query") String query,
-                                                @ApiParam(value = "projectName", required = true) @PathParam("projectName") String projectName) throws Exception {
+                                                @ApiParam(value = "projectName", required = true) @PathParam("projectName") String projectName) {
+    try {
     ListAccess<User> usersList = userService.findUserByName(query);
     JSONArray usersJsonArray = new JSONArray();
     for (User user : usersList.load(0, UserUtil.SEARCH_LIMIT)) {
@@ -272,9 +288,15 @@ public class ProjectRestService implements ResourceContainer {
     }
     return Response.ok(usersJsonArray.toString()).build();
   }
+    catch (Exception e) {
+            LOG.error("Can't get Users ",e);
+            return Response.serverError().entity(e.getMessage()).build();
+            }
+  }
 
 
   private JSONArray buildJSON(JSONArray projectsJsonArray, List<ProjectDto> projects, boolean participatorParam) throws JSONException {
+
     Identity currentUser = ConversationState.getCurrent().getIdentity();
     for (ProjectDto project : projects) {
       if (project.canView(currentUser)) {
@@ -390,8 +412,8 @@ public class ProjectRestService implements ResourceContainer {
           @ApiResponse(code = 400, message = "Invalid query input"),
           @ApiResponse(code = 403, message = "Unauthorized operation"),
           @ApiResponse(code = 404, message = "Resource not found")})
-  public Response createProject(@ApiParam(value = "ProjectDto", required = true) ProjectDto projectDto) throws EntityNotFoundException, JSONException, UnAuthorizedOperationException {
-
+  public Response createProject(@ApiParam(value = "ProjectDto", required = true) ProjectDto projectDto) {
+    try {
     String currentUser = ConversationState.getCurrent().getIdentity().getUserId();
     if (currentUser == null) {
       return Response.status(Response.Status.FORBIDDEN).build();
@@ -449,6 +471,11 @@ public class ProjectRestService implements ResourceContainer {
     result.put("color", "transparent");
 
     return Response.ok(result.toString()).build();
+        }
+        catch (Exception e) {
+        LOG.error("Can't create Project",e);
+        return Response.serverError().entity(e.getMessage()).build();
+        }
   }
 
 
@@ -462,8 +489,8 @@ public class ProjectRestService implements ResourceContainer {
   @ApiResponse(code = 403, message = "Unauthorized operation"),
   @ApiResponse(code = 404, message = "Resource not found") })
   public Response updateProject(@ApiParam(value = "projectId", required = true) @PathParam("projectId") long projectId,
-                                  @ApiParam(value = "Project", required = true) ProjectDto projectDto)
-          throws EntityNotFoundException, ParameterEntityException, UnAuthorizedOperationException {
+                                  @ApiParam(value = "Project", required = true) ProjectDto projectDto) {
+    try {
     if(projectDto.getName() == null) {
       return Response.status(Response.Status.NOT_FOUND).build();
     }
@@ -512,6 +539,11 @@ public class ProjectRestService implements ResourceContainer {
     ProjectDto project = ProjectUtil.saveProjectField(projectService, projectId, fields);
     projectService.updateProject(project);
     return Response.ok(Response.Status.OK).build();
+        }
+        catch (Exception e) {
+        LOG.error("Can't update Project {}", projectId, e);
+        return Response.serverError().entity(e.getMessage()).build();
+        }
   }
 
   @DELETE
@@ -526,7 +558,8 @@ public class ProjectRestService implements ResourceContainer {
   public Response deleteProject(@ApiParam(value = "projectId", required = true) @PathParam("projectId") Long projectId,
                                 @ApiParam(value = "deleteChild", defaultValue = "false") @QueryParam("deleteChild")Boolean deleteChild,
                                 @ApiParam(value = "Offset", required = false, defaultValue = "0") @QueryParam("offset") int offset,
-                                @ApiParam(value = "Limit", required = false, defaultValue = "-1") @QueryParam("limit") int limit) throws EntityNotFoundException, UnAuthorizedOperationException {
+                                @ApiParam(value = "Limit", required = false, defaultValue = "-1") @QueryParam("limit") int limit) {
+    try {
     Identity identity = ConversationState.getCurrent().getIdentity();
     ProjectDto project = projectService.getProject(projectId);
     if (!project.canEdit(identity)) {
@@ -542,6 +575,11 @@ public class ProjectRestService implements ResourceContainer {
 
     projectService.removeProject(projectId, deleteChild);
     return Response.ok(Response.Status.OK).build();
+        }
+        catch (Exception e) {
+        LOG.error("Can't deleteProject {}", projectId,e);
+        return Response.serverError().entity(e.getMessage()).build();
+        }
   }
 
   @POST
@@ -552,8 +590,8 @@ public class ProjectRestService implements ResourceContainer {
   @ApiResponse(code = 400, message = "Invalid query input"),
   @ApiResponse(code = 403, message = "Unauthorized operation"),
   @ApiResponse(code = 404, message = "Resource not found")})
-  public Response cloneProject(@ApiParam(value = "ProjectDto", required = true) ProjectDto projectDto) throws Exception {
-
+  public Response cloneProject(@ApiParam(value = "ProjectDto", required = true) ProjectDto projectDto) {
+    try {
     ProjectDto currentProject = projectDto;
     if (!currentProject.canEdit(ConversationState.getCurrent().getIdentity())) {
       return Response.status(Response.Status.UNAUTHORIZED).build();
@@ -567,6 +605,11 @@ public class ProjectRestService implements ResourceContainer {
     result.put("color", project.getColor());
 
     return Response.ok(Response.Status.OK).build();
+        }
+        catch (Exception e) {
+        LOG.error("Can't clone Project {}", projectDto.getId() ,e);
+        return Response.serverError().entity(e.getMessage()).build();
+        }
   }
 
 
@@ -580,8 +623,8 @@ public class ProjectRestService implements ResourceContainer {
           @ApiResponse(code = 403, message = "Unauthorized operation"),
           @ApiResponse(code = 404, message = "Resource not found") })
   public Response changeProjectColor(@ApiParam(value = "projectId", required = true) @PathParam("projectId") Long projectId,
-                                     @ApiParam(value = "color", required = false, defaultValue = "null") @QueryParam("color") String color)
-          throws EntityNotFoundException, ParameterEntityException, UnAuthorizedOperationException {
+                                     @ApiParam(value = "color", required = false, defaultValue = "null") @QueryParam("color") String color) {
+    try {
     Map<String, String[]> fields = new HashMap<String, String[]>();
     fields.put("color", new String[] {color});
 
@@ -593,6 +636,11 @@ public class ProjectRestService implements ResourceContainer {
     project = ProjectUtil.saveProjectField(projectService, projectId, fields);
     projectService.updateProject(project);
     return Response.ok(Response.Status.OK).build();
+        }
+        catch (Exception e) {
+        LOG.error("Can't change Project Color {}", projectId,e);
+        return Response.serverError().entity(e.getMessage()).build();
+        }
   }
 
   @GET
@@ -602,7 +650,9 @@ public class ProjectRestService implements ResourceContainer {
   @ApiOperation(value = "Gets participants", httpMethod = "GET", response = Response.class, notes = "This returns participants in project")
   @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled") })
   public Response getProjectParticipants(@ApiParam(value = "Project id", required = true) @PathParam("idProject") long idProject,
-                                         @ApiParam(value = "User name search information", required = false) @PathParam("term") String term) throws Exception { Set<String> participants = projectService.getParticipator(idProject);
+                                         @ApiParam(value = "User name search information", required = false) @PathParam("term") String term) {
+    Set<String> participants = projectService.getParticipator(idProject);
+    try {
     JSONArray usersJsonArray = new JSONArray();
     Set<String> members = new HashSet<>();
     Type type = Type.valueOf(Type.MEMBER.name().toUpperCase());
@@ -638,6 +688,11 @@ public class ProjectRestService implements ResourceContainer {
       usersJsonArray.put(json);
     }
     return Response.ok(usersJsonArray.toString()).build();
+        }
+        catch (Exception e) {
+        LOG.error("Can't get Project Participants {}", idProject,e);
+        return Response.serverError().entity(e.getMessage()).build();
+        }
   }
 
 }
