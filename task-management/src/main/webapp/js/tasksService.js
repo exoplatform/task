@@ -89,16 +89,3 @@ export function updateCompleted(task) {
         body: JSON.stringify(task)
     }).then(resp => resp.json());
 }
-
-export function getUser(username) {
-  return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/v1/social/users/${username}`, {
-    method: 'GET',
-    credentials: 'include',
-  }).then(resp => {
-    if (!resp || !resp.ok) {
-      throw new Error('Response code indicates a server error', resp);
-    } else {
-      return resp.json();
-    }
-  });
-}

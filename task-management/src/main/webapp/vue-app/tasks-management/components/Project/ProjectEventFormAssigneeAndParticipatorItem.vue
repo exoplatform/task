@@ -13,8 +13,6 @@
 </template>
 
 <script>
-import {getUser} from '../../../../js/tasksService'
-
 export default {
   props: {
     attendee: {
@@ -46,14 +44,16 @@ export default {
     displayName() {
       const profile = this.attendee && (this.attendee.profile || this.attendee.space);
       const fullName = profile && (profile.displayName || profile.fullname || profile.fullName);
-      return this.isExternal ? fullName.concat(' (').concat(this.$t('label.external')).concat(')') : fullName;
+      return this.isExternal && fullName.indexOf(this.$t('label.external')) < 0 ? fullName.concat(' (').concat(this.$t('label.external')).concat(')') : fullName;
     },
   },
   created() {
-    getUser(this.attendee.id.replace('organization:', ''))
+   if(this.attendee.providerId === 'organization'){
+    this.$userService.getUser(this.attendee.remoteId)
       .then(user => {
         this.isExternal = user.external === 'true';
       });
+   }
   },
 };
 </script>
