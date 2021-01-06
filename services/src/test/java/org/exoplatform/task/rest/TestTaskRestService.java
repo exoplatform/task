@@ -14,6 +14,7 @@ import org.exoplatform.task.domain.Priority;
 import org.exoplatform.task.model.User;
 import org.exoplatform.task.rest.model.PaginatedTaskList;
 import org.exoplatform.task.rest.model.ViewState;
+import org.exoplatform.task.util.CommentUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -523,7 +524,7 @@ public class TestTaskRestService {
     assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
     CommentEntity commentModel = (CommentEntity) response.getEntity();
     assertNotNull(commentModel);
-    assertEquals(commentModel.getFormattedComment(), "commentText");
+    assertEquals(commentModel.getFormattedComment(), CommentUtil.formatMention("commentText",userService));
 
     // Sending an empty comment
     response = taskRestService.addTaskComment("", 1);
@@ -534,7 +535,7 @@ public class TestTaskRestService {
     assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
     commentModel = (CommentEntity) response.getEntity();
     assertNotNull(commentModel);
-    assertEquals(commentModel.getFormattedComment(), "x <= 2");
+    assertEquals(commentModel.getFormattedComment(), CommentUtil.formatMention("x <= 2",userService));
 
     when(commentService.getComment(comment.getId())).thenReturn(comment);
     response = taskRestService.getTaskComments(3, 0, 1);
@@ -612,14 +613,14 @@ public class TestTaskRestService {
     assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
     CommentEntity commentModel = (CommentEntity) response.getEntity();
     assertNotNull(commentModel);
-    assertEquals(commentModel.getFormattedComment(), "commentText");
+    assertEquals(commentModel.getFormattedComment(), CommentUtil.formatMention("commentText",userService));
 
     // Sending an encoded comment
     response = taskRestService.addTaskComment("x%20%3C%3D%202", 1);
     assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
     commentModel = (CommentEntity) response.getEntity();
     assertNotNull(commentModel);
-    assertEquals(commentModel.getFormattedComment(), "x <= 2");
+    assertEquals(commentModel.getFormattedComment(), CommentUtil.formatMention("x <= 2",userService));
 
     when(commentService.getComment(1)).thenReturn(null);
     response = taskRestService.deleteComment( 1);
@@ -668,7 +669,7 @@ public class TestTaskRestService {
     assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
     CommentEntity commentModel = (CommentEntity) response.getEntity();
     assertNotNull(commentModel);
-    assertEquals(commentModel.getFormattedComment(), "commentText");
+    assertEquals(commentModel.getFormattedComment(), CommentUtil.formatMention("commentText",userService));
 
     // Sending an empty subcomment
     response = taskRestService.addTaskSubComment("", 1, 1);
@@ -679,7 +680,7 @@ public class TestTaskRestService {
     assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
     commentModel = (CommentEntity) response.getEntity();
     assertNotNull(commentModel);
-    assertEquals(commentModel.getFormattedComment(), "x <= 2");
+    assertEquals(commentModel.getFormattedComment(), CommentUtil.formatMention("x <= 2",userService));
 
   }
 
