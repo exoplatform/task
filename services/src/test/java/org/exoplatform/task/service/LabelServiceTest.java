@@ -138,8 +138,9 @@ public class LabelServiceTest {
     public void testRemoveLabel() {
         labelService.removeLabel(TestUtils.EXISTING_TASK_ID);
         verify(labelHandler, times(1)).delete(labelCaptor.capture());
-
-        assertEquals(TestUtils.EXISTING_TASK_ID, labelCaptor.getValue().getId());
+        Label result = labelCaptor.getValue();
+        result.setId(TestUtils.EXISTING_LABEL_ID);
+        assertEquals(TestUtils.EXISTING_TASK_ID, result.getId());
 
     }
 
@@ -147,6 +148,7 @@ public class LabelServiceTest {
     public void testUpdateLabelName() throws EntityNotFoundException {
 
         LabelDto label = labelService.getLabel(TestUtils.EXISTING_LABEL_ID);
+        label.setId(TestUtils.EXISTING_LABEL_ID);
         label.setName("exo");
         when(daoHandler.getLabelHandler().update(any())).thenReturn(labelStorage.labelToEntity(label));
         labelService.updateLabel(label, Arrays.asList(Label.FIELDS.NAME));
@@ -159,6 +161,7 @@ public class LabelServiceTest {
     public void testUpdateLabelColor() throws EntityNotFoundException {
 
         LabelDto label = labelService.getLabel(TestUtils.EXISTING_LABEL_ID);
+        label.setId(TestUtils.EXISTING_LABEL_ID);
         label.setColor("white");
         when(daoHandler.getLabelHandler().update(any())).thenReturn(labelStorage.labelToEntity(label));
         labelService.updateLabel(label, Arrays.asList(Label.FIELDS.COLOR));
@@ -188,6 +191,7 @@ public class LabelServiceTest {
     public void testUpdateLabelHIDDEN() throws EntityNotFoundException {
 
         LabelDto label = labelService.getLabel(TestUtils.EXISTING_LABEL_ID);
+        label.setId(TestUtils.EXISTING_LABEL_ID);
         label.setHidden(true);
         when(daoHandler.getLabelHandler().update(any())).thenReturn(labelStorage.labelToEntity(label));
         labelService.updateLabel(label, Arrays.asList(Label.FIELDS.HIDDEN));
