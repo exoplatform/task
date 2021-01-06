@@ -101,6 +101,9 @@
           this.task = data  
           if(this.task.status && this.task.status.project){
               document.dispatchEvent(new CustomEvent('showProjectTasks', {detail: this.task.status.project}));
+            this.tab='tab-2'
+          } else {
+            this.tab='tab-1'
           }
           this.$refs.taskDrawer.open(this.task);
         })
