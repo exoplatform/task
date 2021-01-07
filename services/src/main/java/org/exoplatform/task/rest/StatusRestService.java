@@ -1,5 +1,7 @@
 package org.exoplatform.task.rest;
 
+import java.util.List;
+
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -14,14 +16,10 @@ import org.exoplatform.task.dto.ProjectDto;
 import org.exoplatform.task.dto.StatusDto;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.exception.NotAllowedOperationOnEntityException;
-import org.exoplatform.task.exception.ParameterEntityException;
-import org.exoplatform.task.exception.UnAuthorizedOperationException;
 import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.StatusService;
 
 import io.swagger.annotations.*;
-
-import java.util.List;
 
 @Path("/status")
 @Api(value = "/status", description = "Managing status")
@@ -46,8 +44,8 @@ public class StatusRestService implements ResourceContainer {
   @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled"),
       @ApiResponse(code = 400, message = "Invalid query input"), @ApiResponse(code = 403, message = "Unauthorized operation"),
       @ApiResponse(code = 404, message = "Resource not found") })
-  public Response addStatus(@ApiParam(value = "Status", required = true) List<StatusDto> status) throws EntityNotFoundException, NotAllowedOperationOnEntityException {
-
+  public Response addStatus(@ApiParam(value = "Status", required = true) List<StatusDto> status){
+    try {
     Identity identity = ConversationState.getCurrent().getIdentity();
     ProjectDto projectDto = projectService.getProject(status.get(0).getProject().getId());
     if (projectDto.getParent() != null && !projectDto.getParent().toString().isEmpty()) {
@@ -57,6 +55,7 @@ public class StatusRestService implements ResourceContainer {
           return Response.status(Response.Status.UNAUTHORIZED).build();
         }
       } catch (EntityNotFoundException ex) {
+        return Response.status(Response.Status.NOT_FOUND).build();
       }
     }
     if (!projectDto.canEdit(identity)) {
@@ -75,6 +74,11 @@ public class StatusRestService implements ResourceContainer {
 
     return Response.ok(Response.Status.OK).build();
   }
+    catch (Exception e) {
+    LOG.error("Can't Create Status",e);
+    return Response.serverError().entity(e.getMessage()).build();
+  }
+  }
 
   @PUT
   @Path("{statusId}")
@@ -85,9 +89,9 @@ public class StatusRestService implements ResourceContainer {
       @ApiResponse(code = 400, message = "Invalid query input"), @ApiResponse(code = 403, message = "Unauthorized operation"),
       @ApiResponse(code = 404, message = "Resource not found") })
   public Response updateStatus(@ApiParam(value = "statusId", required = true) @PathParam("statusId") long statusId,
-                               @ApiParam(value = "status", required = true) StatusDto statusDto) throws EntityNotFoundException,
-                                                                                                 NotAllowedOperationOnEntityException {
-    if (statusService.getStatus(statusId) == null) {
+                               @ApiParam(value = "status", required = true) StatusDto statusDto) {
+    try {  
+  if (statusService.getStatus(statusId) == null) {
       return Response.status(Response.Status.NOT_FOUND).build();
     }
     Identity identity = ConversationState.getCurrent().getIdentity();
@@ -99,6 +103,7 @@ public class StatusRestService implements ResourceContainer {
           return Response.status(Response.Status.UNAUTHORIZED).build();
         }
       } catch (EntityNotFoundException ex) {
+        return Response.status(Response.Status.NOT_FOUND).build();
       }
     }
     if (!projectDto.canEdit(identity)) {
@@ -106,6 +111,11 @@ public class StatusRestService implements ResourceContainer {
     }
     statusService.updateStatus(statusDto.getId(), statusDto.getName());
     return Response.ok(Response.Status.OK).build();
+  }
+    catch (Exception e) {
+      LOG.error("Can't update Status {}", statusId,e);
+      return Response.serverError().entity(e.getMessage()).build();
+   }
   }
 
   @DELETE
@@ -117,14 +127,19 @@ public class StatusRestService implements ResourceContainer {
       @ApiResponse(code = 400, message = "Invalid query input"),
       @ApiResponse(code = 401, message = "User not authorized to delete the Project"),
       @ApiResponse(code = 500, message = "Internal server error") })
-  public Response deleteProject(@ApiParam(value = "statusId", required = true) @PathParam("statusId") Long statusId) throws Exception {
-    Identity identity = ConversationState.getCurrent().getIdentity();
-    StatusDto statusDto = statusService.getStatus(statusId);
-    if (!statusDto.getProject().canEdit(identity)) {
-      return Response.status(Response.Status.UNAUTHORIZED).build();
+  public Response deleteStatus(@ApiParam(value = "statusId", required = true) @PathParam("statusId") Long statusId) {
+    try {
+      Identity identity = ConversationState.getCurrent().getIdentity();
+      StatusDto statusDto = statusService.getStatus(statusId);
+      if (!statusDto.getProject().canEdit(identity)) {
+        return Response.status(Response.Status.UNAUTHORIZED).build();
+      }
+      statusService.removeStatus(statusDto.getId());
+      return Response.ok(Response.Status.OK).entity("Deleted").build();
+    } catch (Exception e) {
+      LOG.error("Can't delete Status {}", statusId, e);
+      return Response.serverError().entity(e.getMessage()).build();
     }
-    statusService.removeStatus(statusDto.getId());
-    return Response.ok(Response.Status.OK).entity("Deleted").build();
   }
 
 }

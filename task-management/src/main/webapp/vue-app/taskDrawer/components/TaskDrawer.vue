@@ -110,6 +110,7 @@
         <v-divider class="my-0" />
         <div class="taskDescription py-4">
           <task-description-editor
+            :task="task"
             v-model="task.description"
             :placeholder="$t('editinline.taskDescription.empty')"/>
         </div>
@@ -435,6 +436,7 @@
           this.showEditor=false;
           //this.enableAutosave=false
           this.$refs.addTaskDrawer.close();
+          this.labelsToAdd = [];
         });
       },
       updateTaskAssignee(value) {
@@ -527,11 +529,8 @@
         this.$root.$emit('task-drawer-closed', this.task)
         this.enableAutosave=false;
         this.showEditor=false;
-        this.$nextTick(() => {
-          document.dispatchEvent(new CustomEvent('drawerClosed'));
-        }).then(()=>{
-          this.task={}
-        })
+        this.task={};
+        document.dispatchEvent(new CustomEvent('drawerClosed'));
       },
       deleteTask() {
         this.deleteConfirmMessage = `${this.$t('popup.msg.deleteTask')} : ${this.task.title}? `;
