@@ -214,6 +214,8 @@
         isManager :false,
         isParticipator :false,
         datePickerTop: true,
+        enableDelete:false,
+        enableClone:false,
         currentUserName: eXo.env.portal.userName,
         MESSAGE_MAX_LENGTH:1250,
         dateTimeFormat: {
@@ -285,6 +287,13 @@
                 this.menuActions = this.menuActions.filter(menuAction => menuAction.enabled);
               });
             }
+          }else if (event.detail.name === 'noProject') {
+            this.menuActions = [];
+            this.enableDelete = event.detail.task.createdBy === eXo.env.portal.userName ? true : false;
+            this.enableClone = event.detail.task.assignee === eXo.env.portal.userName || event.detail.task.coworker.includes(eXo.env.portal.userName) ? true : false;
+            this.addMenuAction(this.$t('label.delete'), 'uiIconTrash', this.enableDelete, 'deleteTask');
+            this.addMenuAction(this.$t('label.clone'), 'uiIconCloneNode', this.enableClone, 'cloneTask');
+            this.menuActions = this.menuActions.filter(menuAction => menuAction.enabled);
           }
         }
       });
