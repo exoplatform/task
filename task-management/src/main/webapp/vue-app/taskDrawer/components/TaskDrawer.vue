@@ -112,6 +112,7 @@
           <task-description-editor
             :task="task"
             v-model="task.description"
+            :value="task.description"
             :placeholder="$t('editinline.taskDescription.empty')"/>
         </div>
         <div class="taskLabelsName mt-3 mb-3">
