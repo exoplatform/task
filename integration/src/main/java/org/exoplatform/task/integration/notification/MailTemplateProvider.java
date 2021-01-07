@@ -92,7 +92,7 @@ public class MailTemplateProvider extends TemplateProvider {
       String projectUrl = notification.getValueOwnerParameter(NotificationUtils.PROJECT_URL);
       String assignee = notification.getValueOwnerParameter(NotificationUtils.TASK_ASSIGNEE);
       String listOfCoworker = notification.getValueOwnerParameter(NotificationUtils.TASK_COWORKERS);
-      commentText = CommentUtil.formatMention(getExcerpt(commentText, 130), userService);
+      commentText = CommentUtil.formatMention(getExcerpt(commentText, 130), language,userService);
       String coworker = notification.getValueOwnerParameter(NotificationUtils.ADDED_COWORKER);
       String usersMentioned = notification.getValueOwnerParameter(NotificationUtils.MENTIONED_USERS);
       String actionName = notification.getValueOwnerParameter(NotificationUtils.ACTION_NAME.getKey());
