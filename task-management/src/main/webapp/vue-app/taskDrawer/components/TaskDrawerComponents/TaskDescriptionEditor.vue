@@ -23,8 +23,7 @@
 </template>
 
 <script>
-  import {urlVerify} from '../../taskDrawerApi';
-
+  import {urlVerify, updateTask} from '../../taskDrawerApi';
   export default {
     props: {
       value: {
@@ -39,6 +38,12 @@
         type: String,
         default: ''
       },
+      task : {
+        type: Object,
+         default: function () {
+          return {}
+        }
+      }
     },
     data() {
       return {
@@ -48,11 +53,7 @@
     },
     watch: {
       inputVal(val) {
-        this.$emit('input', val);
-      },
-      value(val) {
-        this.inputVal = val;
-        const editorData = CKEDITOR.instances['descriptionContent'].getData();
+        const editorData = CKEDITOR.instances['descriptionContent'] && CKEDITOR.instances['descriptionContent'].getData();
         if (editorData != null && val !== editorData) {
           if (val === '') {
             CKEDITOR.instances['descriptionContent'].setData('');
@@ -92,6 +93,15 @@
       });
     },
     methods: {
+      saveDescription: function (newValue) {
+        if (newValue !== this.task.description) {
+          if(this.task.id && !isNaN(this.task.id)){
+            self.inputVal = newValue;
+            this.task.description = newValue;
+            updateTask(this.task.id ,this.task);
+          }
+        }
+      },
       initCKEditor: function () {
         let extraPlugins = 'simpleLink,widget,embedsemantic';
         const windowWidth = $(window).width();
@@ -113,7 +123,7 @@
               $(document.body).trigger('click');
               const newData = CKEDITOR.instances['descriptionContent'].getData();
               const newData1 = evt.editor.getData();
-              this.inputVal = newData;
+              self.saveDescription(newData);
               self.editorReady = !self.editorReady;
             },
             change: function(evt) {
