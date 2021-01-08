@@ -546,12 +546,15 @@
         });
       },
       deleteConfirm() {
+        const idTask = this.task.id;
         return fetch(`${eXo.env.portal.context}/${eXo.env.portal.rest}/tasks/${this.task.id}`, {
           method: 'DELETE',
           credentials: 'include',
         }).then(resp => {
           if (!resp || !resp.ok) {
             throw new Error('error message');
+          }else {
+            document.dispatchEvent(new CustomEvent('deleteTask', {detail: idTask}));
           }
         })
       },
