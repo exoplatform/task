@@ -112,6 +112,7 @@
           <task-description-editor
             :task="task"
             v-model="task.description"
+            :value="task.description"
             :placeholder="$t('editinline.taskDescription.empty')"/>
         </div>
         <div class="taskLabelsName mt-3 mb-3">
@@ -404,13 +405,16 @@
         }
       },
       updateTaskDueDate(value) {
-        if(value) {
+        if(value && value!=='none') {
           if(this.task.id!=null){
             this.task.dueDate = value;
             updateTask(this.task.id,this.task);
           } else {
             this.taskDueDate = value;
           }
+        } else if(value==='none') {
+          this.task.dueDate = null;
+          updateTask(this.task.id,this.task);
         }
       },
       updateTask() {
