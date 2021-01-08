@@ -210,6 +210,7 @@
       },
       resetDueDate() {
         this.dueDate = null;
+        this.$emit('dueDateChanged','none');
         this.$refs.taskDueDate.menu = false;
       },
       emitStartDate(date) {
