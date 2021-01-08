@@ -37,6 +37,13 @@ import {updateTask} from '../../../taskDrawer/taskDrawerApi';
         tasksStatsStartValue:0,
       }
     },
+    mounted() {
+      document.addEventListener('deleteTask', (event) => {
+        if (event && event.detail) {
+          this.tasksList = this.tasksList.filter((t) => t.id !== event.detail);
+        }
+      });
+    },
 
     methods: {
       getTasksByStatus(items ,statusName) {
