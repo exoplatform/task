@@ -27,5 +27,7 @@ public interface LabelStorage {
 
   Label labelToEntity(LabelDto labelDto);
 
+  Label mappingLabelToEntity(LabelDto labelDto);
+
   LabelDto labelToDto(Label Label);
 }
