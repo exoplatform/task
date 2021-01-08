@@ -1304,19 +1304,14 @@ public final class TaskUtil {
    * @return the platform language
    */
   public static String getCurrentUserLanguage(String userId) {
+    LocaleContextInfo localeCtx = LocaleContextInfoUtils.buildLocaleContextInfo(userId);
+    LocalePolicy localePolicy = ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(LocalePolicy.class);
     String lang = Locale.getDefault().getLanguage();
-    try {
-      LocaleContextInfo localeCtx = LocaleContextInfoUtils.buildLocaleContextInfo(userId);
-      LocalePolicy localePolicy = ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(LocalePolicy.class);
-      if(localePolicy != null) {
-        Locale locale = localePolicy.determineLocale(localeCtx);
-        lang = locale.toString();
-      }
-      return lang;
-    } catch (Exception e) {
-      LOG.warn("Error when getting current user language" + e);
-      return lang;
+    if(localePolicy != null) {
+      Locale locale = localePolicy.determineLocale(localeCtx);
+      lang = locale.toString();
     }
+    return lang;
   }
 
   /**
