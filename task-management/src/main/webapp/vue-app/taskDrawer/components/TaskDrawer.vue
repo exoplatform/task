@@ -404,13 +404,16 @@
         }
       },
       updateTaskDueDate(value) {
-        if(value) {
+        if(value && value!=='none') {
           if(this.task.id!=null){
             this.task.dueDate = value;
             updateTask(this.task.id,this.task);
           } else {
             this.taskDueDate = value;
           }
+        } else if(value==='none') {
+          this.task.dueDate = null;
+          updateTask(this.task.id,this.task);
         }
       },
       updateTask() {
