@@ -537,7 +537,7 @@
         document.dispatchEvent(new CustomEvent('drawerClosed'));
       },
       deleteTask() {
-        this.deleteConfirmMessage = `${this.$t('popup.msg.deleteTask')} : ${this.task.title}? `;
+        this.deleteConfirmMessage = `${this.$t('popup.msg.deleteTask')} : <strong>${this.task.title}</strong>? `;
         this.$refs.deleteConfirmDialog.open();
       },
       cloneTask() {
