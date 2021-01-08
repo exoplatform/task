@@ -47,9 +47,14 @@
     },
     data() {
       return {
-        inputVal: this.value,
+        inputVal : this.value,
         editorReady: false
       };
+    },
+    computed: {
+      taskDescription () {
+        return this.task && this.task.description || ''
+      }
     },
     watch: {
       inputVal(val) {
@@ -62,6 +67,9 @@
             CKEDITOR.instances['descriptionContent'].setData(val);
           }
         }
+      },
+      value() {
+        this.inputVal = this.taskDescription;
       },
       editorReady(val) {
         const ckeContent = document.querySelectorAll('[id=cke_descriptionContent]');
@@ -89,6 +97,7 @@
     },
     created() {
       document.addEventListener('drawerClosed', () => {
+        this.saveDescription(this.inputVal);
         this.editorReady = false;
       });
     },
@@ -96,7 +105,7 @@
       saveDescription: function (newValue) {
         if (newValue !== this.task.description) {
           if(this.task.id && !isNaN(this.task.id)){
-            self.inputVal = newValue;
+            //self.inputVal = newValue;
             this.task.description = newValue;
             updateTask(this.task.id ,this.task);
           }
