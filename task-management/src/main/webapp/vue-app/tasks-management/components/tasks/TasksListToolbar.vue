@@ -116,8 +116,8 @@
       },
     },created() {
     this.primaryFilterSelected = localStorage.getItem('primary-filter-tasks');
-      localStorage.setItem('primary-filter-tasks', 'ALL');
-      this.changePrimaryFilter();
+    localStorage.setItem('primary-filter-tasks', 'ALL');
+    this.changePrimaryFilter();
   },
     methods: {
       resetFilterTask(){
