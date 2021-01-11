@@ -303,6 +303,7 @@
       },
       openTaskDrawer() {
         this.$root.$emit('open-task-drawer', this.task.task)
+        document.dispatchEvent(new CustomEvent('taskOrigin',{ detail:{name : 'noProject' , task :this.task.task}}));
       },
       onCloseDrawer: function(drawer){
         this.drawer = drawer;
