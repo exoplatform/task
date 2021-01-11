@@ -124,7 +124,7 @@
         };
       },
       searchOptions() {
-      if(this.task && this.task.status) {
+      if(this.task && this.task.status && this.task.status.project) {
           return {
             searchUrl: '/portal/rest/projects/projectParticipants/'.concat(this.task.status.project.id).concat('/')
           };
