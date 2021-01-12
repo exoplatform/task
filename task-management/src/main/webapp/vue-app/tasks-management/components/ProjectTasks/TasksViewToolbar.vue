@@ -127,7 +127,7 @@
         priority:'NONE',
         description:'',
         title:''}
-        this.$root.$emit('open-task-drawer', defaultTask)
+        this.$root.$emit('open-task-drawer', defaultTask);
       },
       resetFilterTask(){
         this.searchonkeyChange=false

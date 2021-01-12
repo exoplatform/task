@@ -53,7 +53,7 @@
     },
     computed: {
       taskDescription () {
-        return this.task && this.task.description || ''
+        return this.task && this.task.id && this.task.description || ''
       }
     },
     watch: {
@@ -82,7 +82,6 @@
           }
           document.getElementById('taskDescriptionId').classList.remove("taskDescription")
           CKEDITOR.instances['descriptionContent'].focus(true);
-
         } else {
           for (let i = 0; i < ckeContent.length; i++) {
             ckeContent[i].classList.add('hiddenEditor');
@@ -99,13 +98,18 @@
       document.addEventListener('drawerClosed', () => {
         this.saveDescription(this.inputVal);
         this.editorReady = false;
+        this.inputVal = ''
+      });
+      document.addEventListener('onAddTask', () => {
+        this.$emit('addTaskDescription',this.inputVal);
+        this.editorReady = false;
       });
     },
     methods: {
       saveDescription: function (newValue) {
         if (newValue !== this.task.description) {
           if(this.task.id && !isNaN(this.task.id)){
-            //self.inputVal = newValue;
+            self.inputVal = newValue;
             this.task.description = newValue;
             updateTask(this.task.id ,this.task);
           }
@@ -130,10 +134,7 @@
           on: {
             blur: function (evt) {
               $(document.body).trigger('click');
-              const newData = CKEDITOR.instances['descriptionContent'].getData();
-              const newData1 = evt.editor.getData();
-              self.saveDescription(newData);
-              self.editorReady = !self.editorReady;
+              self.editorReady = false;
             },
             change: function(evt) {
               const newData = evt.editor.getData();
@@ -141,6 +142,7 @@
             },
             destroy: function () {
               self.inputVal = '';
+              self.editorReady = false;
             }
           },
         });
@@ -148,6 +150,7 @@
       showDescriptionEditor:function () {
         this.editorReady = !this.editorReady;
       },
+
       urlVerify(text) {
         return urlVerify(text);
       }
