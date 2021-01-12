@@ -113,7 +113,8 @@
             :task="task"
             v-model="task.description"
             :value="task.description"
-            :placeholder="$t('editinline.taskDescription.empty')"/>
+            :placeholder="$t('editinline.taskDescription.empty')"
+            @addTaskDescription="addTaskDescription($event)"/>
         </div>
         <div class="taskLabelsName mt-3 mb-3">
           <task-labels
@@ -218,7 +219,6 @@
       return {
         displayActionMenu: false,
         menuActions: [],
-        enableAutosave: true,
         editorData: null,
         reset: false,
         disabledComment: true,
@@ -270,11 +270,6 @@
       },
     },
     watch: {
-       'task.description': function (newValue, oldValue) {
-        if (newValue !== this.task.description) {
-          this.autoSaveDescription();
-        }
-      },
       editorData(val) {
         this.disabledComment = val === '';
       },
@@ -435,6 +430,7 @@
         }
       },
       addTask() {
+        document.dispatchEvent(new CustomEvent('onAddTask'));
         this.task.coworker = this.taskCoworkers;
         this.task.assignee = this.assignee;
         this.task.startDate = this.taskStartDate;
@@ -447,7 +443,6 @@
           this.$emit('addTask', this.task);
           this.$root.$emit('task-added', this.task);
           this.showEditor=false;
-          //this.enableAutosave=false
           this.$refs.addTaskDrawer.close();
           this.labelsToAdd = [];
         });
@@ -484,15 +479,8 @@
           }
         }
       },
-      autoSaveDescription() {
-        if(this.task.id!=null && this.enableAutosave){
-          clearTimeout(this.saveDescription);
-          this.saveDescription = setTimeout(() => {
-            //Vue.nextTick(() => this.updateTask(this.task.id));
-            updateTask(this.task.id,this.task);
-          }, this.autoSaveDelay);
-        }
-        this.enableAutosave=true
+      addTaskDescription(value) {
+        this.task.description = value;
       },
       retrieveTaskLogs() {
         getTaskLogs(this.task.id).then(
@@ -515,7 +503,6 @@
         return urlVerify(text);
       },
       open(task) {
-        this.enableAutosave=true;
         this.task=task
         window.setTimeout(() => {
             document.dispatchEvent(new CustomEvent('loadTaskPriority', {detail: task}));
@@ -540,7 +527,6 @@
       },
       onCloseDrawer() {
         this.$root.$emit('task-drawer-closed', this.task)
-        this.enableAutosave=false;
         this.showEditor=false;
         this.task={};
         document.dispatchEvent(new CustomEvent('drawerClosed'));
