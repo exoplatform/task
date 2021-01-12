@@ -12,8 +12,7 @@
         :url="comment.author.url"/>
       <div class="commentContent pl-3 d-flex align-center">
         <a
-          class="primary-color--text font-weight-bold subtitle-2 pr-2"
-          v-html="comment.author.displayName"></a>
+          class="primary-color--text font-weight-bold subtitle-2 pr-2">{{ comment.author.displayName }} <span v-if="comment.author.external" class="externalTagClass">{{ ` (${$t('label.external')})` }}</span></a>
         <span :title="absoluteTime()" class="dateTime caption font-italic d-block">{{ relativeTime }}</span>
       </div>
       <div class="removeCommentBtn">
