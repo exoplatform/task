@@ -129,7 +129,7 @@
               <div v-if="!loadingTasks && tasks.length===0" class="noTasks">
                 <div class="noTasksContent">
                   <i class="uiNoTaskIcon"></i>
-                  <div class="noTasksTitle">{{ $t('label.noTask') }}</div>
+                  <div class="noTasksTitle">{{ $t('label.noTasks') }}</div>
                 </div>
               </div>
         </v-flex></v-layout></v-flex>
