@@ -20,6 +20,9 @@ package org.exoplatform.task.util;
 import java.text.*;
 import java.util.*;
 
+import org.exoplatform.portal.localization.LocaleContextInfoUtils;
+import org.exoplatform.services.resources.LocaleContextInfo;
+import org.exoplatform.services.resources.LocalePolicy;
 import org.exoplatform.services.resources.ResourceBundleService;
 import org.exoplatform.task.dto.CommentDto;
 import org.exoplatform.task.dto.LabelDto;
@@ -303,13 +306,13 @@ public final class TaskUtil {
     taskService.loadSubComments(cmts);
     for (Comment c : cmts) {
       org.exoplatform.task.model.User u = userService.loadUser(c.getAuthor());
-      CommentModel commentModel = new CommentModel(c, u, CommentUtil.formatMention(c.getComment(), userService));
+      CommentModel commentModel = new CommentModel(c, u, CommentUtil.formatMention(c.getComment(), bundle.getLocale().getLanguage(), userService));
       comments.add(commentModel);
       if (c.getSubComments() != null && !c.getSubComments().isEmpty()) {
         List<CommentModel> subComments = new ArrayList<>();
         for (Comment comment : c.getSubComments()) {
           org.exoplatform.task.model.User user = userService.loadUser(comment.getAuthor());
-          subComments.add(new CommentModel(comment, user, CommentUtil.formatMention(comment.getComment(), userService)));
+          subComments.add(new CommentModel(comment, user, CommentUtil.formatMention(comment.getComment(), bundle.getLocale().getLanguage(), userService)));
         }
         commentModel.setSubComments(subComments);
       }
@@ -1293,6 +1296,22 @@ public final class TaskUtil {
   public static String getResourceBundleLabel(Locale locale, String label) {
     ResourceBundleService resourceBundleService =  ExoContainerContext.getService(ResourceBundleService.class);
     return resourceBundleService.getResourceBundle(resourceBundleService.getSharedResourceBundleNames(), locale).getString(label);
+  }
+
+  /**
+   * Gets platform language of current user. In case of any errors return null.
+   *
+   * @return the platform language
+   */
+  public static String getCurrentUserLanguage(String userId) {
+    LocaleContextInfo localeCtx = LocaleContextInfoUtils.buildLocaleContextInfo(userId);
+    LocalePolicy localePolicy = ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(LocalePolicy.class);
+    String lang = Locale.getDefault().getLanguage();
+    if(localePolicy != null) {
+      Locale locale = localePolicy.determineLocale(localeCtx);
+      lang = locale.toString();
+    }
+    return lang;
   }
 
   /**
