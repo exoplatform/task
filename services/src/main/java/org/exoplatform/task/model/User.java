@@ -32,6 +32,7 @@ public class User {
   private String url;
   private boolean enable;
   private boolean deleted;
+  private boolean external;
 
   public User() {
   }
@@ -117,4 +118,7 @@ public class User {
   public void setEnable(boolean enable) {
     this.enable = enable;
   }
+  public boolean isExternal() { return external; }
+
+  public void setExternal(boolean external) { this.external = external; }
 }

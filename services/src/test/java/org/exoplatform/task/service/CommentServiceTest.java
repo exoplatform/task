@@ -95,6 +95,7 @@ public class CommentServiceTest {
   public void setUp() {
     // Make sure the container is started to prevent the ExoTransactional annotation
     // to fail
+    PortalContainer.getInstance();
     taskStorage = new TaskStorageImpl(daoHandler,userService);
     commentStorage = new CommentStorageImpl(daoHandler);
     statusService = new StatusServiceImpl(daoHandler, statusStorage, projectStorage, listenerService);

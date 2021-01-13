@@ -21,9 +21,18 @@ package org.exoplatform.task.util;
 
 import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.commons.utils.HTMLEntityEncoder;
+import org.exoplatform.container.ExoContainerContext;
+import org.exoplatform.portal.localization.LocaleContextInfoUtils;
+import org.exoplatform.services.resources.LocaleContextInfo;
+import org.exoplatform.services.resources.LocalePolicy;
+import org.exoplatform.services.security.ConversationState;
+import org.exoplatform.social.core.identity.model.Identity;
+import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
+import org.exoplatform.social.core.manager.IdentityManager;
 import org.exoplatform.task.model.User;
 import org.exoplatform.task.legacy.service.UserService;
 
+import java.util.Locale;
 import java.util.StringTokenizer;
 
 /**
@@ -34,7 +43,7 @@ public final class CommentUtil {
   private CommentUtil() {
   }
 
-  public static String formatMention(String text, UserService userService) {
+  public static String formatMention(String text,String lang, UserService userService) {
     if (text == null || text.isEmpty()) {
       return text;
     }
@@ -51,21 +60,33 @@ public final class CommentUtil {
         User user = userService.loadUser(username);
         if (user != null && !"guest".equals(user.getUsername())) {
           next = "<a href=\"" + CommonsUtils.getCurrentDomain() + user.getUrl() + "\">"
-              + encoder.encodeHTML(user.getDisplayName()) + "</a>";
+              + encoder.encodeHTML(user.getDisplayName());
+          if(isExternal(username)){
+            next += "<span class=\" externalTagClass\">" + " (" + TaskUtil.getResourceBundleLabel(new Locale(lang), "external.label.tag") + ")</span>";
+          }
+          next += "</a>";
         }
       } else if (next.startsWith("<p>@")) {
         String username = next.substring(4);
         User user = userService.loadUser(username);
         if (user != null && !"guest".equals(user.getUsername())) {
           next = "<p><a href=\"" + CommonsUtils.getCurrentDomain() + user.getUrl() + "\">"
-              + encoder.encodeHTML(user.getDisplayName()) + "</a>";
+              + encoder.encodeHTML(user.getDisplayName());
+          if(isExternal(username)){
+            next += "<span class=\" externalTagClass\">" + " (" + TaskUtil.getResourceBundleLabel(new Locale(lang), "external.label.tag") + ")</span>";
+          }
+          next += "</a>";
         }
       } else if (next.contains("@")) {
         String username = next.split("@")[1];
         User user = userService.loadUser(username);
         if (user != null && !"guest".equals(user.getUsername())) {
           next = next.split("@")[0] + "<a href=\"" + CommonsUtils.getCurrentDomain() + user.getUrl() + "\">"
-              + encoder.encodeHTML(user.getDisplayName()) + "</a>";
+              + encoder.encodeHTML(user.getDisplayName());
+          if(isExternal(username)){
+            next += "<span class=\" externalTagClass\">" + " (" + TaskUtil.getResourceBundleLabel(new Locale(lang), "external.label.tag") + ")</span>";
+          }
+          next += "</a>";
         }
       }
       sb.append(next);
@@ -74,4 +95,16 @@ public final class CommentUtil {
 
     return StringUtil.encodeInjectedHtmlTag(sb.toString());
   }
+
+  /**
+   * Chech if is an external user.
+   *
+   * @return true if is an external
+   */
+  public static boolean isExternal(String userName){
+    IdentityManager identityManager = CommonsUtils.getService(IdentityManager.class);
+    Identity identity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, userName);
+    return identity.getProfile().getProperty("external") != null &&  identity.getProfile().getProperty("external").equals("true");
+  }
+
 }
