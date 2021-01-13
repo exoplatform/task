@@ -44,7 +44,7 @@ export default {
     displayName() {
       const profile = this.attendee && (this.attendee.profile || this.attendee.space);
       const fullName = profile && (profile.displayName || profile.fullname || profile.fullName);
-      return this.isExternal && fullName.indexOf(this.$t('label.external')) < 0 ? fullName.concat(' (').concat(this.$t('label.external')).concat(')') : fullName;
+      return this.isExternal && fullName.indexOf(this.$t('label.external')) < 0 ? `${fullName} (${this.$t('label.external')})` : fullName;
     },
   },
   created() {
