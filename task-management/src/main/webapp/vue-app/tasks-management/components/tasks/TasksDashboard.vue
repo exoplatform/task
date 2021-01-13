@@ -18,7 +18,7 @@
       v-if="(!tasks || !tasks.length) && !loadingTasks"
       class="noTasksProject">
       <div class="noTasksProjectIcon"><i class="uiIcon uiIconTask"></i></div>
-      <div class="noTasksProjectLabel"><span>{{ $t('label.noTask') }}</span></div>
+      <div class="noTasksProjectLabel"><span>{{ $t('label.noTasks') }}</span></div>
       <!-- <div class="noTasksProjectLink"><a href="#">{{ $t('label.addTask') }}</a></div> -->
     </div>
     <div v-else>
