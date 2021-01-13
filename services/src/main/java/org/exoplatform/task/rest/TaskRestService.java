@@ -607,14 +607,15 @@ public class TaskRestService implements ResourceContainer {
     if (limit == 0) {
       limit = -1;
     }
+    String currentUser = ConversationState.getCurrent().getIdentity().getUserId();
     List<CommentDto> comments = commentService.getCommentsWithSubs(id, offset, limit);
     List<CommentEntity> commentModelsList = new ArrayList<CommentEntity>();
     for (CommentDto comment : comments) {
-      CommentEntity commentModel = addCommentModel(comment, commentModelsList);
+      CommentEntity commentModel = addCommentModel(comment, commentModelsList, TaskUtil.getCurrentUserLanguage(currentUser));
       if (comment.getSubComments()!=null&&!comment.getSubComments().isEmpty()) {
         List<CommentEntity> subCommentsModelsList = new ArrayList<>();
         for (CommentDto subComment :comment.getSubComments()) {
-          addCommentModel(subComment, subCommentsModelsList);
+          addCommentModel(subComment, subCommentsModelsList, TaskUtil.getCurrentUserLanguage(currentUser));
         }
         commentModel.setSubComments(subCommentsModelsList);
       }
@@ -653,7 +654,7 @@ public class TaskRestService implements ResourceContainer {
     if (addedComment != null) {
       addedComment = commentService.getComment(addedComment.getId());
     }
-    CommentEntity commentEntity = new CommentEntity(addedComment, userService.loadUser(currentUser), CommentUtil.formatMention(commentText, userService));
+    CommentEntity commentEntity = new CommentEntity(addedComment, userService.loadUser(currentUser), CommentUtil.formatMention(commentText, TaskUtil.getCurrentUserLanguage(currentUser), userService));
     return Response.ok(commentEntity).build();
         } catch (Exception e) {
         LOG.error("Can't add Comment to Task {}", id, e);
@@ -689,7 +690,7 @@ public class TaskRestService implements ResourceContainer {
     if (addedComment != null) {
       addedComment = commentService.getComment(addedComment.getId());
     }
-    CommentEntity commentEntity = new CommentEntity(addedComment, userService.loadUser(currentUser), CommentUtil.formatMention(commentText, userService));
+    CommentEntity commentEntity = new CommentEntity(addedComment, userService.loadUser(currentUser), CommentUtil.formatMention(commentText, TaskUtil.getCurrentUserLanguage(currentUser), userService));
     return Response.ok(commentEntity).build();
         } catch (Exception e) {
         LOG.error("Can't add SubComment to Task {}", id, e);
@@ -776,14 +777,14 @@ public class TaskRestService implements ResourceContainer {
   }
 
 
-  private CommentEntity addCommentModel(CommentDto comment, List<CommentEntity> commentModelsList) {
+  private CommentEntity addCommentModel(CommentDto comment, List<CommentEntity> commentModelsList, String lang) {
 
     User user = userService.loadUser(comment.getAuthor());
     Status taskStatus = comment.getTask().getStatus();
     if (taskStatus != null) {
       comment.getTask().setStatus(taskStatus.clone());// To be checked
     }
-    CommentEntity commentEntity = new CommentEntity(comment, user, CommentUtil.formatMention(comment.getComment(), userService));
+    CommentEntity commentEntity = new CommentEntity(comment, user, CommentUtil.formatMention(comment.getComment(), lang, userService));
     if (commentEntity.getSubComments() == null) {
       commentEntity.setSubComments(new ArrayList<>());
     }

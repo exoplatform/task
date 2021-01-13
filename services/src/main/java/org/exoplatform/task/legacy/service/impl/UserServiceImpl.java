@@ -130,6 +130,7 @@ public class UserServiceImpl implements UserService {
     User u = new User(username, email, firstName, lastName, displayName, avatar, url);
     u.setDeleted(identity.isDeleted());
     u.setEnable(identity.isEnable());
+    u.setExternal(identity.getProfile().getProperty("external") != null && identity.getProfile().getProperty("external").equals("true"));
 
     return u;
   }
