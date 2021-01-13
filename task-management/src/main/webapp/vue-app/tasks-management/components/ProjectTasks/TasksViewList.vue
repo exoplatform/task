@@ -1,12 +1,12 @@
 <template>
   <v-app class="tasksList">
     <v-card
-      class="tasksView tasksListItem tasksViewList pt-6"
+      class="tasksView tasksListItem tasksViewList pt-5"
       flat>
-      <v-item-group class="pa-4">
+      <v-item-group>
         <div class="ma-0 border-box-sizing">
           <div
-            class="pt-0 pb-8 px-4 projectTaskItem">
+            class="pt-0 pb-8 px-3 projectTaskItem">
             <tasks-view-list-column
               :status="statusList"
               :tasks-list="tasksList"
