@@ -34,7 +34,7 @@
   export default {
     data () {
       return {
-        tab: 'tab-2',
+        tab: 'tab-1',
         spaceName: '',
         task: {
         type: Object,
