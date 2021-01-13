@@ -16,7 +16,7 @@
         flat>
         <div 
           ref="addProjectTitle" 
-          class="addProjectTitle d-flex align-center"
+          class="addProjectTitle d-flex align-center my-3"
           @click="showManager = true,showParticipant = true">
           <i class="uiIcon uiIconProject"></i>
           <input
