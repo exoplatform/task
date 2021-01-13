@@ -3,7 +3,7 @@
     <v-toolbar
       id="TasksListToolbar"
       flat
-      class="tasksToolbar pb-3">
+      class="tasksToolbar">
       <v-toolbar-title>
         <v-btn
           class="btn px-2 btn-primary addNewProjectButton"
