@@ -1,8 +1,8 @@
 <template>
-  <v-app 
+  <v-app
     id="taskCardItem"
     :class="removeCompletedTask && 'completedTask' || ''"
-    class="mt-3">
+    class="pt-3">
     <v-card
       :class="[getTaskPriorityColor(task.task.priority)]"
       class="taskCard taskViewCard pa-3"
@@ -129,8 +129,8 @@
         isPersonnalTask : this.task.task.status === null,
         drawer:null,
         maxAvatarToShow : 3,
-        showCompleteTasks: false,
-        removeCompletedTask: false,
+        showCompleteTasks: false
+
       }
     },
     computed: {
