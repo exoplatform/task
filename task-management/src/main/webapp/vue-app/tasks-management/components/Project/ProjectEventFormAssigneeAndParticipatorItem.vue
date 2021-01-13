@@ -24,6 +24,11 @@ export default {
       default: () => ({}),
     },
   },
+   data () {
+      return {
+        isExternal : false,
+      }
+  },
   computed: {
     canRemoveAttendee() {
       if (this.creator && this.creator.id) {
@@ -38,8 +43,17 @@ export default {
     },
     displayName() {
       const profile = this.attendee && (this.attendee.profile || this.attendee.space);
-      return profile && (profile.displayName || profile.fullname || profile.fullName);
+      const fullName = profile && (profile.displayName || profile.fullname || profile.fullName);
+      return this.isExternal && fullName.indexOf(this.$t('label.external')) < 0 ? `${fullName} (${this.$t('label.external')})` : fullName;
     },
+  },
+  created() {
+   if(this.attendee.providerId === 'organization'){
+    this.$userService.getUser(this.attendee.remoteId)
+      .then(user => {
+        this.isExternal = user.external === 'true';
+      });
+   }
   },
 };
 </script>
