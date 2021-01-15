@@ -34,7 +34,8 @@
           v-model="keyword"
           :placeholder=" $t('label.filterTask') "
           prepend-inner-icon="fa-filter"
-          class="inputTasksFilter pa-0 mr-3 my-auto"/>
+          class="inputTasksFilter pa-0 mr-3 my-auto"
+          clearable/>
       </v-scale-transition>
       <v-scale-transition>
         <select
