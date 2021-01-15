@@ -1,36 +1,44 @@
 <template>
   <v-app id="ProjectCardList" class="tasksListContainer">
-    <v-card flat>
-      <v-item-group class="pa-4">
-        <v-container class="pa-0">
-          <v-row class="ma-0 border-box-sizing">
-            <v-col
-              v-for="project in projects"
-              :key="project.id"
-              :id="'project-'+project.id"
-              cols="12"
-              md="6"
-              lg="4"
-              xl="3"
-              class="pa-0 projectItem">
-              <project-card
-                :project="project"/>
-            </v-col>
-          </v-row>
-          <v-row class="ma-0 border-box-sizing">
-            <v-btn
-              v-if="canShowMore"
-              :loading="loadingProjects"
-              :disabled="loadingProjects"
-              class="loadMoreButton ma-auto mt-4 btn"
-              block
-              @click="loadNextPage">
-              {{ $t('spacesList.button.showMore') }}
-            </v-btn>
-          </v-row>
-        </v-container>
-      </v-item-group>
-    </v-card>
+    <div
+      v-if="(!projects || !projects.length) && !loadingProjects"
+      class="noTasksProject">
+      <div class="noTasksProjectIcon"><i class="uiIcon uiIconEcmsClipboard"></i></div>
+      <div class="noTasksProjectLabel"><span>{{ $t('label.noProjects') }}</span></div>
+    </div>
+    <div v-else>
+      <v-card flat>
+        <v-item-group class="pa-4">
+          <v-container class="pa-0">
+            <v-row class="ma-0 border-box-sizing">
+              <v-col
+                v-for="project in projects"
+                :key="project.id"
+                :id="'project-'+project.id"
+                cols="12"
+                md="6"
+                lg="4"
+                xl="3"
+                class="pa-0 projectItem">
+                <project-card
+                  :project="project"/>
+              </v-col>
+            </v-row>
+            <v-row class="ma-0 border-box-sizing">
+              <v-btn
+                v-if="canShowMore"
+                :loading="loadingProjects"
+                :disabled="loadingProjects"
+                class="loadMoreButton ma-auto mt-4 btn"
+                block
+                @click="loadNextPage">
+                {{ $t('spacesList.button.showMore') }}
+              </v-btn>
+            </v-row>
+          </v-container>
+        </v-item-group>
+      </v-card>
+    </div>
   </v-app>
 </template>
 <script>
