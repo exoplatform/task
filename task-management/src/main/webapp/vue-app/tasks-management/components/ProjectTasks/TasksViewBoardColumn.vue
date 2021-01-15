@@ -16,7 +16,7 @@
       v-model="tasksList" 
       :move="checkMove"
       group="people" 
-      class="draggable-palceholder" 
+      class="draggable-palceholder taskBoardColumn"
       @start="drag=true"
       @end="drag=false">
       <task-view-card
