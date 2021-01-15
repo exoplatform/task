@@ -1100,6 +1100,7 @@
           .tasksViewBoardRowContainer {
             flex-wrap: nowrap!important;
             overflow-x: scroll;
+            padding-bottom: 20px;
             &::-webkit-scrollbar {
               height: 5px;
             }
@@ -1297,6 +1298,27 @@
         }
         .draggable-palceholder{
           min-height: 180px;
+        }
+        .taskBoardColumn {
+          max-height: 60vh;
+          height: 60vh;
+          overflow: hidden;
+          &:hover {
+            overflow-y: scroll;
+            &::-webkit-scrollbar {
+              width: 5px;
+            }
+            /*&::-webkit-scrollbar-track {
+              background: @primaryBackground;
+            }*/
+            &::-webkit-scrollbar-thumb {
+              background: @greyColorLighten1;
+              border-radius: 10px;
+            }
+            &::-webkit-scrollbar-thumb:hover {
+              background: @borderColorLight;
+            }
+          }
         }
       }
       .tasksList {
