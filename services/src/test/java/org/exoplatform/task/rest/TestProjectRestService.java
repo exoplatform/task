@@ -27,7 +27,7 @@ import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.dto.ProjectDto;
 import org.exoplatform.task.dto.StatusDto;
 import org.exoplatform.task.dto.TaskDto;
-import org.exoplatform.task.legacy.service.UserService;
+import org.exoplatform.task.service.UserService;
 import org.exoplatform.task.model.User;
 import org.exoplatform.task.service.*;
 import org.exoplatform.task.storage.ProjectStorage;
@@ -342,14 +342,14 @@ public class TestProjectRestService {
     project3.setName("project3");
     projectService.createProject(project3);
 
-    StatusDto status1 = new StatusDto(3, "ToDo", 1, projectStorage.projectToEntity(project1));
-    StatusDto status2 = new StatusDto(4, "ToDo", 2, projectStorage.projectToEntity(project1));
+    StatusDto status1 = new StatusDto(3, "ToDo", 1, project1);
+    StatusDto status2 = new StatusDto(4, "ToDo", 2, project1);
 
     List<StatusDto> statuses = new ArrayList<>();
     statuses.add(status1);
     statuses.add(status2);
-    List<Status> list = statusStorage.listStatusToEntitys(statuses);
-    Set<Status> foo = new HashSet<Status>(list);
+
+    Set<StatusDto> foo = new HashSet<StatusDto>(statuses);
     project1.setStatus(foo);
 
     Set<String> participator = new HashSet<String>();

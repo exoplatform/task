@@ -27,14 +27,14 @@ import org.exoplatform.social.core.manager.IdentityManager;
 import org.exoplatform.social.core.service.LinkProvider;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
-import org.exoplatform.task.domain.Project;
-import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.legacy.service.ParserContext;
-import org.exoplatform.task.legacy.service.ProjectService;
-import org.exoplatform.task.legacy.service.StatusService;
-import org.exoplatform.task.legacy.service.TaskParser;
-import org.exoplatform.task.legacy.service.TaskService;
-import org.exoplatform.task.legacy.service.UserService;
+import org.exoplatform.task.dto.ProjectDto;
+import org.exoplatform.task.dto.TaskDto;
+import org.exoplatform.task.service.ParserContext;
+import org.exoplatform.task.service.ProjectService;
+import org.exoplatform.task.service.StatusService;
+import org.exoplatform.task.service.TaskParser;
+import org.exoplatform.task.service.TaskService;
+import org.exoplatform.task.service.UserService;
 import org.exoplatform.task.util.ProjectUtil;
 import org.exoplatform.task.util.StringUtil;
 
@@ -111,9 +111,9 @@ public class ActivityTaskCreationListener extends ActivityListenerPlugin {
         comment = ActivityTaskProcessor.decode(comment);
         comment = StringEscapeUtils.unescapeHtml(comment);
 
-        Task taskInfo = extractTaskInfo(comment);
+        TaskDto taskInfo = extractTaskInfo(comment);
 
-        Task task = parser.parse(taskInfo.getTitle(), context);
+        TaskDto task = parser.parse(taskInfo.getTitle(), context);
         //we need to remove malicious code here in case user inject request using curl TA-387
         task.setDescription(StringUtil.encodeInjectedHtmlTag(taskInfo.getDescription()));
         task.setContext(LinkProvider.getSingleActivityUrl(activity.getId()));
@@ -124,7 +124,7 @@ public class ActivityTaskCreationListener extends ActivityListenerPlugin {
         if(rootActivity.getActivityStream().getType() == ActivityStream.Type.SPACE) {
           String spaceName = rootActivity.getActivityStream().getPrettyId();
           Space space = spaceService.getSpaceByPrettyName(spaceName);
-          List<Project> projects = ProjectUtil.getProjectTree(space.getGroupId(), projectService);
+          List<ProjectDto> projects = ProjectUtil.getProjectTree(space.getGroupId(), projectService);
           if (projects != null && projects.size() > 0) {
             task.setStatus(statusService.getDefaultStatus(projects.get(0).getId()));
           }
@@ -140,7 +140,7 @@ public class ActivityTaskCreationListener extends ActivityListenerPlugin {
   }
 
   // Extract task [title,description] from a string without any HTML formatting tag
-  Task extractTaskInfo(String html) {
+  TaskDto extractTaskInfo(String html) {
     int idx = html.indexOf(PREFIX);
     String text = html.substring(idx + 2);
     text = text.replaceFirst("<br(\\s*\\/?)>", "\n");
@@ -164,7 +164,7 @@ public class ActivityTaskCreationListener extends ActivityListenerPlugin {
       }
     }
 
-    Task task = new Task();
+    TaskDto task = new TaskDto();
     task.setTitle(taskTitle.toString());
     task.setDescription(description);
     return task;

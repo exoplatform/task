@@ -46,9 +46,10 @@ import org.exoplatform.task.dao.ProjectQuery;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.dto.ProjectDto;
+import org.exoplatform.task.dto.StatusDto;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.exception.ParameterEntityException;
-import org.exoplatform.task.legacy.service.ProjectService;
+import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.web.controller.router.Router;
 import org.gatein.common.text.EntityEncoder;
 
@@ -77,7 +78,7 @@ public final class ProjectUtil {
   private ProjectUtil() {
   }
   
-  public static List<Project> getProjectTree(String space_group_id, ProjectService projectService) {
+  public static List<ProjectDto> getProjectTree(String space_group_id, ProjectService projectService) {
     List<String> memberships = new LinkedList<String>();
     ConversationState state = ConversationState.getCurrent();
     Identity identity = state.getIdentity();
@@ -90,23 +91,23 @@ public final class ProjectUtil {
 //    ListAccess<Project> projects = projectService.findProjects(memberships, null, null);
     ProjectQuery manQ = new ProjectQuery();
     manQ.setManager(memberships);
-    ListAccess<Project> editPrj = projectService.findProjects(manQ);
+    List<ProjectDto> editPrj = projectService.findProjects(manQ,0,-1);
     //
     ProjectQuery parQ = new ProjectQuery();
     parQ.setParticipator(memberships);
-    ListAccess<Project> viewPrj = projectService.findProjects(parQ);
+    List<ProjectDto> viewPrj = projectService.findProjects(parQ,0,-1);
     //
-    Set<Project> tmp = new HashSet<Project>();
+    Set<ProjectDto> tmp = new HashSet<ProjectDto>();
     try {
-      tmp.addAll(buildProxy(Arrays.asList(editPrj.load(0, -1)), identity, true));
-      tmp.addAll(buildProxy(Arrays.asList(viewPrj.load(0, -1)), identity, false));
+      tmp.addAll(buildProxy(editPrj, identity, true));
+      tmp.addAll(buildProxy(viewPrj, identity, false));
     } catch (Exception ex) {
       LOG.error("Can't load project list", ex);
     }
-    return ProjectUtil.buildRootProjects(new LinkedList<Project>(tmp));
+    return ProjectUtil.buildRootProjects(new LinkedList<ProjectDto>(tmp));
   }
 
-  public static List<ProjectDto> getProjectTree(String space_group_id, org.exoplatform.task.service.ProjectService projectService,int offset, int limit) {
+  public static List<ProjectDto> getProjectTree(String space_group_id, ProjectService projectService,int offset, int limit) {
     List<String> memberships = new LinkedList<String>();
     ConversationState state = ConversationState.getCurrent();
     Identity identity = state.getIdentity();
@@ -167,9 +168,9 @@ public final class ProjectUtil {
     return new LinkedList<ProjectDto>(tmp);
   }
 
-  private static Collection<? extends Project> buildProxy(List<Project> projects, Identity user, boolean editable) {
-    List<Project> tmp = new LinkedList<Project>();
-    for (Project p : projects) {
+  private static Collection<? extends ProjectDto> buildProxy(List<ProjectDto> projects, Identity user, boolean editable) {
+    List<ProjectDto> tmp = new LinkedList<ProjectDto>();
+    for (ProjectDto p : projects) {
       tmp.add(new ProjectProxy(p, user, editable));
     }
     return tmp;
@@ -183,18 +184,18 @@ public final class ProjectUtil {
     return tmp;
   }
 
-  public static List<Project> buildRootProjects(List<Project> projects) {
+  public static List<ProjectDto> buildRootProjects(List<ProjectDto> projects) {
     if (projects == null) return projects;
 
-    Map<Long, Project> maps = new HashMap<Long, Project>();
-    Set<Project> rootPRJs = new LinkedHashSet<Project>();
+    Map<Long, ProjectDto> maps = new HashMap<Long, ProjectDto>();
+    Set<ProjectDto> rootPRJs = new LinkedHashSet<ProjectDto>();
     //Set<Project> childs = new LinkedHashSet<Project>();
-    for (Project p : projects) {
+    for (ProjectDto p : projects) {
       while(true) {
         if (!maps.containsKey(p.getId())) {
           maps.put(p.getId(), p);
         }
-        Project parent = p.getParent();
+        ProjectDto parent = p.getParent();
         if (parent == null) {
           rootPRJs.add(p);
           break;
@@ -209,62 +210,21 @@ public final class ProjectUtil {
         }
       }
     }
-
-    /*List<Project> parents = new LinkedList<Project>(rootPRJs);
-    do {
-      List<Project> tmpParents = new LinkedList<Project>();
-      for (Project p : parents) {
-        List<Project> tmp = new LinkedList<Project>();
-        for (Project c : childs) {
-          if (c.getParent().equals(p)) {
-            tmp.add(c);
-          }
-        }
-        p.setChildren(tmp);
-        tmpParents.addAll(tmp);
-        childs.removeAll(tmp);
-      }
-      parents = tmpParents;
-    } while (!parents.isEmpty() && !childs.isEmpty());*/
-
-    return new LinkedList<Project>(rootPRJs);
+    return new LinkedList<ProjectDto>(rootPRJs);
   }
 
-  public static Project projectToEntity(ProjectDto projectDto) {
-    Project project=new Project();
-    project.setId(projectDto.getId());
-    project.setColor(projectDto.getColor());
-    project.setDueDate(projectDto.getDueDate());
-    project.setParent(projectDto.getParent());
-    project.setStatus(projectDto.getStatus());
-    project.setChildren(projectDto.getChildren());
-    return project;
-
-  }
-
-  public static ProjectDto projectToDto(Project project) {
-    ProjectDto projectDto=new ProjectDto();
-    projectDto.setId(project.getId());
-    projectDto.setColor(project.getColor());
-    projectDto.setDueDate(project.getDueDate());
-    projectDto.setParent(project.getParent());
-    projectDto.setStatus(project.getStatus());
-    projectDto.setChildren(project.getChildren());
-    return projectDto;
-  }
-  
-  public static List<Project> flattenTree(List<Project> projectTree, ProjectService projectService) {
+  public static List<ProjectDto> flattenTree(List<ProjectDto> projectTree, ProjectService projectService) {
     if (projectTree == null) {
       return null;
     }
 
-    Set<Project> projects = new HashSet<Project>();
-    for (Project p : projectTree) {
+    Set<ProjectDto> projects = new HashSet<ProjectDto>();
+    for (ProjectDto p : projectTree) {
       projects.add(p);
-      ListAccess<Project> tmp = projectService.getSubProjects(p.getId());
-      List<Project> children = new LinkedList<Project>();
+      List<ProjectDto> tmp = projectService.getSubProjects(p.getId(),0,-1);
+      List<ProjectDto> children = new LinkedList<ProjectDto>();
       try {
-        children = Arrays.asList(tmp.load(0, -1));
+        children = tmp;
       } catch (Exception ex) {
         LOG.error("Can't load project list", ex);
       }
@@ -272,7 +232,7 @@ public final class ProjectUtil {
         projects.addAll(flattenTree(children, projectService));
       }
     }    
-    return new ArrayList<Project>(projects);
+    return new ArrayList<ProjectDto>(projects);
   }
 
   public static List<ProjectDto> flattenTree(List<ProjectDto> projectTree, org.exoplatform.task.service.ProjectService projectService,int offset, int limit) {
@@ -295,7 +255,7 @@ public final class ProjectUtil {
 
   //TODO: should move this method to web module
   public static String buildBreadcumbs(Long id, ProjectService projectService, ResourceBundle bundle) {
-    Project project = null;
+    ProjectDto project = null;
     if (id > 0) {
       try {
         project = projectService.getProject(id);
@@ -307,7 +267,7 @@ public final class ProjectUtil {
     EntityEncoder encoder = HTMLEntityEncoder.getInstance();
     StringBuilder builder = new StringBuilder();
     if (project != null) {
-      Project tmp = project;
+      ProjectDto tmp = project;
       while (tmp != null) {
         StringBuilder el = new StringBuilder();
         if (builder.length() == 0) {
@@ -460,7 +420,7 @@ public final class ProjectUtil {
     }
   }
 
-  public static String buildProjectURL(Project project, SiteKey siteKey, ExoContainer container, Router router) {
+  public static String buildProjectURL(ProjectDto project, SiteKey siteKey, ExoContainer container, Router router) {
     long projectId = ProjectUtil.TODO_PROJECT_ID;
     if (project != null) {
       projectId = project.getId();
@@ -521,14 +481,14 @@ public final class ProjectUtil {
     //CKEditor encode user input already, but we still need to remove malicious code
     //here in case user inject request using curl TA-387
     description = StringUtil.encodeInjectedHtmlTag(description);
-    ProjectDto p = new ProjectDto(name, description, new HashSet<Status>(), managers, participators);
+    ProjectDto p = new ProjectDto(name, description, new HashSet<StatusDto>(), managers, participators);
     return p;
   }
 
-  public static Project saveProjectField(ProjectService projService, long projectId, Map<String, String[]> fields)
+  public static ProjectDto saveProjectField(ProjectService projService, long projectId, Map<String, String[]> fields)
       throws EntityNotFoundException, ParameterEntityException {
 
-    Project project = projService.getProject(projectId);
+    ProjectDto project = projService.getProject(projectId);
 
     // Load 'manager' and 'participator'
     project.setManager(projService.getManager(projectId));
@@ -591,7 +551,7 @@ public final class ProjectUtil {
           } else if (pId == project.getId()) {
             throw new ParameterEntityException(pId, Project.class, fieldName, val, "project can not be child of itself", null);
           } else {
-            Project parent = projService.getProject(pId);
+            ProjectDto parent = projService.getProject(pId);
             project.setParent(parent);
           }
         } catch (NumberFormatException ex) {
@@ -606,7 +566,7 @@ public final class ProjectUtil {
 
     return project;
   }
-
+/*
   public static ProjectDto saveProjectField(org.exoplatform.task.service.ProjectService projService, long projectId, Map<String, String[]> fields)
           throws EntityNotFoundException, ParameterEntityException {
 
@@ -688,7 +648,7 @@ public final class ProjectUtil {
 
     return project;
   }
-  
+  */
   public static Set<String> getParticipator(long projectId) {
     ProjectService service = getProjectService();
     return service.getParticipator(projectId);
@@ -705,8 +665,8 @@ public final class ProjectUtil {
     List<String> memberships = new LinkedList<String>();
     memberships.addAll(UserUtil.getMemberships(identity));
 
-    ListAccess<Project> list = projectService.findProjects(memberships, null, null);
-    return (ListUtil.getSize(list) == 0);
+    List<ProjectDto> list = projectService.findProjects(memberships,"",null, 0, -1);
+    return (list.size() == 0);
   }
 
   private static ProjectService getProjectService() {
@@ -714,12 +674,12 @@ public final class ProjectUtil {
     return container.getComponentInstanceOfType(ProjectService.class);
   }
 
-  private static class ProjectProxy extends Project {
-    private Project project;
+  private static class ProjectProxy extends ProjectDto {
+    private ProjectDto project;
     private boolean editable;
     private Identity identity;
 
-    public ProjectProxy(Project project, Identity identity, boolean editable) {
+    public ProjectProxy(ProjectDto project, Identity identity, boolean editable) {
       this.project = project;
       this.editable = editable;
       this.identity = identity;
@@ -741,11 +701,11 @@ public final class ProjectUtil {
       project.setName(name);
     }
 
-    public Set<Status> getStatus() {
+    public Set<StatusDto> getStatus() {
       return project.getStatus();
     }
 
-    public void setStatus(Set<Status> status) {
+    public void setStatus(Set<StatusDto> status) {
       project.setStatus(status);
     }
 
@@ -789,23 +749,22 @@ public final class ProjectUtil {
       project.setColor(color);
     }
 
-    public Project getParent() {
+    public ProjectDto getParent() {
       return project.getParent();
     }
 
-    public void setParent(Project parent) {
+    public void setParent(ProjectDto parent) {
       project.setParent(parent);
     }
 
-    public List<Project> getChildren() {
+    public List<ProjectDto> getChildren() {
       return project.getChildren();
     }
-
-    public void setChildren(List<Project> children) {
+    public void setChildren(List<ProjectDto> children) {
       project.setChildren(children);
     }
 
-    public Project clone(boolean cloneTask) {
+    public ProjectDto clone(boolean cloneTask) {
       return project.clone(cloneTask);
     }
 
@@ -867,11 +826,11 @@ public final class ProjectUtil {
       project.setName(name);
     }
 
-    public Set<Status> getStatus() {
+    public Set<StatusDto> getStatus() {
       return project.getStatus();
     }
 
-    public void setStatus(Set<Status> status) {
+    public void setStatus(Set<StatusDto> status) {
       project.setStatus(status);
     }
 
@@ -915,19 +874,19 @@ public final class ProjectUtil {
       project.setColor(color);
     }
 
-    public Project getParent() {
+    public ProjectDto getParent() {
       return project.getParent();
     }
 
-    public void setParent(Project parent) {
+    public void setParent(ProjectDto parent) {
       project.setParent(parent);
     }
 
-    public List<Project> getChildren() {
+    public List<ProjectDto> getChildren() {
       return project.getChildren();
     }
 
-    public void setChildren(List<Project> children) {
+    public void setChildren(List<ProjectDto> children) {
       project.setChildren(children);
     }
 

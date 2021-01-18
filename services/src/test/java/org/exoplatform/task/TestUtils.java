@@ -26,8 +26,7 @@ import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.dto.LabelDto;
-import org.exoplatform.task.dto.UserSettingDto;
+import org.exoplatform.task.dto.*;
 import org.exoplatform.task.model.User;
 
 import java.sql.Connection;
@@ -108,8 +107,21 @@ public class TestUtils {
     return getDefaultTaskWithId(EXISTING_TASK_ID);
   }
 
+  public static TaskDto getDefaultTaskDto() {
+    return getDefaultTaskDtoWithId(EXISTING_TASK_ID);
+  }
+
   public static Task getDefaultTaskWithId(long id) {
     Task task = new Task();
+    task.setId(id);
+    task.setTitle("Default task");
+    task.setAssignee("root");
+    task.setCreatedBy("root");
+    task.setCreatedTime(new Date());
+    return task;
+  }
+  public static TaskDto getDefaultTaskDtoWithId(long id) {
+    TaskDto task = new TaskDto();
     task.setId(id);
     task.setTitle("Default task");
     task.setAssignee("root");
@@ -128,8 +140,25 @@ public class TestUtils {
     return comment;
   }
 
+  public static CommentDto getDefaultCommentDto() {
+    CommentDto comment = new CommentDto();
+    comment.setId(EXISTING_COMMENT_ID);
+    comment.setComment("Bla bla");
+    comment.setAuthor("Tib");
+    comment.setCreatedTime(new Date());
+    comment.setTask(getDefaultTaskDto());
+    return comment;
+  }
+
   public static Status getDefaultStatus() {
     Status status = new Status();
+    status.setId(EXISTING_STATUS_ID);
+    status.setName("TODO");
+    status.setRank(1);
+    return status;
+  }
+  public static StatusDto getDefaultStatusDto() {
+    StatusDto status = new StatusDto();
     status.setId(EXISTING_STATUS_ID);
     status.setName("TODO");
     status.setRank(1);
@@ -154,6 +183,17 @@ public class TestUtils {
 
   public static Project getDefaultProject() {
     Project project = new Project();
+    project.setId(EXISTING_PROJECT_ID);
+    project.setName("Default project");
+    project.setDescription("The default project");
+    project.setDueDate(new Date());
+    Set<String> managers = new HashSet<String>();
+    managers.add("Tib");
+    project.setManager(managers);
+    return project;
+  }
+  public static ProjectDto getDefaultProjectDto() {
+    ProjectDto project = new ProjectDto();
     project.setId(EXISTING_PROJECT_ID);
     project.setName("Default project");
     project.setDescription("The default project");

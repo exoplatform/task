@@ -24,18 +24,16 @@ import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.portal.mop.SiteKey;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.dao.TaskQuery;
-import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.legacy.service.TaskService;
-import org.exoplatform.task.legacy.service.UserService;
-import org.exoplatform.task.util.ListUtil;
-import org.exoplatform.task.util.ResourceUtil;
-import org.exoplatform.task.util.StringUtil;
-import org.exoplatform.task.util.TaskUtil;
-import org.exoplatform.task.util.UserUtil;
+import org.exoplatform.task.dto.TaskDto;
+import org.exoplatform.task.service.TaskService;
+import org.exoplatform.task.service.UserService;
+import org.exoplatform.task.util.*;
 import org.exoplatform.web.WebAppController;
 
 import java.text.SimpleDateFormat;
@@ -45,6 +43,8 @@ import java.util.Collection;
 import java.util.List;
 
 public class TaskSearchConnector extends SearchServiceConnector {
+
+  private static final Log LOG = ExoLogger.getExoLogger(TaskSearchConnector.class);
 
   private static final int MAX_EXCERPT_LENGTH = 430;
   
@@ -93,15 +93,19 @@ public class TaskSearchConnector extends SearchServiceConnector {
     }
     SimpleDateFormat  df = new SimpleDateFormat("EEEEE, MMMMMMMM d, yyyy");
     df.setTimeZone(userService.getUserTimezone(currentUser.getUserId()));
-    Task[] tasks = ListUtil.load(taskService.findTasks(taskQuery), 0, -1);
-    for (Task t : tasks) {
-      result.add(buildResult(t, context, df));
+    try {
+      List<TaskDto> tasks = taskService.findTasks(taskQuery, 0, -1);
+      for (TaskDto t : tasks) {
+        result.add(buildResult(t, context, df));
+      }
+    } catch (Exception e) {
+      LOG.info("can not find list of tasks");
     }
 
     return ResourceUtil.subList(result, offset, limit);
   }
 
-  private SearchResult buildResult(Task t, SearchContext ctx, SimpleDateFormat df) {
+  private SearchResult buildResult(TaskDto t, SearchContext ctx, SimpleDateFormat df) {
     String url = buildUrl(t, ctx);
     String imageUrl = buildImageUrl(t);
     String excerpt = buildExcerpt(t);
@@ -111,7 +115,7 @@ public class TaskSearchConnector extends SearchServiceConnector {
     return new TaskSearchResult(url, t.getTitle(), excerpt, imageUrl,  projectName, priority, dueDate, t.isCompleted(), t.getCreatedTime().getTime(), 0);
   }
   
-  private String buildExcerpt(Task t) {
+  private String buildExcerpt(TaskDto t) {
     String description = t.getDescription();
     if (description != null) {
       if (description.length() > MAX_EXCERPT_LENGTH) {
@@ -124,11 +128,11 @@ public class TaskSearchConnector extends SearchServiceConnector {
     return null;
   }
 
-  private String buildImageUrl(Task t) {
+  private String buildImageUrl(TaskDto t) {
     return null;
   }
 
-  private String buildUrl(Task t, SearchContext context) {
+  private String buildUrl(TaskDto t, SearchContext context) {
     ExoContainer container = ExoContainerContext.getCurrentContainer();
     return TaskUtil.buildTaskURL(t, SiteKey.portal(context.getSiteName()), container, controller.getRouter());
   }

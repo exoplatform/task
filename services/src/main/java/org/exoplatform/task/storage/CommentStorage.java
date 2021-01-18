@@ -31,11 +31,4 @@ public interface CommentStorage {
    */
   List<CommentDto> loadSubComments(List<CommentDto> listComments);
 
-  Comment commentToEntity(CommentDto commentDto);
-
-  CommentDto commentToDto(Comment comment);
-
-  List<CommentDto> listCommentsToDtos(List<Comment> comments);
-
-  public List<Comment> listCommentsToEntitys(List<CommentDto> commentDtos);
 }

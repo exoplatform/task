@@ -20,6 +20,7 @@ import org.exoplatform.commons.api.notification.NotificationContext;
 import org.exoplatform.commons.api.notification.model.NotificationInfo;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.dto.TaskDto;
 
 import java.util.Calendar;
 import java.util.TimeZone;
@@ -40,7 +41,7 @@ public class TaskDueDatePlugin extends AbstractNotificationPlugin {
   @Override
   public NotificationInfo makeNotification(NotificationContext ctx) {
     NotificationInfo info = super.makeNotification(ctx);
-    Task task = ctx.value(NotificationUtils.TASK);
+    TaskDto task = ctx.value(NotificationUtils.TASK);
 
     Calendar grpDueDate = Calendar.getInstance(TimeZone.getTimeZone("GMT0"));
     grpDueDate.setTime(task.getDueDate());
@@ -61,7 +62,7 @@ public class TaskDueDatePlugin extends AbstractNotificationPlugin {
 
   @Override
   public boolean isValid(NotificationContext ctx) {
-    Task task = ctx.value(NotificationUtils.TASK);
+    TaskDto task = ctx.value(NotificationUtils.TASK);
     return task.getDueDate() != null && ((task.getAssignee() != null && !task.getAssignee().isEmpty()) ||
         (task.getCoworker() != null && task.getCoworker().size() > 0)||(task.getWatcher() != null && task.getWatcher().size() > 0));
   }

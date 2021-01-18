@@ -18,7 +18,7 @@ public class CommentDto implements Serializable {
 
     private Date createdTime;
 
-    private Task task;
+    private TaskDto task;
 
     private CommentDto parentComment;
 

@@ -16,6 +16,7 @@ import org.exoplatform.task.dto.LabelDto;
 import org.exoplatform.task.dto.TaskDto;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.storage.LabelStorage;
+import org.exoplatform.task.util.StorageUtil;
 
 public class LabelStorageImpl implements LabelStorage {
 
@@ -35,7 +36,7 @@ public class LabelStorageImpl implements LabelStorage {
     try {
       return Arrays.asList(daoHandler.getLabelHandler().findLabelsByUser(username).load(offset, limit))
                    .stream()
-                   .map(this::labelToDto)
+                   .map(StorageUtil::labelToDto)
                    .collect(Collectors.toList());
     } catch (Exception e) {
       return new ArrayList<LabelDto>();
@@ -47,7 +48,7 @@ public class LabelStorageImpl implements LabelStorage {
     try {
       return Arrays.asList(daoHandler.getLabelHandler().findLabelsByTask(taskId, username).load(offset, limit))
                    .stream()
-                   .map(this::labelToDto)
+                   .map(StorageUtil::labelToDto)
                    .collect(Collectors.toList());
     } catch (Exception e) {
       return new ArrayList<LabelDto>();
@@ -56,12 +57,12 @@ public class LabelStorageImpl implements LabelStorage {
 
   @Override
   public LabelDto getLabel(long labelId) {
-    return labelToDto(daoHandler.getLabelHandler().find(labelId));
+    return StorageUtil.labelToDto(daoHandler.getLabelHandler().find(labelId));
   }
 
   @Override
   public LabelDto createLabel(LabelDto label) {
-    return labelToDto(daoHandler.getLabelHandler().create(labelToEntity(label)));
+    return StorageUtil.labelToDto(daoHandler.getLabelHandler().create(StorageUtil.labelToEntity(label)));
   }
 
   @Override
@@ -71,7 +72,7 @@ public class LabelStorageImpl implements LabelStorage {
 
   @Override
   public void removeLabel(long labelId) {
-    daoHandler.getLabelHandler().delete(labelToEntity(getLabel(labelId)));
+    daoHandler.getLabelHandler().delete(StorageUtil.labelToEntity(getLabel(labelId)));
   }
 
   @Override
@@ -83,46 +84,4 @@ public class LabelStorageImpl implements LabelStorage {
 
   }
 
-  @Override
-  public Label labelToEntity(LabelDto labelDto) {
-    if(labelDto==null){
-      return null;
-    }
-    Label label = new Label();
-    label.setUsername(labelDto.getUsername());
-    label.setName(labelDto.getName());
-    label.setColor(labelDto.getColor());
-    label.setHidden(labelDto.isHidden());
-    label.setParent(labelToEntity(labelDto.getParent()));
-    return label;
-  }
-
-  public Label mappingLabelToEntity(LabelDto labelDto) {
-    if(labelDto==null){
-      return null;
-    }
-    Label label = new Label();
-    label.setId(labelDto.getId());
-    label.setUsername(labelDto.getUsername());
-    label.setName(labelDto.getName());
-    label.setColor(labelDto.getColor());
-    label.setHidden(labelDto.isHidden());
-    label.setParent(labelToEntity(labelDto.getParent()));
-    return label;
-  }
-
-  @Override
-  public LabelDto labelToDto(Label label) {
-    if(label==null){
-      return null;
-    }
-    LabelDto labelDto = new LabelDto();
-    labelDto.setId(label.getId());
-    labelDto.setUsername(label.getUsername());
-    labelDto.setName(label.getName());
-    labelDto.setColor(label.getColor());
-    labelDto.setHidden(label.isHidden());
-    labelDto.setParent(labelToDto(label.getParent()));
-    return labelDto;
-  }
 }
