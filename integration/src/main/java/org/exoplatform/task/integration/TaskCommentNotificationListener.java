@@ -23,23 +23,16 @@ import org.exoplatform.commons.api.notification.NotificationContext;
 import org.exoplatform.commons.api.notification.command.NotificationCommand;
 import org.exoplatform.commons.api.notification.model.PluginKey;
 import org.exoplatform.commons.notification.impl.NotificationContextImpl;
-import org.exoplatform.commons.utils.CommonsUtils;
-import org.exoplatform.commons.utils.ListAccess;
-import org.exoplatform.commons.utils.PortalPrinter;
 import org.exoplatform.container.PortalContainer;
-import org.exoplatform.portal.config.model.PortalConfig;
 import org.exoplatform.services.listener.Event;
 import org.exoplatform.services.listener.Listener;
 import org.exoplatform.services.security.ConversationState;
-import org.exoplatform.task.domain.Comment;
-import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.dto.CommentDto;
+import org.exoplatform.task.dto.TaskDto;
 import org.exoplatform.task.integration.notification.NotificationUtils;
 import org.exoplatform.task.integration.notification.TaskCommentPlugin;
 import org.exoplatform.task.integration.notification.TaskMentionPlugin;
-import org.exoplatform.task.legacy.service.TaskService;
 import org.exoplatform.task.service.CommentService;
-import org.exoplatform.task.util.ListUtil;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -49,18 +42,18 @@ import java.util.Set;
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
-public class TaskCommentNotificationListener extends Listener<Task, Comment> {
+public class TaskCommentNotificationListener extends Listener<TaskDto, CommentDto> {
 
   @Override
-  public void onEvent(Event<Task, Comment> event) throws Exception {
-    Task task = event.getSource();
-    Comment comment = event.getData();
+  public void onEvent(Event<TaskDto, CommentDto> event) throws Exception {
+    TaskDto task = event.getSource();
+    CommentDto comment = event.getData();
     //. How to send notification
     NotificationContext ctx = buildContext(task, comment);
     dispatch(ctx, TaskCommentPlugin.ID, TaskMentionPlugin.ID);
   }
 
-  private NotificationContext buildContext(Task task, Comment comment) {
+  private NotificationContext buildContext(TaskDto task, CommentDto comment) {
     NotificationContext ctx = NotificationContextImpl.cloneInstance()
             .append(NotificationUtils.COMMENT, comment)
             .append(NotificationUtils.TASK, task);
@@ -107,9 +100,10 @@ public class TaskCommentNotificationListener extends Listener<Task, Comment> {
 
     // Get all mentioned
     Set<String> mentioned = comment.getMentionedUsers();
-
+    if(mentioned==null){
+      mentioned = new HashSet<String>();
+    }
     mentioned.remove(creator);
-
     ctx.append(NotificationUtils.RECEIVERS, receiver);
     ctx.append(NotificationUtils.MENTIONED, mentioned);
 

@@ -4,6 +4,7 @@ import org.exoplatform.commons.api.notification.NotificationContext;
 import org.exoplatform.commons.notification.impl.NotificationContextImpl;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.dto.TaskDto;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -37,7 +38,7 @@ public class AbstractNotificationPluginTest {
   @Test
   public void shouldReturnAssigneeInReceivers() throws Exception {
     // Given
-    Task task = new Task();
+    TaskDto task = new TaskDto();
     task.setAssignee("user1");
 
     AbstractNotificationPlugin notificationPlugin = new DummyNotificationPlugin(new InitParams());
@@ -54,7 +55,7 @@ public class AbstractNotificationPluginTest {
   @Test
   public void shouldReturnCoworkersInReceivers() throws Exception {
     // Given
-    Task task = new Task();
+    TaskDto task = new TaskDto();
     task.setCoworker(new HashSet<>(Arrays.asList("user1", "user2")));
 
     AbstractNotificationPlugin notificationPlugin = new DummyNotificationPlugin(new InitParams());
@@ -72,7 +73,7 @@ public class AbstractNotificationPluginTest {
   @Test
   public void shouldReturnWatchersInReceivers() throws Exception {
     // Given
-    Task task = new Task();
+    TaskDto task = new TaskDto();
     task.setWatcher(new HashSet<>(Arrays.asList("user1", "user2")));
 
     AbstractNotificationPlugin notificationPlugin = new DummyNotificationPlugin(new InitParams());
@@ -90,7 +91,7 @@ public class AbstractNotificationPluginTest {
   @Test
   public void shouldReturnCreatorInReceivers() throws Exception {
     // Given
-    Task task = new Task();
+    TaskDto task = new TaskDto();
     task.setAssignee("user1");
     task.setCreatedBy("user2");
     task.setCoworker(new HashSet<>(Arrays.asList("user2", "user3")));

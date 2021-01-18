@@ -17,22 +17,19 @@
 
 package org.exoplatform.task.integration;
 
-import java.util.Date;
-
 import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.services.listener.Event;
 import org.exoplatform.services.listener.Listener;
-import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.dto.ProjectDto;
 import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.storage.ProjectStorage;
 
-public class ProjectModifiedListener extends Listener<ProjectService, Project> {
+public class ProjectModifiedListener extends Listener<ProjectService, ProjectDto> {
 
   @Override
-  public void onEvent(Event<ProjectService, Project> event) throws Exception {
+  public void onEvent(Event<ProjectService, ProjectDto> event) throws Exception {
     ProjectStorage storage = CommonsUtils.getService(ProjectStorage.class);
-    ProjectDto data = storage.projectToDto(event.getData());
+    ProjectDto data = event.getData();
     data.setLastModifiedDate(System.currentTimeMillis());
     storage.updateProject(data);
   }

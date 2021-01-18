@@ -99,7 +99,4 @@ public interface ProjectStorage {
 
     int countProjects(List<String> memberships, String keyword);
 
-    Project projectToEntity(ProjectDto projectDto);
-
-    ProjectDto projectToDto(Project project);
 }

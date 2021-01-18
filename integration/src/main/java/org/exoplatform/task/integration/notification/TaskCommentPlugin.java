@@ -24,6 +24,8 @@ import org.exoplatform.commons.api.notification.model.NotificationInfo;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.dto.CommentDto;
+import org.exoplatform.task.dto.TaskDto;
 
 import java.util.Set;
 
@@ -44,8 +46,8 @@ public class TaskCommentPlugin extends AbstractNotificationPlugin {
 
   @Override
   public NotificationInfo makeNotification(NotificationContext ctx) {
-    Task task = ctx.value(NotificationUtils.TASK);
-    Comment comment = ctx.value(NotificationUtils.COMMENT);
+    TaskDto task = ctx.value(NotificationUtils.TASK);
+    CommentDto comment = ctx.value(NotificationUtils.COMMENT);
     NotificationInfo info = super.makeNotification(ctx);
     info.with(NotificationUtils.TASKS, String.valueOf(task.getId()));
     info.with(NotificationUtils.COMMENT_TEXT, comment.getComment());
@@ -67,7 +69,7 @@ public class TaskCommentPlugin extends AbstractNotificationPlugin {
   }
 
   @Override
-  protected Set<String> getReceiver(Task task, NotificationContext ctx) {
+  protected Set<String> getReceiver(TaskDto task, NotificationContext ctx) {
     return (Set<String>)ctx.value(NotificationUtils.RECEIVERS);
   }
 }

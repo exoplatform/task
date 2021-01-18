@@ -28,7 +28,7 @@ public class ProjectDto implements Serializable {
 
     private String    color;
 
-    private Set<Status> status ;
+    private Set<StatusDto> status ;
 
     private Set<String> manager;
 
@@ -38,15 +38,15 @@ public class ProjectDto implements Serializable {
 
     private Long lastModifiedDate;;
 
-    private Project parent;
+    private ProjectDto parent;
 
-    private List<Project> children;
+    private List<ProjectDto> children;
 
     private Set<UserSetting> hiddenOn;
 
     private String spaceName;
 
-    public ProjectDto(String name, String description, HashSet<Status> statuses, Set<String> managers, Set<String> participators) {
+    public ProjectDto(String name, String description, HashSet<StatusDto> statuses, Set<String> managers, Set<String> participators) {
         this.name=name;
         this.description=description;
         this.status=statuses;
@@ -65,8 +65,8 @@ public class ProjectDto implements Serializable {
         if (this.getParent() != null) {
             project.setParent(getParent().clone(false));
         }
-        project.status = new HashSet<Status>();
-        project.children = new LinkedList<Project>();
+        project.status = new HashSet<StatusDto>();
+        project.children = new LinkedList<ProjectDto>();
 
         return project;
     }

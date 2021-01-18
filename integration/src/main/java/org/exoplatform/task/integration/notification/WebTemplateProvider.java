@@ -37,7 +37,7 @@ import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvide
 import org.exoplatform.social.core.manager.IdentityManager;
 import org.exoplatform.social.core.service.LinkProvider;
 import org.exoplatform.social.notification.LinkProviderUtils;
-import org.exoplatform.task.legacy.service.UserService;
+import org.exoplatform.task.service.UserService;
 import org.exoplatform.webui.utils.TimeConvertUtils;
 import org.gatein.common.text.EntityEncoder;
 

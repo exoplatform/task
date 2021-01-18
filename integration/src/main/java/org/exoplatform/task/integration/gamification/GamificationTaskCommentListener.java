@@ -10,11 +10,11 @@ import org.exoplatform.services.log.Log;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
 import org.exoplatform.social.core.manager.IdentityManager;
-import org.exoplatform.task.domain.Comment;
-import org.exoplatform.task.legacy.service.TaskService;
+import org.exoplatform.task.dto.CommentDto;
+import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.util.TaskUtil;
 
-public class GamificationTaskCommentListener extends Listener<TaskService, Comment> {
+public class GamificationTaskCommentListener extends Listener<TaskService, CommentDto> {
   private static final Log      LOG                                  =
                                     ExoLogger.getLogger(GamificationTaskCommentListener.class);
 
@@ -35,7 +35,7 @@ public class GamificationTaskCommentListener extends Listener<TaskService, Comme
   }
 
   @Override
-  public void onEvent(Event<TaskService, Comment> event) throws Exception {
+  public void onEvent(Event<TaskService, CommentDto> event) throws Exception {
     String actorUsername = ConversationState.getCurrent().getIdentity().getUserId();
 
     GamificationActionsHistory aHistory = null;

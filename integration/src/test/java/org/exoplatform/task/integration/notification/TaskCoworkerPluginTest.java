@@ -4,6 +4,7 @@ import org.exoplatform.commons.api.notification.NotificationContext;
 import org.exoplatform.commons.notification.impl.NotificationContextImpl;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.dto.TaskDto;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -20,7 +21,7 @@ public class TaskCoworkerPluginTest {
   @Test
   public void shouldReturnAssigneeInReceivers() throws Exception {
     // Given
-    Task task = new Task();
+    TaskDto task = new TaskDto();
     task.setCoworker(new HashSet<>(Arrays.asList("user1", "user2")));
 
     NotificationContext ctx = NotificationContextImpl.cloneInstance();
@@ -41,7 +42,7 @@ public class TaskCoworkerPluginTest {
   @Test
   public void shouldNotReturnAssigneeInReceiversWhenAssigneeIsCreator() throws Exception {
     // Given
-    Task task = new Task();
+    TaskDto task = new TaskDto();
     task.setCoworker(new HashSet<>(Arrays.asList("user1", "user2")));
 
     NotificationContext ctx = NotificationContextImpl.cloneInstance();

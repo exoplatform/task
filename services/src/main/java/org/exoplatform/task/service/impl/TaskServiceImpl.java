@@ -19,7 +19,6 @@ package org.exoplatform.task.service.impl;
 import org.apache.commons.lang3.StringUtils;
 import org.exoplatform.commons.api.persistence.ExoTransactional;
 import org.exoplatform.commons.utils.CommonsUtils;
-import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.listener.ListenerService;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -35,11 +34,12 @@ import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.dto.*;
 import org.exoplatform.task.exception.EntityNotFoundException;
-import org.exoplatform.task.legacy.service.TaskPayload;
+import org.exoplatform.task.service.TaskPayload;
 import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.storage.TaskStorage;
 import org.exoplatform.task.util.ProjectUtil;
+import org.exoplatform.task.util.StorageUtil;
 import org.exoplatform.task.util.TaskUtil;
 
 import javax.inject.Inject;
@@ -75,11 +75,11 @@ public class TaskServiceImpl implements TaskService {
     public TaskDto createTask(TaskDto task) {
         TaskDto result = taskStorage.createTask(task);
         //
-        TaskPayload event = new TaskPayload(null, taskStorage.toEntity(result));
+        TaskPayload event = new TaskPayload(null, result);
         try {
             listenerService.broadcast(TASK_CREATION, null, event);
             if(result.getStatus()!=null){
-                listenerService.broadcast("exo.project.projectModified", null, taskStorage.toEntity(result).getStatus().getProject() );
+                listenerService.broadcast("exo.project.projectModified", null,result.getStatus().getProject() );
             }
         } catch (Exception e) {
             LOG.error("Error while broadcasting task creation event", e);
@@ -97,11 +97,11 @@ public class TaskServiceImpl implements TaskService {
 
         TaskDto oldTaskEntity = taskStorage.getTaskWithCoworkers(task.getId());
         TaskDto newTaskEntity = taskStorage.update(task);
-        TaskPayload event = new TaskPayload(taskStorage.toEntity(oldTaskEntity), taskStorage.toEntity(newTaskEntity));
+        TaskPayload event = new TaskPayload(oldTaskEntity, newTaskEntity);
         try {
             listenerService.broadcast(TASK_UPDATE, null, event);
             if(task.getStatus()!=null){
-                listenerService.broadcast("exo.project.projectModified", null, taskStorage.toEntity(task).getStatus().getProject() );
+                listenerService.broadcast("exo.project.projectModified", null, task.getStatus().getProject() );
             }
         } catch (Exception e) {
             LOG.error("Error while broadcasting task creation event", e);
@@ -158,7 +158,7 @@ public class TaskServiceImpl implements TaskService {
     @ExoTransactional
     public ChangeLogEntry addTaskLog(long id, String username, String actionName, String target) throws EntityNotFoundException {
         ChangeLogEntry log = new ChangeLogEntry();
-        log.setTask(taskStorage.toEntity(getTask(id)));
+        log.setTask(StorageUtil.taskToEntity(getTask(id)));
         log.setAuthor(username);
         log.setActionName(actionName);
         log.setTarget(target);

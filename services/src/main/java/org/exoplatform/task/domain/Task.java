@@ -43,7 +43,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.exoplatform.commons.api.persistence.ExoEntity;
-import org.exoplatform.task.legacy.service.TaskBuilder;
+import org.exoplatform.task.dto.StatusDto;
+import org.exoplatform.task.service.TaskBuilder;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>
@@ -227,6 +228,23 @@ public class Task {
     this.priority = Priority.NORMAL;
   }
 
+
+
+  public Task(String title, String description, Priority priority, String context, String assignee, Set<String> coworker, Set<String> watcher, Status status, String createdBy , Date endDate, Date startDate, Date dueDate) {
+    this.title = title;
+    this.assignee = assignee;
+    this.coworker = coworker;
+    this.watcher = watcher;
+    this.context = context;
+    this.createdBy = createdBy;
+    this.description = description;
+    this.priority = priority;
+    this.startDate = startDate;
+    this.endDate = endDate;
+    this.dueDate = dueDate;
+    this.status = status;
+  }
+
   public long getId() {
     return id;
   }
@@ -372,32 +390,12 @@ public class Task {
     if (getWatcher() != null) {
       watcherClone = new HashSet<String>(getWatcher());
     }
-    Task newTask = new TaskBuilder().withTitle(this.getTitle())
-        .withAssignee(this.getAssignee())
-        .withCoworker(coworkerClone)
-        .withWatcher(watcherClone)
-        .withContext(this.getContext())
-        .withCreatedBy(this.getCreatedBy())
-        .withDescription(this.getDescription())
-        .withDueDate(this.getDueDate())
-        .withPriority(this.getPriority())
-        .withStartDate(this.getStartDate())
-        .withEndDate(this.getEndDate())
-        .withStatus(this.getStatus() != null ? this.getStatus().clone() : null)
-        .build();
+    Task newTask = new Task(this.getTitle(), this.getDescription(), this.getPriority(), this.getContext(), this.getAssignee(), coworkerClone, watcherClone, this.getStatus() != null ? this.getStatus().clone() : null, this.getCreatedBy() , this.getEndDate(), this.getStartDate(), this.getDueDate());
 
     newTask.setCreatedTime(getCreatedTime());
     newTask.setActivityId(getActivityId());
     newTask.setCompleted(isCompleted());
     newTask.setRank(getRank());
-    
-    //performance issue, need lazy load
-//    Set<String> coworker = new HashSet<String>();
-//    if (this.getCoworker() != null) {
-//      coworker.addAll(getCoworker());
-//    }
-//    newTask.setCoworker(coworker);
-
     newTask.setId(getId());
 
     return newTask;

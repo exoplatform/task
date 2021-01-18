@@ -22,9 +22,9 @@ import org.exoplatform.services.log.Log;
 import org.exoplatform.social.core.space.SpaceListenerPlugin;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceLifeCycleEvent;
-import org.exoplatform.task.domain.Project;
-import org.exoplatform.task.legacy.service.ProjectService;
-import org.exoplatform.task.legacy.service.StatusService;
+import org.exoplatform.task.dto.ProjectDto;
+import org.exoplatform.task.service.ProjectService;
+import org.exoplatform.task.service.StatusService;
 import org.exoplatform.task.util.ProjectUtil;
 import org.exoplatform.task.util.UserUtil;
 
@@ -59,7 +59,7 @@ public class SpaceTaskDataInitializer extends SpaceListenerPlugin {
     Set<String> managers = new HashSet<String>(Arrays.asList(memberships.get(0)));
     Set<String> participators = new HashSet<String>(Arrays.asList(memberships.get(1)));
 
-    Project project = ProjectUtil.newProjectInstance(space.getDisplayName(), "", managers, participators);
+    ProjectDto project = ProjectUtil.newProjectInstanceDto(space.getDisplayName(), "", managers, participators);
     projectService.createProject(project);
     statusServ.createInitialStatuses(project);
   }
