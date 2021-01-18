@@ -23,7 +23,7 @@ import org.exoplatform.task.dto.StatusDto;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.exception.ParameterEntityException;
 import org.exoplatform.task.exception.UnAuthorizedOperationException;
-import org.exoplatform.task.legacy.service.UserService;
+import org.exoplatform.task.service.UserService;
 import org.exoplatform.task.model.User;
 import org.exoplatform.task.service.*;
 import org.exoplatform.task.util.ProjectUtil;

@@ -24,10 +24,4 @@ public interface LabelStorage {
   void addTaskToLabel(TaskDto task, Long labelId) throws EntityNotFoundException;
 
   void removeTaskFromLabel(TaskDto task, Long labelId) throws EntityNotFoundException;
-
-  Label labelToEntity(LabelDto labelDto);
-
-  Label mappingLabelToEntity(LabelDto labelDto);
-
-  LabelDto labelToDto(Label Label);
 }

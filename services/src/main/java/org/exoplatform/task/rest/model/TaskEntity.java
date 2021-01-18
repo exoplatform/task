@@ -20,14 +20,11 @@ package org.exoplatform.task.rest.model;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import lombok.Data;
-import org.exoplatform.social.core.space.model.Space;
-import org.exoplatform.task.domain.Label;
-import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.dto.LabelDto;
+import org.exoplatform.task.dto.StatusDto;
 import org.exoplatform.task.dto.TaskDto;
 import org.exoplatform.task.model.CommentModel;
 import org.exoplatform.task.model.User;
@@ -37,7 +34,7 @@ import org.exoplatform.task.util.UserUtil;
 public class TaskEntity {
   long Id;
   Date dueDate;
-  private Status status;
+  private StatusDto status;
   private TaskDto task;
   private boolean readOnly;
   private boolean isWatched;

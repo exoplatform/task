@@ -2,7 +2,7 @@ package org.exoplatform.task.dto;
 
 import org.exoplatform.task.domain.ChangeLog;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.legacy.service.UserService;
+import org.exoplatform.task.service.UserService;
 
 import java.io.Serializable;
 

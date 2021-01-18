@@ -27,7 +27,7 @@ import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.social.core.space.spi.SpaceService;
 import org.exoplatform.task.dto.*;
-import org.exoplatform.task.legacy.service.UserService;
+import org.exoplatform.task.service.UserService;
 import org.exoplatform.task.rest.model.CommentEntity;
 import org.exoplatform.task.service.*;
 

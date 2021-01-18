@@ -18,15 +18,20 @@ package org.exoplatform.task.dao;
 
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.container.PortalContainer;
+import org.exoplatform.services.listener.ListenerService;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.task.AbstractTest;
 import org.exoplatform.task.dao.condition.Conditions;
 import org.exoplatform.task.domain.*;
 import org.exoplatform.task.exception.EntityNotFoundException;
-import org.exoplatform.task.legacy.service.ParserContext;
-import org.exoplatform.task.legacy.service.TaskParser;
-import org.exoplatform.task.legacy.service.impl.TaskParserImpl;
+import org.exoplatform.task.service.TaskService;
+import org.exoplatform.task.service.UserService;
+import org.exoplatform.task.service.impl.TaskServiceImpl;
+import org.exoplatform.task.storage.ProjectStorage;
+import org.exoplatform.task.storage.StatusStorage;
+import org.exoplatform.task.storage.TaskStorage;
+import org.exoplatform.task.storage.impl.TaskStorageImpl;
 import org.exoplatform.task.util.ListUtil;
 import org.exoplatform.task.util.TaskUtil;
 import org.junit.After;
@@ -47,20 +52,24 @@ public class TestTaskDAO extends AbstractTest {
   private TaskHandler tDAO;
   private CommentHandler cDAO;
   private DAOHandler daoHandler;
-  private TaskParser parser = new TaskParserImpl();
-  private ParserContext context = new ParserContext(TimeZone.getDefault());
-
   private final String username = "root";
   private LabelHandler labelHandler;
+  private ListenerService listenerService;
+  private ProjectStorage projectStorage;
+  private UserService userService;
+  private TaskStorage taskStorage;
+  private TaskService taskService;
 
   @Before
   public void setup() {
     PortalContainer container = PortalContainer.getInstance();
-    
+
     daoHandler = (DAOHandler) container.getComponentInstanceOfType(DAOHandler.class);
     tDAO = daoHandler.getTaskHandler();
     cDAO = daoHandler.getCommentHandler();
-    labelHandler = daoHandler.getLabelHandler(); 
+    labelHandler = daoHandler.getLabelHandler();
+    taskStorage =new TaskStorageImpl(daoHandler, userService, projectStorage);
+    taskService =new TaskServiceImpl(taskStorage, daoHandler, listenerService);
   }
 
   @After
@@ -78,14 +87,16 @@ public class TestTaskDAO extends AbstractTest {
 
   @Test
   public void testTaskCreation() {
-    Task task = parser.parse("Testing task creation", context);
+    Task task = new Task();
+    task.setTitle("Testing task creation");
     tDAO.create(task);
 
     List<Task> list = tDAO.findAll();
     Assert.assertEquals(1, list.size());
 
     //
-    task = parser.parse("There is an important meeting tomorrow !high", context);
+    task = new Task();
+    task.setTitle("There is an important meeting tomorrow !high");
     tDAO.create(task);
     list = tDAO.findAll();
     Assert.assertEquals(2, list.size());
@@ -93,8 +104,8 @@ public class TestTaskDAO extends AbstractTest {
     //
     task = tDAO.find(task.getId());
     Assert.assertNotNull(task);
-    Assert.assertEquals("There is an important meeting tomorrow", task.getTitle());
-    Assert.assertEquals(Priority.HIGH, task.getPriority());
+    Assert.assertEquals("There is an important meeting tomorrow !high", task.getTitle());
+    Assert.assertEquals(Priority.NORMAL, task.getPriority());
   }
 
   @Test
@@ -569,25 +580,25 @@ public class TestTaskDAO extends AbstractTest {
     tDAO.create(task);
     //worker1 is a coworker, so he has permission
     ConversationState.setCurrent(new ConversationState(worker1));
-    Assert.assertEquals(true, TaskUtil.hasEditPermission(task));
+    Assert.assertEquals(true, TaskUtil.hasEditPermission(taskService,task));
 
     //worker is the assignee, so he has permission
     ConversationState.setCurrent(new ConversationState(worker));
-    Assert.assertEquals(true, TaskUtil.hasEditPermission(task));
+    Assert.assertEquals(true, TaskUtil.hasEditPermission(taskService,task));
 
     //worker2 is not the assignee, neither coworker nor the creator, so he has not permission
     ConversationState.setCurrent(new ConversationState(worker2));
-    Assert.assertEquals(false, TaskUtil.hasEditPermission(task));
+    Assert.assertEquals(false, TaskUtil.hasEditPermission(taskService,task));
 
     //worker3 is the creator, so he has permission
     ConversationState.setCurrent(new ConversationState(worker3));
-    Assert.assertEquals(true, TaskUtil.hasEditPermission(task));
+    Assert.assertEquals(true, TaskUtil.hasEditPermission(taskService,task));
 
     coworkers.add("worker2");
     task.setCoworker(coworkers);
     //worker2 is now a coworker, so he has permission
     ConversationState.setCurrent(new ConversationState(worker2));
-    Assert.assertEquals(true, TaskUtil.hasEditPermission(task));
+    Assert.assertEquals(true, TaskUtil.hasEditPermission(taskService,task));
   }
 
   @Test

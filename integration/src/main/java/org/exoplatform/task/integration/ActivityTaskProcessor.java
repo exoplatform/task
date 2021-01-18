@@ -25,8 +25,8 @@ import org.exoplatform.portal.application.PortalRequestContext;
 import org.exoplatform.portal.mop.SiteKey;
 import org.exoplatform.social.core.BaseActivityProcessorPlugin;
 import org.exoplatform.social.core.activity.model.ExoSocialActivity;
-import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.legacy.service.TaskService;
+import org.exoplatform.task.dto.TaskDto;
+import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.util.TaskUtil;
 import org.exoplatform.web.WebAppController;
 import org.exoplatform.web.application.RequestContext;
@@ -59,7 +59,7 @@ public class ActivityTaskProcessor extends BaseActivityProcessorPlugin {
     if (idx >=0) {
       try {
         RequestLifeCycle.begin(entityManagerService);
-        Task task = taskService.findTaskByActivityId(activity.getId());
+        TaskDto task = taskService.findTaskByActivityId(activity.getId());
         if (task != null) {
           RequestContext request = RequestContext.getCurrentInstance();
           String portalName = "intranet";
