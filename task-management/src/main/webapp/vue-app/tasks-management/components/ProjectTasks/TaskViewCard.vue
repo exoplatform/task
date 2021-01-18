@@ -1,5 +1,8 @@
 <template>
-  <v-app id="taskCardItem" class="pt-3">
+  <v-app 
+    id="taskCardItem" 
+    :class="removeCompletedTask && 'completedTask' || ''" 
+    class="mt-3">
     <v-card
       :class="[getTaskPriorityColor(task.task.priority)]"
       class="taskCard taskViewCard pa-3"
@@ -122,7 +125,8 @@
         isPersonnalTask : this.task.task.status === null,
         drawer:null,
         maxAvatarToShow : 3,
-        showCompleteTasks: false
+        showCompleteTasks: false,
+        removeCompletedTask: false
 
       }
     },
@@ -199,25 +203,21 @@
         }
       },
       updateCompleted() {
-
         const task = {
           id: this.task.task.id,
           showCompleteTasks: this.showCompleted(),
         };
-
-
         if (typeof task.id !== 'undefined') {
           return this.$tasksService.updateCompleted(task).then(task => {
             this.$emit('update-task-completed', task);
+            this.removeCompletedTask = true;
           }).then(this.task.task.completed = task.showCompleteTasks)
-                  .catch(e => {
-                    console.debug("Error updating project", e);
-                    this.$emit('error', e && e.message ? e.message : String(e));
-                    this.postProject = false;
-                  });
+            .catch(e => {
+              console.debug("Error updating project", e);
+              this.$emit('error', e && e.message ? e.message : String(e));
+              this.postProject = false;
+            });
         }
-
-
       },
       showCompleted() {
         if (this.getTaskCompleted() === 'uiIconValidate') {
