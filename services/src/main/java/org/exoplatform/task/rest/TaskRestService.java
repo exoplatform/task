@@ -15,7 +15,7 @@ import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.dto.*;
-import org.exoplatform.task.legacy.service.UserService;
+import org.exoplatform.task.service.UserService;
 import org.exoplatform.task.model.GroupKey;
 import org.exoplatform.task.model.User;
 import org.exoplatform.task.rest.model.*;
@@ -100,7 +100,7 @@ public class TaskRestService implements ResourceContainer {
     if (task == null) {
       return Response.status(Response.Status.NOT_FOUND).build();
     }
-    if (!TaskUtil.hasEditPermission(task)) {
+    if (!TaskUtil.hasEditPermission(taskService,task)) {
       return Response.status(Response.Status.FORBIDDEN).build();
     }
     return Response.ok(task).build();
@@ -356,9 +356,9 @@ public class TaskRestService implements ResourceContainer {
       }
       task.setStatus(null);
     }
-    if(task.getStatus()!=null&&task.getStatus().getId()==0&&task.getStatus().getProject()!=null) {
+    if(task.getStatus()!=null&&(task.getStatus().getId()==null||task.getStatus().getId()==0)&&task.getStatus().getProject()!=null) {
       StatusStorage statusStorage = CommonsUtils.getService(StatusStorage.class);
-      task.setStatus(statusStorage.statusToEntity(statusService.getDefaultStatus(task.getStatus().getProject().getId())));
+      task.setStatus(statusService.getDefaultStatus(task.getStatus().getProject().getId()));
     }
     task = taskService.createTask(task);
     return Response.ok(task).build();
@@ -382,7 +382,7 @@ public class TaskRestService implements ResourceContainer {
     if (task == null) {
       return Response.status(Response.Status.BAD_REQUEST).build();
     }
-    if (!TaskUtil.hasEditPermission(task)) {
+    if (!TaskUtil.hasEditPermission(taskService,task)) {
       return Response.status(Response.Status.FORBIDDEN).build();
     }
     TaskDto newTask = taskService.cloneTask(taskId);
@@ -415,7 +415,7 @@ public class TaskRestService implements ResourceContainer {
     if (task == null) {
       return Response.status(Response.Status.NOT_FOUND).build();
     }
-    if (!TaskUtil.hasEditPermission(task)) {
+    if (!TaskUtil.hasEditPermission(taskService,task)) {
       return Response.status(Response.Status.FORBIDDEN).build();
     }
     task = taskService.updateTask(updatedTask);
@@ -441,7 +441,7 @@ public class TaskRestService implements ResourceContainer {
     if (task == null) {
       return Response.status(Response.Status.NOT_FOUND).build();
     }
-    if (!TaskUtil.hasEditPermission(task)) {
+    if (!TaskUtil.hasEditPermission(taskService,task)) {
       return Response.status(Response.Status.FORBIDDEN).build();
     }
     taskService.removeTask(id);
@@ -504,7 +504,7 @@ public class TaskRestService implements ResourceContainer {
     if (task == null) {
       return Response.status(Response.Status.NOT_FOUND).build();
     }
-    if (!TaskUtil.hasEditPermission(task)) {
+    if (!TaskUtil.hasEditPermission(taskService,task)) {
       return Response.status(Response.Status.FORBIDDEN).build();
     }
     if (addedLabel.getId() == 0) {// Create a new label and add a task to it
@@ -538,7 +538,7 @@ public class TaskRestService implements ResourceContainer {
     if (label == null) {
       return Response.status(Response.Status.NOT_FOUND).build();
     }
-    if (!TaskUtil.hasEditPermission(task)) {
+    if (!TaskUtil.hasEditPermission(taskService,task)) {
       return Response.status(Response.Status.FORBIDDEN).build();
     }
     labelService.removeTaskFromLabel(task, labelId);
@@ -564,7 +564,7 @@ public class TaskRestService implements ResourceContainer {
     if (task == null) {
       return Response.status(Response.Status.NOT_FOUND).build();
     }
-    if (!TaskUtil.hasViewPermission(task)) {
+    if (!TaskUtil.hasViewPermission(taskService,task)) {
       return Response.status(Response.Status.UNAUTHORIZED).build();
     }
     if (limit == 0) {
@@ -597,7 +597,7 @@ public class TaskRestService implements ResourceContainer {
     if (task == null) {
       return Response.status(Response.Status.NOT_FOUND).build();
     }
-    if (!TaskUtil.hasViewPermission(task)) {
+    if (!TaskUtil.hasViewPermission(taskService,task)) {
       return Response.status(Response.Status.UNAUTHORIZED).build();
     }
     if (limit == 0) {
@@ -642,7 +642,7 @@ public class TaskRestService implements ResourceContainer {
     if (commentText == null || commentText.isEmpty()) {
       return Response.status(Response.Status.BAD_REQUEST).build();
     }
-    if (!TaskUtil.hasEditPermission(task)) {
+    if (!TaskUtil.hasEditPermission(taskService,task)) {
       return Response.status(Response.Status.FORBIDDEN).build();
     }
     commentText = URLDecoder.decode(commentText, "UTF-8");
@@ -674,7 +674,7 @@ public class TaskRestService implements ResourceContainer {
     if (task == null) {
       return Response.status(Response.Status.NOT_FOUND).build();
     }
-    if (!TaskUtil.hasEditPermission(task)) {
+    if (!TaskUtil.hasEditPermission(taskService,task)) {
       return Response.status(Response.Status.FORBIDDEN).build();
     }
     if (commentText == null || commentText.isEmpty()) {
@@ -759,7 +759,7 @@ public class TaskRestService implements ResourceContainer {
                                   @ApiParam(value = "showCompleteTasks", defaultValue = "false") @QueryParam("showCompleteTasks") boolean showCompleteTasks) {
     try {
     TaskDto task = taskService.getTask(idTask);
-    if (!TaskUtil.hasEditPermission(task)) {
+    if (!TaskUtil.hasEditPermission(taskService,task)) {
       return Response.status(Response.Status.FORBIDDEN).build();
     }
     task.setCompleted(showCompleteTasks);
@@ -776,7 +776,7 @@ public class TaskRestService implements ResourceContainer {
   private CommentEntity addCommentModel(CommentDto comment, List<CommentEntity> commentModelsList, String lang) {
 
     User user = userService.loadUser(comment.getAuthor());
-    Status taskStatus = comment.getTask().getStatus();
+    StatusDto taskStatus = comment.getTask().getStatus();
     if (taskStatus != null) {
       comment.getTask().setStatus(taskStatus.clone());// To be checked
     }
@@ -816,7 +816,7 @@ public class TaskRestService implements ResourceContainer {
     return taskEntity;
   }
 
-  private SpaceEntity getProjectSpace(Project project) {
+  private SpaceEntity getProjectSpace(ProjectDto project) {
     for (String permission : projectService.getManager(project.getId())) {
       int index = permission.indexOf(':');
       if (index > -1) {

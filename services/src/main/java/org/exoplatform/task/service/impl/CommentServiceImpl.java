@@ -89,31 +89,19 @@ public class CommentServiceImpl implements CommentService {
     @ExoTransactional
     public CommentDto addComment(TaskDto task, long parentCommentId, String username, String comment) throws EntityNotFoundException {
 
-        CommentDto newComment = new CommentDto();
-        newComment.setTask(taskStorage.toEntity(task));
-        newComment.setAuthor(username);
-        newComment.setComment(comment);
-        newComment.setCreatedTime(new Date());
-        if (parentCommentId > 0) {
-            CommentDto parentComment = commentStorage.getComment(parentCommentId);
-            if (parentComment.getParentComment() != null) {
-                parentComment = parentComment.getParentComment();
-            }
-            newComment.setParentComment(parentComment);
-        }
-        Comment commentEntity = daoHandler.getCommentHandler().create(commentStorage.commentToEntity(newComment));
-        CommentDto obj = commentStorage.commentToDto(commentEntity);
+
+        CommentDto commentDto = commentStorage.addComment(task,parentCommentId,username,comment);
 
         try {
-            listenerService.broadcast(TASK_COMMENT_CREATION, commentEntity.getTask(), commentEntity);
-            if(obj.getTask().getStatus()!=null){
-                listenerService.broadcast("exo.project.projectModified", null, obj.getTask().getStatus().getProject() );
+            listenerService.broadcast(TASK_COMMENT_CREATION, commentDto.getTask(), commentDto);
+            if(commentDto.getTask().getStatus()!=null){
+                listenerService.broadcast("exo.project.projectModified", null, commentDto.getTask().getStatus().getProject() );
             }
         } catch (Exception e) {
             LOG.error("Error while broadcasting task creation event", e);
         }
 
-        return obj;
+        return commentDto;
     }
 
     @Override

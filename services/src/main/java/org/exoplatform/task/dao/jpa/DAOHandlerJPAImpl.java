@@ -27,7 +27,7 @@ import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.domain.ChangeLog;
 import org.exoplatform.task.domain.UserSetting;
-import org.exoplatform.task.legacy.service.impl.AbstractDAOHandler;
+import org.exoplatform.task.service.impl.AbstractDAOHandler;
 
 /**
  * Created by The eXo Platform SAS

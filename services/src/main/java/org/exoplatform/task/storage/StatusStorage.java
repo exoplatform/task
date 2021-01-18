@@ -46,12 +46,5 @@ public interface StatusStorage {
   StatusDto updateStatus(StatusDto statusDto) throws EntityNotFoundException,
                                                                   NotAllowedOperationOnEntityException;
 
-  public Status statusToEntity(StatusDto statusDto);
-
-  public StatusDto statusToDTO(Status status);
-
-  public List<StatusDto> listStatusToDTOs(List<Status> status);
-
-  public List<Status> listStatusToEntitys(List<StatusDto> status);
 
 }

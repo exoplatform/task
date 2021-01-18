@@ -4,6 +4,7 @@ import org.exoplatform.commons.api.notification.NotificationContext;
 import org.exoplatform.commons.notification.impl.NotificationContextImpl;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.dto.TaskDto;
 import org.junit.Test;
 
 import java.util.Set;
@@ -18,7 +19,7 @@ public class TaskAssignPluginTest {
   @Test
   public void shouldReturnAssigneeInReceivers() throws Exception {
     // Given
-    Task task = new Task();
+    TaskDto task = new TaskDto();
     task.setAssignee("user1");
 
     AbstractNotificationPlugin notificationPlugin = new TaskAssignPlugin(new InitParams());
@@ -35,7 +36,7 @@ public class TaskAssignPluginTest {
   @Test
   public void shouldNotReturnAssigneeInReceiversWhenAssigneeIsCreator() throws Exception {
     // Given
-    Task task = new Task();
+    TaskDto task = new TaskDto();
     task.setAssignee("user1");
 
     NotificationContext ctx = NotificationContextImpl.cloneInstance();
