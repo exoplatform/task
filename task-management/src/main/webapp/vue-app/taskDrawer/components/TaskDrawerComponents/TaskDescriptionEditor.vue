@@ -104,6 +104,12 @@
         this.$emit('addTaskDescription',this.inputVal);
         this.editorReady = false;
       });
+      $(document).on('click','.taskDescriptionToShow a',function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        const url = $(this).attr('href');
+        window.open(url, '_blank');
+      });
     },
     methods: {
       saveDescription: function (newValue) {
@@ -116,11 +122,12 @@
         }
       },
       initCKEditor: function () {
+        CKEDITOR.plugins.addExternal('embedsemantic', '/commons-extension/eXoPlugins/embedsemantic/', 'plugin.js');
         let extraPlugins = 'simpleLink,widget,embedsemantic';
         const windowWidth = $(window).width();
         const windowHeight = $(window).height();
         if (windowWidth > windowHeight && windowWidth < 768) {
-          extraPlugins = 'simpleLink,selectImage';
+          extraPlugins = 'simpleLink,selectImage,embedsemantic';
         }
         CKEDITOR.basePath = '/commons-extension/ckeditor/';
         const self = this;
@@ -128,6 +135,7 @@
           customConfig: '/commons-extension/ckeditorCustom/config.js',
           //removePlugins: 'suggester,simpleLink,confighelper',
           extraPlugins: extraPlugins,
+          allowedContent: true,
           removePlugins: 'confirmBeforeReload,maximize,resize',
           toolbarLocation: 'bottom',
           autoGrow_onStartup: true,
