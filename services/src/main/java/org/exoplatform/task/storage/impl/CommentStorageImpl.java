@@ -1,9 +1,6 @@
 package org.exoplatform.task.storage.impl;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -17,6 +14,9 @@ import org.exoplatform.task.dto.CommentDto;
 import org.exoplatform.task.dto.TaskDto;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.storage.CommentStorage;
+import org.exoplatform.task.storage.ProjectStorage;
+import org.exoplatform.task.util.StorageUtil;
+
 
 public class CommentStorageImpl implements CommentStorage {
 
@@ -28,28 +28,36 @@ public class CommentStorageImpl implements CommentStorage {
     @Inject
     private final DAOHandler daoHandler;
 
+    @Inject
+    private final ProjectStorage projectStorage;
 
-    public CommentStorageImpl(DAOHandler daoHandler) {
+
+    public CommentStorageImpl(DAOHandler daoHandler, ProjectStorage projectStorage) {
         this.daoHandler = daoHandler;
+        this.projectStorage = projectStorage;
     }
 
     @Override
     public CommentDto getComment(long commentId) {
-        return commentToDto(daoHandler.getCommentHandler().find(commentId));
+        return StorageUtil.commentToDto(daoHandler.getCommentHandler().find(commentId),projectStorage);
     }
 
     @Override
     public List<CommentDto> getCommentsWithSubs(long taskId, int offset, int limit) {
         try {
+            List<CommentDto> commentsDto=new ArrayList<>();
             List<Comment>  comments =  Arrays.asList(daoHandler.getCommentHandler().findComments(taskId).load(offset, limit));
-            List<Comment> subComments = daoHandler.getCommentHandler().getSubComments(comments);
-            List<CommentDto> commentsDto = comments.stream().map(this::commentToDto).collect(Collectors.toList());
-            List<CommentDto> subCommentsDto = subComments.stream().map(this::commentToDto).collect(Collectors.toList());
-            for (CommentDto comment : commentsDto) {
-                comment.setSubComments(subCommentsDto.stream()
-                        .filter(subComment -> subComment.getParentComment().getId() == comment.getId())
-                        .collect(Collectors.toList()));
+            if(comments.size()>0){
+                List<Comment> subComments = daoHandler.getCommentHandler().getSubComments(comments);
+                List<CommentDto> subCommentsDto = subComments.stream().map((Comment comment1) -> StorageUtil.commentToDto(comment1,projectStorage)).collect(Collectors.toList());
+                commentsDto = comments.stream().map((Comment comment1) -> StorageUtil.commentToDto(comment1,projectStorage)).collect(Collectors.toList());
+                for (CommentDto comment : commentsDto) {
+                    comment.setSubComments(subCommentsDto.stream()
+                            .filter(subComment -> subComment.getParentComment().getId() == comment.getId())
+                            .collect(Collectors.toList()));
+                }
             }
+
         return commentsDto;
         } catch (Exception e) {
             return new ArrayList<CommentDto>();
@@ -59,7 +67,7 @@ public class CommentStorageImpl implements CommentStorage {
     @Override
     public List<CommentDto> getComments(long taskId, int offset, int limit) {
         try {
-        return Arrays.asList(daoHandler.getCommentHandler().findComments(taskId).load(offset, limit)).stream().map(this::commentToDto).collect(Collectors.toList());
+        return Arrays.asList(daoHandler.getCommentHandler().findComments(taskId).load(offset, limit)).stream().map((Comment comment) -> StorageUtil.commentToDto(comment,projectStorage)).collect(Collectors.toList());
         } catch (Exception e) {
             return new ArrayList<CommentDto>();
         }
@@ -75,70 +83,46 @@ public class CommentStorageImpl implements CommentStorage {
     }
 
     @Override
-    public CommentDto addComment(TaskDto task, String username, String commentText) throws EntityNotFoundException {
-        return null;
+    public CommentDto addComment(TaskDto task, String username, String comment) throws EntityNotFoundException {
+        CommentDto newComment = new CommentDto();
+        newComment.setTask(task);
+        newComment.setAuthor(username);
+        newComment.setComment(comment);
+        newComment.setCreatedTime(new Date());
+        return  StorageUtil.commentToDto(daoHandler.getCommentHandler().create(StorageUtil.commentToEntity(newComment)),projectStorage);
     }
 
     @Override
     public CommentDto addComment(TaskDto task, long parentCommentId, String username, String comment) throws EntityNotFoundException {
-        return null;
+        CommentDto newComment = new CommentDto();
+        newComment.setTask(task);
+        newComment.setAuthor(username);
+        newComment.setComment(comment);
+        newComment.setCreatedTime(new Date());
+        if (parentCommentId > 0) {
+            CommentDto parentComment = getComment(parentCommentId);
+            if (parentComment.getParentComment() != null) {
+                parentComment = parentComment.getParentComment();
+            }
+            newComment.setParentComment(parentComment);
+        }
+        return  StorageUtil.commentToDto(daoHandler.getCommentHandler().create(StorageUtil.commentToEntity(newComment)),projectStorage);
     }
 
     @Override
     public void removeComment(long commentId) throws EntityNotFoundException {
-        daoHandler.getCommentHandler().delete(commentToEntity(getComment(commentId)));
+        daoHandler.getCommentHandler().delete(StorageUtil.commentToEntity(getComment(commentId)));
     }
 
     @Override
     public List<CommentDto> loadSubComments(List<CommentDto> listComments) {
-        List<Comment> comments = listComments.stream().map(this::commentToEntity).collect(Collectors.toList());
-        comments = daoHandler.getCommentHandler().getSubComments(comments);
-        return  comments.stream().map(this::commentToDto).collect(Collectors.toList());
-    }
-
-    @Override
-    public Comment commentToEntity(CommentDto commentDto) {
-        if(commentDto==null){
-            return null;
+        List<Comment> comments = new ArrayList<>();
+        if(comments.size()>0) {
+            comments = listComments.stream().map(StorageUtil::commentToEntity).collect(Collectors.toList());
+            comments = daoHandler.getCommentHandler().getSubComments(comments);
+            return comments.stream().map((Comment comment) -> StorageUtil.commentToDto(comment, projectStorage)).collect(Collectors.toList());
         }
-        Comment comment = new Comment();
-        comment.setId(commentDto.getId());
-        comment.setAuthor(commentDto.getAuthor());
-        comment.setComment(commentDto.getComment());
-        if (commentDto.getParentComment()!=null) comment.setParentComment(commentToEntity(commentDto.getParentComment()));
-        comment.setCreatedTime(commentDto.getCreatedTime());
-        comment.setTask(commentDto.getTask());
-        return comment;
+        return new ArrayList<CommentDto>();
     }
 
-    @Override
-    public CommentDto commentToDto(Comment comment) {
-        if(comment==null){
-            return null;
-        }
-        CommentDto commentDto = new CommentDto();
-        commentDto.setId(comment.getId());
-        commentDto.setAuthor(comment.getAuthor());
-        commentDto.setComment(comment.getComment());
-        if (comment.getParentComment()!=null) commentDto.setParentComment(commentToDto(comment.getParentComment()));
-        commentDto.setCreatedTime(comment.getCreatedTime());
-        commentDto.setTask(comment.getTask());
-        return commentDto;
-    }
-
-    @Override
-    public List<CommentDto> listCommentsToDtos(List<Comment> comments) {
-        return comments.stream()
-                .filter(Objects::nonNull)
-                .map(this::commentToDto)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<Comment> listCommentsToEntitys(List<CommentDto> commentDtos) {
-        return commentDtos.stream()
-                .filter(Objects::nonNull)
-                .map(this::commentToEntity)
-                .collect(Collectors.toList());
-    }
 }

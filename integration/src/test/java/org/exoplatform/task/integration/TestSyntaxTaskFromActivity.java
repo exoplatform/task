@@ -17,12 +17,9 @@
   
 package org.exoplatform.task.integration;
 
-import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.dto.TaskDto;
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Mock;
-
-import static org.mockito.Mockito.mock;
 
 public class TestSyntaxTaskFromActivity {
 
@@ -32,7 +29,7 @@ public class TestSyntaxTaskFromActivity {
 
     String html = "we need to ++download new documentation from cloud<br>" +
         "It helps you understand better what's happening";
-    Task taskInfo = processor.extractTaskInfo(html);
+    TaskDto taskInfo = processor.extractTaskInfo(html);
     Assert.assertEquals("download new documentation from cloud", taskInfo.getTitle());
     Assert.assertEquals("It helps you understand better what's happening", taskInfo.getDescription());
 

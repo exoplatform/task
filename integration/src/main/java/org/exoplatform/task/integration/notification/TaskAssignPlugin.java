@@ -19,6 +19,7 @@ package org.exoplatform.task.integration.notification;
 import org.exoplatform.commons.api.notification.NotificationContext;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.dto.TaskDto;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -38,12 +39,12 @@ public class TaskAssignPlugin extends AbstractNotificationPlugin {
 
   @Override
   public boolean isValid(NotificationContext ctx) {
-    Task task = ctx.value(NotificationUtils.TASK);
+    TaskDto task = ctx.value(NotificationUtils.TASK);
     return task.getAssignee() != null && !task.getAssignee().isEmpty();
   }
 
   @Override
-  protected Set<String> getReceiver(Task task, NotificationContext ctx) {
+  protected Set<String> getReceiver(TaskDto task, NotificationContext ctx) {
     Set<String> receivers = new HashSet<String>();
     if (task.getAssignee() != null) {
       receivers.add(task.getAssignee());

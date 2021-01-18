@@ -28,6 +28,8 @@ import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.portal.mop.SiteKey;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.dto.ProjectDto;
+import org.exoplatform.task.dto.TaskDto;
 import org.exoplatform.task.util.ProjectUtil;
 import org.exoplatform.task.util.TaskUtil;
 import org.exoplatform.web.WebAppController;
@@ -44,7 +46,7 @@ public abstract class AbstractNotificationPlugin extends BaseNotificationPlugin 
 
   @Override
   public NotificationInfo makeNotification(NotificationContext ctx) {
-    Task task = ctx.value(NotificationUtils.TASK);
+    TaskDto task = ctx.value(NotificationUtils.TASK);
     String notificationCreator = ctx.value(NotificationUtils.CREATOR);
     Set coworker = ctx.value(NotificationUtils.COWORKER);
     Set mentioned = ctx.value(NotificationUtils.MENTIONED);
@@ -52,7 +54,7 @@ public abstract class AbstractNotificationPlugin extends BaseNotificationPlugin 
     //
     String projectName = "";
     String projectId = "";
-    Project project = null;
+    ProjectDto project = null;
     if (task.getStatus() != null) {
       project = task.getStatus().getProject();
       projectName = project.getName();
@@ -99,11 +101,11 @@ public abstract class AbstractNotificationPlugin extends BaseNotificationPlugin 
     return container;
   }
 
-  private String buildProjectUrl(Project project, ExoContainer container, WebAppController controller) {
+  private String buildProjectUrl(ProjectDto project, ExoContainer container, WebAppController controller) {
     return CommonsUtils.getCurrentDomain() + ProjectUtil.buildProjectURL(project, CommonsUtils.getCurrentSite(), container, controller.getRouter());
   }
 
-  protected Set<String> getReceiver(Task task, NotificationContext ctx) {
+  protected Set<String> getReceiver(TaskDto task, NotificationContext ctx) {
     Set<String> receivers = new HashSet<String>();
     if (task.getAssignee() != null && !task.getAssignee().isEmpty()) {
       receivers.add(task.getAssignee());
@@ -123,7 +125,7 @@ public abstract class AbstractNotificationPlugin extends BaseNotificationPlugin 
     return receivers;
   }
   
-  private String buildTaskUrl(Task t, ExoContainer container, WebAppController controller) {
+  private String buildTaskUrl(TaskDto t, ExoContainer container, WebAppController controller) {
     return CommonsUtils.getCurrentDomain() + TaskUtil.buildTaskURL(t, CommonsUtils.getCurrentSite(), container, controller.getRouter());
   }
 }

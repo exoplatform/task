@@ -15,8 +15,9 @@ import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
 import org.exoplatform.social.core.manager.IdentityManager;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.legacy.service.TaskPayload;
-import org.exoplatform.task.legacy.service.TaskService;
+import org.exoplatform.task.dto.TaskDto;
+import org.exoplatform.task.service.TaskPayload;
+import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.util.TaskUtil;
 
 public class GamificationTaskUpdateListener extends Listener<TaskService, TaskPayload> {
@@ -50,8 +51,8 @@ public class GamificationTaskUpdateListener extends Listener<TaskService, TaskPa
 
     TaskPayload data = event.getData();
 
-    Task oldTask = data.before();
-    Task newTask = data.after();
+    TaskDto oldTask = data.before();
+    TaskDto newTask = data.after();
 
     // New Task has been created
     if (oldTask == null && newTask != null) {
@@ -65,7 +66,7 @@ public class GamificationTaskUpdateListener extends Listener<TaskService, TaskPa
 
   }
 
-  protected void createTask(Task task) {
+  protected void createTask(TaskDto task) {
 
     String actorUsername = ConversationState.getCurrent().getIdentity().getUserId();
 
@@ -76,7 +77,7 @@ public class GamificationTaskUpdateListener extends Listener<TaskService, TaskPa
 
   }
 
-  protected void updateTask(Task before, Task after) {
+  protected void updateTask(TaskDto before, TaskDto after) {
     RuleDTO ruleDto = null;
     String actorId = "";
     GamificationActionsHistory aHistory = null;

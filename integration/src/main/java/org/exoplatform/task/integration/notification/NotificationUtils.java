@@ -20,12 +20,14 @@ package org.exoplatform.task.integration.notification;
 import org.exoplatform.commons.api.notification.model.ArgumentLiteral;
 import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.dto.CommentDto;
+import org.exoplatform.task.dto.TaskDto;
 
 import java.util.Set;
 
 public class NotificationUtils {
-  public final static ArgumentLiteral<Task> TASK = new ArgumentLiteral<Task>(Task.class, "task");
-  public final static ArgumentLiteral<Comment> COMMENT = new ArgumentLiteral<Comment>(Comment.class, "comment");
+  public final static ArgumentLiteral<TaskDto> TASK = new ArgumentLiteral<TaskDto>(TaskDto.class, "task");
+  public final static ArgumentLiteral<CommentDto> COMMENT = new ArgumentLiteral<CommentDto>(CommentDto.class, "comment");
   public final static ArgumentLiteral<String> CREATOR = new ArgumentLiteral<String>(String.class, "creator");
   public static final ArgumentLiteral<Set> COWORKER = new ArgumentLiteral<Set>(Set.class, "coworker");
   public static final ArgumentLiteral<Set> WATCHER = new ArgumentLiteral<Set>(Set.class, "watcher");

@@ -17,16 +17,16 @@
 package org.exoplatform.task.service;
 
 import org.exoplatform.container.ExoContainer;
-import org.exoplatform.container.ExoContainerContext;
+
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.services.listener.ListenerService;
 import org.exoplatform.task.TestUtils;
 import org.exoplatform.task.dao.*;
 import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.dto.CommentDto;
+import org.exoplatform.task.dto.TaskDto;
 import org.exoplatform.task.dto.UserSettingDto;
 import org.exoplatform.task.exception.EntityNotFoundException;
-import org.exoplatform.task.legacy.service.UserService;
 import org.exoplatform.task.model.User;
 import org.exoplatform.task.service.impl.CommentServiceImpl;
 import org.exoplatform.task.service.impl.StatusServiceImpl;
@@ -36,6 +36,7 @@ import org.exoplatform.task.storage.StatusStorage;
 import org.exoplatform.task.storage.TaskStorage;
 import org.exoplatform.task.storage.impl.CommentStorageImpl;
 import org.exoplatform.task.storage.impl.TaskStorageImpl;
+import org.exoplatform.task.util.StorageUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -57,10 +58,9 @@ public class CommentServiceTest {
 
   CommentService          commentService;
 
-  StatusStorage           statusStorage;
+  ProjectStorage          projectStorage;
 
-  ProjectStorage projectStorage;
-
+  @Mock
   CommentStorage          commentStorage;
 
   TaskStorage             taskStorage;
@@ -88,16 +88,20 @@ public class CommentServiceTest {
   @Mock
   DAOHandler              daoHandler;
 
+  @Mock
+  StatusStorage           statusStorage;
+
   @Captor
   ArgumentCaptor<Comment> commentCaptor;
 
   @Before
-  public void setUp() {
+  public void setUp() throws EntityNotFoundException {
     // Make sure the container is started to prevent the ExoTransactional annotation
     // to fail
     PortalContainer.getInstance();
-    taskStorage = new TaskStorageImpl(daoHandler,userService);
-    commentStorage = new CommentStorageImpl(daoHandler);
+    PortalContainer.getInstance();
+    taskStorage = new TaskStorageImpl(daoHandler,userService,projectStorage);
+    commentStorage = new CommentStorageImpl(daoHandler,projectStorage);
     statusService = new StatusServiceImpl(daoHandler, statusStorage, projectStorage, listenerService);
     commentService = new CommentServiceImpl(taskStorage, commentStorage, daoHandler, listenerService);
     // Mock DAO handler to return Mocked DAO
@@ -108,7 +112,7 @@ public class CommentServiceTest {
 
     // Mock some DAO methods
     when(taskHandler.find(TestUtils.EXISTING_TASK_ID)).thenReturn(TestUtils.getDefaultTask());
-    when(statusHandler.find(TestUtils.EXISTING_STATUS_ID)).thenReturn(TestUtils.getDefaultStatus());
+    when(statusStorage.getStatus(TestUtils.EXISTING_STATUS_ID)).thenReturn(TestUtils.getDefaultStatusDto());
     when(commentHandler.find(TestUtils.EXISTING_COMMENT_ID)).thenReturn(TestUtils.getDefaultComment());
   }
 
@@ -120,7 +124,7 @@ public class CommentServiceTest {
   @Test public void testAddComment() throws EntityNotFoundException { Comment
           comment = TestUtils.getDefaultComment();
     when(daoHandler.getCommentHandler().create(any())).thenReturn(comment);
-    commentService.addComment(taskStorage.toDto(comment.getTask()),comment.
+    commentService.addComment(StorageUtil.taskToDto(comment.getTask(),projectStorage),comment.
             getAuthor(),comment.getComment());
     verify(commentHandler, times(1)).create(commentCaptor.capture());
     Comment result = commentCaptor.getValue();
@@ -147,19 +151,14 @@ public class CommentServiceTest {
 
   @Test public void testAddCommentsByTask() throws EntityNotFoundException {
     String username = "Tib"; String comment = "Bla bla bla bla bla";
-    CommentDto newComment = new CommentDto();
-    newComment.setTask(TestUtils.getDefaultTask());
-    newComment.setAuthor(username);
-    newComment.setComment(comment);
-    newComment.setCreatedTime(new Date());
-    when(daoHandler.getCommentHandler().create(any())).thenReturn(commentStorage.commentToEntity(newComment));
-    commentService.addComment(taskStorage.toDto(TestUtils.getDefaultTask()), username, comment);
+   CommentDto newComment = TestUtils.getDefaultCommentDto();
+    commentService.addComment(TestUtils.getDefaultTaskDto(), newComment.getAuthor(), newComment.getComment());
     commentService.getComments(TestUtils.EXISTING_TASK_ID,0,1);
     commentService.countComments(TestUtils.EXISTING_TASK_ID);
     verify(commentHandler, times(1)).create(commentCaptor.capture());
     assertEquals(TestUtils.EXISTING_TASK_ID, commentCaptor.getValue().getTask().getId());
     assertEquals(username, commentCaptor.getValue().getAuthor());
-    assertEquals(comment, commentCaptor.getValue().getComment());
+    assertEquals(newComment.getComment(), commentCaptor.getValue().getComment());
 
   }
 
@@ -168,25 +167,24 @@ public class CommentServiceTest {
     String authorSubComment = "Tib2";
     String subCommentContent = "Bla bla bla bla bla sub comment";
     CommentDto newComment = new CommentDto();
-    newComment.setTask(TestUtils.getDefaultTask());
+    newComment.setTask(TestUtils.getDefaultTaskDto());
     newComment.setAuthor(username);
     newComment.setComment(comment);
     newComment.setCreatedTime(new Date());
-    when(daoHandler.getCommentHandler().create(any())).thenReturn(commentStorage. commentToEntity(newComment));
     when(userService.loadUser(eq(username))).thenReturn(new User(username, null, null, null, null, null, null));
     when(userService.loadUser(eq(authorSubComment))).thenReturn(new User(authorSubComment, null, null, null, null, null, null));
     UserSettingDto userSettingDto= TestUtils.getDefaultUserSettingDto();
     assertEquals ("user",userSettingDto.getUsername());
     assertEquals (true,userSettingDto.isShowHiddenLabel());
     assertEquals (true,userSettingDto.isShowHiddenProject());
-    commentService.addComment(taskStorage.toDto(TestUtils.getDefaultTask()), username, comment);
+    commentService.addComment(StorageUtil.taskToDto(TestUtils.getDefaultTask(),projectStorage), username, comment);
     verify(commentHandler, times(1)).create(commentCaptor.capture());
     Comment parentComment = commentCaptor.getValue();
     assertEquals(TestUtils.EXISTING_TASK_ID, parentComment.getTask().getId());
     assertEquals(username, parentComment.getAuthor());
     assertEquals(comment, parentComment.getComment());
     long parentCommentId = parentComment.getId();
-    commentService.addComment(taskStorage.toDto(TestUtils.getDefaultTask()), parentCommentId ,authorSubComment, subCommentContent);
+    commentService.addComment(StorageUtil.taskToDto(TestUtils.getDefaultTask(),projectStorage), parentCommentId ,authorSubComment, subCommentContent);
     verify(commentHandler, times(2)).create(commentCaptor.capture());
     Comment subComment = commentCaptor.getValue(); assertEquals(TestUtils.EXISTING_TASK_ID, subComment.getTask().getId());
     assertEquals(authorSubComment, subComment.getAuthor());

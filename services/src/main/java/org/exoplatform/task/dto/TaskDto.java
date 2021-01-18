@@ -14,7 +14,7 @@ public class TaskDto  implements Serializable {
     private Priority priority;
     private String      context;
     private String      assignee;
-    private Status status;
+    private StatusDto status;
     private int         rank;
     private boolean completed;
     private Set<String> coworker;

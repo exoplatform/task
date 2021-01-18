@@ -27,7 +27,10 @@ import javax.ws.rs.core.MediaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
-import org.exoplatform.task.legacy.service.*;
+import org.exoplatform.task.dto.ProjectDto;
+import org.exoplatform.task.dto.StatusDto;
+import org.exoplatform.task.dto.TaskDto;
+import org.exoplatform.task.service.*;
 import org.json.simple.JSONObject;
 
 import org.exoplatform.commons.api.ui.*;
@@ -43,7 +46,6 @@ import org.exoplatform.task.dao.ProjectQuery;
 import org.exoplatform.task.domain.*;
 import org.exoplatform.task.integration.ActivityTaskProcessor;
 import org.exoplatform.task.model.User;
-import org.exoplatform.task.legacy.service.*;
 import org.exoplatform.task.util.*;
 
 @SuppressWarnings("unchecked")
@@ -66,7 +68,7 @@ public class ChatPopupPlugin extends BaseUIPlugin {
 
   private SpaceService        spaceService;
 
-  private TaskService         taskService;
+  private TaskService taskService;
 
   private UserService userService;
 
@@ -109,7 +111,7 @@ public class ChatPopupPlugin extends BaseUIPlugin {
     String taskInput = getParam("text", params);
     String dueDateInput = getParam("dueDate", params);
 
-    Status status = getStatus(params);
+    StatusDto status = getStatus(params);
         
     if (CREATE_TASK_ACTION.equals(actionName)) {
       String username = getParam("username", params);
@@ -128,7 +130,7 @@ public class ChatPopupPlugin extends BaseUIPlugin {
       ObjectMapper mapper = new ObjectMapper();
       byte[] result = null;
       for (String name : username.split(",")) {
-        Task task = new Task();
+        TaskDto task = new TaskDto();
         task.setAssignee(name);
         task.setTitle(taskInput);
         task.setDueDate(dueDate);
@@ -146,7 +148,7 @@ public class ChatPopupPlugin extends BaseUIPlugin {
       return new Response(result, MediaType.APPLICATION_JSON);
     } else if (CREATE_TASK_INLINE_ACTION.equals(actionName)) {
       ParserContext parserCtx = new ParserContext(userService.getUserTimezone(creator));
-      Task task = parseText(taskInput, parserCtx);
+      TaskDto task = parseText(taskInput, parserCtx);
       if (task != null) {
         task.setCreatedBy(creator);
         task.setCreatedTime(new Date());
@@ -161,7 +163,7 @@ public class ChatPopupPlugin extends BaseUIPlugin {
     }
   }
 
-  private JSONObject buildJSON(Task task) {
+  private JSONObject buildJSON(TaskDto task) {
     JSONObject json = new JSONObject();
     json.put("title", task.getTitle());
     json.put("url", TaskUtil.buildTaskURL(task));
@@ -178,14 +180,14 @@ public class ChatPopupPlugin extends BaseUIPlugin {
     return json;
   }
 
-  private Status getStatus(Map<String, List<String>> params) {
+  private StatusDto getStatus(Map<String, List<String>> params) {
     String creator = ConversationState.getCurrent().getIdentity().getUserId();
     String roomName = getParam("roomName", params);
     String isSpace = getParam("isSpace", params);
     String isTeam = getParam("isTeam", params);
     String participants = getParam("participants", params);
 
-    Project project = null;
+    ProjectDto project = null;
     
     // find default project of space
     if ("true".equals(isSpace)) {
@@ -194,7 +196,7 @@ public class ChatPopupPlugin extends BaseUIPlugin {
       if (StringUtils.isNotEmpty(roomName)) {
         Space space = spaceService.getSpaceByPrettyName(roomName);
         if (space != null) {
-          List<Project> projects = ProjectUtil.getProjectTree(space.getGroupId(), projectService);
+          List<ProjectDto> projects = ProjectUtil.getProjectTree(space.getGroupId(), projectService);
           if (projects != null && projects.size() > 0) {
             project = projects.get(0);
           } else {
@@ -209,15 +211,15 @@ public class ChatPopupPlugin extends BaseUIPlugin {
       
       ProjectQuery query = new ProjectQuery();
       query.setKeyword(roomName);
-      ListAccess<Project> projects = projectService.findProjects(query);
+      List<ProjectDto> projects = projectService.findProjects(query,0, -1);
       try {
-        if (projects.getSize() > 0) {
-          project = projects.load(0, 1)[0];
+        if (projects.size() > 0) {
+          project = projects.get(0);
         } else {
           Set<String> mans = new HashSet<String>(Arrays.asList(creator));
           Set<String> pars = new HashSet<String>(Arrays.asList(participants.split(",")));
           
-          project = ProjectUtil.newProjectInstance(roomName, "", mans, pars);
+          project = ProjectUtil.newProjectInstanceDto(roomName, "", mans, pars);
           projectService.createProject(project);
           statusService.createInitialStatuses(project);
         }
@@ -245,7 +247,7 @@ public class ChatPopupPlugin extends BaseUIPlugin {
     return pluginType;
   }
 
-  private Task parseText(String txt, ParserContext context) {
+  private TaskDto parseText(String txt, ParserContext context) {
     if (txt != null && !txt.isEmpty()) {
       int idx = txt.indexOf(PREFIX);
       //
@@ -264,7 +266,7 @@ public class ChatPopupPlugin extends BaseUIPlugin {
           title = text.trim();
           description = "";
         }
-        Task task = taskParser.parse(title, context);
+        TaskDto task = taskParser.parse(title, context);
         //we need to remove malicious code here in case user inject request using curl TA-387
         task.setDescription(StringUtil.encodeInjectedHtmlTag(description));
         return task;

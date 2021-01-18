@@ -39,6 +39,7 @@ import org.exoplatform.task.service.StatusService;
 import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.storage.ProjectStorage;
 import org.exoplatform.task.storage.StatusStorage;
+import org.exoplatform.task.util.StorageUtil;
 
 @Singleton
 public class ProjectServiceImpl implements ProjectService {
@@ -50,8 +51,6 @@ public class ProjectServiceImpl implements ProjectService {
   @Inject
   private ProjectStorage     projectStorage;
 
-  @Inject
-  private StatusStorage      statusStorage;
 
   @Inject
   StatusService              statusService;
@@ -72,13 +71,11 @@ public class ProjectServiceImpl implements ProjectService {
                             TaskService taskService,
                             DAOHandler daoHandler,
                             ProjectStorage projectStorage,
-                            StatusStorage statusStorage,
                             ListenerService listenerService) {
     this.daoHandler = daoHandler;
     this.statusService = statusService;
     this.taskService = taskService;
     this.projectStorage = projectStorage;
-    this.statusStorage = statusStorage;
     this.listenerService = listenerService;
   }
 
@@ -94,7 +91,7 @@ public class ProjectServiceImpl implements ProjectService {
   public ProjectDto createProject(ProjectDto project, long parentId) throws EntityNotFoundException {
     ProjectDto parentProject = projectStorage.getProject(parentId);
     if (parentProject != null) {
-      project.setParent(projectStorage.projectToEntity(parentProject));
+      project.setParent(parentProject);
       // If parent, list of members/participators of parents override the list of
       // members/participators in parameter
       project.setParticipator(new HashSet<String>(parentProject.getParticipator()));
@@ -160,11 +157,11 @@ public class ProjectServiceImpl implements ProjectService {
         StatusDto s = statusService.createStatus(newProject, st.getName());
         if (cloneTask) {
           taskQuery = new TaskQuery();
-          taskQuery.setStatus(statusStorage.statusToEntity(st));
+          taskQuery.setStatus(StorageUtil.statusToEntity(st));
           for (TaskDto t : taskService.findTasks(taskQuery, 0, -1)) {
             TaskDto newTask = t.clone();
             newTask.setId(0);
-            newTask.setStatus(statusStorage.statusToEntity(s));
+            newTask.setStatus(s);
             newTask.setCoworker(taskService.getCoworker(t.getId()));
             newTask.setTitle(PREFIX_CLONE + newTask.getTitle());
             taskService.createTask(newTask);

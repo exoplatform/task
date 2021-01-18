@@ -138,11 +138,4 @@ public interface TaskStorage {
 
     List<Object[]> countTaskStatusByProject(long projectId);
 
-    ChangeLog changeLogToEntity(ChangeLogEntry changeLogEntry);
-
-    ChangeLogEntry changeLogToDto(ChangeLog changeLog);
-
-    Task toEntity(TaskDto taskDto);
-
-    TaskDto toDto(Task taskEntity);
 }
