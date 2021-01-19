@@ -61,6 +61,7 @@
       drag(val) {
         if(!val&&this.task&&this.newStatus&&this.task.status.id !== this.newStatus){
              this.$emit('updateTaskStatus', this.task,this.newStatus);
+             document.getElementsByClassName("projectTaskItem").forEach(element => element.style.backgroundColor= "#FFFFFF");
         }},
    },
     methods: {
@@ -69,6 +70,8 @@
       },
       checkMove(evt){
         if(evt){
+          document.getElementsByClassName("projectTaskItem").forEach(element => element.style.backgroundColor= "#FFFFFF");
+          evt.to.parentElement.parentElement.style.backgroundColor="#80808024"
           this.task = evt.draggedContext.element.task
           this.newStatus = evt.to.parentElement.id;
         }
