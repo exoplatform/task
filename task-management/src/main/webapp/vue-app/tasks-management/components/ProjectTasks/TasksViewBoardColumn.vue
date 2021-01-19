@@ -71,7 +71,7 @@
       checkMove(evt){
         if(evt){
           document.getElementsByClassName("taskBoardColumn").forEach(element => element.style.backgroundColor= "#FFFFFF");
-          evt.to.parentElement.getElementsByClassName("taskBoardColumn").forEach(element => element.style.backgroundColor= "#80808024");
+          evt.to.parentElement.getElementsByClassName("taskBoardColumn").forEach(element => element.style.backgroundColor= "#e2e9ef");
           this.task = evt.draggedContext.element.task
           this.newStatus = evt.to.parentElement.id;
         }
@@ -126,6 +126,6 @@
     opacity: 0.5;
     background: #F7FAFC;
     border: 1px solid #578dc9;
-    animation: beginDrag .8s ease forwards;
+    animation: beginDrag 1s ease forwards;
   }
 </style>
