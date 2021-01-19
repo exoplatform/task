@@ -54,7 +54,7 @@
     return {
       drag: false,
       task:null,
-      newStatus:null
+      newStatus:null,
     };
   },
     watch: {
