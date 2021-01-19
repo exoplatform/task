@@ -20,7 +20,7 @@
           v-model="confirmDeleteComment"
           width="500">
           <template v-slot:activator="{ on }" >
-            <v-btn
+            <v-btn 
               v-show="showDeleteButtom"
               :title="$t('label.remove')"
               :size="32"
@@ -48,11 +48,11 @@
         @click="openEditor()">{{ $t('comment.message.Reply') }}
       </v-btn>
     </div>
-    <div class="py-0 TaskSubComments">
+    <div class="py-0 pl-10 TaskSubComments">
       <div
         v-for="(item, i) in comment.subComments"
         :key="i"
-        class="TaskSubCommentItem pl-10 pr-0 pb-2">
+        class="TaskSubCommentItem pr-0 pb-2">
         <task-comments
           :comment="item"
           :task="task"
@@ -61,8 +61,8 @@
           @openSubEditor="openEditor()"/>
       </div>
       <div
-        v-focus
-        v-if="showEditor && !sub"
+        v-focus 
+        v-if="showEditor && !sub" 
         class="subComment subCommentEditor ml-10 d-flex align-start">
         <exo-user-avatar
           :username="currentUserName"
@@ -73,16 +73,15 @@
           <task-comment-editor
             ref="subCommentEditor"
             v-model="editorData"
-            :max-length="MESSAGE_MAX_LENGTH"
-            :placeholder="$t('task.placeholder').replace('{0}', MESSAGE_MAX_LENGTH)"
+            :placeholder="commentPlaceholder"
             class="subComment subCommentEditor"
             @subShowEditor="openEditor"/>
           <v-btn
-            :disabled="postDisabled"
+            :disabled="disabledComment"
             depressed
             small
-            type="button" 
-            class="btn btn-primary ignore-vuetify-classes btnStyle mt-1 mb-2 commentBtn"
+            dark
+            class="commentBtn mt-1 mb-2"
             @click="addTaskSubComment(comment)">{{ $t('comment.label.comment') }}
           </v-btn>
         </div>
@@ -148,8 +147,7 @@
                 confirmDeleteComment: false,
                 commentPlaceholder: this.$t('comment.message.addYourComment'),
                 showEditor : false,
-                currentUserName: eXo.env.portal.userName,
-                MESSAGE_MAX_LENGTH:255,
+                currentUserName: eXo.env.portal.userName
             }
         },
         computed: {
@@ -162,17 +160,6 @@
             showDeleteButtom() {
                 return this.hover && eXo.env.portal.userName === this.comment.author.username;
             },
-           postDisabled: function () {
-           if (this.disabledComment) {
-             return true
-           } else if (this.editorData !== null && this.editorData!=='') {
-           let pureText = this.editorData ? this.editorData.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, '').trim() : '';
-           const div = document.createElement('div');
-           div.innerHTML = pureText;
-           pureText = div.textContent || div.innerText || '';
-           return pureText.length > this.MESSAGE_MAX_LENGTH;
-          }else {return true}
-        },
         },
         watch: {
             editorData(val) {
