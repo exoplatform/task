@@ -73,14 +73,14 @@
           <task-comment-editor
             ref="subCommentEditor"
             v-model="editorData"
-            :placeholder="commentPlaceholder"
+            :max-length="MESSAGE_MAX_LENGTH"
+            :placeholder="$t('task.placeholder').replace('{0}', MESSAGE_MAX_LENGTH)"
             class="subComment subCommentEditor"
             @subShowEditor="openEditor"/>
           <v-btn
-            :disabled="disabledComment"
+            :disabled="postDisabled"
             depressed
             small
-            dark
             class="commentBtn mt-1 mb-2"
             @click="addTaskSubComment(comment)">{{ $t('comment.label.comment') }}
           </v-btn>
@@ -147,7 +147,8 @@
                 confirmDeleteComment: false,
                 commentPlaceholder: this.$t('comment.message.addYourComment'),
                 showEditor : false,
-                currentUserName: eXo.env.portal.userName
+                currentUserName: eXo.env.portal.userName,
+                MESSAGE_MAX_LENGTH:255,
             }
         },
         computed: {
@@ -160,6 +161,17 @@
             showDeleteButtom() {
                 return this.hover && eXo.env.portal.userName === this.comment.author.username;
             },
+           postDisabled: function () {
+           if (this.disabledComment) {
+             return true
+           } else if (this.editorData !== null) {
+           let pureText = this.editorData ? this.editorData.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, '').trim() : '';
+           const div = document.createElement('div');
+           div.innerHTML = pureText;
+           pureText = div.textContent || div.innerText || '';
+           return pureText.length > this.MESSAGE_MAX_LENGTH;
+          }
+        },
         },
         watch: {
             editorData(val) {
