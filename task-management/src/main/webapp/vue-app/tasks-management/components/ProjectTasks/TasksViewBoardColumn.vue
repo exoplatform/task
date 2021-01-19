@@ -61,6 +61,7 @@
       drag(val) {
         if(!val&&this.task&&this.newStatus&&this.task.status.id !== this.newStatus){
              this.$emit('updateTaskStatus', this.task,this.newStatus);
+             document.getElementsByClassName("taskBoardColumn").forEach(element => element.style.backgroundColor= "#FFFFFF");
         }},
    },
     methods: {
@@ -69,6 +70,8 @@
       },
       checkMove(evt){
         if(evt){
+          document.getElementsByClassName("taskBoardColumn").forEach(element => element.style.backgroundColor= "#FFFFFF");
+          evt.to.parentElement.getElementsByClassName("taskBoardColumn").forEach(element => element.style.backgroundColor= "#e2e9ef");
           this.task = evt.draggedContext.element.task
           this.newStatus = evt.to.parentElement.id;
         }
@@ -123,6 +126,6 @@
     opacity: 0.5;
     background: #F7FAFC;
     border: 1px solid #578dc9;
-    animation: beginDrag .8s ease forwards;
+    animation: beginDrag 1s ease forwards;
   }
 </style>
