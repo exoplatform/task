@@ -8,6 +8,14 @@
       cols="30" 
       rows="10" 
       class="textarea"></textarea>
+    <div
+      v-show="editorReady"
+      :class="charsCount > maxLength ? 'tooManyChars' : ''"
+      class="activityCharsCount"
+      style="">
+      {{ charsCount }}{{ maxLength > -1 ? ' / ' + maxLength : '' }}
+      <i class="uiIconMessageLength"></i>
+    </div>
   </div>
 </template>
 
@@ -28,11 +36,17 @@
         type: String,
         default: ''
       },
+      maxLength: {
+        type: Number,
+        default: -1
+      }
     },
     data() {
       return {
         inputVal: this.value,
         id: `commentContent${parseInt(Math.random() * 10000).toString()}`,
+        charsCount: 0,
+        editorReady: false,
       };
     },
     watch: {
@@ -82,13 +96,23 @@
 
           autoGrow_onStartup: true,
           on: {
+            instanceReady: function() {
+              self.editorReady = true;
+            },
             change: function(evt) {
               const newData = evt.editor.getData();
 
               self.inputVal = newData;
+
+              let pureText = newData ? newData.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, '').trim() : '';
+              const div = document.createElement('div');
+              div.innerHTML = pureText;
+              pureText = div.textContent || div.innerText || '';
+              self.charsCount = pureText.length;
             },
             destroy: function () {
               self.inputVal = '';
+              self.charsCount = 0;
             },
           },
           suggester: {
