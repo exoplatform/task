@@ -1,5 +1,5 @@
 <template>
-  <v-app id="taskCardItem" class="py-3">
+  <v-app id="taskCardItem" class="pt-3">
     <v-card
       :class="[getTaskPriorityColor(task.task.priority)]"
       class="taskCard taskViewCard pa-3"

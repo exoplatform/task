@@ -3,7 +3,7 @@
     <v-toolbar
       id="TasksListToolbar"
       flat
-      class="tasksToolbar pb-3">
+      class="tasksToolbar">
       <v-toolbar-title>
         <v-btn
           class="btn px-2 btn-primary addNewProjectButton"
@@ -34,7 +34,8 @@
           v-model="keyword"
           :placeholder=" $t('label.filterTask') "
           prepend-inner-icon="fa-filter"
-          class="inputTasksFilter pa-0 mr-3 my-auto"/>
+          class="inputTasksFilter pa-0 mr-3 my-auto"
+          clearable/>
       </v-scale-transition>
       <v-scale-transition>
         <select

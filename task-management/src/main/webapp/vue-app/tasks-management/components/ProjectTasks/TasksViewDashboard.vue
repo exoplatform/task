@@ -1,5 +1,5 @@
 <template>
-  <v-app :id="'projectTask-'+project.id" class="projectTasksDashboard">
+  <v-app :id="'projectTask-'+project.id" class="projectTasksDashboard px-4">
     <exo-confirm-dialog
       ref="deleteConfirmDialog"
       :message="deleteConfirmMessage"
@@ -7,7 +7,7 @@
       :ok-label="$t('label.ok')"
       :cancel-label="$t('popup.cancel')"
       @ok="deleteConfirm()" />
-    <div class="taskViewBreadcrumb pa-4">
+    <div class="taskViewBreadcrumb px-0 pt-4 pb-5">
       <a
         class="text-color"
         @click="hideProjectDetails()">

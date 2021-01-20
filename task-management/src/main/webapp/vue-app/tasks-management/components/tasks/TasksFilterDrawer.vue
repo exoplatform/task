@@ -11,7 +11,7 @@
       <div class="VuetifyApp">
         <template>
           <v-card class="taskFilter">
-            <v-toolbar>
+            <v-toolbar dense>
               <v-tabs
                 v-model="tab">
                 <v-tab class="text-capitalize">{{ $t('label.filter.groupandsort') }}</v-tab>
