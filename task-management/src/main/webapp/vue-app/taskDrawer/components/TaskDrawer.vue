@@ -161,8 +161,7 @@
                       :disabled="postDisabled"
                       depressed
                       small
-                      type="button" 
-                      class="btn btn-primary ignore-vuetify-classes btnStyle mt-1 mb-2 commentBtn"
+                      class="mt-1 mb-2 commentBtn"
                       @click="addTaskComment()">{{ $t('comment.label.comment') }}</v-btn>
                   </div>
                 </div>
@@ -272,13 +271,13 @@
         if(this.disabledComment){
           return true
         }
-        else if(this.editorData !== null && this.editorData!==''){
+        else if(this.editorData !== null){
           let pureText = this.editorData ? this.editorData.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, '').trim() : '';
           const div = document.createElement('div');
           div.innerHTML = pureText;
           pureText = div.textContent || div.innerText || '';
           return pureText.length> this.MESSAGE_MAX_LENGTH ;
-        }else {return true}
+        }
       },
     },
     watch: {
