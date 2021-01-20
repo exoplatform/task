@@ -20,7 +20,7 @@
           v-model="confirmDeleteComment"
           width="500">
           <template v-slot:activator="{ on }" >
-            <v-btn 
+            <v-btn
               v-show="showDeleteButtom"
               :title="$t('label.remove')"
               :size="32"
@@ -48,7 +48,7 @@
         @click="openEditor()">{{ $t('comment.message.Reply') }}
       </v-btn>
     </div>
-    <div class="py-0 pl-10 TaskSubComments">
+    <div class="py-0 TaskSubComments">
       <div
         v-for="(item, i) in comment.subComments"
         :key="i"
@@ -61,8 +61,8 @@
           @openSubEditor="openEditor()"/>
       </div>
       <div
-        v-focus 
-        v-if="showEditor && !sub" 
+        v-focus
+        v-if="showEditor && !sub"
         class="subComment subCommentEditor ml-10 d-flex align-start">
         <exo-user-avatar
           :username="currentUserName"
@@ -81,7 +81,8 @@
             :disabled="postDisabled"
             depressed
             small
-            class="commentBtn mt-1 mb-2"
+            type="button" 
+            class="btn btn-primary ignore-vuetify-classes btnStyle mt-1 mb-2 commentBtn"
             @click="addTaskSubComment(comment)">{{ $t('comment.label.comment') }}
           </v-btn>
         </div>
@@ -164,13 +165,13 @@
            postDisabled: function () {
            if (this.disabledComment) {
              return true
-           } else if (this.editorData !== null) {
+           } else if (this.editorData !== null && this.editorData!=='') {
            let pureText = this.editorData ? this.editorData.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, '').trim() : '';
            const div = document.createElement('div');
            div.innerHTML = pureText;
            pureText = div.textContent || div.innerText || '';
            return pureText.length > this.MESSAGE_MAX_LENGTH;
-          }
+          }else {return true}
         },
         },
         watch: {
