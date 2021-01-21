@@ -52,7 +52,7 @@
       <div
         v-for="(item, i) in comment.subComments"
         :key="i"
-        class="TaskSubCommentItem pr-0 pb-2">
+        class="TaskSubCommentItem pl-10 pr-0 pb-2">
         <task-comments
           :comment="item"
           :task="task"
