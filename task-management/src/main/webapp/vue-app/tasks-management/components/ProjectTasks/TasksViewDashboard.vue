@@ -28,7 +28,6 @@
       @reset-filter-task-dashboard="resetFiltertaskDashboard"/>
     <div v-if="filterProjectActive">
       <div v-for="(project,i) in groupName.projectName" :key="project.name">
-
         <div
           v-if=" project.value && project.value.displayName && project.name!==''"
           class="d-flex align-center assigneeFilter pointer"
@@ -126,6 +125,7 @@
           :project="project" 
           :status-list="statusList"
           :tasks-list="tasksList"
+          :filter-task-completed="filterAsCompleted"
           @update-status="updateStatus"
           @create-status="createStatus"
           @delete-status="deleteStatus"/>
@@ -184,7 +184,8 @@
         tasksList: [],
         groupName:null,
         filterProjectActive:false,
-        status:null
+        status:null,
+        filterAsCompleted: false,
       }
     },
     watch:{
@@ -240,6 +241,8 @@
         this.loadingTasks = true;
         const tasks=e.tasks;
         tasks.showCompleteTasks=e.showCompleteTasks;
+        this.filterAsCompleted = e.showCompleteTasks;
+        console.warn('filter tasks',e.showCompleteTasks);
         if (tasks.groupBy==='completed'){
           tasks.showCompleteTasks=true;
         }
