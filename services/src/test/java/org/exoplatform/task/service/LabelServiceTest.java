@@ -126,7 +126,7 @@ public class LabelServiceTest {
         LabelDto label = TestUtils.getDefaultLabel();
         when(daoHandler.getLabelHandler().create(any())).thenReturn(StorageUtil.labelToEntity(label));
         labelService.createLabel(label);
-        verify(labelHandler, times(2)).create(labelCaptor.capture());
+        verify(labelHandler, times(1)).create(labelCaptor.capture());
         Label result = labelCaptor.getValue();
         assertEquals("TODO", result.getName());
         assertEquals("label", result.getUsername());
