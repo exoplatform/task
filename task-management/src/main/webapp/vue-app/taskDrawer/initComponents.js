@@ -10,6 +10,7 @@ import TaskPriority from './components/TaskDrawerComponents/TaskPriority.vue';
 import TaskStatus from "./components/TaskDrawerComponents/TasksStatus.vue";
 import TaskFormDatePickers from "./components/TaskDrawerComponents/TaskFormDatePickers.vue";
 import TaskCommentsDrawer from "./components/TaskDrawerComponents/TaskCommentsDrawer.vue";
+import TaskLastComment from "./components/TaskDrawerComponents/TaskLastComment.vue"
 
 const components = {
     'task-drawer': TaskDrawer,
@@ -20,6 +21,7 @@ const components = {
     'task-description-editor': TaskDescriptionEditor,
     'log-details': LogDetails,
     'task-comments': TaskComments,
+    'task-last-comment': TaskLastComment,
     'task-priority' : TaskPriority,
     'task-status' : TaskStatus,
     'task-form-date-pickers': TaskFormDatePickers,
