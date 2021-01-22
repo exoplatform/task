@@ -17,14 +17,10 @@
           <a
             ref="tooltip"
             :class="getTitleTaskClass()"
+            :title="task.task.title"
             class="taskCardViewTitle"
             @click="openTaskDrawer()">
-            <ellipsis
-              v-if="task.task.title "
-              :title="task.task.title "
-              :data="task.task.title "
-              :line-clamp="2"
-              end-char=".."/>
+            <span class="taskTitleEllipsis">{{ task.task.title }}</span>
           </a>
         </div>
         <div class="taskId" @click="openTaskDrawer()">
