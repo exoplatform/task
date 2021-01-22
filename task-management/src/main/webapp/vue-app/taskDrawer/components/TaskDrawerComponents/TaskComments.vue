@@ -138,7 +138,7 @@
           isOpen:{
             type: Boolean,
             default: false
-          }
+          },
         },
         data() {
             return {
