@@ -129,8 +129,12 @@
             <v-tab class="text-capitalize">{{ $t('label.comments') }}</v-tab>
             <v-tab class="text-capitalize">{{ $t('label.changes') }}</v-tab>
             <v-tab-item class="pt-5 taskComments">
+              <div class="taskCommentNumber">
+                <span class="lastCommentLabel">{{ $t('comment.message.lastComment') }}</span>
+                <span class="ViewAllCommentLabelLabel" @click="$root.$emit('displayTaskComment')">{{ $t('comment.message.viewAllComment') }} ({{ comments.length }})</span>
+              </div>
               <div>
-                <div
+                <!-- <div
                   v-for="(item, i) in comments"
                   :key="i"
                   class="pr-0 pl-0 TaskCommentItem">
@@ -142,8 +146,15 @@
                     :close-editor="subEditorIsOpen"
                     @isOpen="OnCloseAllEditor()"
                     @showSubEditor="OnUpdateEditorStatus"/>
+                </div>-->
+                <div
+                  class="pr-0 pl-0 TaskCommentItem">
+                  <task-comments
+                    :task="task"
+                    :comment="comments[comments.length-1]"
+                    :comments="comments"/>
                 </div>
-                <div v-if="showEditor" class="comment commentEditor d-flex align-start">
+                <!--<div v-if="showEditor" class="comment commentEditor d-flex align-start">
                   <exo-user-avatar
                     :username="currentUserName"
                     :avatar-url="currentUserAvatar"
@@ -165,11 +176,11 @@
                       class="btn btn-primary ignore-vuetify-classes btnStyle mt-1 mb-2 commentBtn"
                       @click="addTaskComment()">{{ $t('comment.label.comment') }}</v-btn>
                   </div>
-                </div>
-                <a
+                </div>-->
+                <!-- <a
                   v-else
                   class="pl-4"
-                  @click="openEditor">{{ $t('comment.label.comment') }}</a>
+                  @click="openEditor">{{ $t('comment.label.comment') }}</a>-->
               </div>
             </v-tab-item>
             <v-tab-item class="pt-5 taskChanges">
@@ -202,6 +213,11 @@
         </div>
       </template>
     </exo-drawer>
+    <task-comments-drawer
+      :task="task"
+      :comments="comments"
+      :show-editor="showEditor"
+      :sub-editor-is-open="subEditorIsOpen"/>
   </div>
 
 </template>
@@ -535,6 +551,7 @@
         this.showEditor=false;
         this.task={};
         document.dispatchEvent(new CustomEvent('drawerClosed'));
+        this.$root.$emit('hideTaskComment');
       },
       deleteTask() {
         this.deleteConfirmMessage = `${this.$t('popup.msg.deleteTask')} : <strong>${this.task.title}</strong>? `;

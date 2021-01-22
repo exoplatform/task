@@ -9,6 +9,7 @@ import TaskComments from './components/TaskDrawerComponents/TaskComments.vue';
 import TaskPriority from './components/TaskDrawerComponents/TaskPriority.vue';
 import TaskStatus from "./components/TaskDrawerComponents/TasksStatus.vue";
 import TaskFormDatePickers from "./components/TaskDrawerComponents/TaskFormDatePickers.vue";
+import TaskCommentsDrawer from "./components/TaskDrawerComponents/TaskCommentsDrawer.vue";
 
 const components = {
     'task-drawer': TaskDrawer,
@@ -21,7 +22,8 @@ const components = {
     'task-comments': TaskComments,
     'task-priority' : TaskPriority,
     'task-status' : TaskStatus,
-    'task-form-date-pickers': TaskFormDatePickers
+    'task-form-date-pickers': TaskFormDatePickers,
+    'task-comments-drawer': TaskCommentsDrawer,
 };
 
 for (const key in components) {
