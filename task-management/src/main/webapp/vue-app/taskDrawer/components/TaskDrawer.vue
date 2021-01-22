@@ -161,7 +161,7 @@
                       :disabled="postDisabled"
                       depressed
                       small
-                      type="button" 
+                      type="button"
                       class="btn btn-primary ignore-vuetify-classes btnStyle mt-1 mb-2 commentBtn"
                       @click="addTaskComment()">{{ $t('comment.label.comment') }}</v-btn>
                   </div>
