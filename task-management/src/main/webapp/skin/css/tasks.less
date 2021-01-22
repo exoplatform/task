@@ -2171,6 +2171,28 @@
   }
   .taskCommentsAndChanges {
     .taskComments {
+      .comment{
+        position: relative;
+      }
+      .tooManyChars {
+        color: #bc4343!important;
+      }
+      .tooManyChars .uiIconMessageLength {
+        color: #bc4343!important;
+      }
+      .activityCharsCount{
+        position: absolute;
+        bottom: 8px;
+        right: 10px;
+        color: #adadad;
+        .uiIconMessageLength {
+          font-size: 14px;
+          color: #2eb58c;
+          &:before {
+            content: "\e910";
+          }
+        }
+      }
       .commentItem {
         width: 100%;
         .commentHeader {
@@ -2200,8 +2222,17 @@
           }
         }
       }
+      .TaskSubComments{
+        margin-left: -20px!important;
+      }
       .editorContent {
         width: 100%;
+        .subComment.subCommentEditor{
+          position: relative;
+          .activityCharsCount {
+            right: 5px;
+          }
+        }
         .cke_bottom.cke_reset_all {
           background-color: transparent;
           height: 30px!important;
@@ -2218,6 +2249,7 @@
       background-color: @primaryColor!important;
       letter-spacing: 0!important;
       font-size: 14px!important;
+      text-transform: capitalize;
     }
   }
   .drawerContent {

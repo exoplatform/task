@@ -153,15 +153,16 @@
                     <task-comment-editor
                       ref="commentEditor"
                       v-model="editorData"
-                      :placeholder="commentPlaceholder"
+                      :max-length="MESSAGE_MAX_LENGTH"
+                      :placeholder="$t('task.placeholder').replace('{0}', MESSAGE_MAX_LENGTH)"
                       :reset="reset"
                       class="comment"/>
                     <v-btn
-                      :disabled="disabledComment"
+                      :disabled="postDisabled"
                       depressed
                       small
-                      dark
-                      class="mt-1 mb-2 commentBtn"
+                      type="button" 
+                      class="btn btn-primary ignore-vuetify-classes btnStyle mt-1 mb-2 commentBtn"
                       @click="addTaskComment()">{{ $t('comment.label.comment') }}</v-btn>
                   </div>
                 </div>
@@ -245,6 +246,7 @@
         isParticipator :false,
         datePickerTop: true,
         currentUserName: eXo.env.portal.userName,
+        MESSAGE_MAX_LENGTH:255,
       }
     },
     computed: {
@@ -265,6 +267,18 @@
       },
       disableSaveButton() {
         return this.saving || !this.taskTitleValid;
+      },
+      postDisabled: function() {
+        if(this.disabledComment){
+          return true
+        }
+        else if(this.editorData !== null && this.editorData!==''){
+          let pureText = this.editorData ? this.editorData.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, '').trim() : '';
+          const div = document.createElement('div');
+          div.innerHTML = pureText;
+          pureText = div.textContent || div.innerText || '';
+          return pureText.length> this.MESSAGE_MAX_LENGTH ;
+        }else {return true}
       },
     },
     watch: {

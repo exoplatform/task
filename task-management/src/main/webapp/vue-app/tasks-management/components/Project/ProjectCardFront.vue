@@ -262,12 +262,12 @@
       deleteProject() {
         this.$projectService.deleteProjectInfo(this.project)
                 .then(() => this.$emit('projectDeleted'))
-                .then(window.location.href = `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest`);
+                .then(window.location.href = `${eXo.env.portal.context}/${eXo.env.portal.portalName}/tasks/myProjects`);
       },
       cloneProject() {
         this.$projectService.cloneProject(this.project)
                 .then(() => this.$emit('projectCloned'))
-                .then(window.location.href = `${eXo.env.portal.context}/${eXo.env.portal.portalName}/taskstest`)
+                .then(window.location.href = `${eXo.env.portal.context}/${eXo.env.portal.portalName}/tasks/myProjects`)
       },
     changeColorProject(project,color) {
       this.$projectService.updateProjectColor(project, color)
