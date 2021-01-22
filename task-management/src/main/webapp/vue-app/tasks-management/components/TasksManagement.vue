@@ -36,6 +36,7 @@
       :task="task"/>
 
     <tasks-assignee-coworker-drawer/>
+
   </v-app>
 </template>
 <script>
