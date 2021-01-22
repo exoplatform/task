@@ -76,7 +76,7 @@
       checkMove(evt){
         if(evt){
           document.getElementsByClassName("taskBoardColumn").forEach(element => element.style.backgroundColor= "#FFFFFF");
-          evt.to.parentElement.getElementsByClassName("taskBoardColumn").forEach(element => element.style.backgroundColor= "#e2e9ef");
+          evt.to.parentElement.getElementsByClassName("taskBoardColumn").forEach(element => element.style.backgroundColor= "#f2f2f2");
           this.task = evt.draggedContext.element.task
           this.newStatus = evt.to.parentElement.id;
         }
