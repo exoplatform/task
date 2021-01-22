@@ -245,8 +245,8 @@ export function removeTaskComment(commentId) {
   })
 }
 
-export function findUsersToMention(query) {
-  return fetch(`/portal/rest/tasks/usersToMention/${query}/${eXo.env.portal.language}`, {
+export function findUsersToMention(projectId, query) {
+  return fetch(`/portal/rest/projects/users/${projectId}/${query}`, {
     method: 'GET',
     credentials: 'include',
   }).then((resp) => {

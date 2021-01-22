@@ -9,6 +9,7 @@ import org.exoplatform.services.log.Log;
 import org.exoplatform.services.rest.resource.ResourceContainer;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
+import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
 import org.exoplatform.social.core.manager.IdentityManager;
 import org.exoplatform.social.core.profile.ProfileFilter;
 import org.exoplatform.social.core.space.model.Space;
@@ -19,8 +20,6 @@ import org.exoplatform.task.dao.ProjectQuery;
 import org.exoplatform.task.dto.ProjectDto;
 import org.exoplatform.task.dto.StatusDto;
 import org.exoplatform.task.exception.EntityNotFoundException;
-import org.exoplatform.task.exception.ParameterEntityException;
-import org.exoplatform.task.exception.UnAuthorizedOperationException;
 import org.exoplatform.task.legacy.service.UserService;
 import org.exoplatform.task.model.User;
 import org.exoplatform.task.service.*;
@@ -44,6 +43,8 @@ import java.util.*;
 public class ProjectRestService implements ResourceContainer {
 
   private static final Log LOG           = ExoLogger.getLogger(ProjectRestService.class);
+
+  private static final String SPACE_PREFIX           = "member:/spaces/";
 
   private TaskService taskService;
 
@@ -264,36 +265,67 @@ public class ProjectRestService implements ResourceContainer {
   }
   }
 
-
   @GET
-  @Path("users/{query}/{projectName}")
+  @Path("users/{projectId}/{query}")
   @RolesAllowed("users")
   @Produces(MediaType.APPLICATION_JSON)
   @ApiOperation(value = "Gets users by query and project name", httpMethod = "GET", response = Response.class, notes = "This returns users by query and project name")
-  @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled") })
-  public Response getUsersByQueryAndProjectName(@ApiParam(value = "Query", required = true) @PathParam("query") String query,
-                                                @ApiParam(value = "projectName", required = true) @PathParam("projectName") String projectName) {
+  @ApiResponses(value = {@ApiResponse(code = 200, message = "Request fulfilled")})
+  public Response getUsersByQueryAndProjectId(@ApiParam(value = "Query", required = true) @PathParam("query") String query,
+                                              @ApiParam(value = "projectId", required = true) @PathParam("projectId") long projectId) {
+    Identity currentUser = ConversationState.getCurrent().getIdentity();
     try {
-    ListAccess<User> usersList = userService.findUserByName(query);
-    JSONArray usersJsonArray = new JSONArray();
-    for (User user : usersList.load(0, UserUtil.SEARCH_LIMIT)) {
-      JSONObject userJson = new JSONObject();
-      Space space = spaceService.getSpaceByPrettyName(projectName);
-      if (space == null || spaceService.isMember(space, user.getUsername())) {
-        userJson.put("username", user.getUsername());
-        userJson.put("fullname", user.getDisplayName());
-        userJson.put("avatar", user.getAvatar());
-        usersJsonArray.put(userJson);
-      }
+      ProjectDto project = projectService.getProject(projectId);
+      Set<String> projectParticipantList = project.getParticipator();
+      JSONArray usersJsonArray = new JSONArray();
+      HashSet<org.exoplatform.social.core.identity.model.Identity> userIdentities = new HashSet<>();
+      projectParticipantList.forEach(participant -> {
+        if (!participant.startsWith(SPACE_PREFIX)) {
+          if (!StringUtils.equals(currentUser.getUserId(), participant) && participant.contains(query)) {
+            org.exoplatform.social.core.identity.model.Identity identity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, participant);
+            userIdentities.add(identity);
+          }
+        } else {
+          Space space = spaceService.getSpaceByPrettyName(participant.substring(SPACE_PREFIX.length()));
+          if (space != null) {
+            searchSpaceMembers(userIdentities, space, query, currentUser);
+          }
+        }
+      });
+      userIdentities.forEach(identity -> {
+        addParticipantToUserList(usersJsonArray, (org.exoplatform.social.core.identity.model.Identity) identity);
+      });
+      return Response.ok(usersJsonArray.toString()).build();
+    } catch (Exception e) {
+      LOG.error("Can't get Users ", e);
+      return Response.serverError().entity(e.getMessage()).build();
     }
-    return Response.ok(usersJsonArray.toString()).build();
-  }
-    catch (Exception e) {
-            LOG.error("Can't get Users ",e);
-            return Response.serverError().entity(e.getMessage()).build();
-            }
   }
 
+  private void addParticipantToUserList(JSONArray usersJsonArray, org.exoplatform.social.core.identity.model.Identity identity) {
+    if (identity.isEnable() && !identity.isDeleted()) {
+      JSONObject userJson = new JSONObject();
+      try {
+        userJson.put("id", identity.getRemoteId());
+        userJson.put("name", identity.getProfile().getFullName());
+        userJson.put("avatar", identity.getProfile().getAvatarUrl());
+        userJson.put("type", "contact");
+        usersJsonArray.put(userJson);
+      } catch (JSONException e) {
+        throw new IllegalStateException("Error while adding participant to JSONArray", e);
+      }
+    }
+  }
+
+  private void searchSpaceMembers(HashSet<org.exoplatform.social.core.identity.model.Identity> userIdentities, Space space, String query, Identity currentUser) {
+    String[] spaceMembers = space.getMembers();
+    for (String spaceMember : spaceMembers) {
+      if (!StringUtils.equals(currentUser.getUserId(), spaceMember) && spaceMember.contains(query)) {
+        org.exoplatform.social.core.identity.model.Identity identity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, spaceMember);
+        userIdentities.add(identity);
+      }
+    }
+  }
 
   private JSONArray buildJSON(JSONArray projectsJsonArray, List<ProjectDto> projects, boolean participatorParam) throws JSONException {
 
