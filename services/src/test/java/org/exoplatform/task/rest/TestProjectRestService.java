@@ -9,6 +9,7 @@ import java.util.*;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.RuntimeDelegate;
 
+import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
 import org.exoplatform.social.core.manager.IdentityManager;
 import org.exoplatform.task.rest.model.PaginatedTaskList;
@@ -395,6 +396,45 @@ public class TestProjectRestService {
   public void testfindUsersToMention() throws Exception {
     // Given
     ProjectRestService projectRestService = new ProjectRestService(taskService,
+            commentService,
+            projectService,
+            statusService,
+            userService,
+            spaceService,
+            labelService,
+            identityManager);
+
+    Identity root = new Identity("root");
+    ConversationState.setCurrent(new ConversationState(root));
+
+    ProjectDto project1 = new ProjectDto();
+    project1.setName("project1");
+
+    when(projectService.getProject(project1.getId())).thenReturn(project1);
+
+    final User user = TestUtils.getUser();
+    ListAccess<User> lists = new ListAccess<User>() {
+      @Override
+      public User[] load(int i, int i1) throws Exception, IllegalArgumentException {
+        return new User[] { user };
+      }
+
+      @Override
+      public int getSize() throws Exception {
+        return 1;
+      }
+    };
+
+    when(userService.findUserByName("root")).thenReturn(lists);
+
+    Response response = projectRestService.getUsersByQueryAndProjectName("root", "project1");
+    assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+  }
+
+  @Test
+  public void testFindUsersToMentionInTasksAffectedToProject() throws Exception {
+    // Given
+    ProjectRestService projectRestService = new ProjectRestService(taskService,
                                                                    commentService,
                                                                    projectService,
                                                                    statusService,
@@ -422,7 +462,7 @@ public class TestProjectRestService {
     when(identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME,"userA")).thenReturn(userAIdentity);
 
     //when
-    Response response = projectRestService.getUsersByQueryAndProjectId("userA", 1L);
+    Response response = projectRestService.getProjectParticipants(1L, "userA");
 
     //then
     assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
