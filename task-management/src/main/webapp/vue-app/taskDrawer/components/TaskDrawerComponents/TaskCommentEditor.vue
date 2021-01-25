@@ -28,6 +28,10 @@
         type: String,
         default: ''
       },
+      task: {
+        type: Object,
+        default: null
+      },
       reset: {
         type: Boolean,
         default: false
@@ -60,14 +64,16 @@
     },
     mounted() {
       this.initCKEditor();
+      const thiss = this;
       $('body').suggester('addProvider', 'task:people', function (query, callback) {
         const _this = this;
-        findUsersToMention(query).then((data) => {
+        const projectId = thiss.task.status ? thiss.task.status.project.id : null;
+        findUsersToMention(projectId, query).then((data) => {
           const result = [];
           for (let i = 0; i < data.length; i++) {
             const d = data[i];
             const item = {
-              uid: d.id.substr(1),
+              uid: d.id,
               name: d.name,
               avatar: d.avatar
             };
