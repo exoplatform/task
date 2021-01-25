@@ -96,7 +96,7 @@
             this.manager = [{
               id: `space:${eXo.env.portal.spaceName}`,
               providerId: 'space',
-              remoteId: eXo.env.portal.spaceName,
+              remoteId: eXo.env.portal.spaceGroup,
               profile: {
                 avatar: `/portal/rest/v1/social/spaces/${eXo.env.portal.spaceName}/avatar`,
                 fullname: eXo.env.portal.spaceDisplayName,

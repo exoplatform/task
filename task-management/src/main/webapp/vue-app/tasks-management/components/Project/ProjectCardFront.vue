@@ -213,10 +213,10 @@
     },
     computed: {
       avatarToDisplay () {
-        if(this.managerIdentities.length > this.maxAvatarToShow) {
-          return this.managerIdentities.slice(0, this.maxAvatarToShow-1);
+        if(this.project.managerIdentities.length > this.maxAvatarToShow) {
+          return this.project.managerIdentities.slice(0, this.maxAvatarToShow-1);
         } else {
-          return this.managerIdentities;
+          return this.project.managerIdentities;
         }
       },
       showMoreAvatarsNumber() {
@@ -240,7 +240,7 @@
         }
       });
       this.$root.$on('update-projects-list-avatar',managerIdentities =>{
-        this.managerIdentities=managerIdentities;
+        this.project.managerIdentities=managerIdentities;
       });
     },
     methods : {

@@ -283,6 +283,7 @@
                       providerId: 'space',
                       profile: {
                         fullName: spaceFullName,
+                        originalName: spacePrettyName,
                         avatarUrl: `/portal/rest/v1/social/spaces/${spacePrettyName}/avatar`,
                       },
                     }
@@ -326,6 +327,7 @@
                       providerId: 'space',
                       profile: {
                         fullName: spaceFullName,
+                        originalName: spacePrettyName,
                         avatarUrl: `/portal/rest/v1/social/spaces/${spacePrettyName}/avatar`,
                       },
                     }
@@ -417,9 +419,9 @@
             if (this.manager.filter(e => e.providerId === 'space').length > 0) {
               this.manager.forEach(manager_el => {
                 if(manager_el.providerId ==='space') {
-                  projects.spaceName=manager_el.remoteId;
-                  projects.manager.push(`manager:/spaces/${manager_el.remoteId}`);
-                  projects.participator.push(`member:/spaces/${manager_el.remoteId}`);
+                  projects.spaceName=manager_el.profile.fullName;
+                  projects.manager.push(`manager:/spaces/${manager_el.profile.originalName}`);
+                  projects.participator.push(`member:/spaces/${manager_el.profile.originalName}`);
                 } else {
                   projects.manager.push(manager_el.remoteId)
                 }
@@ -432,7 +434,7 @@
           } else {
             const urlPath = document.location.pathname
             if(urlPath.includes('g/:spaces')) {
-              const spaceName = urlPath.split('g/:spaces:')[1].split('/')[0]
+              const spaceName =urlPath.split(':')[2].split('/')[1]
               projects.spaceName=spaceName
             }
           }
