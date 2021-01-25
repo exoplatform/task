@@ -34,7 +34,7 @@
   export default {
     data () {
       return {
-        tab: 'tab-2',
+        tab: 'tab-1',
         spaceName: '',
         task: {
         type: Object,
@@ -97,10 +97,14 @@
       let taskId = urlPath.split('taskDetail/')[1].split(/[^0-9]/)[0]
       taskId = taskId && Number(taskId) || 0;
       if (taskId) {
+          this.tab='tab-2';
           this.$tasksService.getTaskById(taskId).then(data => {
           this.task = data  
           if(this.task.status && this.task.status.project){
               document.dispatchEvent(new CustomEvent('showProjectTasks', {detail: this.task.status.project}));
+            this.tab='tab-2'
+          } else {
+            this.tab='tab-1'
           }
           this.$refs.taskDrawer.open(this.task);
         })
@@ -110,6 +114,7 @@
       let projectId = urlPath.split('projectDetail/')[1].split(/[^0-9]/)[0]
       projectId = projectId && Number(projectId) || 0;
       if (projectId) {
+          this.tab='tab-2';
           this.$projectService.getProject(projectId).then(data => {
           document.dispatchEvent(new CustomEvent('showProjectTasks', {detail: data}));
         })

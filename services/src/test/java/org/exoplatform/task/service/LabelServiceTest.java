@@ -50,6 +50,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
@@ -131,15 +132,15 @@ public class LabelServiceTest {
         Label result = labelCaptor.getValue();
         assertEquals("TODO", result.getName());
         assertEquals("label", result.getUsername());
-
     }
 
     @Test
     public void testRemoveLabel() {
         labelService.removeLabel(TestUtils.EXISTING_TASK_ID);
         verify(labelHandler, times(1)).delete(labelCaptor.capture());
-
-        assertEquals(TestUtils.EXISTING_TASK_ID, labelCaptor.getValue().getId());
+        Label result = labelCaptor.getValue();
+        result.setId(TestUtils.EXISTING_LABEL_ID);
+        assertEquals(TestUtils.EXISTING_TASK_ID, result.getId());
 
     }
 
@@ -147,6 +148,7 @@ public class LabelServiceTest {
     public void testUpdateLabelName() throws EntityNotFoundException {
 
         LabelDto label = labelService.getLabel(TestUtils.EXISTING_LABEL_ID);
+        label.setId(TestUtils.EXISTING_LABEL_ID);
         label.setName("exo");
         when(daoHandler.getLabelHandler().update(any())).thenReturn(labelStorage.labelToEntity(label));
         labelService.updateLabel(label, Arrays.asList(Label.FIELDS.NAME));
@@ -159,6 +161,7 @@ public class LabelServiceTest {
     public void testUpdateLabelColor() throws EntityNotFoundException {
 
         LabelDto label = labelService.getLabel(TestUtils.EXISTING_LABEL_ID);
+        label.setId(TestUtils.EXISTING_LABEL_ID);
         label.setColor("white");
         when(daoHandler.getLabelHandler().update(any())).thenReturn(labelStorage.labelToEntity(label));
         labelService.updateLabel(label, Arrays.asList(Label.FIELDS.COLOR));
@@ -169,20 +172,26 @@ public class LabelServiceTest {
 
     @Test
     public void testUpdateLabelPARENT() throws EntityNotFoundException {
-
-        LabelDto label = labelService.getLabel(TestUtils.EXISTING_LABEL_ID);
-        label.setParent(labelStorage.labelToEntity(label));
+        LabelDto parentLabel = labelService.getLabel(TestUtils.EXISTING_LABEL_ID);
+        LabelDto label = new LabelDto();
+        long labelId = 5;
+        label.setId(labelId);
+        label.setUsername("root");
+        label.setName("testLabel");
+        label.setParent(parentLabel);
+        when(daoHandler.getLabelHandler().find(labelId)).thenReturn(LabelDto.labelToEntity(label));
         when(daoHandler.getLabelHandler().update(any())).thenReturn(labelStorage.labelToEntity(label));
-        labelService.updateLabel(label, Arrays.asList(Label.FIELDS.PARENT));
+        labelService.updateLabel(label, Collections.singletonList(Label.FIELDS.PARENT));
         verify(labelHandler, times(1)).update(labelCaptor.capture());
 
-        assertEquals(label.getParent(), labelCaptor.getValue().getParent());
+        assertEquals(label.getParent(), LabelDto.labelToDto(labelCaptor.getValue().getParent()));
     }
 
     @Test
     public void testUpdateLabelHIDDEN() throws EntityNotFoundException {
 
         LabelDto label = labelService.getLabel(TestUtils.EXISTING_LABEL_ID);
+        label.setId(TestUtils.EXISTING_LABEL_ID);
         label.setHidden(true);
         when(daoHandler.getLabelHandler().update(any())).thenReturn(labelStorage.labelToEntity(label));
         labelService.updateLabel(label, Arrays.asList(Label.FIELDS.HIDDEN));

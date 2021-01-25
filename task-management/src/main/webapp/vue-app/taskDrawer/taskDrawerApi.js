@@ -245,16 +245,17 @@ export function removeTaskComment(commentId) {
   })
 }
 
-export function findUsersToMention(query) {
-  return fetch(`/portal/rest/tasks/usersToMention/${query}/${eXo.env.portal.language}`, {
+export function findUsersToMention(projectId, query) {
+  const fetchUrl = projectId ? `/portal/rest/projects/projectParticipants/${projectId}/${query}`
+      : `/portal/rest/tasks/usersToMention/${query}/${eXo.env.portal.language}`;
+  return fetch(fetchUrl, {
     method: 'GET',
     credentials: 'include',
   }).then((resp) => {
-    if(resp && resp.ok) {
+    if (resp && resp.ok) {
       return resp.json();
-    }
-    else {
-      throw new Error ('Error when getting users to mention');
+    } else {
+      throw new Error('Error when getting users to mention');
     }
   })
 }

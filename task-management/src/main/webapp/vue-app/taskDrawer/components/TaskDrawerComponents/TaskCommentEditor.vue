@@ -8,6 +8,14 @@
       cols="30" 
       rows="10" 
       class="textarea"></textarea>
+    <div
+      v-show="editorReady"
+      :class="charsCount > maxLength ? 'tooManyChars' : ''"
+      class="activityCharsCount"
+      style="">
+      {{ charsCount }}{{ maxLength > -1 ? ' / ' + maxLength : '' }}
+      <i class="uiIconMessageLength"></i>
+    </div>
   </div>
 </template>
 
@@ -20,6 +28,10 @@
         type: String,
         default: ''
       },
+      task: {
+        type: Object,
+        default: null
+      },
       reset: {
         type: Boolean,
         default: false
@@ -28,11 +40,17 @@
         type: String,
         default: ''
       },
+      maxLength: {
+        type: Number,
+        default: -1
+      }
     },
     data() {
       return {
         inputVal: this.value,
         id: `commentContent${parseInt(Math.random() * 10000).toString()}`,
+        charsCount: 0,
+        editorReady: false,
       };
     },
     watch: {
@@ -46,14 +64,16 @@
     },
     mounted() {
       this.initCKEditor();
+      const thiss = this;
       $('body').suggester('addProvider', 'task:people', function (query, callback) {
         const _this = this;
-        findUsersToMention(query).then((data) => {
+        const projectId = thiss.task.status ? thiss.task.status.project.id : null;
+        findUsersToMention(projectId, query).then((data) => {
           const result = [];
           for (let i = 0; i < data.length; i++) {
             const d = data[i];
             const item = {
-              uid: d.id.substr(1),
+              uid: d.id,
               name: d.name,
               avatar: d.avatar
             };
@@ -82,13 +102,22 @@
 
           autoGrow_onStartup: true,
           on: {
+            instanceReady: function() {
+              self.editorReady = true;
+            },
             change: function(evt) {
               const newData = evt.editor.getData();
 
               self.inputVal = newData;
+              let pureText = newData ? newData.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, '').trim() : '';
+              const div = document.createElement('div');
+              div.innerHTML = pureText;
+              pureText = div.textContent || div.innerText || '';
+              self.charsCount = pureText.length;
             },
             destroy: function () {
               self.inputVal = '';
+              self.charsCount = 0;
             },
           },
           suggester: {

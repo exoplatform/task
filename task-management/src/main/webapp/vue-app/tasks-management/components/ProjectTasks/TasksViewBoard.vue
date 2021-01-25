@@ -1,14 +1,14 @@
 <template>
   <v-card
-    class="tasksView tasksViewBoard tasksCardsContainer pt-6"
+    class="tasksView tasksViewBoard tasksCardsContainer"
     flat>
-    <v-item-group class="pa-4">
-      <v-container class="pa-0">
+    <v-item-group class="pb-4 pt-5 px-0">
+      <v-container class="pa-0 mx-0">
         <v-row class="ma-0 border-box-sizing tasksViewBoardRowContainer">
           <v-col
             v-for="(status, index) in statusList"
             :key="index"
-            class="py-0 px-4 projectTaskItem">
+            class="py-0 px-3 projectTaskItem">
             <tasks-view-board-column
               :project="project"
               :status="status"
@@ -49,6 +49,13 @@ import {updateTask} from '../../../taskDrawer/taskDrawerApi';
       index: -1,
     };
   },
+    mounted() {
+      document.addEventListener('deleteTask', (event) => {
+        if (event && event.detail) {
+          this.tasksList = this.tasksList.filter((t) => t.id !== event.detail);
+        }
+      });
+    },
     methods: {
       getTasksByStatus(items ,statusName) {
         const tasksByStatus = [];

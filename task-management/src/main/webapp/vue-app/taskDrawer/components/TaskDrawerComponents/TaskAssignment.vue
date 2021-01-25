@@ -21,7 +21,7 @@
             class="assigneeName">
             <exo-user-avatar
               :username="taskAssigneeObj.profile.remoteId"
-              :fullname="taskAssigneeObj.profile.fullName"
+              :fullname="taskAssigneeFullName"
               :avatar-url="taskAssigneeObj.profile.avatarUrl"
               :title="taskAssigneeObj.profile.fullName"
               :size="24"
@@ -124,9 +124,14 @@
         };
       },
       searchOptions() {
-        return {
-          searchUrl: '/portal/rest/projects/projectParticipants/'.concat(this.task.status.project.id).concat('/')
-        };
+      if(this.task && this.task.status && this.task.status.project) {
+          return {
+            searchUrl: '/portal/rest/projects/projectParticipants/'.concat(this.task.status.project.id).concat('/')
+          };
+        }
+      },
+      taskAssigneeFullName() {
+        return this.taskAssigneeObj.profile.external ? this.taskAssigneeObj.profile.fullName.concat(' (').concat(this.$t('label.external')).concat(')') : this.taskAssigneeObj.profile.fullName;
       },
     },
     mounted() {
@@ -161,6 +166,7 @@
                 profile: {
                   fullName: user.profile.fullname,
                   avatarUrl: user.profile.avatar,
+                  external: user.profile.dataEntity.external === 'true',
                 },
               }
             })
@@ -176,6 +182,7 @@
                     profile: {
                       fullName: user.profile.fullname,
                       avatarUrl: user.profile.avatar,
+                      external: user.profile.dataEntity.external === 'true',
                     },
                   }
                   this.taskCoworkerObj.push(taskCoworker)
@@ -192,6 +199,7 @@
                   profile: {
                     fullName: user.profile.fullname,
                     avatarUrl: user.profile.avatar,
+                    external: user.profile.dataEntity.external === 'true',
                   },
                 }
               })
@@ -210,6 +218,7 @@
               profile: {
                 fullName: user.profile.fullname,
                 avatarUrl: user.profile.avatar,
+                external: user.profile.dataEntity.external === 'true',
               },
             }
           })
@@ -227,6 +236,7 @@
               profile: {
                 fullName: user.profile.fullname,
                 avatarUrl: user.profile.avatar,
+                external: user.profile.dataEntity.external === 'true',
               },
             }
             this.taskCoworkerObj.push(taskCoworker);
@@ -245,6 +255,7 @@
                 profile: {
                   fullName: user.profile.fullname,
                   avatarUrl: user.profile.avatar,
+                  external: user.profile.dataEntity.external === 'true',
                 },
               }
               this.taskCoworkerObj.push(taskCoworker);

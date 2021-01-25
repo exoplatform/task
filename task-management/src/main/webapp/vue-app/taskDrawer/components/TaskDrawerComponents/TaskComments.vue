@@ -12,15 +12,14 @@
         :url="comment.author.url"/>
       <div class="commentContent pl-3 d-flex align-center">
         <a
-          class="primary-color--text font-weight-bold subtitle-2 pr-2"
-          v-html="comment.author.displayName"></a>
+          class="primary-color--text font-weight-bold subtitle-2 pr-2">{{ comment.author.displayName }} <span v-if="comment.author.external" class="externalTagClass">{{ ` (${$t('label.external')})` }}</span></a>
         <span :title="absoluteTime()" class="dateTime caption font-italic d-block">{{ relativeTime }}</span>
       </div>
       <div class="removeCommentBtn">
         <v-dialog
           v-model="confirmDeleteComment"
           width="500">
-          <template v-slot:activator="{ on }">
+          <template v-slot:activator="{ on }" >
             <v-btn
               v-show="showDeleteButtom"
               :title="$t('label.remove')"
@@ -28,42 +27,11 @@
               class="deleteComment"
               icon
               small
+              @click="confirmCommentDelete()"
               v-on="on">
               <i class="uiIconTrashMini uiIconLightGray "></i>
             </v-btn>
           </template>
-
-          <v-card>
-            <v-card-title
-              class="font-weight-black grey lighten-2 py-2"
-              primary-title>
-              {{ $t('popup.confirmation') }}
-            </v-card-title>
-
-            <v-card-text class="pt-5">
-              <i class="uiIconColorQuestion"></i>
-              {{ $t('popup.msg.deleteComment') }}
-            </v-card-text>
-
-            <v-divider/>
-
-            <v-card-actions>
-              <v-spacer/>
-              <v-btn
-                depressed
-                small
-                color="primary"
-                dark
-                @click="confirmDeleteComment=!confirmDeleteComment;removeTaskComment()">{{ $t('label.ok') }}
-              </v-btn>
-              <v-btn
-                depressed
-                text
-                small
-                @click="confirmDeleteComment=!confirmDeleteComment">{{ $t('popup.cancel') }}
-              </v-btn>
-            </v-card-actions>
-          </v-card>
         </v-dialog>
       </div>
     </div>
@@ -80,11 +48,11 @@
         @click="openEditor()">{{ $t('comment.message.Reply') }}
       </v-btn>
     </div>
-    <div class="py-0 pl-10 TaskSubComments">
+    <div class="py-0 TaskSubComments">
       <div
         v-for="(item, i) in comment.subComments"
         :key="i"
-        class="TaskSubCommentItem pr-0 pb-2">
+        class="TaskSubCommentItem pl-10 pr-0 pb-2">
         <task-comments
           :comment="item"
           :task="task"
@@ -93,8 +61,8 @@
           @openSubEditor="openEditor()"/>
       </div>
       <div
-        v-focus 
-        v-if="showEditor && !sub" 
+        v-focus
+        v-if="showEditor && !sub"
         class="subComment subCommentEditor ml-10 d-flex align-start">
         <exo-user-avatar
           :username="currentUserName"
@@ -105,20 +73,29 @@
           <task-comment-editor
             ref="subCommentEditor"
             v-model="editorData"
-            :placeholder="commentPlaceholder"
+            :max-length="MESSAGE_MAX_LENGTH"
+            :placeholder="$t('task.placeholder').replace('{0}', MESSAGE_MAX_LENGTH)"
+            :task="task"
             class="subComment subCommentEditor"
             @subShowEditor="openEditor"/>
           <v-btn
-            :disabled="disabledComment"
+            :disabled="postDisabled"
             depressed
             small
-            dark
-            class="commentBtn mt-1 mb-2"
+            type="button" 
+            class="btn btn-primary ignore-vuetify-classes btnStyle mt-1 mb-2 commentBtn"
             @click="addTaskSubComment(comment)">{{ $t('comment.label.comment') }}
           </v-btn>
         </div>
       </div>
     </div>
+    <exo-confirm-dialog
+      ref="CancelSavingCommentDialog"
+      :message="$t('popup.msg.deleteComment')"
+      :title="$t('popup.confirmation')"
+      :ok-label="$t('popup.delete')"
+      :cancel-label="$t('popup.cancel')"
+      @ok="removeTaskComment()" />
   </div>
 </template>
 
@@ -148,8 +125,8 @@
             }
           },
           task: {
-            type: Boolean,
-            default: false
+            type: Object,
+            default: () => null
           },
           sub: {
             type: Boolean,
@@ -172,7 +149,8 @@
                 confirmDeleteComment: false,
                 commentPlaceholder: this.$t('comment.message.addYourComment'),
                 showEditor : false,
-                currentUserName: eXo.env.portal.userName
+                currentUserName: eXo.env.portal.userName,
+                MESSAGE_MAX_LENGTH:255,
             }
         },
         computed: {
@@ -185,6 +163,17 @@
             showDeleteButtom() {
                 return this.hover && eXo.env.portal.userName === this.comment.author.username;
             },
+           postDisabled: function () {
+           if (this.disabledComment) {
+             return true
+           } else if (this.editorData !== null && this.editorData!=='') {
+           let pureText = this.editorData ? this.editorData.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, '').trim() : '';
+           const div = document.createElement('div');
+           div.innerHTML = pureText;
+           pureText = div.textContent || div.innerText || '';
+           return pureText.length > this.MESSAGE_MAX_LENGTH;
+          }else {return true}
+        },
         },
         watch: {
             editorData(val) {
@@ -200,6 +189,9 @@
             },
         },
         methods: {
+          confirmCommentDelete: function () {
+            this.$refs.CancelSavingCommentDialog.open();
+          },
             openEditor() {
               if (this.isOpen) {
                 this.$emit('isOpen')

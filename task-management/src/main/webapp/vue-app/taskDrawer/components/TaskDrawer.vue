@@ -110,8 +110,11 @@
         <v-divider class="my-0" />
         <div class="taskDescription py-4">
           <task-description-editor
+            :task="task"
             v-model="task.description"
-            :placeholder="$t('editinline.taskDescription.empty')"/>
+            :value="task.description"
+            :placeholder="$t('editinline.taskDescription.empty')"
+            @addTaskDescription="addTaskDescription($event)"/>
         </div>
         <div class="taskLabelsName mt-3 mb-3">
           <task-labels
@@ -150,15 +153,17 @@
                     <task-comment-editor
                       ref="commentEditor"
                       v-model="editorData"
-                      :placeholder="commentPlaceholder"
+                      :max-length="MESSAGE_MAX_LENGTH"
+                      :placeholder="$t('task.placeholder').replace('{0}', MESSAGE_MAX_LENGTH)"
+                      :task="task"
                       :reset="reset"
                       class="comment"/>
                     <v-btn
-                      :disabled="disabledComment"
+                      :disabled="postDisabled"
                       depressed
                       small
-                      dark
-                      class="mt-1 mb-2 commentBtn"
+                      type="button" 
+                      class="btn btn-primary ignore-vuetify-classes btnStyle mt-1 mb-2 commentBtn"
                       @click="addTaskComment()">{{ $t('comment.label.comment') }}</v-btn>
                   </div>
                 </div>
@@ -216,7 +221,6 @@
       return {
         displayActionMenu: false,
         menuActions: [],
-        enableAutosave: true,
         editorData: null,
         reset: false,
         disabledComment: true,
@@ -242,7 +246,10 @@
         isManager :false,
         isParticipator :false,
         datePickerTop: true,
+        enableDelete:false,
+        enableClone:false,
         currentUserName: eXo.env.portal.userName,
+        MESSAGE_MAX_LENGTH:255,
       }
     },
     computed: {
@@ -264,13 +271,20 @@
       disableSaveButton() {
         return this.saving || !this.taskTitleValid;
       },
+      postDisabled: function() {
+        if(this.disabledComment){
+          return true
+        }
+        else if(this.editorData !== null && this.editorData!==''){
+          let pureText = this.editorData ? this.editorData.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, '').trim() : '';
+          const div = document.createElement('div');
+          div.innerHTML = pureText;
+          pureText = div.textContent || div.innerText || '';
+          return pureText.length> this.MESSAGE_MAX_LENGTH ;
+        }else {return true}
+      },
     },
     watch: {
-       'task.description': function (newValue, oldValue) {
-        if (newValue !== this.task.description) {
-          this.autoSaveDescription();
-        }
-      },
       editorData(val) {
         this.disabledComment = val === '';
       },
@@ -317,6 +331,13 @@
                 this.menuActions = this.menuActions.filter(menuAction => menuAction.enabled);
               });
             }
+          }else if (event.detail.name === 'noProject') {
+            this.menuActions = [];
+            this.enableDelete = event.detail.task.createdBy === eXo.env.portal.userName ? true : false;
+            this.enableClone = event.detail.task.assignee === eXo.env.portal.userName || event.detail.task.coworker.includes(eXo.env.portal.userName) ? true : false;
+            this.addMenuAction(this.$t('label.delete'), 'uiIconTrash', this.enableDelete, 'deleteTask');
+            this.addMenuAction(this.$t('label.clone'), 'uiIconCloneNode', this.enableClone, 'cloneTask');
+            this.menuActions = this.menuActions.filter(menuAction => menuAction.enabled);
           }
         }
       });
@@ -403,13 +424,16 @@
         }
       },
       updateTaskDueDate(value) {
-        if(value) {
+        if(value && value!=='none') {
           if(this.task.id!=null){
             this.task.dueDate = value;
             updateTask(this.task.id,this.task);
           } else {
             this.taskDueDate = value;
           }
+        } else if(value==='none') {
+          this.task.dueDate = null;
+          updateTask(this.task.id,this.task);
         }
       },
       updateTask() {
@@ -421,6 +445,7 @@
         }
       },
       addTask() {
+        document.dispatchEvent(new CustomEvent('onAddTask'));
         this.task.coworker = this.taskCoworkers;
         this.task.assignee = this.assignee;
         this.task.startDate = this.taskStartDate;
@@ -433,8 +458,8 @@
           this.$emit('addTask', this.task);
           this.$root.$emit('task-added', this.task);
           this.showEditor=false;
-          //this.enableAutosave=false
           this.$refs.addTaskDrawer.close();
+          this.labelsToAdd = [];
         });
       },
       updateTaskAssignee(value) {
@@ -469,15 +494,8 @@
           }
         }
       },
-      autoSaveDescription() {
-        if(this.task.id!=null && this.enableAutosave){
-          clearTimeout(this.saveDescription);
-          this.saveDescription = setTimeout(() => {
-            //Vue.nextTick(() => this.updateTask(this.task.id));
-            updateTask(this.task.id,this.task);
-          }, this.autoSaveDelay);
-        }
-        this.enableAutosave=true
+      addTaskDescription(value) {
+        this.task.description = value;
       },
       retrieveTaskLogs() {
         getTaskLogs(this.task.id).then(
@@ -500,7 +518,6 @@
         return urlVerify(text);
       },
       open(task) {
-        this.enableAutosave=true;
         this.task=task
         window.setTimeout(() => {
             document.dispatchEvent(new CustomEvent('loadTaskPriority', {detail: task}));
@@ -525,16 +542,12 @@
       },
       onCloseDrawer() {
         this.$root.$emit('task-drawer-closed', this.task)
-        this.enableAutosave=false;
         this.showEditor=false;
-        this.$nextTick(() => {
-          document.dispatchEvent(new CustomEvent('drawerClosed'));
-        }).then(()=>{
-          this.task={}
-        })
+        this.task={};
+        document.dispatchEvent(new CustomEvent('drawerClosed'));
       },
       deleteTask() {
-        this.deleteConfirmMessage = `${this.$t('popup.msg.deleteTask')} : ${this.task.title}? `;
+        this.deleteConfirmMessage = `${this.$t('popup.msg.deleteTask')} : <strong>${this.task.title}</strong>? `;
         this.$refs.deleteConfirmDialog.open();
       },
       cloneTask() {
@@ -543,12 +556,15 @@
         });
       },
       deleteConfirm() {
+        const idTask = this.task.id;
         return fetch(`${eXo.env.portal.context}/${eXo.env.portal.rest}/tasks/${this.task.id}`, {
           method: 'DELETE',
           credentials: 'include',
         }).then(resp => {
           if (!resp || !resp.ok) {
             throw new Error('error message');
+          }else {
+            document.dispatchEvent(new CustomEvent('deleteTask', {detail: idTask}));
           }
         })
       },

@@ -89,12 +89,25 @@ public class LabelStorageImpl implements LabelStorage {
       return null;
     }
     Label label = new Label();
+    label.setUsername(labelDto.getUsername());
+    label.setName(labelDto.getName());
+    label.setColor(labelDto.getColor());
+    label.setHidden(labelDto.isHidden());
+    label.setParent(labelToEntity(labelDto.getParent()));
+    return label;
+  }
+
+  public Label mappingLabelToEntity(LabelDto labelDto) {
+    if(labelDto==null){
+      return null;
+    }
+    Label label = new Label();
     label.setId(labelDto.getId());
     label.setUsername(labelDto.getUsername());
     label.setName(labelDto.getName());
     label.setColor(labelDto.getColor());
     label.setHidden(labelDto.isHidden());
-    label.setParent(labelDto.getParent());
+    label.setParent(labelToEntity(labelDto.getParent()));
     return label;
   }
 
@@ -109,6 +122,7 @@ public class LabelStorageImpl implements LabelStorage {
     labelDto.setName(label.getName());
     labelDto.setColor(label.getColor());
     labelDto.setHidden(label.isHidden());
+    labelDto.setParent(labelToDto(label.getParent()));
     return labelDto;
   }
 }

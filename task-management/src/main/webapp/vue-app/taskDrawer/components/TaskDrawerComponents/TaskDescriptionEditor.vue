@@ -23,8 +23,7 @@
 </template>
 
 <script>
-  import {urlVerify} from '../../taskDrawerApi';
-
+  import {urlVerify, updateTask} from '../../taskDrawerApi';
   export default {
     props: {
       value: {
@@ -39,20 +38,27 @@
         type: String,
         default: ''
       },
+      task : {
+        type: Object,
+         default: function () {
+          return {}
+        }
+      }
     },
     data() {
       return {
-        inputVal: this.value,
+        inputVal : this.value,
         editorReady: false
       };
     },
+    computed: {
+      taskDescription () {
+        return this.task && this.task.id && this.task.description || ''
+      }
+    },
     watch: {
       inputVal(val) {
-        this.$emit('input', val);
-      },
-      value(val) {
-        this.inputVal = val;
-        const editorData = CKEDITOR.instances['descriptionContent'].getData();
+        const editorData = CKEDITOR.instances['descriptionContent'] && CKEDITOR.instances['descriptionContent'].getData();
         if (editorData != null && val !== editorData) {
           if (val === '') {
             CKEDITOR.instances['descriptionContent'].setData('');
@@ -61,6 +67,9 @@
             CKEDITOR.instances['descriptionContent'].setData(val);
           }
         }
+      },
+      value() {
+        this.inputVal = this.taskDescription;
       },
       editorReady(val) {
         const ckeContent = document.querySelectorAll('[id=cke_descriptionContent]');
@@ -73,7 +82,6 @@
           }
           document.getElementById('taskDescriptionId').classList.remove("taskDescription")
           CKEDITOR.instances['descriptionContent'].focus(true);
-
         } else {
           for (let i = 0; i < ckeContent.length; i++) {
             ckeContent[i].classList.add('hiddenEditor');
@@ -88,10 +96,25 @@
     },
     created() {
       document.addEventListener('drawerClosed', () => {
+        this.saveDescription(this.inputVal);
+        this.editorReady = false;
+        this.inputVal = ''
+      });
+      document.addEventListener('onAddTask', () => {
+        this.$emit('addTaskDescription',this.inputVal);
         this.editorReady = false;
       });
     },
     methods: {
+      saveDescription: function (newValue) {
+        if (newValue !== this.task.description) {
+          if(this.task.id && !isNaN(this.task.id)){
+            self.inputVal = newValue;
+            this.task.description = newValue;
+            updateTask(this.task.id ,this.task);
+          }
+        }
+      },
       initCKEditor: function () {
         let extraPlugins = 'simpleLink,widget,embedsemantic';
         const windowWidth = $(window).width();
@@ -111,10 +134,7 @@
           on: {
             blur: function (evt) {
               $(document.body).trigger('click');
-              const newData = CKEDITOR.instances['descriptionContent'].getData();
-              const newData1 = evt.editor.getData();
-              this.inputVal = newData;
-              self.editorReady = !self.editorReady;
+              self.editorReady = false;
             },
             change: function(evt) {
               const newData = evt.editor.getData();
@@ -122,6 +142,7 @@
             },
             destroy: function () {
               self.inputVal = '';
+              self.editorReady = false;
             }
           },
         });
@@ -129,6 +150,7 @@
       showDescriptionEditor:function () {
         this.editorReady = !this.editorReady;
       },
+
       urlVerify(text) {
         return urlVerify(text);
       }

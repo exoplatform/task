@@ -495,7 +495,7 @@ public class TaskController extends AbstractController {
     Comment cmt = taskService.addComment(taskId, parentCommentId, currentUser, comment); //Can throw TaskNotFoundException
 
     //TODO:
-    CommentModel model = new CommentModel(cmt, userService.loadUser(cmt.getAuthor()), CommentUtil.formatMention(cmt.getComment(), userService));
+    CommentModel model = new CommentModel(cmt, userService.loadUser(cmt.getAuthor()), CommentUtil.formatMention(cmt.getComment(), TaskUtil.getCurrentUserLanguage(currentUser), userService));
 
     DateFormat df = new SimpleDateFormat("MMM dd, yyyy HH:mm");
     df.setTimeZone(userService.getUserTimezone(currentUser));
@@ -1070,7 +1070,7 @@ public class TaskController extends AbstractController {
 
   private CommentModel addCommentModel(Comment cmt, List<CommentModel> listComments) {
     org.exoplatform.task.model.User u = userService.loadUser(cmt.getAuthor());
-    CommentModel commentModel = new CommentModel(cmt, u, CommentUtil.formatMention(cmt.getComment(), userService));
+    CommentModel commentModel = new CommentModel(cmt, u, CommentUtil.formatMention(cmt.getComment(), TaskUtil.getCurrentUserLanguage(ConversationState.getCurrent().getIdentity().getUserId()), userService));
     listComments.add(commentModel);
     return commentModel;
   }

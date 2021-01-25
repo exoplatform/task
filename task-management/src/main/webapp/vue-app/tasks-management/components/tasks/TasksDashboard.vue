@@ -1,7 +1,7 @@
 <template>
   <v-app
     id="tasksListApplication"
-    class="projectAndTasksContainer transparent"
+    class="projectAndTasksContainer transparent pa-4"
     flat>
     <tasks-list-toolbar
       ref="taskToolBar"

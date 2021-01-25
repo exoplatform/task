@@ -255,8 +255,6 @@
       hr.my-0.v-divider.theme--light {
          margin-left: 20px;
          margin-right: 25px;
-         border-top-width: 1px;
-         padding-block-end: 20px;
        }
       i.uiIcon.uiIconMiniArrowDown,i.uiIcon.uiIconMiniArrowRight{
         margin-right: 8px;
@@ -305,6 +303,20 @@
         }
         .inputTasksFilter {
           max-width: 250px;
+          .v-input__slot {
+            margin-bottom: 0!important;
+            .v-text-field__slot {
+              input {
+                max-height: 22px!important;
+              }
+            }
+          }
+          .v-input__append-inner {
+            button.mdi-close {
+              font-size: 18px;
+              margin-top: 14px;
+            }
+          }
         }
         .selectPrimaryFilter {
           max-width: 250px;
@@ -554,6 +566,9 @@
             color: @primaryColor!important;
             box-shadow: 0 0 #FFFFFE!important;
             background-color: #FFFFFF!important;
+            padding: 0px;
+            margin: 0px;
+            margin-left: -16px;
           }
           .reset{
             i.fas.fa-redo{
@@ -1004,29 +1019,39 @@
           }
         }
         .tasksToolbar {
-          .taskDisplay {
-            .taskTabBoard {
-              border: 1px solid @borderColor;
-              border-radius: 5px 0 0 5px;
-              height: 38px;
-              min-height: 38px;
-              .uiIconBoard {
-                &:before {
-                  content: "\e631";
-                }
-              }
-            }
-            .taskTabList {
-              border-radius: 0;
-            }
-            .taskTabGantt {
-              border: 1px solid @borderColor;
-              border-radius: 0 5px 5px 0;
-              height: 38px;
-              min-height: 38px;
-              .uiIconGantt {
-                &:before {
-                  content: "\e623";
+          height: auto!important;
+          .v-toolbar__content {
+            height: auto!important;
+            padding: 0!important;
+            .taskDisplay {
+              .projectTasksViewTabs {
+                .v-tabs-bar {
+                  height: auto!important;
+                  .taskTabBoard {
+                    border: 1px solid @borderColor;
+                    border-radius: 5px 0 0 5px;
+                    height: 38px;
+                    min-height: 38px;
+                    .uiIconBoard {
+                      &:before {
+                        content: "\e631";
+                      }
+                    }
+                  }
+                  .taskTabList {
+                    border-radius: 0;
+                  }
+                  .taskTabGantt {
+                    border: 1px solid @borderColor;
+                    border-radius: 0 5px 5px 0;
+                    height: 38px;
+                    min-height: 38px;
+                    .uiIconGantt {
+                      &:before {
+                        content: "\e623";
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -1077,7 +1102,7 @@
             .v-divider {
               border-top-width: 2px;
               margin-top: 4px;
-              margin-bottom: 18px;
+              margin-bottom: 0;
             }
           }
         }
@@ -1137,9 +1162,29 @@
             color: @greyColor;
             padding-bottom: 20px;
           }
+          .uiIconEcmsClipboard{
+            &:after {
+              content: '\e9d0';
+              font-size: 29.5px;
+              position: absolute;
+              bottom: 12px;
+              right: -5px;
+              background: -webkit-linear-gradient(-45deg, transparent 0%, transparent 46%, white 46%, white 56%,transparent 56%, transparent 100%), -webkit-linear-gradient(45deg, transparent 0%, transparent 46%, white 46%, white 56%,transparent 56%, transparent 100%);
+            }
+          }
+          .uiIconTask {
+            &:after {
+              content: '\e9d0';
+              font-size: 30px;
+              position: absolute;
+              bottom: 12px;
+              right: -5px;
+              background: white;
+            }
+          }
         }
         .noTasksProjectLabel {
-          font-size: 1.1rem;
+          font-size: 18px;
           color: @greyColorLighten1;
         }
         .noTasksProjectLink {
@@ -1664,6 +1709,13 @@
           }
         }
       }
+      #TasksListToolbar {
+        height: auto!important;
+        .v-toolbar__content {
+          height: auto!important;
+          padding: 0!important;
+        }
+      }
     }
 
 /*----------- Task Drawer CSS ---------------*/
@@ -2119,6 +2171,28 @@
   }
   .taskCommentsAndChanges {
     .taskComments {
+      .comment{
+        position: relative;
+      }
+      .tooManyChars {
+        color: #bc4343!important;
+      }
+      .tooManyChars .uiIconMessageLength {
+        color: #bc4343!important;
+      }
+      .activityCharsCount{
+        position: absolute;
+        bottom: 8px;
+        right: 10px;
+        color: #adadad;
+        .uiIconMessageLength {
+          font-size: 14px;
+          color: #2eb58c;
+          &:before {
+            content: "\e910";
+          }
+        }
+      }
       .commentItem {
         width: 100%;
         .commentHeader {
@@ -2126,6 +2200,10 @@
           .removeCommentBtn {
             margin-left: auto;
             margin-top: -4px;
+          }
+          .externalTagClass {
+            color: @baseColorLight;
+            font-weight: normal;
           }
         }
         .commentBody {
@@ -2137,11 +2215,24 @@
             p {
               margin-bottom: 0!important;
             }
+            .externalTagClass {
+              color: @baseColorLight;
+              font-weight: normal;
+            }
           }
         }
       }
+      .TaskSubComments{
+        margin-left: -20px!important;
+      }
       .editorContent {
         width: 100%;
+        .subComment.subCommentEditor{
+          position: relative;
+          .activityCharsCount {
+            right: 5px;
+          }
+        }
         .cke_bottom.cke_reset_all {
           background-color: transparent;
           height: 30px!important;
@@ -2153,6 +2244,12 @@
           filter: opacity(0.2);
         }
       }
+    }
+    .commentBtn {
+      background-color: @primaryColor!important;
+      letter-spacing: 0!important;
+      font-size: 14px!important;
+      text-transform: capitalize;
     }
   }
   .drawerContent {
