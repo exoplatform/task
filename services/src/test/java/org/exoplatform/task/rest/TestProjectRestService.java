@@ -9,6 +9,8 @@ import java.util.*;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.RuntimeDelegate;
 
+import org.exoplatform.commons.utils.ListAccess;
+import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
 import org.exoplatform.social.core.manager.IdentityManager;
 import org.exoplatform.task.rest.model.PaginatedTaskList;
 import org.junit.Before;
@@ -17,7 +19,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.rest.impl.RuntimeDelegateImpl;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
@@ -395,13 +396,13 @@ public class TestProjectRestService {
   public void testfindUsersToMention() throws Exception {
     // Given
     ProjectRestService projectRestService = new ProjectRestService(taskService,
-                                                                   commentService,
-                                                                   projectService,
-                                                                   statusService,
-                                                                   userService,
-                                                                   spaceService,
-                                                                   labelService,
-                                                                   identityManager);
+            commentService,
+            projectService,
+            statusService,
+            userService,
+            spaceService,
+            labelService,
+            identityManager);
 
     Identity root = new Identity("root");
     ConversationState.setCurrent(new ConversationState(root));
@@ -428,6 +429,44 @@ public class TestProjectRestService {
 
     Response response = projectRestService.getUsersByQueryAndProjectName("root", "project1");
     assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+  }
+
+  @Test
+  public void testFindUsersToMentionInTasksAffectedToProject() throws Exception {
+    // Given
+    ProjectRestService projectRestService = new ProjectRestService(taskService,
+                                                                   commentService,
+                                                                   projectService,
+                                                                   statusService,
+                                                                   userService,
+                                                                   spaceService,
+                                                                   labelService,
+                                                                   identityManager);
+
+    Identity root = new Identity("root");
+    final User userA = TestUtils.getUserA();
+    org.exoplatform.social.core.identity.model.Identity userAIdentity = TestUtils.getUserAIdentity();
+
+    ConversationState.setCurrent(new ConversationState(root));
+
+    Set<String> projectParticipator = new HashSet<>();
+    projectParticipator.add(root.getUserId());
+    projectParticipator.add(userA.getUsername());
+
+    ProjectDto project1 = new ProjectDto();
+    project1.setName("project1");
+    project1.setId(1L);
+    project1.setParticipator(projectParticipator);
+
+    when(projectService.getProject(project1.getId())).thenReturn(project1);
+    when(identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME,"userA")).thenReturn(userAIdentity);
+
+    //when
+    Response response = projectRestService.getProjectParticipants(1L, "userA");
+
+    //then
+    assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+    assertNotNull(response.getEntity());
   }
 
   @Test
@@ -523,5 +562,4 @@ public class TestProjectRestService {
     Response response1 = projectRestService.changeProjectColor(projectDto.getId(), "red");
     assertEquals(Response.Status.OK.getStatusCode(), response1.getStatus());
   }
-
 }

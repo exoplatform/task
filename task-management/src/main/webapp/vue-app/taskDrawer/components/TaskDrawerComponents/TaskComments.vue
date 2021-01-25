@@ -75,6 +75,7 @@
             v-model="editorData"
             :max-length="MESSAGE_MAX_LENGTH"
             :placeholder="$t('task.placeholder').replace('{0}', MESSAGE_MAX_LENGTH)"
+            :task="task"
             class="subComment subCommentEditor"
             @subShowEditor="openEditor"/>
           <v-btn
@@ -124,8 +125,8 @@
             }
           },
           task: {
-            type: Boolean,
-            default: false
+            type: Object,
+            default: () => null
           },
           sub: {
             type: Boolean,
