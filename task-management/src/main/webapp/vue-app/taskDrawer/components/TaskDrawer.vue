@@ -382,14 +382,25 @@
 
       updateTaskTitle() {
         if(this.task.id!=null){
-          updateTask(this.task.id,this.task);
+          updateTask(this.task.id,this.task).then(task => {
+          this.$root.$emit('show-alert', { type: 'success', message: this.$t('alert.success.task.title')});
+        })
+        .catch(e => {
+                   console.debug("Error when updating task's title", e);
+                   this.$root.$emit('show-alert',{type:'error',message:this.$t('alert.error')} );
+                });
         }
       },
       updateTaskPriority(value) {
         if(value) {
           if (this.task.id != null) {
             this.task.priority = value;
-            updateTask(this.task.id, this.task);
+            updateTask(this.task.id, this.task).then(task => {
+            this.$root.$emit('show-alert', { type: 'success', message: this.$t('alert.success.task.priority') });
+        }).catch(e => {
+             console.debug("Error when updating task's priority", e);
+              this.$root.$emit('show-alert',{type:'error',message:this.$t('alert.error')} );
+           });
           } else {
             this.taskPriority = value;
           }
@@ -399,7 +410,12 @@
         if(value) {
           if (this.task.id != null) {
             this.task.status = value;
-            updateTask(this.task.id, this.task);
+            updateTask(this.task.id, this.task).then(task => {
+          this.$root.$emit('show-alert', { type: 'success', message: this.$t('alert.success.task.status') });
+        }).catch(e => {
+                             console.debug("Error when updating task's status", e);
+                             this.$root.$emit('show-alert',{type:'error',message: this.$t('alert.error')} );
+                          });
           }
         }
       },
@@ -407,7 +423,12 @@
         if(value) {
           if(this.task.id!=null){
             this.task.startDate = value;
-            updateTask(this.task.id,this.task);
+            updateTask(this.task.id,this.task).then(task => {
+          this.$root.$emit('show-alert', { type: 'success', message: this.$t('alert.success.task.startDate') });
+        }).catch(e => {
+                             console.debug("Error when updating task's start date", e);
+                             this.$root.$emit('show-alert',{type:'error',message:this.$t('alert.error')} );
+                          });
           } else {
             this.taskStartDate = value;
           }
@@ -417,21 +438,35 @@
         if(value && value!=='none') {
           if(this.task.id!=null){
             this.task.dueDate = value;
-            updateTask(this.task.id,this.task);
+            updateTask(this.task.id,this.task).then(task => {
+          this.$root.$emit('show-alert', { type: 'success', message: this.$t('alert.success.task.duetDate') });
+        }).catch(e => {
+                             console.debug("Error when updating task's due date", e);
+                             this.$root.$emit('show-alert',{type:'error',message:this.$t('alert.error')} );
+                          });
           } else {
             this.taskDueDate = value;
           }
         } else if(value==='none') {
           this.task.dueDate = null;
-          updateTask(this.task.id,this.task);
+          updateTask(this.task.id,this.task).then(task => {
+          this.$root.$emit('show-alert', { type: 'success', message: this.$t('alert.success.task.duetDate') });
+        }).catch(e => {
+                             console.debug("Error when updating task's due date", e);
+                             this.$root.$emit('show-alert',{type:'error',message: this.$t('alert.error')} );
+                          });
         }
       },
       updateTask() {
         if(this.task.id!=null){
-          updateTask(this.task.id,this.task);
-          window.setTimeout(() => {
-             this.$root.$emit('task-added', this.task)
-          }, 200);
+          updateTask(this.task.id,this.task).then(task => {
+          this.$root.$emit('task-added', this.task);
+          this.$root.$emit('show-alert', { type: 'success', message: this.$t('alert.success.task.updated') });
+        })
+        .catch(e => {
+                             console.debug("Error when updating task", e);
+                             this.$root.$emit('show-alert',{type:'error',message: this.$t('alert.error')} );
+                          });
         }
       },
       addTask() {
@@ -447,10 +482,14 @@
           });
           this.$emit('addTask', this.task);
           this.$root.$emit('task-added', this.task);
+          this.$root.$emit('show-alert', { type: 'success', message: this.$t('alert.success.task.created') });
           this.showEditor=false;
           this.$refs.addTaskDrawer.close();
           this.labelsToAdd = [];
-        });
+        }).catch(e => {
+                             console.debug("Error when adding task title", e);
+                             this.$root.$emit('show-alert',{type:'error',message: this.$t('alert.error')} );
+                          });
       },
       updateTaskAssignee(value) {
         if (this.task.id !== null) {
@@ -459,7 +498,12 @@
           } else {
             this.task.assignee = null
           }
-          updateTask(this.task.id,this.task);
+          updateTask(this.task.id,this.task).then(task => {
+          this.$root.$emit('show-alert', { type: 'success', message: this.$t('alert.success.task.assignee') });
+        }).catch(e => {
+                             console.debug("Error when updating task's assignee", e);
+                             this.$root.$emit('show-alert',{type:'error',message: this.$t('alert.error')} );
+                          });
         } else {
           if(value) {
             this.assignee = value;
@@ -475,7 +519,12 @@
           } else {
             this.task.coworker = []
           }
-          updateTask(this.task.id,this.task);
+          updateTask(this.task.id,this.task).then(task => {
+          this.$root.$emit('show-alert', { type: 'success', message: this.$t('alert.success.task.coworker') });
+        }).catch(e => {
+                             console.debug("Error when updating task's coworkers", e);
+                             this.$root.$emit('show-alert',{type:'error',message: this.$t('alert.error')} );
+                          });
         } else {
           if (value && value.length) {
             this.taskCoworkers = value
@@ -542,8 +591,12 @@
       },
       cloneTask() {
         cloneTask(this.task.id).then(task => {
+          this.$root.$emit('show-alert', { type: 'success', message: 'Task cloned' });
           this.$root.$emit('open-task-drawer', task);
-        });
+        }).catch(e => {
+                             console.debug("Error when cloning task", e);
+                             this.$root.$emit('show-alert',{type:'error',message:'Error when cloning task, please contact your System admin'} );
+                          });
       },
       deleteConfirm() {
         const idTask = this.task.id;
@@ -551,12 +604,12 @@
           method: 'DELETE',
           credentials: 'include',
         }).then(resp => {
-          if (!resp || !resp.ok) {
-            throw new Error('error message');
-          }else {
+            this.$root.$emit('show-alert', { type: 'success', message: 'Task deleted' });
             document.dispatchEvent(new CustomEvent('deleteTask', {detail: idTask}));
-          }
-        })
+        }).catch(e => {
+                             console.debug("Error when deleting task", e);
+                             this.$root.$emit('show-alert',{type:'error',message:'Error when deleting task, please contact your System admin'} );
+                          });
       },
       addMenuAction(title, uiIcon, enabled, actionFunctionName) {
         this.menuActions.push({

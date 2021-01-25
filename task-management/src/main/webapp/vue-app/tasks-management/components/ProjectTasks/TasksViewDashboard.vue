@@ -28,7 +28,6 @@
       @reset-filter-task-dashboard="resetFiltertaskDashboard"/>
     <div v-if="filterProjectActive">
       <div v-for="(project,i) in groupName.projectName" :key="project.name">
-
         <div
           v-if=" project.value && project.value.displayName && project.name!==''"
           class="d-flex align-center assigneeFilter pointer"
@@ -126,6 +125,7 @@
           :project="project" 
           :status-list="statusList"
           :tasks-list="tasksList"
+          :filter-task-completed="filterAsCompleted"
           @update-status="updateStatus"
           @create-status="createStatus"
           @delete-status="deleteStatus"/>
@@ -184,7 +184,8 @@
         tasksList: [],
         groupName:null,
         filterProjectActive:false,
-        status:null
+        status:null,
+        filterAsCompleted: false,
       }
     },
     watch:{
@@ -240,6 +241,8 @@
         this.loadingTasks = true;
         const tasks=e.tasks;
         tasks.showCompleteTasks=e.showCompleteTasks;
+        this.filterAsCompleted = e.showCompleteTasks;
+        console.warn('filter tasks',e.showCompleteTasks);
         if (tasks.groupBy==='completed'){
           tasks.showCompleteTasks=true;
         }
@@ -293,13 +296,21 @@
       },
       deleteConfirm() {
          return this.$statusService.deleteStatus(this.status.id).then(resp => {
+           this.$root.$emit('show-alert',{type:'success',message:this.$t('alert.success.status.deleted')} );
            this.getStatusByProject(this.project.id)
-        })
+        }).catch(e => {
+                             console.debug("Error when deleting status", e);
+                             this.$root.$emit('show-alert',{type:'error',message: this.$t('alert.error')} );
+                          });
       },
       updateStatus(status) {
          return this.$statusService.updateStatus(status).then(resp => {
+           this.$root.$emit('show-alert',{type:'success',message: this.$t('alert.success.status.update')} );
            this.getStatusByProject(this.project.id)
-        })
+        }).catch(e => {
+                             console.debug("Error when updating status", e);
+                             this.$root.$emit('show-alert',{type:'error',message: this.$t('alert.error')} );
+                          });
       },
       createStatus() {
         this.statusList.forEach(function (element, index) {
@@ -309,8 +320,12 @@
         element.rank=index
         },  this);
         return this.$statusService.createStatus(this.statusList).then(resp => {
-           this.getStatusByProject(this.project.id)
-        })
+          this.$root.$emit('show-alert',{type:'success',message: this.$t('alert.success.status.created')} );
+          this.getStatusByProject(this.project.id)
+        }).catch(e => {
+           console.debug("Error when creating status", e);
+            this.$root.$emit('show-alert',{type:'error',message: this.$t('alert.error')} );
+                 });
       },
     }
   }
