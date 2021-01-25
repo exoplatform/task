@@ -60,7 +60,7 @@ public class SpaceTaskDataInitializer extends SpaceListenerPlugin {
     Set<String> participators = new HashSet<String>(Arrays.asList(memberships.get(1)));
 
     ProjectDto project = ProjectUtil.newProjectInstanceDto(space.getDisplayName(), "", managers, participators);
-    projectService.createProject(project);
+    project = projectService.createProject(project);
     statusServ.createInitialStatuses(project);
   }
 
