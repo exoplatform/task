@@ -22,6 +22,8 @@ import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
+import org.exoplatform.social.core.identity.model.Profile;
+import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
 import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
@@ -173,6 +175,32 @@ public class TestUtils {
     user.setEmail("root@gmail.com");
 
     return user;
+  }
+
+  public static User getUserA() {
+    User user = new User();
+    user.setUsername("userA");
+    user.setDisplayName("userA");
+    user.setFirstName("userA");
+    user.setLastName("userA");
+    user.setEmail("userA@gmail.com");
+
+    return user;
+  }
+
+  public static org.exoplatform.social.core.identity.model.Identity getUserAIdentity() {
+    org.exoplatform.social.core.identity.model.Identity userIdentity = new org.exoplatform.social.core.identity.model.Identity(OrganizationIdentityProvider.NAME, "userA");
+
+    userIdentity.setEnable(true);
+    userIdentity.setDeleted(false);
+    userIdentity.setRemoteId("userA");
+
+    Profile userProfile = new Profile(userIdentity);
+    userProfile.setProperty(Profile.FULL_NAME, "userA");
+    userProfile.setProperty(Profile.AVATAR, "/userA.png");
+    userIdentity.setProfile(userProfile);
+
+    return userIdentity;
   }
 
 }
