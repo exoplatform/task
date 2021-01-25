@@ -458,6 +458,7 @@
               this.$refs.addProjectDrawer.close();
               this.showManager=true;
               this.showParticipant=true;
+              this.$root.$emit('show-alert',{type:'success',message:this.$t('alert.success.project.updated')} );
             }).then(() => {
                 this.project.managerIdentities = managers.map(user => ({
                   avatar: user.profile.avatarUrl,
@@ -469,7 +470,7 @@
             })
                     .catch(e => {
                       console.debug("Error updating project", e);
-                      this.$emit('error', e && e.message ? e.message : String(e));
+                      this.$root.$emit('show-alert',{type:'error',message:this.$t('alert.error')} );
                       this.postProject = false;
                     });
           } else {
@@ -480,10 +481,11 @@
                this.$refs.addProjectDrawer.close();
               this.showManager=true;
               this.showParticipant=true;
+              this.$root.$emit('show-alert',{type:'success',message:this.$t('alert.success.project.created')} );
             })
                     .catch(e => {
                       console.debug("Error saving project", e);
-                      this.$emit('error', e && e.message ? e.message : String(e));
+                      this.$root.$emit('show-alert',{type:'error',message:this.$t('alert.error')} );
                       this.postProject = false;
                     });
           }

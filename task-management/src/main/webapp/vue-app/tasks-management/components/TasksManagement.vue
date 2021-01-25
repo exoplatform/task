@@ -1,5 +1,13 @@
 <template>
   <v-app id="TasksManagementPortlet">
+    <div 
+      v-if="alert" 
+      id 
+      :class="alertType" 
+      class="alert">
+      <i :class="alertIcon"></i>
+      {{ message }}
+    </div>
     <v-tabs 
       v-if="!spaceName"
       v-model="tab" 
@@ -36,6 +44,10 @@
       return {
         tab: 'tab-1',
         spaceName: '',
+        alert: false,
+        message: '',
+        alertType: '',
+        alertIcon: '',
         task: {
         type: Object,
         default: () => ({}),
@@ -44,7 +56,10 @@
     },
  
   created(){
-     this.$root.$on('open-project-drawer', project => {
+     this.$root.$on('show-alert', message => {
+       this.displayMessage(message)
+      });
+    this.$root.$on('open-project-drawer', project => {
        this.$refs.addProjectDrawer.open(project);
       });
     this.$root.$on('show-project-details-tasks',project =>{
@@ -140,7 +155,22 @@
       setProjectUrl(id){
         const urlPath = document.location.pathname
         window.history.pushState('task', 'Task details', `${urlPath.split('tasks')[0]}tasks/projectDetail/${id}`); 
+      },
+      displayMessage(message) {
+      if(message.type==='success'){
+        this.alertType = 'alert-success';
+        this.alertIcon = 'uiIconSuccess';
+      }else if(message.type==='error'){
+        this.alertType = 'alert-error';
+        this.alertIcon = 'uiIconError';
+      }else {
+        this.alertType = 'alert-info';
+        this.alertIcon = 'uiIconInfo';
       }
+      this.message = message.message;
+      this.alert = true;
+      window.setTimeout(() => this.alert = false, 5000);
+    }
 }
    }
 </script>
