@@ -1,18 +1,11 @@
 <template>
 
   <div :id="status.id">
-    <draggable 
-      v-model="tasksList" 
-      :move="checkMove"
-      group="people" 
-      @start="drag=true" 
-      @end="drag=false">
-      <task-view-list-item
-        v-for="task in tasksList"
-        :key="task.task.id"
-        :task="task"
-        @update-task-completed="updateTaskCompleted"/>
-    </draggable>  
+    <task-view-list-item
+      v-for="task in tasksList"
+      :key="task.task.id"
+      :task="task"
+      @update-task-completed="updateTaskCompleted"/>
   </div>
 
 </template>
@@ -38,25 +31,10 @@
       newStatus:null
     };
   },
-    watch: {
-      drag(val) {
-        if(!val&&this.task&&this.newStatus&&this.task.status.name !== this.newStatus){
-             this.$emit('updateTaskStatus', this.task,this.newStatus);
-        }
-      },
-   },
     methods: {
       updateTaskCompleted(e){
         this.$emit('updateTaskCompleted', e);
       },
-      checkMove(evt){
-         if(evt){
-      this.task = evt.draggedContext.element.task
-      this.newStatus = evt.to.parentElement.id
-       } 
-      
-    },
-
     }
   }
 </script>

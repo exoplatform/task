@@ -117,7 +117,13 @@
           if(this.task.id && !isNaN(this.task.id)){
             self.inputVal = newValue;
             this.task.description = newValue;
-            updateTask(this.task.id ,this.task);
+            updateTask(this.task.id ,this.task)
+            .then(task => {
+               this.$root.$emit('show-alert', { type: 'success', message: this.$t('alert.success.task.description') });})
+              .catch(e => {
+                console.debug("Error when updating task's title", e);
+                this.$root.$emit('show-alert',{type:'error',message:this.$t('alert.error')} );
+                   });
           }
         }
       },
