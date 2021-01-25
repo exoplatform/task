@@ -261,13 +261,21 @@
       },
       deleteProject() {
         this.$projectService.deleteProjectInfo(this.project)
-                .then(() => this.$emit('projectDeleted'))
-                .then(window.location.href = `${eXo.env.portal.context}/${eXo.env.portal.portalName}/tasks/myProjects`);
+                .then(() => this.$emit('refreshProjects'))
+                .then(this.$root.$emit('show-alert',{type:'success',message:this.$t('alert.success.project.deleted')} ))
+                .catch(e => {
+                    console.debug("Error updating project", e);
+                    this.$root.$emit('show-alert',{type:'error',message:this.$t('alert.error')} );
+                 });
       },
       cloneProject() {
         this.$projectService.cloneProject(this.project)
-                .then(() => this.$emit('projectCloned'))
-                .then(window.location.href = `${eXo.env.portal.context}/${eXo.env.portal.portalName}/tasks/myProjects`)
+                .then(() => this.$emit('refreshProjects'))
+                .then(this.$root.$emit('show-alert',{type:'success',message:this.$t('alert.success.project.cloned')} ))
+                .catch(e => {
+                   console.debug("Error updating project", e);
+                   this.$root.$emit('show-alert',{type:'error',message:this.$t('alert.error')} );
+                })
       },
     changeColorProject(project,color) {
       this.$projectService.updateProjectColor(project, color)

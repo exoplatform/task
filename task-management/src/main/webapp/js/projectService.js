@@ -78,8 +78,6 @@ export function cloneProject(project) {
         credentials: 'include',
         method: 'POST',
         body: JSON.stringify(project)
-    }).then((data) => {
-        return data.json();
     });
 }
 
