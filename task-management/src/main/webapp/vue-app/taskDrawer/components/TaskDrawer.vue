@@ -153,7 +153,9 @@
                     <task-comment-editor
                       ref="commentEditor"
                       v-model="editorData"
-                      :placeholder="commentPlaceholder"
+                      :max-length="MESSAGE_MAX_LENGTH"
+                      :placeholder="$t('task.placeholder').replace('{0}', MESSAGE_MAX_LENGTH)"
+                      :task="task"
                       :reset="reset"
                       class="comment"/>
                     <v-btn
