@@ -25,6 +25,7 @@
         v-for="task in tasksList"
         :key="task.task.id"
         :task="task"
+        :show-completed-tasks="showCompletedTasks"
         @update-task-completed="updateTaskCompleted"/>
     </draggable>   
   </div>     
@@ -48,6 +49,10 @@
       project: {
         type: Number,
         default: 0
+      },
+      showCompletedTasks: {
+        type: Boolean,
+        default: false
       }
     },
     data() {
@@ -71,7 +76,7 @@
       checkMove(evt){
         if(evt){
           document.getElementsByClassName("taskBoardColumn").forEach(element => element.style.backgroundColor= "#FFFFFF");
-          evt.to.parentElement.getElementsByClassName("taskBoardColumn").forEach(element => element.style.backgroundColor= "#e2e9ef");
+          evt.to.parentElement.getElementsByClassName("taskBoardColumn").forEach(element => element.style.backgroundColor= "#f2f2f2");
           this.task = evt.draggedContext.element.task
           this.newStatus = evt.to.parentElement.id;
         }
