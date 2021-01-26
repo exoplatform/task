@@ -26,7 +26,7 @@
         @click="$root.$emit('displayTaskComment')">{{ $t('comment.message.Reply') }}
       </v-btn>
     </div>
-    <div class="py-0 TaskSubComments">
+    <div v-if="comment.subComments && comment.subComments.length" class="py-0 TaskSubComments">
       <div class="TaskSubCommentItem pl-10 pr-0 pb-2">
         <div class="commentItem">
           <div class="commentHeader d-flex">
@@ -79,7 +79,12 @@
         return this.getRelativeTime(this.comment.comment.createdTime.time)
       },
       lastSubComment() {
-        return this.comment.subComments[this.comment.subComments.length-1];
+        return this.comment.subComments && this.comment.subComments[this.comment.subComments.length-1];
+      },
+    },
+    watch: {
+      comment(){
+        console.warn(this.comment.author.displayName);
       }
     },
     methods: {

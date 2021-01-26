@@ -80,6 +80,13 @@
             autofocus
             @change="updateTaskTitle()"/>
         </div>
+        <div
+          class="lastUpdatedTask d-flex pb-3"
+          @click="$root.$emit('displayTaskChanges')">
+          <span class="pr-2">{{ $t('label.task.lastUpdate') }}</span>
+          <date-format :value="logs[0].createdTime" :format="dateTimeFormat" />
+          <span class="pl-2" >{{ $t('label.task.lastUpdateBy') }} {{ logs[0].authorFullName }}</span>
+        </div>
         <div class="taskAssignement ml-8 pb-3">
           <task-assignment
             :task="task"
@@ -125,75 +132,21 @@
           v-if="task.id!=null"
           xs12
           class="pt-2 taskCommentsAndChanges">
-          <v-tabs color="#578DC9">
-            <v-tab class="text-capitalize">{{ $t('label.comments') }}</v-tab>
-            <v-tab class="text-capitalize">{{ $t('label.changes') }}</v-tab>
-            <v-tab-item class="pt-5 taskComments">
-              <div class="taskCommentNumber">
-                <span class="lastCommentLabel">{{ $t('comment.message.lastComment') }}</span>
-                <span class="ViewAllCommentLabelLabel" @click="$root.$emit('displayTaskComment')">{{ $t('comment.message.viewAllComment') }} ({{ comments.length }})</span>
-              </div>
-              <div>
-                <!-- <div
-                  v-for="(item, i) in comments"
-                  :key="i"
-                  class="pr-0 pl-0 TaskCommentItem">
-                  <task-comments
-                    :task="task"
-                    :comment="item"
-                    :comments="comments"
-                    :is-open="!showEditor"
-                    :close-editor="subEditorIsOpen"
-                    @isOpen="OnCloseAllEditor()"
-                    @showSubEditor="OnUpdateEditorStatus"/>
-                </div>-->
-                <div
-                  class="pr-0 pl-0 TaskCommentItem">
-                  <task-comments
-                    :task="task"
-                    :comment="comments[comments.length-1]"
-                    :comments="comments"/>
-                </div>
-                <!--<div v-if="showEditor" class="comment commentEditor d-flex align-start">
-                  <exo-user-avatar
-                    :username="currentUserName"
-                    :avatar-url="currentUserAvatar"
-                    :size="30"
-                    :url="null"/>
-                  <div class="editorContent ml-2">
-                    <task-comment-editor
-                      ref="commentEditor"
-                      v-model="editorData"
-                      :max-length="MESSAGE_MAX_LENGTH"
-                      :placeholder="$t('task.placeholder').replace('{0}', MESSAGE_MAX_LENGTH)"
-                      :reset="reset"
-                      class="comment"/>
-                    <v-btn
-                      :disabled="postDisabled"
-                      depressed
-                      small
-                      type="button"
-                      class="btn btn-primary ignore-vuetify-classes btnStyle mt-1 mb-2 commentBtn"
-                      @click="addTaskComment()">{{ $t('comment.label.comment') }}</v-btn>
-                  </div>
-                </div>-->
-                <!-- <a
-                  v-else
-                  class="pl-4"
-                  @click="openEditor">{{ $t('comment.label.comment') }}</a>-->
-              </div>
-            </v-tab-item>
-            <v-tab-item class="pt-5 taskChanges">
-              <v-list class="py-0">
-                <v-list-item
-                  v-for="(item, i) in logs"
-                  :key="i"
-                  class="pr-0">
-                  <log-details :change-log="item"/>
-                </v-list-item>
-              </v-list>
-            </v-tab-item>
-          </v-tabs>
+          <div class="taskComments">
+            <div v-if="comments && comments.length" class="taskCommentNumber pb-3">
+              <span class="lastCommentLabel">{{ $t('comment.message.lastComment') }}</span>
+              <span class="ViewAllCommentLabelLabel" @click="$root.$emit('displayTaskComment')">{{ $t('comment.message.viewAllComment') }} ({{ comments.length }})</span>
+            </div>
+            <div v-else class="taskCommentNumber pb-3">
+              <span class="lastCommentLabel">{{ $t('comment.message.noComment') }}</span>
+              <span class="ViewAllCommentLabelLabel" @click="$root.$emit('displayTaskComment')">{{ $t('comment.message.addYourComment') }}</span>
+            </div>
+            <div v-if="comments && comments.length" class="pr-0 pl-0 TaskCommentItem">
+              <task-last-comment
+                :task="task"
+                :comment="comments[comments.length-1]" />
+            </div>
+          </div>
         </v-flex>
       </template>
       <template v-if="!task.id" slot="footer">
@@ -214,10 +167,13 @@
       </template>
     </exo-drawer>
     <task-comments-drawer
+      ref="taskCommentDrawer"
       :task="task"
-      :comments="comments"
-      :show-editor="showEditor"
-      :sub-editor-is-open="subEditorIsOpen"/>
+      :comments="comments"/>
+    <task-changes-drawer
+      ref="taskChangesDrawer"
+      :task="task"
+      :logs="logs"/>
   </div>
 
 </template>
@@ -236,12 +192,8 @@
       return {
         displayActionMenu: false,
         menuActions: [],
-        editorData: null,
         reset: false,
-        disabledComment: true,
         dates: [],
-        showEditor: true,
-        showSubEditor: false,
         commentPlaceholder: this.$t('comment.message.addYourComment'),
         descriptionPlaceholder: this.$t('editinline.taskDescription.empty'),
         chips: [],
@@ -263,6 +215,11 @@
         datePickerTop: true,
         currentUserName: eXo.env.portal.userName,
         MESSAGE_MAX_LENGTH:1250,
+        dateTimeFormat: {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        },
       }
     },
     computed: {
@@ -271,9 +228,6 @@
           return ""
         }
         return `${eXo.env.portal.context}/${eXo.env.portal.portalName}/tasks/taskDetail/${this.task.id}`;
-      },
-      currentUserAvatar() {
-        return `/portal/rest/v1/social/users/${eXo.env.portal.userName}/avatar`;
       },
       taskTitle() {
         return this.task && this.task.title;
@@ -284,25 +238,8 @@
       disableSaveButton() {
         return this.saving || !this.taskTitleValid;
       },
-      postDisabled: function() {
-        if(this.disabledComment){
-          return true
-        }
-        else if(this.editorData !== null && this.editorData!==''){
-          let pureText = this.editorData ? this.editorData.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, '').trim() : '';
-          const div = document.createElement('div');
-          div.innerHTML = pureText;
-          pureText = div.textContent || div.innerText || '';
-          return pureText.length> this.MESSAGE_MAX_LENGTH ;
-        }else {return true}
-      },
-    },
-    watch: {
-      editorData(val) {
-        this.disabledComment = val === '';
-      },
-      showEditor() {
-        this.showSubEditor = !this.showEditor;
+      lastTaskUpdate() {
+        return new Date(this.logs[0].createdTime);
       },
     },
     created() {
@@ -370,53 +307,22 @@
       closeAssignements() {
         document.dispatchEvent(new CustomEvent('closeAssignments'));
       },
-      openEditor() {
-        this.showEditor = true;
-        this.subEditorIsOpen = true;
-        this.editorData = null;
-      },
-      OnUpdateEditorStatus: function (val) {
-        this.showEditor = !val;
-        if (val === false) {
-          this.subEditorIsOpen = false;
-        }
-      },
-      OnCloseAllEditor() {
-        this.subEditorIsOpen = true;
-      },
-      addTaskComment() {
-        let comment = this.$refs.commentEditor.getMessage();
-        comment = this.urlVerify(comment);
-        addTaskComments(this.task.id,comment).then(comment => {
-          this.comments.push(comment);
-          this.reset = !this.reset;
-        });
-      },
-      getUserAvatar(username) {
-        return `/rest/v1/social/users/${username}/avatar`;
-      },
-
       updateTaskTitle() {
         if(this.task.id!=null){
           updateTask(this.task.id,this.task).then(task => {
           this.$root.$emit('show-alert', { type: 'success', message: this.$t('alert.success.task.title')});
         })
         .catch(e => {
-                   console.debug("Error when updating task's title", e);
-                   this.$root.$emit('show-alert',{type:'error',message:this.$t('alert.error')} );
-                });
+          console.debug("Error when updating task's title", e);
+          this.$root.$emit('show-alert',{type:'error',message:this.$t('alert.error')} );
+        });
         }
       },
       updateTaskPriority(value) {
         if(value) {
           if (this.task.id != null) {
             this.task.priority = value;
-            updateTask(this.task.id, this.task).then(task => {
-            this.$root.$emit('show-alert', { type: 'success', message: this.$t('alert.success.task.priority') });
-        }).catch(e => {
-             console.debug("Error when updating task's priority", e);
-              this.$root.$emit('show-alert',{type:'error',message:this.$t('alert.error')} );
-           });
+            updateTask(this.task.id, this.task);
           } else {
             this.taskPriority = value;
           }
@@ -429,9 +335,9 @@
             updateTask(this.task.id, this.task).then(task => {
           this.$root.$emit('show-alert', { type: 'success', message: this.$t('alert.success.task.status') });
         }).catch(e => {
-                             console.debug("Error when updating task's status", e);
-                             this.$root.$emit('show-alert',{type:'error',message: this.$t('alert.error')} );
-                          });
+          console.debug("Error when updating task's status", e);
+          this.$root.$emit('show-alert',{type:'error',message: this.$t('alert.error')} );
+        });
           }
         }
       },
@@ -442,9 +348,9 @@
             updateTask(this.task.id,this.task).then(task => {
           this.$root.$emit('show-alert', { type: 'success', message: this.$t('alert.success.task.startDate') });
         }).catch(e => {
-                             console.debug("Error when updating task's start date", e);
-                             this.$root.$emit('show-alert',{type:'error',message:this.$t('alert.error')} );
-                          });
+          console.debug("Error when updating task's start date", e);
+          this.$root.$emit('show-alert',{type:'error',message:this.$t('alert.error')} );
+        });
           } else {
             this.taskStartDate = value;
           }
@@ -457,9 +363,9 @@
             updateTask(this.task.id,this.task).then(task => {
           this.$root.$emit('show-alert', { type: 'success', message: this.$t('alert.success.task.duetDate') });
         }).catch(e => {
-                             console.debug("Error when updating task's due date", e);
-                             this.$root.$emit('show-alert',{type:'error',message:this.$t('alert.error')} );
-                          });
+          console.debug("Error when updating task's due date", e);
+          this.$root.$emit('show-alert',{type:'error',message:this.$t('alert.error')} );
+        });
           } else {
             this.taskDueDate = value;
           }
@@ -468,9 +374,9 @@
           updateTask(this.task.id,this.task).then(task => {
           this.$root.$emit('show-alert', { type: 'success', message: this.$t('alert.success.task.duetDate') });
         }).catch(e => {
-                             console.debug("Error when updating task's due date", e);
-                             this.$root.$emit('show-alert',{type:'error',message: this.$t('alert.error')} );
-                          });
+          console.debug("Error when updating task's due date", e);
+          this.$root.$emit('show-alert',{type:'error',message: this.$t('alert.error')} );
+        });
         }
       },
       updateTask() {
@@ -498,14 +404,15 @@
           });
           this.$emit('addTask', this.task);
           this.$root.$emit('task-added', this.task);
+          //this.showEditor=false;
           this.$root.$emit('show-alert', { type: 'success', message: this.$t('alert.success.task.created') });
           this.showEditor=false;
           this.$refs.addTaskDrawer.close();
           this.labelsToAdd = [];
         }).catch(e => {
-                             console.debug("Error when adding task title", e);
-                             this.$root.$emit('show-alert',{type:'error',message: this.$t('alert.error')} );
-                          });
+          console.debug("Error when adding task title", e);
+          this.$root.$emit('show-alert',{type:'error',message: this.$t('alert.error')} );
+        });
       },
       updateTaskAssignee(value) {
         if (this.task.id !== null) {
@@ -538,9 +445,9 @@
           updateTask(this.task.id,this.task).then(task => {
           this.$root.$emit('show-alert', { type: 'success', message: this.$t('alert.success.task.coworker') });
         }).catch(e => {
-                             console.debug("Error when updating task's coworkers", e);
-                             this.$root.$emit('show-alert',{type:'error',message: this.$t('alert.error')} );
-                          });
+          console.debug("Error when updating task's coworkers", e);
+          this.$root.$emit('show-alert',{type:'error',message: this.$t('alert.error')} );
+        });
         } else {
           if (value && value.length) {
             this.taskCoworkers = value
@@ -592,15 +499,15 @@
       },
       cancel() {
         this.$emit('updateTaskList');
-        this.showEditor=false;
         this.$refs.addTaskDrawer.close();
       },
       onCloseDrawer() {
-        this.$root.$emit('task-drawer-closed', this.task)
-        this.showEditor=false;
+        this.$root.$emit('task-drawer-closed', this.task);
         this.task={};
         document.dispatchEvent(new CustomEvent('drawerClosed'));
         this.$root.$emit('hideTaskComment');
+        this.$root.$emit('hideTaskChanges');
+        this.comments= []
       },
       deleteTask() {
         this.deleteConfirmMessage = `${this.$t('popup.msg.deleteTask')} : <strong>${this.task.title}</strong>? `;
@@ -611,9 +518,9 @@
           this.$root.$emit('show-alert', { type: 'success', message: 'Task cloned' });
           this.$root.$emit('open-task-drawer', task);
         }).catch(e => {
-                             console.debug("Error when cloning task", e);
-                             this.$root.$emit('show-alert',{type:'error',message:'Error when cloning task, please contact your System admin'} );
-                          });
+          console.debug("Error when cloning task", e);
+          this.$root.$emit('show-alert',{type:'error',message:'Error when cloning task, please contact your System admin'} );
+        });
       },
       deleteConfirm() {
         const idTask = this.task.id;
@@ -624,9 +531,9 @@
             this.$root.$emit('show-alert', { type: 'success', message: 'Task deleted' });
             document.dispatchEvent(new CustomEvent('deleteTask', {detail: idTask}));
         }).catch(e => {
-                             console.debug("Error when deleting task", e);
-                             this.$root.$emit('show-alert',{type:'error',message:'Error when deleting task, please contact your System admin'} );
-                          });
+          console.debug("Error when deleting task", e);
+          this.$root.$emit('show-alert',{type:'error',message:'Error when deleting task, please contact your System admin'} );
+        });
       },
       addMenuAction(title, uiIcon, enabled, actionFunctionName) {
         this.menuActions.push({
