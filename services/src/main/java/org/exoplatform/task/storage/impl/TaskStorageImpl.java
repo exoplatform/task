@@ -331,7 +331,8 @@ public class TaskStorageImpl implements TaskStorage {
             } catch (Exception e) {
                 LOG.warn("Task description cannot be sanitized");
             }
-        }        task.setPriority(taskEntity.getPriority());
+        }        
+        task.setPriority(taskEntity.getPriority());
         task.setContext(taskEntity.getContext());
         task.setAssignee(taskEntity.getAssignee());
         task.setCoworker(taskEntity.getCoworker());
