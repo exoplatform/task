@@ -2242,30 +2242,10 @@
         font-size: 16px;
         color: @primaryColor;
         text-decoration: underline;
-        font-weight: bold;
         cursor: pointer;
       }
       .comment{
         position: relative;
-      }
-      .tooManyChars {
-        color: #bc4343!important;
-      }
-      .tooManyChars .uiIconMessageLength {
-        color: #bc4343!important;
-      }
-      .activityCharsCount{
-        position: absolute;
-        bottom: 8px;
-        right: 10px;
-        color: #adadad;
-        .uiIconMessageLength {
-          font-size: 14px;
-          color: #2eb58c;
-          &:before {
-            content: "\e910";
-          }
-        }
       }
       .commentItem {
         width: 100%;
@@ -2374,6 +2354,27 @@
       }
       .TaskSubComments{
         margin-left: -20px!important;
+      }
+    }
+    .commentEditor {
+      .tooManyChars {
+        color: #bc4343!important;
+      }
+      .tooManyChars .uiIconMessageLength {
+        color: #bc4343!important;
+      }
+      .activityCharsCount{
+        position: absolute;
+        bottom: 8px;
+        right: 10px;
+        color: #adadad;
+        .uiIconMessageLength {
+          font-size: 14px;
+          color: #2eb58c;
+          &:before {
+            content: "\e910";
+          }
+        }
       }
     }
   }
