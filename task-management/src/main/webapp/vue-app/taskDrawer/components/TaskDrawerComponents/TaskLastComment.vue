@@ -82,11 +82,6 @@
         return this.comment.subComments && this.comment.subComments[this.comment.subComments.length-1];
       },
     },
-    watch: {
-      comment(){
-        console.warn(this.comment.author.displayName);
-      }
-    },
     methods: {
       getRelativeTime(previous) {
         const msPerMinute = 60 * 1000;

@@ -178,7 +178,7 @@
 
 </template>
 <script>
-  import {updateTask, addTask, addTaskToLabel, getTaskLogs, getTaskComments, addTaskComments, cloneTask} from '../taskDrawerApi';
+  import {updateTask, addTask, addTaskToLabel, getTaskLogs, getTaskComments, cloneTask} from '../taskDrawerApi';
   export default {
     props: {
       task: {
