@@ -240,6 +240,11 @@
       this.$root.$on('filter-task-labels',labels =>{
         this.labels = labels;
       });
+      if(localStorage.getItem(`groupBy${this.project}`)!==null){
+        this.groupBy = localStorage.getItem(`groupBy${this.project}`);
+        this.sortBy = localStorage.getItem(`sortBy${this.project}`);
+        this.filterTasks();
+      }
     },
     methods: {
       open() {
@@ -254,6 +259,8 @@
         this.statusSelected='';
         this.groupBy='none';
         this.sortBy='';
+        localStorage.setItem(`groupBy${this.project}`, 'none');
+        localStorage.setItem(`sortBy${this.project}`, '');
         this.labels='';
         this.showCompleteTasks=false;
         this.getFilterNumber()
@@ -269,7 +276,9 @@
         this.sortBy='';
         this.labels='';
         this.showCompleteTasks=false;
-        this.getFilterNumber()
+        this.getFilterNumber();
+        localStorage.setItem(`groupBy${this.project}`, 'none');
+        localStorage.setItem(`sortBy${this.project}`, '');
         this.$root.$emit('reset-filter-task-group-sort',this.groupBy);
         this.$emit('reset-filter-task');
       },
@@ -296,7 +305,10 @@
           showCompleteTasks: this.showCompleteTasks,
           groupBy: this.groupBy,
           orderBy: this.sortBy,
+          project: this.project,
         };
+        localStorage.setItem(`groupBy${tasks.project}`, this.groupBy);
+        localStorage.setItem(`sortBy${tasks.project}`, this.sortBy);
         const filterGroupSort = {
           groupBy: this.groupBy,
           sortBy: this.sortBy,
@@ -315,7 +327,9 @@
         if(this.project){
           this.$emit('filter-task',{ tasks,filterLabels,showCompleteTasks:this.showCompleteTasks });
           this.getFilterNumber()
-          this.$refs.filterTasksDrawer.close();
+          if (this.$refs.filterTasksDrawer){
+            this.$refs.filterTasksDrawer.close();
+          }
         }else{
           this.$emit('filter-task-query', tasks,filterGroupSort,filterLabels);
        
