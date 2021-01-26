@@ -10,7 +10,7 @@
           <v-list-item class="pr-0">
             <v-list-item-content class="drawerTitle align-start d-flex text-header-title text-truncate">
               <i class="uiIcon uiArrowBAckIcon" @click="closeDrawer"></i>
-              {{ $t('label.comments') }}
+              <span>{{ $t('label.comments') }}</span>
             </v-list-item-content>
             <v-list-item-action class="drawerIcons align-end d-flex flex-row">
               <v-btn icon>
@@ -31,7 +31,9 @@
                 :comment="item"
                 :comments="comments"
                 :is-open="!showEditor"
-                :close-editor="subEditorIsOpen"/>
+                :close-editor="subEditorIsOpen"
+                @isOpen="OnCloseAllEditor()"
+                @showSubEditor="OnUpdateEditorStatus"/>
             </div>
           </div>
           <div v-if="showEditor" class="comment commentEditor d-flex align-start">
@@ -67,6 +69,8 @@
   </div>
 </template>
 <script>
+  import {addTaskComments} from "../../taskDrawerApi";
+
   export default {
     props: {
       comment: {
@@ -89,10 +93,6 @@
         type: Boolean,
         default: false
       },
-      showEditor:{
-        type: Boolean,
-        default: false
-      },
       subEditorIsOpen: {
         type: Boolean,
         default: false
@@ -101,7 +101,19 @@
     data() {
       return {
         currentUserName: eXo.env.portal.userName,
+        showEditor: true,
+        showSubEditor: false,
+        disabledComment: true,
+        editorData: null,
       }
+    },
+    watch: {
+      editorData(val) {
+        this.disabledComment = val === '';
+      },
+      showEditor() {
+        this.showSubEditor = !this.showEditor;
+      },
     },
     mounted() {
       this.$root.$on('displayTaskComment', taskCommentDrawer => {
@@ -112,11 +124,45 @@
       });
     },
     methods: {
+      addTaskComment() {
+        let comment = this.$refs.commentEditor.getMessage();
+        comment = this.urlVerify(comment);
+        addTaskComments(this.task.id,comment).then(comment => {
+          this.comments.push(comment);
+          this.reset = !this.reset;
+        });
+      },
+      openEditor() {
+        this.showEditor = true;
+        this.subEditorIsOpen = true;
+        this.editorData = null;
+      },
+      OnUpdateEditorStatus: function (val) {
+        this.showEditor = !val;
+        if (val === false) {
+          this.subEditorIsOpen = false;
+        }
+      },
+      OnCloseAllEditor() {
+        this.subEditorIsOpen = true;
+      },
       closeDrawer() {
         this.showTaskCommentDrawer = false
       },
       currentUserAvatar() {
         return `/portal/rest/v1/social/users/${eXo.env.portal.userName}/avatar`;
+      },
+      postDisabled: function() {
+        if(this.disabledComment){
+          return true
+        }
+        else if(this.editorData !== null && this.editorData!==''){
+          let pureText = this.editorData ? this.editorData.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, '').trim() : '';
+          const div = document.createElement('div');
+          div.innerHTML = pureText;
+          pureText = div.textContent || div.innerText || '';
+          return pureText.length> this.MESSAGE_MAX_LENGTH ;
+        }else {return true}
       },
     }
   };
