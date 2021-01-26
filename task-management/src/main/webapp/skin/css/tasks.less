@@ -1922,6 +1922,12 @@
       font-size: 30px!important;
     }
   }
+  .lastUpdatedTask {
+    color: @greyColorLighten1;
+    font-style: italic;
+    font-size: 16px;
+    cursor: pointer;
+  }
   .taskLabelsName {
     .inputTaskLabel{
       box-shadow: none!important;
@@ -2228,6 +2234,17 @@
   }
   .taskCommentsAndChanges {
     .taskComments {
+      .lastCommentLabel {
+        font-size: 16px;
+        color: @greyColorLighten1;
+      }
+      .ViewAllCommentLabelLabel {
+        font-size: 16px;
+        color: @primaryColor;
+        text-decoration: underline;
+        font-weight: bold;
+        cursor: pointer;
+      }
       .comment{
         position: relative;
       }
@@ -2387,6 +2404,22 @@
   }
 }
 .showTaskCommentDrawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 420px;
+  background: white;
+  height: 100%;
+  z-index: 1035;
+  -webkit-animation-duration: .5s;
+  animation-duration: .5s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+  -webkit-animation-name: slideInRight;
+  animation-name: slideInRight;
+}
+
+.showTaskChangesDrawer {
   position: fixed;
   top: 0;
   right: 0;
