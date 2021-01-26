@@ -246,7 +246,7 @@
         isParticipator :false,
         datePickerTop: true,
         currentUserName: eXo.env.portal.userName,
-        MESSAGE_MAX_LENGTH:255,
+        MESSAGE_MAX_LENGTH:1250,
       }
     },
     computed: {

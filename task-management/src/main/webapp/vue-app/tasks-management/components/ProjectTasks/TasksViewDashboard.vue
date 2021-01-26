@@ -26,7 +26,7 @@
       @taskViewChangeTab="getChangeTabValue"
       @filter-task-dashboard="filterTaskDashboard"
       @reset-filter-task-dashboard="resetFiltertaskDashboard"/>
-    <div v-if="filterProjectActive">
+    <div v-if="filterProjectActive && groupName && groupName.projectName">
       <div v-for="(project,i) in groupName.projectName" :key="project.name">
 
         <div
@@ -183,7 +183,7 @@
         statusList: [],
         tasksList: [],
         groupName:null,
-        filterProjectActive:false,
+        filterProjectActive:true,
         status:null
       }
     },
@@ -219,15 +219,28 @@
       },
       getTasksByProject(ProjectId,query) {
         this.loadingTasks = true;
+        if(localStorage.getItem(`groupBy${ProjectId}`)!==null){
+          this.groupBy = localStorage.getItem(`groupBy${ProjectId}`);
+          this.sortBy = localStorage.getItem(`sortBy${ProjectId}`);
+        }
         const tasks = {
           query: query,
+          groupBy: this.groupBy,
+          orderBy: this.sortBy,
           offset: 0,
           limit: 0,
           showCompleteTasks:false,
         };
         return this.$tasksService.filterTasksList(tasks,'','','',ProjectId).then(data => {
-          this.tasksList = data && data.tasks || [];
-          this.filterProjectActive=false;
+          if(data.projectName){
+            this.filterProjectActive=true
+            this.tasksList = data && data.tasks || [];
+            this.groupName=data;
+          }
+          else {
+            this.filterProjectActive=false
+            this.tasksList = data && data.tasks || [];
+          }
 
         })
         .finally(() => this.loadingTasks = false);
@@ -243,7 +256,7 @@
         if (tasks.groupBy==='completed'){
           tasks.showCompleteTasks=true;
         }
-        return this.$tasksService.filterTasksList(e.tasks,'','',e.filterLabels.labels,this.project.id).then(data => {
+        return this.$tasksService.filterTasksList(e.tasks,'','',e.filterLabels.labels,this.project.id || tasks.project).then(data => {
           if(data.projectName){
             this.filterProjectActive=true
             this.tasksList = data && data.tasks || [];
