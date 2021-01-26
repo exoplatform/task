@@ -6,8 +6,7 @@ const webpackCommonConfig = require('./webpack.common.js');
 const app = 'task-management';
 
 // add the server path to your server location path
-// const exoServerPath = "/exo-server";
-const exoServerPath = "/home/exo/Desktop/platform-6.2.x-tasks-SNAPSHOT";
+const exoServerPath = "/exo-server";
 
 let config = merge(webpackCommonConfig, {
   output: {
