@@ -8,9 +8,9 @@
       <v-layout column>
         <v-flex class="mx-0 drawerHeader flex-grow-0">
           <v-list-item class="pr-0">
-            <v-list-item-content class="drawerTitle align-start d-flex text-header-title text-truncate">
+            <v-list-item-content class="drawerTitle d-flex text-header-title text-truncate">
               <i class="uiIcon uiArrowBAckIcon" @click="closeDrawer"></i>
-              <span>{{ $t('label.changes') }}</span>
+              <span class="pl-2">{{ $t('label.changes') }}</span>
             </v-list-item-content>
             <v-list-item-action class="drawerIcons align-end d-flex flex-row">
               <v-btn icon>
@@ -27,29 +27,40 @@
               :key="i"
               class="pr-0">
               <v-list-item-content class="pt-1">
-                <v-flex xs12>
-                  <v-layout>
-                    <v-flex xs8>
-                      <span
-                        v-if="item.actionName == ('assign' || 'unassign')"
-                        v-html="$t(item.actionName.toString(), {
-                          '0': `<a href='/portal/dw/profile/${item.author}'>${item.authorFullName}</a>`,
-                          '1': `<a href='/portal/dw/profile/${item.target}'>${item.targetFullName}</a>`
-                      })"></span>
-                      <span
-                        v-else
-                        v-html="$t(item.actionName.toString(), {
-                          '0': `<a href='/portal/dw/profile/${item.author}'>${item.authorFullName}</a>`,
-                          '1': item.target
-                      })"></span>
-                    </v-flex>
-                    <v-flex xs4>
-                      <span class="dateTime caption">
+                <div class="d-flex align-center">
+                  <exo-user-avatar
+                    :username="currentUserName"
+                    :avatar-url="userAvatar(item.author)"
+                    :size="30"
+                    :url="null"/>
+                  <div class="pt-2">
+                    <span
+                      v-if="logMsg(item) == ('assign' || 'unassign')"
+                      class="pl-3"
+                      v-html="$t(item.actionName.toString(), {
+                        '0': `<a href='/portal/dw/profile/${item.author}'>${item.authorFullName}</a>`,
+                        '1': `<a href='/portal/dw/profile/${item.target}'>${item.targetFullName}</a>`
+                    })"></span>
+                    <span
+                      v-else
+                      class="pl-3"
+                      v-html="$t(logMsg(item), {
+                        '0': `<a href='/portal/dw/profile/${item.author}'>${item.authorFullName}</a>`,
+                        '1': item.target
+                    })"></span>
+                    <div>
+                      <div class="dateTime caption">
                         <date-format :value="item.createdTime" :format="dateTimeFormat" />
-                      </span>
-                    </v-flex>
-                  </v-layout>
-                </v-flex>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+                <!-- <div>
+                    <span class="dateTime caption">
+                      <date-format :value="item.createdTime" :format="dateTimeFormat" />
+                    </span>
+                  </div>-->
               </v-list-item-content>
             </v-list-item>
           </v-list>
@@ -83,11 +94,6 @@
         },
       }
     },
-    computed : {
-      logMsg(item) {
-        return item.actionName
-      },
-    },
     mounted() {
       this.$root.$on('displayTaskChanges', taskChangesDrawer => {
         this.showTaskChangesDrawer = true
@@ -99,6 +105,12 @@
     methods: {
       closeDrawer() {
         this.showTaskChangesDrawer = false
+      },
+      logMsg(item) {
+        return `log.${ item.actionName }`
+      },
+      userAvatar(username) {
+        return `/portal/rest/v1/social/users/${username}/avatar`;
       },
     }
   };
