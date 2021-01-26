@@ -8,9 +8,9 @@
       <v-layout column>
         <v-flex class="mx-0 drawerHeader flex-grow-0">
           <v-list-item class="pr-0">
-            <v-list-item-content class="drawerTitle align-start d-flex text-header-title text-truncate">
+            <v-list-item-content class="drawerTitle d-flex text-header-title text-truncate">
               <i class="uiIcon uiArrowBAckIcon" @click="closeDrawer"></i>
-              <span>{{ $t('label.comments') }}</span>
+              <span class="pl-2">{{ $t('label.comments') }}</span>
             </v-list-item-content>
             <v-list-item-action class="drawerIcons align-end d-flex flex-row">
               <v-btn icon>
@@ -69,7 +69,7 @@
   </div>
 </template>
 <script>
-  import {addTaskComments} from "../../taskDrawerApi";
+  import {addTaskComments, urlVerify} from "../../taskDrawerApi";
 
   export default {
     props: {
@@ -105,7 +105,25 @@
         showSubEditor: false,
         disabledComment: true,
         editorData: null,
+        MESSAGE_MAX_LENGTH:255,
       }
+    },
+    computed: {
+      currentUserAvatar() {
+        return `/portal/rest/v1/social/users/${eXo.env.portal.userName}/avatar`;
+      },
+      postDisabled: function() {
+        if(this.disabledComment){
+          return true
+        }
+        else if(this.editorData !== null && this.editorData!==''){
+          let pureText = this.editorData ? this.editorData.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, '').trim() : '';
+          const div = document.createElement('div');
+          div.innerHTML = pureText;
+          pureText = div.textContent || div.innerText || '';
+          return pureText.length> this.MESSAGE_MAX_LENGTH ;
+        }else {return true}
+      },
     },
     watch: {
       editorData(val) {
@@ -149,20 +167,8 @@
       closeDrawer() {
         this.showTaskCommentDrawer = false
       },
-      currentUserAvatar() {
-        return `/portal/rest/v1/social/users/${eXo.env.portal.userName}/avatar`;
-      },
-      postDisabled: function() {
-        if(this.disabledComment){
-          return true
-        }
-        else if(this.editorData !== null && this.editorData!==''){
-          let pureText = this.editorData ? this.editorData.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, '').trim() : '';
-          const div = document.createElement('div');
-          div.innerHTML = pureText;
-          pureText = div.textContent || div.innerText || '';
-          return pureText.length> this.MESSAGE_MAX_LENGTH ;
-        }else {return true}
+      urlVerify(text) {
+        return urlVerify(text);
       },
     }
   };

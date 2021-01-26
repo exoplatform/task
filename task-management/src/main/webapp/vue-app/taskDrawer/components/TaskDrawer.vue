@@ -178,7 +178,7 @@
 
 </template>
 <script>
-  import {updateTask, addTask, addTaskToLabel, getTaskLogs, getTaskComments, addTaskComments, urlVerify, cloneTask} from '../taskDrawerApi';
+  import {updateTask, addTask, addTaskToLabel, getTaskLogs, getTaskComments, addTaskComments, cloneTask} from '../taskDrawerApi';
   export default {
     props: {
       task: {
@@ -479,9 +479,6 @@
       },
       navigateTo(pagelink) {
         window.open(`${ eXo.env.portal.context }/${ eXo.env.portal.portalName }/${ pagelink }`, '_blank');
-      },
-      urlVerify(text) {
-        return urlVerify(text);
       },
       open(task) {
         this.task=task
