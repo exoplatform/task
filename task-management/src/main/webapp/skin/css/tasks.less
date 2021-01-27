@@ -1236,40 +1236,42 @@
             .taskTitleId {
               min-height: 50px;
               height: 50px;
+              .uiIconCircle {
+                font-family: "PLF-FONT-ICONS" !important;
+                color: @primaryColor;
+                font-style: normal;
+                font-weight: bold;
+                font-size: 19px;
+                padding-right: 10px;
+                cursor: pointer;
+                &:before {
+                  content: "\ea47";
+                }
+              }
+              .uiIconValidate{
+                font-style: normal;
+                font-weight: bold;
+                font-size: 19px;
+                padding-right: 10px;
+                cursor: pointer;
+              }
+              .uiIconValidate{
+                font-style: normal;
+                font-weight: bold;
+                font-size: 19px;
+                padding-right: 10px;
+                cursor: pointer;
+              }
               .taskTitle {
+                cursor: pointer;
                 width: 75%;
                 max-width: 75%;
                 .strikethrough{
                   text-decoration: line-through;
                 }
-                .uiIconCircle {
-                  font-family: "PLF-FONT-ICONS" !important;
-                  color: @primaryColor;
-                  font-style: normal;
-                  font-weight: bold;
-                  font-size: 19px;
-                  padding-right: 10px;
-                  cursor: pointer;
-                  &:before {
-                    content: "\ea47";
-                  }
-                }
-                .uiIconValidate{
-                  font-style: normal;
-                  font-weight: bold;
-                  font-size: 19px;
-                  padding-right: 10px;
-                  cursor: pointer;
-                }
-                .uiIconValidate{
-                  font-style: normal;
-                  font-weight: bold;
-                  font-size: 19px;
-                  padding-right: 10px;
-                  cursor: pointer;
-                }
               }
               .taskId {
+                cursor: pointer;
                 width: 25%;
                 max-width: 25%;
                 text-align: right;
@@ -1409,6 +1411,7 @@
               overflow: hidden;
               text-overflow: ellipsis;
               white-space: nowrap;
+              cursor: pointer;
             }
             .taskTitleAndId {
               width: 25%!important;
@@ -1740,28 +1743,31 @@
           }
         }
       }
-      .taskActionsAndLabels {
-        .taskTags {
-          .uiTagIcon {
-            padding-right: 2px;
-            &:before {
-              content: "\ead3";
-              font-family: "PLF-FONT-ICONS" !important;
-              color: @likeButtonColor;
-              font-style: normal;
-              font-size: 18px;
+      .taskActionsAndDate{
+        cursor: pointer;
+        .taskActionsAndLabels {
+          .taskTags {
+            .uiTagIcon {
+              padding-right: 2px;
+              &:before {
+                content: "\ead3";
+                font-family: "PLF-FONT-ICONS" !important;
+                color: @likeButtonColor;
+                font-style: normal;
+                font-size: 18px;
+              }
             }
           }
-        }
-        .taskAttachment {
-          .uiAttachIcon {
-            padding-right: 2px;
-            &:before {
-              content: "\e91f";
-              font-family: "PLF-FONT-ICONS" !important;
-              color: @likeButtonColor;
-              font-style: normal;
-              font-size: 18px;
+          .taskAttachment {
+            .uiAttachIcon {
+              padding-right: 2px;
+              &:before {
+                content: "\e91f";
+                font-family: "PLF-FONT-ICONS" !important;
+                color: @likeButtonColor;
+                font-style: normal;
+                font-size: 18px;
+              }
             }
           }
         }
@@ -2514,6 +2520,7 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     margin-right: 10px;
+    cursor: pointer;
     span {
       margin-left: 10px;
     }
