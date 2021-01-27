@@ -32,7 +32,7 @@
   <properties>
     <!-- Maven Plugin for JS and CSS bundling and Unit Test execution -->
     <com.github.eirslett.frontend.version>1.6</com.github.eirslett.frontend.version>
-    <node.version>v12.0.0</node.version>
+    <node.version>v11.4.0</node.version>
     <npm.version>6.5.0</npm.version>
     <exo.test.coverage.ratio>0.01</exo.test.coverage.ratio>
   </properties>
