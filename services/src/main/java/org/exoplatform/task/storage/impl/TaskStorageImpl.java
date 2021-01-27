@@ -1,5 +1,6 @@
 package org.exoplatform.task.storage.impl;
 
+import org.exoplatform.commons.utils.HTMLSanitizer;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -324,7 +325,13 @@ public class TaskStorageImpl implements TaskStorage {
         TaskDto task = new TaskDto();
         task.setId(taskEntity.getId());
         task.setTitle(taskEntity.getTitle());
-        task.setDescription(taskEntity.getDescription());
+        if(taskEntity.getDescription()!=null) {
+            try {
+                task.setDescription(HTMLSanitizer.sanitize(taskEntity.getDescription()));
+            } catch (Exception e) {
+                LOG.warn("Task description cannot be sanitized");
+            }
+        }
         task.setPriority(taskEntity.getPriority());
         task.setContext(taskEntity.getContext());
         task.setAssignee(taskEntity.getAssignee());
