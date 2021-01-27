@@ -1775,7 +1775,7 @@
       }
     }
 
-/*----------- Task Drawer CSS ---------------*/
+/*----------- Task comment Drawer CSS ---------------*/
 
 .taskDrawer {
   .drawerHeader {
@@ -1921,6 +1921,12 @@
       color: @primaryColor!important;
       font-size: 30px!important;
     }
+  }
+  .lastUpdatedTask {
+    color: @greyColorLighten1;
+    font-style: italic;
+    font-size: 16px;
+    cursor: pointer;
   }
   .taskLabelsName {
     .inputTaskLabel{
@@ -2228,27 +2234,18 @@
   }
   .taskCommentsAndChanges {
     .taskComments {
+      .lastCommentLabel {
+        font-size: 16px;
+        color: @greyColorLighten1;
+      }
+      .ViewAllCommentLabelLabel {
+        font-size: 16px;
+        color: @primaryColor;
+        text-decoration: underline;
+        cursor: pointer;
+      }
       .comment{
         position: relative;
-      }
-      .tooManyChars {
-        color: #bc4343!important;
-      }
-      .tooManyChars .uiIconMessageLength {
-        color: #bc4343!important;
-      }
-      .activityCharsCount{
-        position: absolute;
-        bottom: 8px;
-        right: 10px;
-        color: #adadad;
-        .uiIconMessageLength {
-          font-size: 14px;
-          color: #2eb58c;
-          &:before {
-            content: "\e910";
-          }
-        }
       }
       .commentItem {
         width: 100%;
@@ -2269,6 +2266,7 @@
             background: @commentBackgroundColor;
             padding: 10px;
             border-radius: 10px;
+            word-break: break-word;
             p {
               margin-bottom: 0!important;
             }
@@ -2281,25 +2279,6 @@
       }
       .TaskSubComments{
         margin-left: -20px!important;
-      }
-      .editorContent {
-        width: 100%;
-        .subComment.subCommentEditor{
-          position: relative;
-          .activityCharsCount {
-            right: 5px;
-          }
-        }
-        .cke_bottom.cke_reset_all {
-          background-color: transparent;
-          height: 30px!important;
-        }
-        .cke_toolbar {
-          border-right: none!important;
-        }
-        .cke_bottom .cke_button_icon {
-          filter: opacity(0.2);
-        }
       }
     }
     .commentBtn {
@@ -2314,6 +2293,171 @@
   }
 }
 
+.taskCommentDrawer {
+  .drawerTitle > * {
+    flex: 0 0 auto!important;
+  }
+  .uiArrowBAckIcon {
+    cursor: pointer;
+    color: @btnDisableColor!important;
+    &:before {
+      content: "\e913";
+      font-family: "PLF-FONT-ICONS" !important;
+      font-style: normal;
+      font-size: 24px;
+    }
+  }
+  .drawerContent {
+    padding: 16px;
+    .dateTime.caption {
+      color: @greyColorLighten1;
+      text-align: left;
+      padding-left: 10px;
+    }
+    .TaskCommentContent {
+      .commentItem {
+        width: 100%;
+        .commentHeader {
+          width: 100%;
+          .removeCommentBtn {
+            margin-left: auto;
+            margin-top: -4px;
+          }
+          .externalTagClass {
+            color: @baseColorLight;
+            font-weight: normal;
+          }
+        }
+        .commentBody {
+          display: inline-block;
+          .taskContentComment {
+            background: @commentBackgroundColor;
+            padding: 10px;
+            border-radius: 10px;
+            word-break: break-word;
+            p {
+              margin-bottom: 0!important;
+            }
+            .externalTagClass {
+              color: @baseColorLight;
+              font-weight: normal;
+            }
+          }
+        }
+      }
+      .TaskSubComments{
+        margin-left: -20px!important;
+      }
+    }
+    .commentEditor {
+      .tooManyChars {
+        color: #bc4343!important;
+      }
+      .tooManyChars .uiIconMessageLength {
+        color: #bc4343!important;
+      }
+      .activityCharsCount{
+        .uiIconMessageLength {
+          font-size: 14px;
+          color: #2eb58c;
+          &:before {
+            content: "\e910";
+          }
+        }
+      }
+    }
+    .editorContent {
+      width: 100%;
+      .subComment.subCommentEditor{
+        position: relative;
+        .activityCharsCount {
+          right: 5px;
+        }
+      }
+      .cke_bottom.cke_reset_all {
+        background-color: transparent;
+        height: 30px!important;
+      }
+      .cke_toolbar {
+        border-right: none!important;
+      }
+      .cke_bottom .cke_button_icon {
+        filter: opacity(0.2);
+      }
+      .tooManyChars {
+        color: #bc4343!important;
+      }
+      .tooManyChars .uiIconMessageLength {
+        color: #bc4343!important;
+      }
+      .activityCharsCount{
+        .uiIconMessageLength {
+          font-size: 14px;
+          color: #2eb58c;
+          &:before {
+            content: "\e910";
+          }
+        }
+      }
+    }
+  }
+}
+
+@-webkit-keyframes slideInRight {
+  from {
+    -webkit-transform: translate3d(100%, 0, 0);
+    transform: translate3d(100%, 0, 0);
+    visibility: visible;
+  }
+
+  to {
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+  }
+}
+@keyframes slideInRight {
+  from {
+    -webkit-transform: translate3d(100%, 0, 0);
+    transform: translate3d(100%, 0, 0);
+    visibility: visible;
+  }
+
+  to {
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+  }
+}
+.showTaskCommentDrawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 420px;
+  background: white;
+  height: 100%;
+  z-index: 1035;
+  -webkit-animation-duration: .5s;
+  animation-duration: .5s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+  -webkit-animation-name: slideInRight;
+  animation-name: slideInRight;
+}
+
+.showTaskChangesDrawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 420px;
+  background: white;
+  height: 100%;
+  z-index: 1035;
+  -webkit-animation-duration: .5s;
+  animation-duration: .5s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+  -webkit-animation-name: slideInRight;
+  animation-name: slideInRight;
+}
 
 /*----------- Task Snapshot CSS ---------------*/
 

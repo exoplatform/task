@@ -66,7 +66,6 @@
         class="subComment subCommentEditor ml-10 d-flex align-start">
         <exo-user-avatar
           :username="currentUserName"
-          :avatar-url="currentUserAvatar"
           :size="30"
           :url="null"/>
         <div class="editorContent ml-2">
@@ -138,7 +137,7 @@
           isOpen:{
             type: Boolean,
             default: false
-          }
+          },
         },
         data() {
             return {
@@ -155,9 +154,6 @@
         computed: {
             relativeTime() {
                 return this.getRelativeTime(this.comment.comment.createdTime.time)
-            },
-            currentUserAvatar() {
-                return `/rest/v1/social/users/${this.currentUserName}/avatar`;
             },
             showDeleteButtom() {
                 return this.hover && eXo.env.portal.userName === this.comment.author.username;
