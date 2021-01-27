@@ -186,6 +186,11 @@
         this.tasksFilter = tasks;
         this.filterActive=true;
       });
+      this.$root.$on('deleteTask', (event) => {
+        if (event && event.detail) {
+          this.tasks = this.tasks.filter((t) => t.id !== event.detail);
+        }
+      });
     },
     methods: {
       keywordChanged(keyword,searchonkeyChange){
