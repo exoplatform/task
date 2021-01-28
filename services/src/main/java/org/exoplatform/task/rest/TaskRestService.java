@@ -297,7 +297,10 @@ public class TaskRestService implements ResourceContainer {
                                       @ApiParam(value = "Returning All Details", defaultValue = "false") @QueryParam("returnDetails") boolean returnDetails) {
     try {
     String currentUser = ConversationState.getCurrent().getIdentity().getUserId();
-
+    ProjectDto project = projectService.getProject(id);
+    if (project==null || !project.canView(ConversationState.getCurrent().getIdentity())) {
+      return Response.status(Response.Status.UNAUTHORIZED).build();
+    }
     long tasksSize;
     List<?> tasks = null;
     TaskQuery taskQuery = new TaskQuery();
