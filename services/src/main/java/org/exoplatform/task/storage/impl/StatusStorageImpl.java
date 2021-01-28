@@ -22,6 +22,7 @@ import org.exoplatform.task.exception.NotAllowedOperationOnEntityException;
 import org.exoplatform.task.storage.ProjectStorage;
 import org.exoplatform.task.storage.StatusStorage;
 import org.exoplatform.task.storage.TaskStorage;
+import org.exoplatform.task.util.StorageUtil;
 
 public class StatusStorageImpl implements StatusStorage {
 
@@ -34,28 +35,26 @@ public class StatusStorageImpl implements StatusStorage {
 
   @Inject
   private final ProjectStorage projectStorage;
-  private final TaskStorage taskStorage;
 
-  public StatusStorageImpl(DAOHandler daoHandler, ProjectStorage projectStorage, TaskStorage taskStorage) {
+  public StatusStorageImpl(DAOHandler daoHandler, ProjectStorage projectStorage) {
     this.daoHandler = daoHandler;
     this.projectStorage = projectStorage;
-    this.taskStorage = taskStorage;
   }
 
   @Override
   public StatusDto getStatus(long statusId) {
-    return statusToDTO(daoHandler.getStatusHandler().find(statusId));
+    return StorageUtil.statusToDTO(daoHandler.getStatusHandler().find(statusId),projectStorage);
   }
 
   @Override
   public StatusDto getDefaultStatus(long projectId) {
-    return statusToDTO(daoHandler.getStatusHandler().findLowestRankStatusByProject(projectId));
+    return StorageUtil.statusToDTO(daoHandler.getStatusHandler().findLowestRankStatusByProject(projectId),projectStorage);
   }
 
   @Override
   public List<StatusDto> getStatuses(long projectId) {
     List<Status> statusDtos = daoHandler.getStatusHandler().getStatuses(projectId);
-    return statusDtos.stream().map(this::statusToDTO).collect(Collectors.toList());
+    return statusDtos.stream().map((Status status) -> StorageUtil.statusToDTO(status,projectStorage)).collect(Collectors.toList());
   }
 
   @Override
@@ -71,13 +70,13 @@ public class StatusStorageImpl implements StatusStorage {
       }
     }
 
-    StatusDto max = statusToDTO(daoHandler.getStatusHandler().findHighestRankStatusByProject(project.getId()));
+    StatusDto max = StorageUtil.statusToDTO(daoHandler.getStatusHandler().findHighestRankStatusByProject(project.getId()),projectStorage);
     int maxRank = max != null && max.getRank() != null ? max.getRank() : -1;
 
     StatusHandler handler = daoHandler.getStatusHandler();
-    Status st = new Status(status, ++maxRank, projectStorage.projectToEntity(project));
+    Status st = new Status(status, ++maxRank, StorageUtil.projectToEntity(project));
     handler.create(st);
-    return statusToDTO(st);
+    return StorageUtil.statusToDTO(st,projectStorage);
   }
 
   @Override
@@ -93,9 +92,9 @@ public class StatusStorageImpl implements StatusStorage {
       }
     }
     StatusHandler handler = daoHandler.getStatusHandler();
-    Status st = new Status(status, rank, projectStorage.projectToEntity(project));
+    Status st = new Status(status, rank, StorageUtil.projectToEntity(project));
     handler.create(st);
-    return statusToDTO(st);
+    return StorageUtil.statusToDTO(st,projectStorage);
   }
 
   @Override
@@ -125,7 +124,7 @@ public class StatusStorageImpl implements StatusStorage {
   public StatusDto updateStatus(long statusId, String statusName) throws EntityNotFoundException,
                                                                   NotAllowedOperationOnEntityException {
     StatusHandler handler = daoHandler.getStatusHandler();
-    StatusDto status = statusToDTO(handler.find(statusId));
+    StatusDto status = StorageUtil.statusToDTO(handler.find(statusId),projectStorage);
     if (status == null) {
       throw new EntityNotFoundException(statusId, Status.class);
     }
@@ -135,62 +134,22 @@ public class StatusStorageImpl implements StatusStorage {
     }
 
     status.setName(statusName);
-    return statusToDTO(daoHandler.getStatusHandler().update(statusToEntity(status)));
+    return StorageUtil.statusToDTO(daoHandler.getStatusHandler().update(StorageUtil.statusToEntity(status)),projectStorage);
   }
 
   @Override
   public StatusDto updateStatus(StatusDto statusDto) throws EntityNotFoundException,
                                                                   NotAllowedOperationOnEntityException {
     StatusHandler handler = daoHandler.getStatusHandler();
-    StatusDto status = statusToDTO(handler.find(statusDto.getId()));
+    StatusDto status = StorageUtil.statusToDTO(handler.find(statusDto.getId()),projectStorage);
     if (status == null) {
       throw new EntityNotFoundException(statusDto.getId(), Status.class);
     }
-    StatusDto curr = statusToDTO(handler.findByName(statusDto.getName(), status.getProject().getId()));
+    StatusDto curr = StorageUtil.statusToDTO(handler.findByName(statusDto.getName(), status.getProject().getId()),projectStorage);
     if (curr != null && !status.equals(curr)) {
       throw new NotAllowedOperationOnEntityException(status.getId(), StatusDto.class, "duplicate status name");
     }
-    return statusToDTO(daoHandler.getStatusHandler().update(statusToEntity(statusDto)));
-  }
-
-  @Override
-  public Status statusToEntity(StatusDto statusDto) {
-    if(statusDto==null){
-      return null;
-    }
-    Status status = new Status();
-    status.setId(statusDto.getId());
-    status.setName(statusDto.getName());
-    status.setRank(statusDto.getRank());
-    status.setProject(statusDto.getProject());
-    return status;
-  }
-
-  @Override
-  public StatusDto statusToDTO(Status status) {
-    if(status==null){
-      return null;
-    }
-    StatusDto statusDto = new StatusDto();
-    statusDto.setId(status.getId());
-    statusDto.setName(status.getName());
-    statusDto.setRank(status.getRank());
-    statusDto.setProject(status.getProject());
-    return statusDto;
-  }
-
-  @Override
-  public List<StatusDto> listStatusToDTOs(List<Status> status) {
-    return status.stream()
-            .map(this::statusToDTO)
-            .collect(Collectors.toList());
-  }
-
-  @Override
-  public List<Status> listStatusToEntitys(List<StatusDto> status) {
-    return status.stream()
-            .map(this::statusToEntity)
-            .collect(Collectors.toList());
+    return StorageUtil.statusToDTO(daoHandler.getStatusHandler().update(StorageUtil.statusToEntity(statusDto)),projectStorage);
   }
 
 

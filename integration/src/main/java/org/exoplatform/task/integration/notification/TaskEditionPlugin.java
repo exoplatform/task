@@ -19,6 +19,7 @@ package org.exoplatform.task.integration.notification;
 import org.exoplatform.commons.api.notification.NotificationContext;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.dto.TaskDto;
 
 public class TaskEditionPlugin extends AbstractNotificationPlugin {
 
@@ -35,7 +36,7 @@ public class TaskEditionPlugin extends AbstractNotificationPlugin {
 
   @Override
   public boolean isValid(NotificationContext ctx) {
-    Task task = ctx.value(NotificationUtils.TASK);
+    TaskDto task = ctx.value(NotificationUtils.TASK);
     return((task.getAssignee() != null && !task.getAssignee().isEmpty()) ||
             (task.getCoworker() != null && task.getCoworker().size() > 0)||(task.getWatcher() != null && task.getWatcher().size() > 0) || (task.getCreatedBy() != null && !task.getCreatedBy().isEmpty()));
   }

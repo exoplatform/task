@@ -21,17 +21,16 @@ import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.services.listener.ListenerService;
+import org.exoplatform.social.core.storage.impl.StorageUtils;
 import org.exoplatform.task.TestDtoUtils;
 import org.exoplatform.task.TestUtils;
-import org.exoplatform.task.dao.ProjectHandler;
-import org.exoplatform.task.dao.StatusHandler;
-import org.exoplatform.task.dao.TaskHandler;
-import org.exoplatform.task.dao.TaskQuery;
+import org.exoplatform.task.dao.*;
 import org.exoplatform.task.dao.jpa.DAOHandlerJPAImpl;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.dto.ProjectDto;
+import org.exoplatform.task.dto.StatusDto;
 import org.exoplatform.task.dto.TaskDto;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.exception.ParameterEntityException;
@@ -59,7 +58,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
-
+import org.exoplatform.task.util.StorageUtil;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ProjectServiceTest {
@@ -99,8 +98,8 @@ public class ProjectServiceTest {
         // Make sure the container is started to prevent the ExoTransactional annotation to fail
         PortalContainer.getInstance();
         projectStorage = new ProjectStorageImpl(daoHandler);
-        statusStorage = new StatusStorageImpl(daoHandler, projectStorage,taskStorage);
-        projectService = new ProjectServiceImpl(statusService, taskService, daoHandler, projectStorage, statusStorage, listenerService);
+        statusStorage = new StatusStorageImpl(daoHandler, projectStorage);
+        projectService = new ProjectServiceImpl(statusService, taskService, daoHandler, projectStorage, listenerService);
         //Mock DAO handler to return Mocked DAO
         when(daoHandler.getTaskHandler()).thenReturn(taskHandler);
         when(daoHandler.getProjectHandler()).thenReturn(projectHandler);
@@ -130,11 +129,11 @@ public class ProjectServiceTest {
         Status status = new Status(1L, "testStatus");
 
         when(projectHandler.find(1L)).thenReturn(parent);
-        when(statusService.getStatuses(1L)).thenReturn(Arrays.asList(statusStorage.statusToDTO(status)));
+        when(statusService.getStatuses(1L)).thenReturn(Arrays.asList(StorageUtil.statusToDTO(status,projectStorage)));
 
         //projectService.createDefaultStatusProjectWithAttributes(1L, "test", null, null, null);
         Project child = ProjectUtil.newProjectInstance("test", "", "root");
-        projectService.createProject(projectStorage.projectToDto(child), parent.getId());
+        projectService.createProject(StorageUtil.projectToDto(child,projectStorage), parent.getId());
 
         verify(projectHandler, times(1)).create(any(Project.class));
         //the new created project must inherits parent's workflow
@@ -241,29 +240,33 @@ public class ProjectServiceTest {
     @Test
     public void testCloneProjectById() throws Exception {
 
-        Project project = TestUtils.getDefaultProject();
+        ProjectDto project = TestUtils.getDefaultProjectDto();
         project.setName("Tib Project");
         project.setId(3L);
 
-        final Set<Task> tasks1 = new HashSet<Task>();
-        tasks1.add(TestUtils.getDefaultTask());
-        tasks1.add(TestUtils.getDefaultTask());
+        Project project_ = TestUtils.getDefaultProject();
+        project.setName("Tib Project");
+        project.setId(3L);
 
-        final Set<Task> tasks2 = new HashSet<Task>();
-        tasks2.add(TestUtils.getDefaultTask());
-        tasks2.add(TestUtils.getDefaultTask());
+        final Set<TaskDto> tasks1 = new HashSet<TaskDto>();
+        tasks1.add(TestUtils.getDefaultTaskDto());
+        tasks1.add(TestUtils.getDefaultTaskDto());
 
-        Status status1 = new Status(3, "ToDo", 1, project);
-        Status status2 = new Status(4, "ToDo", 2, project);
+        final Set<TaskDto> tasks2 = new HashSet<TaskDto>();
+        tasks2.add(TestUtils.getDefaultTaskDto());
+        tasks2.add(TestUtils.getDefaultTaskDto());
 
-        Set<Status> statuses = new HashSet<Status>();
+        StatusDto status1 = new StatusDto(3, "ToDo", 1, project);
+        StatusDto status2 = new StatusDto(4, "ToDo", 2, project);
+
+        Set<StatusDto> statuses = new HashSet<StatusDto>();
         statuses.add(status1);
         statuses.add(status2);
         project.setStatus(statuses);
-        List<Status> list = new ArrayList<Status>(statuses);
-        when(projectHandler.find(3L)).thenReturn(project);
+        List<StatusDto> list = new ArrayList<StatusDto>(statuses);
+        when(projectHandler.find(3L)).thenReturn(project_);
 
-        when(statusService.getStatuses(3L)).thenReturn(statusStorage.listStatusToDTOs(list));
+        when(statusService.getStatuses(3L)).thenReturn(list);
 
         projectService.cloneProject(3L, false);
         verify(projectHandler, times(1)).create(projectCaptor.capture());

@@ -1,7 +1,6 @@
 package org.exoplatform.task.service.impl;
 
 import org.exoplatform.commons.api.persistence.ExoTransactional;
-import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.listener.ListenerService;
 import org.exoplatform.task.dao.DAOHandler;
 import org.exoplatform.task.domain.Label;
@@ -11,7 +10,7 @@ import org.exoplatform.task.dto.TaskDto;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.service.LabelService;
 import org.exoplatform.task.storage.LabelStorage;
-import org.exoplatform.task.storage.TaskStorage;
+import org.exoplatform.task.util.StorageUtil;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -22,16 +21,12 @@ public class LabelServiceImpl implements LabelService {
     private DAOHandler daoHandler;
 
     @Inject
-    private TaskStorage taskStorage;
-
-    @Inject
     private LabelStorage labelStorage;
 
     private ListenerService listenerService;
 
-    public LabelServiceImpl(LabelStorage labelStorage, TaskStorage taskStorage, DAOHandler daoHandler) {
+    public LabelServiceImpl(LabelStorage labelStorage,  DAOHandler daoHandler) {
         this.labelStorage = labelStorage;
-        this.taskStorage = taskStorage;
         this.daoHandler = daoHandler;
     }
 
@@ -48,13 +43,13 @@ public class LabelServiceImpl implements LabelService {
 
     @Override
     public LabelDto getLabel(long labelId) {
-        return labelStorage.labelToDto(daoHandler.getLabelHandler().find(labelId));
+        return StorageUtil.labelToDto(daoHandler.getLabelHandler().find(labelId));
     }
 
     @Override
     @ExoTransactional
     public LabelDto createLabel(LabelDto label) {
-        return labelStorage.createLabel(labelStorage.labelToDto(daoHandler.getLabelHandler().create(labelStorage.labelToEntity(label))));
+        return labelStorage.createLabel(label);
     }
 
     @Override
@@ -81,13 +76,13 @@ public class LabelServiceImpl implements LabelService {
                     lb.setHidden(label.isHidden());
             }
         }
-        return labelStorage.labelToDto(daoHandler.getLabelHandler().update(labelStorage.mappingLabelToEntity(lb)));
+        return StorageUtil.labelToDto(daoHandler.getLabelHandler().update(StorageUtil.mappingLabelToEntity(lb)));
     }
 
     @Override
     @ExoTransactional
     public void removeLabel(long labelId) {
-        daoHandler.getLabelHandler().delete(labelStorage.labelToEntity(getLabel(labelId)));
+        daoHandler.getLabelHandler().delete(StorageUtil.labelToEntity(getLabel(labelId)));
     }
 
 
@@ -95,8 +90,8 @@ public class LabelServiceImpl implements LabelService {
     @ExoTransactional
     public void addTaskToLabel(TaskDto task, Long labelId) throws EntityNotFoundException {
         LabelTaskMapping mapping = new LabelTaskMapping();
-        mapping.setLabel(labelStorage.mappingLabelToEntity(getLabel(labelId)));
-        mapping.setTask(taskStorage.toEntity(task));
+        mapping.setLabel(StorageUtil.mappingLabelToEntity(getLabel(labelId)));
+        mapping.setTask(StorageUtil.taskToEntity(task));
         daoHandler.getLabelTaskMappingHandler().create(mapping);
     }
 
@@ -104,8 +99,8 @@ public class LabelServiceImpl implements LabelService {
     @ExoTransactional
     public void removeTaskFromLabel(TaskDto task, Long labelId) throws EntityNotFoundException {
         LabelTaskMapping mapping = new LabelTaskMapping();
-        mapping.setLabel(labelStorage.mappingLabelToEntity(getLabel(labelId)));
-        mapping.setTask(taskStorage.toEntity(task));
+        mapping.setLabel(StorageUtil.mappingLabelToEntity(getLabel(labelId)));
+        mapping.setTask(StorageUtil.taskToEntity(task));
         daoHandler.getLabelTaskMappingHandler().delete(mapping);
     }
 

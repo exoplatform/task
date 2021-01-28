@@ -13,28 +13,13 @@
   </component>
 
   <component>
-    <key>org.exoplatform.task.legacy.service.StatusService</key>
-    <type>org.exoplatform.task.legacy.service.impl.StatusServiceImpl</type>
-  </component>
-
-  <component>
-    <key>org.exoplatform.task.legacy.service.UserService</key>
-    <type>org.exoplatform.task.legacy.service.impl.UserServiceImpl</type>
-  </component>
-
-  <component>
-    <key>org.exoplatform.task.legacy.service.TaskService</key>
-    <type>org.exoplatform.task.legacy.service.impl.TaskServiceImpl</type>
-  </component>
-
-  <component>
-    <key>org.exoplatform.task.legacy.service.ProjectService</key>
-    <type>org.exoplatform.task.legacy.service.impl.ProjectServiceImpl</type>
+    <key>org.exoplatform.task.service.UserService</key>
+    <type>org.exoplatform.task.service.impl.UserServiceImpl</type>
   </component>
 
   <component>
     <key>org.exoplatform.task.legacy.service.TaskParser</key>
-    <type>org.exoplatform.task.legacy.service.impl.TaskParserImpl</type>
+    <type>org.exoplatform.task.service.impl.TaskParserImpl</type>
   </component>
 
   <component>

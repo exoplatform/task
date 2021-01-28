@@ -1,6 +1,5 @@
 package org.exoplatform.task.storage.impl;
 
-import org.exoplatform.commons.utils.HTMLSanitizer;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -14,8 +13,12 @@ import org.exoplatform.task.dto.ChangeLogEntry;
 import org.exoplatform.task.dto.LabelDto;
 import org.exoplatform.task.dto.TaskDto;
 import org.exoplatform.task.exception.EntityNotFoundException;
-import org.exoplatform.task.legacy.service.UserService;
+import org.exoplatform.task.service.StatusService;
+import org.exoplatform.task.service.UserService;
+import org.exoplatform.task.storage.ProjectStorage;
+import org.exoplatform.task.storage.StatusStorage;
 import org.exoplatform.task.storage.TaskStorage;
+import org.exoplatform.task.util.StorageUtil;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -38,36 +41,40 @@ public class TaskStorageImpl implements TaskStorage {
     @Inject
     private final UserService userService;
 
+    @Inject
+    private final ProjectStorage projectStorage;
 
-    public TaskStorageImpl(DAOHandler daoHandler, UserService userService) {
+
+    public TaskStorageImpl(DAOHandler daoHandler, UserService userService, ProjectStorage projectStorage) {
         this.daoHandler = daoHandler;
         this.userService = userService;
+        this.projectStorage = projectStorage;
     }
 
     @Override
     public TaskDto getTaskById(long id) {
-        return toDto(daoHandler.getTaskHandler().find(id));
+        return StorageUtil.taskToDto(daoHandler.getTaskHandler().find(id),projectStorage);
     }
 
     @Override
     public TaskDto createTask(TaskDto task) {
-        return toDto(daoHandler.getTaskHandler().create(toEntity(task)));
+        return StorageUtil.taskToDto(daoHandler.getTaskHandler().create(StorageUtil.taskToEntity(task)),projectStorage);
     }
 
     @Override
     public TaskDto update(TaskDto task) {
-        return toDto(daoHandler.getTaskHandler().update(toEntity(task)));
+        return StorageUtil.taskToDto(daoHandler.getTaskHandler().update(StorageUtil.taskToEntity(task)),projectStorage);
     }
 
     @Override
     public void delete(TaskDto task) {
-        daoHandler.getTaskHandler().delete(toEntity(task));
+        daoHandler.getTaskHandler().delete(StorageUtil.taskToEntity(task));
     }
 
     @Override
     public List<TaskDto> findTasksByLabel(LabelDto label, List<Long> projectIds, String username, OrderBy orderBy, int offset, int limit) throws Exception {
         List<Task> taskEntities = Arrays.asList(daoHandler.getTaskHandler().findTasksByLabel(label.getId(), projectIds, username, orderBy).load(offset, limit));
-        return taskEntities.stream().map(this::toDto).collect(Collectors.toList());
+        return taskEntities.stream().map((Task taskEntity) -> StorageUtil.taskToDto(taskEntity,projectStorage)).collect(Collectors.toList());
     }
 
     @Override
@@ -80,13 +87,13 @@ public class TaskStorageImpl implements TaskStorage {
         List<String> memberships = new ArrayList<String>();
         memberships.add(user);
         List<Task> taskEntities = daoHandler.getTaskHandler().findAllByMembership(user, memberships);
-        return taskEntities.stream().map(this::toDto).collect(Collectors.toList());
+        return taskEntities.stream().map((Task taskEntity) -> StorageUtil.taskToDto(taskEntity,projectStorage)).collect(Collectors.toList());
     }
 
     @Override
     public List<TaskDto> findTasks(TaskQuery query, int offset, int limit) throws Exception {
         List<Task> taskEntities = Arrays.asList(daoHandler.getTaskHandler().findTasks(query).load(offset, limit));
-        return taskEntities.stream().map(this::toDto).collect(Collectors.toList());
+        return taskEntities.stream().map((Task taskEntity) -> StorageUtil.taskToDto(taskEntity,projectStorage)).collect(Collectors.toList());
     }
 
     public int countTasks(TaskQuery query) throws Exception {
@@ -100,7 +107,7 @@ public class TaskStorageImpl implements TaskStorage {
 
     @Override
     public TaskDto findTaskByActivityId(String activityId) {
-        return toDto(daoHandler.getTaskHandler().findTaskByActivityId(activityId));
+        return StorageUtil.taskToDto(daoHandler.getTaskHandler().findTaskByActivityId(activityId),projectStorage);
     }
 
     @Override
@@ -120,13 +127,13 @@ public class TaskStorageImpl implements TaskStorage {
 
     @Override
     public TaskDto getTaskWithCoworkers(long id) {
-        return toDto(daoHandler.getTaskHandler().getTaskWithCoworkers(id));
+        return StorageUtil.taskToDto(daoHandler.getTaskHandler().getTaskWithCoworkers(id),projectStorage);
     }
 
     @Override
     public List<TaskDto> getUncompletedTasks(String user, int limit) {
         List<Task> taskEntities = daoHandler.getTaskHandler().getUncompletedTasks(user, limit);
-        return taskEntities.stream().map(this::toDto).collect(Collectors.toList());
+        return taskEntities.stream().map((Task taskEntity) -> StorageUtil.taskToDto(taskEntity,projectStorage)).collect(Collectors.toList());
     }
 
     @Override
@@ -137,7 +144,7 @@ public class TaskStorageImpl implements TaskStorage {
     @Override
     public List<TaskDto> getAssignedTasks(String user, int limit) {
         List<Task> taskEntities = daoHandler.getTaskHandler().getAssignedTasks(user, limit);
-        return taskEntities.stream().map(this::toDto).collect(Collectors.toList());
+        return taskEntities.stream().map((Task taskEntity) -> StorageUtil.taskToDto(taskEntity,projectStorage)).collect(Collectors.toList());
     }
 
     @Override
@@ -149,7 +156,7 @@ public class TaskStorageImpl implements TaskStorage {
     @Override
     public List<TaskDto> getWatchedTasks(String user, int limit) {
         List<Task> taskEntities = daoHandler.getTaskHandler().getWatchedTasks(user, limit);
-        return taskEntities.stream().map(this::toDto).collect(Collectors.toList());
+        return taskEntities.stream().map((Task taskEntity) -> StorageUtil.taskToDto(taskEntity,projectStorage)).collect(Collectors.toList());
     }
 
     @Override
@@ -161,7 +168,7 @@ public class TaskStorageImpl implements TaskStorage {
     @Override
     public List<TaskDto> getCollaboratedTasks(String user, int limit) {
         List<Task> taskEntities = daoHandler.getTaskHandler().getCollaboratedTasks(user, limit);
-        return taskEntities.stream().map(this::toDto).collect(Collectors.toList());
+        return taskEntities.stream().map((Task taskEntity) -> StorageUtil.taskToDto(taskEntity,projectStorage)).collect(Collectors.toList());
     }
 
 
@@ -174,7 +181,7 @@ public class TaskStorageImpl implements TaskStorage {
     @Override
     public List<TaskDto> getIncomingTasks(String user, int offset, int limit) throws Exception {
         List<Task> taskEntities = Arrays.asList(daoHandler.getTaskHandler().getIncomingTasks(user).load(offset, limit));
-        return taskEntities.stream().map(this::toDto).collect(Collectors.toList());
+        return taskEntities.stream().map((Task taskEntity) -> StorageUtil.taskToDto(taskEntity,projectStorage)).collect(Collectors.toList());
     }
 
     @Override
@@ -185,7 +192,7 @@ public class TaskStorageImpl implements TaskStorage {
     @Override
     public List<TaskDto> getOverdueTasks(String user, int limit) {
         List<Task> taskEntities = daoHandler.getTaskHandler().getOverdueTasks(user, limit);
-        return taskEntities.stream().map(this::toDto).collect(Collectors.toList());
+        return taskEntities.stream().map((Task taskEntity) -> StorageUtil.taskToDto(taskEntity,projectStorage)).collect(Collectors.toList());
     }
 
     @Override
@@ -199,7 +206,7 @@ public class TaskStorageImpl implements TaskStorage {
         if (watchers != null && !watchers.contains(username)) {
             watchers.add(username);
             task.setWatcher(watchers);
-            daoHandler.getTaskHandler().update(toEntity(task));
+            daoHandler.getTaskHandler().update(StorageUtil.taskToEntity(task));
         }
     }
 
@@ -209,7 +216,7 @@ public class TaskStorageImpl implements TaskStorage {
         if (watchers != null && watchers.contains(username)) {
             watchers.remove(username);
             task.setWatcher(watchers);
-            daoHandler.getTaskHandler().update(toEntity(task));
+            daoHandler.getTaskHandler().update(StorageUtil.taskToEntity(task));
         } else {
             throw new Exception("Cannot remove watcher " + username + "of task because watcher does not exist.");
         }
@@ -217,7 +224,7 @@ public class TaskStorageImpl implements TaskStorage {
 
     @Override
     public Set<String> getWatchersOfTask(TaskDto task) {
-        return daoHandler.getTaskHandler().getWatchersOfTask(toEntity(task));
+        return daoHandler.getTaskHandler().getWatchersOfTask(StorageUtil.taskToEntity(task));
     }
 
     /**
@@ -232,7 +239,7 @@ public class TaskStorageImpl implements TaskStorage {
     @Override
     public List<TaskDto> findTasks(String user, String query, int limit) {
         List<Task> taskEntities = daoHandler.getTaskHandler().findTasks(user, query, limit);
-        return taskEntities.stream().map(this::toDto).collect(Collectors.toList());
+        return taskEntities.stream().map((Task taskEntity) -> StorageUtil.taskToDto(taskEntity,projectStorage)).collect(Collectors.toList());
     }
 
     /**
@@ -250,14 +257,14 @@ public class TaskStorageImpl implements TaskStorage {
 
     @Override
     public ChangeLogEntry addTaskLog(ChangeLogEntry changeLogEntry) throws EntityNotFoundException {
-        return changeLogToDto(daoHandler.getTaskLogHandler().create(changeLogToEntity(changeLogEntry)));
+        return StorageUtil.changeLogToDto(daoHandler.getTaskLogHandler().create(StorageUtil.changeLogToEntity(changeLogEntry,userService)),userService);
     }
 
     @Override
     public List<ChangeLogEntry> getTaskLogs(long taskId, int offset, int limit) throws Exception {
         return Arrays.asList(daoHandler.getTaskLogHandler().findTaskLogs(taskId).load(offset, limit))
                 .stream()
-                .map(this::changeLogToDto)
+                .map((ChangeLog changeLog) -> StorageUtil.changeLogToDto(changeLog,userService))
                 .collect(Collectors.toList());
 
     }
@@ -267,85 +274,4 @@ public class TaskStorageImpl implements TaskStorage {
         return daoHandler.getTaskHandler().countTaskStatusByProject(projectId);
     }
 
-
-    @Override
-    public ChangeLog changeLogToEntity(ChangeLogEntry changeLogEntry) {
-        ChangeLog changeLog = new ChangeLog();
-        changeLog.setId(changeLogEntry.getId());
-        changeLog.setTask(changeLogEntry.getTask());
-        changeLog.setAuthor(changeLogEntry.getAuthor());
-        changeLog.setActionName(changeLogEntry.getActionName());
-        changeLog.setCreatedTime(changeLogEntry.getCreatedTime());
-        changeLog.setTarget(changeLogEntry.getTarget());
-        return changeLog;
-    }
-
-    @Override
-    public ChangeLogEntry changeLogToDto(ChangeLog changeLog) {
-        ChangeLogEntry changeLogEntry = new ChangeLogEntry();
-        changeLogEntry.setId(changeLog.getId());
-        changeLogEntry.setTask(changeLog.getTask());
-        changeLogEntry.setAuthor(changeLog.getAuthor());
-        changeLogEntry.setActionName(changeLog.getActionName());
-        changeLogEntry.setCreatedTime(changeLog.getCreatedTime());
-        changeLogEntry.setTarget(changeLog.getTarget());
-        changeLogEntry.setAuthorFullName(userService.loadUser(changeLog.getAuthor()).getDisplayName());
-        return changeLogEntry;
-    }
-
-    public Task toEntity(TaskDto taskDto) {
-        if(taskDto==null){
-            return null;
-        }
-        Task taskEntity = new Task();
-        taskEntity.setId(taskDto.getId());
-        taskEntity.setTitle(taskDto.getTitle());
-        taskEntity.setDescription(taskDto.getDescription());
-        taskEntity.setPriority(taskDto.getPriority());
-        taskEntity.setContext(taskDto.getContext());
-        taskEntity.setAssignee(taskDto.getAssignee());
-        taskEntity.setCoworker(taskDto.getCoworker());
-        taskEntity.setWatcher(taskDto.getWatcher());
-        taskEntity.setStatus(taskDto.getStatus());
-        taskEntity.setRank(taskDto.getRank());
-        taskEntity.setActivityId(taskDto.getActivityId());
-        taskEntity.setCompleted(taskDto.isCompleted());
-        taskEntity.setCreatedBy(taskDto.getCreatedBy());
-        taskEntity.setCreatedTime(taskDto.getCreatedTime());
-        taskEntity.setEndDate(taskDto.getEndDate());
-        taskEntity.setStartDate(taskDto.getStartDate());
-        taskEntity.setDueDate(taskDto.getDueDate());
-        return taskEntity;
-    }
-
-    public TaskDto toDto(Task taskEntity) {
-        if(taskEntity==null){
-            return null;
-        }
-        TaskDto task = new TaskDto();
-        task.setId(taskEntity.getId());
-        task.setTitle(taskEntity.getTitle());
-        if(taskEntity.getDescription()!=null) {
-            try {
-                task.setDescription(HTMLSanitizer.sanitize(taskEntity.getDescription()));
-            } catch (Exception e) {
-                LOG.warn("Task description cannot be sanitized");
-            }
-        }
-        task.setPriority(taskEntity.getPriority());
-        task.setContext(taskEntity.getContext());
-        task.setAssignee(taskEntity.getAssignee());
-        task.setCoworker(taskEntity.getCoworker());
-        task.setWatcher(taskEntity.getWatcher());
-        task.setStatus(taskEntity.getStatus());
-        task.setRank(taskEntity.getRank());
-        task.setActivityId(taskEntity.getActivityId());
-        task.setCompleted(taskEntity.isCompleted());
-        task.setCreatedBy(taskEntity.getCreatedBy());
-        task.setCreatedTime(taskEntity.getCreatedTime());
-        task.setEndDate(taskEntity.getEndDate());
-        task.setStartDate(taskEntity.getStartDate());
-        task.setDueDate(taskEntity.getDueDate());
-        return task;
-    }
 }

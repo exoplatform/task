@@ -29,6 +29,7 @@ import org.exoplatform.task.exception.NotAllowedOperationOnEntityException;
 import org.exoplatform.task.service.StatusService;
 import org.exoplatform.task.storage.ProjectStorage;
 import org.exoplatform.task.storage.StatusStorage;
+import org.exoplatform.task.util.StorageUtil;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -53,7 +54,7 @@ public class StatusServiceImpl implements StatusService {
 
     private String[] DEFAULT_STATUS = {"ToDo", "InProgress", "WaitingOn", "Done"};
 
-    private static Log LOG = ExoLogger.getExoLogger(org.exoplatform.task.legacy.service.impl.StatusServiceImpl.class);
+    private static Log LOG = ExoLogger.getExoLogger(StatusServiceImpl.class);
 
     public StatusServiceImpl(DAOHandler daoHandler, StatusStorage statusStorage, ProjectStorage projectStorage, ListenerService listenerService) {
         this.daoHandler = daoHandler;
@@ -114,7 +115,7 @@ public class StatusServiceImpl implements StatusService {
             throw new IllegalArgumentException("project must be not null and status must not be null or empty");
         }
         try {
-            listenerService.broadcast("exo.project.projectModified", null, projectStorage.projectToEntity(project));
+            listenerService.broadcast("exo.project.projectModified", null, project);
         } catch (Exception e) {
             LOG.error("Error while broadcasting status creation event", e);
         }
@@ -128,7 +129,7 @@ public class StatusServiceImpl implements StatusService {
             throw new IllegalArgumentException("project must be not null and status must not be null or empty");
         }
         try {
-            listenerService.broadcast("exo.project.projectModified", null, projectStorage.projectToEntity(project));
+            listenerService.broadcast("exo.project.projectModified", null, project);
         } catch (Exception e) {
             LOG.error("Error while broadcasting status creation event", e);
         }

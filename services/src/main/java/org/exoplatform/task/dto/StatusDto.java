@@ -21,9 +21,9 @@ public class StatusDto implements Serializable {
 
     private List<Task> tasks;
 
-    private Project project;
+    private ProjectDto project;
 
-    public StatusDto(Status status) {
+    public StatusDto(StatusDto status) {
         this.id=status.getId();
         this.name=status.getName();
         this.rank=status.getRank();
@@ -35,7 +35,7 @@ public class StatusDto implements Serializable {
         this.name = name;
     }
 
-    public StatusDto(long id, String name, Integer rank, Project project) {
+    public StatusDto(long id, String name, Integer rank, ProjectDto project) {
         this.id = id;
         this.name = name;
         this.rank = rank;
