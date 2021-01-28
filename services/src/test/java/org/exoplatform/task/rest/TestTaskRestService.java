@@ -155,15 +155,19 @@ public class TestTaskRestService {
     allProjectIds.add((long) 1);
     ProjectDto project1 = new ProjectDto();
     project1.setName("project1");
+    when(projectService.getProject(project1.getId())).thenReturn(project1);
+    when(taskService.findTasks(taskQuery,0,-1)).thenReturn(tasks);
+    // When
+    Response response = taskRestService.getTasksByProjectId(project1.getId(),0,-1,false,false, false);
+    // Then
+    assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
+
     Set<String> manager = new HashSet<String>();
     manager.add("root");
     project1.setManager(manager);
-    when(projectService.getProject(project1.getId())).thenReturn(project1);
-
-    when(taskService.findTasks(taskQuery,0,-1)).thenReturn(tasks);
 
     // When
-    Response response = taskRestService.getTasksByProjectId(project1.getId(),0,-1,false,false, false);
+    response = taskRestService.getTasksByProjectId(project1.getId(),0,-1,false,false, false);
     // Then
     assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
   }
