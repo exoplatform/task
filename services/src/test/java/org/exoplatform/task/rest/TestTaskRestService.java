@@ -153,9 +153,17 @@ public class TestTaskRestService {
     TaskQuery taskQuery = new TaskQuery();
     List<Long> allProjectIds = new ArrayList<Long>();
     allProjectIds.add((long) 1);
+    ProjectDto project1 = new ProjectDto();
+    project1.setName("project1");
+    Set<String> manager = new HashSet<String>();
+    manager.add("root");
+    project1.setManager(manager);
+    when(projectService.getProject(project1.getId())).thenReturn(project1);
+
     when(taskService.findTasks(taskQuery,0,-1)).thenReturn(tasks);
+
     // When
-    Response response = taskRestService.getTasksByProjectId((long)1,0,-1,false,false, false);
+    Response response = taskRestService.getTasksByProjectId(project1.getId(),0,-1,false,false, false);
     // Then
     assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
   }
