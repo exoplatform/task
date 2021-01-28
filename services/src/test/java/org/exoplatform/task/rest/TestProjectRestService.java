@@ -12,6 +12,7 @@ import javax.ws.rs.ext.RuntimeDelegate;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
 import org.exoplatform.social.core.manager.IdentityManager;
+import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.task.rest.model.PaginatedTaskList;
 import org.junit.Before;
 import org.junit.Test;
@@ -235,7 +236,7 @@ public class TestProjectRestService {
   }
 
   @Test
-  public void testAddProject() throws Exception {
+  public void testCreateProject() throws Exception {
     // Given
     ProjectRestService projectRestService = new ProjectRestService(taskService,
                                                                    commentService,
@@ -254,6 +255,7 @@ public class TestProjectRestService {
     projectDto.setName("john");
     projectDto.setDescription("bla bla bla");
     projectDto.setManager(manager);
+
     projectService.createProject(projectDto);
 
     when(projectService.createProject(any())).thenReturn(projectDto);
@@ -268,6 +270,32 @@ public class TestProjectRestService {
 
     response = projectRestService.createProject(projectDto);
     assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+
+    projectDto.setName("john");
+    projectDto.setSpaceName("space");
+    projectService.createProject(projectDto);
+
+    when(projectService.createProject(any())).thenReturn(projectDto);
+
+    response = projectRestService.createProject(projectDto);
+    assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
+
+
+    projectService.createProject(projectDto);
+    Space space = new Space();
+    when(projectService.createProject(any())).thenReturn(projectDto);
+    when(spaceService.getSpaceByPrettyName(any())).thenReturn(space);
+    response = projectRestService.createProject(projectDto);
+    assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
+
+    projectService.createProject(projectDto);
+    space = new Space();
+    space.setGroupId("/space");
+    when(projectService.createProject(any())).thenReturn(projectDto);
+    when(spaceService.getSpaceByPrettyName(any())).thenReturn(space);
+    when(spaceService.isMember(space,"john")).thenReturn(true);
+    response = projectRestService.createProject(projectDto);
+    assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
   }
 

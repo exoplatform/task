@@ -6,8 +6,8 @@
       :labels="participantSuggesterLabels"
       :search-options="searchOptions"
       :ignore-items="ignoredMembers"
+      :type-of-relations="relationsType"
       name="inviteAttendee"
-      type-of-relations="''"
       include-users
       include-spaces />
     <div v-if="manager" class="identitySuggester no-border mt-0">
@@ -29,6 +29,10 @@
         type: Array,
         default: () => [],
       },
+      project: {
+      type: Object,
+      default: () => ({}),
+    }
     },
     data() {
       return {
@@ -38,7 +42,19 @@
     },
     computed: {
       searchOptions(){
+        if(this.project.spaceDetails){
+         return {
+                  spaceURL: this.project.spaceDetails.prettyName,
+                  currentUser:this.currentUser
+                }
+        }
         return this.currentUser;
+      },
+      relationsType(){
+        if(this.project.spaceDetails){
+         return 'member_of_space'
+        }
+        return '';
       },
       participantSuggesterLabels() {
         return {

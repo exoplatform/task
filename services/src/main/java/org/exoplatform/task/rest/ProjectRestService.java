@@ -390,6 +390,7 @@ public class ProjectRestService implements ResourceContainer {
         spaceJson.put("avatarUrl", space.getAvatarUrl());
         spaceJson.put("description", space.getDescription());
         projectJson.put("space", space);
+        projectJson.put("spaceDetails", spaceJson);
       }
 
       projectJson.put("id", projectId);
@@ -429,8 +430,16 @@ public class ProjectRestService implements ResourceContainer {
     Space space = null;
     if(StringUtils.isNotBlank(projectDto.getSpaceName())){
       space = spaceService.getSpaceByPrettyName(projectDto.getSpaceName());
+      if (space == null ) {
+        LOG.warn("User {} attempts to create a project under a non existing space {}", currentUser, projectDto.getSpaceName());
+        return Response.status(Response.Status.UNAUTHORIZED).build();
+      }
     }
     if (space != null) {
+      if(!spaceService.isMember(space,currentUser)){
+        LOG.warn("User {} attempts to create a project under a non authorized space {}", currentUser, projectDto.getSpaceName());
+        return Response.status(Response.Status.UNAUTHORIZED).build();
+      }
       List<String> memberships = UserUtil.getSpaceMemberships(space.getGroupId());
       Set<String> managers = new HashSet<String>(Arrays.asList(currentUser, memberships.get(0)));
       Set<String> participators = new HashSet<String>(Arrays.asList(memberships.get(1)));
