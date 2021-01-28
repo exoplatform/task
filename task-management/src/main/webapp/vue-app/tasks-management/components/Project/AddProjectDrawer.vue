@@ -86,6 +86,7 @@
               <project-assignee-manager
                 v-if="!showManager"
                 ref="assigneeManager"
+                :project="project"
                 :manager="manager"/>
             </div>
           </div>
@@ -131,6 +132,7 @@
               </div>
               <project-assignee-participator
                 v-if="!showParticipant"
+                :project="project"
                 :participator="participator"/>
             </div>
 

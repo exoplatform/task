@@ -390,6 +390,7 @@ public class ProjectRestService implements ResourceContainer {
         spaceJson.put("avatarUrl", space.getAvatarUrl());
         spaceJson.put("description", space.getDescription());
         projectJson.put("space", space);
+        projectJson.put("spaceDetails", spaceJson);
       }
 
       projectJson.put("id", projectId);
@@ -431,6 +432,9 @@ public class ProjectRestService implements ResourceContainer {
       space = spaceService.getSpaceByPrettyName(projectDto.getSpaceName());
     }
     if (space != null) {
+      if(!spaceService.isMember(space,currentUser)){
+        return Response.status(Response.Status.UNAUTHORIZED).build();
+      }
       List<String> memberships = UserUtil.getSpaceMemberships(space.getGroupId());
       Set<String> managers = new HashSet<String>(Arrays.asList(currentUser, memberships.get(0)));
       Set<String> participators = new HashSet<String>(Arrays.asList(memberships.get(1)));
