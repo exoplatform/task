@@ -81,10 +81,11 @@
             @change="updateTaskTitle()"/>
         </div>
         <div
+          v-if="task && task.id"
           class="lastUpdatedTask d-flex pb-3"
           @click="$root.$emit('displayTaskChanges')">
           <span class="pr-2">{{ $t('label.task.lastUpdate') }}</span>
-          <date-format :value="logs[0].createdTime" :format="dateTimeFormat" />
+          <date-format :value="lastTaskChangesLog" :format="dateTimeFormat" />
           <span class="pl-2" >{{ $t('label.task.lastUpdateBy') }} {{ logs[0].authorFullName }}</span>
         </div>
         <div class="taskAssignement ml-8 pb-3">
@@ -128,18 +129,19 @@
             :task="task"
             @labelsListOpened="closePriority(); closeStatus(); closeProjectsList();closeTaskDates();closeAssignements()"/>
         </div>
+        <v-divider class="my-0" />
         <v-flex
           v-if="task.id!=null"
           xs12
           class="pt-2 taskCommentsAndChanges">
           <div class="taskComments">
             <div v-if="comments && comments.length" class="taskCommentNumber pb-3">
-              <span class="lastCommentLabel">{{ $t('comment.message.lastComment') }}</span>
-              <span class="ViewAllCommentLabelLabel" @click="$root.$emit('displayTaskComment')">{{ $t('comment.message.viewAllComment') }} ({{ comments.length }})</span>
+              <span class="ViewAllCommentLabel" @click="$root.$emit('displayTaskComment')">{{ $t('comment.message.viewAllComment') }} ({{ comments.length }})</span>
             </div>
-            <div v-else class="taskCommentNumber pb-3">
-              <span class="lastCommentLabel">{{ $t('comment.message.noComment') }}</span>
-              <span class="ViewAllCommentLabelLabel" @click="$root.$emit('displayTaskComment')">{{ $t('comment.message.addYourComment') }}</span>
+            <div v-else class="taskCommentEmpty align-center pt-6 pb-3">
+              <i class="uiIcon uiIconComment"></i>
+              <span class="noCommentLabel">{{ $t('comment.message.noComment') }}</span>
+              <span class="ViewAllCommentText" @click="$root.$emit('displayTaskComment')">{{ $t('comment.message.addYourComment') }}</span>
             </div>
             <div v-if="comments && comments.length" class="pr-0 pl-0 TaskCommentItem">
               <task-last-comment
@@ -238,9 +240,9 @@
       disableSaveButton() {
         return this.saving || !this.taskTitleValid;
       },
-      lastTaskUpdate() {
-        return new Date(this.logs[0].createdTime);
-      },
+      lastTaskChangesLog() {
+        return this.logs && this.logs.length && this.logs[0].createdTime || '';
+      }
     },
     created() {
       $(document).on('mousedown', () => {

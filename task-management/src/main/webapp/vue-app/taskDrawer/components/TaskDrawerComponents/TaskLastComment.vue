@@ -27,33 +27,37 @@
       </v-btn>
     </div>
     <div v-if="comment.subComments && comment.subComments.length" class="py-0 TaskSubComments">
-      <div class="TaskSubCommentItem pl-10 pr-0 pb-2">
-        <div class="commentItem">
-          <div class="commentHeader d-flex">
-            <exo-user-avatar
-              :username="lastSubComment.author.username"
-              :avatar-url="lastSubComment.author.avatar"
-              :title="lastSubComment.author.displayName"
-              :size="30"
-              :url="lastSubComment.author.url"/>
-            <div class="commentContent pl-3 d-flex align-center">
-              <a
-                class="primary-color--text font-weight-bold subtitle-2 pr-2">{{ lastSubComment.author.displayName }} <span v-if="lastSubComment.author.external" class="externalTagClass">{{ ` (${$t('label.external')})` }}</span></a>
-              <span :title="absoluteTime()" class="dateTime caption font-italic d-block">{{ relativeTime }}</span>
+      <div
+        v-for="(item, i) in comment.subComments"
+        :key="i">
+        <div class="TaskSubCommentItem pl-10 pr-0 pb-2">
+          <div class="commentItem">
+            <div class="commentHeader d-flex">
+              <exo-user-avatar
+                :username="item.author.username"
+                :avatar-url="item.author.avatar"
+                :title="item.author.displayName"
+                :size="30"
+                :url="item.author.url"/>
+              <div class="commentContent pl-3 d-flex align-center">
+                <a
+                  class="primary-color--text font-weight-bold subtitle-2 pr-2">{{ item.author.displayName }} <span v-if="lastSubComment.author.external" class="externalTagClass">{{ ` (${$t('label.external')})` }}</span></a>
+                <span :title="absoluteTime()" class="dateTime caption font-italic d-block">{{ relativeTime }}</span>
+              </div>
             </div>
-          </div>
-          <div class="commentBody ml-10 mt-1">
-            <div
-              class="taskContentComment"
-              v-html="lastSubComment.formattedComment"></div>
-            <v-btn
-              id="reply_btn"
-              depressed
-              text
-              small
-              color="primary"
-              @click="$root.$emit('displayTaskComment')">{{ $t('comment.message.Reply') }}
-            </v-btn>
+            <div class="commentBody ml-10 mt-1">
+              <div
+                class="taskContentComment"
+                v-html="item.formattedComment"></div>
+              <v-btn
+                id="reply_btn"
+                depressed
+                text
+                small
+                color="primary"
+                @click="$root.$emit('displayTaskComment')">{{ $t('comment.message.Reply') }}
+              </v-btn>
+            </div>
           </div>
         </div>
       </div>
