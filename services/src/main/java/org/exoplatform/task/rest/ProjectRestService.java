@@ -11,6 +11,7 @@ import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.social.core.manager.IdentityManager;
 import org.exoplatform.social.core.profile.ProfileFilter;
+import org.exoplatform.social.core.space.SpaceUtils;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
 import org.exoplatform.social.core.identity.SpaceMemberFilterListAccess.Type;
@@ -125,7 +126,7 @@ public class ProjectRestService implements ResourceContainer {
       projectNumber = projectService.countNotEmptyProjects(memberships,query);
     }else {
       if(StringUtils.isNoneEmpty(spaceName)){
-        Space space = spaceService.getSpaceByPrettyName(spaceName);
+        Space space = spaceService.getSpaceByGroupId(SpaceUtils.SPACE_GROUP + "/" + spaceName);
         if(space!=null){
           memberships.addAll(UserUtil.getSpaceMemberships(space.getGroupId()));
         }
