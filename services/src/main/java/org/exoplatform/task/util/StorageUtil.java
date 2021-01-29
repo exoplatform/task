@@ -76,7 +76,7 @@ public final class StorageUtil{
             try {
                 task.setDescription(HTMLSanitizer.sanitize(taskEntity.getDescription()));
             } catch (Exception e) {
-                LOG.warn("Task description cannot be sanitized");
+                LOG.warn("Task description cannot be sanitized",e);
             }
         }
         task.setPriority(taskEntity.getPriority());
