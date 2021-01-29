@@ -1931,7 +1931,8 @@
   .lastUpdatedTask {
     color: @greyColorLighten1;
     font-style: italic;
-    font-size: 16px;
+    font-size: 14px;
+    padding-left: 32px;
     cursor: pointer;
   }
   .taskLabelsName {
@@ -2244,7 +2245,7 @@
         font-size: 16px;
         color: @greyColorLighten1;
       }
-      .ViewAllCommentLabelLabel {
+      .ViewAllCommentLabel {
         font-size: 16px;
         color: @primaryColor;
         text-decoration: underline;
@@ -2285,6 +2286,31 @@
       }
       .TaskSubComments{
         margin-left: -20px!important;
+      }
+      .taskCommentEmpty {
+        .uiIconComment{
+          display: block;
+          margin-bottom: 10px;
+          &:before {
+            font-family: "PLF-FONT-ICONS" !important;
+            content: '\e9c1';
+            font-style: normal;
+            font-size: 34px;
+            color: @greyColor;
+          }
+        }
+        .noCommentLabel {
+          display: block;
+          color: @greyColorLighten1;
+          font-size: 16px;
+        }
+        .ViewAllCommentText {
+          display: block;
+          text-decoration: underline;
+          color: @primaryColor;
+          font-size: 14px;
+          cursor: pointer;
+        }
       }
     }
     .commentBtn {
@@ -2363,6 +2389,7 @@
         color: #bc4343!important;
       }
       .activityCharsCount{
+        text-align: right;
         .uiIconMessageLength {
           font-size: 14px;
           color: #2eb58c;
@@ -2378,6 +2405,7 @@
         position: relative;
         .activityCharsCount {
           right: 5px;
+          text-align: right;
         }
       }
       .cke_bottom.cke_reset_all {
