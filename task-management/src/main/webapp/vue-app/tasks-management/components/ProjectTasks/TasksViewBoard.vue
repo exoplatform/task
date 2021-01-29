@@ -49,13 +49,6 @@ import {updateTask} from '../../../taskDrawer/taskDrawerApi';
       index: -1,
     };
   },
-    mounted() {
-      this.$root.$on('deleteTask', (event) => {
-        if (event && event.detail) {
-          this.tasksList = this.tasksList.filter((t) => t.id !== event.detail);
-        }
-      });
-    },
     methods: {
       getTasksByStatus(items ,statusName) {
         const tasksByStatus = [];
