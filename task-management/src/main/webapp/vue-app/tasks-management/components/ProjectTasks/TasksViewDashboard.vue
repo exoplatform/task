@@ -126,6 +126,7 @@
           :project="project" 
           :status-list="statusList"
           :tasks-list="tasksList"
+          :filter-task-completed="filterAsCompleted"
           @update-status="updateStatus"
           @create-status="createStatus"
           @delete-status="deleteStatus"/>
@@ -136,6 +137,7 @@
         <tasks-view-list
           :status-list="statusList"
           :tasks-list="tasksList"
+          :filter-task-completed="filterAsCompleted"
           @update-status="updateStatus"/>
       </div>
       <!--<v-tab-item
@@ -183,8 +185,9 @@
         statusList: [],
         tasksList: [],
         groupName:null,
-        filterProjectActive:false,
-        status:null
+        filterProjectActive:true,
+        status:null,
+        filterAsCompleted: false,
       }
     },
     watch:{
@@ -239,6 +242,7 @@
       filterTaskDashboard(e){
         this.loadingTasks = true;
         const tasks=e.tasks;
+        this.filterAsCompleted = e.showCompleteTasks;
         tasks.showCompleteTasks=e.showCompleteTasks;
         if (tasks.groupBy==='completed'){
           tasks.showCompleteTasks=true;

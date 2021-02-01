@@ -10,6 +10,7 @@
             <tasks-view-list-column
               :status="statusList"
               :tasks-list="tasksList"
+              :show-completed-tasks="filterTaskCompleted"
               @updateTaskCompleted="updateTaskCompleted"
               @updateTaskStatus="updateTaskStatus" />
           </div>
@@ -29,12 +30,15 @@ import {updateTask} from '../../../taskDrawer/taskDrawerApi';
       tasksList: {
         type: Array,
         default: () => []
+      },
+      filterTaskCompleted: {
+        type: Boolean,
+        default: false
       }
     },
     data () {
       return {
-        
-        tasksStatsStartValue:0,
+        tasksStatsStartValue:0
       }
     },
     mounted() {
@@ -60,7 +64,9 @@ import {updateTask} from '../../../taskDrawer/taskDrawerApi';
         return tasksByStatus;
       },
     updateTaskCompleted(e){
-      window.setTimeout(() => this.tasksList = this.tasksList.filter((t) => t.task.id !== e.id), 500);
+      if( !this.filterTaskCompleted ) {
+        window.setTimeout(() => this.tasksList = this.tasksList.filter((t) => t.task.id !== e.id), 500);
+      }
     },
        updateTaskStatus(task,newStatus){
               const status = this.statusList.find(s => s.name === newStatus);
