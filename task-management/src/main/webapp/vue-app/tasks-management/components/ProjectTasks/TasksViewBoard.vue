@@ -14,6 +14,7 @@
               :status="status"
               :tasks-list="getTasksByStatus(tasksList,status.name)"
               :index="index"
+              :show-completed-tasks="filterTaskCompleted"
               @updateTaskCompleted="updateTaskCompleted"
               @updateTaskStatus="updateTaskStatus"
               @delete-status="deleteStatus"
@@ -42,11 +43,15 @@ import {updateTask} from '../../../taskDrawer/taskDrawerApi';
       project: {
         type: Number,
         default: 0
+      },
+      filterTaskCompleted: {
+        type: Boolean,
+        default: false
       }
     },
     data() {
     return {
-      index: -1,
+      index: -1
     };
   },
     mounted() {
@@ -71,8 +76,9 @@ import {updateTask} from '../../../taskDrawer/taskDrawerApi';
         return tasksByStatus;
       },
       updateTaskCompleted(e){
-        window.setTimeout(() => this.tasksList = this.tasksList.filter((t) => t.task.id !== e.id), 500);
-
+        if( !this.filterTaskCompleted ) {
+          window.setTimeout(() => this.tasksList = this.tasksList.filter((t) => t.task.id !== e.id), 500);
+        }
       },
       updateTaskStatus(task,newStatus){
                // eslint-disable-next-line eqeqeq

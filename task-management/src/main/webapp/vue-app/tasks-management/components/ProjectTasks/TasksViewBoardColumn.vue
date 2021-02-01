@@ -23,6 +23,7 @@
         v-for="task in tasksList"
         :key="task.task.id"
         :task="task"
+        :show-completed-tasks="showCompletedTasks"
         @update-task-completed="updateTaskCompleted"/>
     </draggable>   
   </div>     
@@ -46,6 +47,10 @@
       project: {
         type: Number,
         default: 0
+      },
+      showCompletedTasks: {
+        type: Boolean,
+        default: false
       }
     },
     data() {
