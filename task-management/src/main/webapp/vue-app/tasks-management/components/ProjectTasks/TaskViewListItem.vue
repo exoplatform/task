@@ -85,6 +85,10 @@
       task: {
         type: Object,
         default: null
+      },
+      showCompletedTasks: {
+        type: Boolean,
+        default: false
       }
     },
     data () {
@@ -185,7 +189,9 @@
       if (typeof task.id !== 'undefined') {
         return this.$tasksService.updateCompleted(task).then(task => {
           this.$emit('update-task-completed', task);
-          this.removeCompletedTask = true;
+          if( task.completed === true && !this.showCompletedTasks) {
+            this.removeCompletedTask = true;
+          }
         }).then(this.task.task.completed = task.showCompleteTasks)
                 .catch(e => {
                   console.debug("Error updating project", e);
