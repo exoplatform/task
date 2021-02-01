@@ -58,9 +58,6 @@
     <mockito.version>2.0.13-beta</mockito.version>
     <h2database.version>1.2.145</h2database.version>
     <org.lombok.version>1.18.2</org.lombok.version>
-    <sonar.projectKey>exoplatform_task</sonar.projectKey>
-    <sonar.organization>exoplatform</sonar.organization>
-    <sonar.host.url>https://sonarcloud.io</sonar.host.url>   
   </properties>
   <dependencyManagement>
     <dependencies>
