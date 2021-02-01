@@ -1,9 +1,13 @@
 package org.exoplatform.task.util;
 
+import org.exoplatform.commons.utils.HTMLSanitizer;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.exoplatform.task.domain.*;
 import org.exoplatform.task.dto.*;
 import org.exoplatform.task.service.UserService;
 import org.exoplatform.task.storage.ProjectStorage;
+import org.exoplatform.task.storage.impl.TaskStorageImpl;
 
 import java.util.List;
 import java.util.Objects;
@@ -11,6 +15,7 @@ import java.util.stream.Collectors;
 
 public final class StorageUtil{
 
+    private static final Log LOG = ExoLogger.getExoLogger(StorageUtil.class);
 
     public static ChangeLog changeLogToEntity(ChangeLogEntry changeLogEntry, UserService userService) {
         ChangeLog changeLog = new ChangeLog();
@@ -67,7 +72,13 @@ public final class StorageUtil{
         TaskDto task = new TaskDto();
         task.setId(taskEntity.getId());
         task.setTitle(taskEntity.getTitle());
-        task.setDescription(taskEntity.getDescription());
+        if(taskEntity.getDescription()!=null) {
+            try {
+                task.setDescription(HTMLSanitizer.sanitize(taskEntity.getDescription()));
+            } catch (Exception e) {
+                LOG.warn("Task description cannot be sanitized",e);
+            }
+        }
         task.setPriority(taskEntity.getPriority());
         task.setContext(taskEntity.getContext());
         task.setAssignee(taskEntity.getAssignee());
