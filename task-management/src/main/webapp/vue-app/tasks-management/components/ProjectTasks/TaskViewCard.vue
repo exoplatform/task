@@ -19,10 +19,10 @@
         </div>
         <div class="taskTitle d-flex align-start" @click="openTaskDrawer()">
           <a
-                  ref="tooltip"
-                  :class="getTitleTaskClass()"
-                  :title="task.task.title"
-                  class="taskCardViewTitle">
+            ref="tooltip"
+            :class="getTitleTaskClass()"
+            :title="task.task.title"
+            class="taskCardViewTitle">
             <span class="taskTitleEllipsis">{{ task.task.title }}</span>
           </a>
         </div>
