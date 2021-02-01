@@ -21,6 +21,7 @@ import javax.persistence.TypedQuery;
 
 import java.util.List;
 
+import org.exoplatform.commons.api.persistence.ExoTransactional;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.task.dao.LabelHandler;
 import org.exoplatform.task.dao.LabelQuery;
@@ -29,6 +30,7 @@ import org.exoplatform.task.domain.Label;
 public class LabelDAOImpl extends CommonJPADAO<Label, Long> implements LabelHandler {
 
   @Override
+  @ExoTransactional
   public void delete(Label entity) {
     Query query = getEntityManager().createNamedQuery("LabelTaskMapping.removeLabelTaskMapping");
     query.setParameter("labelId", entity.getId());
