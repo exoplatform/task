@@ -1363,6 +1363,45 @@
         }
       }
       .tasksList {
+        /* Zooming exits */
+        @-webkit-keyframes zoomOut {
+          from {
+            opacity: 1;
+          }
+
+          50% {
+            opacity: 0;
+            -webkit-transform: scale3d(0.3, 0.3, 0.3);
+            transform: scale3d(0.3, 0.3, 0.3);
+          }
+
+          to {
+            opacity: 0;
+          }
+        }
+        @keyframes zoomOut {
+          from {
+            opacity: 1;
+          }
+
+          50% {
+            opacity: 0;
+            -webkit-transform: scale3d(0.3, 0.3, 0.3);
+            transform: scale3d(0.3, 0.3, 0.3);
+          }
+
+          to {
+            opacity: 0;
+          }
+        }
+        .completedTask {
+          -webkit-animation-duration: 1.5s;
+          animation-duration: 1.5s;
+          -webkit-animation-fill-mode: both;
+          animation-fill-mode: both;
+          -webkit-animation-name: zoomOut;
+          animation-name: zoomOut;
+        }
         .tasksListItem {
           .taskListItemView {
             background-color: @tableBackgroundAccent;

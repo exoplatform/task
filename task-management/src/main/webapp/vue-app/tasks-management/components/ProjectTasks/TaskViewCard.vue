@@ -128,7 +128,6 @@
         maxAvatarToShow : 3,
         showCompleteTasks: false,
         removeCompletedTask: false
-
       }
     },
     computed: {
