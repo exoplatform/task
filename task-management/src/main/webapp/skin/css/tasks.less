@@ -1236,31 +1236,25 @@
             .taskTitleId {
               min-height: 50px;
               height: 50px;
-              .uiIconCircle {
-                font-family: "PLF-FONT-ICONS" !important;
-                color: @primaryColor;
-                font-style: normal;
-                font-weight: bold;
-                font-size: 19px;
+              .taskCheckBox{
                 padding-right: 10px;
-                cursor: pointer;
-                &:before {
-                  content: "\ea47";
+                .uiIconCircle {
+                  font-family: "PLF-FONT-ICONS" !important;
+                  color: @primaryColor;
+                  font-style: normal;
+                  font-weight: bold;
+                  font-size: 19px;
+                  cursor: pointer;
+                  &:before {
+                    content: "\ea47";
+                  }
                 }
-              }
-              .uiIconValidate{
-                font-style: normal;
-                font-weight: bold;
-                font-size: 19px;
-                padding-right: 10px;
-                cursor: pointer;
-              }
-              .uiIconValidate{
-                font-style: normal;
-                font-weight: bold;
-                font-size: 19px;
-                padding-right: 10px;
-                cursor: pointer;
+                .uiIconValidate{
+                  font-style: normal;
+                  font-weight: bold;
+                  font-size: 19px;
+                  cursor: pointer;
+                }
               }
               .taskTitle {
                 cursor: pointer;
@@ -1378,6 +1372,7 @@
               max-width: 3%;
               width: 3%;
               align-self: flex-start!important;
+              padding-right: 10px;
               .uiIconCircle {
                 font-family: "PLF-FONT-ICONS" !important;
                 color: @primaryColor;
@@ -1385,7 +1380,6 @@
                 font-weight: bold;
                 font-size: 19px;
                 padding-top: 5px;
-                padding-right: 12px;
                 cursor: pointer;
                 &:before {
                   content: "\ea47";
@@ -1395,7 +1389,6 @@
                 font-style: normal;
                 font-weight: bold;
                 font-size: 19px;
-                padding-right: 10px;
                 cursor: pointer;
                 padding-top: 5px;
               }
@@ -1746,6 +1739,11 @@
       .taskActionsAndDate{
         cursor: pointer;
         .taskActionsAndLabels {
+          .taskLabels{
+            .v-chip{
+              cursor:pointer;
+            }
+          }
           .taskTags {
             .uiTagIcon {
               padding-right: 2px;

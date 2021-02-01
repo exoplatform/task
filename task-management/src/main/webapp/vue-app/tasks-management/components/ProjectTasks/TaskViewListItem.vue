@@ -2,13 +2,16 @@
   <div
     :class="getTaskPriorityColor(task.task.priority)"
     class="taskListItemView px-4 py-3 d-flex align-center">
-    <div class="taskCheckBox" @click="updateCompleted">
+    <div class="taskCheckBox" >
       <v-switch
         ref="autoFocusInput2"
         class="d-none"
         true-value="true"
         false-value="false"/>
-      <i :title="$t(getTaskCompletedTitle())" :class="getTaskCompleted()"></i>
+      <i 
+        :title="$t(getTaskCompletedTitle())" 
+        :class="getTaskCompleted()" 
+        @click="updateCompleted"></i>
     </div>
     <div class="taskTitle pr-3">
       <a
