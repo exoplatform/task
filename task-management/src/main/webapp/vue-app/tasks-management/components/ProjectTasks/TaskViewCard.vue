@@ -1,5 +1,8 @@
 <template>
-  <v-app id="taskCardItem" class="pt-3">
+  <v-app
+    id="taskCardItem"
+    :class="removeCompletedTask && 'completedTask' || ''"
+    class="pt-3">
     <v-card
       :class="[getTaskPriorityColor(task.task.priority)]"
       class="taskCard taskViewCard pa-3"
@@ -107,6 +110,10 @@
       task: {
         type: Object,
         default: () => ({}),
+      },
+      showCompletedTasks: {
+        type: Boolean,
+        default: false
       }
     },
     data() {
@@ -122,8 +129,8 @@
         isPersonnalTask : this.task.task.status === null,
         drawer:null,
         maxAvatarToShow : 3,
-        showCompleteTasks: false
-
+        showCompleteTasks: false,
+        removeCompletedTask: false
       }
     },
     computed: {
@@ -209,6 +216,9 @@
         if (typeof task.id !== 'undefined') {
           return this.$tasksService.updateCompleted(task).then(task => {
             this.$emit('update-task-completed', task);
+            if( task.completed === true && !this.showCompletedTasks) {
+              this.removeCompletedTask = true;
+            }
           }).then(this.task.task.completed = task.showCompleteTasks)
                   .catch(e => {
                     console.debug("Error updating project", e);
