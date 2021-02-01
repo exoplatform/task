@@ -1,6 +1,6 @@
 <template>
   <div
-    :class="getTaskPriorityColor(task.task.priority)"
+    :class="[getTaskPriorityColor(task.task.priority),removeCompletedTask && 'completedTask' || '']"
     class="taskListItemView px-4 py-3 d-flex align-center">
     <div class="taskCheckBox" >
       <v-switch
@@ -85,6 +85,10 @@
       task: {
         type: Object,
         default: null
+      },
+      showCompletedTasks: {
+        type: Boolean,
+        default: false
       }
     },
     data () {
@@ -99,7 +103,9 @@
         assigneeAndCoworkerArray: [],
         isPersonnalTask : this.task.task.status === null,
         labelList: '',
-        maxAvatarToShow : 3
+        maxAvatarToShow : 3,
+        removeCompletedTask: false,
+        showCompleteTasks: false,
       }
     },
     computed: {
@@ -180,10 +186,12 @@
         showCompleteTasks: this.showCompleted(),
       };
 
-
       if (typeof task.id !== 'undefined') {
         return this.$tasksService.updateCompleted(task).then(task => {
           this.$emit('update-task-completed', task);
+          if( task.completed === true && !this.showCompletedTasks) {
+            this.removeCompletedTask = true;
+          }
         }).then(this.task.task.completed = task.showCompleteTasks)
                 .catch(e => {
                   console.debug("Error updating project", e);
