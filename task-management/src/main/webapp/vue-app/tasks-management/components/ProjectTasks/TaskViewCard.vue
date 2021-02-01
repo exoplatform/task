@@ -8,20 +8,23 @@
       class="taskCard taskViewCard pa-3"
       flat>
       <div class="taskTitleId  d-flex justify-space-between">
-        <div class="taskTitle d-flex align-start">
-          <div class="taskCheckBox" @click="updateCompleted" >
-            <v-switch
-              ref="autoFocusInput2"
-              class="d-none"
-              true-value="true"
-              false-value="false"/>
-            <i :title="$t(getTaskCompletedTitle())" :class="getTaskCompleted()"></i>
-          </div>
+
+        <div class="taskCheckBox" >
+          <v-switch
+            ref="autoFocusInput2"
+            class="d-none"
+            true-value="true"
+            false-value="false"/>
+          <i 
+            :title="$t(getTaskCompletedTitle())" 
+            :class="getTaskCompleted()" 
+            @click="updateCompleted"></i>
+        </div>
+        <div class="taskTitle d-flex align-start" @click="openTaskDrawer()">
           <a
             ref="tooltip"
             :class="getTitleTaskClass()"
-            class="taskCardViewTitle"
-            @click="openTaskDrawer()">
+            class="taskCardViewTitle">
             <ellipsis
               v-if="task.task.title "
               :title="task.task.title "
@@ -67,10 +70,11 @@
 
       </div>
       <v-divider v-if="taskDueDate || (task.labels && task.labels.length)"/>
-      <div class="taskActionsAndDate d-flex justify-space-between pt-3">
+      <div 
+        class="taskActionsAndDate d-flex justify-space-between pt-3"
+        @click="openTaskDrawer()">
         <div 
-          class="taskActionsAndLabels d-flex align-center"
-          @click="openTaskDrawer()">
+          class="taskActionsAndLabels d-flex align-center">
           <div v-if="task.commentCount" class="taskComment d-flex pr-2">
             <i class="uiIcon uiCommentIcon"></i>
             <span class="taskCommentNumber caption">{{ task.commentCount }}</span>

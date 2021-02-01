@@ -1196,19 +1196,14 @@
             .taskTitleId {
               min-height: 50px;
               height: 50px;
-              .taskTitle {
-                width: 75%;
-                max-width: 75%;
-                .strikethrough{
-                  text-decoration: line-through;
-                }
+              .taskCheckBox{
+                padding-right: 10px;
                 .uiIconCircle {
                   font-family: "PLF-FONT-ICONS" !important;
                   color: @primaryColor;
                   font-style: normal;
                   font-weight: bold;
                   font-size: 19px;
-                  padding-right: 10px;
                   cursor: pointer;
                   &:before {
                     content: "\ea47";
@@ -1218,18 +1213,19 @@
                   font-style: normal;
                   font-weight: bold;
                   font-size: 19px;
-                  padding-right: 10px;
-                  cursor: pointer;
-                }
-                .uiIconValidate{
-                  font-style: normal;
-                  font-weight: bold;
-                  font-size: 19px;
-                  padding-right: 10px;
                   cursor: pointer;
                 }
               }
+              .taskTitle {
+                cursor: pointer;
+                width: 75%;
+                max-width: 75%;
+                .strikethrough{
+                  text-decoration: line-through;
+                }
+              }
               .taskId {
+                cursor: pointer;
                 width: 25%;
                 max-width: 25%;
                 text-align: right;
@@ -1354,6 +1350,7 @@
               max-width: 3%;
               width: 3%;
               align-self: flex-start!important;
+              padding-right: 10px;
               .uiIconCircle {
                 font-family: "PLF-FONT-ICONS" !important;
                 color: @primaryColor;
@@ -1361,7 +1358,6 @@
                 font-weight: bold;
                 font-size: 19px;
                 padding-top: 5px;
-                padding-right: 12px;
                 cursor: pointer;
                 &:before {
                   content: "\ea47";
@@ -1371,7 +1367,6 @@
                 font-style: normal;
                 font-weight: bold;
                 font-size: 19px;
-                padding-right: 10px;
                 cursor: pointer;
                 padding-top: 5px;
               }
@@ -1387,6 +1382,7 @@
               overflow: hidden;
               text-overflow: ellipsis;
               white-space: nowrap;
+              cursor: pointer;
             }
             .taskTitleAndId {
               width: 25%!important;
@@ -1718,32 +1714,41 @@
           }
         }
       }
-      .taskActionsAndLabels {
-        .taskTags {
-          .uiTagIcon {
-            padding-right: 2px;
-            &:before {
-              content: "\ead3";
-              font-family: "PLF-FONT-ICONS" !important;
-              color: @likeButtonColor;
-              font-style: normal;
-              font-size: 18px;
+      .taskActionsAndDate{
+        cursor: pointer;
+        .taskActionsAndLabels {
+          .taskLabels{
+            .v-chip{
+              cursor:pointer;
             }
           }
-        }
-        .taskAttachment {
-          .uiAttachIcon {
-            padding-right: 2px;
-            &:before {
-              content: "\e91f";
-              font-family: "PLF-FONT-ICONS" !important;
-              color: @likeButtonColor;
-              font-style: normal;
-              font-size: 18px;
+          .taskTags {
+            .uiTagIcon {
+              padding-right: 2px;
+              &:before {
+                content: "\ead3";
+                font-family: "PLF-FONT-ICONS" !important;
+                color: @likeButtonColor;
+                font-style: normal;
+                font-size: 18px;
+              }
+            }
+          }
+          .taskAttachment {
+            .uiAttachIcon {
+              padding-right: 2px;
+              &:before {
+                content: "\e91f";
+                font-family: "PLF-FONT-ICONS" !important;
+                color: @likeButtonColor;
+                font-style: normal;
+                font-size: 18px;
+              }
             }
           }
         }
       }
+
       #TasksListToolbar {
         height: auto!important;
         .v-toolbar__content {
@@ -2348,6 +2353,7 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     margin-right: 10px;
+    cursor: pointer;
     span {
       margin-left: 10px;
     }
