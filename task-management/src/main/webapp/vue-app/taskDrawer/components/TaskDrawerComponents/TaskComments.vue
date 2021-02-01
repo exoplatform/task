@@ -150,7 +150,7 @@
                 commentPlaceholder: this.$t('comment.message.addYourComment'),
                 showEditor : false,
                 currentUserName: eXo.env.portal.userName,
-                MESSAGE_MAX_LENGTH:255,
+                MESSAGE_MAX_LENGTH:1250,
             }
         },
         computed: {
