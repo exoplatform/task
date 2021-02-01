@@ -1196,9 +1196,16 @@
             .taskTitleId {
               min-height: 50px;
               height: 50px;
+              overflow: hidden;
               .taskTitle {
                 width: 75%;
                 max-width: 75%;
+                .taskCardViewTitle {
+                  display: -webkit-box;
+                  -webkit-line-clamp: 2;
+                  -webkit-box-orient: vertical;
+                  line-height: 23px;
+                }
                 .strikethrough{
                   text-decoration: line-through;
                 }
