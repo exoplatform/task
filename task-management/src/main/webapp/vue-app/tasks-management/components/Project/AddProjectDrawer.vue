@@ -284,7 +284,7 @@
                       remoteId: spacePrettyName,
                       providerId: 'space',
                       profile: {
-                        fullName: spaceFullName,
+                        fullName: spacePrettyName,
                         originalName: spacePrettyName,
                         avatarUrl: `/portal/rest/v1/social/spaces/${spacePrettyName}/avatar`,
                       },
