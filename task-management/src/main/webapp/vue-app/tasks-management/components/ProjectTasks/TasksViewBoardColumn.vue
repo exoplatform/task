@@ -15,7 +15,9 @@
     <draggable 
       v-model="tasksList" 
       :move="checkMove"
+      :animation="200"
       group="people"
+      ghost-class="ghost-card"
       class="draggable-palceholder"
       @start="drag=true"
       @end="drag=false">
