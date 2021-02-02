@@ -116,6 +116,7 @@
               profile: {
                 avatar: `/portal/rest/v1/social/spaces/${eXo.env.portal.spaceName}/avatar`,
                 fullname: eXo.env.portal.spaceDisplayName,
+                originalName: eXo.env.portal.spaceGroup,
               },
             }];
           } else {
