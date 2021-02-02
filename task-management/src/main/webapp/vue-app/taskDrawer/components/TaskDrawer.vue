@@ -80,6 +80,14 @@
             autofocus
             @change="updateTaskTitle()"/>
         </div>
+        <div
+          v-if="task && task.id"
+          class="lastUpdatedTask d-flex pb-3"
+          @click="$root.$emit('displayTaskChanges')">
+          <span class="pr-2">{{ $t('label.task.lastUpdate') }}</span>
+          <date-format :value="lastTaskChangesLog" :format="dateTimeFormat" />
+          <span class="pl-2" >{{ $t('label.task.lastUpdateBy') }} {{ logs[0].authorFullName }}</span>
+        </div>
         <div class="taskAssignement ml-8 pb-3">
           <task-assignment
             :task="task"
@@ -121,69 +129,26 @@
             :task="task"
             @labelsListOpened="closePriority(); closeStatus(); closeProjectsList();closeTaskDates();closeAssignements()"/>
         </div>
+        <v-divider class="my-0" />
         <v-flex
           v-if="task.id!=null"
           xs12
           class="pt-2 taskCommentsAndChanges">
-          <v-tabs color="#578DC9">
-            <v-tab class="text-capitalize">{{ $t('label.comments') }}</v-tab>
-            <v-tab class="text-capitalize">{{ $t('label.changes') }}</v-tab>
-            <v-tab-item class="pt-5 taskComments">
-              <div>
-                <div
-                  v-for="(item, i) in comments"
-                  :key="i"
-                  class="pr-0 pl-0 TaskCommentItem">
-                  <task-comments
-                    :task="task"
-                    :comment="item"
-                    :comments="comments"
-                    :is-open="!showEditor"
-                    :close-editor="subEditorIsOpen"
-                    @isOpen="OnCloseAllEditor()"
-                    @showSubEditor="OnUpdateEditorStatus"/>
-                </div>
-                <div v-if="showEditor" class="comment commentEditor d-flex align-start">
-                  <exo-user-avatar
-                    :username="currentUserName"
-                    :avatar-url="currentUserAvatar"
-                    :size="30"
-                    :url="null"/>
-                  <div class="editorContent ml-2">
-                    <task-comment-editor
-                      ref="commentEditor"
-                      v-model="editorData"
-                      :max-length="MESSAGE_MAX_LENGTH"
-                      :placeholder="$t('task.placeholder').replace('{0}', MESSAGE_MAX_LENGTH)"
-                      :task="task"
-                      :reset="reset"
-                      class="comment"/>
-                    <v-btn
-                      :disabled="postDisabled"
-                      depressed
-                      small
-                      type="button" 
-                      class="btn btn-primary ignore-vuetify-classes btnStyle mt-1 mb-2 commentBtn"
-                      @click="addTaskComment()">{{ $t('comment.label.comment') }}</v-btn>
-                  </div>
-                </div>
-                <a
-                  v-else
-                  class="pl-4"
-                  @click="openEditor">{{ $t('comment.label.comment') }}</a>
-              </div>
-            </v-tab-item>
-            <v-tab-item class="pt-5 taskChanges">
-              <v-list class="py-0">
-                <v-list-item
-                  v-for="(item, i) in logs"
-                  :key="i"
-                  class="pr-0">
-                  <log-details :change-log="item"/>
-                </v-list-item>
-              </v-list>
-            </v-tab-item>
-          </v-tabs>
+          <div class="taskComments">
+            <div v-if="comments && comments.length" class="taskCommentNumber pb-3">
+              <span class="ViewAllCommentLabel" @click="$root.$emit('displayTaskComment')">{{ $t('comment.message.viewAllComment') }} ({{ comments.length }})</span>
+            </div>
+            <div v-else class="taskCommentEmpty align-center pt-6 pb-3">
+              <i class="uiIcon uiIconComment"></i>
+              <span class="noCommentLabel">{{ $t('comment.message.noComment') }}</span>
+              <span class="ViewAllCommentText" @click="$root.$emit('displayTaskComment')">{{ $t('comment.message.addYourComment') }}</span>
+            </div>
+            <div v-if="comments && comments.length" class="pr-0 pl-0 TaskCommentItem">
+              <task-last-comment
+                :task="task"
+                :comment="comments[comments.length-1]" />
+            </div>
+          </div>
         </v-flex>
       </template>
       <template v-if="!task.id" slot="footer">
@@ -203,11 +168,19 @@
         </div>
       </template>
     </exo-drawer>
+    <task-comments-drawer
+      ref="taskCommentDrawer"
+      :task="task"
+      :comments="comments"/>
+    <task-changes-drawer
+      ref="taskChangesDrawer"
+      :task="task"
+      :logs="logs"/>
   </div>
 
 </template>
 <script>
-  import {updateTask, addTask, addTaskToLabel, getTaskLogs, getTaskComments, addTaskComments, urlVerify, cloneTask} from '../taskDrawerApi';
+  import {updateTask, addTask, addTaskToLabel, getTaskLogs, getTaskComments, cloneTask} from '../taskDrawerApi';
   export default {
     props: {
       task: {
@@ -221,12 +194,8 @@
       return {
         displayActionMenu: false,
         menuActions: [],
-        editorData: null,
         reset: false,
-        disabledComment: true,
         dates: [],
-        showEditor: true,
-        showSubEditor: false,
         commentPlaceholder: this.$t('comment.message.addYourComment'),
         descriptionPlaceholder: this.$t('editinline.taskDescription.empty'),
         chips: [],
@@ -248,6 +217,11 @@
         datePickerTop: true,
         currentUserName: eXo.env.portal.userName,
         MESSAGE_MAX_LENGTH:1250,
+        dateTimeFormat: {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        },
       }
     },
     computed: {
@@ -256,9 +230,6 @@
           return ""
         }
         return `${eXo.env.portal.context}/${eXo.env.portal.portalName}/tasks/taskDetail/${this.task.id}`;
-      },
-      currentUserAvatar() {
-        return `/portal/rest/v1/social/users/${eXo.env.portal.userName}/avatar`;
       },
       taskTitle() {
         return this.task && this.task.title;
@@ -269,25 +240,8 @@
       disableSaveButton() {
         return this.saving || !this.taskTitleValid;
       },
-      postDisabled: function() {
-        if(this.disabledComment){
-          return true
-        }
-        else if(this.editorData !== null && this.editorData!==''){
-          let pureText = this.editorData ? this.editorData.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, '').trim() : '';
-          const div = document.createElement('div');
-          div.innerHTML = pureText;
-          pureText = div.textContent || div.innerText || '';
-          return pureText.length> this.MESSAGE_MAX_LENGTH ;
-        }else {return true}
-      },
-    },
-    watch: {
-      editorData(val) {
-        this.disabledComment = val === '';
-      },
-      showEditor() {
-        this.showSubEditor = !this.showEditor;
+      lastTaskUpdate() {
+        return this.logs && this.logs.length && this.logs[0].createdTime || '';
       },
     },
     created() {
@@ -355,32 +309,6 @@
       closeAssignements() {
         document.dispatchEvent(new CustomEvent('closeAssignments'));
       },
-      openEditor() {
-        this.showEditor = true;
-        this.subEditorIsOpen = true;
-        this.editorData = null;
-      },
-      OnUpdateEditorStatus: function (val) {
-        this.showEditor = !val;
-        if (val === false) {
-          this.subEditorIsOpen = false;
-        }
-      },
-      OnCloseAllEditor() {
-        this.subEditorIsOpen = true;
-      },
-      addTaskComment() {
-        let comment = this.$refs.commentEditor.getMessage();
-        comment = this.urlVerify(comment);
-        addTaskComments(this.task.id,comment).then(comment => {
-          this.comments.push(comment);
-          this.reset = !this.reset;
-        });
-      },
-      getUserAvatar(username) {
-        return `/rest/v1/social/users/${username}/avatar`;
-      },
-
       updateTaskTitle() {
         if(this.task.id!=null){
           updateTask(this.task.id,this.task);
@@ -505,9 +433,6 @@
       navigateTo(pagelink) {
         window.open(`${ eXo.env.portal.context }/${ eXo.env.portal.portalName }/${ pagelink }`, '_blank');
       },
-      urlVerify(text) {
-        return urlVerify(text);
-      },
       open(task) {
         this.task=task
         window.setTimeout(() => {
@@ -537,6 +462,7 @@
         this.task={};
         document.dispatchEvent(new CustomEvent('drawerClosed'));
         document.dispatchEvent(new CustomEvent('loadTaskLabels', {detail: {}}));
+        this.$root.$emit('hideTaskComment');
       },
       deleteTask() {
         this.deleteConfirmMessage = `${this.$t('popup.msg.deleteTask')} : <strong>${this.task.title}</strong>? `;
