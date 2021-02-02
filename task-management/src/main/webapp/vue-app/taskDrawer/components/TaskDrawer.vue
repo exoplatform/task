@@ -543,7 +543,7 @@
           if (!resp || !resp.ok) {
             throw new Error('error message');
           }else {
-            document.dispatchEvent(new CustomEvent('deleteTask', {detail: idTask}));
+            this.$root.$emit('deleteTask', {detail: idTask});
           }
         })
       },
