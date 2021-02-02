@@ -197,8 +197,12 @@
       this.$root.$on('task-added', task => {
         this.getTasksByProject(this.project.id,"");
       });
+      this.$root.$on('deleteTask', (event) => {
+        if (event && event.detail) {
+          this.tasksList = this.tasksList.filter((t) => t.id !== event.detail);
+        }
+      });
     },
-
     methods : {
       hideProjectDetails() {
         this.$root.$emit('set-url', {type:"myProjects",id:""})
