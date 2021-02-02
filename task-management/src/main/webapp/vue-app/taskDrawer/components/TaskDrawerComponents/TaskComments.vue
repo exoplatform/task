@@ -6,7 +6,6 @@
     <div class="commentHeader d-flex">
       <exo-user-avatar
         :username="comment.author.username"
-        :avatar-url="comment.author.avatar"
         :title="comment.author.displayName"
         :size="30"
         :url="comment.author.url"/>
@@ -156,9 +155,6 @@
         computed: {
             relativeTime() {
                 return this.getRelativeTime(this.comment.comment.createdTime.time)
-            },
-            currentUserAvatar() {
-                return `/rest/v1/social/users/${this.currentUserName}/avatar`;
             },
             showDeleteButtom() {
                 return this.hover && eXo.env.portal.userName === this.comment.author.username;

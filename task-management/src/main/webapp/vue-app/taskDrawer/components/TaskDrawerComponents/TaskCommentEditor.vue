@@ -85,12 +85,12 @@
     },
     methods: {
       initCKEditor: function () {
-        let extraPlugins = 'simpleLink,suggester,widget,embedsemantic';
+        let extraPlugins = 'suggester,widget,embedsemantic';
         const windowWidth = $(window).width();
         const windowHeight = $(window).height();
         if (windowWidth > windowHeight && windowWidth < 768) {
           // Disable suggester on smart-phone landscape
-          extraPlugins = 'simpleLink,selectImage';
+          extraPlugins = 'selectImage';
         }
         // this line is mandatory when a custom skin is defined
         CKEDITOR.basePath = '/commons-extension/ckeditor/';
