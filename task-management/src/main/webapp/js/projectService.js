@@ -91,3 +91,43 @@ export function updateProjectColor(project, color) {
         body: JSON.stringify(project)
     }).then(resp => resp.json());
 }
+
+export function saveFilterSettings(valueOfFilter) {
+    return fetch(`${eXo.env.portal.context}/${eXo.env.portal.rest}/v1/settings/USER,${eXo.env.portal.userName}/APPLICATION,task-${valueOfFilter.projectId}/filterTask`, {
+        method: 'PUT',
+        credentials: 'include',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({"value": JSON.stringify(valueOfFilter)}),
+    }).then((resp) => {
+        if (resp && resp.ok) {
+            return resp;
+        } else {
+            throw new Error('Error setting filter  settings');
+        }
+    }).then(resp => {
+        return resp;
+    });
+}
+export function getFilterSettings(ProjectId) {
+    return fetch(`${eXo.env.portal.context}/${eXo.env.portal.rest}/v1/settings/USER,${eXo.env.portal.userName}/APPLICATION,task-${ProjectId}/filterTask`, {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+    }).then((resp) => {
+        if (resp && resp.ok) {
+            return resp.json();
+        } else if (resp && resp.status === 404) {
+            return null;
+        } else {
+            throw new Error('Error getting filter settings');
+        }
+    }).then(resp => {
+        return resp;
+    });
+}
