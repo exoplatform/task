@@ -256,7 +256,7 @@
         this.sortBy='';
         this.labels='';
         this.showCompleteTasks=false;
-        this.getFilterNumber()
+        this.getFilterNumber();
         this.$root.$emit('reset-filter-task-group-sort',this.groupBy);
       },
       reset() {
@@ -269,7 +269,13 @@
         this.sortBy='';
         this.labels='';
         this.showCompleteTasks=false;
-        this.getFilterNumber()
+        this.getFilterNumber();
+        const jsonToSave = {
+          groupBy: this.groupBy,
+          sortBy: this.sortBy,
+          projectId: this.project,
+        }
+        this.saveValueFilterInStorage(JSON.parse(JSON.stringify(jsonToSave)));
         this.$root.$emit('reset-filter-task-group-sort',this.groupBy);
         this.$emit('reset-filter-task');
       },
@@ -312,10 +318,18 @@
         if (this.assignee !== null && this.assignee !== undefined && this.assignee !== ''){
           tasks.assignee = this.assignee.remoteId;
         }
+        const jsonToSave = {
+          groupBy: this.groupBy,
+          sortBy: this.sortBy,
+          projectId: this.project,
+        }
+        this.saveValueFilterInStorage(JSON.parse(JSON.stringify(jsonToSave)));
         if(this.project){
           this.$emit('filter-task',{ tasks,filterLabels,showCompleteTasks:this.showCompleteTasks });
           this.getFilterNumber()
-          this.$refs.filterTasksDrawer.close();
+          if (this.$refs.filterTasksDrawer){
+            this.$refs.filterTasksDrawer.close();
+          }
         }else{
           this.$emit('filter-task-query', tasks,filterGroupSort,filterLabels);
        
@@ -347,7 +361,14 @@
           filtersnumber++
         }
         this.$emit('filter-num-changed',filtersnumber,source)
-      }
+      },
+      saveValueFilterInStorage(value){
+        this.$projectService.saveFilterSettings(value).then((response) => {
+          if (response){
+            localStorage.setItem(`filterStorage${this.project}`,JSON.stringify(value));
+          }
+        });
+      },
 
     }
   }
