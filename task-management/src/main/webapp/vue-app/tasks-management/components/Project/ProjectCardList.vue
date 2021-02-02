@@ -21,7 +21,8 @@
                 xl="3"
                 class="pa-0 projectItem">
                 <project-card
-                  :project="project"/>
+                  :project="project"
+                  @refreshProjects="searchProjects"/>
               </v-col>
             </v-row>
             <v-row class="ma-0 border-box-sizing">

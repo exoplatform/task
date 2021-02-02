@@ -83,10 +83,12 @@ import {updateTask} from '../../../taskDrawer/taskDrawerApi';
       },
       updateTask(task) {
         if(task.id!=null){
-          updateTask(task.id,task);
-/*           window.setTimeout(() => {
-             this.$root.$emit('task-added', this.task)
-          }, 200); */
+          updateTask(task.id,task).then(task => {
+          this.$root.$emit('show-alert', { type: 'success', message: this.$t('alert.success.task.status') });
+        }).catch(e => {
+          console.debug("Error when updating task's status", e);
+          this.$root.$emit('show-alert',{type:'error',message: this.$t('alert.error')} );
+          });
         }
       },
       deleteStatus(status) {
