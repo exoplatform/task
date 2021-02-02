@@ -1,5 +1,13 @@
 <template>
   <v-app id="TasksManagementPortlet">
+
+    <v-alert 
+      v-model="alert" 
+      :type="type"
+      dismissible >
+      {{ message }}
+    </v-alert>
+
     <v-tabs 
       v-if="!spaceName"
       v-model="tab" 
@@ -36,6 +44,9 @@
       return {
         tab: 'tab-1',
         spaceName: '',
+        alert:false,
+        type:'',
+        message:'',
         task: {
         type: Object,
         default: () => ({}),
@@ -44,7 +55,10 @@
     },
  
   created(){
-     this.$root.$on('open-project-drawer', project => {
+     this.$root.$on('show-alert', message => {
+       this.displayMessage(message)
+      });
+    this.$root.$on('open-project-drawer', project => {
        this.$refs.addProjectDrawer.open(project);
       });
     this.$root.$on('show-project-details-tasks',project =>{
@@ -140,7 +154,13 @@
       setProjectUrl(id){
         const urlPath = document.location.pathname
         window.history.pushState('task', 'Task details', `${urlPath.split('tasks')[0]}tasks/projectDetail/${id}`); 
-      }
+      },
+      displayMessage(message) {
+        this.message=message.message
+        this.type=message.type
+        this.alert = true;
+        window.setTimeout(() => this.alert = false, 5000);
+    }
 }
    }
 </script>
