@@ -59,10 +59,10 @@
                 @click="addTaskComment()">{{ $t('comment.label.comment') }}</v-btn>
             </div>
           </div>
-          <a
+          <!--<a
             v-else
             class="pl-4"
-            @click="openEditor">{{ $t('comment.label.comment') }}</a>
+            @click="openEditor">{{ $t('comment.label.comment') }}</a>-->
         </v-flex>
       </v-layout>
     </v-container>
