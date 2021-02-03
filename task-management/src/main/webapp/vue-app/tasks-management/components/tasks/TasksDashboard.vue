@@ -179,7 +179,7 @@
     },
     created() {
       this.originalLimitToFetch = this.limitToFetch = this.limit;
-      this.$root.$on('task-added', task => {
+      this.$root.$on('update-task-list', task => {
        this.searchTasks();
       });
       this.$root.$on('filter-task-groupBy',tasks =>{
