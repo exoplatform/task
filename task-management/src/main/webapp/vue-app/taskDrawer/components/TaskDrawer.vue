@@ -85,7 +85,7 @@
           @click="$root.$emit('displayTaskChanges')">
           <span class="pr-2">{{ $t('label.task.lastUpdate') }}</span>
           <date-format :value="lastTaskChangesLog" :format="dateTimeFormat" />
-          <span class="pl-2" >{{ $t('label.task.lastUpdateBy') }} {{ logs[0].authorFullName }}</span>
+          <span class="pl-2" >{{ $t('label.task.lastUpdateBy') }} {{ lastTaskChangesLogAuthor }}</span>
         </div>
         <div class="taskAssignement ml-8 pb-3">
           <task-assignment
@@ -241,6 +241,9 @@
       },
       lastTaskChangesLog() {
         return this.logs && this.logs.length && this.logs[0].createdTime || '';
+      },
+      lastTaskChangesLogAuthor() {
+        return this.logs && this.logs.length && this.logs[0].authorFullName || '';
       },
     },
     created() {

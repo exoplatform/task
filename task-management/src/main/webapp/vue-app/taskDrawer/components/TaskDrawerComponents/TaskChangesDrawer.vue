@@ -30,7 +30,6 @@
                 <div class="d-flex align-center">
                   <exo-user-avatar
                     :username="currentUserName"
-                    :avatar-url="userAvatar(item.author)"
                     :size="30"
                     :url="null"/>
                   <div class="pt-2">
@@ -92,6 +91,7 @@
           month: 'long',
           day: 'numeric'
         },
+        currentUserName: eXo.env.portal.userName,
       }
     },
     mounted() {
@@ -108,9 +108,6 @@
       },
       logMsg(item) {
         return `log.${ item.actionName }`
-      },
-      userAvatar(username) {
-        return `/portal/rest/v1/social/users/${username}/avatar`;
       },
     }
   };

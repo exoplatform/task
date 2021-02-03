@@ -111,7 +111,7 @@
     created() {
       this.getMyAllLabels();
       $(document).on('mousedown', () => {
-        if (this.$refs.selectLabel.isMenuActive) {
+        if (this.$refs.selectLabel && this.$refs.selectLabel.isMenuActive) {
           window.setTimeout(() => {
             this.$refs.selectLabel.isMenuActive = false;
             }, 200);
