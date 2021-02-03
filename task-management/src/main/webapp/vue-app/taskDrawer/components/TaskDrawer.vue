@@ -85,7 +85,7 @@
           @click="$root.$emit('displayTaskChanges')">
           <span class="pr-2">{{ $t('label.task.lastUpdate') }}</span>
           <date-format :value="lastTaskChangesLog" :format="dateTimeFormat" />
-          <span class="pl-2" >{{ $t('label.task.lastUpdateBy') }} {{ logs[0].authorFullName }}</span>
+          <span class="pl-2" >{{ $t('label.task.lastUpdateBy') }} {{ lastTaskChangesLogAuthor }}</span>
         </div>
         <div class="taskAssignement ml-8 pb-3">
           <task-assignment
@@ -231,24 +231,27 @@ export default {
         }
     },
     computed: {
-        taskLink() {
-            if (this.task == null || this.task.id == null) {
-                return ""
-            }
-            return `${eXo.env.portal.context}/${eXo.env.portal.portalName}/tasks/taskDetail/${this.task.id}`;
-        },
-        taskTitle() {
-            return this.task && this.task.title;
-        },
-        taskTitleValid() {
-            return this.taskTitle && this.taskTitle.trim() && this.taskTitle.trim().length >= 3 && this.taskTitle.length < 1024;
-        },
-        disableSaveButton() {
-            return this.saving || !this.taskTitleValid;
-        },
-        lastTaskChangesLog() {
-            return this.logs && this.logs.length && this.logs[0].createdTime || '';
-        },
+      taskLink() {
+        if (this.task == null || this.task.id == null) {
+          return ""
+        }
+        return `${eXo.env.portal.context}/${eXo.env.portal.portalName}/tasks/taskDetail/${this.task.id}`;
+      },
+      taskTitle() {
+        return this.task && this.task.title;
+      },
+      taskTitleValid() {
+        return this.taskTitle && this.taskTitle.trim() && this.taskTitle.trim().length >= 3 && this.taskTitle.length < 1024;
+      },
+      disableSaveButton() {
+        return this.saving || !this.taskTitleValid;
+      },
+      lastTaskChangesLog() {
+        return this.logs && this.logs.length && this.logs[0].createdTime || '';
+      },
+      lastTaskChangesLogAuthor() {
+        return this.logs && this.logs.length && this.logs[0].authorFullName || '';
+      },
     },
     created() {
         $(document).on('mousedown', () => {

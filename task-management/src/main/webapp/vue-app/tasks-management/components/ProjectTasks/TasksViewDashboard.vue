@@ -26,8 +26,11 @@
       @taskViewChangeTab="getChangeTabValue"
       @filter-task-dashboard="filterTaskDashboard"
       @reset-filter-task-dashboard="resetFiltertaskDashboard"/>
-    <div v-if="filterProjectActive && groupName && groupName.projectName">
-      <div v-for="(project,i) in groupName.projectName" :key="project.name">
+    <div v-if="filterProjectActive && groupName && groupName.projectName" class="px-0 pt-8 pb-4">
+      <div 
+        v-for="(project,i) in groupName.projectName" 
+        :key="project.name" 
+        class="pt-5">
 
         <div
           v-if=" project.value && project.value.displayName && project.name!==''"
@@ -35,7 +38,6 @@
           @click="showDetailsTask(project.rank)">
           <a
             class="toggle-collapse-group"
-            style="margin-right: 10px"
             href="#">
             <i
               :id="'uiIconMiniArrowDown'+project.rank"
@@ -58,6 +60,11 @@
             class="pr-2"/>
           <span class="amount-item">({{ tasksList[i].length }})</span>
 
+          <hr
+            role="separator"
+            aria-orientation="horizontal"
+            class="my-0 v-divider theme--light">
+
         </div>
         <div
           v-else
@@ -67,7 +74,6 @@
           <a
             :id="'iconTask'+project.rank"
             class="toggle-collapse-group"
-            style="margin-right: 10px"
             href="#">
             <i
               :id="'uiIconMiniArrowDown'+project.rank"
@@ -86,11 +92,11 @@
 
           <span class="nameGroup">{{ $t(getNameGroup(project.name)) }}</span>
           <span class="amount-item">({{ tasksList[i].length }})</span>
+          <hr
+            role="separator"
+            aria-orientation="horizontal"
+            class="my-0 v-divider theme--light">
         </div>
-        <hr
-          role="separator"
-          aria-orientation="horizontal"
-          class="my-0 v-divider theme--light">
         <div :id="'taskView'+project.rank" style="display: block">
           <div
             v-show="taskViewTabName == 'board'"
