@@ -77,7 +77,6 @@
             rows="1"
             row-height="13"
             required
-            autofocus
             @change="updateTaskTitle()"/>
         </div>
         <div
@@ -240,7 +239,7 @@
       disableSaveButton() {
         return this.saving || !this.taskTitleValid;
       },
-      lastTaskUpdate() {
+      lastTaskChangesLog() {
         return this.logs && this.logs.length && this.logs[0].createdTime || '';
       },
     },
@@ -463,6 +462,7 @@
         document.dispatchEvent(new CustomEvent('drawerClosed'));
         document.dispatchEvent(new CustomEvent('loadTaskLabels', {detail: {}}));
         this.$root.$emit('hideTaskComment');
+        this.$root.$emit('hideTaskChanges');
       },
       deleteTask() {
         this.deleteConfirmMessage = `${this.$t('popup.msg.deleteTask')} : <strong>${this.task.title}</strong>? `;
