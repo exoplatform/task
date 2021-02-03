@@ -18,7 +18,7 @@
       :animation="200"
       group="people"
       ghost-class="ghost-card"
-      class="draggable-palceholder"
+      class="draggable-palceholder taskBoardColumn"
       @start="drag=true"
       @end="drag=false">
       <task-view-card
