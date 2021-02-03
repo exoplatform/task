@@ -31,7 +31,6 @@
           <div v-if=" project.value && project.value.displayName" class="d-flex align-center assigneeFilter">
             <a
               class="toggle-collapse-group pointer"
-              style="margin-right: 10px"
               href="#"
               @click="showDetailsTask(project.rank)">
               <i
@@ -54,13 +53,15 @@
               :size="26"
               class="pr-2"/>
             <span class="amount-item">({{ tasksFilter.tasks[i].length }})</span>
-
+            <hr
+              role="separator"
+              aria-orientation="horizontal"
+              class="my-0 v-divider theme--light">
           </div>
           <div v-else class="d-flex align-center assigneeFilter">
             <a
               :id="'iconTask'+project.rank"
               class="toggle-collapse-group pointer"
-              style="margin-right: 10px"
               href="#"
               @click="showDetailsTask(project.rank)">
               <i
@@ -79,11 +80,11 @@
             </div>
             <span class="nameGroup">{{ $t(getGroupName(project.name)) }}</span>
             <span class="amount-item">({{ tasksFilter.tasks[i].length }})</span>
+            <hr
+              role="separator"
+              aria-orientation="horizontal"
+              class="my-0 v-divider theme--light">
           </div>
-          <hr
-            role="separator"
-            aria-orientation="horizontal"
-            class="my-0 v-divider theme--light">
           <div :id="'taskView'+project.rank" style="margin-left: 10px; display: block">
             <tasks-cards-list
               v-show="isTasksTabChanged"
