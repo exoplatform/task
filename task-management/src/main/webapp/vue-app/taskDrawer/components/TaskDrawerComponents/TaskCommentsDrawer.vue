@@ -105,7 +105,7 @@
         showSubEditor: false,
         disabledComment: true,
         editorData: null,
-        MESSAGE_MAX_LENGTH:255,
+        MESSAGE_MAX_LENGTH:1250,
       }
     },
     computed: {

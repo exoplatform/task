@@ -58,7 +58,7 @@
     },
     created() {
       $(document).on('mousedown', () => {
-        if (this.$refs.selectPriority.isMenuActive) {
+        if (this.$refs.selectPriority && this.$refs.selectPriority.isMenuActive) {
           window.setTimeout(() => {
             this.$refs.selectPriority.isMenuActive = false;
           }, 200);
@@ -71,14 +71,13 @@
             this.priority = task.priority;
             this.priorityDefaultColor = this.getTaskPriorityColor(task.priority);
           } else {
-            //this.priority = {key:'NORMAL',value:this.$t('label.priority.normal')};
             this.priority = 'NORMAL';
             this.priorityDefaultColor = this.getTaskPriorityColor('NORMAL');
           }
         }
       });
       document.addEventListener('closePriority',()=> {
-        if (this.$refs.selectPriority.isMenuActive) {
+        if (this.$refs.selectPriority && this.$refs.selectPriority.isMenuActive) {
           window.setTimeout(() => {
             this.$refs.selectPriority.isMenuActive = false;
           }, 100);
