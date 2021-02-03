@@ -48,8 +48,7 @@
     data() {
       return {
         inputVal : this.value,
-        editorReady: false,
-        isLinkClick: false
+        editorReady: false
       };
     },
     computed: {
