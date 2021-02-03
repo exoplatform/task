@@ -8,7 +8,7 @@
       :title="$t('tooltip.clickToEdit')"
       contentEditable="true"
       class="py-1 px-2 taskDescriptionToShow"
-      @click="showDescriptionEditor()"
+      @click="showDescriptionEditor($event)"
       v-html="inputVal ? urlVerify(inputVal) : inputVal">
       {{ placeholder }}
     </div>
@@ -48,7 +48,8 @@
     data() {
       return {
         inputVal : this.value,
-        editorReady: false
+        editorReady: false,
+        isLinkClick: false
       };
     },
     computed: {
@@ -104,12 +105,14 @@
         this.$emit('addTaskDescription',this.inputVal);
         this.editorReady = false;
       });
-      $(document).on('click','.taskDescriptionToShow a',function(e){
+      /*$(document).on('click','.taskDescriptionToShow a',function(e){
+        this.isLinkClick = true;
         e.preventDefault();
         e.stopPropagation();
         const url = $(this).attr('href');
         window.open(url, '_blank');
-      });
+        console.warn('test 2',this.isLinkClick)
+      });*/
     },
     methods: {
       saveDescription: function (newValue) {
@@ -160,8 +163,16 @@
           },
         });
       },
-      showDescriptionEditor:function () {
-        this.editorReady = !this.editorReady;
+      showDescriptionEditor:function (event) {
+        const target = $( event.target );
+        if ( target.is( "a" ) ) {
+          console.warn('link is clicked',target[0].href);
+          const url = target[0].href;
+          window.open(url, '_blank');
+        } else {
+          this.editorReady = !this.editorReady;
+          console.warn('link is not clicked');
+        }
       },
 
       urlVerify(text) {

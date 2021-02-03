@@ -2245,6 +2245,11 @@
     }
   }
   .taskDescription {
+    .taskDescriptionToShow {
+      &:focus {
+        outline-width: 0 !important;
+      }
+    }
     [contentEditable=true]:empty:not(:focus):before{
       content:attr(data-text);
       color: @greyColorLighten1Default;
@@ -2386,11 +2391,12 @@
   .uiArrowBAckIcon {
     cursor: pointer;
     color: @btnDisableColor!important;
+    margin-left: -4px;
     &:before {
       content: "\e913";
       font-family: "PLF-FONT-ICONS" !important;
       font-style: normal;
-      font-size: 24px;
+      font-size: 22px;
     }
   }
   .drawerContent {
@@ -2436,6 +2442,9 @@
       }
     }
     .commentEditor {
+      .comment {
+        position: relative;
+      }
       .tooManyChars {
         color: #bc4343!important;
       }
@@ -2443,7 +2452,9 @@
         color: #bc4343!important;
       }
       .activityCharsCount{
-        text-align: right;
+        position: absolute;
+        bottom: 5px;
+        right:  5px;
         .uiIconMessageLength {
           font-size: 14px;
           color: #2eb58c;
@@ -2458,8 +2469,9 @@
       .subComment.subCommentEditor{
         position: relative;
         .activityCharsCount {
-          right: 5px;
-          text-align: right;
+          position: absolute;
+          bottom: 5px;
+          right:  5px;
         }
       }
       .cke_bottom.cke_reset_all {
