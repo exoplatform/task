@@ -206,7 +206,7 @@
     },
   },
     created(){
-      this.$root.$on('task-added', task => {
+      this.$root.$on('update-task-list', task => {
         this.retrieveTask(task);
       });
       this.$root.$on('open-task-drawer', task => {
