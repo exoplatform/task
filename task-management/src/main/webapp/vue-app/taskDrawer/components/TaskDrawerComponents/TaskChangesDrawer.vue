@@ -25,7 +25,7 @@
             <v-list-item
               v-for="(item, i) in logs"
               :key="i"
-              class="pr-0">
+              class="pl-0 pr-0">
               <v-list-item-content class="pt-1">
                 <div class="d-flex align-center">
                   <exo-user-avatar
@@ -89,7 +89,9 @@
         dateTimeFormat: {
           year: 'numeric',
           month: 'long',
-          day: 'numeric'
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
         },
         currentUserName: eXo.env.portal.userName,
       }
