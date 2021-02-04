@@ -81,11 +81,13 @@
         </div>
         <div
           v-if="task && task.id"
-          class="lastUpdatedTask d-flex pb-3"
+          class="lastUpdatedTask pb-3"
+          title="Click to view all changes"
           @click="$root.$emit('displayTaskChanges')">
-          <span class="pr-2">{{ $t('label.task.lastUpdate') }}</span>
-          <date-format :value="lastTaskChangesLog" :format="dateTimeFormat" />
-          <span class="pl-2" >{{ $t('label.task.lastUpdateBy') }} {{ lastTaskChangesLogAuthor }}</span>
+          <span class="pr-2">{{ $t('label.task.lastUpdate') }}
+            {{ displayedDate(lastTaskChangesLog) }}
+            {{ $t('label.task.lastUpdateBy') }}
+            {{ lastTaskChangesLogAuthor }}</span>
         </div>
         <div class="taskAssignement ml-8 pb-3">
           <task-assignment
@@ -228,6 +230,7 @@ export default {
                 month: 'long',
                 day: 'numeric'
             },
+          lang: eXo.env.portal.language
         }
     },
     computed: {
@@ -650,6 +653,9 @@ export default {
                 action: this[actionFunctionName]
             });
         },
+      displayedDate(value) {
+        return value && this.$dateUtil.formatDateObjectToDisplay(new Date(value), this.dateTimeFormat, this.lang) || '';
+      },
     }
 }
 </script>
