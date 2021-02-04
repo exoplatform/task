@@ -54,6 +54,9 @@
     this.$root.$on('reset-filter-task-group-sort',tasks =>{
       this.sortBy = '';
     });
+      this.$root.$on('reset-filter-task-sort',sortBy =>{
+        this.sortBy = sortBy;
+      });
   }
   }
 </script>

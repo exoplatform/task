@@ -15,14 +15,14 @@
       @primary-filter-task="getTasksByPrimary"
       @reset-filter-task-dashboard="resetFiltertaskDashboard"/>
     <div
-      v-if="(!tasks || !tasks.length) && !loadingTasks"
+      v-if="(!tasks || !tasks.length) && !loadingTasks && !filterActive"
       class="noTasksProject">
       <div class="noTasksProjectIcon"><i class="uiIcon uiIconTask"></i></div>
       <div class="noTasksProjectLabel"><span>{{ $t('label.noTask') }}</span></div>
       <!-- <div class="noTasksProjectLink"><a href="#">{{ $t('label.addTask') }}</a></div> -->
     </div>
     <div v-else>
-      <div v-if="filterActive" class="px-0 pt-8 pb-4">
+      <div v-if="filterActive && tasksFilter && tasksFilter.projectName" class="px-0 pt-8 pb-4">
         <div 
           v-for="(project,i) in tasksFilter.projectName" 
           :key="project.name" 
@@ -358,8 +358,24 @@
          this.filterTasks.statusId=''
          this.filterTasks.priority=''
          this.filterTasks.query=''
-         this.groupBy=''
-         this.orderBy=''
+          if(localStorage.getItem(`filterStorageNone`)!==null){
+            const localStorageSaveFilter = localStorage.getItem(`filterStorageNone`);
+            if (localStorageSaveFilter.split('"')[11] === "None") {
+              this.groupBy = localStorageSaveFilter.split('"')[3];
+              this.sortBy = localStorageSaveFilter.split('"')[7];
+            }
+          }else {
+            this.getFilterProject().then(() => {
+              const jsonToSave = {
+                groupBy: this.groupBy,
+                sortBy: this.sortBy,
+                projectId: 'None',
+              }
+              localStorage.setItem(`filterStorageNone`,JSON.stringify(jsonToSave));
+              this.filterTasks.projectId=-2;
+              this.searchTasks(this.filterTasks)
+            });
+          }
          this.filterTasks.projectId=-2
          this.resetSearch();
          this.searchTasks() 
@@ -423,7 +439,21 @@
         else {detailsTask.style.display = 'block'
           uiIconMiniArrowDown.style.display = 'block';
           uiIconMiniArrowRight.style.display = 'none'}
-      }
+      },
+      getFilterProject(){
+        return this.$projectService.getFilterSettings('None').then((resp) =>{
+          if (resp && resp.value){
+            const StorageSaveFilter = resp.value;
+            if (StorageSaveFilter.split('"')[11] === 'None') {
+              this.groupBy = StorageSaveFilter.split('"')[3];
+              this.sortBy = StorageSaveFilter.split('"')[7];
+            }
+          }else {
+            this.groupBy = 'none';
+            this.sortBy = '';
+          }
+        });
+      },
     }
   }
 </script>

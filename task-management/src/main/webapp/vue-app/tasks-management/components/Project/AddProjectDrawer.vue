@@ -271,7 +271,7 @@
             if (this.project.description !== null || this.project.description !== ''){
               this.projectInformation.description = this.project.description;
             }
-            if (this.project.manager !== null && this.project.manager !== '' && this.project.manager !==undefined ){
+            if (this.project && this.project.manager){
               this.manager = this.project.manager;
                const managerIdentity = this.project.managerIdentities;
               if(this.project && this.project.space) {
@@ -315,7 +315,7 @@
               }
             }
 
-            if (this.project.participator !== null && this.project.participator !== '' && this.project.participator !==undefined && this.project.participator.length > 0){
+            if (this.project && this.project.participator && this.project.participator.length ){
               this.participator = this.project.participator;
               const participatorIdentity = this.project.participatorIdentities;
               if(this.project && this.project.space) {
