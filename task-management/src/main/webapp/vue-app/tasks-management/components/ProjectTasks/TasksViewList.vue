@@ -71,7 +71,7 @@ import {updateTask} from '../../../taskDrawer/taskDrawerApi';
         if(task.id!=null){
           updateTask(task.id,task);
 /*           window.setTimeout(() => {
-             this.$root.$emit('task-added', this.task)
+             this.$root.$emit('update-task-list', this.task)
           }, 200); */
         }
       },

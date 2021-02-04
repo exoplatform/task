@@ -203,7 +203,7 @@
       }
     },
     created() {
-      this.$root.$on('task-added', task => {
+      this.$root.$on('update-task-list', task => {
         this.getTasksByProject(this.project.id,"");
       });
       this.$root.$on('deleteTask', (event) => {
