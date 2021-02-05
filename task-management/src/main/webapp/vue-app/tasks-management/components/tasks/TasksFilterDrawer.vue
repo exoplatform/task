@@ -296,9 +296,10 @@
         const jsonToSave = {
           groupBy: this.groupBy,
           sortBy: this.sortBy,
-          projectId: this.project,
+          projectId: this.project || "None",
         }
         this.saveValueFilterInStorage(JSON.parse(JSON.stringify(jsonToSave)));
+        localStorage.setItem(`filterStorage${jsonToSave.projectId}`,JSON.stringify(jsonToSave));
         this.$root.$emit('reset-filter-task-group-sort',this.groupBy);
         this.$emit('reset-filter-task');
       },
