@@ -13,6 +13,11 @@
               <span class="pl-2">{{ $t('label.comments') }}</span>
             </v-list-item-content>
             <v-list-item-action class="drawerIcons align-end d-flex flex-row">
+              <div
+                :title="$t('comment.message.addYourComment')"
+                class="addCommentBtn">
+                <i class="uiIcon uiIconComment"></i>
+              </div>
               <v-btn icon>
                 <v-icon @click="closeDrawer()">mdi-close</v-icon>
               </v-btn>

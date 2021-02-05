@@ -81,8 +81,8 @@
         </div>
         <div
           v-if="task && task.id"
+          :title="$t('tooltip.viewAllChanges')"
           class="lastUpdatedTask pb-3"
-          title="Click to view all changes"
           @click="$root.$emit('displayTaskChanges')">
           <span class="pr-2">{{ $t('label.task.lastUpdate') }}
             {{ displayedDate(lastTaskChangesLog) }}
@@ -136,13 +136,21 @@
           xs12
           class="pt-2 taskCommentsAndChanges">
           <div class="taskComments">
-            <div v-if="comments && comments.length" class="taskCommentNumber pb-3">
-              <span class="ViewAllCommentLabel" @click="$root.$emit('displayTaskComment')">{{ $t('comment.message.viewAllComment') }} ({{ comments.length }})</span>
-            </div>
-            <div v-else class="taskCommentEmpty align-center pt-6 pb-3">
-              <i class="uiIcon uiIconComment"></i>
-              <span class="noCommentLabel">{{ $t('comment.message.noComment') }}</span>
-              <span class="ViewAllCommentText" @click="$root.$emit('displayTaskComment')">{{ $t('comment.message.addYourComment') }}</span>
+            <div class="commentActionsContent">
+              <div v-if="comments && comments.length" class="taskCommentNumber pb-3 d-flex ">
+                <span class="ViewAllCommentLabel" @click="$root.$emit('displayTaskComment')">{{ $t('comment.message.viewAllComment') }} ({{ comments.length }})</span>
+                <div
+                  :title="$t('comment.message.addYourComment')"
+                  class="addCommentBtn pl-3"
+                  @click="$root.$emit('displayTaskComment')">
+                  <i class="uiIcon uiIconComment"></i>
+                </div>
+              </div>
+              <div v-else class="taskCommentEmpty align-center pt-6 pb-3 pr-3">
+                <i class="uiIcon uiIconComment"></i>
+                <span class="noCommentLabel">{{ $t('comment.message.noComment') }}</span>
+                <span class="ViewAllCommentText" @click="$root.$emit('displayTaskComment')">{{ $t('comment.message.addYourComment') }}</span>
+              </div>
             </div>
             <div v-if="comments && comments.length" class="pr-0 pl-0 TaskCommentItem">
               <task-last-comment
