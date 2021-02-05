@@ -97,7 +97,7 @@
             aria-orientation="horizontal"
             class="my-0 v-divider theme--light">
         </div>
-        <div :id="'taskView'+project.rank" style="display: block">
+        <div :id="'taskView'+project.rank" style="margin-left: 53px; display: block">
           <div
             v-show="taskViewTabName == 'board'"
             style="display: block"

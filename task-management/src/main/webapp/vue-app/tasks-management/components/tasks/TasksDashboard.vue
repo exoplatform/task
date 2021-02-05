@@ -84,7 +84,7 @@
               aria-orientation="horizontal"
               class="my-0 v-divider theme--light">
           </div>
-          <div :id="'taskView'+project.rank" style="margin-left: 10px; display: block">
+          <div :id="'taskView'+project.rank" style="margin-left: 63px; display: block">
             <tasks-cards-list
               v-show="isTasksTabChanged"
               :tasks="tasksFilter.tasks[i]"
