@@ -66,7 +66,7 @@
       drag(val) {
         if(!val&&this.task&&this.newStatus&&this.task.status.id !== this.newStatus){
              this.$emit('updateTaskStatus', this.task,this.newStatus);
-             document.getElementsByClassName("draggable-palceholder").forEach(element => element.style.backgroundColor= "#FFFFFF");
+             Array.from(document.getElementsByClassName("draggable-palceholder")).forEach(element => element.style.backgroundColor= "#FFFFFF");
         }},
    },
     methods: {
@@ -75,8 +75,8 @@
       },
       checkMove(evt){
         if(evt){
-          document.getElementsByClassName("draggable-palceholder").forEach(element => element.style.backgroundColor= "#FFFFFF");
-          evt.to.parentElement.getElementsByClassName("draggable-palceholder").forEach(element => element.style.backgroundColor= "#f2f2f2");
+          Array.from(document.getElementsByClassName("draggable-palceholder")).forEach(element => element.style.backgroundColor= "#FFFFFF");
+          Array.from(evt.to.parentElement.getElementsByClassName("draggable-palceholder")).forEach(element => element.style.backgroundColor= "#f2f2f2");
           this.task = evt.draggedContext.element.task
           this.newStatus = evt.to.parentElement.id;
         }
