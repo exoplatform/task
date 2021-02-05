@@ -320,15 +320,15 @@
           const day = date.getDate();
           const month = date.getMonth()+1;
           const year = date.getFullYear();
-          const formattedTime = `${day  }-${  month  }-${  year}`;
+          const formattedTime = `${  year}-${  month  }-${day  }`;
           return formattedTime
         }
       },
       retrieveTask(task){
         if(task.dueDate){
           const Today = new Date();
-          const formattedTimeToday = `${Today.getDate()  }-${  Today.getMonth()+1  }-${  Today.getFullYear()}`;
-          const formattedTimeTomorrow = `${Today.getDate()+1  }-${  Today.getMonth()+1  }-${  Today.getFullYear()}`;
+          const formattedTimeToday = `${  Today.getFullYear()}-${  Today.getMonth()+1  }-${Today.getDate()  }`;
+          const formattedTimeTomorrow = `${  Today.getFullYear()}-${  Today.getMonth()+1  }-${Today.getDate()+1  }`;
           const date = this.dateFormatter(task.dueDate);
           if(new Date(date) < new Date(formattedTimeToday)){
            return  this.getMyOverDueTasks();
