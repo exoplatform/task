@@ -358,7 +358,11 @@ public final class TaskUtil {
     Map<GroupKey, List<TaskEntity>> maps = new TreeMap<GroupKey, List<TaskEntity>>();
     for(TaskEntity task : tasks) {
       for (GroupKey key : getGroupName(task, groupBy, username, userTimezone, labelService, userService)) {
-        List<TaskEntity> list = maps.get(key);
+        List<TaskEntity> list = maps.entrySet().stream()
+          .filter(group -> group.getKey().getName().equals(key.getName()))
+          .map(Map.Entry::getValue)
+          .findFirst()
+          .orElse(null);
         if(list == null) {
           list = new LinkedList<TaskEntity>();
           maps.put(key, list);
