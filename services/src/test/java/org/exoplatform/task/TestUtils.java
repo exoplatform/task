@@ -130,6 +130,26 @@ public class TestUtils {
     return comment;
   }
 
+  public static Comment getDefaultCommentWithMention() {
+    Comment comment = new Comment();
+    comment.setId(EXISTING_COMMENT_ID);
+    comment.setComment("Bla bla @testa");
+    comment.setAuthor("Tib");
+    comment.setCreatedTime(new Date());
+    comment.setTask(getDefaultTask());
+    return comment;
+  }
+
+  public static CommentDto getDefaultCommentDto() {
+    CommentDto comment = new CommentDto();
+    comment.setId(EXISTING_COMMENT_ID);
+    comment.setComment("Bla bla");
+    comment.setAuthor("Tib");
+    comment.setCreatedTime(new Date());
+    comment.setTask(getDefaultTaskDto());
+    return comment;
+  }
+
   public static Status getDefaultStatus() {
     Status status = new Status();
     status.setId(EXISTING_STATUS_ID);
