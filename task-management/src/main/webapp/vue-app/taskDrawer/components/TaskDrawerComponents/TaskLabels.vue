@@ -201,7 +201,7 @@
                     console.debug("Error when updating task's labels", e);
                     this.$root.$emit('show-alert', {
                         type: 'error',
-                        message: this.$t('alert.label')
+                        message: this.$t('alert.error')
                     });
                 });
       },
