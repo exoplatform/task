@@ -128,7 +128,19 @@ public class CommentServiceTest {
             getAuthor(),comment.getComment());
     verify(commentHandler, times(1)).create(commentCaptor.capture());
     Comment result = commentCaptor.getValue();
-    assertEquals("Bla bla", result.getComment()); }
+    assertEquals("Bla bla", result.getComment());
+  }
+
+  @Test
+  public void testCommentWithMention() throws EntityNotFoundException {
+    Comment comment = TestUtils.getDefaultCommentWithMention();
+    when(daoHandler.getCommentHandler().create(any())).thenReturn(comment);
+    commentService.addComment(StorageUtil.taskToDto(comment.getTask(), projectStorage), comment.
+            getAuthor(), comment.getComment());
+    verify(commentHandler, times(1)).create(commentCaptor.capture());
+    Comment result = commentCaptor.getValue();
+    assertEquals(true, result.getMentionedUsers().contains("testa"));
+  }
 
   @Test
   public void testRemoveComment() throws EntityNotFoundException {
