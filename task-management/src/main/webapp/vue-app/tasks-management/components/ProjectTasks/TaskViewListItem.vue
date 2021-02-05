@@ -190,6 +190,11 @@
 
       if (typeof task.id !== 'undefined') {
         return this.$tasksService.updateCompleted(task).then(task => {
+                      if(task.completed){
+              this.$root.$emit('show-alert', {type: 'success',message: this.$t('alert.success.task.completed')});   
+            }else{
+              this.$root.$emit('show-alert', {type: 'success',message: this.$t('alert.success.task.unCompleted')});
+            }
           this.$emit('update-task-completed', task);
           if( task.completed === true && !this.showCompletedTasks) {
             this.removeCompletedTask = true;
@@ -197,7 +202,10 @@
         }).then(this.task.task.completed = task.showCompleteTasks)
                 .catch(e => {
                   console.debug("Error updating project", e);
-                  this.$emit('error', e && e.message ? e.message : String(e));
+                  this.$root.$emit('show-alert', {
+                    type: 'error',
+                    message: this.$t('alert.error')
+                });
                   this.postProject = false;
                 });
       }
