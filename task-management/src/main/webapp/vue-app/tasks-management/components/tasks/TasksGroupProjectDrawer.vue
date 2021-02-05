@@ -50,8 +50,8 @@
         this.$emit('input', val);
       },
     },created() {
-      this.$root.$on('reset-filter-task-group-sort',tasks =>{
-        this.groupBy = tasks;
+      this.$root.$on('reset-filter-task-group-sort',groupBy =>{
+        this.groupBy = groupBy;
       });
     }
   }

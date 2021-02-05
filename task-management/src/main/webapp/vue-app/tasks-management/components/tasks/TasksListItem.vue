@@ -276,7 +276,9 @@
           if(!  this.assigneeAndCoworkerArray.some(assigneeAndCowoker => assigneeAndCowoker.username === this.task.coworker.username)){
 
             this.task.coworker.forEach((coworker) => {
-            this.assigneeAndCoworkerArray.push(coworker);
+              if (coworker){
+                this.assigneeAndCoworkerArray.push(coworker);
+              }
           })
         }}
       },
