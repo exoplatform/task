@@ -71,6 +71,7 @@
             v-model="task.title"
             :class="{taskCompleted: task.completed}"
             :placeholder="$t('label.tapTask.name')"
+            :autofocus="task && task.id === null"
             type="text"
             class="pl-0 pt-0 task-name"
             auto-grow
@@ -80,9 +81,9 @@
             @change="updateTaskTitle()"/>
         </div>
         <div
-          v-if="task && task.id"
+          v-if="task && task && task.id"
+          :title="$t('tooltip.viewAllChanges')"
           class="lastUpdatedTask pb-3"
-          title="Click to view all changes"
           @click="$root.$emit('displayTaskChanges')">
           <span class="pr-2">{{ $t('label.task.lastUpdate') }}
             {{ displayedDate(lastTaskChangesLog) }}
@@ -136,8 +137,14 @@
           xs12
           class="pt-2 taskCommentsAndChanges">
           <div class="taskComments">
-            <div v-if="comments && comments.length" class="taskCommentNumber pb-3">
+            <div v-if="comments && comments.length" class="taskCommentNumber d-flex pb-3">
               <span class="ViewAllCommentLabel" @click="$root.$emit('displayTaskComment')">{{ $t('comment.message.viewAllComment') }} ({{ comments.length }})</span>
+              <div
+                :title="$t('comment.message.addYourComment')"
+                class="addCommentBtn pl-3"
+                @click="openCommentDrawer">
+                <i class="uiIcon uiIconComment"></i>
+              </div>
             </div>
             <div v-else class="taskCommentEmpty align-center pt-6 pb-3">
               <i class="uiIcon uiIconComment"></i>
@@ -656,6 +663,10 @@ export default {
       displayedDate(value) {
         return value && this.$dateUtil.formatDateObjectToDisplay(new Date(value), this.dateTimeFormat, this.lang) || '';
       },
+      openCommentDrawer() {
+        this.$root.$emit('displayTaskComment');
+        this.$root.$emit('displaySubCommentEditor', null);
+      }
     }
 }
 </script>

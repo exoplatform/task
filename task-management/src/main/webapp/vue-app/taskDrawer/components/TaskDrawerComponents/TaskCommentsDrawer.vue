@@ -13,6 +13,12 @@
               <span class="pl-2">{{ $t('label.comments') }}</span>
             </v-list-item-content>
             <v-list-item-action class="drawerIcons align-end d-flex flex-row">
+              <div
+                :title="$t('comment.message.addYourComment')"
+                class="addCommentBtn"
+                @click="openEditorToBottom">
+                <i class="uiIcon uiIconComment"></i>
+              </div>
               <v-btn icon>
                 <v-icon @click="closeDrawer()">mdi-close</v-icon>
               </v-btn>
@@ -20,7 +26,7 @@
           </v-list-item>
         </v-flex>
         <v-divider class="my-0" />
-        <v-flex class="drawerContent flex-grow-1 overflow-auto border-box-sizing">
+        <v-flex id="commentDrawerContent" class="drawerContent flex-grow-1 overflow-auto border-box-sizing">
           <div class="TaskCommentContent">
             <div
               v-for="(item, i) in comments"
@@ -32,6 +38,8 @@
                 :comments="comments"
                 :is-open="!showEditor"
                 :close-editor="subEditorIsOpen"
+                :comment-id="commentId"
+                :id="id"
                 @isOpen="OnCloseAllEditor()"
                 @showSubEditor="OnUpdateEditorStatus"/>
             </div>
@@ -49,6 +57,7 @@
                 :max-length="MESSAGE_MAX_LENGTH"
                 :placeholder="$t('task.placeholder').replace('{0}', MESSAGE_MAX_LENGTH)"
                 :reset="reset"
+                :id="id"
                 class="comment"/>
               <v-btn
                 :disabled="postDisabled"
@@ -101,11 +110,13 @@
     data() {
       return {
         currentUserName: eXo.env.portal.userName,
-        showEditor: true,
+        showEditor: false,
         showSubEditor: false,
         disabledComment: true,
         editorData: null,
         MESSAGE_MAX_LENGTH:1250,
+        id: `commentContent${parseInt(Math.random() * 10000).toString()}`,
+        commentId:''
       }
     },
     computed: {
@@ -135,7 +146,19 @@
     },
     mounted() {
       this.$root.$on('displayTaskComment', taskCommentDrawer => {
-        this.showTaskCommentDrawer = true
+        this.showTaskCommentDrawer = true;
+      });
+
+      this.$root.$on('displaySubCommentEditor', id => {
+        if( id == null ) {
+          window.setTimeout(() => {
+            this.openEditorToBottom();
+          }, 500);
+        } else {
+          window.setTimeout(() => {
+            document.dispatchEvent(new CustomEvent('openSubComment',{'detail': id}))
+          }, 500);
+        }
       });
       this.$root.$on('hideTaskComment', taskCommentDrawer => {
         this.showTaskCommentDrawer = false
@@ -165,11 +188,20 @@
         this.subEditorIsOpen = true;
       },
       closeDrawer() {
-        this.showTaskCommentDrawer = false
+        this.showTaskCommentDrawer = false;
+        this.showEditor = false;
+        this.subEditorIsOpen = false;
       },
       urlVerify(text) {
         return urlVerify(text);
       },
+      openEditorToBottom() {
+        const commentsDiv = document.getElementById("commentDrawerContent");
+        $('#commentDrawerContent').animate({
+          scrollTop: commentsDiv.scrollHeight - commentsDiv.clientHeight
+        }, 500);
+        this.openEditor();
+      }
     }
   };
 </script>
