@@ -7,7 +7,8 @@
       :placeholder="placeholder" 
       cols="30" 
       rows="10" 
-      class="textarea"></textarea>
+      class="textarea"
+      autofocus></textarea>
     <div
       v-show="editorReady"
       :class="charsCount > maxLength ? 'tooManyChars' : ''"
@@ -43,12 +44,15 @@
       maxLength: {
         type: Number,
         default: -1
+      },
+      id: {
+        type: String,
+        default: ''
       }
     },
     data() {
       return {
         inputVal: this.value,
-        id: `commentContent${parseInt(Math.random() * 10000).toString()}`,
         charsCount: 0,
         editorReady: false,
       };
@@ -104,10 +108,10 @@
           on: {
             instanceReady: function() {
               self.editorReady = true;
+              self.setFocus();
             },
             change: function(evt) {
               const newData = evt.editor.getData();
-
               self.inputVal = newData;
               let pureText = newData ? newData.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, '').trim() : '';
               const div = document.createElement('div');
@@ -132,7 +136,10 @@
       getMessage: function() {
         const newData = CKEDITOR.instances[this.id].getData();
         return newData ? newData.trim() : '';
-      }
+      },
+      setFocus: function() {
+        CKEDITOR.instances[this.id].focus();
+      },
     }
   };
 </script>
