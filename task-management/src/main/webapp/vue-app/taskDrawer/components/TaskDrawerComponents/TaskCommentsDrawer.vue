@@ -156,7 +156,7 @@
           }, 500);
         } else {
           window.setTimeout(() => {
-            document.dispatchEvent(new CustomEvent('openSubComment',{'detail': id}))
+            document.dispatchEvent(new CustomEvent('openSubComment',{'detail': id}));
           }, 500);
         }
       });
