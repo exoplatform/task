@@ -103,13 +103,13 @@
       renderChangeHTML(item) {
         let str = '';
         if ( item.actionName === 'assign' || item.actionName === 'unassign') {
-          str = `${"<p class='changesItem assignDiv mb-0'>" +
-            "<span>"}${ this.$t(this.logMsg(item))}</span>`+
+          str = `<p class='changesItem assignDiv text-truncate mb-0' title='${item.authorFullName} ${this.$t(this.logMsg(item))} ${item.targetFullName}'>` +
+            `<span>${ this.$t(this.logMsg(item))}</span>`+
             `<a href='/portal/dw/profile/${item.target}'> ${item.targetFullName} </a>`+
             `</p>`
         } else {
-          str = `${"<p class='changesItem mb-0'>" +
-            "<p class='text-truncate mb-0'>"}${ this.$t(this.logMsg(item))  }${item.target}</p>`+
+          str = `<p class='changesItem mb-0'>` +
+            `<p class='text-truncate mb-0' title='${item.authorFullName} ${this.$t(this.logMsg(item))} ${item.target}'> ${ this.$t(this.logMsg(item))  }${item.target}</p>`+
           `</p>`
         }
         return str;
