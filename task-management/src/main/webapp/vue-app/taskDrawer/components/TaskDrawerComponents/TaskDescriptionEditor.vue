@@ -98,7 +98,6 @@
       document.addEventListener('drawerClosed', () => {
         this.saveDescription(this.inputVal);
         this.editorReady = false;
-        this.inputVal = ''
       });
       document.addEventListener('onAddTask', () => {
         this.$emit('addTaskDescription',this.inputVal);
@@ -109,7 +108,6 @@
       saveDescription: function (newValue) {
         if (newValue !== this.task.description) {
           if(this.task.id && !isNaN(this.task.id)){
-            self.inputVal = newValue;
             this.task.description = newValue;
             updateTask(this.task.id ,this.task)
             .then(task => {
@@ -123,6 +121,7 @@
                 this.$root.$emit('show-alert',{type:'error',message:this.$t('alert.error')} );
                    });
           }
+          this.inputVal = '';
         }
       },
       initCKEditor: function () {
