@@ -27,39 +27,22 @@
               :key="i"
               class="pl-0 pr-0">
               <v-list-item-content class="pt-1">
-                <div class="d-flex align-center">
+                <div class="d-flex">
                   <exo-user-avatar
-                    :username="currentUserName"
+                    :username="item.author"
+                    :fullname="item.authorFullName"
+                    :avatar-url="item.authorAvatarUrl"
                     :size="30"
-                    :url="null"/>
-                  <div class="pt-2">
-                    <span
-                      v-if="logMsg(item) == ('assign' || 'unassign')"
-                      class="pl-3"
-                      v-html="$t(item.actionName.toString(), {
-                        '0': `<a href='/portal/dw/profile/${item.author}'>${item.authorFullName}</a>`,
-                        '1': `<a href='/portal/dw/profile/${item.target}'>${item.targetFullName}</a>`
-                    })"></span>
-                    <span
-                      v-else
-                      class="pl-3"
-                      v-html="$t(logMsg(item), {
-                        '0': `<a href='/portal/dw/profile/${item.author}'>${item.authorFullName}</a>`,
-                        '1': item.target
-                    })"></span>
-                    <div>
-                      <div class="dateTime caption">
-                        <date-format :value="item.createdTime" :format="dateTimeFormat" />
-                      </div>
-                    </div>
-                  </div>
+                    :url="null"
+                    class="changeUserAvatar"/>
 
+                  <p class="changesText mb-0 pl-1" v-html="renderChangeHTML(item)"></p>
                 </div>
-                <!-- <div>
-                    <span class="dateTime caption">
-                      <date-format :value="item.createdTime" :format="dateTimeFormat" />
-                    </span>
-                  </div>-->
+                <div>
+                  <div class="dateTime caption">
+                    <date-format :value="item.createdTime" :format="dateTimeFormat" />
+                  </div>
+                </div>
               </v-list-item-content>
             </v-list-item>
           </v-list>
@@ -94,6 +77,14 @@
           minute: '2-digit',
         },
         currentUserName: eXo.env.portal.userName,
+        changeAuthor: {},
+        userAvatar: '',
+        avatarUrl:''
+      }
+    },
+    watch: {
+      userAvatar() {
+        this.avatarUrl = this.userAvatar;
       }
     },
     mounted() {
@@ -110,6 +101,20 @@
       },
       logMsg(item) {
         return `log.${ item.actionName }`
+      },
+      renderChangeHTML(item) {
+        let str = '';
+        if ( item.actionName === 'assign' || item.actionName === 'unassign') {
+          str = `${"<p class='changesItem assignDiv mb-0'>" +
+            "<span>"}${ this.$t(this.logMsg(item))}</span>`+
+            `<a href='/portal/dw/profile/${item.target}'> ${item.targetFullName} </a>`+
+            `</p>`
+        } else {
+          str = `${"<p class='changesItem mb-0'>" +
+            "<p class='text-truncate mb-0'>"}${ this.$t(this.logMsg(item))  }${item.target}</p>`+
+          `</p>`
+        }
+        return str;
       },
     }
   };
