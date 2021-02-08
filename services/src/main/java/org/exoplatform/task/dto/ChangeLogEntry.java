@@ -16,6 +16,8 @@ public class ChangeLogEntry implements Serializable {
     
     private String authorFullName;
 
+    private String authorAvatarUrl;
+
     private String actionName;
 
     private String target;
@@ -36,6 +38,8 @@ public class ChangeLogEntry implements Serializable {
         this.author = changeLog.getAuthor();
         
         this.authorFullName = userService.loadUser(changeLog.getAuthor()).getDisplayName();
+
+        this.authorAvatarUrl = userService.loadUser(changeLog.getAuthor()).getAvatar();
         
         this.actionName = changeLog.getActionName();
         
@@ -74,8 +78,16 @@ public class ChangeLogEntry implements Serializable {
         return authorFullName;
     }
 
+    public String getAuthorAvatarUrl() {
+        return authorAvatarUrl;
+    }
+
     public void setAuthorFullName(String authorFullName) {
         this.authorFullName = authorFullName;
+    }
+
+    public void setAuthorAvatarUrl(String authorAvatarUrl) {
+        this.authorAvatarUrl = authorAvatarUrl;
     }
 
     public String getActionName() {

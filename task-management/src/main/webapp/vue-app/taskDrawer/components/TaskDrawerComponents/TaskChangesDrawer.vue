@@ -31,36 +31,18 @@
                   <exo-user-avatar
                     :username="item.author"
                     :fullname="item.authorFullName"
+                    :avatar-url="item.authorAvatarUrl"
                     :size="30"
                     :url="null"
                     class="changeUserAvatar"/>
 
                   <p class="changesText mb-0 pl-1" v-html="renderChangeHTML(item)"></p>
                 </div>
-                <!-- <span
-                      v-if="logMsg(item) == ('assign' || 'unassign')"
-                      class="pl-3 text-truncate"
-                      v-html="$t(item.actionName.toString(), {
-                        '0': `<a href='/portal/dw/profile/${item.author}'>${item.authorFullName}</a>`,
-                        '1': `<a href='/portal/dw/profile/${item.target}'>${item.targetFullName}</a>`
-                    })"></span>
-                    <span
-                      v-else
-                      class="pl-3 text-truncate"
-                      v-html="$t(logMsg(item), {
-                        '0': `<a href='/portal/dw/profile/${item.author}'>${item.authorFullName}</a>`,
-                        '1': item.target
-                    })"></span>-->
                 <div>
                   <div class="dateTime caption">
                     <date-format :value="item.createdTime" :format="dateTimeFormat" />
                   </div>
                 </div>
-                <!-- <div>
-                    <span class="dateTime caption">
-                      <date-format :value="item.createdTime" :format="dateTimeFormat" />
-                    </span>
-                  </div>-->
               </v-list-item-content>
             </v-list-item>
           </v-list>
@@ -95,6 +77,14 @@
           minute: '2-digit',
         },
         currentUserName: eXo.env.portal.userName,
+        changeAuthor: {},
+        userAvatar: '',
+        avatarUrl:''
+      }
+    },
+    watch: {
+      userAvatar() {
+        this.avatarUrl = this.userAvatar;
       }
     },
     mounted() {
@@ -112,15 +102,12 @@
       logMsg(item) {
         return `log.${ item.actionName }`
       },
-    /*  logStringMessage (item) {
-        return this.$t(this.logMsg(item));
-      },*/
       renderChangeHTML(item) {
         let str = '';
         if ( item.actionName === 'assign' || item.actionName === 'unassign') {
           str = `${"<p class='changesItem assignDiv mb-0'>" +
             "<span>"}${ this.$t(this.logMsg(item))}</span>`+
-            `<a href='/portal/dw/profile/item.target'> ${item.targetFullName} </a>`+
+            `<a href='/portal/dw/profile/${item.target}'> ${item.targetFullName} </a>`+
             `</p>`
         } else {
           str = `${"<p class='changesItem mb-0'>" +
@@ -128,7 +115,7 @@
           `</p>`
         }
         return str;
-      }
+      },
     }
   };
 </script>
