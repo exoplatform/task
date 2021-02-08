@@ -37,6 +37,9 @@ public final class StorageUtil{
         changeLogEntry.setCreatedTime(changeLog.getCreatedTime());
         changeLogEntry.setTarget(changeLog.getTarget());
         changeLogEntry.setAuthorFullName(userService.loadUser(changeLog.getAuthor()).getDisplayName());
+        if(changeLog.getActionName().equals("assign")||changeLog.getActionName().equals("unassign")){
+            changeLogEntry.setTargetFullName(userService.loadUser(changeLog.getTarget()).getDisplayName());
+        }
         return changeLogEntry;
     }
 
