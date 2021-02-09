@@ -287,6 +287,7 @@
       }
       .view-project-group-sort{
         margin-left: 19px;
+        margin-left: 63px;
         display: block
       }
       span.amount-item{
@@ -1358,6 +1359,7 @@
         .taskBoardColumn {
           max-height: 60vh;
           overflow-y: scroll;
+          overflow-x: hidden;
           padding-right:4px ;
           &::-webkit-scrollbar {
             scroll-margin-left: 10px!important;
@@ -1373,6 +1375,7 @@
           }
           &:hover {
             overflow-y: scroll;
+            overflow-x: hidden;
             &::-webkit-scrollbar {
               scroll-margin-left: 10px!important;
               width: 5px;
@@ -2314,6 +2317,26 @@
   }
   .taskCommentsAndChanges {
     .taskComments {
+      .addCommentBtn {
+        .uiIconComment {
+          position: relative;
+          cursor: pointer;
+          &:before {
+            content: '\e9c4';
+            font-family: "PLF-FONT-ICONS";
+            font-size: 22px;
+          }
+          &:after {
+            content: '\eb5d';
+            font-family: "PLF-FONT-ICONS";
+            position: absolute;
+            color: white;
+            left: 7px;
+            font-size: 12px;
+            top: 4px;
+          }
+        }
+      }
       .lastCommentLabel {
         font-size: 16px;
         color: @greyColorLighten1;
@@ -2399,6 +2422,27 @@
 }
 
 .taskCommentDrawer {
+  .addCommentBtn {
+    .uiIconComment {
+      position: relative;
+      cursor: pointer;
+      top: -2px;
+      &:before {
+        content: '\e9c4';
+        font-family: "PLF-FONT-ICONS";
+        font-size: 22px;
+      }
+      &:after {
+        content: '\eb5d';
+        font-family: "PLF-FONT-ICONS";
+        position: absolute;
+        color: white;
+        left: 7px;
+        font-size: 12px;
+        top: 4px;
+      }
+    }
+  }
   .drawerTitle > * {
     flex: 0 0 auto!important;
   }
@@ -2418,7 +2462,8 @@
     .dateTime.caption {
       color: @greyColorLighten1;
       text-align: left;
-      padding-left: 10px;
+      padding-left: 38px;
+      margin-top: -16px;
     }
     .TaskCommentContent {
       .commentItem {
@@ -2440,7 +2485,6 @@
             background: @commentBackgroundColor;
             padding: 10px;
             border-radius: 10px;
-            word-break: break-word;
             p {
               margin-bottom: 0!important;
             }
@@ -2512,6 +2556,22 @@
             content: "\e910";
           }
         }
+      }
+    }
+    .changeUserAvatar {
+      .pull-left.ml-2.d-flex.flex-column {
+        align-self: flex-start;
+        margin-top: -5px;
+        p {
+          font-weight: bold;
+          color: @primaryColor !important;
+        }
+      }
+    }
+    .changesText {
+      max-width: 270px;
+      .assignDiv {
+        margin-top: -1px;
       }
     }
   }
