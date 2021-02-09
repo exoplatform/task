@@ -128,7 +128,9 @@
           return {
             searchUrl: '/portal/rest/projects/projectParticipants/'.concat(this.task.status.project.id).concat('/')
           };
-        }
+        }else {
+          return this.currentUser;
+      }
       },
       taskAssigneeFullName() {
         return this.taskAssigneeObj.profile.external ? this.taskAssigneeObj.profile.fullName.concat(' (').concat(this.$t('label.external')).concat(')') : this.taskAssigneeObj.profile.fullName;
