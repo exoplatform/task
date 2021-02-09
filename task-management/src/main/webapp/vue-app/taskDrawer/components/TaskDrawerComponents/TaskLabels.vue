@@ -173,7 +173,18 @@
       },
       addTaskToLabel(label) {
         if( this.task.id!= null ) {
-          addTaskToLabel(this.task.id, label);
+          addTaskToLabel(this.task.id, label).then(task => {
+                    this.$root.$emit('show-alert', {
+                        type: 'success',
+                        message: this.$t('alert.success.task.label')
+                    });
+                }).catch(e => {
+                    console.debug("Error when updating task's labels", e);
+                    this.$root.$emit('show-alert', {
+                        type: 'error',
+                        message: this.$t('alert.error')
+                    });
+                });
         } else {
           document.dispatchEvent(new CustomEvent('labelListChanged', {detail: label}));
         }
@@ -181,7 +192,18 @@
         document.getElementById('labelInput').focus()
       },
       removeTaskFromLabel(item) {
-        removeTaskFromLabel(this.task.id, item.id)
+        removeTaskFromLabel(this.task.id, item.id).then(task => {
+                    this.$root.$emit('show-alert', {
+                        type: 'success',
+                        message: this.$t('alert.success.task.label')
+                    });
+                }).catch(e => {
+                    console.debug("Error when updating task's labels", e);
+                    this.$root.$emit('show-alert', {
+                        type: 'error',
+                        message: this.$t('alert.error')
+                    });
+                });
       },
       openLabelsList() {
         this.$emit('labelsListOpened')

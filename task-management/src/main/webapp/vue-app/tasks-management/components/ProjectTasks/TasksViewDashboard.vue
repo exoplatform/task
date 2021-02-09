@@ -203,7 +203,7 @@
       }
     },
     created() {
-      this.$root.$on('task-added', task => {
+      this.$root.$on('update-task-list', task => {
         this.getTasksByProject(this.project.id,"");
       });
       this.$root.$on('deleteTask', (event) => {
@@ -328,13 +328,21 @@
       },
       deleteConfirm() {
          return this.$statusService.deleteStatus(this.status.id).then(resp => {
+           this.$root.$emit('show-alert',{type:'success',message:this.$t('alert.success.status.deleted')} );
            this.getStatusByProject(this.project.id)
-        })
+        }).catch(e => {
+            console.debug("Error when deleting status", e);
+                this.$root.$emit('show-alert',{type:'error',message: this.$t('alert.error')} );
+          });
       },
       updateStatus(status) {
          return this.$statusService.updateStatus(status).then(resp => {
+           this.$root.$emit('show-alert',{type:'success',message: this.$t('alert.success.status.update')} );
            this.getStatusByProject(this.project.id)
-        })
+        }).catch(e => {
+            console.debug("Error when updating status", e);
+           this.$root.$emit('show-alert',{type:'error',message: this.$t('alert.error')} );
+        });
       },
       createStatus() {
         this.statusList.forEach(function (element, index) {
@@ -344,8 +352,12 @@
         element.rank=index
         },  this);
         return this.$statusService.createStatus(this.statusList).then(resp => {
+          this.$root.$emit('show-alert',{type:'success',message: this.$t('alert.success.status.created')} );
            this.getStatusByProject(this.project.id)
-        })
+        }).catch(e => {
+           console.debug("Error when creating status", e);
+            this.$root.$emit('show-alert',{type:'error',message: this.$t('alert.error')} );
+           });
       },
     getFilter(tasksFilter,ProjectId){
       this.$tasksService.filterTasksList(tasksFilter,'','','',ProjectId).then(data => {

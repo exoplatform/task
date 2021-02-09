@@ -6,6 +6,7 @@
           :project="project"
           @openDrawer="openEditDrawer"
           @closed="onCloseDrawer"
+          @refreshProjects="refreshProjects"
           @flip="flipCard = true; flip()"/>
       </div>
       <div class="tasksCardBack pa-3">
@@ -36,6 +37,9 @@ export default {
     },
     onCloseDrawer: function(drawer){
       this.drawer = drawer;
+    },
+    refreshProjects: function(){
+      this.$emit('refreshProjects')
     },
     flip: function(){
       if(this.flipCard){
