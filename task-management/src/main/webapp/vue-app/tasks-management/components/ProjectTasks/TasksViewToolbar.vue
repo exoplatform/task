@@ -100,7 +100,8 @@
         keyword: null,
         awaitingSearch: false,
         filterNumber:0,
-        searchonkeyChange:true
+        searchonkeyChange:true,
+        allowGantt: false,
       }
     },
     watch: {        
@@ -117,6 +118,9 @@
           this.resetFields("query") }      
         this.searchonkeyChange= true;
       },
+    },
+    created(){
+        this.$featureService.isFeatureEnabled('tasks.gantt').then(enabled => this.allowGantt = enabled);
     },
     methods: {
       openDrawer() {
