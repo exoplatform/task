@@ -1,5 +1,7 @@
 <template>
-  <div class="commentItem">
+  <div 
+    :id="id"
+    class="commentItem">
     <div class="commentHeader d-flex">
       <exo-user-avatar
         :username="comment.author.username"
@@ -23,7 +25,7 @@
         text
         small
         color="primary"
-        @click="$root.$emit('displayTaskComment')">{{ $t('comment.message.Reply') }}
+        @click="openCommentDrawer">{{ $t('comment.message.Reply') }}
       </v-btn>
     </div>
     <div v-if="comment.subComments && comment.subComments.length" class="py-0 TaskSubComments">
@@ -85,6 +87,9 @@
       lastSubComment() {
         return this.comment.subComments && this.comment.subComments[this.comment.subComments.length-1];
       },
+      id() {
+        return `comment-${this.comment.comment.id}`
+      }
     },
     methods: {
       getRelativeTime(previous) {
@@ -116,6 +121,10 @@
         const lang = eXo && eXo.env && eXo.env.portal && eXo.env.portal.language || 'en';
         return new Date(this.comment.comment.createdTime.time).toLocaleString(lang, options).split("/").join("-");
       },
+      openCommentDrawer() {
+        this.$root.$emit('displayTaskComment');
+        this.$root.$emit('displaySubCommentEditor', this.id);
+      }
     }
 
   }

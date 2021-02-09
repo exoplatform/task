@@ -1,5 +1,6 @@
 <template>
   <div
+    :id="'comment-'+comment.comment.id"
     class="commentItem"
     @mouseover="hover = true"
     @mouseleave="hover = false">
@@ -75,6 +76,7 @@
             :max-length="MESSAGE_MAX_LENGTH"
             :placeholder="$t('task.placeholder').replace('{0}', MESSAGE_MAX_LENGTH)"
             :task="task"
+            :id="id"
             class="subComment subCommentEditor"
             @subShowEditor="openEditor"/>
           <v-btn
@@ -138,6 +140,14 @@
           isOpen:{
             type: Boolean,
             default: false
+          },
+          id: {
+            type: String,
+            default: ''
+          },
+          commentId: {
+            type: String,
+            default: ''
           }
         },
         data() {
@@ -152,7 +162,7 @@
                 MESSAGE_MAX_LENGTH:1250,
             }
         },
-        computed: {
+      computed: {
             relativeTime() {
                 return this.getRelativeTime(this.comment.comment.createdTime.time)
             },
@@ -183,14 +193,26 @@
                 this.showEditor = false
               }
             },
+          commentId() {
+              if( this.commentId === `comment-${this.comment.comment.id}` ) {
+                this.openSubEditor();
+              }
+          }
         },
-        methods: {
+      mounted() {
+          document.addEventListener('openSubComment', event => {
+            if (event && event.detail && event.detail === `comment-${this.comment.comment.id}`) {
+              this.commentId = event.detail;
+            }
+          })
+      },
+      methods: {
           confirmCommentDelete: function () {
             this.$refs.CancelSavingCommentDialog.open();
           },
-            openEditor() {
-              if (this.isOpen) {
-                this.$emit('isOpen')
+          openEditor() {
+            if (this.isOpen) {
+              this.$emit('isOpen')
                 setTimeout(this.openSubEditor, 100)
               } else {
                 this.openSubEditor()
