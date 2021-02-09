@@ -57,6 +57,7 @@
                 :max-length="MESSAGE_MAX_LENGTH"
                 :placeholder="$t('task.placeholder').replace('{0}', MESSAGE_MAX_LENGTH)"
                 :reset="reset"
+                :task="task"
                 :id="id"
                 class="comment"/>
               <v-btn
