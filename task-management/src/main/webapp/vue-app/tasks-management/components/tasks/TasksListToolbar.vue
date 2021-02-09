@@ -90,13 +90,9 @@
         tasks:null,
         keyword: null,
         awaitingSearch: false,
-        searchonkeyChange:true,
+        searchOnKeyChange:true,
         filterNumber:0,
         primaryFilterSelected:'ALL',
-        task: {
-          id:null,
-          status:{}
-          },
         drawer:null,
         primaryFilter: [
           {name: "ALL"},{name: "ASSIGNED"},{name: "COLLABORATED"},{name: "OVERDUE"},{name: "TODAY"},{name: "TOMORROW"},{name: "UPCOMING"}
@@ -106,14 +102,14 @@
     watch: {
       keyword() {  
           if (!this.awaitingSearch) {
-            const searchonkeyChange = this.searchonkeyChange
+            const searchOnKeyChange = this.searchOnKeyChange
             setTimeout(() => {
-              this.$emit('keyword-changed', this.keyword,searchonkeyChange);
+              this.$emit('keyword-changed', this.keyword,searchOnKeyChange);
               this.awaitingSearch = false;
             }, 1000);
           }
           this.awaitingSearch = true;  
-        this.searchonkeyChange= true;
+        this.searchOnKeyChange= true;
       },
     },created() {
     this.primaryFilterSelected = localStorage.getItem('primary-filter-tasks');
@@ -125,7 +121,7 @@
         this.$emit('reset-filter-task-dashboard');
       },
       filterTaskquery(e,filterGroupSort,filterLabels){
-        this.searchonkeyChange=false
+        this.searchOnKeyChange=false
         this.showCompleteTasks=e.showCompleteTasks;
         this.keyword=e.query
         this.$emit('filter-task-query',e,filterGroupSort,filterLabels)
@@ -139,19 +135,22 @@
         this.$refs.filterTasksDrawer.open();
       },
       openTaskDrawer() {
-        this.task = {
+        const defaultTask = {
           id:null,
-          status:{},
-        };
-        this.$root.$emit('open-task-drawer', this.task);
+          status:{project:this.project},
+          priority:'NONE',
+          description:'',
+          title:''
+        }
+        this.$root.$emit('open-task-drawer', defaultTask);
       },
       changePrimaryFilter(){  
-       this.searchonkeyChange=false 
+       this.searchOnKeyChange=false 
        this.keyword=""   
        this.$emit('primary-filter-task', this.primaryFilterSelected);     
       },
       resetFields(activeField){
-        this.searchonkeyChange=false
+        this.searchOnKeyChange=false
           this.keyword=''
           this.$refs.filterTasksDrawer.resetFields(activeField);
       },
