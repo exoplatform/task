@@ -110,5 +110,19 @@ public class ProjectDto implements Serializable {
         return false;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (!(obj instanceof Project))
+            return false;
+        ProjectDto other = (ProjectDto) obj;
+        if (getId() != other.getId())
+            return false;
+        return true;
+    }
+
 
 }
