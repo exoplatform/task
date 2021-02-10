@@ -216,6 +216,7 @@ export default {
             chips: [],
             autoSaveDelay: 1000,
             saveDescription: '',
+            taskTitle_:'',
             logs: [],
             comments: [],
             subEditorIsOpen: false,
@@ -329,14 +330,20 @@ export default {
             document.dispatchEvent(new CustomEvent('closeAssignments'));
         },
         updateTaskTitle() {
-            if (this.task.id != null) {
+            if(!this.task.title || this.task.title.length===0){
+                this.$root.$emit('show-alert', {type: 'error',message: this.$t('alert.error.title.mandatory')});
+            }else if(!this.taskTitleValid){
+                this.$root.$emit('show-alert', {type: 'error',message: this.$t('alert.error.title.length')});
+            }else if (this.task.id != null) {
                 updateTask(this.task.id, this.task).then(task => {
+                        this.taskTitle_ = this.task.title 
                         this.$root.$emit('show-alert', {
                             type: 'success',
                             message: this.$t('alert.success.task.title')
                         });
                     })
                     .catch(e => {
+                         this.task.title = this.taskTitle_
                         console.debug("Error when updating task's title", e);
                         this.$root.$emit('show-alert', {
                             type: 'error',
@@ -562,6 +569,7 @@ export default {
             window.open(`${ eXo.env.portal.context }/${ eXo.env.portal.portalName }/${ pagelink }`, '_blank');
         },
         open(task) {
+            this.taskTitle_= task.title
             this.task = task
             window.setTimeout(() => {
                     document.dispatchEvent(new CustomEvent('loadTaskPriority', {
@@ -600,6 +608,7 @@ export default {
             this.$refs.addTaskDrawer.close();
         },
         onCloseDrawer() {
+            this.task.title = this.taskTitle_
             this.$root.$emit('task-drawer-closed', this.task)
             this.showEditor = false;
             this.task = {};
