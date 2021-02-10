@@ -37,6 +37,30 @@ public class StatusRestService implements ResourceContainer {
     this.statusService = statusService;
   }
 
+
+  @GET
+  @Path("{statusId}")
+  @Produces(MediaType.APPLICATION_JSON)
+  @RolesAllowed("users")
+  @ApiOperation(value = "get Status by Id", httpMethod = "GET", response = Response.class, notes = "This get status by Id")
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled"),
+          @ApiResponse(code = 400, message = "Invalid query input"), @ApiResponse(code = 403, message = "Unauthorized operation"),
+          @ApiResponse(code = 404, message = "Resource not found") })
+  public Response getStatus(@ApiParam(value = "statusId", required = true) @PathParam("statusId") long statusId) {
+    try {
+      StatusDto statusDto = statusService.getStatus(statusId);
+      if (statusDto == null) {
+        return Response.status(Response.Status.NOT_FOUND).build();
+      }
+      return Response.ok(statusDto).build();
+    }
+    catch (Exception e) {
+      LOG.error("Can't get Status {}", statusId,e);
+      return Response.serverError().entity(e.getMessage()).build();
+    }
+  }
+
+
   @POST
   @Produces(MediaType.APPLICATION_JSON)
   @RolesAllowed("users")
@@ -48,10 +72,10 @@ public class StatusRestService implements ResourceContainer {
     try {
     Identity identity = ConversationState.getCurrent().getIdentity();
     ProjectDto projectDto = projectService.getProject(status.get(0).getProject().getId());
-    if (projectDto.getParent() != null && !projectDto.getParent().toString().isEmpty()) {
-      Long parentId = Long.parseLong(projectDto.getParent().toString());
+    if (projectDto.getParent() != null && projectDto.getParent().getId()!=0) {
+      Long parentId = projectDto.getParent().getId();
       try {
-        if (!projectService.getProject(parentId).canEdit(identity)) {
+        if (projectService.getProject(parentId)!=null && !projectService.getProject(parentId).canEdit(identity)) {
           return Response.status(Response.Status.UNAUTHORIZED).build();
         }
       } catch (EntityNotFoundException ex) {
@@ -97,9 +121,9 @@ public class StatusRestService implements ResourceContainer {
     Identity identity = ConversationState.getCurrent().getIdentity();
     ProjectDto projectDto = projectService.getProject(statusDto.getProject().getId());
     if (projectDto.getParent() != null && !projectDto.getParent().toString().isEmpty()) {
-      Long parentId = Long.parseLong(projectDto.getParent().toString());
+      Long parentId = projectDto.getParent().getId();
       try {
-        if (!projectService.getProject(parentId).canEdit(identity)) {
+        if (projectService.getProject(parentId)!=null && !projectService.getProject(parentId).canEdit(identity)) {
           return Response.status(Response.Status.UNAUTHORIZED).build();
         }
       } catch (EntityNotFoundException ex) {
