@@ -1,12 +1,11 @@
 package org.exoplatform.task.storage.impl;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+import javax.persistence.NonUniqueResultException;
 
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -48,13 +47,33 @@ public class StatusStorageImpl implements StatusStorage {
 
   @Override
   public StatusDto getDefaultStatus(long projectId) {
-    return StorageUtil.statusToDTO(daoHandler.getStatusHandler().findLowestRankStatusByProject(projectId),projectStorage);
+    Status status = null;
+    try {
+      status = daoHandler.getStatusHandler().findLowestRankStatusByProject(projectId);
+    }catch (NonUniqueResultException e) {
+      List<Status> projectStatuses = daoHandler.getStatusHandler().getStatuses(projectId);
+      projectStatuses = projectStatuses.stream().sorted(Comparator.comparing(Status::getId).reversed()).sorted(Comparator.comparingInt(Status::getRank)).collect(Collectors.toList());
+      for(int i = 0; i<projectStatuses.size() ; i++){
+        projectStatuses.get(i).setRank(i);
+      }
+      daoHandler.getStatusHandler().updateAll(projectStatuses);
+      status = projectStatuses.get(0);
+    }
+    return StorageUtil.statusToDTO(status,projectStorage);
   }
 
   @Override
   public List<StatusDto> getStatuses(long projectId) {
-    List<Status> statusDtos = daoHandler.getStatusHandler().getStatuses(projectId);
-    return statusDtos.stream().map((Status status) -> StorageUtil.statusToDTO(status,projectStorage)).collect(Collectors.toList());
+    List<Status> projectStatuses = daoHandler.getStatusHandler().getStatuses(projectId);
+    Set<Integer> set = new HashSet<>();
+    if(!projectStatuses.stream().allMatch(t -> set.add(t.getRank()))){
+      projectStatuses = projectStatuses.stream().sorted(Comparator.comparing(Status::getId).reversed()).sorted(Comparator.comparingInt(Status::getRank)).collect(Collectors.toList());
+      for(int i = 0; i<projectStatuses.size() ; i++){
+        projectStatuses.get(i).setRank(i);
+      }
+      daoHandler.getStatusHandler().updateAll(projectStatuses);
+    }
+    return projectStatuses.stream().map((Status status) -> StorageUtil.statusToDTO(status,projectStorage)).collect(Collectors.toList());
   }
 
   @Override
