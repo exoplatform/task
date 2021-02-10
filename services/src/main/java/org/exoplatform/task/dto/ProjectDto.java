@@ -116,7 +116,7 @@ public class ProjectDto implements Serializable {
             return true;
         if (obj == null)
             return false;
-        if (!(obj instanceof Project))
+        if (!(obj instanceof ProjectDto))
             return false;
         ProjectDto other = (ProjectDto) obj;
         if (getId() != other.getId())
