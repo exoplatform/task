@@ -13,11 +13,61 @@
       autofocus
       @keyup="checkImput($event,index)">
     <div
-      v-else
-      class="taskStatusName font-weight-bold text-color mb-1"
-      @click="editStatus = true">{{ getI18N(status.name) }}</div>
+      class="py-3 d-flex">
+      <a
+        v-if="viewType=== 'list'"
+        class="toggle-collapse-group d-flex"
+        href="#"
+        @click="showDetailsTask(viewType,status.id)">
+        <i
+          :id="'uiIconMiniArrowDown'+viewType+status.id"
+          class="uiIcon uiIconMiniArrowDown"
+          style="display: block">
+        </i>
+        <i
+          :id="'uiIconMiniArrowRight'+viewType+status.id"
+          class="uiIcon  uiIconMiniArrowRight"
+          style="display: none">
+        </i>
+      </a>
+      <input
+        v-if="editStatus || status.edit"
+        ref="autoFocusInput1"
+        v-model="status.name"
+        :placeholder="$t('label.tapStatus.name')"
+        type="text"
+        class="taskStatusName font-weight-bold text-color mb-1"
+        required
+        autofocus
+        @keyup="checkImput($event,index)">
+      <div
+        v-else
+        class="taskStatusName font-weight-bold text-color mb-1"
+        @click="editStatus = true">{{ getI18N(status.name) }} <span v-if="viewType=== 'list'" class="caption font-weight-bold">({{ tasksNumber }})</span></div>
+
+    </div>
     <div class="taskNumberAndActions d-flex align-center mb-1">
-      <span class="caption">{{ tasksNumber }}</span>
+      <span class="uiTaskNumber">{{ tasksNumber }}</span>
+      <!-- <span v-if="tasksNumber < maxTasksToShow" class="caption">{{ tasksNumber }}</span>
+      <div v-else class="showTasksPagination">
+        <span class="caption">
+          {{ limitTasksToshow }} - {{ initialTasksToShow }} of {{ tasksNumber }}
+        </span>
+        <v-btn
+          :disabled="disableBtnLoadMore"
+          icon
+          small
+          @click="loadNextTasks">
+          <i class="uiIcon uiIconArrowNext text-color"></i>
+        </v-btn>
+
+      </div> -->
+      <i
+        icon
+        small
+        class="uiIconSocSimplePlus d-flex"
+        @click="openQuickAdd">
+      </i>
       <i
         icon
         small
@@ -38,6 +88,15 @@
             </v-list-item-title>
           </v-list-item>
           <v-list-item
+            v-if="project.canManage && index>0"
+            class="menu-list"
+            @click="moveBeforeColumn(index)" >
+            <v-list-item-title class="subtitle-2">
+              <i class="uiIcon uiIconArrowLeft pr-1"></i>
+              <span>{{ $t('label.status.move.before') }}</span>
+            </v-list-item-title>
+          </v-list-item>
+          <v-list-item
             v-if="project.canManage"
             class="menu-list"
             @click="addColumn(index)" >
@@ -53,6 +112,15 @@
             <v-list-item-title class="subtitle-2">
               <i class="uiIcon uiIconRotateRight pr-1"></i>
               <span> {{ $t('label.status.after') }} </span>
+            </v-list-item-title>
+          </v-list-item>
+          <v-list-item
+            v-if="project.canManage && index < statusListLength-1"
+            class="menu-list"
+            @click="moveAfterColumn(index)" >
+            <v-list-item-title class="subtitle-2">
+              <i class="uiIcon uiIconArrowRight pr-1"></i>
+              <span> {{ $t('label.status.move.after') }}</span>
             </v-list-item-title>
           </v-list-item>
           <v-list-item
@@ -94,6 +162,10 @@
         type: Number,
         default: 0
       },
+      statusListLength: {
+        type: Number,
+        default: 0
+      },
       project: {
         type: Number,
         default: 0
@@ -108,6 +180,14 @@
         disableBtnLoadMore: false,
       }
     },
+    computed: {
+      initialTasksToShow() {
+        return this.originalTasksToShow;
+      },
+      limitTasksToshow() {
+        return this.tasksStatsStartValue;
+      }
+    },
     created() {
       $(document).on('mousedown', () => {
         if (this.displayActionMenu) {
@@ -118,6 +198,16 @@
       });
     },
     methods: {
+      loadNextTasks() {
+        if(this.tasksNumber - this.originalTasksToShow >= this.maxTasksToShow) {
+          this.tasksStatsStartValue = this.originalTasksToShow+1;
+          this.originalTasksToShow += this.maxTasksToShow;
+        } else {
+          this.tasksStatsStartValue = this.originalTasksToShow;
+          this.originalTasksToShow = this.tasksNumber;
+          this.disableBtnLoadMore = true;
+        }
+      },
       openTaskDrawer() {
         const defaultTask= {id:null,
         status:this.status,
@@ -148,8 +238,17 @@
           this.editStatus=false
         }
       },
+      openQuickAdd(index) {
+          this.$emit('open-quick-add');
+      },
       addColumn(index) {
           this.$emit('add-column',index);
+      },
+      moveBeforeColumn(index) {
+          this.$emit('move-column',index,index-1);
+      },
+      moveAfterColumn(index) {
+          this.$emit('move-column',index,index+1);
       },
       cancelAddColumn(index) {
         if(this.status.id){
@@ -163,7 +262,21 @@
         const fieldLabelI18NKey = `tasks.status.${label}`;
         const fieldLabelI18NValue = this.$t(fieldLabelI18NKey);
         return  fieldLabelI18NValue === fieldLabelI18NKey ? label : fieldLabelI18NValue;
-      }
+      },
+      showDetailsTask(viewType,id){
+        const uiIconMiniArrowDown = document.querySelector(`#${`uiIconMiniArrowDown${viewType}${id}`}`);
+        const uiIconMiniArrowRight = document.querySelector(`#${`uiIconMiniArrowRight${viewType}${id}`}`);
+
+        const detailsTask = document.querySelector(`#${`taskView${id}`}`);
+        if (detailsTask.style.display !== 'none') {
+          detailsTask.style.display = 'none';
+          uiIconMiniArrowDown.style.display = 'none';
+          uiIconMiniArrowRight.style.display = 'block'
+        }
+        else {detailsTask.style.display = 'block'
+          uiIconMiniArrowDown.style.display = 'block';
+          uiIconMiniArrowRight.style.display = 'none'}
+      },
     }
   }
 </script>

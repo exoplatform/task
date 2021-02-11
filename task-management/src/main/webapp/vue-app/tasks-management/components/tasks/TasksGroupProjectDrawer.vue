@@ -25,6 +25,10 @@
         :label="$t('label.task.dueDate')"
         value="dueDate"/>
       <v-radio
+        v-if="taskViewTabName === 'list'"
+        :label="$t('label.task.status')"
+        value="status"/>
+      <v-radio
         :label="$t('label.task.completed')"
         value="completed"/>
     </v-radio-group>
@@ -43,6 +47,7 @@
     data() {
       return {
         groupBy: this.value,
+        taskViewTabName: '',
       }
     },
     watch: {
@@ -52,6 +57,9 @@
     },created() {
       this.$root.$on('reset-filter-task-group-sort',groupBy =>{
         this.groupBy = groupBy;
+      });
+      this.$root.$on('task-view-tab-name',taskViewTabName =>{
+        this.taskViewTabName = taskViewTabName;
       });
     }
   }
