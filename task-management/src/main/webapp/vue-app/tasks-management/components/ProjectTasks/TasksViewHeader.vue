@@ -2,20 +2,40 @@
   <div
     :id="'task-'+viewType+'-'+status.id"
     class="tasksViewHeader d-flex justify-space-between align-center">
-    <input 
-      v-if="editStatus || status.edit"      
-      ref="autoFocusInput1" 
-      v-model="status.name" 
-      placeholder="Status Name"
-      type="text"
-      class="taskStatusName font-weight-bold text-color mb-1"
-      required  
-      autofocus
-      @keyup="checkImput($event,index)">     
-    <div 
-      v-else
-      class="taskStatusName font-weight-bold text-color mb-1" 
-      @click="editStatus = true">{{ status.name }}</div>   
+    <div
+      class="py-3 d-flex">
+      <a
+        v-if="viewType=== 'list'"
+        class="toggle-collapse-group d-flex"
+        href="#"
+        @click="showDetailsTask(viewType,status.id)">
+        <i
+          :id="'uiIconMiniArrowDown'+viewType+status.id"
+          class="uiIcon uiIconMiniArrowDown"
+          style="display: block">
+        </i>
+        <i
+          :id="'uiIconMiniArrowRight'+viewType+status.id"
+          class="uiIcon  uiIconMiniArrowRight"
+          style="display: none">
+        </i>
+      </a>
+      <input
+        v-if="editStatus || status.edit"
+        ref="autoFocusInput1"
+        v-model="status.name"
+        placeholder="Status Name"
+        type="text"
+        class="taskStatusName font-weight-bold text-color mb-1"
+        required
+        autofocus
+        @keyup="checkImput($event,index)">
+      <div
+        v-else
+        class="taskStatusName font-weight-bold text-color mb-1"
+        @click="editStatus = true">{{ status.name }} <span v-if="viewType=== 'list'" class="caption font-weight-bold">({{ tasksNumber }})</span></div>
+
+    </div>
     <div class="taskNumberAndActions d-flex align-center mb-1">
       <span class="caption">{{ tasksNumber }}</span>
       <!-- <span v-if="tasksNumber < maxTasksToShow" class="caption">{{ tasksNumber }}</span>
@@ -195,7 +215,21 @@
         }else{
           this.$emit('cancel-add-column',index);
         }
-      }
+      },
+      showDetailsTask(viewType,id){
+        const uiIconMiniArrowDown = document.querySelector(`#${`uiIconMiniArrowDown${viewType}${id}`}`);
+        const uiIconMiniArrowRight = document.querySelector(`#${`uiIconMiniArrowRight${viewType}${id}`}`);
+
+        const detailsTask = document.querySelector(`#${`taskView${id}`}`);
+        if (detailsTask.style.display !== 'none') {
+          detailsTask.style.display = 'none';
+          uiIconMiniArrowDown.style.display = 'none';
+          uiIconMiniArrowRight.style.display = 'block'
+        }
+        else {detailsTask.style.display = 'block'
+          uiIconMiniArrowDown.style.display = 'block';
+          uiIconMiniArrowRight.style.display = 'none'}
+      },
     }
   }
 </script>
