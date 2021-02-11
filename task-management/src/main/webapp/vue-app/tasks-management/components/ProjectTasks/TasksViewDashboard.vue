@@ -226,6 +226,7 @@
       },
       getChangeTabValue(value) {
         this.taskViewTabName = value;
+        this.$root.$emit('task-view-tab-name',this.taskViewTabName);
       },
       getStatusByProject(ProjectId) {
         return this.$tasksService.getStatusesByProjectId(ProjectId).then(data => {
