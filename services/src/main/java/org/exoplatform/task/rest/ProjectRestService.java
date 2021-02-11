@@ -666,6 +666,10 @@ public class ProjectRestService implements ResourceContainer {
 
     Identity currentUser = ConversationState.getCurrent().getIdentity();
     Set<String> participants = projectService.getParticipator(idProject);
+    Set<String> managers = projectService.getManager(idProject);
+    managers.forEach(manager -> {
+      participants.add(manager);
+    });
     try {
       JSONArray usersJsonArray = new JSONArray();
       Set<org.exoplatform.social.core.identity.model.Identity> userIdentities = new HashSet<>();
