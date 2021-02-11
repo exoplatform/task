@@ -31,13 +31,13 @@
             <i class="uiIcon uiIconList"></i>
             <span>{{ $t('label.listView') }}</span>
           </v-tab>
-          <!--<v-tab
+          <v-tab
             :href="taskGanttTabView"
             class="taskTabGantt"
             @change="$emit('taskViewChangeTab', 'gantt')">
             <i class="uiIcon uiIconGantt"></i>
             <span>Gantt</span>
-          </v-tab>-->
+          </v-tab>
         </v-tabs>
       </div>
       <v-spacer/>

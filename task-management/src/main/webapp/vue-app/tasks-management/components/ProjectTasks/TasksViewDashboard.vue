@@ -146,12 +146,12 @@
           :filter-task-completed="filterAsCompleted"
           @update-status="updateStatus"/>
       </div>
-      <!--<v-tab-item
+      <v-tab-item
         v-show="taskViewTabName == 'gantt'"
         eager>
         <tasks-view-gantt
           :tasks-list="tasksList"/>
-      </v-tab-item>-->
+      </v-tab-item>
     </v-tabs-items>
     <div
       v-if="(!tasksList || !tasksList.length) && !loadingTasks"
