@@ -16,6 +16,7 @@
       </a>
     </div>
     <tasks-view-toolbar
+      :allow-gantt="allowGantt"
       :project="project"
       :status-list="statusList"
       :task-card-tab-view="'#tasks-view-board'"
@@ -146,12 +147,12 @@
           :filter-task-completed="filterAsCompleted"
           @update-status="updateStatus"/>
       </div>
-      <!--<v-tab-item
-        v-show="taskViewTabName == 'gantt'"
+      <v-tab-item
+        v-show="taskViewTabName == 'gantt' && allowGantt"
         eager>
         <tasks-view-gantt
           :tasks-list="tasksList"/>
-      </v-tab-item>-->
+      </v-tab-item>
     </v-tabs-items>
     <div
       v-if="(!tasksList || !tasksList.length) && !loadingTasks"
@@ -194,6 +195,7 @@
         filterProjectActive:true,
         status:null,
         filterAsCompleted: false,
+        allowGantt: false,
       }
     },
     watch:{
@@ -203,6 +205,7 @@
       }
     },
     created() {
+      this.$featureService.isFeatureEnabled('tasks.gantt').then(enabled => this.allowGantt = enabled);
       this.$root.$on('update-task-list', task => {
         this.getTasksByProject(this.project.id,"");
       });
