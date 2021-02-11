@@ -147,11 +147,12 @@ public class StatusStorageImpl implements StatusStorage {
     if (status == null) {
       throw new EntityNotFoundException(statusId, Status.class);
     }
-    Status curr = handler.findByName(statusName, status.getProject().getId());
-    if (curr != null && status.getId()!=curr.getId()) {
-      throw new NotAllowedOperationOnEntityException(status.getId(), Status.class, "duplicate status name");
+    List<Status> peojectStatus = handler.getStatuses(status.getProject().getId());
+    for(Status st : peojectStatus){
+      if(st.getName().equals(statusName)&&st.getId()!=statusId){
+        throw new NotAllowedOperationOnEntityException(status.getId(), Status.class, "duplicate status name");
+      }
     }
-
     status.setName(statusName);
     return StorageUtil.statusToDTO(daoHandler.getStatusHandler().update(StorageUtil.statusToEntity(status)),projectStorage);
   }
@@ -164,9 +165,11 @@ public class StatusStorageImpl implements StatusStorage {
     if (status == null) {
       throw new EntityNotFoundException(statusDto.getId(), Status.class);
     }
-    StatusDto curr = StorageUtil.statusToDTO(handler.findByName(statusDto.getName(), status.getProject().getId()),projectStorage);
-    if (curr != null && status.getId()!=curr.getId()) {
-      throw new NotAllowedOperationOnEntityException(status.getId(), StatusDto.class, "duplicate status name");
+    List<Status> peojectStatus = handler.getStatuses(status.getProject().getId());
+    for(Status st : peojectStatus){
+      if(st.getName().equals(statusDto.getName())&&st.getId()!=status.getId()){
+        throw new NotAllowedOperationOnEntityException(status.getId(), Status.class, "duplicate status name");
+      }
     }
     return StorageUtil.statusToDTO(daoHandler.getStatusHandler().update(StorageUtil.statusToEntity(statusDto)),projectStorage);
   }

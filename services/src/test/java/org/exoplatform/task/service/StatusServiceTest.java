@@ -46,10 +46,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
@@ -175,8 +172,11 @@ public class StatusServiceTest {
         s3.setId(2L);
         s3.setName("s3");
         s3.setProject(project);
+        List<Status> sts=new ArrayList<>();
+        sts.add(s1);
+        sts.add(s2);
         when(statusHandler.find(s2.getId())).thenReturn(s2);
-        when(statusHandler.findByName(s1.getName(), project.getId())).thenReturn(s1);
+        when(statusHandler.getStatuses(project.getId())).thenReturn(sts);
         try {
             statusService.updateStatus(s2.getId(), s1.getName());
             Assert.fail("should raise exception for duplicating name");
