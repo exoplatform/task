@@ -99,14 +99,14 @@ public class StatusStorageImpl implements StatusStorage {
   }
 
   @Override
-  public StatusDto createStatus(ProjectDto project, String status, int rank) {
+  public StatusDto createStatus(ProjectDto project, String status, int rank) throws NotAllowedOperationOnEntityException{
     //
     List<StatusDto> statuses = getStatuses(project.getId());
     if (statuses != null) {
       for (StatusDto st : statuses) {
         if (st.getName().equalsIgnoreCase(status)) {
           LOG.warn("Status {} has already exists", status);
-          return st;
+          throw new NotAllowedOperationOnEntityException(0, Status.class, "duplicate status name");
         }
       }
     }
