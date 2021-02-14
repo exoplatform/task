@@ -1,14 +1,13 @@
 <template>
   <div :id="status.id">
-    <div v-show="groupByStatus">
-      <tasks-view-header
+    <div v-if="filterByStatus===true">
+      <tasks-view-header-status
         :status="status"
         :view-type="'list'"
         :max-tasks-to-show="maxTasksToShow"
         :tasks-number="tasksList.length"/>
-      <v-divider class="py-3"/>
     </div>
-    <div :id="'taskView'+status.id">
+    <div :id="'taskView'+status.id" :class="filterByStatus===true ? 'pt-5 px-8' : ''">
       <task-view-list-item
         v-for="task in tasksList"
         :key="task.task.id"
@@ -47,6 +46,10 @@
       showCompletedTasks: {
         type: Boolean,
         default: false
+      },
+      filterByStatus: {
+        type: Boolean,
+        default: false
       }
     },
     data() {
@@ -55,12 +58,7 @@
       drag: false,
       task:null,
       newStatus:null,
-      groupByStatus: false,
     };
-  },created() {
-    this.$root.$on('filter-group-by-status',tasks =>{
-      this.groupByStatus= true;
-    });
   },
     methods: {
       updateTaskCompleted(e){

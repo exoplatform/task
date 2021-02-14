@@ -348,16 +348,12 @@
           projectId: this.project || 'None',
         }
         this.saveValueFilterInStorage(JSON.parse(JSON.stringify(jsonToSave)));
-        if(this.project && this.groupBy!=="status"){
+        if(this.project){
           this.$emit('filter-task',{ tasks,filterLabels,showCompleteTasks:this.showCompleteTasks });
           this.getFilterNumber()
           if (this.$refs.filterTasksDrawer){
             this.$refs.filterTasksDrawer.close();
           }
-        }else if(this.groupBy==="status"){
-          this.$root.$emit('filter-group-by-status',this.groupBy);
-          this.getFilterNumber();
-          this.$refs.filterTasksDrawer.close();
         }else{
           this.$emit('filter-task-query', tasks,filterGroupSort,filterLabels);
        

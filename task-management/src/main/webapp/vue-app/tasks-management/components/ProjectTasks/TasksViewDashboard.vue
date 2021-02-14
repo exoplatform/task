@@ -147,6 +147,7 @@
           :status-list="statusList"
           :tasks-list="tasksList"
           :filter-task-completed="filterAsCompleted"
+          :filter-by-status="filterByStatus"
           @update-status="updateStatus"/>
       </div>
       <v-tab-item
@@ -195,6 +196,7 @@
         tasksList: [],
         groupName:null,
         filterProjectActive:true,
+        filterByStatus:false,
         status:null,
         filterAsCompleted: false,
         allowGantt: false,
@@ -224,7 +226,6 @@
       },
       getChangeTabValue(value) {
         this.taskViewTabName = value;
-        this.$root.$emit('task-view-tab-name',this.taskViewTabName);
       },
       getStatusByProject(ProjectId) {
         return this.$tasksService.getStatusesByProjectId(ProjectId).then(data => {
@@ -275,6 +276,7 @@
       },
       resetFiltertaskDashboard(){
         this.getTasksByProject(this.project.id,"");
+        this.filterByStatus=false;
       },
       filterTaskDashboard(e){
         this.loadingTasks = true;
@@ -284,7 +286,19 @@
         if (tasks.groupBy==='completed'){
           tasks.showCompleteTasks=true;
         }
-        return this.$tasksService.filterTasksList(e.tasks,'','',e.filterLabels.labels,this.project.id).then(data => {
+        if (tasks.groupBy==='none'){
+          this.filterByStatus=false;
+        }
+        if (tasks.groupBy==='status'){
+          tasks.groupBy='';
+          return this.$tasksService.filterTasksList(tasks,'','','',this.project.id).then(data => {
+              this.filterProjectActive=false
+              this.filterByStatus=true
+              this.tasksList = data && data.tasks || [];
+
+          }).finally(() => this.loadingTasks = false);
+        } else {
+          return this.$tasksService.filterTasksList(e.tasks,'','',e.filterLabels.labels,this.project.id).then(data => {
           if(data.projectName){
             this.filterProjectActive=true
             this.tasksList = data && data.tasks || [];
@@ -297,7 +311,8 @@
 
         })
         .finally(() => this.loadingTasks = false);
-      },
+      }
+        },
       getNameGroup(name){
         if (name==='Unassigned' || name===''){
           return 'label.unassigned'

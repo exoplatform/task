@@ -37,6 +37,7 @@ import TaskViewCard from "./components/ProjectTasks/TaskViewCard.vue";
 import TaskViewListItem from "./components/ProjectTasks/TaskViewListItem.vue";
 import TasksViewBoardColumn from "./components/ProjectTasks/TasksViewBoardColumn.vue";
 import QuickAddCard from "./components/ProjectTasks/QuickAddCard.vue";
+import TasksViewHeaderStatus from "./components/ProjectTasks/TasksViewHeaderStatus.vue";
 
 const components = {
     'tasks-management': TasksManagement,
@@ -77,7 +78,8 @@ const components = {
     'tasks-view-header': TasksViewHeader,
     'task-view-card': TaskViewCard,
     'task-view-list-item': TaskViewListItem,
-    'quick-add-card': QuickAddCard
+    'quick-add-card': QuickAddCard,
+    'tasks-view-header-status': TasksViewHeaderStatus,
 };
 
 for (const key in components) {

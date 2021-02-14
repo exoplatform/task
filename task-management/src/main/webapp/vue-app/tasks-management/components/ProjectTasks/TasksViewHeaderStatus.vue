@@ -1,21 +1,10 @@
 <template>
   <div
     :id="'task-'+viewType+'-'+status.id"
-    class="tasksViewHeader d-flex justify-space-between align-center">
-    <input
-      v-if="editStatus || status.edit"
-      ref="autoFocusInput1"
-      v-model="status.name"
-      placeholder="Status Name"
-      type="text"
-      class="taskStatusName font-weight-bold text-color mb-1"
-      required
-      autofocus
-      @keyup="checkImput($event,index)">
+    class="tasksViewHeaderStatus d-flex justify-space-between align-center">
     <div
-      class="py-3 d-flex">
+      class="d-flex align-center assigneeFilter pointer">
       <a
-        v-if="viewType=== 'list'"
         class="toggle-collapse-group d-flex"
         href="#"
         @click="showDetailsTask(viewType,status.id)">
@@ -34,20 +23,21 @@
         v-if="editStatus || status.edit"
         ref="autoFocusInput1"
         v-model="status.name"
-        :placeholder="$t('label.tapStatus.name')"
+        placeholder="Status Name"
         type="text"
-        class="taskStatusName font-weight-bold text-color mb-1"
+        class="text-truncate subtitle-2 text-color my-auto"
         required
         autofocus
         @keyup="checkImput($event,index)">
       <div
         v-else
-        class="taskStatusName font-weight-bold text-color mb-1"
-        @click="editStatus = true">{{ status.name }} <span v-if="viewType=== 'list'" class="caption font-weight-bold">({{ tasksNumber }})</span></div>
+        class="text-truncate subtitle-2 text-color my-auto"
+        @click="editStatus = true">{{ status.name }} <span class="text-truncate subtitle-2 text-color my-auto">({{ tasksNumber }})</span></div>
 
     </div>
+    <v-divider class="mx-1"/>
     <div class="taskNumberAndActions d-flex align-center mb-1">
-      <span class="uiTaskNumber">{{ tasksNumber }}</span>
+      <span class="caption">{{ tasksNumber }}</span>
       <!-- <span v-if="tasksNumber < maxTasksToShow" class="caption">{{ tasksNumber }}</span>
       <div v-else class="showTasksPagination">
         <span class="caption">
@@ -62,12 +52,6 @@
         </v-btn>
 
       </div> -->
-      <i
-        icon
-        small
-        class="uiIconSocSimplePlus d-flex"
-        @click="openQuickAdd">
-      </i>      
       <i
         icon
         small
@@ -88,15 +72,6 @@
             </v-list-item-title>
           </v-list-item>
           <v-list-item 
-            v-if="project.canManage && index>0" 
-            class="menu-list" 
-            @click="moveBeforeColumn(index)" >
-            <v-list-item-title class="subtitle-2">
-              <i class="uiIcon uiIconArrowLeft pr-1"></i>
-              <span>{{ $t('label.status.move.before') }}</span>
-            </v-list-item-title>
-          </v-list-item>
-          <v-list-item 
             v-if="project.canManage" 
             class="menu-list" 
             @click="addColumn(index)" >
@@ -112,15 +87,6 @@
             <v-list-item-title class="subtitle-2">
               <i class="uiIcon uiIconRotateRight pr-1"></i>
               <span> {{ $t('label.status.after') }} </span>
-            </v-list-item-title>
-          </v-list-item>
-          <v-list-item 
-            v-if="project.canManage && index < statusListLength-1" 
-            class="menu-list" 
-            @click="moveAfterColumn(index)" >
-            <v-list-item-title class="subtitle-2">
-              <i class="uiIcon uiIconArrowRight pr-1"></i>
-              <span> {{ $t('label.status.move.after') }}</span>
             </v-list-item-title>
           </v-list-item>
           <v-list-item 
@@ -159,10 +125,6 @@
         default: 0
       },
       index: {
-        type: Number,
-        default: 0
-      },
-      statusListLength: {
         type: Number,
         default: 0
       },
@@ -243,17 +205,8 @@
           this.editStatus=false
         }
       },
-      openQuickAdd(index) {       
-          this.$emit('open-quick-add');    
-      },
       addColumn(index) {       
           this.$emit('add-column',index);    
-      },
-      moveBeforeColumn(index) {       
-          this.$emit('move-column',index,index-1);    
-      },
-      moveAfterColumn(index) {       
-          this.$emit('move-column',index,index+1);  
       },
       cancelAddColumn(index) {
         if(this.status.id){
@@ -262,6 +215,20 @@
         }else{
           this.$emit('cancel-add-column',index);
         }
+      },
+      showDetailsTask(viewType,id){
+        const uiIconMiniArrowDown = document.querySelector(`#${`uiIconMiniArrowDown${viewType}${id}`}`);
+        const uiIconMiniArrowRight = document.querySelector(`#${`uiIconMiniArrowRight${viewType}${id}`}`);
+
+        const detailsTask = document.querySelector(`#${`taskView${id}`}`);
+        if (detailsTask.style.display !== 'none') {
+          detailsTask.style.display = 'none';
+          uiIconMiniArrowDown.style.display = 'none';
+          uiIconMiniArrowRight.style.display = 'block'
+        }
+        else {detailsTask.style.display = 'block'
+          uiIconMiniArrowDown.style.display = 'block';
+          uiIconMiniArrowRight.style.display = 'none'}
       },
     }
   }
