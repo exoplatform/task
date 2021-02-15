@@ -35,6 +35,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.annotation.security.RolesAllowed;
+import javax.persistence.NonUniqueResultException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -195,10 +196,10 @@ public class ProjectRestService implements ResourceContainer {
     }
     StatusDto status = statusService.getDefaultStatus(id);
     return Response.ok(status).build();
-  } catch (Exception e) {
-    LOG.error("Can't get Default StatusBy Project id {}", id,e);
-    return Response.serverError().entity(e.getMessage()).build();
-  }
+  }  catch (Exception e) {
+      LOG.error("Can't get Default StatusBy Project id {}", id,e);
+      return Response.serverError().entity(e.getMessage()).build();
+    }
   }
 
 
@@ -667,16 +668,18 @@ public class ProjectRestService implements ResourceContainer {
         if (index > -1) {
           String groupId = participant.substring(index + 1);
           Space space = spaceService.getSpaceByGroupId(groupId);
-          ListAccess<org.exoplatform.social.core.identity.model.Identity> spaceIdentitiesListAccess =
-                  identityManager.getSpaceIdentityByProfileFilter(space,
-                          profileFilter,
-                          type,
-                          true);
-          org.exoplatform.social.core.identity.model.Identity[] spaceIdentities = spaceIdentitiesListAccess.load(0, 21);
-          if (spaceIdentities.length > 0) {
-            for (org.exoplatform.social.core.identity.model.Identity spaceMember : spaceIdentities) {
-              if (!StringUtils.equals(spaceMember.getRemoteId(), currentUser.getUserId())) {
-                userIdentities.add(spaceMember);
+          if(space != null){
+            ListAccess<org.exoplatform.social.core.identity.model.Identity> spaceIdentitiesListAccess =
+                    identityManager.getSpaceIdentityByProfileFilter(space,
+                            profileFilter,
+                            type,
+                            true);
+            org.exoplatform.social.core.identity.model.Identity[] spaceIdentities = spaceIdentitiesListAccess.load(0, 21);
+            if (spaceIdentities.length > 0) {
+              for (org.exoplatform.social.core.identity.model.Identity spaceMember : spaceIdentities) {
+                if (!StringUtils.equals(spaceMember.getRemoteId(), currentUser.getUserId())) {
+                  userIdentities.add(spaceMember);
+                }
               }
             }
           }
