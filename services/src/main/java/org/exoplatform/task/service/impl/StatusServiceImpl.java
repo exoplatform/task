@@ -123,7 +123,7 @@ public class StatusServiceImpl implements StatusService {
 
     @Override
     @ExoTransactional
-    public StatusDto createStatus(ProjectDto project, String name, int rank) {
+    public StatusDto createStatus(ProjectDto project, String name, int rank) throws  NotAllowedOperationOnEntityException {
         if (name == null || (name = name.trim()).isEmpty() || project == null) {
             throw new IllegalArgumentException("project must be not null and status must not be null or empty");
         }
