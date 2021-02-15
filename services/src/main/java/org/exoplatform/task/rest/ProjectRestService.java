@@ -661,7 +661,8 @@ public class ProjectRestService implements ResourceContainer {
   @ApiOperation(value = "Gets participants", httpMethod = "GET", response = Response.class, notes = "This returns participants in project")
   @ApiResponses(value = {@ApiResponse(code = 200, message = "Request fulfilled")})
   public Response getProjectParticipants(@ApiParam(value = "Project id", required = true) @PathParam("idProject") long idProject,
-                                         @ApiParam(value = "User name search information", required = false) @PathParam("term") String term) {
+                                         @ApiParam(value = "User name search information", required = false) @PathParam("term") String term,
+                                         @ApiParam(value = "Include or not current user", required = false) @QueryParam("includeCurrentUser") boolean includeCurrentUser) {
 
     Identity currentUser = ConversationState.getCurrent().getIdentity();
     Set<String> participants = projectService.getParticipator(idProject);
@@ -684,13 +685,13 @@ public class ProjectRestService implements ResourceContainer {
           org.exoplatform.social.core.identity.model.Identity[] spaceIdentities = spaceIdentitiesListAccess.load(0, 21);
           if (spaceIdentities.length > 0) {
             for (org.exoplatform.social.core.identity.model.Identity spaceMember : spaceIdentities) {
-              if (!StringUtils.equals(spaceMember.getRemoteId(), currentUser.getUserId())) {
+              if (!StringUtils.equals(spaceMember.getRemoteId(), currentUser.getUserId()) || includeCurrentUser) {
                 userIdentities.add(spaceMember);
               }
             }
           }
         } else {
-          if (!StringUtils.equals(currentUser.getUserId(), participant) && participant.contains(term)) {
+          if ((!StringUtils.equals(currentUser.getUserId(), participant) || includeCurrentUser) && participant.contains(term)) {
             org.exoplatform.social.core.identity.model.Identity userIdentity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, participant);
             userIdentities.add(userIdentity);
           }
@@ -711,7 +712,7 @@ public class ProjectRestService implements ResourceContainer {
     if (userIdentity.isEnable() && !userIdentity.isDeleted()) {
       JSONObject userJson = new JSONObject();
       try {
-        userJson.put("id", userIdentity.getRemoteId());
+        userJson.put("id", "@" + userIdentity.getRemoteId());
         userJson.put("name", userIdentity.getProfile().getFullName());
         userJson.put("avatar", userIdentity.getProfile().getAvatarUrl());
         userJson.put("type", "contact");
