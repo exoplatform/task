@@ -54,7 +54,7 @@ public class LabelServiceImpl implements LabelService {
     @Override
     @ExoTransactional
     public LabelDto createLabel(LabelDto label) {
-        return labelStorage.createLabel(labelStorage.labelToDto(daoHandler.getLabelHandler().create(labelStorage.labelToEntity(label))));
+        return labelStorage.createLabel(label);
     }
 
     @Override
