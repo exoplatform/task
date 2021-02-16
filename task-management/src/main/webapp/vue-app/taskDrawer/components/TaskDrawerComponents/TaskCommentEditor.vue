@@ -77,7 +77,7 @@
           for (let i = 0; i < data.length; i++) {
             const d = data[i];
             const item = {
-              uid: d.id,
+              uid: d.id.substr(1),
               name: d.name,
               avatar: d.avatar
             };

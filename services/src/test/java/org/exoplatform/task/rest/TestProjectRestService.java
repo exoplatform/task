@@ -490,7 +490,7 @@ public class TestProjectRestService {
     when(identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME,"userA")).thenReturn(userAIdentity);
 
     //when
-    Response response = projectRestService.getProjectParticipants(1L, "userA");
+    Response response = projectRestService.getProjectParticipants(1L, "userA", false);
 
     //then
     assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
