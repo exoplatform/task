@@ -9,7 +9,6 @@
       :task-list-tab="'#tasks-list'"
       :keyword="keyword"
       @keyword-changed="keywordChanged"
-      @changed="changeSelectedTabItem()"
       @filter-task-dashboard="filterTaskDashboard"
       @filter-task-query="filterTaskquery"
       @primary-filter-task="getTasksByPrimary"
@@ -87,7 +86,6 @@
           </div>
           <div :id="'taskView'+project.rank" class="view-task-group-sort">
             <tasks-cards-list
-              v-show="isTasksTabChanged"
               :tasks="tasksFilter.tasks[i]"
               class="d-md-none"/>
             <tasks-list
@@ -107,16 +105,6 @@
         </div>
       </div>
     </div>
-    <!--<v-tabs-items v-show="!filterActive" :key="id">
-      &lt;!&ndash;<v-tab-item v-show="isTasksTabChanged" eager>
-         <tasks-cards-list
-          :tasks="tasks"/>
-      </v-tab-item>&ndash;&gt;
-      <v-tab-item eager>
-        <tasks-list
-          :tasks="tasks"/>
-      </v-tab-item>
-    </v-tabs-items>-->
     <v-row class="ma-0 border-box-sizing">
       <v-btn
         v-if="canShowMore && !filterActive"
@@ -134,7 +122,6 @@
   export default {
     data () {
       return {
-        isTasksTabChanged: false,
         primaryfilter:'ALL',
         tasks: [],
         keyword: null,
@@ -268,9 +255,6 @@
             this.filterActive=false;
           }         
         }) */
-      },
-      changeSelectedTabItem() {
-        this.isTasksTabChanged = !this.isTasksTabChanged;
       },
       searchTasks(tasks) {
         if(!tasks){
