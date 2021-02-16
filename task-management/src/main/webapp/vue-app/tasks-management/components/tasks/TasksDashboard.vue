@@ -270,6 +270,7 @@
       searchTasks(tasks) {
         if(!tasks){
          tasks = this.filterTasks;
+          this.labels=[];
         }
         this.loadingTasks = true;
         if(tasks.assignee){
