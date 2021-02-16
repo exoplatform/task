@@ -15,19 +15,6 @@
         </v-btn>
       </v-toolbar-title>
       <v-spacer/>
-      <!--<div class="taskDisplay">
-        <v-tabs
-          @change="$emit('changed')">
-          &lt;!&ndash;<v-tab :href="taskCardTab" class="taskTabCards">
-            <i class="uiIcon uiIconCards"></i>
-            <span>{{ $t('label.cardsView') }}</span>
-          </v-tab>&ndash;&gt;
-          <v-tab :href="taskListTab" class="taskTabList">
-            <i class="uiIcon uiIconList"></i>
-            <span>{{ $t('label.listView') }}</span>
-          </v-tab>
-        </v-tabs>
-      </div>-->
       <v-spacer/>
       <v-scale-transition>
         <v-text-field
