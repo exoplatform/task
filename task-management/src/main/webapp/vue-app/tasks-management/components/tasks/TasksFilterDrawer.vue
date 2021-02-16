@@ -82,6 +82,7 @@
                       ref="autoFocusInput3"
                       :labels="suggesterLabels"
                       v-model="assignee"
+                      :search-options="searchOptions"
                       name="assignee"
                       type-of-relations="user_to_invite"
                       height="40"
@@ -234,7 +235,18 @@
           placeholder: this.$t('label.assignee'),
           noDataLabel: this.$t('label.noDataLabel'),
         };
-      }
+      },
+      searchOptions() {
+        if(this.project) {
+          const options = {
+            includeCurrentUser: true,
+          };
+          return {
+            searchUrl: '/portal/rest/projects/projectParticipants/'.concat(this.project).concat('/'),
+            options: options
+          };
+        }
+      },
     },
     created() {
       this.$root.$on('filter-task-labels',labels =>{
