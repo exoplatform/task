@@ -211,6 +211,11 @@
           this.tasksList = this.tasksList.filter((t) => t.id !== event.detail);
         }
       });
+      this.$root.$on('update-task-completed', (event) => {
+        if (event) {
+          this.tasksList = this.tasksList.filter((t) => t.id !== event.id);
+        }
+      });
     },
     methods : {
       hideProjectDetails() {

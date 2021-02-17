@@ -219,7 +219,7 @@
             }else{
               this.$root.$emit('show-alert', {type: 'success',message: this.$t('alert.success.task.unCompleted')});
             }
-            this.$emit('update-cart', task);
+            this.$root.$emit('update-cart', task);
           }).then(this.task.task.completed = task.showCompleteTasks)
                   .catch(e => {
                     console.debug("Error updating project", e);

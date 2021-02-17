@@ -183,6 +183,11 @@
           this.tasks = this.tasks.filter((t) => t.id !== event.detail);
         }
       });
+      this.$root.$on('update-cart', (event) => {
+        if (event) {
+          this.tasks = this.tasks.filter((t) => t.id !== event.id);
+        }
+      });
     },
     methods: {
       keywordChanged(keyword,searchonkeyChange){
