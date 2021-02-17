@@ -237,17 +237,20 @@ public final class StorageUtil{
         return comment;
     }
 
-    public static CommentDto commentToDto(Comment comment,ProjectStorage projectStorage) {
-        if(comment==null){
+    public static CommentDto commentToDto(Comment comment, ProjectStorage projectStorage) {
+        if (comment == null) {
             return null;
         }
         CommentDto commentDto = new CommentDto();
         commentDto.setId(comment.getId());
         commentDto.setAuthor(comment.getAuthor());
         commentDto.setComment(comment.getComment());
-        if (comment.getParentComment()!=null) commentDto.setParentComment(commentToDto(comment.getParentComment(),projectStorage));
+        if (comment.getParentComment() != null) {
+            commentDto.setParentComment(commentToDto(comment.getParentComment(), projectStorage));
+        }
         commentDto.setCreatedTime(comment.getCreatedTime());
-        commentDto.setTask(taskToDto(comment.getTask(),projectStorage));
+        commentDto.setTask(taskToDto(comment.getTask(), projectStorage));
+        commentDto.setMentionedUsers(comment.getMentionedUsers());
         return commentDto;
     }
 
