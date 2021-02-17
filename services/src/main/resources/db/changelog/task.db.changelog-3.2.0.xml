@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+
+    <changeSet author="task" id="3.2.0-1">
+        <createTable tableName="TASK_STEP">
+            <column name="STEP_ID" type="BIGINT" autoIncrement="${autoIncrement}" startWith="1">
+                <constraints primaryKey="true" primaryKeyName="PK_TASK_STEP" nullable="false"/>
+            </column>
+            <column name="AUTHOR" type="NVARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NAME" type="NVARCHAR(1000)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_TIME" type="TIMESTAMP">
+                <constraints nullable="true"/>
+            </column>
+            <column name="TASK_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="FK_STEP_TASK" references="TASK_TASKS(TASK_ID)"/>
+            </column>
+            <column name="COMPLETED" type="BIT" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
+        </modifySql>
+    </changeSet>
+
+
+</databaseChangeLog>

@@ -251,6 +251,34 @@ public final class StorageUtil{
         return commentDto;
     }
 
+    public static Step stepToEntity(StepDto stepDto) {
+        if(stepDto==null){
+            return null;
+        }
+        Step step = new Step();
+        step.setId(stepDto.getId());
+        step.setAuthor(stepDto.getAuthor());
+        step.setName(stepDto.getName());
+        step.setCreatedTime(stepDto.getCreatedTime());
+        step.setCompleted(stepDto.isCompleted());
+        step.setTask(taskToEntity(stepDto.getTask()));
+        return step;
+    }
+
+    public static StepDto stepToDto(Step step,ProjectStorage projectStorage) {
+        if(step==null){
+            return null;
+        }
+        StepDto stepDto = new StepDto();
+        stepDto.setId(step.getId());
+        stepDto.setAuthor(step.getAuthor());
+        stepDto.setName(step.getName());
+        stepDto.setCreatedTime(step.getCreatedTime());
+        stepDto.setCompleted(step.isCompleted());
+        stepDto.setTask(taskToDto(step.getTask(),projectStorage));
+        return stepDto;
+    }
+
     public static List<CommentDto> listCommentsToDtos(List<Comment> comments, ProjectStorage projectStorage) {
         return comments.stream()
                 .filter(Objects::nonNull)

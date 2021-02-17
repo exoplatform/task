@@ -40,6 +40,20 @@ export function getLabelsByTaskId(taskId) {
     });
 }
 
+
+export function getStepsByTaskId(taskId) {
+    return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/tasks/steps/${taskId}`, {
+        method: 'GET',
+        credentials: 'include',
+    }).then(resp => {
+        if (!resp || !resp.ok) {
+            throw new Error('Response code indicates a server error', resp);
+        } else {
+            return resp.json();
+        }
+    });
+}
+
 export function getTaskById(taskId) {
     return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/tasks/${taskId}`, {
         method: 'GET',

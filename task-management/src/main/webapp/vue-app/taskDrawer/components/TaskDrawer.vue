@@ -99,6 +99,13 @@
         </div>
         <v-divider class="my-0" />
         <div class="d-flex  pt-4 pb-2">
+          <div class="taskSteps">
+            <task-steps
+              :task="task"/>
+          </div>
+        </div>
+        <v-divider class="my-0" />
+        <div class="d-flex  pt-4 pb-2">
           <div class="taskDates">
             <task-form-date-pickers
               :task="task"

@@ -11,7 +11,8 @@ import TaskStatus from "./components/TaskDrawerComponents/TasksStatus.vue";
 import TaskFormDatePickers from "./components/TaskDrawerComponents/TaskFormDatePickers.vue";
 import TaskCommentsDrawer from "./components/TaskDrawerComponents/TaskCommentsDrawer.vue";
 import TaskLastComment from "./components/TaskDrawerComponents/TaskLastComment.vue";
-import TaskChangesDrawer from "./components/TaskDrawerComponents/TaskChangesDrawer.vue"
+import TaskChangesDrawer from "./components/TaskDrawerComponents/TaskChangesDrawer.vue";
+import TaskSteps from "./components/TaskDrawerComponents/TaskSteps.vue"
 
 const components = {
     'task-drawer': TaskDrawer,
@@ -23,11 +24,12 @@ const components = {
     'log-details': LogDetails,
     'task-comments': TaskComments,
     'task-last-comment': TaskLastComment,
-    'task-priority' : TaskPriority,
-    'task-status' : TaskStatus,
+    'task-priority': TaskPriority,
+    'task-status': TaskStatus,
     'task-form-date-pickers': TaskFormDatePickers,
     'task-comments-drawer': TaskCommentsDrawer,
-    'task-changes-drawer': TaskChangesDrawer
+    'task-changes-drawer': TaskChangesDrawer,
+    'task-steps': TaskSteps
 };
 
 for (const key in components) {

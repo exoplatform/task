@@ -61,6 +61,8 @@ public class TaskRestService implements ResourceContainer {
 
   private LabelService     labelService;
 
+  private StepService     stepService;
+
   private CommentStorage   commentStorage;
 
   public TaskRestService(TaskService taskService,
@@ -69,7 +71,8 @@ public class TaskRestService implements ResourceContainer {
                          StatusService statusService,
                          UserService userService,
                          SpaceService spaceService,
-                         LabelService labelService) {
+                         LabelService labelService,
+                         StepService stepService) {
     this.taskService = taskService;
     this.commentService = commentService;
     this.projectService = projectService;
@@ -77,6 +80,7 @@ public class TaskRestService implements ResourceContainer {
     this.userService = userService;
     this.spaceService = spaceService;
     this.labelService = labelService;
+    this.stepService = stepService;
   }
 
 
@@ -552,6 +556,116 @@ public class TaskRestService implements ResourceContainer {
         }
   }
 
+
+  @GET
+  @Path("steps/{id}")
+  @RolesAllowed("users")
+  @Produces(MediaType.APPLICATION_JSON)
+  @ApiOperation(value = "Gets steps of a specific task by id", httpMethod = "GET", response = Response.class, notes = "This returns steps of a specific task by id")
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled"),
+      @ApiResponse(code = 500, message = "Internal server error") })
+  public Response getStepsByTaskId(@ApiParam(value = "Task id", required = true) @PathParam("id") long id) {
+    try {
+    return Response.ok(stepService.getSteps(id, 0, -1)).build();
+        } catch (Exception e) {
+        LOG.error("Can't get Labels By TaskId {}", id, e);
+        return Response.serverError().entity(e.getMessage()).build();
+        }
+  }
+
+  @POST
+  @Path("steps/{id}")
+  @RolesAllowed("users")
+  @ApiOperation(value = "Adds a step to a task", httpMethod = "POST", response = Response.class, notes = "This Adds a step to a task")
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled"),
+      @ApiResponse(code = 400, message = "Invalid query input"), @ApiResponse(code = 403, message = "Unauthorized operation"),
+      @ApiResponse(code = 404, message = "Resource not found") })
+  public Response addStepToTask(@ApiParam(value = "step", required = true) StepDto step,
+                                 @ApiParam(value = "Task id", required = true) @PathParam("id") long id) {
+    try {
+    String currentUser = ConversationState.getCurrent().getIdentity().getUserId();
+    if (step == null) {
+      return Response.status(Response.Status.BAD_REQUEST).build();
+    }
+    TaskDto task = taskService.getTask(id);
+    if (task == null) {
+      return Response.status(Response.Status.NOT_FOUND).build();
+    }
+    if (!TaskUtil.hasEditPermission(taskService,task)) {
+      return Response.status(Response.Status.FORBIDDEN).build();
+    }
+      step.setAuthor(currentUser);
+      StepDto stepDto = stepService.addStep(task,currentUser,step.getName());
+
+    return Response.ok(stepDto).build();
+        } catch (Exception e) {
+        LOG.error("Can't add step {} To tash", id, e);
+        return Response.serverError().entity(e.getMessage()).build();
+        }
+  }
+
+  @PUT
+  @Path("steps/{id}")
+  @RolesAllowed("users")
+  @ApiOperation(value = "Update a specific step", httpMethod = "DELETE", response = Response.class, notes = "Update a specific step")
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled"),
+      @ApiResponse(code = 403, message = "Unauthorized operation"), @ApiResponse(code = 404, message = "Resource not found") })
+  public Response updateStep(@ApiParam(value = "step", required = true) StepDto stepDto,
+                             @ApiParam(value = "Step id", required = true) @PathParam("id") long id) {
+
+    if (id != stepDto.getId()) {
+      return Response.status(Response.Status.BAD_REQUEST).build();
+    }
+
+    StepDto step = stepService.getStep(id);
+    if (step == null) {
+      return Response.status(Response.Status.NOT_FOUND).build();
+    }
+
+    try {
+    TaskDto task = taskService.getTask(id);
+    if (task == null) {
+      return Response.status(Response.Status.NOT_FOUND).build();
+    }
+
+    if (!TaskUtil.hasEditPermission(taskService,task)) {
+      return Response.status(Response.Status.FORBIDDEN).build();
+    }
+    stepService.updateStep(step.getId(),step.getName(),step.isCompleted());
+    return Response.ok(step).build();
+        } catch (Exception e) {
+        LOG.error("Can't remove Step {}", id, e);
+        return Response.serverError().entity(e.getMessage()).build();
+        }
+  }
+
+  @DELETE
+  @Path("steps/{id}")
+  @RolesAllowed("users")
+  @ApiOperation(value = "Deletes a specific step", httpMethod = "DELETE", response = Response.class, notes = "Deletes a specific step")
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled"),
+      @ApiResponse(code = 403, message = "Unauthorized operation"), @ApiResponse(code = 404, message = "Resource not found") })
+  public Response removeStep(@ApiParam(value = "step id", required = true) @PathParam("id") long id) {
+    try {
+    TaskDto task = taskService.getTask(id);
+    if (task == null) {
+      return Response.status(Response.Status.NOT_FOUND).build();
+    }
+    StepDto step = stepService.getStep(id);
+    if (step == null) {
+      return Response.status(Response.Status.NOT_FOUND).build();
+    }
+    if (!TaskUtil.hasEditPermission(taskService,task)) {
+      return Response.status(Response.Status.FORBIDDEN).build();
+    }
+    stepService.removeStep(step.getId());
+    return Response.ok(step).build();
+        } catch (Exception e) {
+        LOG.error("Can't remove Step {}", id, e);
+        return Response.serverError().entity(e.getMessage()).build();
+        }
+  }
+
   @GET
   @Path("logs/{id}")
   @RolesAllowed("users")
@@ -808,6 +922,12 @@ public class TaskRestService implements ResourceContainer {
     } catch (Exception e) {
       LOG.warn("Error retrieving task '{}' labels", taskId, e);
     }
+    List<StepDto> steps = new ArrayList<>();
+    try {
+      steps = stepService.getSteps(taskId, 0, -1);
+    } catch (Exception e) {
+      LOG.warn("Error retrieving task '{}' steps", taskId, e);
+    }
     SpaceEntity space = null;
     if (task.getStatus() != null && task.getStatus().getProject() != null) {
       space = getProjectSpace(task.getStatus().getProject());
@@ -815,6 +935,7 @@ public class TaskRestService implements ResourceContainer {
 
     TaskEntity taskEntity = new TaskEntity(((TaskDto) task), commentCount);
     taskEntity.setLabels(labels);
+    taskEntity.setSteps(steps);
     taskEntity.setSpace(space);
     return taskEntity;
   }

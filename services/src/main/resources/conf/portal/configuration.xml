@@ -54,6 +54,12 @@
 
 
   <component>
+    <key>org.exoplatform.task.storage.StepStorage</key>
+    <type>org.exoplatform.task.storage.impl.StepStorageImpl</type>
+  </component>
+
+
+  <component>
     <key>org.exoplatform.task.service.ProjectService</key>
     <type>org.exoplatform.task.service.impl.ProjectServiceImpl</type>
   </component>
@@ -71,6 +77,11 @@
   <component>
     <key>org.exoplatform.task.service.StatusService</key>
     <type>org.exoplatform.task.service.impl.StatusServiceImpl</type>
+  </component>
+
+  <component>
+    <key>org.exoplatform.task.service.StepService</key>
+    <type>org.exoplatform.task.service.impl.StepServiceImpl</type>
   </component>
 
   <component>
@@ -105,6 +116,7 @@
           <value>db/changelog/task.db.changelog-2.1.0.xml</value>
           <value>db/changelog/task.db.changelog-3.0.0.xml</value>
           <value>db/changelog/task.db.changelog-3.1.0.xml</value>
+          <value>db/changelog/task.db.changelog-3.2.0.xml</value>
         </values-param>
       </init-params>
     </component-plugin>

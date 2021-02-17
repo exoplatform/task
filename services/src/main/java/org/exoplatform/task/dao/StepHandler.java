@@ -19,25 +19,13 @@
 
 package org.exoplatform.task.dao;
 
+import org.exoplatform.commons.api.persistence.GenericDAO;
+import org.exoplatform.commons.utils.ListAccess;
+import org.exoplatform.task.domain.Step;
+
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
-public interface DAOHandler {
-  public ProjectHandler getProjectHandler();
-
-  public TaskHandler getTaskHandler();
-
-  public LabelHandler getLabelHandler();
-
-  public LabelTaskMappingHandler getLabelTaskMappingHandler();
-
-  public CommentHandler getCommentHandler();
-
-  public TaskLogHandler getTaskLogHandler();
-
-  public StatusHandler getStatusHandler();
-
-  public UserSettingHandler getUserSettingHandler();
-
-  public StepHandler getStepHandler();
+public interface StepHandler extends GenericDAO<Step, Long> {
+  ListAccess<Step> findSteps(long taskId);
 }

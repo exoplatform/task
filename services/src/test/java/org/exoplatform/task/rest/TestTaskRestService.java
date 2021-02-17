@@ -55,6 +55,9 @@ public class TestTaskRestService {
   @Mock
   LabelService   labelService;
 
+  @Mock
+  StepService   stepService;
+
 
 
   @Before
@@ -71,7 +74,8 @@ public class TestTaskRestService {
             statusService,
             userService,
             spaceService,
-            labelService);
+            labelService,
+            stepService);
     Identity root = new Identity("root");
     ConversationState.setCurrent(new ConversationState(root));
     TaskDto task1 = new TaskDto();
@@ -138,7 +142,8 @@ public class TestTaskRestService {
             statusService,
             userService,
             spaceService,
-            labelService);
+            labelService,
+            stepService);
     Identity root = new Identity("root");
     ConversationState.setCurrent(new ConversationState(root));
     TaskDto task1 = new TaskDto();
@@ -180,7 +185,8 @@ public class TestTaskRestService {
             statusService,
             userService,
             spaceService,
-            labelService);
+            labelService,
+            stepService);
     Identity root = new Identity("root");
     ConversationState.setCurrent(new ConversationState(root));
     TaskDto task1 = new TaskDto();
@@ -202,7 +208,8 @@ public class TestTaskRestService {
             statusService,
             userService,
             spaceService,
-            labelService);
+            labelService,
+            stepService);
     Identity john = new Identity("john");
     ConversationState.setCurrent(new ConversationState(john));
     TaskDto task1 = new TaskDto();
@@ -251,7 +258,8 @@ public class TestTaskRestService {
               statusService,
               userService,
               spaceService,
-              labelService);
+              labelService,
+              stepService);
       Identity john = new Identity("john");
       ConversationState.setCurrent(new ConversationState(john));
       TaskDto task = new TaskDto();
@@ -274,7 +282,8 @@ public class TestTaskRestService {
             statusService,
             userService,
             spaceService,
-            labelService);
+            labelService,
+            stepService);
     Identity root = new Identity("root");
     ConversationState.setCurrent(new ConversationState(root));
 
@@ -315,7 +324,8 @@ public class TestTaskRestService {
             statusService,
             userService,
             spaceService,
-            labelService);
+            labelService,
+            stepService);
     Identity root = new Identity("root");
     ConversationState.setCurrent(new ConversationState(root));
 
@@ -368,7 +378,8 @@ public class TestTaskRestService {
             statusService,
             userService,
             spaceService,
-            labelService);
+            labelService,
+            stepService);
     Identity root = new Identity("root");
     ConversationState.setCurrent(new ConversationState(root));
 
@@ -432,7 +443,8 @@ public class TestTaskRestService {
             statusService,
             userService,
             spaceService,
-            labelService);
+            labelService,
+            stepService);
     Identity root = new Identity("root");
     ConversationState.setCurrent(new ConversationState(root));
 
@@ -465,7 +477,8 @@ public class TestTaskRestService {
             statusService,
             userService,
             spaceService,
-            labelService);
+            labelService,
+            stepService);
     Identity root = new Identity("root");
     ConversationState.setCurrent(new ConversationState(root));
 
@@ -515,7 +528,8 @@ public class TestTaskRestService {
             statusService,
             userService,
             spaceService,
-            labelService);
+            labelService,
+            stepService);
     Identity john = new Identity("john");
     ConversationState.setCurrent(new ConversationState(john));
 
@@ -566,7 +580,8 @@ public class TestTaskRestService {
             statusService,
             userService,
             spaceService,
-            labelService);
+            labelService,
+            stepService);
 
     Identity root = new Identity("root");
     ConversationState.setCurrent(new ConversationState(root));
@@ -604,7 +619,8 @@ public class TestTaskRestService {
             statusService,
             userService,
             spaceService,
-            labelService);
+            labelService,
+            stepService);
     Identity john = new Identity("john");
     ConversationState.setCurrent(new ConversationState(john));
 
@@ -659,7 +675,8 @@ public class TestTaskRestService {
             statusService,
             userService,
             spaceService,
-            labelService);
+            labelService,
+            stepService);
     Identity john = new Identity("john");
     ConversationState.setCurrent(new ConversationState(john));
 
@@ -705,7 +722,8 @@ public class TestTaskRestService {
             statusService,
             userService,
             spaceService,
-            labelService);
+            labelService,
+            stepService);
     Identity root = new Identity("root");
     ConversationState.setCurrent(new ConversationState(root));
     TaskDto task1 = new TaskDto();
@@ -768,7 +786,8 @@ public class TestTaskRestService {
             statusService,
             userService,
             spaceService,
-            labelService);
+            labelService,
+            stepService);
     Identity root = new Identity("root");
     ConversationState.setCurrent(new ConversationState(root));
     TaskDto task = new TaskDto();

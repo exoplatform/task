@@ -98,6 +98,8 @@ public class TestUtils {
     liquibase.update((String)null);
     liquibase = new Liquibase("db/changelog/task.db.changelog-3.1.0.xml", new ClassLoaderResourceAccessor(), database);
     liquibase.update((String)null);
+    liquibase = new Liquibase("db/changelog/task.db.changelog-3.2.0.xml", new ClassLoaderResourceAccessor(), database);
+    liquibase.update((String)null);
   }
 
   public static void closeDB() throws LiquibaseException, SQLException {

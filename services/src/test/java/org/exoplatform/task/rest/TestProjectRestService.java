@@ -65,6 +65,9 @@ public class TestProjectRestService {
   LabelService   labelService;
 
   @Mock
+  StepService   stepService;
+
+  @Mock
   IdentityManager identityManager;
 
   @Before
@@ -81,7 +84,8 @@ public class TestProjectRestService {
                                                           statusService,
                                                           userService,
                                                           spaceService,
-                                                          labelService);
+                                                          labelService,
+                                                          stepService);
     Identity root = new Identity("root");
     ConversationState.setCurrent(new ConversationState(root));
     TaskDto task1 = new TaskDto();

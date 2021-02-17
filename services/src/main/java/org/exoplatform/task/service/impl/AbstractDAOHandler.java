@@ -16,15 +16,7 @@
 */
 package org.exoplatform.task.service.impl;
 
-import org.exoplatform.task.dao.CommentHandler;
-import org.exoplatform.task.dao.LabelHandler;
-import org.exoplatform.task.dao.DAOHandler;
-import org.exoplatform.task.dao.LabelTaskMappingHandler;
-import org.exoplatform.task.dao.ProjectHandler;
-import org.exoplatform.task.dao.StatusHandler;
-import org.exoplatform.task.dao.TaskHandler;
-import org.exoplatform.task.dao.TaskLogHandler;
-import org.exoplatform.task.dao.UserSettingHandler;
+import org.exoplatform.task.dao.*;
 
 /**
  * @author <a href="trongtt@gmail.com">Trong Tran</a>
@@ -32,22 +24,24 @@ import org.exoplatform.task.dao.UserSettingHandler;
  */
 abstract public class AbstractDAOHandler implements DAOHandler {
 
-  protected ProjectHandler pHandler;
+  protected ProjectHandler          pHandler;
 
-  protected TaskHandler tHandler;
-  
-  protected CommentHandler cHandler;
+  protected TaskHandler             tHandler;
 
-  protected TaskLogHandler taskLogHandler;
+  protected CommentHandler          cHandler;
 
-  protected StatusHandler sHandler;
+  protected TaskLogHandler          taskLogHandler;
 
-  protected UserSettingHandler uHandler;
+  protected StatusHandler           sHandler;
 
-  protected LabelHandler lHandler;
-  
+  protected UserSettingHandler      uHandler;
+
+  protected LabelHandler            lHandler;
+
   protected LabelTaskMappingHandler ltmHandler;
-  
+
+  protected StepHandler             stepHandler;
+
   public ProjectHandler getProjectHandler() {
     return pHandler;
   }
@@ -55,11 +49,11 @@ abstract public class AbstractDAOHandler implements DAOHandler {
   public TaskHandler getTaskHandler() {
     return tHandler;
   }
-  
+
   public CommentHandler getCommentHandler() {
     return cHandler;
   }
-  
+
   public StatusHandler getStatusHandler() {
     return sHandler;
   }
@@ -73,7 +67,7 @@ abstract public class AbstractDAOHandler implements DAOHandler {
   public LabelHandler getLabelHandler() {
     return lHandler;
   }
-  
+
   @Override
   public LabelTaskMappingHandler getLabelTaskMappingHandler() {
     return ltmHandler;
@@ -83,5 +77,9 @@ abstract public class AbstractDAOHandler implements DAOHandler {
   public TaskLogHandler getTaskLogHandler() {
     return taskLogHandler;
   }
-}
 
+  @Override
+  public StepHandler getStepHandler() {
+    return stepHandler;
+  }
+}

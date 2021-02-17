@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 import lombok.Data;
 import org.exoplatform.task.dto.LabelDto;
 import org.exoplatform.task.dto.StatusDto;
+import org.exoplatform.task.dto.StepDto;
 import org.exoplatform.task.dto.TaskDto;
 import org.exoplatform.task.model.CommentModel;
 import org.exoplatform.task.model.User;
@@ -49,6 +50,7 @@ public class TaskEntity {
   private User currentUser;
   private SpaceEntity space;
   private List<LabelDto> labels = new ArrayList<LabelDto>();
+  private List<StepDto> steps = new ArrayList<StepDto>();
   private boolean completed;
 
   public TaskEntity() {
