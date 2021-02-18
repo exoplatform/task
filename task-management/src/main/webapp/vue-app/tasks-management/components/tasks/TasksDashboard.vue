@@ -184,8 +184,8 @@
         }
       });
       this.$root.$on('update-cart', (event) => {
-        if (event) {
-          this.tasks = this.tasks.filter((t) => t.id !== event.id);
+        if (event && event.completed) {
+          window.setTimeout(() => this.tasks = this.tasks.filter((t) => t.id !== event.id), 500);
         }
       });
     },
