@@ -287,16 +287,44 @@
                 this.menuActions = this.menuActions.filter(menuAction => menuAction.enabled);
               });
             }
-          }else if (event.detail.name === 'noProject') {
+          } else if (event.detail.name === 'noProject') {
             this.menuActions = [];
-            this.enableDelete = event.detail.task.createdBy === eXo.env.portal.userName ? true : false;
-            this.enableClone = event.detail.task.assignee === eXo.env.portal.userName || event.detail.task.coworker.includes(eXo.env.portal.userName) ? true : false;
+            this.enableDelete = event.detail.task.createdBy === eXo.env.portal.userName;
+            this.enableClone = event.detail.task.assignee === eXo.env.portal.userName || event.detail.task.coworker.includes(eXo.env.portal.userName);
             this.addMenuAction(this.$t('label.delete'), 'uiIconTrash', this.enableDelete, 'deleteTask');
             this.addMenuAction(this.$t('label.clone'), 'uiIconCloneNode', this.enableClone, 'cloneTask');
             this.menuActions = this.menuActions.filter(menuAction => menuAction.enabled);
           }
         }
       });
+
+      const urlPath = document.location.pathname
+      if(urlPath.includes('taskDetail')){
+      let taskId = urlPath.split('taskDetail/')[1].split(/[^0-9]/)[0]
+      taskId = taskId && Number(taskId) || 0;
+      if (taskId) {
+        this.$tasksService.getTaskById(taskId).then(data => {
+          this.task = data  
+          if(this.task.status && this.task.status.project){
+            this.$projectService.getProject(this.task.status.project.id, true).then(data => {
+              this.isManager = data.managerIdentities.some(manager => manager.username === eXo.env.portal.userName);
+              this.isParticipator = this.isManager || data.participatorIdentities.some(participator => participator.username === eXo.env.portal.userName);
+              // add menu actions
+              this.menuActions = [];
+              this.addMenuAction(this.$t('label.delete'), 'uiIconTrash', this.isManager, 'deleteTask');
+              this.addMenuAction(this.$t('label.clone'), 'uiIconCloneNode', this.isParticipator, 'cloneTask');
+              this.menuActions = this.menuActions.filter(menuAction => menuAction.enabled);
+            });
+          } else {
+            this.enableDelete = this.task.createdBy === eXo.env.portal.userName;
+            this.enableClone = this.task.assignee === eXo.env.portal.userName || this.task.coworker.includes(eXo.env.portal.userName);
+            this.addMenuAction(this.$t('label.delete'), 'uiIconTrash', this.enableDelete, 'deleteTask');
+            this.addMenuAction(this.$t('label.clone'), 'uiIconCloneNode', this.enableClone, 'cloneTask');
+            this.menuActions = this.menuActions.filter(menuAction => menuAction.enabled);
+          }
+        })  
+      } 
+      }
     },
     destroyed: function () {
       document.removeEventListener('keyup', this.escapeKeyListener);
