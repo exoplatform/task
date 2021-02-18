@@ -228,8 +228,6 @@ export default {
             taskStartDate: null,
             saving: false,
             deleteConfirmMessage: null,
-            isManager: false,
-            isParticipator: false,
             datePickerTop: true,
             enableDelete:false,
             enableClone:false,
@@ -294,24 +292,10 @@ export default {
         document.addEventListener('taskOrigin', event => {
             if (event && event.detail) {
                 if (event.detail === 'projectView') {
-                    if (this.task.status.project.id) {
-                        this.$projectService.getProject(this.task.status.project.id, true).then(data => {
-                            this.isManager = data.managerIdentities.some(manager => manager.username === eXo.env.portal.userName);
-                            this.isParticipator = this.isManager || data.participatorIdentities.some(participator => participator.username === eXo.env.portal.userName);
-                            // add menu actions
-                            this.menuActions = [];
-                            this.addMenuAction(this.$t('label.delete'), 'uiIconTrash', this.isManager, 'deleteTask');
-                            this.addMenuAction(this.$t('label.clone'), 'uiIconCloneNode', this.isParticipator, 'cloneTask');
-                            this.menuActions = this.menuActions.filter(menuAction => menuAction.enabled);
-                        });
-                    }
+                  this.displayDrawerMenuAction( this.task );
                 } else if ( event.detail.name === 'noProject' ) {
-                    this.menuActions = [];
-                    this.enableDelete = event.detail.task.createdBy === eXo.env.portal.userName;
-                    this.enableClone = event.detail.task.assignee === eXo.env.portal.userName || event.detail.task.coworker.includes(eXo.env.portal.userName);
-                    this.addMenuAction(this.$t('label.delete'), 'uiIconTrash', this.enableDelete, 'deleteTask');
-                    this.addMenuAction(this.$t('label.clone'), 'uiIconCloneNode', this.enableClone, 'cloneTask');
-                    this.menuActions = this.menuActions.filter(menuAction => menuAction.enabled);
+                    this.task = event.detail.task;
+                    this.displayDrawerMenuAction( this.task );
                 }
             }
         });
@@ -322,23 +306,7 @@ export default {
          if (taskId) {
            this.$tasksService.getTaskById(taskId).then(data => {
              this.task = data  
-             if(this.task.status && this.task.status.project) {
-                this.$projectService.getProject(this.task.status.project.id, true).then(data => {
-                this.isManager = data.managerIdentities.some(manager => manager.username === eXo.env.portal.userName);
-                this.isParticipator = this.isManager || data.participatorIdentities.some(participator => participator.username === eXo.env.portal.userName);
-                // add menu actions
-                this.menuActions = [];
-                this.addMenuAction(this.$t('label.delete'), 'uiIconTrash', this.isManager, 'deleteTask');
-                this.addMenuAction(this.$t('label.clone'), 'uiIconCloneNode', this.isParticipator, 'cloneTask');
-                this.menuActions = this.menuActions.filter(menuAction => menuAction.enabled);
-              });
-            } else {
-              this.enableDelete = this.task.createdBy === eXo.env.portal.userName;
-              this.enableClone = this.task.assignee === eXo.env.portal.userName || this.task.coworker.includes(eXo.env.portal.userName);
-              this.addMenuAction(this.$t('label.delete'), 'uiIconTrash', this.enableDelete, 'deleteTask');
-              this.addMenuAction(this.$t('label.clone'), 'uiIconCloneNode', this.enableClone, 'cloneTask');
-              this.menuActions = this.menuActions.filter(menuAction => menuAction.enabled);
-            }
+             this.displayDrawerMenuAction( this.task );
         })  
       } 
       } 
@@ -705,6 +673,25 @@ export default {
                 action: this[actionFunctionName]
             });
         },
+        displayDrawerMenuAction( task ) {
+          this.menuActions = [];
+          if (task && task.status && task.status.project && task.status.project.id ) {
+            this.$projectService.getProject(task.status.project.id, true).then(data => {
+              this.enableDelete = data.managerIdentities.some(manager => manager.username === eXo.env.portal.userName);
+              this.enableClone = this.enableDelete || data.participatorIdentities.some(participator => participator.username === eXo.env.portal.userName);
+              this.addMenuAction(this.$t('label.delete'), 'uiIconTrash', this.enableDelete, 'deleteTask');
+              this.addMenuAction(this.$t('label.clone'), 'uiIconCloneNode', this.enableClone, 'cloneTask');
+              this.menuActions = this.menuActions.filter(menuAction => menuAction.enabled);
+              });
+            } else if ( task && task.id ) {
+              this.enableDelete = task.createdBy === eXo.env.portal.userName;
+              this.enableClone = task.assignee === eXo.env.portal.userName || this.task.coworker.includes(eXo.env.portal.userName);
+              this.addMenuAction(this.$t('label.delete'), 'uiIconTrash', this.enableDelete, 'deleteTask');
+              this.addMenuAction(this.$t('label.clone'), 'uiIconCloneNode', this.enableClone, 'cloneTask');
+              this.menuActions = this.menuActions.filter(menuAction => menuAction.enabled);
+            }
+        },
+
       displayedDate(value) {
         return value && this.$dateUtil.formatDateObjectToDisplay(new Date(value), this.dateTimeFormat, this.lang) || '';
       },
