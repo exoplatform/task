@@ -264,6 +264,15 @@ export default {
         return this.logs && this.logs.length && this.logs[0].authorFullName || '';
       },
     },
+    watch: {
+      taskLink() {
+        if( this.taskLink.includes ('taskDetail')) {
+          if ( this.task && this.task.id ) {
+            this.displayDrawerMenuAction( this.task );
+          }
+        }
+      }
+    },
     created() {
         $(document).on('mousedown', () => {
             if (this.displayActionMenu) {
@@ -289,27 +298,6 @@ export default {
                 this.taskCoworkers = event.detail;
             }
         });
-        document.addEventListener('taskOrigin', event => {
-            if (event && event.detail) {
-                if (event.detail === 'projectView') {
-                  this.displayDrawerMenuAction( this.task );
-                } else if ( event.detail.name === 'noProject' ) {
-                    this.task = event.detail.task;
-                    this.displayDrawerMenuAction( this.task );
-                }
-            }
-        });
-       const urlPath = document.location.pathname
-       if(urlPath.includes('taskDetail')){
-         let taskId = urlPath.split('taskDetail/')[1].split(/[^0-9]/)[0]
-         taskId = taskId && Number(taskId) || 0;
-         if (taskId) {
-           this.$tasksService.getTaskById(taskId).then(data => {
-             this.task = data  
-             this.displayDrawerMenuAction( this.task );
-        })  
-      } 
-      } 
     },
     destroyed: function() {
         document.removeEventListener('keyup', this.escapeKeyListener);
