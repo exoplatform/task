@@ -263,13 +263,14 @@ export default {
       lastTaskChangesLogAuthor() {
         return this.logs && this.logs.length && this.logs[0].authorFullName || '';
       },
+      taskId() {
+        return this.task && this.task.id;
+      }
     },
     watch: {
-      taskLink() {
-        if( this.taskLink.includes ('taskDetail')) {
-          if ( this.task && this.task.id ) {
-            this.displayDrawerMenuAction( this.task );
-          }
+      taskId() {
+        if ( this.task && this.task.id !== null && typeof this.task.id !== 'undefined' ) {
+          this.displayDrawerMenuAction( this.task );
         }
       }
     },
