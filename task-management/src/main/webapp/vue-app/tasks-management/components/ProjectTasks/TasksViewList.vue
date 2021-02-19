@@ -60,7 +60,9 @@ import {updateTask} from '../../../taskDrawer/taskDrawerApi';
         return tasksByStatus;
       },
     updateTaskCompleted(e){
-      window.setTimeout(() => this.tasksList = this.tasksList.filter((t) => t.task.id !== e.id), 500);
+      if( !this.filterTaskCompleted ) {
+        this.$root.$emit('update-task-completed', e);
+      }
     },
        updateTaskStatus(task,newStatus){
               const status = this.statusList.find(s => s.name === newStatus);

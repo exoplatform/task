@@ -202,6 +202,11 @@
           this.tasksList = this.tasksList.filter((t) => t.id !== event.detail);
         }
       });
+      this.$root.$on('update-task-completed', (event) => {
+        if (event) {
+          window.setTimeout(() => this.tasksList = this.tasksList.filter((t) => t.id !== event.id), 500);
+        }
+      });
     },
     methods : {
       hideProjectDetails() {
