@@ -187,7 +187,6 @@
       },
       openTaskDrawer() {
         this.$root.$emit('open-task-drawer', this.task.task,)
-        document.dispatchEvent(new CustomEvent('taskOrigin',{ detail: 'projectView' }));
       },
 
       onCloseDrawer: function (drawer) {
