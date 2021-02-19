@@ -11,7 +11,7 @@
         false-value="false"/>
       <i 
         :title="$t(getTaskCompletedTitle())" 
-        :class="getTaskCompleted()" 
+        :class="getTaskCompleted()"
         @click="updateCompleted"></i>
     </div>
     <div class="taskTitleAndId pl-2 d-lg-none" @click="openTaskDrawer()">

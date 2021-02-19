@@ -184,7 +184,7 @@
         }
       });
       this.$root.$on('update-cart', (event) => {
-        if (event && event.completed) {
+        if (event && !this.showCompleteTasks) {
           window.setTimeout(() => this.tasks = this.tasks.filter((t) => t.id !== event.id), 500);
         }
       });
@@ -220,6 +220,7 @@
       },
 
       filterTaskquery(e,filterGroupSort,filterLabels){
+        this.showCompleteTasks = e.showCompleteTasks;
         this.groupBy=filterGroupSort.groupBy
         this.sortBy=filterGroupSort.sortBy
         this.labels=filterLabels.labels
