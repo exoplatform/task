@@ -37,7 +37,7 @@
 
     </div>
     <div class="taskNumberAndActions d-flex align-center mb-1">
-      <span class="caption">{{ tasksNumber }}</span>
+      <span class="uiTaskNumber">{{ tasksNumber }}</span>
       <!-- <span v-if="tasksNumber < maxTasksToShow" class="caption">{{ tasksNumber }}</span>
       <div v-else class="showTasksPagination">
         <span class="caption">
@@ -52,6 +52,12 @@
         </v-btn>
 
       </div> -->
+      <i
+        icon
+        small
+        class="uiIconSocSimplePlus d-flex"
+        @click="openQuickAdd">
+      </i>      
       <i
         icon
         small
@@ -204,6 +210,9 @@
           this.$emit('add-status');
           this.editStatus=false
         }
+      },
+      openQuickAdd(index) {       
+          this.$emit('open-quick-add');    
       },
       addColumn(index) {       
           this.$emit('add-column',index);    
