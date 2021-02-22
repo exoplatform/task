@@ -243,8 +243,6 @@
         taskStartDate: null,
         saving: false,
         deleteConfirmMessage: null,
-        isManager :false,
-        isParticipator :false,
         datePickerTop: true,
         enableDelete:false,
         enableClone:false,
@@ -270,8 +268,16 @@
       disableSaveButton() {
         return this.saving || !this.taskTitleValid;
       },
+      taskId() {
+        return this.task && this.task.id;
+      }
     },
     watch: {
+      taskId() {
+        if ( this.task && this.task.id !== null && typeof this.task.id !== 'undefined' ) {
+          this.displayDrawerMenuAction( this.task );
+        }
+      },
       editorData(val) {
         this.disabledComment = val === '';
       },
@@ -302,30 +308,6 @@
       document.addEventListener('taskCoworkerChanged', event => {
         if (event && event.detail) {
           this.taskCoworkers = event.detail;
-        }
-      });
-      document.addEventListener('taskOrigin', event => {
-        if (event && event.detail) {
-          if(event.detail === 'projectView') {
-            if (this.task.status.project.id) {
-              this.$projectService.getProject(this.task.status.project.id, true).then(data => {
-                this.isManager = data.managerIdentities.some(manager => manager.username === eXo.env.portal.userName);
-                this.isParticipator = this.isManager || data.participatorIdentities.some(participator => participator.username === eXo.env.portal.userName);
-                // add menu actions
-                this.menuActions = [];
-                this.addMenuAction(this.$t('label.delete'), 'uiIconTrash', this.isManager, 'deleteTask');
-                this.addMenuAction(this.$t('label.clone'), 'uiIconCloneNode', this.isParticipator, 'cloneTask');
-                this.menuActions = this.menuActions.filter(menuAction => menuAction.enabled);
-              });
-            }
-          } else if (event.detail.name === 'noProject') {
-            this.menuActions = [];
-            this.enableDelete = event.detail.task.createdBy === eXo.env.portal.userName ? true : false;
-            this.enableClone = event.detail.task.assignee === eXo.env.portal.userName || event.detail.task.coworker.includes(eXo.env.portal.userName) ? true : false;
-            this.addMenuAction(this.$t('label.delete'), 'uiIconTrash', this.enableDelete, 'deleteTask');
-            this.addMenuAction(this.$t('label.clone'), 'uiIconCloneNode', this.enableClone, 'cloneTask');
-            this.menuActions = this.menuActions.filter(menuAction => menuAction.enabled);
-          }
         }
       });
     },
@@ -564,6 +546,24 @@
           action: this[actionFunctionName]
         });
       },
+      displayDrawerMenuAction( task ) {
+          this.menuActions = [];
+          if (task && task.status && task.status.project && task.status.project.id ) {
+            this.$projectService.getProject(task.status.project.id, true).then(data => {
+              this.enableDelete = data.managerIdentities.some(manager => manager.username === eXo.env.portal.userName);
+              this.enableClone = this.enableDelete || data.participatorIdentities.some(participator => participator.username === eXo.env.portal.userName);
+              this.addMenuAction(this.$t('label.delete'), 'uiIconTrash', this.enableDelete, 'deleteTask');
+              this.addMenuAction(this.$t('label.clone'), 'uiIconCloneNode', this.enableClone, 'cloneTask');
+              this.menuActions = this.menuActions.filter(menuAction => menuAction.enabled);
+              });
+            } else if ( task && task.id ) {
+              this.enableDelete = task.createdBy === eXo.env.portal.userName;
+              this.enableClone = task.assignee === eXo.env.portal.userName || this.task.coworker.includes(eXo.env.portal.userName);
+              this.addMenuAction(this.$t('label.delete'), 'uiIconTrash', this.enableDelete, 'deleteTask');
+              this.addMenuAction(this.$t('label.clone'), 'uiIconCloneNode', this.enableClone, 'cloneTask');
+              this.menuActions = this.menuActions.filter(menuAction => menuAction.enabled);
+            }
+        },
     }
   }
 </script>

@@ -152,7 +152,6 @@
       },
       openTaskDrawer() {
        this.$root.$emit('open-task-drawer', this.task.task);
-        document.dispatchEvent(new CustomEvent('taskOrigin',{ detail: 'projectView' }));
       },
     getTaskCompleted() {
       if(this.task.task.completed===true){
