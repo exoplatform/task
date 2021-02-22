@@ -70,8 +70,9 @@
                       <option
                         v-for="item in statusList"
                         :key="item.id"
-                        :value="item.id">
-                        {{ $t('label.status.'+item.name.toLowerCase()) }}
+						:value="item.id"
+                        class="text-capitalize">
+                        {{ statusFilterLabel(item.name) }}
                       </option>
                     </select>
 
@@ -360,6 +361,14 @@
         }
         this.$emit('filter-num-changed',filtersnumber,source)
       }
+
+      statusFilterLabel(item) {
+        if(this.$t(`label.status.${item.toLowerCase()}`).includes('label.status')) {
+          return item;
+        } else {
+          return this.$t(`label.status.${item.toLowerCase()}`);
+        }
+      },
 
     }
   }
