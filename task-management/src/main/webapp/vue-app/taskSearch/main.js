@@ -4,8 +4,8 @@ import '../taskDrawer/initComponents.js';
 Vue.use(Vuetify);
 
 export function formatSearchResult(results, term) {
-  if (results && results.length) {
-    results = results.map(task => {
+  if (results && results.tasks && results.tasks.length) {
+    results = results.tasks.map(task => {
       const commentCount = task.commentCount;
       task = task.task;
       task.commentCount = commentCount;
