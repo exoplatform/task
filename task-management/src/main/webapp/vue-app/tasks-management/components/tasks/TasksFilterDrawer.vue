@@ -71,7 +71,7 @@
                         v-for="item in statusList"
                         :key="item.id"
                         :value="item.id">
-                        {{ $t('label.status.'+item.name.toLowerCase()) }}
+                        {{ statusFilterLabel(item.name) }}
                       </option>
                     </select>
 
@@ -404,6 +404,13 @@
             localStorage.setItem(`filterStorage${value.projectId}`,JSON.stringify(value));
           }
         });
+      },
+      statusFilterLabel(item) {
+        if(item ==='All' || item ==='ToDo'|| item ==='InProgress'|| item ==='WaitingOn'|| item ==='Done') {
+          return this.$t(`label.status.${item.toLowerCase()}`);
+        } else {
+          return item;
+        }
       },
 
     }
