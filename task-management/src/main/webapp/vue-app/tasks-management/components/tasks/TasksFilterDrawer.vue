@@ -70,7 +70,8 @@
                       <option
                         v-for="item in statusList"
                         :key="item.id"
-                        :value="item.id">
+                        :value="item.id"
+                        class="text-capitalize">
                         {{ statusFilterLabel(item.name) }}
                       </option>
                     </select>
@@ -406,10 +407,10 @@
         });
       },
       statusFilterLabel(item) {
-        if(item ==='All' || item ==='ToDo'|| item ==='InProgress'|| item ==='WaitingOn'|| item ==='Done') {
-          return this.$t(`label.status.${item.toLowerCase()}`);
-        } else {
+        if(this.$t(`label.status.${item.toLowerCase()}`).includes('label.status')) {
           return item;
+        } else {
+          return this.$t(`label.status.${item.toLowerCase()}`);
         }
       },
 
