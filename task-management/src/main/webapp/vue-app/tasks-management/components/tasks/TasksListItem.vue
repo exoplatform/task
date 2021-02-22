@@ -2,14 +2,17 @@
   <div
     :class="getTaskPriorityColor(task.task.priority)"
     class="taskListItemView  px-4 py-3 d-flex align-center">
-    <div class="taskCheckBox" @click="updateCompleted" >
+    <div class="taskCheckBox" >
       <v-switch
         ref="autoFocusInput2"
         class="d-none"
         reset
         true-value="true"
         false-value="false"/>
-      <i :title="$t(getTaskCompletedTitle())" :class="getTaskCompleted()"></i>
+      <i 
+        :title="$t(getTaskCompletedTitle())" 
+        :class="getTaskCompleted()"
+        @click="updateCompleted"></i>
     </div>
     <div class="taskTitleAndId pl-2 d-lg-none" @click="openTaskDrawer()">
       <div class="taskId">
@@ -209,7 +212,12 @@
 
         if (typeof task.id !== 'undefined') {
           return this.$tasksService.updateCompleted(task).then(task => {
-            this.$emit('update-cart', task);
+            if(task.completed){
+              this.$root.$emit('show-alert', {type: 'success',message: this.$t('alert.success.task.completed')});   
+            }else{
+              this.$root.$emit('show-alert', {type: 'success',message: this.$t('alert.success.task.unCompleted')});
+            }
+            this.$root.$emit('update-cart', task);
           }).then(this.task.task.completed = task.showCompleteTasks)
                   .catch(e => {
                     console.debug("Error updating project", e);
