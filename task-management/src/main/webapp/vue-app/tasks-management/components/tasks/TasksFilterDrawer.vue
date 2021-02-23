@@ -360,8 +360,7 @@
           filtersnumber++
         }
         this.$emit('filter-num-changed',filtersnumber,source)
-      }
-
+      },
       statusFilterLabel(item) {
         if(this.$t(`label.status.${item.toLowerCase()}`).includes('label.status')) {
           return item;
