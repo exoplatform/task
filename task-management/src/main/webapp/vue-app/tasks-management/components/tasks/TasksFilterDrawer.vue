@@ -70,7 +70,7 @@
                       <option
                         v-for="item in statusList"
                         :key="item.id"
-						:value="item.id"
+			:value="item.id"
                         class="text-capitalize">
                         {{ statusFilterLabel(item.name) }}
                       </option>
