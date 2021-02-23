@@ -24,7 +24,7 @@
         v-if="editStatus || status.edit"
         ref="autoFocusInput1"
         v-model="status.name"
-        placeholder="Status Name"
+        :placeholder="$t('label.tapStatus.name')"
         type="text"
         class="taskStatusName font-weight-bold text-color mb-1"
         required
