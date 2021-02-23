@@ -194,6 +194,53 @@ public class TestTaskRestService {
   }
 
   @Test
+  public void testAddTask() throws Exception {
+    // Given
+    TaskRestService taskRestService = new TaskRestService(taskService,
+            commentService,
+            projectService,
+            statusService,
+            userService,
+            spaceService,
+            labelService);
+    Identity john = new Identity("john");
+    ConversationState.setCurrent(new ConversationState(john));
+    TaskDto task1 = new TaskDto();
+    task1.setTitle("task");
+    task1.setCreatedBy("john");
+    task1.setAssignee("john");
+
+    // When
+    Response response = taskRestService.addTask(task1);
+
+    // Then
+    assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+    ProjectDto project = new ProjectDto();
+    project.setId(1);
+    StatusDto status = new StatusDto();
+    status.setProject(project);
+    task1.setStatus(status);
+
+    when(projectService.getProject(1L)).thenReturn(project);
+    when(statusService.getDefaultStatus(1L)).thenReturn(status);
+
+    // When
+    response = taskRestService.addTask(task1);
+    // Then
+    assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
+
+    Set<String> participators = new HashSet<String>();
+    participators.add("john");
+    project.setParticipator(participators);
+
+    // When
+    response = taskRestService.addTask(task1);
+    // Then
+    assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+  }
+
+  @Test
   public void testUpdateTaskById() throws Exception {
     // Given
     TaskRestService taskRestService = new TaskRestService(taskService,
