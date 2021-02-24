@@ -6,10 +6,12 @@
       :view-type="'board'"
       :tasks-number="tasksList.length"
       :index="index"
+      :status-list-length="statusListLength"
       @delete-status="deleteStatus"
       @update-status="updateStatus"
       @add-status="createStatus"
       @cancel-add-column="cancelAddColumn"
+      @move-column="moveColumn"
       @open-quick-add="quickAddTask1=true"
       @add-column ="addColumn"/>
     <v-divider/>
@@ -71,6 +73,10 @@
         type: Number,
         default: 0
       },
+      statusListLength: {
+        type: Number,
+        default: 0
+      },
       showCompletedTasks: {
         type: Boolean,
         default: false
@@ -116,6 +122,10 @@
      
     addColumn(index) {  
         this.$emit('add-column',index);
+      },
+     
+    moveColumn(index,orientation) {  
+        this.$emit('move-column',index,orientation);
       },
     cancelAddColumn(index) {
           this.$emit('cancel-add-column',index);         
