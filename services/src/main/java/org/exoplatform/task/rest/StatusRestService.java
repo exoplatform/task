@@ -142,6 +142,49 @@ public class StatusRestService implements ResourceContainer {
    }
   }
 
+
+  @PUT
+  @Path("move")
+  @Produces(MediaType.APPLICATION_JSON)
+  @RolesAllowed("users")
+  @ApiOperation(value = "move Status", httpMethod = "PUT", response = Response.class, notes = "This moves status")
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled"),
+      @ApiResponse(code = 400, message = "Invalid query input"), @ApiResponse(code = 403, message = "Unauthorized operation"),
+      @ApiResponse(code = 404, message = "Resource not found") })
+  public Response moveStatus(@ApiParam(value = "Status", required = true) List<StatusDto> status){
+    try {
+      Identity identity = ConversationState.getCurrent().getIdentity();
+      ProjectDto projectDto = projectService.getProject(status.get(0).getProject().getId());
+      if (projectDto.getParent() != null && projectDto.getParent().getId()!=0) {
+        Long parentId = projectDto.getParent().getId();
+        try {
+          if (projectService.getProject(parentId)!=null && !projectService.getProject(parentId).canEdit(identity)) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+          }
+        } catch (EntityNotFoundException ex) {
+          return Response.status(Response.Status.NOT_FOUND).build();
+        }
+      }
+      if (!projectDto.canEdit(identity)) {
+        return Response.status(Response.Status.UNAUTHORIZED).build();
+      }
+      for(StatusDto statusDto : status){
+
+          StatusDto oldStatus = statusService.getStatus(statusDto.getId());
+          if(oldStatus!=null && oldStatus.getRank()!=statusDto.getRank()){
+            statusService.updateStatus(statusDto);
+          }
+
+      }
+
+      return Response.ok(Response.Status.OK).build();
+    }
+    catch (Exception e) {
+      LOG.error("Can't move Status",e);
+      return Response.serverError().entity(e.getMessage()).build();
+    }
+  }
+
   @DELETE
   @Path("{statusId}")
   @Consumes(MediaType.APPLICATION_JSON)

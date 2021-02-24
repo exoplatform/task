@@ -15,11 +15,13 @@
               :tasks-list="getTasksByStatus(tasksList,status.name)"
               :index="index"
               :show-completed-tasks="filterTaskCompleted"
+              :status-list-length="statusList.length"
               @updateTaskCompleted="updateTaskCompleted"
               @updateTaskStatus="updateTaskStatus"
               @delete-status="deleteStatus"
               @update-status="updateStatus"
               @add-column="addColumn"
+              @move-column="moveColumn"
               @cancel-add-column="cancelAddColumn"
               @create-status="createStatus"/>
           </v-col>
@@ -111,6 +113,12 @@ import {updateTask} from '../../../taskDrawer/taskDrawerApi';
         newStatus.edit=true;
         this.statusList.splice( index, 0, newStatus)
         this.index=index
+      },
+      moveColumn(fromIndex,toIndex) {  
+        const element = this.statusList[fromIndex];
+        this.statusList.splice(fromIndex, 1);
+        this.statusList.splice(toIndex, 0, element);
+        this.$emit('move-status');
       },
       cancelAddColumn(index) {
         this.statusList.splice( index, 1)       

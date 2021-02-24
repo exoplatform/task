@@ -108,6 +108,7 @@
               :tasks-list="tasksList[i]"
               @update-status="updateStatus"
               @create-status="createStatus"
+              @move-status="moveStatus"
               @delete-status="deleteStatus"/>
           </div>
           <div
@@ -135,6 +136,7 @@
           :filter-task-completed="filterAsCompleted"
           @update-status="updateStatus"
           @create-status="createStatus"
+          @move-status="moveStatus"
           @delete-status="deleteStatus"/>
       </div>
       <div
@@ -361,6 +363,21 @@
            this.getStatusByProject(this.project.id)
         }).catch(e => {
            console.debug("Error when creating status", e);
+            this.$root.$emit('show-alert',{type:'error',message: this.$t('alert.error')} );
+           });
+      },
+      moveStatus() {
+        this.statusList.forEach(function (element, index) {
+        if(!element.project){
+          element.project=this.project
+        }
+        element.rank=index
+        },  this);
+        return this.$statusService.moveStatus(this.statusList).then(resp => {
+          this.$root.$emit('show-alert',{type:'success',message: this.$t('alert.success.status.moved')} );
+           this.getStatusByProject(this.project.id)
+        }).catch(e => {
+           console.debug("Error when moving status", e);
             this.$root.$emit('show-alert',{type:'error',message: this.$t('alert.error')} );
            });
       },
