@@ -72,6 +72,15 @@
             </v-list-item-title>
           </v-list-item>
           <v-list-item 
+            v-if="project.canManage && index>0" 
+            class="menu-list" 
+            @click="moveBeforeColumn(index)" >
+            <v-list-item-title class="subtitle-2">
+              <i class="uiIcon uiIconArrowLeft pr-1"></i>
+              <span>{{ $t('label.status.move.before') }}</span>
+            </v-list-item-title>
+          </v-list-item>
+          <v-list-item 
             v-if="project.canManage" 
             class="menu-list" 
             @click="addColumn(index)" >
@@ -87,6 +96,15 @@
             <v-list-item-title class="subtitle-2">
               <i class="uiIcon uiIconRotateRight pr-1"></i>
               <span> {{ $t('label.status.after') }} </span>
+            </v-list-item-title>
+          </v-list-item>
+          <v-list-item 
+            v-if="project.canManage && index < statusListLength-1" 
+            class="menu-list" 
+            @click="moveAfterColumn(index)" >
+            <v-list-item-title class="subtitle-2">
+              <i class="uiIcon uiIconArrowRight pr-1"></i>
+              <span> {{ $t('label.status.move.after') }}</span>
             </v-list-item-title>
           </v-list-item>
           <v-list-item 
@@ -125,6 +143,10 @@
         default: 0
       },
       index: {
+        type: Number,
+        default: 0
+      },
+      statusListLength: {
         type: Number,
         default: 0
       },
@@ -207,6 +229,12 @@
       },
       addColumn(index) {       
           this.$emit('add-column',index);    
+      },
+      moveBeforeColumn(index) {       
+          this.$emit('move-column',index,index-1);    
+      },
+      moveAfterColumn(index) {       
+          this.$emit('move-column',index,index+1);  
       },
       cancelAddColumn(index) {
         if(this.status.id){
