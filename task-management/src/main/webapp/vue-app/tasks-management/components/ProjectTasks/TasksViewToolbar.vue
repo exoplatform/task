@@ -120,6 +120,11 @@
     },
     methods: {
       openDrawer() {
+        if (document.getElementsByClassName('taskTabList')[0].getAttribute('aria-selected')==='true'){
+          this.$root.$emit('task-view-tab-name','list');
+        }else {
+          this.$root.$emit('task-view-tab-name','board');
+        }
         this.$refs.filterTasksDrawer.open();
       },
       openTaskDrawer() {
