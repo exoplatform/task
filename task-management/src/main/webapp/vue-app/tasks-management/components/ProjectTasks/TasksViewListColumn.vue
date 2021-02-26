@@ -7,7 +7,7 @@
         :max-tasks-to-show="maxTasksToShow"
         :tasks-number="tasksList.length"/>
     </div>
-    <div :id="'taskView'+status.id" :class="filterByStatus===true ? 'pt-5 px-8' : ''">
+    <div :id="'taskView'+status.id" :class="filterByStatus===true ? 'pt-5 ml-7 mr-2' : ''">
       <task-view-list-item
         v-for="task in tasksList"
         :key="task.task.id"
