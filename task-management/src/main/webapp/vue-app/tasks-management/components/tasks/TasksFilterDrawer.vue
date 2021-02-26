@@ -36,7 +36,8 @@
                 <v-card >
                   <tasks-group-project-drawer
                     ref="filterGroupTasksDrawer"
-                    v-model="groupBy"/>
+                    v-model="groupBy"
+                    :task-view-tab-name="taskViewTabName"/>
                   <tasks-sort-by-project-drawer
                     ref="filterSortTasksDrawer"
                     v-model="sortBy"/>
@@ -228,6 +229,7 @@
         ],
         showCompleteTasks:false,
         labels:[],
+        taskViewTabName:'',
       }
     },
     computed: {
@@ -279,6 +281,7 @@
         }
         this.$root.$emit('reset-filter-task-group-sort',this.groupBy);
         this.$root.$emit('reset-filter-task-sort',this.sortBy);
+        this.taskViewTabName = document.getElementsByClassName('taskTabList')[0].getAttribute('aria-selected')==='true' ? 'list' : 'borad';
         this.$refs.filterTasksDrawer.open();
       },
       cancel() {

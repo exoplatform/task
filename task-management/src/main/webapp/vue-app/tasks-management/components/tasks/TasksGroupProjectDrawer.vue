@@ -43,11 +43,14 @@
         type: String,
         default: ''
       },
+      taskViewTabName: {
+        type: String,
+        default:''
+      },
     },
     data() {
       return {
         groupBy: this.value,
-        taskViewTabName: '',
       }
     },
     watch: {
@@ -57,9 +60,6 @@
     },created() {
       this.$root.$on('reset-filter-task-group-sort',groupBy =>{
         this.groupBy = groupBy;
-      });
-      this.$root.$on('task-view-tab-name',taskViewTabName =>{
-        this.taskViewTabName = taskViewTabName;
       });
     }
   }
