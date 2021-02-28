@@ -153,8 +153,13 @@
       },
       setProjectUrl(id){
         const urlPath = document.location.pathname
-        window.history.pushState('task', 'Task details', `${urlPath.split('tasks')[0]}tasks/projectDetail/${id}`); 
-      },
+        if(urlPath.includes('g/:spaces') && !urlPath.includes('/projectDetail/')){
+          window.history.pushState('task', 'Task details', `${urlPath.split('tasks')[0]}/projectDetail/${id}`);
+        } else if (urlPath.includes('g/:spaces') && urlPath.includes('/projectDetail/')){
+          window.history.pushState('task', 'Task details', `${urlPath.split('tasks')[0]}`);
+        }else {
+          window.history.pushState('task', 'Task details', `${urlPath.split('tasks')[0]}tasks/projectDetail/${id}`);
+        }      },
       displayMessage(message) {
         this.message=message.message
         this.type=message.type
