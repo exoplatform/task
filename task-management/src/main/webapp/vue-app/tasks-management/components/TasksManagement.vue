@@ -159,7 +159,8 @@
           window.history.pushState('task', 'Task details', `${urlPath.split('tasks')[0]}`);
         }else {
           window.history.pushState('task', 'Task details', `${urlPath.split('tasks')[0]}tasks/projectDetail/${id}`);
-        }      },
+        }
+        },
       displayMessage(message) {
         this.message=message.message
         this.type=message.type
