@@ -330,10 +330,10 @@
           const formattedTimeToday = `${  Today.getFullYear()}-${  Today.getMonth()+1  }-${Today.getDate()  }`;
           const formattedTimeTomorrow = `${  Today.getFullYear()}-${  Today.getMonth()+1  }-${Today.getDate()+1  }`;
           const date = this.dateFormatter(task.dueDate);
-          if(new Date(date) < new Date(formattedTimeToday)){
-           return  this.getMyOverDueTasks();
-          }else if (date===formattedTimeToday){
+          if(date===formattedTimeToday){
             return this.getMyTodayTasks();
+          }else if (new Date(task.dueDate.time).getTime () < Today.getTime()){
+            return  this.getMyOverDueTasks();
           }else if (date===formattedTimeTomorrow){
             return this.getMyTomorrowTasks();
           }else {

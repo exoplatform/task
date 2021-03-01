@@ -250,7 +250,7 @@ public final class TaskUtil {
 
       switch (DUE.valueOf(dueDate.toUpperCase())) {
         case OVERDUE:
-          today.add(Calendar.DATE, -1);
+          today.add(Calendar.DATE, 0);
           due[1] = today.getTime();
           break;
         case TODAY:
