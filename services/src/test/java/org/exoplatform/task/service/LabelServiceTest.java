@@ -101,7 +101,7 @@ public class LabelServiceTest {
         statusStorage = new StatusStorageImpl(daoHandler, projectStorage);
         statusService = new StatusServiceImpl(daoHandler, statusStorage, projectStorage, listenerService);
         labelStorage = new LabelStorageImpl(daoHandler);
-        labelService = new LabelServiceImpl(labelStorage, daoHandler);
+        labelService = new LabelServiceImpl(labelStorage, daoHandler,projectStorage);
         taskService =new TaskServiceImpl(taskStorage, daoHandler, listenerService);
         // Mock DAO handler to return Mocked DAO
         when(daoHandler.getTaskHandler()).thenReturn(taskHandler);
@@ -177,12 +177,12 @@ public class LabelServiceTest {
         label.setUsername("root");
         label.setName("testLabel");
         label.setParent(parentLabel);
-        when(daoHandler.getLabelHandler().find(labelId)).thenReturn(LabelDto.labelToEntity(label));
+        when(daoHandler.getLabelHandler().find(labelId)).thenReturn(StorageUtil.labelToEntity(label));
         when(daoHandler.getLabelHandler().update(any())).thenReturn(StorageUtil.labelToEntity(label));
         labelService.updateLabel(label, Collections.singletonList(Label.FIELDS.PARENT));
         verify(labelHandler, times(1)).update(labelCaptor.capture());
 
-        assertEquals(label.getParent(), LabelDto.labelToDto(labelCaptor.getValue().getParent()));
+        assertEquals(label.getParent(), StorageUtil.labelToDto(labelCaptor.getValue().getParent()));
     }
 
     @Test

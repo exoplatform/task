@@ -2,6 +2,7 @@ package org.exoplatform.task.service.impl;
 
 import org.exoplatform.commons.api.persistence.ExoTransactional;
 import org.exoplatform.services.listener.ListenerService;
+import org.exoplatform.services.security.Identity;
 import org.exoplatform.task.dao.DAOHandler;
 import org.exoplatform.task.domain.Label;
 import org.exoplatform.task.domain.LabelTaskMapping;
@@ -10,6 +11,7 @@ import org.exoplatform.task.dto.TaskDto;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.service.LabelService;
 import org.exoplatform.task.storage.LabelStorage;
+import org.exoplatform.task.storage.ProjectStorage;
 import org.exoplatform.task.util.StorageUtil;
 
 import javax.inject.Inject;
@@ -23,11 +25,15 @@ public class LabelServiceImpl implements LabelService {
     @Inject
     private LabelStorage labelStorage;
 
+    @Inject
+    private ProjectStorage projectStorage;
+
     private ListenerService listenerService;
 
-    public LabelServiceImpl(LabelStorage labelStorage,  DAOHandler daoHandler) {
+    public LabelServiceImpl(LabelStorage labelStorage,  DAOHandler daoHandler, ProjectStorage projectStorage) {
         this.labelStorage = labelStorage;
         this.daoHandler = daoHandler;
+        this.projectStorage = projectStorage;
     }
 
 
@@ -37,8 +43,13 @@ public class LabelServiceImpl implements LabelService {
     }
 
     @Override
-    public List<LabelDto> findLabelsByTask(long taskId, String username, int offset, int limit) {
-        return labelStorage.findLabelsByTask(taskId, username,offset,limit);
+    public List<LabelDto> findLabelsByProject(long projectId, Identity currentUser, int offset, int limit) {
+        return labelStorage.findLabelsByProject(projectId,  currentUser,projectStorage, offset,limit);
+    }
+
+    @Override
+    public List<LabelDto> findLabelsByTask(TaskDto task, long projectId, Identity currentUser, int offset, int limit) {
+        return labelStorage.findLabelsByTask(task, projectId,currentUser,projectStorage,offset,limit);
     }
 
     @Override
@@ -98,9 +109,7 @@ public class LabelServiceImpl implements LabelService {
     @Override
     @ExoTransactional
     public void removeTaskFromLabel(TaskDto task, Long labelId) throws EntityNotFoundException {
-        LabelTaskMapping mapping = new LabelTaskMapping();
-        mapping.setLabel(StorageUtil.mappingLabelToEntity(getLabel(labelId)));
-        mapping.setTask(StorageUtil.taskToEntity(task));
+        LabelTaskMapping mapping = daoHandler.getLabelTaskMappingHandler().findLabelTaskMapping(labelId,task.getId());
         daoHandler.getLabelTaskMappingHandler().delete(mapping);
     }
 

@@ -143,6 +143,7 @@
                 <v-card >
                   <tasks-labels-drawer
                     ref="filterLabelsTasksDrawer"
+                    :project-id="projectId"
                     :labels="labels"/>
                 </v-card>
               </v-tab-item>
@@ -219,6 +220,7 @@
         dueDateSelected:'',
         prioritySelected:'',
         statusSelected:'',
+        projectId:0,
         assignee:'',
         assigneeTask:'',
         dueDate: [
@@ -255,16 +257,13 @@
       this.$root.$on('filter-task-labels',labels =>{
         this.labels = labels;
       });
-    },
-    methods: {
-      open() {
         const urlPath = document.location.pathname
         if(urlPath.includes('projectDetail')){
-          let projectId = urlPath.split('projectDetail/')[1].split(/[^0-9]/)[0]
-          projectId = projectId && Number(projectId) || 0;
-          if (localStorage.getItem(`filterStorage${projectId}`) !== null) {
-            const localStorageSaveFilter = localStorage.getItem(`filterStorage${projectId}`);
-            if (localStorageSaveFilter.split('"')[10].split('}')[0].split(':')[1] === projectId.toString()) {
+          const pid= urlPath.split('projectDetail/')[1].split(/[^0-9]/)[0]
+          this.projectId = pid && Number(pid) || 0;
+          if (localStorage.getItem(`filterStorage${this.projectId}`) !== null) {
+            const localStorageSaveFilter = localStorage.getItem(`filterStorage${this.projectId}`);
+            if (localStorageSaveFilter.split('"')[10].split('}')[0].split(':')[1] === this.projectId.toString()) {
               this.groupBy = localStorageSaveFilter.split('"')[3];
               this.sortBy = localStorageSaveFilter.split('"')[7];
             }
@@ -279,6 +278,10 @@
             }
           }
         }
+    },
+    methods: {
+      open() {
+
         this.$root.$emit('reset-filter-task-group-sort',this.groupBy);
         this.$root.$emit('reset-filter-task-sort',this.sortBy);
         this.taskViewTabName = document.getElementsByClassName('taskTabList')[0].getAttribute('aria-selected')==='true' ? 'list' : 'borad';
