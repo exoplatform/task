@@ -16,8 +16,9 @@
       @add-column ="addColumn"/>
     <v-divider/>
     <quick-add-card 
-      :status="status" 
+      :status="status"
       :quick-add-task="quickAddTask1" 
+      class="status-add-task" 
       @close-quick-form="quickAddTask1=false"/>
     <draggable 
       v-model="tasksList" 

@@ -4,7 +4,7 @@
     class="addTaskCard pa-3"
     flat>
     <v-textarea
-      v-model="newTask.title"
+      v-model="taskTitle"
       :placeholder="$t('label.tapTask.name')"
       :autofocus="quickAddTask"
       type="text"
@@ -48,13 +48,22 @@
     data() {
       return {
         newTask:{title:"",
-               priority: "NORMAL"}
+               priority: "NORMAL"},
+        taskTitle:""       
       }
     },
-
+    computed: {
+      taskTitleValid() {
+        return this.taskTitle && this.taskTitle.trim() && this.taskTitle.trim().length >= 3 && this.taskTitle.length < 1024;
+      },
+      disableSaveButton() {
+        return !this.taskTitleValid;
+      },
+    },
 
     methods: {
     addTask() {
+      this.newTask.title=this.taskTitle
       this.newTask.status=this.status
       addTask(this.newTask).then(task => {
                 this.quickAddTask=false
@@ -77,6 +86,7 @@
     },
     closeForm(){
       this.quickAddTask=false
+      this.taskTitle=""
       this.$emit('close-quick-form')
     }
     },
