@@ -22,9 +22,7 @@ import java.util.List;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.task.AbstractTest;
-import org.exoplatform.task.domain.Label;
-import org.exoplatform.task.domain.LabelTaskMapping;
-import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.domain.*;
 import org.exoplatform.task.util.ListUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -53,7 +51,10 @@ public class TestLabelDAO extends AbstractTest {
   
   @Test
   public void testAddTask() throws Exception {
-    Label label = new Label("test label", username);
+    Project project= new Project();
+    project.setName("project");
+    taskService.getProjectHandler().create(project);
+    Label label = new Label("test label", username, project);
     label = lblDAO.create(label);
     Task task = new Task();
     task.setTitle("task1");
@@ -68,7 +69,10 @@ public class TestLabelDAO extends AbstractTest {
   
   @Test
   public void testRemoveTask() throws Exception {
-    Label label = new Label("test label", username);
+    Project project= new Project();
+    project.setName("project");
+    taskService.getProjectHandler().create(project);
+    Label label = new Label("test label", username, project);
     label = lblDAO.create(label);
     Task task = new Task();
     task.setTitle("test");
@@ -89,7 +93,10 @@ public class TestLabelDAO extends AbstractTest {
   
   @Test
   public void testUpdate() {
-    Label label = new Label("test label", username);
+    Project project= new Project();
+    project.setName("project");
+    taskService.getProjectHandler().create(project);
+    Label label = new Label("test label", username, project);
     label = lblDAO.create(label);
     Assert.assertNotNull(label);
     
@@ -106,7 +113,7 @@ public class TestLabelDAO extends AbstractTest {
     label = lblDAO.find(label.getId());
     Assert.assertEquals("label2", label.getName());    
     
-    Label parent = new Label("parent label", "root");
+    Label parent = new Label("parent label", "root", project);
     lblDAO.create(parent);
     label.setParent(parent);
     lblDAO.update(label);
@@ -116,12 +123,23 @@ public class TestLabelDAO extends AbstractTest {
   
   @Test
   public void testFindLabelByTask() throws Exception {
+    Project project = new Project();
+    project.setName("project1");
+    taskService.getProjectHandler().create(project);
+
+    Status status = new Status();
+    status.setName("status1");
+    status.setRank(1);
+    status.setProject(project);
+    taskService.getStatusHandler().create(status);
+
     Task task = new Task();
     task.setTitle("task1");
+    task.setStatus(status);
     taskService.getTaskHandler().create(task);
     //
-    Label label1 = new Label("test label1", "root");
-    lblDAO.create(label1);    
+    Label label1 = new Label("test label1", "root", project);
+    lblDAO.create(label1);
     //
     LabelTaskMapping mapping = new LabelTaskMapping();
     mapping.setLabel(label1);
@@ -129,11 +147,15 @@ public class TestLabelDAO extends AbstractTest {
     //
     taskService.getLabelTaskMappingHandler().create(mapping);
     
-    Assert.assertEquals(1, lblDAO.findLabelsByTask(task.getId(), "root").getSize());
+    Assert.assertEquals(1, lblDAO.findLabelsByTask(task.getId(), project.getId()).getSize());
   }
   
   @Test
   public void testRemoveLabel() throws Exception {
+    Project project= new Project();
+    project.setName("project");
+    taskService.getProjectHandler().create(project);
+
     Task task = new Task();
     task.setTitle("task1");
     taskService.getTaskHandler().create(task);
@@ -142,7 +164,7 @@ public class TestLabelDAO extends AbstractTest {
     task2.setTitle("task2");
     taskService.getTaskHandler().create(task2);
     //
-    Label label1 = new Label("test label1", "root");
+    Label label1 = new Label("test label1", "root",project);
     lblDAO.create(label1);    
     //
     LabelTaskMapping mapping = new LabelTaskMapping();
@@ -173,9 +195,24 @@ public class TestLabelDAO extends AbstractTest {
   
   @Test
   public void testQuery() throws Exception {
-    Label label1 = new Label("test label1", "root");
-    Label label2 = new Label("test label2", "demo");
-    lblDAO.create(label1);    
+    Project project = new Project();
+    project.setName("project1");
+    taskService.getProjectHandler().create(project);
+
+    Status status = new Status();
+    status.setName("status1");
+    status.setRank(1);
+    status.setProject(project);
+    taskService.getStatusHandler().create(status);
+
+    Task task = new Task();
+    task.setTitle("task1");
+    task.setStatus(status);
+    taskService.getTaskHandler().create(task);
+
+    Label label1 = new Label("test label1", "root",project);
+    Label label2 = new Label("test label2", "demo",project);
+    lblDAO.create(label1);
     lblDAO.create(label2);
     
     //
@@ -187,14 +224,11 @@ public class TestLabelDAO extends AbstractTest {
     list = Arrays.asList(ListUtil.load(labels, 0, -1));
     Assert.assertEquals(1, labels.getSize());
     Assert.assertEquals(label2.getName(), list.get(0).getName());
-    
-    Task task = new Task();
-    task.setTitle("task1");
-    taskService.getTaskHandler().create(task);
+
     LabelTaskMapping mapping = new LabelTaskMapping(label1, task);
     taskService.getLabelTaskMappingHandler().create(mapping);
     //
-    labels = lblDAO.findLabelsByTask(task.getId(), "root");
+    labels = lblDAO.findLabelsByTask(task.getId(), project.getId());
     Assert.assertEquals(1, labels.getSize());
   }
 }

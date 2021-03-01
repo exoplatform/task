@@ -44,7 +44,8 @@
           <span class="pr-2">
             {{ item.text }}
           </span>
-          <v-icon
+          <v-icon 
+            v-if="item.canEdit"
             x-small
             class="pr-0"
             @click="parent.selectItem(item);removeTaskFromLabel(item)">close</v-icon>
@@ -66,7 +67,7 @@
 </template>
 
 <script>
-  import {getMyAllLabels, getTaskLabels, addTaskToLabel,removeTaskFromLabel} from '../../taskDrawerApi';
+  import {getMyAllLabels, getProjectLabels, getTaskLabels, addTaskToLabel,removeTaskFromLabel} from '../../taskDrawerApi';
   export default {
     props: {
       task: {
@@ -109,7 +110,7 @@
 
     },
     created() {
-      this.getMyAllLabels();
+      
       $(document).on('mousedown', () => {
         if (this.$refs.selectLabel && this.$refs.selectLabel.isMenuActive) {
           window.setTimeout(() => {
@@ -123,6 +124,15 @@
             this.$refs.selectLabel.isMenuActive = false;
           }
         }, 100);
+      });
+      document.addEventListener('loadProjectLabels', event => {
+        if (event && event.detail) {
+          const task = event.detail;
+          this.model = [];
+          if(task.id!=null&&task.status.project!=null) {
+            this.getProjectLabels(task.status.project.id);
+          }
+        }
       });
       document.addEventListener('loadTaskLabels', event => {
         if (event && event.detail) {
@@ -162,6 +172,16 @@
           });
         })
       },
+      
+      getProjectLabels(projectId) {
+        getProjectLabels(projectId).then((labels) => {
+          this.items = labels.map(function (el) {
+            const o = Object.assign({}, el);
+            o.text = o.name;
+            return o;
+          });
+        })
+      },
       getTaskLabels() {
         getTaskLabels(this.task.id).then((labels) => {
           this.model = labels.map(function (el) {
@@ -171,6 +191,7 @@
           });
         })
       },
+
       addTaskToLabel(label) {
         if( this.task.id!= null ) {
           addTaskToLabel(this.task.id, label).then(task => {

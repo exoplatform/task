@@ -117,6 +117,7 @@
           <value>db/changelog/task.db.changelog-2.1.0.xml</value>
           <value>db/changelog/task.db.changelog-3.0.0.xml</value>
           <value>db/changelog/task.db.changelog-3.1.0.xml</value>
+          <value>db/changelog/task.db.changelog-3.2.0.xml</value>
         </values-param>
       </init-params>
     </component-plugin>
