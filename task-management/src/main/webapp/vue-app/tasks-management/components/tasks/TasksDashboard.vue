@@ -188,6 +188,11 @@
           window.setTimeout(() => this.tasks = this.tasks.filter((t) => t.id !== event.id), 500);
         }
       });
+      this.$root.$on('update-task-completed', (event) => {
+        if (event && !this.showCompleteTasks) {
+          this.tasks = this.tasks.filter((t) => t.id !== event.id);
+        }
+      });
     },
     methods: {
       keywordChanged(keyword,searchonkeyChange){
