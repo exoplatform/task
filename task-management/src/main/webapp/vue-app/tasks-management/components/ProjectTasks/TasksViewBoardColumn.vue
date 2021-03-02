@@ -6,12 +6,20 @@
       :view-type="'board'"
       :tasks-number="tasksList.length"
       :index="index"
+      :status-list-length="statusListLength"
       @delete-status="deleteStatus"
       @update-status="updateStatus"
       @add-status="createStatus"
       @cancel-add-column="cancelAddColumn"
+      @move-column="moveColumn"
+      @open-quick-add="quickAddTask1=true"
       @add-column ="addColumn"/>
     <v-divider/>
+    <quick-add-card 
+      :status="status"
+      :quick-add-task="quickAddTask1" 
+      class="status-add-task" 
+      @close-quick-form="quickAddTask1=false"/>
     <draggable 
       v-model="tasksList" 
       :move="checkMove"
@@ -27,11 +35,27 @@
         :task="task"
         :show-completed-tasks="showCompletedTasks"
         @update-task-completed="updateTaskCompleted"/>
-    </draggable>   
+
+     
+      <quick-add-card 
+        :status="status" 
+        :quick-add-task="quickAddTask" 
+        @close-quick-form="quickAddTask=false"/>
+
+      <v-btn 
+        v-if="!quickAddTask"
+        class="btn px-2 quickAddNewTaskButton"
+        @click="quickAddTask=true">
+        <v-icon dark class="d-block d-sm-none">mdi-plus</v-icon>
+        <span class="d-none font-weight-regular d-sm-inline">
+          + {{ $t('label.addTask') }}
+        </span>
+      </v-btn>
+    </draggable>  
   </div>     
 </template>
 <script>
- 
+
   export default {
     props: {
       tasksList: {
@@ -50,6 +74,10 @@
         type: Number,
         default: 0
       },
+      statusListLength: {
+        type: Number,
+        default: 0
+      },
       showCompletedTasks: {
         type: Boolean,
         default: false
@@ -57,6 +85,8 @@
     },
     data() {
     return {
+      quickAddTask:false,
+      quickAddTask1:false,
       drag: false,
       task:null,
       newStatus:null
@@ -94,9 +124,14 @@
     addColumn(index) {  
         this.$emit('add-column',index);
       },
+     
+    moveColumn(index,orientation) {  
+        this.$emit('move-column',index,orientation);
+      },
     cancelAddColumn(index) {
           this.$emit('cancel-add-column',index);         
-      },  
+      }, 
+  
   }
     }
 

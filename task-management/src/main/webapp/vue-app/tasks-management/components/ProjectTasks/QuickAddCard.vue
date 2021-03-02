@@ -1,0 +1,94 @@
+<template>
+  <v-card
+    v-if="quickAddTask"
+    class="addTaskCard pa-3"
+    flat>
+    <v-textarea
+      v-model="taskTitle"
+      :placeholder="$t('label.tapTask.name')"
+      :autofocus="quickAddTask"
+      type="text"
+      class="pl-0 pt-0 task-name"
+      auto-grow
+      rows="1"
+      row-height="13"
+      required />
+    <div class="d-flex">
+      <v-spacer />
+      <v-btn
+        class="btn mr-2"
+        @click="closeForm">
+        {{ $t('popup.cancel') }}
+      </v-btn>
+      <v-btn
+        :disabled="disableSaveButton"
+        class="btn btn-primary"
+        @click="addTask">
+        {{ $t('label.save') }}
+      </v-btn>
+    </div>
+
+  </v-card>
+</template>
+<script>
+ import {
+    addTask,
+} from '../../../taskDrawer/taskDrawerApi';
+  export default {
+    props: {
+      status: {
+        type: Object,
+        default: null
+      },
+      quickAddTask: {
+        type: Boolean,
+        default: false
+      },
+    },
+    data() {
+      return {
+        newTask:{title:"",
+               priority: "NORMAL"},
+        taskTitle:""       
+      }
+    },
+    computed: {
+      taskTitleValid() {
+        return this.taskTitle && this.taskTitle.trim() && this.taskTitle.trim().length >= 3 && this.taskTitle.length < 1024;
+      },
+      disableSaveButton() {
+        return !this.taskTitleValid;
+      },
+    },
+
+    methods: {
+    addTask() {
+      this.newTask.title=this.taskTitle
+      this.newTask.status=this.status
+      addTask(this.newTask).then(task => {
+                this.quickAddTask=false
+                this.$root.$emit('update-task-list', this.task);
+                this.$root.$emit('show-alert', {
+                    type: 'success',
+                    message: this.$t('alert.success.task.created')
+                });
+            }).catch(e => {
+                console.debug("Error when adding task title", e);
+                this.$root.$emit('show-alert', {
+                    type: 'error',
+                    message: this.$t('alert.error')
+                });
+            });
+      },
+    
+    openForm(){
+      this.quickAddTask=true
+    },
+    closeForm(){
+      this.quickAddTask=false
+      this.taskTitle=""
+      this.$emit('close-quick-form')
+    }
+    },
+  }
+</script>
