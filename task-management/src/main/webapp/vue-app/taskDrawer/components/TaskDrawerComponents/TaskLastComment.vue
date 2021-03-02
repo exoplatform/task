@@ -12,7 +12,7 @@
       <div class="commentContent pl-3 d-flex align-center">
         <a
           class="primary-color--text font-weight-bold subtitle-2 pr-2">{{ comment.author.displayName }} <span v-if="comment.author.external" class="externalTagClass">{{ ` (${$t('label.external')})` }}</span></a>
-        <span :title="absoluteTime()" class="dateTime caption font-italic d-block">{{ relativeTime }}</span>
+        <span :title="displayCommentDate" class="dateTime caption font-italic d-block">{{ relativeTime }}</span>
       </div>
     </div>
     <div class="commentBody ml-10 mt-1">
@@ -44,7 +44,7 @@
               <div class="commentContent pl-3 d-flex align-center">
                 <a
                   class="primary-color--text font-weight-bold subtitle-2 pr-2">{{ item.author.displayName }} <span v-if="lastSubComment.author.external" class="externalTagClass">{{ ` (${$t('label.external')})` }}</span></a>
-                <span :title="absoluteTime()" class="dateTime caption font-italic d-block">{{ relativeTime }}</span>
+                <span :title="displayCommentDate" class="dateTime caption font-italic d-block">{{ relativeTime }}</span>
               </div>
             </div>
             <div class="commentBody ml-10 mt-1">
@@ -57,7 +57,7 @@
                 text
                 small
                 color="primary"
-                @click="$root.$emit('displayTaskComment')">{{ $t('comment.message.Reply') }}
+                @click="openCommentDrawer">{{ $t('comment.message.Reply') }}
               </v-btn>
             </div>
           </div>
@@ -80,6 +80,18 @@
         }
       },
     },
+    data () {
+    return {
+      lang: eXo.env.portal.language,
+      dateTimeFormat: {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      },
+    };
+  },
     computed: {
       relativeTime() {
         return this.getRelativeTime(this.comment.comment.createdTime.time)
@@ -114,12 +126,11 @@
         } else if (elapsed < msPerMaxDays) {
           return this.$t('task.timeConvert.About_?_Days').replace('{0}', Math.round(elapsed / msPerDay));
         } else {
-          return this.absoluteTime({dateStyle: "short"});
+          return this.displayCommentDate(this.comment.comment.createdTime.time);
         }
       },
-      absoluteTime(options) {
-        const lang = eXo && eXo.env && eXo.env.portal && eXo.env.portal.language || 'en';
-        return new Date(this.comment.comment.createdTime.time).toLocaleString(lang, options).split("/").join("-");
+      displayCommentDate( dateTimeValue ) {
+        return dateTimeValue && this.$dateUtil.formatDateObjectToDisplay(new Date(dateTimeValue), this.dateTimeFormat, this.lang) || '';
       },
       openCommentDrawer() {
         this.$root.$emit('displayTaskComment');
