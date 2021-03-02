@@ -64,7 +64,7 @@ export default {
     addTask() {
       this.newTask.title=this.taskTitle;
       this.newTask.status=this.status;
-      addTask(this.newTask).then(task => {
+      addTask(this.newTask).then(() => {
         this.quickAddTask=false;
         this.$root.$emit('update-task-list', this.task);
         this.$root.$emit('show-alert', {
@@ -72,7 +72,7 @@ export default {
           message: this.$t('alert.success.task.created')
         });
       }).catch(e => {
-        console.debug('Error when adding task title', e);
+        console.error('Error when adding task title', e);
         this.$root.$emit('show-alert', {
           type: 'error',
           message: this.$t('alert.error')

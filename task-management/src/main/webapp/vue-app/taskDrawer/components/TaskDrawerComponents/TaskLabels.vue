@@ -196,13 +196,13 @@ export default {
 
     addTaskToLabel(label) {
       if ( this.task.id!= null ) {
-        addTaskToLabel(this.task.id, label).then(task => {
+        addTaskToLabel(this.task.id, label).then(() => {
           this.$root.$emit('show-alert', {
             type: 'success',
             message: this.$t('alert.success.task.label')
           });
         }).catch(e => {
-          console.debug('Error when updating task\'s labels', e);
+          console.error('Error when updating task\'s labels', e);
           this.$root.$emit('show-alert', {
             type: 'error',
             message: this.$t('alert.error')
@@ -215,13 +215,13 @@ export default {
       document.getElementById('labelInput').focus();
     },
     removeTaskFromLabel(item) {
-      removeTaskFromLabel(this.task.id, item.id).then(task => {
+      removeTaskFromLabel(this.task.id, item.id).then( () => {
         this.$root.$emit('show-alert', {
           type: 'success',
           message: this.$t('alert.success.task.label')
         });
       }).catch(e => {
-        console.debug('Error when updating task\'s labels', e);
+        console.error('Error when updating task\'s labels', e);
         this.$root.$emit('show-alert', {
           type: 'error',
           message: this.$t('alert.error')

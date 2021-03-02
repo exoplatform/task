@@ -283,7 +283,7 @@ export default {
                     remoteId: spacePrettyName,
                     providerId: 'space',
                     profile: {
-                      fullName: spacePrettyName,
+                      fullName: spaceFullName,
                       originalName: spacePrettyName,
                       avatarUrl: `/portal/rest/v1/social/spaces/${spacePrettyName}/avatar`,
                     },
@@ -470,7 +470,7 @@ export default {
             this.$root.$emit('update-projects-list-avatar', this.project.managerIdentities);
           })
             .catch(e => {
-              console.debug('Error updating project', e);
+              console.error('Error updating project', e);
               this.$root.$emit('show-alert',{type: 'error',message: this.$t('alert.error')} );
               this.postProject = false;
             });
@@ -485,7 +485,7 @@ export default {
             this.$root.$emit('show-alert',{type: 'success',message: this.$t('alert.success.project.created')} );
           })
             .catch(e => {
-              console.debug('Error saving project', e);
+              console.error('Error saving project', e);
               this.$root.$emit('show-alert',{type: 'error',message: this.$t('alert.error')} );
               this.postProject = false;
             });

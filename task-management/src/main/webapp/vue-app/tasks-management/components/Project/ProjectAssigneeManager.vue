@@ -67,7 +67,7 @@ export default {
       if (this.manager){
         return this.manager.map(attendee => `${attendee.providerId}:${attendee.remoteId}`);
       }
-      return ''
+      return '';
     },
   },
   watch: {

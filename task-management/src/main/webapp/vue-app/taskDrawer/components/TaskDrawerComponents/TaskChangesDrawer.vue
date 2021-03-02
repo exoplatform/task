@@ -39,7 +39,7 @@
                   <p class="changesText mb-0 pl-1" v-html="renderChangeHTML(item)"></p>
                 </div>
                 <div>
-                  <div class="dateTime caption">
+                  <div class="dateTime caption changeItem">
                     <date-format :value="item.createdTime" :format="dateTimeFormat" />
                   </div>
                 </div>
@@ -87,10 +87,10 @@ export default {
     }
   },
   mounted() {
-    this.$root.$on('displayTaskChanges', taskChangesDrawer => {
+    this.$root.$on('displayTaskChanges', () => {
       this.showTaskChangesDrawer = true;
     });
-    this.$root.$on('hideTaskChanges', taskChangesDrawer => {
+    this.$root.$on('hideTaskChanges', () => {
       this.showTaskChangesDrawer = false;
     });
   },

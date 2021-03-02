@@ -190,7 +190,7 @@ export default {
       if (this.tasksToday){
         if (this.tasksTodaySize && this.tasksOverdueSize<11){
           return  this.tasksToday.slice(0, 10-this.tasksOverdueSize);
-        } else {return ''}
+        } else {return '';}
       } else {return this.tasksToday.slice(0, 0);}
 
     },
@@ -198,14 +198,14 @@ export default {
       if (this.tasksTomorrow){
         if (this.tasksTomorrowSize && this.tasksOverdueSize+this.tasksTodaySize<11){
           return  this.tasksTomorrow.slice(0, 10-this.tasksOverdueSize-this.tasksTodaySize);
-        } else {return ''}
+        } else {return '';}
       } else {return this.tasksTomorrow.slice(0, 0);}
     },
     tasksUpcomingList(){
       if (this.tasksUpcoming){
         if (this.tasksUpcomingSize && this.tasksOverdueSize+this.tasksTodaySize+this.tasksTomorrowSize<11){
           return  this.tasksUpcoming.slice(0, 10-this.tasksOverdueSize-this.tasksTodaySize-this.tasksTomorrowSize);
-        } else {return ''}
+        } else {return '';}
       } else {return this.tasksUpcoming.slice(0, 0);}
     },
   },

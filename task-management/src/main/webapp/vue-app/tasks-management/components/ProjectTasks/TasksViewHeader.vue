@@ -227,7 +227,7 @@ export default {
         this.editStatus=false;
       }
     },
-    openQuickAdd(index) {
+    openQuickAdd() {
       this.$emit('open-quick-add');
     },
     addColumn(index) {

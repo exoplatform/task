@@ -111,14 +111,14 @@ export default {
         if (this.task.id && !isNaN(this.task.id)){
           this.task.description = newValue;
           updateTask(this.task.id ,this.task)
-            .then(task => {
+            .then(() => {
               this.$root.$emit('show-alert', { type: 'success', message: this.$t('alert.success.task.description') });});
           this.$root.$emit('show-alert', {
             type: 'success',
             message: this.$t('alert.success.task.description')
           })
             .catch(e => {
-              console.debug('Error when updating task\'s title', e);
+              console.error('Error when updating task\'s title', e);
               this.$root.$emit('show-alert',{type: 'error',message: this.$t('alert.error')} );
             });
         }
@@ -143,7 +143,7 @@ export default {
         toolbarLocation: 'bottom',
         autoGrow_onStartup: true,
         on: {
-          blur: function (evt) {
+          blur: function () {
             $(document.body).trigger('click');
             self.editorReady = false;
           },

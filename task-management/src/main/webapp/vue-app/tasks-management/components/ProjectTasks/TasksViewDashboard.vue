@@ -207,7 +207,7 @@ export default {
   },
   created() {
     this.$featureService.isFeatureEnabled('tasks.gantt').then(enabled => this.allowGantt = enabled);
-    this.$root.$on('update-task-list', task => {
+    this.$root.$on('update-task-list', () => {
       this.getTasksByProject(this.project.id,'');
     });
     this.$root.$on('deleteTask', (event) => {
@@ -350,20 +350,20 @@ export default {
       this.$refs.deleteConfirmDialog.open();
     },
     deleteConfirm() {
-      return this.$statusService.deleteStatus(this.status.id).then(resp => {
+      return this.$statusService.deleteStatus(this.status.id).then(() => {
         this.$root.$emit('show-alert',{type: 'success',message: this.$t('alert.success.status.deleted')} );
         this.getStatusByProject(this.project.id);
       }).catch(e => {
-        console.debug('Error when deleting status', e);
+        console.error('Error when deleting status', e);
         this.$root.$emit('show-alert',{type: 'error',message: this.$t('alert.error')} );
       });
     },
     updateStatus(status) {
-      return this.$statusService.updateStatus(status).then(resp => {
+      return this.$statusService.updateStatus(status).then(() => {
         this.$root.$emit('show-alert',{type: 'success',message: this.$t('alert.success.status.update')} );
         this.getStatusByProject(this.project.id);
       }).catch(e => {
-        console.debug('Error when updating status', e);
+        console.error('Error when updating status', e);
         this.$root.$emit('show-alert',{type: 'error',message: this.$t('alert.error')} );
       });
     },
@@ -374,11 +374,11 @@ export default {
         }
         element.rank=index;
       },  this);
-      return this.$statusService.createStatus(this.statusList).then(resp => {
+      return this.$statusService.createStatus(this.statusList).then(() => {
         this.$root.$emit('show-alert',{type: 'success',message: this.$t('alert.success.status.created')} );
         this.getStatusByProject(this.project.id);
       }).catch(e => {
-        console.debug('Error when creating status', e);
+        console.error('Error when creating status', e);
         this.$root.$emit('show-alert',{type: 'error',message: this.$t('alert.error')} );
       });
     },
@@ -389,11 +389,11 @@ export default {
         }
         element.rank=index;
       },  this);
-      return this.$statusService.moveStatus(this.statusList).then(resp => {
+      return this.$statusService.moveStatus(this.statusList).then(() => {
         this.$root.$emit('show-alert',{type: 'success',message: this.$t('alert.success.status.moved')} );
         this.getStatusByProject(this.project.id);
       }).catch(e => {
-        console.debug('Error when moving status', e);
+        console.error('Error when moving status', e);
         this.$root.$emit('show-alert',{type: 'error',message: this.$t('alert.error')} );
       });
     },

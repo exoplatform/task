@@ -150,7 +150,7 @@ export default {
     },
   },
   mounted() {
-    this.$root.$on('displayTaskComment', taskCommentDrawer => {
+    this.$root.$on('displayTaskComment', () => {
       this.showTaskCommentDrawer = true;
       window.setTimeout(() => {
         const commentsDiv = document.getElementById('commentDrawerContent');
@@ -174,7 +174,7 @@ export default {
         }, 500);
       }
     });
-    this.$root.$on('hideTaskComment', taskCommentDrawer => {
+    this.$root.$on('hideTaskComment', () => {
       this.showTaskCommentDrawer = false;
     });
   },

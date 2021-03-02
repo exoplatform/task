@@ -49,7 +49,7 @@ export default {
     },
   },
   created() {
-    this.$root.$on('reset-filter-task-group-sort',tasks =>{
+    this.$root.$on('reset-filter-task-group-sort', () =>{
       this.sortBy = '';
     });
     this.$root.$on('reset-filter-task-sort',sortBy =>{

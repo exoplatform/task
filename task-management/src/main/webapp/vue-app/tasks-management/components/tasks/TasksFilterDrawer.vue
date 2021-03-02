@@ -248,7 +248,7 @@ export default {
           options: options
         };
       }
-      return ''
+      return '';
     },
   },
   created() {

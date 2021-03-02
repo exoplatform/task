@@ -115,7 +115,7 @@ export default {
     },
   },
   watch: {
-    task(newVal, oldVal) {
+    task(newVal) {
       if (JSON.stringify(newVal) !== '{}') {
         this.actualTask = this.task;
         this.reset();
@@ -130,7 +130,7 @@ export default {
       this.$refs.taskDueDate.menu = false;
     });
 
-    $('.taskAssignItem').off('click').on('click', (event) => {
+    $('.taskAssignItem').off('click').on('click', () => {
       this.$refs.taskStartDate.menu = false;
       this.$refs.taskDueDate.menu = false;
     });

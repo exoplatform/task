@@ -47,7 +47,7 @@ export default {
         this.$root.$emit('set-url', {type: 'project',id: this.project.id});
       }
     });
-    document.addEventListener('hideProjectTasks', (event) => {
+    document.addEventListener('hideProjectTasks', () => {
       this.displayDetails = false;
     });
   },

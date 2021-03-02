@@ -140,7 +140,7 @@ export default {
       this.keyword='';
       this.$refs.filterTasksDrawer.resetFields(activeField);
     },
-    filterNumChanged(filtersnumber,source){
+    filterNumChanged(filtersnumber){
       this.filterNumber=filtersnumber;
     },
     getFilterNum(){

@@ -106,7 +106,7 @@ export default {
   },
   created() {
     this.originalLimitToFetch = this.limitToFetch = this.limit;
-    this.$root.$on('update-projects-list', project => {
+    this.$root.$on('update-projects-list', () => {
       this.searchProjects();
     });
   },

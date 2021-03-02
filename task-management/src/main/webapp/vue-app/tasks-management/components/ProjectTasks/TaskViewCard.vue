@@ -225,7 +225,7 @@ export default {
           }
         }).then(this.task.task.completed = task.showCompleteTasks)
           .catch(e => {
-            console.debug('Error updating project', e);
+            console.error('Error updating project', e);
             this.$root.$emit('show-alert', {
               type: 'error',
               message: this.$t('alert.error')

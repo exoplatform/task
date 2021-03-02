@@ -266,7 +266,7 @@ export default {
         .then(() => this.$emit('refreshProjects'))
         .then(this.$root.$emit('show-alert',{type: 'success',message: this.$t('alert.success.project.deleted')} ))
         .catch(e => {
-          console.debug('Error updating project', e);
+          console.error('Error updating project', e);
           this.$root.$emit('show-alert',{type: 'error',message: this.$t('alert.error')} );
         });
     },
@@ -275,7 +275,7 @@ export default {
         .then(() => this.$emit('refreshProjects'))
         .then(this.$root.$emit('show-alert',{type: 'success',message: this.$t('alert.success.project.cloned')} ))
         .catch(e => {
-          console.debug('Error updating project', e);
+          console.error('Error updating project', e);
           this.$root.$emit('show-alert',{type: 'error',message: this.$t('alert.error')} );
         });
     },

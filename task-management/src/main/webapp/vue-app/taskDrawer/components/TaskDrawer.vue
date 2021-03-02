@@ -342,34 +342,33 @@ export default {
       } else if (!this.taskTitleValid){
         this.$root.$emit('show-alert', {type: 'error',message: this.$t('alert.error.title.length')});
       } else if (this.task.id != null) {
-        updateTask(this.task.id, this.task).then(task => {
+        updateTask(this.task.id, this.task).then(() => {
           this.taskTitle_ = this.task.title; 
           this.$root.$emit('show-alert', {
             type: 'success',
             message: this.$t('alert.success.task.title')
           });
-        })
-          .catch(e => {
-            this.task.title = this.taskTitle_;
-            console.debug('Error when updating task\'s title', e);
-            this.$root.$emit('show-alert', {
-              type: 'error',
-              message: this.$t('alert.error')
-            });
+        }).catch(e => {
+          this.task.title = this.taskTitle_;
+          console.error('Error when updating task\'s title', e);
+          this.$root.$emit('show-alert', {
+            type: 'error',
+            message: this.$t('alert.error')
           });
+        });
       }
     },
     updateTaskPriority(value) {
       if (value) {
         if (this.task.id != null) {
           this.task.priority = value;
-          updateTask(this.task.id, this.task).then(task => {
+          updateTask(this.task.id, this.task).then(() => {
             this.$root.$emit('show-alert', {
               type: 'success',
               message: this.$t('alert.success.task.priority')
             });
           }).catch(e => {
-            console.debug('Error when updating task\'s priority', e);
+            console.error('Error when updating task\'s priority', e);
             this.$root.$emit('show-alert', {
               type: 'error',
               message: this.$t('alert.error')
@@ -384,13 +383,13 @@ export default {
       if (value) {
         if (this.task.id != null) {
           this.task.status = value;
-          updateTask(this.task.id, this.task).then(task => {
+          updateTask(this.task.id, this.task).then(() => {
             this.$root.$emit('show-alert', {
               type: 'success',
               message: this.$t('alert.success.task.status')
             });
           }).catch(e => {
-            console.debug('Error when updating task\'s status', e);
+            console.error('Error when updating task\'s status', e);
             this.$root.$emit('show-alert', {
               type: 'error',
               message: this.$t('alert.error')
@@ -403,13 +402,13 @@ export default {
       if (value) {
         if (this.task.id != null) {
           this.task.startDate = value;
-          updateTask(this.task.id, this.task).then(task => {
+          updateTask(this.task.id, this.task).then(() => {
             this.$root.$emit('show-alert', {
               type: 'success',
               message: this.$t('alert.success.task.startDate')
             });
           }).catch(e => {
-            console.debug('Error when updating task\'s start date', e);
+            console.error('Error when updating task\'s start date', e);
             this.$root.$emit('show-alert', {
               type: 'error',
               message: this.$t('alert.error')
@@ -424,13 +423,13 @@ export default {
       if (value && value !== 'none') {
         if (this.task.id != null) {
           this.task.dueDate = value;
-          updateTask(this.task.id, this.task).then(task => {
+          updateTask(this.task.id, this.task).then(() => {
             this.$root.$emit('show-alert', {
               type: 'success',
               message: this.$t('alert.success.task.duetDate')
             });
           }).catch(e => {
-            console.debug('Error when updating task\'s due date', e);
+            console.error('Error when updating task\'s due date', e);
             this.$root.$emit('show-alert', {
               type: 'error',
               message: this.$t('alert.error')
@@ -441,13 +440,13 @@ export default {
         }
       } else if (value === 'none') {
         this.task.dueDate = null;
-        updateTask(this.task.id, this.task).then(task => {
+        updateTask(this.task.id, this.task).then(() => {
           this.$root.$emit('show-alert', {
             type: 'success',
             message: this.$t('alert.success.task.duetDate')
           });
         }).catch(e => {
-          console.debug('Error when updating task\'s due date', e);
+          console.error('Error when updating task\'s due date', e);
           this.$root.$emit('show-alert', {
             type: 'error',
             message: this.$t('alert.error')
@@ -457,7 +456,7 @@ export default {
     },
     updateTask() {
       if (this.task.id != null) {
-        updateTask(this.task.id, this.task).then(task => {
+        updateTask(this.task.id, this.task).then(() => {
           this.$root.$emit('update-task-list', this.task);
           this.$root.$emit('show-alert', {
             type: 'success',
@@ -465,7 +464,7 @@ export default {
           });
         })
           .catch(e => {
-            console.debug('Error when updating task', e);
+            console.error('Error when updating task', e);
             this.$root.$emit('show-alert', {
               type: 'error',
               message: this.$t('alert.error')
@@ -494,7 +493,7 @@ export default {
         this.$refs.addTaskDrawer.close();
         this.labelsToAdd = [];
       }).catch(e => {
-        console.debug('Error when adding task title', e);
+        console.error('Error when adding task title', e);
         this.$root.$emit('show-alert', {
           type: 'error',
           message: this.$t('alert.error')
@@ -508,13 +507,13 @@ export default {
         } else {
           this.task.assignee = null;
         }
-        updateTask(this.task.id, this.task).then(task => {
+        updateTask(this.task.id, this.task).then(() => {
           this.$root.$emit('show-alert', {
             type: 'success',
             message: this.$t('alert.success.task.assignee')
           });
         }).catch(e => {
-          console.debug('Error when updating task\'s assignee', e);
+          console.error('Error when updating task\'s assignee', e);
           this.$root.$emit('show-alert', {
             type: 'error',
             message: this.$t('alert.error')
@@ -535,13 +534,13 @@ export default {
         } else {
           this.task.coworker = [];
         }
-        updateTask(this.task.id, this.task).then(task => {
+        updateTask(this.task.id, this.task).then(() => {
           this.$root.$emit('show-alert', {
             type: 'success',
             message: this.$t('alert.success.task.coworker')
           });
         }).catch(e => {
-          console.debug('Error when updating task\'s coworkers', e);
+          console.error('Error when updating task\'s coworkers', e);
           this.$root.$emit('show-alert', {
             type: 'error',
             message: this.$t('alert.error')
@@ -642,7 +641,7 @@ export default {
         this.$root.$emit('update-task-list', this.task);
         this.$root.$emit('open-task-drawer', task);
       }).catch(e => {
-        console.debug('Error when cloning task', e);
+        console.error('Error when cloning task', e);
         this.$root.$emit('show-alert', {
           type: 'error',
           message: this.$t('alert.error')
@@ -654,7 +653,7 @@ export default {
       return fetch(`${eXo.env.portal.context}/${eXo.env.portal.rest}/tasks/${this.task.id}`, {
         method: 'DELETE',
         credentials: 'include',
-      }).then(resp => {
+      }).then(() => {
         this.$root.$emit('update-task-list', this.task);
         this.$root.$emit('show-alert', {
           type: 'success',
@@ -664,7 +663,7 @@ export default {
           detail: idTask
         }));
       }).catch(e => {
-        console.debug('Error when deleting task', e);
+        console.error('Error when deleting task', e);
         this.$root.$emit('show-alert', {
           type: 'error',
           message: this.$t('alert.error')

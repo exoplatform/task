@@ -85,10 +85,10 @@ export default {
     },
     updateTask(task) {
       if (task.id!=null){
-        updateTask(task.id,task).then(task => {
+        updateTask(task.id,task).then(() => {
           this.$root.$emit('show-alert', { type: 'success', message: this.$t('alert.success.task.status') });
         }).catch(e => {
-          console.debug('Error when updating task\'s status', e);
+          console.error('Error when updating task\'s status', e);
           this.$root.$emit('show-alert',{type: 'error',message: this.$t('alert.error')} );
         });
       }

@@ -170,7 +170,7 @@ export default {
   },
   created() {
     this.originalLimitToFetch = this.limitToFetch = this.limit;
-    this.$root.$on('update-task-list', task => {
+    this.$root.$on('update-task-list', () => {
       this.searchTasks();
     });
     this.$root.$on('filter-task-groupBy',tasks =>{

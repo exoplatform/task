@@ -131,7 +131,7 @@ export default {
         }
       }
     });
-    this.$root.$on('reset-filter-task-group-sort',tasks =>{
+    this.$root.$on('reset-filter-task-group-sort', () =>{
       this.model = null;
     });
   },

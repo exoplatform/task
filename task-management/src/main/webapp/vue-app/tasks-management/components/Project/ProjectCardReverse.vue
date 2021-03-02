@@ -89,7 +89,7 @@ export default {
   },
 
   methods: {
-    initChart(option,id) {
+    initChart(option) {
       const holder_chart = $(`#echartProjectTasks${this.project.id}`)[0];
       if (holder_chart){
         const chart = echarts.init(holder_chart);

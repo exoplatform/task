@@ -134,10 +134,10 @@ export default {
       return ( item.name.toLocaleLowerCase().indexOf(queryText.toLocaleLowerCase()) >-1 || item.name.toLocaleLowerCase().indexOf(queryText.toLocaleLowerCase()) > -1 );},
     updateTask() {
       updateTask(this.task.id, this.task)
-        .then(task => {
+        .then( () => {
           this.$root.$emit('show-alert', { type: 'success', message: this.$t('alert.success.task.project') });})
         .catch(e => {
-          console.debug('Error when updating task\'s title', e);
+          console.error('Error when updating task\'s title', e);
           this.$root.$emit('show-alert',{type: 'error',message: this.$t('alert.error')} );
         });
     },
