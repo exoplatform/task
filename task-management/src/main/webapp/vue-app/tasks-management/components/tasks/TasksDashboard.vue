@@ -190,7 +190,7 @@
       });
       this.$root.$on('update-task-completed', (event) => {
         if (event && !this.showCompleteTasks) {
-          window.setTimeout(() => this.tasks = this.tasks.filter((t) => t.id !== event.id), 500);
+          this.tasks = this.tasks.filter((t) => t.id !== event.id);
         }
       });
     },
