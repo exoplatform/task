@@ -34,7 +34,8 @@
                     :avatar-url="item.authorAvatarUrl"
                     :size="30"
                     :url="null"
-                    class="changeUserAvatar"/>
+                    class="changeUserAvatar" />
+                  <!-- eslint-disable vue/no-v-html -->
                   <p class="changesText mb-0 pl-1" v-html="renderChangeHTML(item)"></p>
                 </div>
                 <div>
@@ -45,88 +46,84 @@
               </v-list-item-content>
             </v-list-item>
           </v-list>
-
         </v-flex>
       </v-layout>
     </v-container>
   </div>
 </template>
 <script>
-  export default {
-    props: {
-      logs: {
-        type: Object,
-        default: () => {
-          return {};
-        }
-      },
-      task: {
-        type: Boolean,
-        default: false
-      },
-    },
-    data() {
-      return {
-        showTaskChangesDrawer: false,
-        dateTimeFormat: {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit',
-        },
-        currentUserName: eXo.env.portal.userName,
-        changeAuthor: {},
-        userAvatar: '',
-        avatarUrl:''
+export default {
+  props: {
+    logs: {
+      type: Object,
+      default: () => {
+        return {};
       }
     },
-    watch: {
-      userAvatar() {
-        this.avatarUrl = this.userAvatar;
-      }
+    task: {
+      type: Boolean,
+      default: false
     },
-    mounted() {
-      this.$root.$on('displayTaskChanges', taskChangesDrawer => {
-        this.showTaskChangesDrawer = true
-      });
-      this.$root.$on('hideTaskChanges', taskChangesDrawer => {
-        this.showTaskChangesDrawer = false
-      });
+  },
+  data() {
+    return {
+      showTaskChangesDrawer: false,
+      dateTimeFormat: {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      },
+      currentUserName: eXo.env.portal.userName,
+      changeAuthor: {},
+      userAvatar: '',
+      avatarUrl: ''
+    };
+  },
+  watch: {
+    userAvatar() {
+      this.avatarUrl = this.userAvatar;
+    }
+  },
+  mounted() {
+    this.$root.$on('displayTaskChanges', taskChangesDrawer => {
+      this.showTaskChangesDrawer = true;
+    });
+    this.$root.$on('hideTaskChanges', taskChangesDrawer => {
+      this.showTaskChangesDrawer = false;
+    });
+  },
+  methods: {
+    closeDrawer() {
+      this.showTaskChangesDrawer = false;
     },
-    methods: {
-      closeDrawer() {
-        this.showTaskChangesDrawer = false
-      },
-      logMsg(item) {
-        return `log.${ item.actionName }`
-      },
-      renderChangeHTML(item) {
-        let str = '';
-        if ( item.actionName === 'assign' || item.actionName === 'unassign') {
-          str = `<p class='changesItem assignDiv text-truncate mb-0' title='${item.authorFullName} ${this.$t(this.logMsg(item))} ${item.targetFullName}'>` +
+    logMsg(item) {
+      return `log.${ item.actionName }`;
+    },
+    renderChangeHTML(item) {
+      let str = '';
+      if ( item.actionName === 'assign' || item.actionName === 'unassign') {
+        str = `<p class='changesItem assignDiv text-truncate mb-0' title='${item.authorFullName} ${this.$t(this.logMsg(item))} ${item.targetFullName}'>` +
             `<span>${ this.$t(this.logMsg(item))}</span>`+
             `<a href='/portal/dw/profile/${item.target}'> ${item.targetFullName} </a>`+
-            `</p>`
-        } else if ( item.actionName === 'edit_project' ) {
-          str = `<p class='changesItem assignDiv text-truncate mb-0' title='${item.authorFullName} ${this.$t(this.logMsg(item))}  ${item.target}'>` +
+            '</p>';
+      } else if ( item.actionName === 'edit_project' ) {
+        str = `<p class='changesItem assignDiv text-truncate mb-0' title='${item.authorFullName} ${this.$t(this.logMsg(item))}  ${item.target}'>` +
             `<span>${ this.$t(this.logMsg(item))}</span>`+
             `<a href='#'> ${item.target} </a>`+
-            `</p>`
-        } else if ( item.actionName === 'edit_priority' ) {
-          str = `<p class='changesItem mb-0'>` +
+            '</p>';
+      } else if ( item.actionName === 'edit_priority' ) {
+        str = '<p class=\'changesItem mb-0\'>' +
             `<p class='text-truncate mb-0' title='${item.authorFullName} ${this.$t(this.logMsg(item))} ${item.task.status.priority}'> ${ this.$t(this.logMsg(item)) } ${item.task.priority}</p>`+
-          `</p>`;
-        } else {
-          str = `<p class='changesItem mb-0'>` +
+          '</p>';
+      } else {
+        str = '<p class=\'changesItem mb-0\'>' +
             `<p class='text-truncate mb-0' title='${item.authorFullName} ${this.$t(this.logMsg(item))} ${item.target}'> ${ this.$t(this.logMsg(item)) } ${item.target}</p>`+
-          `</p>`
-        }
-        return str;
-      },
-    }
-  };
+          '</p>';
+      }
+      return str;
+    },
+  }
+};
 </script>
-<style>
-
-</style>

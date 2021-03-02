@@ -2,12 +2,12 @@
   <div
     :class="[getTaskPriorityColor(task.task.priority),removeCompletedTask && 'completedTask' || '']"
     class="taskListItemView px-4 py-3 d-flex align-center">
-    <div class="taskCheckBox" >
+    <div class="taskCheckBox">
       <v-switch
         ref="autoFocusInput2"
         class="d-none"
         true-value="true"
-        false-value="false"/>
+        false-value="false" />
       <i 
         :title="$t(getTaskCompletedTitle())" 
         :class="getTaskCompleted()" 
@@ -30,7 +30,7 @@
         :avatar-url="user.avatar"
         :size="iconSize"
         :style="'background-image: url('+user.avatar+')'"
-        class="mx-1 taskWorkerAvatar"/>
+        class="mx-1 taskWorkerAvatar" />
       <div class="seeMoreAvatars">
         <div
           v-if="assigneeAndCoworkerArray.length > maxAvatarToShow"
@@ -76,108 +76,107 @@
         <date-format :value="taskDueDate" :format="dateTimeFormat" />
       </div>
     </div>
-
   </div>
 </template>
 <script>
-  export default {
-    props: {
-      task: {
-        type: Object,
-        default: null
+export default {
+  props: {
+    task: {
+      type: Object,
+      default: null
+    },
+    showCompletedTasks: {
+      type: Boolean,
+      default: false
+    }
+  },
+  data () {
+    return {
+      enabled: false,
+      iconSize: 26,
+      dateTimeFormat: {
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric',
       },
-      showCompletedTasks: {
-        type: Boolean,
-        default: false
+      assigneeAndCoworkerArray: [],
+      isPersonnalTask: this.task.task.status === null,
+      labelList: '',
+      maxAvatarToShow: 3,
+      removeCompletedTask: false,
+      showCompleteTasks: false,
+    };
+  },
+  computed: {
+    taskDueDate() {
+      return this.task && this.task.task.dueDate && this.task.task.dueDate.time;
+    },
+    avatarToDisplay () {
+      if (this.assigneeAndCoworkerArray.length > this. maxAvatarToShow) {
+        return this.assigneeAndCoworkerArray.slice(0, this.maxAvatarToShow-1);
+      } else {
+        return this.assigneeAndCoworkerArray;
       }
     },
-    data () {
-      return {
-        enabled: false,
-        iconSize: 26,
-        dateTimeFormat: {
-          year: 'numeric',
-          month: 'numeric',
-          day: 'numeric',
-        },
-        assigneeAndCoworkerArray: [],
-        isPersonnalTask : this.task.task.status === null,
-        labelList: '',
-        maxAvatarToShow : 3,
-        removeCompletedTask: false,
-        showCompleteTasks: false,
+    showMoreAvatarsNumber() {
+      return this.assigneeAndCoworkerArray.length - this.maxAvatarToShow;
+    }
+  },
+  created() {
+    this.getTaskAssigneeAndCoworkers();
+  },
+  methods: {
+    getTaskPriorityColor(priority) {
+      switch (priority) {
+      case 'HIGH':
+        return 'taskHighPriority';
+      case 'NORMAL':
+        return 'taskNormalPriority';
+      case 'LOW':
+        return 'taskLowPriority';
+      case 'NONE':
+        return 'taskNonePriority';
       }
     },
-    computed: {
-      taskDueDate() {
-        return this.task && this.task.task.dueDate && this.task.task.dueDate.time;
-      },
-      avatarToDisplay () {
-        if(this.assigneeAndCoworkerArray.length > this. maxAvatarToShow) {
-          return this.assigneeAndCoworkerArray.slice(0, this.maxAvatarToShow-1);
-        } else {
-          return this.assigneeAndCoworkerArray;
-        }
-      },
-      showMoreAvatarsNumber() {
-        return this.assigneeAndCoworkerArray.length - this.maxAvatarToShow;
-      }
-    },
-    created() {
-      this.getTaskAssigneeAndCoworkers();
-    },
-    methods: {
-      getTaskPriorityColor(priority) {
-        switch(priority) {
-          case "HIGH":
-            return "taskHighPriority";
-          case "NORMAL":
-            return "taskNormalPriority";
-          case "LOW":
-            return "taskLowPriority";
-          case "NONE":
-            return "taskNonePriority";
-        }
-      },
-      getTaskAssigneeAndCoworkers() {
-           if(this.task.assignee){
+    getTaskAssigneeAndCoworkers() {
+      if (this.task.assignee){
         this.assigneeAndCoworkerArray.push(this.task.assignee);
-        } 
-        if (this.task.coworker || this.task.coworker.length > 0 )
-        {
-          this.task.coworker.forEach((coworker) => {
-            if (coworker){
-              this.assigneeAndCoworkerArray.push(coworker);
-            }
-          })
-        }
-      },
-      getLabelsList(taskLabels) {
-        if (taskLabels.length > 1) {
-          let labelText = '';
-          taskLabels.forEach((label) => {
-            labelText += `${label.name}\r\n`;
-          });
-          return labelText;
-        }
-      },
-      openTaskDrawer() {
-       this.$root.$emit('open-task-drawer', this.task.task);
-      },
+      } 
+      if (this.task.coworker || this.task.coworker.length > 0 )
+      {
+        this.task.coworker.forEach((coworker) => {
+          if (coworker){
+            this.assigneeAndCoworkerArray.push(coworker);
+          }
+        });
+      }
+    },
+    getLabelsList(taskLabels) {
+      if (taskLabels.length > 1) {
+        let labelText = '';
+        taskLabels.forEach((label) => {
+          labelText += `${label.name}\r\n`;
+        });
+        return labelText;
+      }
+    },
+    openTaskDrawer() {
+      this.$root.$emit('open-task-drawer', this.task.task);
+    },
     getTaskCompleted() {
-      if(this.task.task.completed===true){
+      if (this.task.task.completed===true){
         return 'uiIconValidate';
       }
       else {
-        return 'uiIconCircle'
+        return 'uiIconCircle';
       }
     },
     getTaskCompletedTitle() {
-      if(this.task.task.completed===true){
+      if (this.task.task.completed===true){
         return 'message.markAsUnCompleted';
       }
       else {
-        return 'message.markAsCompleted'
+        return 'message.markAsCompleted';
       }
     },
     updateCompleted() {
@@ -189,44 +188,44 @@
 
       if (typeof task.id !== 'undefined') {
         return this.$tasksService.updateCompleted(task).then(task => {
-                      if(task.completed){
-              this.$root.$emit('show-alert', {type: 'success',message: this.$t('alert.success.task.completed')});   
-            }else{
-              this.$root.$emit('show-alert', {type: 'success',message: this.$t('alert.success.task.unCompleted')});
-            }
+          if (task.completed){
+            this.$root.$emit('show-alert', {type: 'success',message: this.$t('alert.success.task.completed')});   
+          } else {
+            this.$root.$emit('show-alert', {type: 'success',message: this.$t('alert.success.task.unCompleted')});
+          }
           this.$emit('update-task-completed', task);
-          if( task.completed === true && !this.showCompletedTasks) {
+          if ( task.completed === true && !this.showCompletedTasks) {
             this.removeCompletedTask = true;
           }
         }).then(this.task.task.completed = task.showCompleteTasks)
-                .catch(e => {
-                  console.debug("Error updating project", e);
-                  this.$root.$emit('show-alert', {
-                    type: 'error',
-                    message: this.$t('alert.error')
-                });
-                  this.postProject = false;
-                });
+          .catch(e => {
+            console.debug('Error updating project', e);
+            this.$root.$emit('show-alert', {
+              type: 'error',
+              message: this.$t('alert.error')
+            });
+            this.postProject = false;
+          });
       }
 
 
     },
     showCompleted(){
-      if(this.getTaskCompleted()==='uiIconValidate'){
-        this.showCompleteTasks=false
-      }else {
-        this.showCompleteTasks=true
+      if (this.getTaskCompleted()==='uiIconValidate'){
+        this.showCompleteTasks=false;
+      } else {
+        this.showCompleteTasks=true;
       }
-      return this.showCompleteTasks
+      return this.showCompleteTasks;
     },
     getTitleTaskClass() {
-      if(this.task.task.completed===true){
+      if (this.task.task.completed===true){
         return 'text-color strikethrough';
       }
       else {
-        return 'text-color'
+        return 'text-color';
       }
     },
-    }
   }
+};
 </script>

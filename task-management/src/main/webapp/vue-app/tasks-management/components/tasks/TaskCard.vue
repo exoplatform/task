@@ -6,12 +6,12 @@
       flat>
       <div class="taskTitleId d-flex justify-space-between">
         <div class="taskTitle d-flex align-start">
-          <div class="taskCheckBox" @click="updateCompleted" >
+          <div class="taskCheckBox" @click="updateCompleted">
             <v-switch
               ref="autoFocusInput2"
               class="d-none"
               true-value="true"
-              false-value="false"/>
+              false-value="false" />
             <i :title="$t(getTaskCompletedTitle())" :class="getTaskCompleted()"></i>
           </div>
           <a
@@ -22,7 +22,7 @@
               :title="task.task.title "
               :data="task.task.title "
               :line-clamp="2"
-              end-char=".."/>
+              end-char=".." />
           </a>
         </div>
         <div 
@@ -34,14 +34,14 @@
       <div class="taskAssigneeAndLabels d-flex justify-space-between align-center mt-3">
         <div class="taskAssignee d-flex flex-nowrap">
           <exo-user-avatar
-            v-for="user in avatarToDisplay"
-            :key="user"
-            :username="user.username"
-            :title="user.displayName"
-            :avatar-url="user.avatar"
+            v-for="userItem in avatarToDisplay"
+            :key="userItem"
+            :username="userItem.username"
+            :title="userItem.displayName"
+            :avatar-url="userItem.avatar"
             :size="iconSize"
-            :style="'background-image: url('+user.avatar+')'"
-            class="mx-1 taskWorkerAvatar"/>
+            :style="'background-image: url('+userItem.avatar+')'"
+            class="mx-1 taskWorkerAvatar" />
           <div class="seeMoreAvatars">
             <div
               v-if="assigneeAndCoworkerArray.length > maxAvatarToShow"
@@ -58,7 +58,7 @@
           </div>
         </div>
       </div>
-      <v-divider v-if="task && commentCount || task && task.labels && task.labels.length || taskDueDate"/>
+      <v-divider v-if="task && commentCount || task && task.labels && task.labels.length || taskDueDate" />
       <div 
         v-if="task && commentCount || task && task.labels && task.labels.length || taskDueDate"
         class="taskStatusAndDate d-flex justify-space-between pt-3" 
@@ -96,125 +96,125 @@
   </v-app>
 </template>
 <script>
-  export default {
-    props: {
-      task: {
-        type: Object,
-        default: () => ({}),
-      }
-    },
-    data() {
-      return {
-        enabled: false,
-        user: {},
-        iconSize: 26,
-        dateTimeFormat: {
-          year: 'numeric',
-          month: 'numeric',
-          day: 'numeric',
-        },
-        assigneeAndCoworkerArray: [],
-        isPersonnalTask : this.task.status === null,
-        isSpaceProject: this.task.space !== null,
-        maxAvatarToShow : 3,
-        showCompleteTasks: false
-      }
-    },
-    computed: {
-      taskDueDate() {
-        return this.task && this.task.task.dueDate && this.task.task.dueDate.time;
+export default {
+  props: {
+    task: {
+      type: Object,
+      default: () => ({}),
+    }
+  },
+  data() {
+    return {
+      enabled: false,
+      user: {},
+      iconSize: 26,
+      dateTimeFormat: {
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric',
       },
-      avatarToDisplay () {
-        this.getTaskAssigneeAndCoworkers();
-          if(this.assigneeAndCoworkerArray.length > this. maxAvatarToShow) {
-            return this.assigneeAndCoworkerArray.slice(0, this.maxAvatarToShow-1);
-          } else {
-            return this.assigneeAndCoworkerArray;
-          }
-      },
-      showMoreAvatarsNumber() {
-        return this.assigneeAndCoworkerArray.length - this.maxAvatarToShow;
+      assigneeAndCoworkerArray: [],
+      isPersonnalTask: this.task.status === null,
+      isSpaceProject: this.task.space !== null,
+      maxAvatarToShow: 3,
+      showCompleteTasks: false
+    };
+  },
+  computed: {
+    taskDueDate() {
+      return this.task && this.task.task.dueDate && this.task.task.dueDate.time;
+    },
+    avatarToDisplay () {
+      this.getTaskAssigneeAndCoworkers();
+      if (this.assigneeAndCoworkerArray.length > this. maxAvatarToShow) {
+        return this.assigneeAndCoworkerArray.slice(0, this.maxAvatarToShow-1);
+      } else {
+        return this.assigneeAndCoworkerArray;
       }
     },
-    methods: {
-      getTaskColor() {
-        if(this.task.task.status){
+    showMoreAvatarsNumber() {
+      return this.assigneeAndCoworkerArray.length - this.maxAvatarToShow;
+    }
+  },
+  methods: {
+    getTaskColor() {
+      if (this.task.task.status){
 
-          return this.task.task.status.project.color ? this.task.task.status.project.color : 'noProjectColor' ;
-        }
-        else {
-          return null
-        }
-      },
-      getNameProject(){
-        if(this.task.task.status){
+        return this.task.task.status.project.color ? this.task.task.status.project.color : 'noProjectColor' ;
+      }
+      else {
+        return null;
+      }
+    },
+    getNameProject(){
+      if (this.task.task.status){
 
-          return  this.task.task.status.project.name  ;
-        }
-        else {
-          return null
-        }
-      },
-      getTaskPriorityColor(priority) {
-        switch(priority) {
-          case "HIGH":
-            return "taskHighPriority";
-          case "NORMAL":
-            return "taskNormalPriority";
-          case "LOW":
-            return "taskLowPriority";
-          case "NONE":
-            return "taskNonePriority";
-        }
-      },
-      getTaskStatusLabel(status) {
-        switch(status) {
-          case "ToDo":
-            return this.$t('exo.tasks.status.todo');
-          case "InProgress":
-            return this.$t('exo.tasks.status.inprogress');
-          case "WaitingOn":
-            return this.$t('exo.tasks.status.waitingon');
-          case "Done":
-            return this.$t('exo.tasks.status.done');
-        }
-      },
-      getTaskAssigneeAndCoworkers() {
-        this.assigneeAndCoworkerArray=[]
-        if(this.task.assignee){
+        return  this.task.task.status.project.name  ;
+      }
+      else {
+        return null;
+      }
+    },
+    getTaskPriorityColor(priority) {
+      switch (priority) {
+      case 'HIGH':
+        return 'taskHighPriority';
+      case 'NORMAL':
+        return 'taskNormalPriority';
+      case 'LOW':
+        return 'taskLowPriority';
+      case 'NONE':
+        return 'taskNonePriority';
+      }
+    },
+    getTaskStatusLabel(status) {
+      switch (status) {
+      case 'ToDo':
+        return this.$t('exo.tasks.status.todo');
+      case 'InProgress':
+        return this.$t('exo.tasks.status.inprogress');
+      case 'WaitingOn':
+        return this.$t('exo.tasks.status.waitingon');
+      case 'Done':
+        return this.$t('exo.tasks.status.done');
+      }
+    },
+    getTaskAssigneeAndCoworkers() {
+      this.assigneeAndCoworkerArray=[];
+      if (this.task.assignee){
         this.assigneeAndCoworkerArray.push(this.task.assignee);
-        } 
-        if (this.task.coworker || this.task.coworker.length > 0 )
-        {
-          this.task.coworker.forEach((coworker) => {
-            if (coworker){
-              this.assigneeAndCoworkerArray.push(coworker);
-            }
-          })
-        }
-      },
-      getLabelsList(taskLabels) {
-        if (taskLabels.length > 1) {
-          let labelText = '';
-          taskLabels.forEach((label) => {
-            labelText += `${label.name}\r\n`;
-          });
-          return labelText;
-        }
-      },
-      openTaskDrawer() {
-        this.$root.$emit('open-task-drawer', this.task.task)
-      },
-      onCloseDrawer: function(drawer){
-        this.drawer = drawer;
-      },
-      spaceUrl(spaceUrl) {
-        if (!this.spaceUrl) {
-          return '#';
-        }
-        return `${eXo.env.portal.context}/g/:spaces:${spaceUrl}/`;
-      },
-      updateCompleted() {
+      } 
+      if (this.task.coworker || this.task.coworker.length > 0 )
+      {
+        this.task.coworker.forEach((coworker) => {
+          if (coworker){
+            this.assigneeAndCoworkerArray.push(coworker);
+          }
+        });
+      }
+    },
+    getLabelsList(taskLabels) {
+      if (taskLabels.length > 1) {
+        let labelText = '';
+        taskLabels.forEach((label) => {
+          labelText += `${label.name}\r\n`;
+        });
+        return labelText;
+      }
+    },
+    openTaskDrawer() {
+      this.$root.$emit('open-task-drawer', this.task.task);
+    },
+    onCloseDrawer: function(drawer){
+      this.drawer = drawer;
+    },
+    spaceUrl(spaceUrl) {
+      if (!this.spaceUrl) {
+        return '#';
+      }
+      return `${eXo.env.portal.context}/g/:spaces:${spaceUrl}/`;
+    },
+    updateCompleted() {
 
       const task = {
         id: this.task.task.id,
@@ -224,57 +224,57 @@
 
       if (typeof task.id !== 'undefined') {
         return this.$tasksService.updateCompleted(task).then(task => {
-            if(task.completed){
-              this.$root.$emit('show-alert', {type: 'success',message: this.$t('alert.success.task.completed')});   
-            }else{
-              this.$root.$emit('show-alert', {type: 'success',message: this.$t('alert.success.task.unCompleted')});
-            }
+          if (task.completed){
+            this.$root.$emit('show-alert', {type: 'success',message: this.$t('alert.success.task.completed')});   
+          } else {
+            this.$root.$emit('show-alert', {type: 'success',message: this.$t('alert.success.task.unCompleted')});
+          }
           this.$emit('update-cart', task);
         }).then(this.task.task.completed = task.showCompleteTasks)
-                .catch(e => {
-                  console.debug("Error updating project", e);
-                  this.$root.$emit('show-alert', {
-                    type: 'error',
-                    message: this.$t('alert.error')
-                });
-                  this.postProject = false;
-                });
+          .catch(e => {
+            console.debug('Error updating project', e);
+            this.$root.$emit('show-alert', {
+              type: 'error',
+              message: this.$t('alert.error')
+            });
+            this.postProject = false;
+          });
       }
 
 
     },
     getTaskCompleted() {
-      if(this.task.task.completed===true){
+      if (this.task.task.completed===true){
         return 'uiIconValidate';
       }
       else {
-        return 'uiIconCircle'
+        return 'uiIconCircle';
       }
     },
-      getTitleTaskClass() {
-        if(this.task.task.completed===true){
-          return 'text-color strikethrough';
-        }
-        else {
-          return 'text-color'
-        }
-      },
+    getTitleTaskClass() {
+      if (this.task.task.completed===true){
+        return 'text-color strikethrough';
+      }
+      else {
+        return 'text-color';
+      }
+    },
     getTaskCompletedTitle() {
-      if(this.task.task.completed===true){
+      if (this.task.task.completed===true){
         return 'message.markAsUnCompleted';
       }
       else {
-        return 'message.markAsCompleted'
+        return 'message.markAsCompleted';
       }
     },
     showCompleted(){
-      if(this.getTaskCompleted()==='uiIconValidate'){
-        this.showCompleteTasks=false
-      }else {
-        this.showCompleteTasks=true
+      if (this.getTaskCompleted()==='uiIconValidate'){
+        this.showCompleteTasks=false;
+      } else {
+        this.showCompleteTasks=true;
       }
-      return this.showCompleteTasks
+      return this.showCompleteTasks;
     },
-    }
   }
+};
 </script>

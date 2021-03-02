@@ -8,13 +8,12 @@
       class="taskCard taskViewCard pa-3"
       flat>
       <div class="taskTitleId  d-flex justify-space-between">
-
-        <div class="taskCheckBox" >
+        <div class="taskCheckBox">
           <v-switch
             ref="autoFocusInput2"
             class="d-none"
             true-value="true"
-            false-value="false"/>
+            false-value="false" />
           <i 
             :title="$t(getTaskCompletedTitle())" 
             :class="getTaskCompleted()" 
@@ -40,14 +39,14 @@
           :class="assigneeAndCoworkerArray && !assigneeAndCoworkerArray.length && task && task.labels && !task.labels.length && 'hideTaskAssignee'"
           class="taskAssignee d-flex flex-nowrap">
           <exo-user-avatar
-            v-for="user in avatarToDisplay"
-            :key="user"
-            :username="user.username"
-            :title="user.displayName"
-            :avatar-url="user.avatar"
+            v-for="userAvatar in avatarToDisplay"
+            :key="userAvatar"
+            :username="userAvatar.username"
+            :title="userAvatar.displayName"
+            :avatar-url="userAvatar.avatar"
             :size="iconSize"
-            :style="'background-image: url('+user.avatar+')'"
-            class="mx-1 taskWorkerAvatar"/>
+            :style="'background-image: url('+userAvatar.avatar+')'"
+            class="mx-1 taskWorkerAvatar" />
           <div class="seeMoreAvatars">
             <div
               v-if="assigneeAndCoworkerArray.length > maxAvatarToShow"
@@ -63,9 +62,8 @@
             </div>
           </div>
         </div>
-
       </div>
-      <v-divider v-if="taskDueDate || (task.labels && task.labels.length)"/>
+      <v-divider v-if="taskDueDate || (task.labels && task.labels.length)" />
       <div 
         class="taskActionsAndDate d-flex justify-space-between pt-3"
         @click="openTaskDrawer()">
@@ -95,7 +93,7 @@
         </div>
         <div v-if="taskDueDate" class="taskStatusAndDate">
           <div class="taskDueDate">
-            <div >
+            <div>
               <date-format :value="taskDueDate" :format="dateTimeFormat" />
             </div>
           </div>
@@ -105,154 +103,154 @@
   </v-app>
 </template>
 <script>
-  export default {
-    props: {
-      task: {
-        type: Object,
-        default: () => ({}),
-      },
-      showCompletedTasks: {
-        type: Boolean,
-        default: false
-      }
+export default {
+  props: {
+    task: {
+      type: Object,
+      default: () => ({}),
     },
-    data() {
-      return {
-        user: {},
-        iconSize: 26,
-        dateTimeFormat: {
-          year: 'numeric',
-          month: 'numeric',
-          day: 'numeric',
-        },
-        assigneeAndCoworkerArray: [],
-        isPersonnalTask : this.task.task.status === null,
-        drawer:null,
-        maxAvatarToShow : 3,
-        showCompleteTasks: false,
-        removeCompletedTask: false
-      }
-    },
-    computed: {
-      taskDueDate() {
-        return this.task && this.task.task.dueDate && this.task.task.dueDate.time;
-      },
-      avatarToDisplay () {
-        if(this.assigneeAndCoworkerArray.length > this. maxAvatarToShow) {
-          return this.assigneeAndCoworkerArray.slice(0, this.maxAvatarToShow-1);
-        } else {
-          return this.assigneeAndCoworkerArray;
-        }
-      },
-      showMoreAvatarsNumber() {
-        return this.assigneeAndCoworkerArray.length - this.maxAvatarToShow;
-      }
-    },
-    created() {
-      this.getTaskAssigneeAndCoworkers();
-    },
-    methods: {
-      getTaskPriorityColor(priority) {
-        switch (priority) {
-          case "HIGH":
-            return "taskHighPriority";
-          case "NORMAL":
-            return "taskNormalPriority";
-          case "LOW":
-            return "taskLowPriority";
-          case "NONE":
-            return "taskNonePriority";
-        }
-      },
-      getTaskAssigneeAndCoworkers() {
-        if (this.task.assignee) {
-          this.assigneeAndCoworkerArray.push(this.task.assignee);
-        }
-        if (this.task.coworker || this.task.coworker.length > 0) {
-          this.task.coworker.forEach((coworker) => {
-            if (coworker){
-              this.assigneeAndCoworkerArray.push(coworker);
-            }
-          })
-        }
-      },
-      getLabelsList(taskLabels) {
-        if (taskLabels.length > 1) {
-          let labelText = '';
-          taskLabels.forEach((label) => {
-            labelText += `${label.name}\r\n`;
-          });
-          return labelText;
-        }
-      },
-      openTaskDrawer() {
-        this.$root.$emit('open-task-drawer', this.task.task,)
-      },
-
-      onCloseDrawer: function (drawer) {
-        this.drawer = drawer;
-      },
-      getTaskCompleted() {
-        if (this.task.task.completed === true) {
-          return 'uiIconValidate';
-        } else {
-          return 'uiIconCircle'
-        }
-      },
-      getTaskCompletedTitle() {
-        if (this.task.task.completed === true) {
-          return 'message.markAsUnCompleted';
-        } else {
-          return 'message.markAsCompleted'
-        }
-      },
-      updateCompleted() {
-
-        const task = {
-          id: this.task.task.id,
-          showCompleteTasks: this.showCompleted(),
-        };
-
-
-        if (typeof task.id !== 'undefined') {
-          return this.$tasksService.updateCompleted(task).then(task => {
-            if(task.completed){
-              this.$root.$emit('show-alert', {type: 'success',message: this.$t('alert.success.task.completed')});   
-            }else{
-              this.$root.$emit('show-alert', {type: 'success',message: this.$t('alert.success.task.unCompleted')});
-            }           
-            this.$emit('update-task-completed', task);
-            if( task.completed === true && !this.showCompletedTasks) {
-              this.removeCompletedTask = true;
-            }
-          }).then(this.task.task.completed = task.showCompleteTasks)
-                  .catch(e => {
-                    console.debug("Error updating project", e);
-                    this.$root.$emit('show-alert', {
-                    type: 'error',
-                    message: this.$t('alert.error')
-                });
-                    this.postProject = false;
-                  });
-        }
-
-
-      },
-      showCompleted() {
-        if (this.getTaskCompleted() === 'uiIconValidate') {
-          this.showCompleteTasks = false
-        } else {
-          this.showCompleteTasks = true
-        }
-        return this.showCompleteTasks
-      },
-      getTitleTaskClass() {
-        if (this.task.task.completed === true) {
-          return 'text-color strikethrough';
-        } else {
-          return 'text-color'
-        }
-      },
+    showCompletedTasks: {
+      type: Boolean,
+      default: false
     }
+  },
+  data() {
+    return {
+      user: {},
+      iconSize: 26,
+      dateTimeFormat: {
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric',
+      },
+      assigneeAndCoworkerArray: [],
+      isPersonnalTask: this.task.task.status === null,
+      drawer: null,
+      maxAvatarToShow: 3,
+      showCompleteTasks: false,
+      removeCompletedTask: false
+    };
+  },
+  computed: {
+    taskDueDate() {
+      return this.task && this.task.task.dueDate && this.task.task.dueDate.time;
+    },
+    avatarToDisplay () {
+      if (this.assigneeAndCoworkerArray.length > this. maxAvatarToShow) {
+        return this.assigneeAndCoworkerArray.slice(0, this.maxAvatarToShow-1);
+      } else {
+        return this.assigneeAndCoworkerArray;
+      }
+    },
+    showMoreAvatarsNumber() {
+      return this.assigneeAndCoworkerArray.length - this.maxAvatarToShow;
+    }
+  },
+  created() {
+    this.getTaskAssigneeAndCoworkers();
+  },
+  methods: {
+    getTaskPriorityColor(priority) {
+      switch (priority) {
+      case 'HIGH':
+        return 'taskHighPriority';
+      case 'NORMAL':
+        return 'taskNormalPriority';
+      case 'LOW':
+        return 'taskLowPriority';
+      case 'NONE':
+        return 'taskNonePriority';
+      }
+    },
+    getTaskAssigneeAndCoworkers() {
+      if (this.task.assignee) {
+        this.assigneeAndCoworkerArray.push(this.task.assignee);
+      }
+      if (this.task.coworker || this.task.coworker.length > 0) {
+        this.task.coworker.forEach((coworker) => {
+          if (coworker){
+            this.assigneeAndCoworkerArray.push(coworker);
+          }
+        });
+      }
+    },
+    getLabelsList(taskLabels) {
+      if (taskLabels.length > 1) {
+        let labelText = '';
+        taskLabels.forEach((label) => {
+          labelText += `${label.name}\r\n`;
+        });
+        return labelText;
+      }
+    },
+    openTaskDrawer() {
+      this.$root.$emit('open-task-drawer', this.task.task,);
+    },
+
+    onCloseDrawer: function (drawer) {
+      this.drawer = drawer;
+    },
+    getTaskCompleted() {
+      if (this.task.task.completed === true) {
+        return 'uiIconValidate';
+      } else {
+        return 'uiIconCircle';
+      }
+    },
+    getTaskCompletedTitle() {
+      if (this.task.task.completed === true) {
+        return 'message.markAsUnCompleted';
+      } else {
+        return 'message.markAsCompleted';
+      }
+    },
+    updateCompleted() {
+
+      const task = {
+        id: this.task.task.id,
+        showCompleteTasks: this.showCompleted(),
+      };
+
+
+      if (typeof task.id !== 'undefined') {
+        return this.$tasksService.updateCompleted(task).then(task => {
+          if (task.completed){
+            this.$root.$emit('show-alert', {type: 'success',message: this.$t('alert.success.task.completed')});   
+          } else {
+            this.$root.$emit('show-alert', {type: 'success',message: this.$t('alert.success.task.unCompleted')});
+          }           
+          this.$emit('update-task-completed', task);
+          if ( task.completed === true && !this.showCompletedTasks) {
+            this.removeCompletedTask = true;
+          }
+        }).then(this.task.task.completed = task.showCompleteTasks)
+          .catch(e => {
+            console.debug('Error updating project', e);
+            this.$root.$emit('show-alert', {
+              type: 'error',
+              message: this.$t('alert.error')
+            });
+            this.postProject = false;
+          });
+      }
+
+
+    },
+    showCompleted() {
+      if (this.getTaskCompleted() === 'uiIconValidate') {
+        this.showCompleteTasks = false;
+      } else {
+        this.showCompleteTasks = true;
+      }
+      return this.showCompleteTasks;
+    },
+    getTitleTaskClass() {
+      if (this.task.task.completed === true) {
+        return 'text-color strikethrough';
+      } else {
+        return 'text-color';
+      }
+    },
   }
+};
 </script>

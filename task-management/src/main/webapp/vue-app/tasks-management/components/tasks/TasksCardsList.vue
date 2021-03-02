@@ -6,15 +6,15 @@
           <v-row class="ma-0 border-box-sizing">
             <v-col
               v-for="task in tasks"
-              :key="task.id"
               :id="'tasks-'+task.id"
+              :key="task.id"
               cols="12"
               md="6"
               lg="4"
               xl="3"
               class="pa-0 projectItem">
               <task-card
-                :task="task"/>
+                :task="task" />
             </v-col>
           </v-row>
         </v-container>
@@ -23,13 +23,13 @@
   </v-app>
 </template>
 <script>
-  export default {
-    props: {
-      tasks: {
-        type: Array,
-        default: () =>[],
-      }
-    },
+export default {
+  props: {
+    tasks: {
+      type: Array,
+      default: () =>[],
+    }
+  },
 
-  }
+};
 </script>

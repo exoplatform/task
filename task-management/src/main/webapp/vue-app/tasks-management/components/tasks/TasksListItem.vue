@@ -2,13 +2,13 @@
   <div
     :class="getTaskPriorityColor(task.task.priority)"
     class="taskListItemView  px-4 py-3 d-flex align-center">
-    <div class="taskCheckBox" >
+    <div class="taskCheckBox">
       <v-switch
         ref="autoFocusInput2"
         class="d-none"
         reset
         true-value="true"
-        false-value="false"/>
+        false-value="false" />
       <i 
         :title="$t(getTaskCompletedTitle())" 
         :class="getTaskCompleted()"
@@ -52,7 +52,7 @@
                 :width="30"
                 :max-height="30"
                 :max-width="30"
-                class="mx-auto spaceAvatarImg"/>
+                class="mx-auto spaceAvatarImg" />
             </v-avatar>
           </a>
         </div>
@@ -79,7 +79,7 @@
         :avatar-url="user.avatar"
         :size="iconSize"
         :style="'background-image: url('+user.avatar+')'"
-        class="mx-1 taskWorkerAvatar"/>
+        class="mx-1 taskWorkerAvatar" />
       <div class="seeMoreAvatars">
         <div
           v-if="assigneeAndCoworkerArray.length > maxAvatarToShow"
@@ -119,7 +119,6 @@
         <i class="uiIcon uiCommentIcon"></i>
         <span class="taskCommentNumber caption">{{ task.commentCount }}</span>
       </div>
-
     </div>
     <div class="taskStat d-lg-block d-md-none" @click="openTaskDrawer()">
       <span v-if="task && task.task && task.task.status && task.task.status" class="taskStatLabel pl-2">
@@ -138,196 +137,195 @@
         </div>
       </div>
     </div>
-
   </div>
 </template>
 <script>
-  export default {
-    props: {
-      task: {
-        type: Object,
-        default: null
+export default {
+  props: {
+    task: {
+      type: Object,
+      default: null
+    }
+  },
+  data () {
+    return {
+      enabled: false,
+      iconSize: 26,
+      dateTimeFormat: {
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric',
+      },
+      assigneeAndCoworkerArray: [],
+      isPersonnalTask: this.task.status === null,
+      labelList: '',
+      isSpaceProject: this.task.space !== null,
+      maxAvatarToShow: 3,
+      showCompleteTasks: false
+    };
+  },
+  computed: {
+    taskDueDate() {
+      return this.task && this.task.task.dueDate && this.task.task.dueDate.time;
+    },
+    avatarToDisplay () {
+      this.getTaskAssigneeAndCoworkers();
+      if (this.assigneeAndCoworkerArray.length > this. maxAvatarToShow) {
+        return this.assigneeAndCoworkerArray.slice(0, this.maxAvatarToShow-1);
+      } else {
+        return this.assigneeAndCoworkerArray;
       }
     },
-    data () {
-      return {
-        enabled: false,
-        iconSize: 26,
-        dateTimeFormat: {
-          year: 'numeric',
-          month: 'numeric',
-          day: 'numeric',
-        },
-        assigneeAndCoworkerArray: [],
-        isPersonnalTask : this.task.status === null,
-        labelList: '',
-        isSpaceProject: this.task.space !== null,
-        maxAvatarToShow : 3,
-        showCompleteTasks: false
+    showMoreAvatarsNumber() {
+      return this.assigneeAndCoworkerArray.length - this.maxAvatarToShow;
+    }
+  },
+  methods: {
+    getTaskPriorityColor(priority) {
+      switch (priority) {
+      case 'HIGH':
+        return 'taskHighPriority';
+      case 'NORMAL':
+        return 'taskNormalPriority';
+      case 'LOW':
+        return 'taskLowPriority';
+      case 'NONE':
+        return 'taskNonePriority';
       }
     },
-    computed: {
-      taskDueDate() {
-        return this.task && this.task.task.dueDate && this.task.task.dueDate.time;
-      },
-      avatarToDisplay () {
-        this.getTaskAssigneeAndCoworkers();
-        if(this.assigneeAndCoworkerArray.length > this. maxAvatarToShow) {
-          return this.assigneeAndCoworkerArray.slice(0, this.maxAvatarToShow-1);
-        } else {
-          return this.assigneeAndCoworkerArray;
-        }
-      },
-      showMoreAvatarsNumber() {
-        return this.assigneeAndCoworkerArray.length - this.maxAvatarToShow;
+    getTaskColor() {
+      if (this.task.task.status){
+        return this.task.task.status.project.color ? this.task.task.status.project.color : 'noProjectColor' ;
+      }
+      else {
+        return null;
       }
     },
-    methods: {
-      getTaskPriorityColor(priority) {
-        switch(priority) {
-          case "HIGH":
-            return "taskHighPriority";
-          case "NORMAL":
-            return "taskNormalPriority";
-          case "LOW":
-            return "taskLowPriority";
-          case "NONE":
-            return "taskNonePriority";
-        }
-      },
-      getTaskColor() {
-        if(this.task.task.status){
-          return this.task.task.status.project.color ? this.task.task.status.project.color : 'noProjectColor' ;
-        }
-        else {
-          return null
-        }
-      },
       
-      updateCompleted() {
+    updateCompleted() {
 
-        const task = {
-          id: this.task.task.id,
-          showCompleteTasks: this.showCompleted(),
-        };
-
-
-        if (typeof task.id !== 'undefined') {
-          return this.$tasksService.updateCompleted(task).then(task => {
-            if(task.completed){
-              this.$root.$emit('show-alert', {type: 'success',message: this.$t('alert.success.task.completed')});   
-            }else{
-              this.$root.$emit('show-alert', {type: 'success',message: this.$t('alert.success.task.unCompleted')});
-            }
-            this.$root.$emit('update-cart', task);
-          }).then(this.task.task.completed = task.showCompleteTasks)
-                  .catch(e => {
-                    console.debug("Error updating project", e);
-                    this.$root.$emit('show-alert', {
-                    type: 'error',
-                    message: this.$t('alert.error')
-                });
-                    this.postProject = false;
-                  });
-        }
+      const task = {
+        id: this.task.task.id,
+        showCompleteTasks: this.showCompleted(),
+      };
 
 
-      },
-      getTaskCompleted() {
-        if(this.task.task.completed===true){
-          return 'uiIconValidate';
-        }
-        else {
-          return 'uiIconCircle'
-        }
-      },
-      getTitleTaskClass() {
-        if(this.task.task.completed===true){
-          return 'text-color strikethrough';
-        }
-        else {
-          return 'text-color'
-        }
-      },
-      getTaskCompletedTitle() {
-        if(this.task.task.completed===true){
-          return 'message.markAsUnCompleted';
-        }
-        else {
-          return 'message.markAsCompleted'
-        }
-      },
-      showCompleted(){
-        if(this.getTaskCompleted()==='uiIconValidate'){
-          this.showCompleteTasks=false
-        }else {
-          this.showCompleteTasks=true
-        }
-        return this.showCompleteTasks
-      },
-      getNameProject(){
-        if(this.task.task.status){
-          return  this.task.task.status.project.name  ;
-        }
-        else {
-          return null
-        }
-      },
-      getTaskAssigneeAndCoworkers() {
-        this.assigneeAndCoworkerArray=[]
-                if(this.task.assignee) {
-                  if (!this.assigneeAndCoworkerArray.some(assigneeAndCowoker => assigneeAndCowoker.username === this.task.assignee.username)) {
-
-                    this.assigneeAndCoworkerArray.push(this.task.assignee);
-                  }
-                }
-        if (this.task.coworker && this.task.coworker.length > 0 )
-        {
-          if(!  this.assigneeAndCoworkerArray.some(assigneeAndCowoker => assigneeAndCowoker.username === this.task.coworker.username)){
-
-            this.task.coworker.forEach((coworker) => {
-              if (coworker){
-                this.assigneeAndCoworkerArray.push(coworker);
-              }
-          })
-        }}
-      },
-      getTaskStatusLabel(status) {
-        switch(status) {
-          case "ToDo":
-            return this.$t('exo.tasks.status.todo');
-          case "InProgress":
-            return this.$t('exo.tasks.status.inprogress');
-          case "WaitingOn":
-            return this.$t('exo.tasks.status.waitingon');
-          case "Done":
-            return this.$t('exo.tasks.status.done');
-        }
-      },
-      getLabelsList(taskLabels) {
-        if (taskLabels.length > 1) {
-          let labelText = '';
-          taskLabels.forEach((label) => {
-            labelText += `${label.name}\r\n`;
+      if (typeof task.id !== 'undefined') {
+        return this.$tasksService.updateCompleted(task).then(task => {
+          if (task.completed){
+            this.$root.$emit('show-alert', {type: 'success',message: this.$t('alert.success.task.completed')});   
+          } else {
+            this.$root.$emit('show-alert', {type: 'success',message: this.$t('alert.success.task.unCompleted')});
+          }
+          this.$root.$emit('update-cart', task);
+        }).then(this.task.task.completed = task.showCompleteTasks)
+          .catch(e => {
+            console.debug('Error updating project', e);
+            this.$root.$emit('show-alert', {
+              type: 'error',
+              message: this.$t('alert.error')
+            });
+            this.postProject = false;
           });
-          return labelText;
+      }
+
+
+    },
+    getTaskCompleted() {
+      if (this.task.task.completed===true){
+        return 'uiIconValidate';
+      }
+      else {
+        return 'uiIconCircle';
+      }
+    },
+    getTitleTaskClass() {
+      if (this.task.task.completed===true){
+        return 'text-color strikethrough';
+      }
+      else {
+        return 'text-color';
+      }
+    },
+    getTaskCompletedTitle() {
+      if (this.task.task.completed===true){
+        return 'message.markAsUnCompleted';
+      }
+      else {
+        return 'message.markAsCompleted';
+      }
+    },
+    showCompleted(){
+      if (this.getTaskCompleted()==='uiIconValidate'){
+        this.showCompleteTasks=false;
+      } else {
+        this.showCompleteTasks=true;
+      }
+      return this.showCompleteTasks;
+    },
+    getNameProject(){
+      if (this.task.task.status){
+        return  this.task.task.status.project.name  ;
+      }
+      else {
+        return null;
+      }
+    },
+    getTaskAssigneeAndCoworkers() {
+      this.assigneeAndCoworkerArray=[];
+      if (this.task.assignee) {
+        if (!this.assigneeAndCoworkerArray.some(assigneeAndCowoker => assigneeAndCowoker.username === this.task.assignee.username)) {
+
+          this.assigneeAndCoworkerArray.push(this.task.assignee);
         }
-      },
-      openTaskDrawer() {
-        this.$root.$emit('open-task-drawer', this.task.task)
-      },
-      onCloseDrawer: function(drawer){
-        this.drawer = drawer;
-      },
-      spaceUrl(spaceUrl) {
-        if (!this.spaceUrl) {
-          return '#';
-        }
-        return `${eXo.env.portal.context}/g/:spaces:${spaceUrl}/`;
-      },
-      showProjectTasksDetails() {
+      }
+      if (this.task.coworker && this.task.coworker.length > 0 )
+      {
+        if (!  this.assigneeAndCoworkerArray.some(assigneeAndCowoker => assigneeAndCowoker.username === this.task.coworker.username)){
+
+          this.task.coworker.forEach((coworker) => {
+            if (coworker){
+              this.assigneeAndCoworkerArray.push(coworker);
+            }
+          });
+        }}
+    },
+    getTaskStatusLabel(status) {
+      switch (status) {
+      case 'ToDo':
+        return this.$t('exo.tasks.status.todo');
+      case 'InProgress':
+        return this.$t('exo.tasks.status.inprogress');
+      case 'WaitingOn':
+        return this.$t('exo.tasks.status.waitingon');
+      case 'Done':
+        return this.$t('exo.tasks.status.done');
+      }
+    },
+    getLabelsList(taskLabels) {
+      if (taskLabels.length > 1) {
+        let labelText = '';
+        taskLabels.forEach((label) => {
+          labelText += `${label.name}\r\n`;
+        });
+        return labelText;
+      }
+    },
+    openTaskDrawer() {
+      this.$root.$emit('open-task-drawer', this.task.task);
+    },
+    onCloseDrawer: function(drawer){
+      this.drawer = drawer;
+    },
+    spaceUrl(spaceUrl) {
+      if (!this.spaceUrl) {
+        return '#';
+      }
+      return `${eXo.env.portal.context}/g/:spaces:${spaceUrl}/`;
+    },
+    showProjectTasksDetails() {
       this.$root.$emit('show-project-details-tasks', this.task.task.status.project);
     },
-    }
   }
+};
 </script>

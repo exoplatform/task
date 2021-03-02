@@ -14,15 +14,15 @@
           </span>
         </v-btn>
       </v-toolbar-title>
-      <v-spacer/>
-      <v-spacer/>
+      <v-spacer />
+      <v-spacer />
       <v-scale-transition>
         <v-text-field
           v-model="keyword"
           :placeholder=" $t('label.filterTask') "
           prepend-inner-icon="fa-filter"
           class="inputTasksFilter pa-0 mr-3 my-auto"
-          clearable/>
+          clearable />
       </v-scale-transition>
       <v-scale-transition>
         <select
@@ -30,7 +30,6 @@
           name="primaryFilter"
           class="selectPrimaryFilter input-block-level ignore-vuetify-classes  pa-0 mr-3 my-auto"
           @change="changePrimaryFilter">
-
           <option
             v-for="item in primaryFilter"
             :key="item.name"
@@ -57,99 +56,99 @@
       @filter-num-changed="filterNumChanged"
       @filter-task="filterTasks"
       @reset-filter-task="resetFilterTask"
-      @filter-task-query="filterTaskquery"/>
+      @filter-task-query="filterTaskquery" />
   </v-app>
 </template>
 <script>
-  export default {
-    props: {
-      taskCardTab:{
-        type: String,
-        default: ''
-      },
-      taskListTab: {
-        type: String,
-        default: ''
-      },
+export default {
+  props: {
+    taskCardTab: {
+      type: String,
+      default: ''
     },
-    data () {
-      return {
-        tasks:null,
-        keyword: null,
-        awaitingSearch: false,
-        searchOnKeyChange:true,
-        filterNumber:0,
-        primaryFilterSelected:'ALL',
-        drawer:null,
-        primaryFilter: [
-          {name: "ALL"},{name: "ASSIGNED"},{name: "COLLABORATED"},{name: "OVERDUE"},{name: "TODAY"},{name: "TOMORROW"},{name: "UPCOMING"}
-        ],
+    taskListTab: {
+      type: String,
+      default: ''
+    },
+  },
+  data () {
+    return {
+      tasks: null,
+      keyword: null,
+      awaitingSearch: false,
+      searchOnKeyChange: true,
+      filterNumber: 0,
+      primaryFilterSelected: 'ALL',
+      drawer: null,
+      primaryFilter: [
+        {name: 'ALL'},{name: 'ASSIGNED'},{name: 'COLLABORATED'},{name: 'OVERDUE'},{name: 'TODAY'},{name: 'TOMORROW'},{name: 'UPCOMING'}
+      ],
+    };
+  },
+  watch: {
+    keyword() {  
+      if (!this.awaitingSearch) {
+        const searchOnKeyChange = this.searchOnKeyChange;
+        setTimeout(() => {
+          this.$emit('keyword-changed', this.keyword,searchOnKeyChange);
+          this.awaitingSearch = false;
+        }, 1000);
       }
+      this.awaitingSearch = true;  
+      this.searchOnKeyChange= true;
     },
-    watch: {
-      keyword() {  
-          if (!this.awaitingSearch) {
-            const searchOnKeyChange = this.searchOnKeyChange
-            setTimeout(() => {
-              this.$emit('keyword-changed', this.keyword,searchOnKeyChange);
-              this.awaitingSearch = false;
-            }, 1000);
-          }
-          this.awaitingSearch = true;  
-        this.searchOnKeyChange= true;
-      },
-    },created() {
+  },created() {
     this.primaryFilterSelected = localStorage.getItem('primary-filter-tasks');
     localStorage.setItem('primary-filter-tasks', 'ALL');
     this.changePrimaryFilter();
   },
-    methods: {
-      resetFilterTask(){
-        this.$emit('reset-filter-task-dashboard');
-      },
-      filterTaskquery(e,filterGroupSort,filterLabels){
-        this.searchOnKeyChange=false
-        this.showCompleteTasks=e.showCompleteTasks;
-        this.keyword=e.query
-        this.$emit('filter-task-query',e,filterGroupSort,filterLabels)
-      },
-      filterTasks(e){
-        this.tasks=e.tasks.tasks;
-        this.showCompleteTasks=e.showCompleteTasks;
-        this.$emit('filter-task-dashboard', { tasks:this.tasks,showCompleteTasks:this.showCompleteTasks });
-      },
-      openDrawer() {
-        this.$refs.filterTasksDrawer.open();
-      },
-      openTaskDrawer() {
-        const defaultTask = {
-          id:null,
-          status:{project:this.project},
-          priority:'NONE',
-          description:'',
-          title:''
-        }
-        this.$root.$emit('open-task-drawer', defaultTask);
-      },
-      changePrimaryFilter(){  
-       this.searchOnKeyChange=false 
-       this.keyword=""   
-       this.$emit('primary-filter-task', this.primaryFilterSelected);     
-      },
-      resetFields(activeField){
-        this.searchOnKeyChange=false
-          this.keyword=''
-          this.$refs.filterTasksDrawer.resetFields(activeField);
-      },
-      filterNumChanged(filtersnumber,source){
-        this.filterNumber=filtersnumber
-      },
-      getFilterNum(){
-        if(this.filterNumber>0){
-          return `(${this.filterNumber})`
-        } return ''
-      }
-
+  methods: {
+    resetFilterTask(){
+      this.$emit('reset-filter-task-dashboard');
+    },
+    filterTaskquery(e,filterGroupSort,filterLabels){
+      this.searchOnKeyChange=false;
+      this.showCompleteTasks=e.showCompleteTasks;
+      this.keyword=e.query;
+      this.$emit('filter-task-query',e,filterGroupSort,filterLabels);
+    },
+    filterTasks(e){
+      this.tasks=e.tasks.tasks;
+      this.showCompleteTasks=e.showCompleteTasks;
+      this.$emit('filter-task-dashboard', { tasks: this.tasks,showCompleteTasks: this.showCompleteTasks });
+    },
+    openDrawer() {
+      this.$refs.filterTasksDrawer.open();
+    },
+    openTaskDrawer() {
+      const defaultTask = {
+        id: null,
+        status: {project: this.project},
+        priority: 'NONE',
+        description: '',
+        title: ''
+      };
+      this.$root.$emit('open-task-drawer', defaultTask);
+    },
+    changePrimaryFilter(){  
+      this.searchOnKeyChange=false; 
+      this.keyword='';   
+      this.$emit('primary-filter-task', this.primaryFilterSelected);     
+    },
+    resetFields(activeField){
+      this.searchOnKeyChange=false;
+      this.keyword='';
+      this.$refs.filterTasksDrawer.resetFields(activeField);
+    },
+    filterNumChanged(filtersnumber,source){
+      this.filterNumber=filtersnumber;
+    },
+    getFilterNum(){
+      if (this.filterNumber>0){
+        return `(${this.filterNumber})`;
+      } return '';
     }
+
   }
+};
 </script>

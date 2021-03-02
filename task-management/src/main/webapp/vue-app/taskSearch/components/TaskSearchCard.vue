@@ -3,6 +3,7 @@
     class="d-flex flex-column border-radius box-shadow" 
     flat
     min-height="227">
+    <!-- eslint-disable vue/no-v-html -->
     <a
       :title="taskTitleText"
       class="px-3 pt-2 pb-1 text-left text-truncate"

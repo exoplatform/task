@@ -1,10 +1,9 @@
 <template>
   <v-app id="TasksManagementPortlet">
-
     <v-alert 
       v-model="alert" 
       :type="type"
-      dismissible >
+      dismissible>
       {{ message }}
     </v-alert>
 
@@ -22,151 +21,151 @@
     </v-tabs>
     <v-tabs-items v-model="tab">
       <v-tab-item value="tab-1">
-        <tasks-dashboard/>
+        <tasks-dashboard />
       </v-tab-item>
       <v-tab-item value="tab-2">
-        <project-dashboard :space-name="spaceName"/>
+        <project-dashboard :space-name="spaceName" />
       </v-tab-item>
     </v-tabs-items>
     <add-project-drawer
-      ref="addProjectDrawer"/>
+      ref="addProjectDrawer" />
       
     <task-drawer
       ref="taskDrawer"
-      :task="task"/>
+      :task="task" />
 
-    <tasks-assignee-coworker-drawer/>
+    <tasks-assignee-coworker-drawer />
   </v-app>
 </template>
 <script>
-  export default {
-    data () {
-      return {
-        tab: 'tab-1',
-        spaceName: '',
-        alert:false,
-        type:'',
-        message:'',
-        task: {
+export default {
+  data () {
+    return {
+      tab: 'tab-1',
+      spaceName: '',
+      alert: false,
+      type: '',
+      message: '',
+      task: {
         type: Object,
         default: () => ({}),
       }
-      }
-    },
+    };
+  },
  
   created(){
-     this.$root.$on('show-alert', message => {
-       this.displayMessage(message)
-      });
+    this.$root.$on('show-alert', message => {
+      this.displayMessage(message);
+    });
     this.$root.$on('open-project-drawer', project => {
-       this.$refs.addProjectDrawer.open(project);
-      });
+      this.$refs.addProjectDrawer.open(project);
+    });
     this.$root.$on('show-project-details-tasks',project =>{
-      document.dispatchEvent(new CustomEvent('showProjectTasks', {detail: project}))
+      document.dispatchEvent(new CustomEvent('showProjectTasks', {detail: project}));
       this.tab='tab-2';
     });
     this.$root.$on('set-url',context =>{
       
-      if(context.type==="task"){
-          this.setTaskUrl(context.id)
+      if (context.type==='task'){
+        this.setTaskUrl(context.id);
       }
-      if(context.type==="project"){
-          this.setProjectUrl(context.id)
+      if (context.type==='project'){
+        this.setProjectUrl(context.id);
       }
-      if(context.type==="myProjects"){
-        this.getMyProjects() 
+      if (context.type==='myProjects'){
+        this.getMyProjects(); 
       }
     });
-     this.$root.$on('open-task-drawer', task => {
-       this.task=task;
-       if(task.id){
-         this.setTaskUrl(task.id)
-       }
-       this.$refs.taskDrawer.open(task);
-      });
-     this.$root.$on('task-drawer-closed', task => {
-       if(this.tab==='tab-1'){
-         this.getMyTasks()
-       }
+    this.$root.$on('open-task-drawer', task => {
+      this.task=task;
+      if (task.id){
+        this.setTaskUrl(task.id);
+      }
+      this.$refs.taskDrawer.open(task);
+    });
+    this.$root.$on('task-drawer-closed', task => {
+      if (this.tab==='tab-1'){
+        this.getMyTasks();
+      }
 
-       else if(task && task.status && task.status.project) {
-         this.setProjectUrl(task.status.project.id)
-          }else{
-           this.tab='tab-1' 
-          }
-      });
-    const urlPath = document.location.pathname
-    if(urlPath.includes('g/:spaces')){
-      this.spaceName = urlPath.split('g/:spaces:')[1].split('/')[0]
-      this.tab='tab-2'
-    }else{
-        if(urlPath.includes('myTasks')){
-        this.tab='tab-1'
-     }
-     if(urlPath.includes('myProjects')){
-        this.tab='tab-2'
-     }
+      else if (task && task.status && task.status.project) {
+        this.setProjectUrl(task.status.project.id);
+      } else {
+        this.tab='tab-1'; 
+      }
+    });
+    const urlPath = document.location.pathname;
+    if (urlPath.includes('g/:spaces')){
+      this.spaceName = urlPath.split('g/:spaces:')[1].split('/')[0];
+      this.tab='tab-2';
+    } else {
+      if (urlPath.includes('myTasks')){
+        this.tab='tab-1';
+      }
+      if (urlPath.includes('myProjects')){
+        this.tab='tab-2';
+      }
     }
-      if(urlPath.includes('taskDetail')){
-      let taskId = urlPath.split('taskDetail/')[1].split(/[^0-9]/)[0]
+    if (urlPath.includes('taskDetail')){
+      let taskId = urlPath.split('taskDetail/')[1].split(/[^0-9]/)[0];
       taskId = taskId && Number(taskId) || 0;
       if (taskId) {
-          this.tab='tab-2';
-          this.$tasksService.getTaskById(taskId).then(data => {
-          this.task = data  
-          if(this.task.status && this.task.status.project){
-              document.dispatchEvent(new CustomEvent('showProjectTasks', {detail: this.task.status.project}));
-            this.tab='tab-2'
+        this.tab='tab-2';
+        this.$tasksService.getTaskById(taskId).then(data => {
+          this.task = data;  
+          if (this.task.status && this.task.status.project){
+            document.dispatchEvent(new CustomEvent('showProjectTasks', {detail: this.task.status.project}));
+            this.tab='tab-2';
           } else {
-            this.tab='tab-1'
+            this.tab='tab-1';
           }
           this.$refs.taskDrawer.open(this.task);
-        })
+        });
       } 
-      }
-      if(urlPath.includes('projectDetail')){
-      let projectId = urlPath.split('projectDetail/')[1].split(/[^0-9]/)[0]
+    }
+    if (urlPath.includes('projectDetail')){
+      let projectId = urlPath.split('projectDetail/')[1].split(/[^0-9]/)[0];
       projectId = projectId && Number(projectId) || 0;
       if (projectId) {
-          this.tab='tab-2';
-          this.$projectService.getProject(projectId).then(data => {
+        this.tab='tab-2';
+        this.$projectService.getProject(projectId).then(data => {
           document.dispatchEvent(new CustomEvent('showProjectTasks', {detail: data}));
-        })
+        });
       }
-      }
+    }
   },
   methods: {
-      getMyTasks(){
+    getMyTasks(){
       window.history.pushState('mytasks', 'My Tasks', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/tasks/myTasks`);
-      },
-      getMyProjects(){
-        const urlPath = document.location.pathname
-          if(urlPath.includes('g/:spaces')){
-           window.history.pushState('task', 'Task details', `${urlPath.split('tasks')[0]}tasks`); 
-          }else{
-            window.history.pushState('myprojects', 'My Projects', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/tasks/myProjects`);
-          }       
-      },
-      setTaskUrl(id){
-        const urlPath = document.location.pathname
-        window.history.pushState('task', 'Task details', `${urlPath.split('tasks')[0]}tasks/taskDetail/${id}`);
-      },
-      setProjectUrl(id){
-        const urlPath = document.location.pathname
-        if(urlPath.includes('g/:spaces') && !urlPath.includes('/projectDetail/')){
-          window.history.pushState('task', 'Task details', `${urlPath.split('tasks')[0]}/projectDetail/${id}`);
-        } else if (urlPath.includes('g/:spaces') && urlPath.includes('/projectDetail/')){
-          window.history.pushState('task', 'Task details', `${urlPath.split('tasks')[0]}`);
-        }else {
-          window.history.pushState('task', 'Task details', `${urlPath.split('tasks')[0]}tasks/projectDetail/${id}`);
-        }
-        },
-      displayMessage(message) {
-        this.message=message.message
-        this.type=message.type
-        this.alert = true;
-        window.setTimeout(() => this.alert = false, 5000);
+    },
+    getMyProjects(){
+      const urlPath = document.location.pathname;
+      if (urlPath.includes('g/:spaces')){
+        window.history.pushState('task', 'Task details', `${urlPath.split('tasks')[0]}tasks`); 
+      } else {
+        window.history.pushState('myprojects', 'My Projects', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/tasks/myProjects`);
+      }       
+    },
+    setTaskUrl(id){
+      const urlPath = document.location.pathname;
+      window.history.pushState('task', 'Task details', `${urlPath.split('tasks')[0]}tasks/taskDetail/${id}`);
+    },
+    setProjectUrl(id){
+      const urlPath = document.location.pathname;
+      if (urlPath.includes('g/:spaces') && !urlPath.includes('/projectDetail/')){
+        window.history.pushState('task', 'Task details', `${urlPath.split('tasks')[0]}/projectDetail/${id}`);
+      } else if (urlPath.includes('g/:spaces') && urlPath.includes('/projectDetail/')){
+        window.history.pushState('task', 'Task details', `${urlPath.split('tasks')[0]}`);
+      } else {
+        window.history.pushState('task', 'Task details', `${urlPath.split('tasks')[0]}tasks/projectDetail/${id}`);
+      }
+    },
+    displayMessage(message) {
+      this.message=message.message;
+      this.type=message.type;
+      this.alert = true;
+      window.setTimeout(() => this.alert = false, 5000);
     }
-}
-   }
+  }
+};
 </script>

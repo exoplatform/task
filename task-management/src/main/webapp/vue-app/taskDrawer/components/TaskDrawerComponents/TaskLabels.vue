@@ -48,7 +48,9 @@
             v-if="item.canEdit"
             x-small
             class="pr-0"
-            @click="parent.selectItem(item);removeTaskFromLabel(item)">close</v-icon>
+            @click="parent.selectItem(item);removeTaskFromLabel(item)">
+            close
+          </v-icon>
         </v-chip>
       </template>
       <template v-slot:item="{ index, item }">
@@ -67,168 +69,168 @@
 </template>
 
 <script>
-  import {getMyAllLabels, getProjectLabels, getTaskLabels, addTaskToLabel,removeTaskFromLabel} from '../../taskDrawerApi';
-  export default {
-    props: {
-      task: {
-        type: Object,
-        default: () => {
-          return {};
-        }
-        },
-    },
-    data() {
-      return {
-        index: -1,
-        items: [],
-        nonce: 1,
-        model: [],
-        x: 0,
-        search: null,
-        y: 0,
+import {getMyAllLabels, getProjectLabels, getTaskLabels, addTaskToLabel,removeTaskFromLabel} from '../../taskDrawerApi';
+export default {
+  props: {
+    task: {
+      type: Object,
+      default: () => {
+        return {};
       }
-      },
-    watch: {
-      model(val, prev) {
-        if (val.length === prev.length) {
-          this.search = null
-          return
-        }
-        this.model = val.map(v => {
-          if (typeof v === 'string') {
-            v = {
-              text: v,
-              name: v,
-            }
-            this.items.push(v)
-            this.nonce++
-            this.addTaskToLabel(v)
-          }
-          return v
-        })
-      },
-
     },
-    created() {
-      
-      $(document).on('mousedown', () => {
-        if (this.$refs.selectLabel && this.$refs.selectLabel.isMenuActive) {
-          window.setTimeout(() => {
-            this.$refs.selectLabel.isMenuActive = false;
-            }, 200);
-        }
-      });
-      document.addEventListener('closeLabelsList',()=> {
-        setTimeout(() => {
-          if (typeof this.$refs.selectLabel !== 'undefined') {
-            this.$refs.selectLabel.isMenuActive = false;
-          }
-        }, 100);
-      });
-      document.addEventListener('loadProjectLabels', event => {
-        if (event && event.detail) {
-          const task = event.detail;
-          this.model = [];
-          if(task.id!=null&&task.status.project!=null) {
-            this.getProjectLabels(task.status.project.id);
-          }
-        }
-      });
-      document.addEventListener('loadTaskLabels', event => {
-        if (event && event.detail) {
-          const task = event.detail;
-          this.model = [];
-          if(task.id!=null) {
-            this.getTaskLabels();
-            getTaskLabels(task.id).then((labels) => {
-              this.model = labels.map(function (el) {
-                const o = Object.assign({}, el);
-                o.text = o.name;
-                return o;
-              });
-            })
-          }
-        }
-      });
-    },
-    methods: {
-      filter(item, queryText, itemText) {
-        if (item.header) {
-          return false
-        }
-        const hasValue = function (val) {
-          return val != null ? val : ''
-        };
-        const text = hasValue(itemText)
-        const query = hasValue(queryText)
-        return text.toString().toLowerCase().indexOf(query.toString().toLowerCase()) > -1
-      },
-      getMyAllLabels() {
-        getMyAllLabels().then((labels) => {
-          this.items = labels.map(function (el) {
-            const o = Object.assign({}, el);
-            o.text = o.name;
-            return o;
-          });
-        })
-      },
-      
-      getProjectLabels(projectId) {
-        getProjectLabels(projectId).then((labels) => {
-          this.items = labels.map(function (el) {
-            const o = Object.assign({}, el);
-            o.text = o.name;
-            return o;
-          });
-        })
-      },
-      getTaskLabels() {
-        getTaskLabels(this.task.id).then((labels) => {
-          this.model = labels.map(function (el) {
-            const o = Object.assign({}, el);
-            o.text = o.name;
-            return o;
-          });
-        })
-      },
-
-      addTaskToLabel(label) {
-        if( this.task.id!= null ) {
-          addTaskToLabel(this.task.id, label).then(task => {
-                    this.$root.$emit('show-alert', {
-                        type: 'success',
-                        message: this.$t('alert.success.task.label')
-                    });
-                }).catch(e => {
-                    console.debug("Error when updating task's labels", e);
-                    this.$root.$emit('show-alert', {
-                        type: 'error',
-                        message: this.$t('alert.error')
-                    });
-                });
-        } else {
-          document.dispatchEvent(new CustomEvent('labelListChanged', {detail: label}));
-        }
-        this.model.push(label)
-        document.getElementById('labelInput').focus()
-      },
-      removeTaskFromLabel(item) {
-        removeTaskFromLabel(this.task.id, item.id).then(task => {
-                    this.$root.$emit('show-alert', {
-                        type: 'success',
-                        message: this.$t('alert.success.task.label')
-                    });
-                }).catch(e => {
-                    console.debug("Error when updating task's labels", e);
-                    this.$root.$emit('show-alert', {
-                        type: 'error',
-                        message: this.$t('alert.error')
-                    });
-                });
-      },
-      openLabelsList() {
-        this.$emit('labelsListOpened')
+  },
+  data() {
+    return {
+      index: -1,
+      items: [],
+      nonce: 1,
+      model: [],
+      x: 0,
+      search: null,
+      y: 0,
+    };
+  },
+  watch: {
+    model(val, prev) {
+      if (val.length === prev.length) {
+        this.search = null;
+        return;
       }
+      this.model = val.map(v => {
+        if (typeof v === 'string') {
+          v = {
+            text: v,
+            name: v,
+          };
+          this.items.push(v);
+          this.nonce++;
+          this.addTaskToLabel(v);
+        }
+        return v;
+      });
+    },
+
+  },
+  created() {
+      
+    $(document).on('mousedown', () => {
+      if (this.$refs.selectLabel && this.$refs.selectLabel.isMenuActive) {
+        window.setTimeout(() => {
+          this.$refs.selectLabel.isMenuActive = false;
+        }, 200);
+      }
+    });
+    document.addEventListener('closeLabelsList',()=> {
+      setTimeout(() => {
+        if (typeof this.$refs.selectLabel !== 'undefined') {
+          this.$refs.selectLabel.isMenuActive = false;
+        }
+      }, 100);
+    });
+    document.addEventListener('loadProjectLabels', event => {
+      if (event && event.detail) {
+        const task = event.detail;
+        this.model = [];
+        if (task.id!=null&&task.status.project!=null) {
+          this.getProjectLabels(task.status.project.id);
+        }
+      }
+    });
+    document.addEventListener('loadTaskLabels', event => {
+      if (event && event.detail) {
+        const task = event.detail;
+        this.model = [];
+        if (task.id!=null) {
+          this.getTaskLabels();
+          getTaskLabels(task.id).then((labels) => {
+            this.model = labels.map(function (el) {
+              const o = Object.assign({}, el);
+              o.text = o.name;
+              return o;
+            });
+          });
+        }
+      }
+    });
+  },
+  methods: {
+    filter(item, queryText, itemText) {
+      if (item.header) {
+        return false;
+      }
+      const hasValue = function (val) {
+        return val != null ? val : '';
+      };
+      const text = hasValue(itemText);
+      const query = hasValue(queryText);
+      return text.toString().toLowerCase().indexOf(query.toString().toLowerCase()) > -1;
+    },
+    getMyAllLabels() {
+      getMyAllLabels().then((labels) => {
+        this.items = labels.map(function (el) {
+          const o = Object.assign({}, el);
+          o.text = o.name;
+          return o;
+        });
+      });
+    },
+      
+    getProjectLabels(projectId) {
+      getProjectLabels(projectId).then((labels) => {
+        this.items = labels.map(function (el) {
+          const o = Object.assign({}, el);
+          o.text = o.name;
+          return o;
+        });
+      });
+    },
+    getTaskLabels() {
+      getTaskLabels(this.task.id).then((labels) => {
+        this.model = labels.map(function (el) {
+          const o = Object.assign({}, el);
+          o.text = o.name;
+          return o;
+        });
+      });
+    },
+
+    addTaskToLabel(label) {
+      if ( this.task.id!= null ) {
+        addTaskToLabel(this.task.id, label).then(task => {
+          this.$root.$emit('show-alert', {
+            type: 'success',
+            message: this.$t('alert.success.task.label')
+          });
+        }).catch(e => {
+          console.debug('Error when updating task\'s labels', e);
+          this.$root.$emit('show-alert', {
+            type: 'error',
+            message: this.$t('alert.error')
+          });
+        });
+      } else {
+        document.dispatchEvent(new CustomEvent('labelListChanged', {detail: label}));
+      }
+      this.model.push(label);
+      document.getElementById('labelInput').focus();
+    },
+    removeTaskFromLabel(item) {
+      removeTaskFromLabel(this.task.id, item.id).then(task => {
+        this.$root.$emit('show-alert', {
+          type: 'success',
+          message: this.$t('alert.success.task.label')
+        });
+      }).catch(e => {
+        console.debug('Error when updating task\'s labels', e);
+        this.$root.$emit('show-alert', {
+          type: 'error',
+          message: this.$t('alert.error')
+        });
+      });
+    },
+    openLabelsList() {
+      this.$emit('labelsListOpened');
     }
   }
+};
 </script>

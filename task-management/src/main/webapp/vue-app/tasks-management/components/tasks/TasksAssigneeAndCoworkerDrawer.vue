@@ -19,15 +19,15 @@
   </exo-drawer>
 </template>
 <script>
-  export default {
-    data: () => ({
-      tasksAssigneeAndCoworker: [],
-    }),
-    mounted() {
-      this.$root.$on('displayTasksAssigneeAndCoworker', assigneeAndCoworkerDrawer => {
-        this.tasksAssigneeAndCoworker = assigneeAndCoworkerDrawer;
-        this.$refs.assigneeAndCoworkerDrawer.open();
-      });
-    }
-  };
+export default {
+  data: () => ({
+    tasksAssigneeAndCoworker: [],
+  }),
+  mounted() {
+    this.$root.$on('displayTasksAssigneeAndCoworker', assigneeAndCoworkerDrawer => {
+      this.tasksAssigneeAndCoworker = assigneeAndCoworkerDrawer;
+      this.$refs.assigneeAndCoworkerDrawer.open();
+    });
+  }
+};
 </script>

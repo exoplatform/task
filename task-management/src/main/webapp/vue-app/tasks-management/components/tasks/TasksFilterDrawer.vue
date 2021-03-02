@@ -22,30 +22,30 @@
 
             <v-tabs-items v-model="tab">
               <v-tab-item v-if="!project">
-                <v-card >
+                <v-card>
                   <tasks-group-drawer
                     ref="filterGroupTasksDrawer"
-                    v-model="groupBy"/>
+                    v-model="groupBy" />
                   <tasks-sort-by-drawer
                     ref="filterSortTasksDrawer"
-                    v-model="sortBy"/>
+                    v-model="sortBy" />
                 </v-card>
               </v-tab-item>
 
               <v-tab-item v-if="project">
-                <v-card >
+                <v-card>
                   <tasks-group-project-drawer
                     ref="filterGroupTasksDrawer"
                     v-model="groupBy"
-                    :task-view-tab-name="taskViewTabName"/>
+                    :task-view-tab-name="taskViewTabName" />
                   <tasks-sort-by-project-drawer
                     ref="filterSortTasksDrawer"
-                    v-model="sortBy"/>
+                    v-model="sortBy" />
                 </v-card>
               </v-tab-item>
 
               <v-tab-item>
-                <v-card >
+                <v-card>
                   <form ref="form1" class="mt-4">
                     <v-label for="name">
                       <span class="font-weight-bold body-2">{{ $t('filter.task.contains') }}</span>
@@ -57,7 +57,7 @@
                       type="text"
                       name="name"
                       class="input-block-level ignore-vuetify-classes my-3"
-                      required >
+                      required>
 
                     <v-label v-if="project" for="status">
                       <span class="font-weight-bold body-2">{{ $t('filter.task.status') }}</span>
@@ -82,13 +82,13 @@
                     </v-label>
                     <exo-identity-suggester
                       ref="autoFocusInput3"
-                      :labels="suggesterLabels"
                       v-model="assignee"
+                      :labels="suggesterLabels"
                       :search-options="searchOptions"
                       name="assignee"
                       type-of-relations="user_to_invite"
                       height="40"
-                      include-users/>
+                      include-users />
                     <v-label for="taskDueDate">
                       <span class="font-weight-bold body-2">{{ $t('filter.task.due') }}</span>
                     </v-label>
@@ -96,7 +96,6 @@
                       v-model="dueDateSelected"
                       name="taskDueDate"
                       class="input-block-level ignore-vuetify-classes my-3">
-
                       <option
                         v-for="item in dueDate"
                         :key="item.name"
@@ -112,7 +111,6 @@
                       v-model="prioritySelected"
                       name="priority"
                       class="input-block-level ignore-vuetify-classes my-3">
-
                       <option
                         v-for="item in priority"
                         :key="item.name"
@@ -139,19 +137,18 @@
                 </v-card>
               </v-tab-item>
 
-              <v-tab-item >
-                <v-card >
+              <v-tab-item>
+                <v-card>
                   <tasks-labels-drawer
                     ref="filterLabelsTasksDrawer"
                     :project-id="projectId"
-                    :labels="labels"/>
+                    :labels="labels" />
                 </v-card>
               </v-tab-item>
             </v-tabs-items>
           </v-card>
         </template>
       </div>
-
     </template>
     <template slot="footer">
       <div class="VuetifyApp flex d-flex">
@@ -187,239 +184,240 @@
   </exo-drawer>
 </template>
 <script>
-  export default {
-    props: {
-      task: {
-        type: Object,
-        default: () => ({}),
-      },
-      groupBy: {
-        type: String,
-        default:''
-      },
-      sortBy: {
-        type: String,
-        default:''
-      },
-      project: {
-        type: String,
-        default:''
-      },
-      query: {
-        type: String,
-        default:''
-      },
-      statusList: {
-        type: Array,
-        default: () =>[],
-      }
+export default {
+  props: {
+    task: {
+      type: Object,
+      default: () => ({}),
     },
-    data () {
-      return {
-        tab: null,
-        dueDateSelected:'',
-        prioritySelected:'',
-        statusSelected:'',
-        projectId:0,
-        assignee:'',
-        assigneeTask:'',
-        dueDate: [
-          {name: ""},{name: "OVERDUE"},{name: "TODAY"},{name: "TOMORROW"},{name: "UPCOMING"}
-        ],
-        priority: [
-          {name: ""},{name: "NONE"},{name: "LOW"},{name: "NORMAL"},{name: "HIGH"}
-        ],
-        showCompleteTasks:false,
-        labels:[],
-        taskViewTabName:'',
-      }
+    groupBy: {
+      type: String,
+      default: ''
     },
-    computed: {
-      suggesterLabels() {
-        return {
-          placeholder: this.$t('label.assignee'),
-          noDataLabel: this.$t('label.noDataLabel'),
-        };
-      },
-      searchOptions() {
-        if(this.project) {
-          const options = {
-            includeCurrentUser: true,
-          };
-          return {
-            searchUrl: '/portal/rest/projects/projectParticipants/'.concat(this.project).concat('/'),
-            options: options
-          };
-        }
-      },
+    sortBy: {
+      type: String,
+      default: ''
     },
-    created() {
-      this.$root.$on('filter-task-labels',labels =>{
-        this.labels = labels;
-      });
-        const urlPath = document.location.pathname
-        if(urlPath.includes('projectDetail')){
-          const pid= urlPath.split('projectDetail/')[1].split(/[^0-9]/)[0]
-          this.projectId = pid && Number(pid) || 0;
-          if (localStorage.getItem(`filterStorage${this.projectId}`) !== null) {
-            const localStorageSaveFilter = localStorage.getItem(`filterStorage${this.projectId}`);
-            if (localStorageSaveFilter.split('"')[10].split('}')[0].split(':')[1] === this.projectId.toString()) {
-              this.groupBy = localStorageSaveFilter.split('"')[3];
-              this.sortBy = localStorageSaveFilter.split('"')[7];
-            }
-          }
-        }
-        else if(urlPath.includes('myTasks')){
-          if (localStorage.getItem(`filterStorageNone`) !== null) {
-            const localStorageSaveFilter = localStorage.getItem(`filterStorageNone`);
-            if (localStorageSaveFilter.split('"')[11] === "None") {
-              this.groupBy = localStorageSaveFilter.split('"')[3];
-              this.sortBy = localStorageSaveFilter.split('"')[7];
-            }
-          }
-        }
+    project: {
+      type: String,
+      default: ''
     },
-    methods: {
-      open() {
-
-        this.$root.$emit('reset-filter-task-group-sort',this.groupBy);
-        this.$root.$emit('reset-filter-task-sort',this.sortBy);
-        this.taskViewTabName = document.getElementsByClassName('taskTabList')[0].getAttribute('aria-selected')==='true' ? 'list' : 'borad';
-        this.$refs.filterTasksDrawer.open();
-      },
-      cancel() {
-        this.$refs.filterTasksDrawer.close();
-        this.query=this.task.query;
-        this.assignee=this.task.assignee;
-        this.dueDateSelected='';
-        this.prioritySelected='';
-        this.statusSelected='';
-        this.groupBy='none';
-        this.sortBy='';
-        this.labels='';
-        this.showCompleteTasks=false;
-        this.getFilterNumber();
-        this.$root.$emit('reset-filter-task-group-sort',this.groupBy);
-      },
-      reset() {
-        this.query=this.task.query;
-        this.assignee=this.task.assignee;
-        this.dueDateSelected='';
-        this.prioritySelected='';
-        this.statusSelected='';
-        this.groupBy='';
-        this.sortBy='';
-        this.labels='';
-        this.showCompleteTasks=false;
-        this.getFilterNumber();
-        const jsonToSave = {
-          groupBy: this.groupBy,
-          sortBy: this.sortBy,
-          projectId: this.project || "None",
-        }
-        this.saveValueFilterInStorage(JSON.parse(JSON.stringify(jsonToSave)));
-        localStorage.setItem(`filterStorage${jsonToSave.projectId}`,JSON.stringify(jsonToSave));
-        this.$root.$emit('reset-filter-task-group-sort',this.groupBy);
-        this.$emit('reset-filter-task');
-      },
-      resetFields(source) {
-        this.query='';
-        this.assignee='';
-        this.dueDateSelected='';
-        this.prioritySelected='';
-        this.statusSelected='';
-        this.groupBy='';
-        this.sortBy='';
-        this.labels='';
-        this.showCompleteTasks=false;
-        this.$root.$emit('reset-filter-task-group-sort',this.groupBy);
-        this.getFilterNumber(source)
-      },
-      filterTasks(){
-        const tasks = {
-          query: this.query,
-          assignee: '',
-          statusId: this.statusSelected,
-          dueDate: this.dueDateSelected,
-          priority: this.prioritySelected,
-          showCompleteTasks: this.showCompleteTasks,
-          groupBy: this.groupBy,
-          orderBy: this.sortBy,
-        };
-        const filterGroupSort = {
-          groupBy: this.groupBy,
-          sortBy: this.sortBy,
-        };
-        const filterLabels = {
-          labels: [],
-        };
-        if(this.labels){
-          this.labels.forEach(user => {
-            filterLabels.labels.push(user.id)
-          })
-        }
-        if (this.assignee){
-          tasks.assignee = this.assignee.remoteId;
-        }
-        const jsonToSave = {
-          groupBy: this.groupBy,
-          sortBy: this.sortBy,
-          projectId: this.project || 'None',
-        }
-        this.saveValueFilterInStorage(JSON.parse(JSON.stringify(jsonToSave)));
-        if(this.project){
-          this.$emit('filter-task',{ tasks,filterLabels,showCompleteTasks:this.showCompleteTasks });
-          this.getFilterNumber()
-          if (this.$refs.filterTasksDrawer){
-            this.$refs.filterTasksDrawer.close();
-          }
-        }else{
-          this.$emit('filter-task-query', tasks,filterGroupSort,filterLabels);
-       
-        this.getFilterNumber()
-          this.$refs.filterTasksDrawer.close();
-      }
-      },
-      getFilterNumber(source){
-        let filtersnumber = 0
-        if(this.query){
-          filtersnumber++
-        }
-        if(this.assignee){
-          filtersnumber++
-        }
-        if(this.dueDateSelected){
-          filtersnumber++
-        }
-        if(this.prioritySelected){
-          filtersnumber++
-        }
-        if(this.statusSelected){
-          filtersnumber++
-        }
-        if(this.labels&&this.labels.length>0){
-          filtersnumber++
-        }
-        if(this.showCompleteTasks){
-          filtersnumber++
-        }
-        this.$emit('filter-num-changed',filtersnumber,source)
-      },
-      saveValueFilterInStorage(value){
-        this.$projectService.saveFilterSettings(value).then((response) => {
-          if (response){
-            localStorage.setItem(`filterStorage${value.projectId}`,JSON.stringify(value));
-          }
-        });
-      },
-      statusFilterLabel(item) {
-        if(this.$t(`label.status.${item.toLowerCase()}`).includes('label.status')) {
-          return item;
-        } else {
-          return this.$t(`label.status.${item.toLowerCase()}`);
-        }
-      },
-
+    query: {
+      type: String,
+      default: ''
+    },
+    statusList: {
+      type: Array,
+      default: () =>[],
     }
+  },
+  data () {
+    return {
+      tab: null,
+      dueDateSelected: '',
+      prioritySelected: '',
+      statusSelected: '',
+      projectId: 0,
+      assignee: '',
+      assigneeTask: '',
+      dueDate: [
+        {name: ''},{name: 'OVERDUE'},{name: 'TODAY'},{name: 'TOMORROW'},{name: 'UPCOMING'}
+      ],
+      priority: [
+        {name: ''},{name: 'NONE'},{name: 'LOW'},{name: 'NORMAL'},{name: 'HIGH'}
+      ],
+      showCompleteTasks: false,
+      labels: [],
+      taskViewTabName: '',
+    };
+  },
+  computed: {
+    suggesterLabels() {
+      return {
+        placeholder: this.$t('label.assignee'),
+        noDataLabel: this.$t('label.noDataLabel'),
+      };
+    },
+    searchOptions() {
+      if (this.project) {
+        const options = {
+          includeCurrentUser: true,
+        };
+        return {
+          searchUrl: '/portal/rest/projects/projectParticipants/'.concat(this.project).concat('/'),
+          options: options
+        };
+      }
+      return ''
+    },
+  },
+  created() {
+    this.$root.$on('filter-task-labels',labels =>{
+      this.labels = labels;
+    });
+    const urlPath = document.location.pathname;
+    if (urlPath.includes('projectDetail')){
+      const pid= urlPath.split('projectDetail/')[1].split(/[^0-9]/)[0];
+      this.projectId = pid && Number(pid) || 0;
+      if (localStorage.getItem(`filterStorage${this.projectId}`) !== null) {
+        const localStorageSaveFilter = localStorage.getItem(`filterStorage${this.projectId}`);
+        if (localStorageSaveFilter.split('"')[10].split('}')[0].split(':')[1] === this.projectId.toString()) {
+          this.groupBy = localStorageSaveFilter.split('"')[3];
+          this.sortBy = localStorageSaveFilter.split('"')[7];
+        }
+      }
+    }
+    else if (urlPath.includes('myTasks')){
+      if (localStorage.getItem('filterStorageNone') !== null) {
+        const localStorageSaveFilter = localStorage.getItem('filterStorageNone');
+        if (localStorageSaveFilter.split('"')[11] === 'None') {
+          this.groupBy = localStorageSaveFilter.split('"')[3];
+          this.sortBy = localStorageSaveFilter.split('"')[7];
+        }
+      }
+    }
+  },
+  methods: {
+    open() {
+
+      this.$root.$emit('reset-filter-task-group-sort',this.groupBy);
+      this.$root.$emit('reset-filter-task-sort',this.sortBy);
+      this.taskViewTabName = document.getElementsByClassName('taskTabList')[0].getAttribute('aria-selected')==='true' ? 'list' : 'borad';
+      this.$refs.filterTasksDrawer.open();
+    },
+    cancel() {
+      this.$refs.filterTasksDrawer.close();
+      this.query=this.task.query;
+      this.assignee=this.task.assignee;
+      this.dueDateSelected='';
+      this.prioritySelected='';
+      this.statusSelected='';
+      this.groupBy='none';
+      this.sortBy='';
+      this.labels='';
+      this.showCompleteTasks=false;
+      this.getFilterNumber();
+      this.$root.$emit('reset-filter-task-group-sort',this.groupBy);
+    },
+    reset() {
+      this.query=this.task.query;
+      this.assignee=this.task.assignee;
+      this.dueDateSelected='';
+      this.prioritySelected='';
+      this.statusSelected='';
+      this.groupBy='';
+      this.sortBy='';
+      this.labels='';
+      this.showCompleteTasks=false;
+      this.getFilterNumber();
+      const jsonToSave = {
+        groupBy: this.groupBy,
+        sortBy: this.sortBy,
+        projectId: this.project || 'None',
+      };
+      this.saveValueFilterInStorage(JSON.parse(JSON.stringify(jsonToSave)));
+      localStorage.setItem(`filterStorage${jsonToSave.projectId}`,JSON.stringify(jsonToSave));
+      this.$root.$emit('reset-filter-task-group-sort',this.groupBy);
+      this.$emit('reset-filter-task');
+    },
+    resetFields(source) {
+      this.query='';
+      this.assignee='';
+      this.dueDateSelected='';
+      this.prioritySelected='';
+      this.statusSelected='';
+      this.groupBy='';
+      this.sortBy='';
+      this.labels='';
+      this.showCompleteTasks=false;
+      this.$root.$emit('reset-filter-task-group-sort',this.groupBy);
+      this.getFilterNumber(source);
+    },
+    filterTasks(){
+      const tasks = {
+        query: this.query,
+        assignee: '',
+        statusId: this.statusSelected,
+        dueDate: this.dueDateSelected,
+        priority: this.prioritySelected,
+        showCompleteTasks: this.showCompleteTasks,
+        groupBy: this.groupBy,
+        orderBy: this.sortBy,
+      };
+      const filterGroupSort = {
+        groupBy: this.groupBy,
+        sortBy: this.sortBy,
+      };
+      const filterLabels = {
+        labels: [],
+      };
+      if (this.labels){
+        this.labels.forEach(user => {
+          filterLabels.labels.push(user.id);
+        });
+      }
+      if (this.assignee){
+        tasks.assignee = this.assignee.remoteId;
+      }
+      const jsonToSave = {
+        groupBy: this.groupBy,
+        sortBy: this.sortBy,
+        projectId: this.project || 'None',
+      };
+      this.saveValueFilterInStorage(JSON.parse(JSON.stringify(jsonToSave)));
+      if (this.project){
+        this.$emit('filter-task',{ tasks,filterLabels,showCompleteTasks: this.showCompleteTasks });
+        this.getFilterNumber();
+        if (this.$refs.filterTasksDrawer){
+          this.$refs.filterTasksDrawer.close();
+        }
+      } else {
+        this.$emit('filter-task-query', tasks,filterGroupSort,filterLabels);
+       
+        this.getFilterNumber();
+        this.$refs.filterTasksDrawer.close();
+      }
+    },
+    getFilterNumber(source){
+      let filtersnumber = 0;
+      if (this.query){
+        filtersnumber++;
+      }
+      if (this.assignee){
+        filtersnumber++;
+      }
+      if (this.dueDateSelected){
+        filtersnumber++;
+      }
+      if (this.prioritySelected){
+        filtersnumber++;
+      }
+      if (this.statusSelected){
+        filtersnumber++;
+      }
+      if (this.labels&&this.labels.length>0){
+        filtersnumber++;
+      }
+      if (this.showCompleteTasks){
+        filtersnumber++;
+      }
+      this.$emit('filter-num-changed',filtersnumber,source);
+    },
+    saveValueFilterInStorage(value){
+      this.$projectService.saveFilterSettings(value).then((response) => {
+        if (response){
+          localStorage.setItem(`filterStorage${value.projectId}`,JSON.stringify(value));
+        }
+      });
+    },
+    statusFilterLabel(item) {
+      if (this.$t(`label.status.${item.toLowerCase()}`).includes('label.status')) {
+        return item;
+      } else {
+        return this.$t(`label.status.${item.toLowerCase()}`);
+      }
+    },
+
   }
+};
 </script>
