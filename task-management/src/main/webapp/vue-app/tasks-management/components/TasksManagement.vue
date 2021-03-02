@@ -153,9 +153,9 @@
       },
       setProjectUrl(id){
         const urlPath = document.location.pathname
-        if(urlPath.includes('g/:spaces') && !urlPath.includes('/projectDetail/')){
+        if(urlPath.includes('TasksManagement') && !urlPath.includes('/projectDetail/')){
           window.history.pushState('task', 'Task details', `${urlPath.split('tasks')[0]}/projectDetail/${id}`);
-        } else if (urlPath.includes('g/:spaces') && urlPath.includes('/projectDetail/')){
+        } else if (urlPath.includes('TasksManagement') && urlPath.includes('/projectDetail/')){
           window.history.pushState('task', 'Task details', `${urlPath.split('tasks')[0]}`);
         }else {
           window.history.pushState('task', 'Task details', `${urlPath.split('tasks')[0]}tasks/projectDetail/${id}`);
