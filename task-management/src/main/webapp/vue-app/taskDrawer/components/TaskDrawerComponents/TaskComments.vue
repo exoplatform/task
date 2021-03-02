@@ -13,26 +13,20 @@
       <div class="commentContent pl-3 d-flex align-center">
         <a
           class="primary-color--text font-weight-bold subtitle-2 pr-2">{{ comment.author.displayName }} <span v-if="comment.author.external" class="externalTagClass">{{ ` (${$t('label.external')})` }}</span></a>
-        <span :title="absoluteTime()" class="dateTime caption font-italic d-block">{{ relativeTime }}</span>
+        <span :title="displayCommentDate" class="dateTime caption font-italic d-block">{{ relativeTime }}</span>
       </div>
       <div class="removeCommentBtn">
-        <v-dialog
-          v-model="confirmDeleteComment"
-          width="500">
-          <template v-slot:activator="{ on }" >
-            <v-btn
-              v-show="showDeleteButtom"
-              :title="$t('label.remove')"
-              :size="32"
-              class="deleteComment"
-              icon
-              small
-              @click="confirmCommentDelete()"
-              v-on="on">
-              <i class="uiIconTrashMini uiIconLightGray "></i>
-            </v-btn>
-          </template>
-        </v-dialog>
+        <v-btn
+          v-show="showDeleteButtom"
+          :title="$t('label.remove')"
+          :size="32"
+          class="deleteComment"
+          icon
+          small
+          @click="confirmCommentDelete()"
+          v-on="on">
+          <i class="uiIconTrashMini uiIconLightGray "></i>
+        </v-btn>
       </div>
     </div>
     <div class="commentBody ml-10 mt-1">
@@ -58,6 +52,8 @@
           :task="task"
           :sub="true"
           :comments="comment.subComments"
+          @confirmDialogOpened="$emit('confirmDialogOpened')"
+          @confirmDialogClosed="$emit('confirmDialogClosed')"
           @openSubEditor="openEditor()"/>
       </div>
       <div
@@ -96,12 +92,15 @@
       :title="$t('popup.confirmation')"
       :ok-label="$t('popup.delete')"
       :cancel-label="$t('popup.cancel')"
-      @ok="removeTaskComment()" />
+      persistent
+      @ok="removeTaskComment()"
+      @dialog-opened="$emit('confirmDialogOpened')"
+      @dialog-closed="$emit('confirmDialogClosed')" />
   </div>
 </template>
 
 <script>
-  import {addTaskSubComment, removeTaskComment, urlVerify} from '../../taskDrawerApi';
+  import {addTaskSubComment, urlVerify, removeTaskComment} from '../../taskDrawerApi';
 
     export default {
         name: "TaskComments",
@@ -160,6 +159,14 @@
                 showEditor : false,
                 currentUserName: eXo.env.portal.userName,
                 MESSAGE_MAX_LENGTH:1250,
+                lang: eXo.env.portal.language,
+                dateTimeFormat: {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                },
             }
         },
       computed: {
@@ -207,9 +214,6 @@
           })
       },
       methods: {
-          confirmCommentDelete: function () {
-            this.$refs.CancelSavingCommentDialog.open();
-          },
           openEditor() {
             if (this.isOpen) {
               this.$emit('isOpen')
@@ -228,7 +232,6 @@
             addTaskSubComment(commentItem) {
               let subComment = this.$refs.subCommentEditor.getMessage();
               subComment = this.urlVerify(subComment);
-              console.warn('this.comment.id',commentItem.comment.id);
               addTaskSubComment(this.task.id, commentItem.comment.id, subComment).then((comment => {
                         this.comment.subComments = this.comment.subComments || [];
                         this.comment.subComments.push(comment)
@@ -236,13 +239,14 @@
               );
               this.showEditor = false;
             },
-            removeTaskComment: function () {
+            removeTaskComment() {
               removeTaskComment(this.comment.comment.id);
                 for (let i = 0; i < this.comments.length; i++) {
-                    if (this.comments[i] === this.comment) {
-                        this.comments.splice(i, 1);
-                    }
+                  if (this.comments[i] === this.comment) {
+                    this.comments.splice(i, 1);
+                  }
                 }
+                this.$emit('confirmDialogClosed')
             },
             getRelativeTime(previous) {
                 const msPerMinute = 60 * 1000;
@@ -266,16 +270,18 @@
                 } else if (elapsed < msPerMaxDays) {
                     return this.$t('task.timeConvert.About_?_Days').replace('{0}', Math.round(elapsed / msPerDay));
                 } else {
-                  return this.absoluteTime({dateStyle: "short"});
+                  return this.displayCommentDate(this.comment.comment.createdTime.time);
                 }
             },
-            absoluteTime(options) {
-              const lang = eXo && eXo.env && eXo.env.portal && eXo.env.portal.language || 'en';
-              return new Date(this.comment.comment.createdTime.time).toLocaleString(lang, options).split("/").join("-");
-            },
+           displayCommentDate( dateTimeValue ) {
+             return dateTimeValue && this.$dateUtil.formatDateObjectToDisplay(new Date(dateTimeValue), this.dateTimeFormat, this.lang) || '';
+           },
             urlVerify(text) {
               return urlVerify(text);
-            }
+            },
+            confirmCommentDelete: function () {
+              this.$refs.CancelSavingCommentDialog.open();
+            },
         }
     }
 </script>

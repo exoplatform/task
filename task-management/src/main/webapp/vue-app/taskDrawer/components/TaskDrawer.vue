@@ -10,6 +10,7 @@
     <exo-drawer
       id="task-Drawer"
       ref="addTaskDrawer"
+      :temporary="confirmDrawerClose"
       class="taskDrawer"
       body-classes="hide-scroll decrease-z-index-more"
       right
@@ -143,7 +144,7 @@
                 :title="$t('comment.message.addYourComment')"
                 class="addCommentBtn pl-3"
                 @click="openCommentDrawer">
-                <i class="uiIcon uiIconComment"></i>
+                <i class="uiIcon uiIconTaskAddComment"></i>
               </div>
             </div>
             <div v-else class="taskCommentEmpty align-center pt-6 pb-3">
@@ -179,7 +180,9 @@
     <task-comments-drawer
       ref="taskCommentDrawer"
       :task="task"
-      :comments="comments"/>
+      :comments="comments"
+      @confirmDialogOpened="isDrawerClose = false"
+      @confirmDialogClosed="isDrawerClose = true"/>
     <task-changes-drawer
       ref="taskChangesDrawer"
       :task="task"
@@ -238,10 +241,15 @@ export default {
                 month: 'long',
                 day: 'numeric'
             },
-          lang: eXo.env.portal.language
+          lang: eXo.env.portal.language,
+          commentId: '',
+          isDrawerClose: true
         }
     },
     computed: {
+      confirmDrawerClose() {
+        return this.isDrawerClose;
+      },
       taskLink() {
         if (this.task == null || this.task.id == null) {
           return ""
@@ -274,6 +282,7 @@ export default {
         }
       }
     },
+    
     created() {
         $(document).on('mousedown', () => {
             if (this.displayActionMenu) {
@@ -281,6 +290,11 @@ export default {
                     this.displayActionMenu = false;
                 }, 200);
             }
+        });
+        $(document).on('click', (event) => {
+          if(( event.target.className === "v-overlay__scrim" ) && ( this.isDrawerClose )) {
+            this.$refs.addTaskDrawer.close();
+          }
         });
 
         document.addEventListener('labelListChanged', event => {
@@ -687,7 +701,7 @@ export default {
       openCommentDrawer() {
         this.$root.$emit('displayTaskComment');
         this.$root.$emit('displaySubCommentEditor', null);
-      }
+      },
     }
 }
 </script>

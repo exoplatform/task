@@ -2337,22 +2337,20 @@
   .taskCommentsAndChanges {
     .taskComments {
       .addCommentBtn {
-        .uiIconComment {
+        .uiIconTaskAddComment {
           position: relative;
           cursor: pointer;
+          margin-top: 2px;
           &:before {
-            content: '\e9c4';
+            content: '\e620';
             font-family: "PLF-FONT-ICONS";
-            font-size: 22px;
+            font-size: 18px;
+            color: @greyColorLighten1;
           }
-          &:after {
-            content: '\eb5d';
-            font-family: "PLF-FONT-ICONS";
-            position: absolute;
-            color: white;
-            left: 7px;
-            font-size: 12px;
-            top: 4px;
+          &:hover {
+            &:before {
+              color: @primaryColor
+            }
           }
         }
       }
@@ -2442,23 +2440,20 @@
 
 .taskCommentDrawer {
   .addCommentBtn {
-    .uiIconComment {
+    .uiIconTaskAddComment {
       position: relative;
       cursor: pointer;
       top: -2px;
       &:before {
-        content: '\e9c4';
+        content: '\e620';
         font-family: "PLF-FONT-ICONS";
-        font-size: 22px;
+        font-size: 18px;
+        color: @greyColorLighten1;
       }
-      &:after {
-        content: '\eb5d';
-        font-family: "PLF-FONT-ICONS";
-        position: absolute;
-        color: white;
-        left: 7px;
-        font-size: 12px;
-        top: 4px;
+      &:hover {
+        &:before {
+          color: @primaryColor
+        }
       }
     }
   }
@@ -2481,8 +2476,11 @@
     .dateTime.caption {
       color: @greyColorLighten1;
       text-align: left;
-      padding-left: 38px;
+      padding-left: 10px;
+    }
+    .changeItem {
       margin-top: -16px;
+      padding-left: 37px!important;
     }
     .TaskCommentContent {
       .commentItem {
@@ -2491,7 +2489,9 @@
           width: 100%;
           .removeCommentBtn {
             margin-left: auto;
-            margin-top: -4px;
+            .uiIconTrashMini {
+              font-size: 12px;
+            }
           }
           .externalTagClass {
             color: @baseColorLight;
@@ -2504,6 +2504,7 @@
             background: @commentBackgroundColor;
             padding: 10px;
             border-radius: 10px;
+            word-break: break-word;
             p {
               margin-bottom: 0!important;
             }
