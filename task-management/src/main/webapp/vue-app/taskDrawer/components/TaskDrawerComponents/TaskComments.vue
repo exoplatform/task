@@ -13,7 +13,7 @@
       <div class="commentContent pl-3 d-flex align-center">
         <a
           class="primary-color--text font-weight-bold subtitle-2 pr-2">{{ comment.author.displayName }} <span v-if="comment.author.external" class="externalTagClass">{{ ` (${$t('label.external')})` }}</span></a>
-        <span :title="absoluteTime()" class="dateTime caption font-italic d-block">{{ relativeTime }}</span>
+        <span :title="displayCommentDate" class="dateTime caption font-italic d-block">{{ relativeTime }}</span>
       </div>
       <div class="removeCommentBtn">
         <v-btn
@@ -159,6 +159,14 @@
                 showEditor : false,
                 currentUserName: eXo.env.portal.userName,
                 MESSAGE_MAX_LENGTH:1250,
+                lang: eXo.env.portal.language,
+                dateTimeFormat: {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                },
             }
         },
       computed: {
@@ -262,13 +270,12 @@
                 } else if (elapsed < msPerMaxDays) {
                     return this.$t('task.timeConvert.About_?_Days').replace('{0}', Math.round(elapsed / msPerDay));
                 } else {
-                  return this.absoluteTime({dateStyle: "short"});
+                  return this.displayCommentDate(this.comment.comment.createdTime.time);
                 }
             },
-            absoluteTime(options) {
-              const lang = eXo && eXo.env && eXo.env.portal && eXo.env.portal.language || 'en';
-              return new Date(this.comment.comment.createdTime.time).toLocaleString(lang, options).split("/").join("-");
-            },
+           displayCommentDate( dateTimeValue ) {
+             return dateTimeValue && this.$dateUtil.formatDateObjectToDisplay(new Date(dateTimeValue), this.dateTimeFormat, this.lang) || '';
+           },
             urlVerify(text) {
               return urlVerify(text);
             },
