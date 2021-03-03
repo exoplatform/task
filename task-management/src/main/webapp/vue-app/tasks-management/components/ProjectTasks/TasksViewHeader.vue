@@ -2,16 +2,6 @@
   <div
     :id="'task-'+viewType+'-'+status.id"
     class="tasksViewHeader d-flex justify-space-between align-center">
-    <input
-      v-if="editStatus || status.edit"
-      ref="autoFocusInput1"
-      v-model="status.name"
-      placeholder="Status Name"
-      type="text"
-      class="taskStatusName font-weight-bold text-color mb-1"
-      required
-      autofocus
-      @keyup="checkImput($event,index)">
     <div
       class="py-3 d-flex">
       <a
