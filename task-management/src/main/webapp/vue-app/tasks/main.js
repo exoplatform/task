@@ -5,8 +5,8 @@ Vue.use(Vuetify);
 Vue.component('task-details', TaskDetails);
 
 const vuetify = new Vuetify({
-    dark: true,
-    iconfont: '',
+  dark: true,
+  iconfont: '',
 });
 
 // getting language of user
@@ -17,16 +17,16 @@ const url = `${eXo.env.portal.context}/${eXo.env.portal.rest}/i18n/bundle/${reso
 
 export function init(itemsLimit) {
 //getting locale ressources
-exoi18n.loadLanguageAsync(lang, url)
+  exoi18n.loadLanguageAsync(lang, url)
     .then(i18n => {
-        // init Vue app when locale ressources are ready
-        new Vue({
-            data: {
-                itemsLimit: itemsLimit
-            },
-            render: h => h(tasksApp),
-            i18n,
-            vuetify,
-        }).$mount('#tasks');
+      // init Vue app when locale ressources are ready
+      new Vue({
+        data: {
+          itemsLimit: itemsLimit
+        },
+        render: h => h(tasksApp),
+        i18n,
+        vuetify,
+      }).$mount('#tasks');
     });
 }

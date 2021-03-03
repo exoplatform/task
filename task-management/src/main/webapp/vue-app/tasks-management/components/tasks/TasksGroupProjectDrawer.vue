@@ -14,54 +14,52 @@
       mandatory>
       <v-radio
         :label="$t('label.task.none')"
-        value="none"/>
+        value="none" />
       <v-radio
         :label="$t('label.task.assignee')"
-        value="assignee"/>
+        value="assignee" />
       <v-radio
         :label="$t('label.task.labels')"
-        value="label"/>
+        value="label" />
       <v-radio
         :label="$t('label.task.dueDate')"
-        value="dueDate"/>
+        value="dueDate" />
       <v-radio
         v-if="taskViewTabName === 'list'"
         :label="$t('label.task.status')"
-        value="status"/>
+        value="status" />
       <v-radio
         :label="$t('label.task.completed')"
-        value="completed"/>
+        value="completed" />
     </v-radio-group>
-
-
   </div>
 </template>
 <script>
-  export default {
-    props: {
-      value: {
-        type: String,
-        default: ''
-      },
-      taskViewTabName: {
-        type: String,
-        default:''
-      },
+export default {
+  props: {
+    value: {
+      type: String,
+      default: ''
     },
-    data() {
-      return {
-        groupBy: this.value,
-      }
+    taskViewTabName: {
+      type: String,
+      default: ''
     },
-    watch: {
-      groupBy(val) {
-        this.$emit('input', val);
-      },
-    },created() {
-      this.$root.$on('reset-filter-task-group-sort',groupBy =>{
-        this.groupBy = groupBy;
-      });
-    }
+  },
+  data() {
+    return {
+      groupBy: this.value,
+    };
+  },
+  watch: {
+    groupBy(val) {
+      this.$emit('input', val);
+    },
+  },created() {
+    this.$root.$on('reset-filter-task-group-sort',groupBy =>{
+      this.groupBy = groupBy;
+    });
   }
+};
 </script>
 

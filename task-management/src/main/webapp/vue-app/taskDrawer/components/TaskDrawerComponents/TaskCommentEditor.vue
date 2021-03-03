@@ -21,125 +21,125 @@
 </template>
 
 <script>
-  import {findUsersToMention} from '../../taskDrawerApi';
+import {findUsersToMention} from '../../taskDrawerApi';
 
-  export default {
-    props: {
-      value: {
-        type: String,
-        default: ''
-      },
-      task: {
-        type: Object,
-        default: null
-      },
-      reset: {
-        type: Boolean,
-        default: false
-      },
-      placeholder: {
-        type: String,
-        default: ''
-      },
-      maxLength: {
-        type: Number,
-        default: -1
-      },
-      id: {
-        type: String,
-        default: ''
-      }
+export default {
+  props: {
+    value: {
+      type: String,
+      default: ''
     },
-    data() {
-      return {
-        inputVal: this.value,
-        charsCount: 0,
-        editorReady: false,
-      };
+    task: {
+      type: Object,
+      default: null
     },
-    watch: {
-      inputVal(val) {
-        this.$emit('input', val);
-      },
-      reset() {
-        CKEDITOR.instances[this.id].destroy(true);
-        this.initCKEditor();
-      },
+    reset: {
+      type: Boolean,
+      default: false
     },
-    mounted() {
+    placeholder: {
+      type: String,
+      default: ''
+    },
+    maxLength: {
+      type: Number,
+      default: -1
+    },
+    id: {
+      type: String,
+      default: ''
+    }
+  },
+  data() {
+    return {
+      inputVal: this.value,
+      charsCount: 0,
+      editorReady: false,
+    };
+  },
+  watch: {
+    inputVal(val) {
+      this.$emit('input', val);
+    },
+    reset() {
+      CKEDITOR.instances[this.id].destroy(true);
       this.initCKEditor();
-      const thiss = this;
-      $('body').suggester('addProvider', 'task:people', function (query, callback) {
-        const _this = this;
-        const projectId = thiss.task.status ? thiss.task.status.project.id : null;
-        findUsersToMention(projectId, query).then((data) => {
-          const result = [];
-          for (let i = 0; i < data.length; i++) {
-            const d = data[i];
-            const item = {
-              uid: d.id.substr(1),
-              name: d.name,
-              avatar: d.avatar
-            };
-            result.push(item);
-          }
-          callback.call(_this, result);
-        });
+    },
+  },
+  mounted() {
+    this.initCKEditor();
+    const thiss = this;
+    $('body').suggester('addProvider', 'task:people', function (query, callback) {
+      const _this = this;
+      const projectId = thiss.task.status ? thiss.task.status.project.id : null;
+      findUsersToMention(projectId, query).then((data) => {
+        const result = [];
+        for (let i = 0; i < data.length; i++) {
+          const d = data[i];
+          const item = {
+            uid: d.id.substr(1),
+            name: d.name,
+            avatar: d.avatar
+          };
+          result.push(item);
+        }
+        callback.call(_this, result);
+      });
+    });
+  },
+  methods: {
+    initCKEditor: function () {
+      let extraPlugins = 'suggester,widget,embedsemantic';
+      const windowWidth = $(window).width();
+      const windowHeight = $(window).height();
+      if (windowWidth > windowHeight && windowWidth < 768) {
+        // Disable suggester on smart-phone landscape
+        extraPlugins = 'selectImage';
+      }
+      // this line is mandatory when a custom skin is defined
+      CKEDITOR.basePath = '/commons-extension/ckeditor/';
+      const self = this;
+      $(this.$refs.editor).ckeditor({
+        customConfig: '/commons-extension/ckeditorCustom/config.js',
+        extraPlugins: extraPlugins,
+        removePlugins: 'confirmBeforeReload,maximize,resize',
+
+        autoGrow_onStartup: true,
+        on: {
+          instanceReady: function() {
+            self.editorReady = true;
+            self.setFocus();
+          },
+          change: function(evt) {
+            const newData = evt.editor.getData();
+            self.inputVal = newData;
+            let pureText = newData ? newData.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, '').trim() : '';
+            const div = document.createElement('div');
+            div.innerHTML = pureText;
+            pureText = div.textContent || div.innerText || '';
+            self.charsCount = pureText.length;
+          },
+          destroy: function () {
+            self.inputVal = '';
+            self.charsCount = 0;
+          },
+        },
+        suggester: {
+          /* eslint-disable no-template-curly-in-string */
+          renderMenuItem: '<li data-value="${uid}"><div class="avatarSmall" style="display: inline-block;"><img src="${avatar}"></div>${name} (${uid})</li>',
+          renderItem: '<span class="exo-mention">${name}<a href="#" class="remove"><i class="uiIconClose uiIconLightGray"></i></a></span>',
+          sourceProviders: ['task:people']
+        },
+
       });
     },
-    methods: {
-      initCKEditor: function () {
-        let extraPlugins = 'suggester,widget,embedsemantic';
-        const windowWidth = $(window).width();
-        const windowHeight = $(window).height();
-        if (windowWidth > windowHeight && windowWidth < 768) {
-          // Disable suggester on smart-phone landscape
-          extraPlugins = 'selectImage';
-        }
-        // this line is mandatory when a custom skin is defined
-        CKEDITOR.basePath = '/commons-extension/ckeditor/';
-        const self = this;
-        $(this.$refs.editor).ckeditor({
-          customConfig: '/commons-extension/ckeditorCustom/config.js',
-          extraPlugins: extraPlugins,
-          removePlugins: 'confirmBeforeReload,maximize,resize',
-
-          autoGrow_onStartup: true,
-          on: {
-            instanceReady: function() {
-              self.editorReady = true;
-              self.setFocus();
-            },
-            change: function(evt) {
-              const newData = evt.editor.getData();
-              self.inputVal = newData;
-              let pureText = newData ? newData.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, '').trim() : '';
-              const div = document.createElement('div');
-              div.innerHTML = pureText;
-              pureText = div.textContent || div.innerText || '';
-              self.charsCount = pureText.length;
-            },
-            destroy: function () {
-              self.inputVal = '';
-              self.charsCount = 0;
-            },
-          },
-          suggester: {
-            /* eslint-disable no-template-curly-in-string */
-            renderMenuItem: '<li data-value="${uid}"><div class="avatarSmall" style="display: inline-block;"><img src="${avatar}"></div>${name} (${uid})</li>',
-            renderItem: '<span class="exo-mention">${name}<a href="#" class="remove"><i class="uiIconClose uiIconLightGray"></i></a></span>',
-            sourceProviders: ['task:people']
-          },
-
-        });
-      },
-      getMessage: function() {
-        const newData = CKEDITOR.instances[this.id].getData();
-        return newData ? newData.trim() : '';
-      },
-      setFocus: function() {
-        CKEDITOR.instances[this.id].focus();
-      },
-    }
-  };
+    getMessage: function() {
+      const newData = CKEDITOR.instances[this.id].getData();
+      return newData ? newData.trim() : '';
+    },
+    setFocus: function() {
+      CKEDITOR.instances[this.id].focus();
+    },
+  }
+};
 </script>

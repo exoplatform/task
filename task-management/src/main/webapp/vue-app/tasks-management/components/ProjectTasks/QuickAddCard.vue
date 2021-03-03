@@ -27,68 +27,67 @@
         {{ $t('label.save') }}
       </v-btn>
     </div>
-
   </v-card>
 </template>
 <script>
- import {
-    addTask,
+import {
+  addTask,
 } from '../../../taskDrawer/taskDrawerApi';
-  export default {
-    props: {
-      status: {
-        type: Object,
-        default: null
-      },
-      quickAddTask: {
-        type: Boolean,
-        default: false
-      },
+export default {
+  props: {
+    status: {
+      type: Object,
+      default: null
     },
-    data() {
-      return {
-        newTask:{title:"",
-               priority: "NORMAL"},
-        taskTitle:""       
-      }
+    quickAddTask: {
+      type: Boolean,
+      default: false
     },
-    computed: {
-      taskTitleValid() {
-        return this.taskTitle && this.taskTitle.trim() && this.taskTitle.trim().length >= 3 && this.taskTitle.length < 1024;
-      },
-      disableSaveButton() {
-        return !this.taskTitleValid;
-      },
+  },
+  data() {
+    return {
+      newTask: {title: '',
+        priority: 'NORMAL'},
+      taskTitle: ''       
+    };
+  },
+  computed: {
+    taskTitleValid() {
+      return this.taskTitle && this.taskTitle.trim() && this.taskTitle.trim().length >= 3 && this.taskTitle.length < 1024;
     },
+    disableSaveButton() {
+      return !this.taskTitleValid;
+    },
+  },
 
-    methods: {
+  methods: {
     addTask() {
-      this.newTask.title=this.taskTitle
-      this.newTask.status=this.status
-      addTask(this.newTask).then(task => {
-                this.quickAddTask=false
-                this.$root.$emit('update-task-list', this.task);
-                this.$root.$emit('show-alert', {
-                    type: 'success',
-                    message: this.$t('alert.success.task.created')
-                });
-            }).catch(e => {
-                console.debug("Error when adding task title", e);
-                this.$root.$emit('show-alert', {
-                    type: 'error',
-                    message: this.$t('alert.error')
-                });
-            });
-      },
+      this.newTask.title=this.taskTitle;
+      this.newTask.status=this.status;
+      addTask(this.newTask).then( () => {
+        this.quickAddTask=false;
+        this.$root.$emit('update-task-list', this.task);
+        this.$root.$emit('show-alert', {
+          type: 'success',
+          message: this.$t('alert.success.task.created')
+        });
+      }).catch(e => {
+        console.error('Error when adding task title', e);
+        this.$root.$emit('show-alert', {
+          type: 'error',
+          message: this.$t('alert.error')
+        });
+      });
+    },
     
     openForm(){
-      this.quickAddTask=true
+      this.quickAddTask=true;
     },
     closeForm(){
-      this.quickAddTask=false
-      this.taskTitle=""
-      this.$emit('close-quick-form')
+      this.quickAddTask=false;
+      this.taskTitle='';
+      this.$emit('close-quick-form');
     }
-    },
-  }
+  },
+};
 </script>

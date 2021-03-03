@@ -14,14 +14,14 @@
           </span>
         </v-btn>
       </v-toolbar-title>
-      <v-spacer/>
+      <v-spacer />
       <v-scale-transition>
         <v-text-field
           v-model="keyword"
           :placeholder="$t('label.filterProject')"
           prepend-inner-icon="fa-filter"
           class="inputTasksFilter pa-0 mr-3 my-auto"
-          clearable/>
+          clearable />
       </v-scale-transition>
       <v-scale-transition v-if="!spaceName">
         <select
@@ -37,44 +37,43 @@
         </select>
       </v-scale-transition>
     </v-toolbar>
-
   </v-app>
 </template>
 <script>
-  export default {
-    props: {
-      keyword: {
-        type: String,
-        default: null,
-      },
-       spaceName: {
-        type: String,
-        default: '',
-      },
-      projectFilterSelected: {
-        type: String,
-        default: 'ALL',
-      },
+export default {
+  props: {
+    keyword: {
+      type: String,
+      default: null,
     },
-    data () {
-      return {
-        projectFilter: [
-          {name: "ALL"},{name: "MANAGED"},{name: "COLLABORATED"},{name: "WITH_TASKS"}
-        ],
-      }
+    spaceName: {
+      type: String,
+      default: '',
     },
-    watch: {
-      keyword() {
-        this.$emit('keyword-changed', this.keyword);
-      },
-      projectFilterSelected() {
-        this.$emit('filter-changed', this.projectFilterSelected);
-      }
+    projectFilterSelected: {
+      type: String,
+      default: 'ALL',
     },
-    methods: {
-      openDrawer() {
-       this.$root.$emit('open-project-drawer', {})
-      },
+  },
+  data () {
+    return {
+      projectFilter: [
+        {name: 'ALL'},{name: 'MANAGED'},{name: 'COLLABORATED'},{name: 'WITH_TASKS'}
+      ],
+    };
+  },
+  watch: {
+    keyword() {
+      this.$emit('keyword-changed', this.keyword);
+    },
+    projectFilterSelected() {
+      this.$emit('filter-changed', this.projectFilterSelected);
     }
+  },
+  methods: {
+    openDrawer() {
+      this.$root.$emit('open-project-drawer', {});
+    },
   }
+};
 </script>
