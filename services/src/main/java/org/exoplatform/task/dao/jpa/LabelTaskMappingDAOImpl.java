@@ -17,10 +17,35 @@
 package org.exoplatform.task.dao.jpa;
 
 import java.io.Serializable;
+import java.util.List;
 
+import org.exoplatform.commons.utils.ListAccess;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.exoplatform.task.dao.LabelTaskMappingHandler;
+import org.exoplatform.task.domain.Label;
 import org.exoplatform.task.domain.LabelTaskMapping;
+import org.exoplatform.task.domain.Task;
+
+import javax.persistence.PersistenceException;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 public class LabelTaskMappingDAOImpl extends CommonJPADAO<LabelTaskMapping, Serializable> implements LabelTaskMappingHandler {
+
+    private static final Log log = ExoLogger.getExoLogger(LabelTaskMappingDAOImpl.class);
+
+    @Override
+    public LabelTaskMapping findLabelTaskMapping(long labelId, long taskId) {
+        TypedQuery<LabelTaskMapping> query = getEntityManager().createNamedQuery("LabelTaskMapping.findLabelMapping", LabelTaskMapping.class);
+        query.setParameter("labelId", labelId);
+        query.setParameter("taskId", taskId);
+        try {
+            return cloneEntity((LabelTaskMapping)query.getSingleResult());
+        } catch (PersistenceException e) {
+            log.error("Error when fetching label mapping", e);
+            return null;
+        }
+    }
 }
 

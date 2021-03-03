@@ -128,7 +128,8 @@
             @addTaskDescription="addTaskDescription($event)"/>
         </div>
         <div class="taskLabelsName mt-3 mb-3">
-          <task-labels
+          <task-labels 
+            v-if="task.status && task.status.project"
             :task="task"
             @labelsListOpened="closePriority(); closeStatus(); closeProjectsList();closeTaskDates();closeAssignements()"/>
         </div>
@@ -589,6 +590,9 @@ export default {
                         detail: task
                     }));
                     document.dispatchEvent(new CustomEvent('loadPlanDates', {
+                        detail: task
+                    }));
+                    document.dispatchEvent(new CustomEvent('loadProjectLabels', {
                         detail: task
                     }));
                     document.dispatchEvent(new CustomEvent('loadTaskLabels', {

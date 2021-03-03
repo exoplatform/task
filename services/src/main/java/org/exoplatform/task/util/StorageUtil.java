@@ -3,6 +3,7 @@ package org.exoplatform.task.util;
 import org.exoplatform.commons.utils.HTMLSanitizer;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.exoplatform.services.security.Identity;
 import org.exoplatform.task.domain.*;
 import org.exoplatform.task.dto.*;
 import org.exoplatform.task.service.UserService;
@@ -179,6 +180,21 @@ public final class StorageUtil{
     }
 
 
+    public static ProjectDto projectToDto(Project project) {
+        if(project==null){
+            return null;
+        }
+        ProjectDto projectDto = new ProjectDto();
+        projectDto.setId(project.getId());
+        projectDto.setName(project.getName());
+        projectDto.setDescription(project.getDescription());
+        projectDto.setColor(project.getColor());
+        projectDto.setDueDate(project.getDueDate());
+        projectDto.setLastModifiedDate(project.getLastModifiedDate());
+        return projectDto;
+    }
+
+
     public static Label labelToEntity(LabelDto labelDto) {
         if(labelDto==null){
             return null;
@@ -186,6 +202,7 @@ public final class StorageUtil{
         Label label = new Label();
         label.setId(labelDto.getId());
         label.setUsername(labelDto.getUsername());
+        label.setProject(projectToEntity(labelDto.getProject()));
         label.setName(labelDto.getName());
         label.setColor(labelDto.getColor());
         label.setHidden(labelDto.isHidden());
@@ -193,14 +210,48 @@ public final class StorageUtil{
         return label;
     }
 
+    public static LabelDto labelToDto(Label label, Identity currentUser,ProjectStorage projectStorage) {
+        if(label==null){
+            return null;
+        }
+        LabelDto labelDto = new LabelDto();
+        labelDto.setId(label.getId());
+        labelDto.setUsername(label.getUsername());
+        labelDto.setName(label.getName());
+        labelDto.setProject(projectToDto(label.getProject(),projectStorage));
+        labelDto.setColor(label.getColor());
+        labelDto.setHidden(label.isHidden());
+        labelDto.setCanEdit(labelDto.getProject().canEdit(currentUser)||label.getUsername().equals(currentUser.getUserId()));
+        labelDto.setParent(labelToDto(label.getParent()));
+        return labelDto;
+    }
+
+    public static LabelDto labelToDto(Label label, TaskDto task, Identity currentUser,ProjectStorage projectStorage) {
+        if(label==null){
+            return null;
+        }
+        LabelDto labelDto = new LabelDto();
+        labelDto.setId(label.getId());
+        labelDto.setUsername(label.getUsername());
+        labelDto.setName(label.getName());
+        labelDto.setProject(projectToDto(label.getProject(),projectStorage));
+        labelDto.setColor(label.getColor());
+        labelDto.setHidden(label.isHidden());
+        labelDto.setCanEdit(labelDto.getProject().canEdit(currentUser)||task.getCreatedBy().equals(currentUser.getUserId()));
+        labelDto.setParent(labelToDto(label.getParent()));
+        return labelDto;
+    }
+
+
     public static LabelDto labelToDto(Label label) {
         if(label==null){
             return null;
         }
-        LabelDto labelDto = new LabelDto(label);
+        LabelDto labelDto = new LabelDto();
         labelDto.setId(label.getId());
         labelDto.setUsername(label.getUsername());
         labelDto.setName(label.getName());
+        labelDto.setProject(projectToDto(label.getProject()));
         labelDto.setColor(label.getColor());
         labelDto.setHidden(label.isHidden());
         labelDto.setParent(labelToDto(label.getParent()));

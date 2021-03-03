@@ -132,6 +132,11 @@ public class Project {
   private Set<UserSetting> hiddenOn = new HashSet<UserSetting>();
 
 
+  // This field is used for remove cascade
+  @ManyToMany(mappedBy = "project", fetch = FetchType.LAZY)
+  private Set<Label> lebels = new HashSet<Label>();
+
+
   @Column(name = "LAST_MODIFIED_DATE")
   private Long lastModifiedDate;
 
