@@ -3196,3 +3196,36 @@
   content: "\e611";
   font-family: "PLF-FONT-ICONS";
 }
+
+
+@keyframes beginDrag {
+    from {
+      transform: rotate(0deg)
+    }
+    10% {
+      -webkit-transform: rotate(-12deg);
+      transform: rotate(-12deg)
+    }
+    30% {
+      -webkit-transform: rotate(8deg);
+      transform: rotate(8deg)
+    }
+    55% {
+      -webkit-transform: rotate(-5deg);
+      transform: rotate(-5deg)
+    }
+    80% {
+      -webkit-transform: rotate(3deg);
+      transform: rotate(3deg)
+    }
+    to {
+      -webkit-transform: rotate(-1deg);
+      transform: rotate(-1deg)
+    }
+  }
+  .ghost-card {
+    opacity: 0.5;
+    background: #F7FAFC;
+    border: 1px solid #578dc9;
+    animation: beginDrag 1s ease forwards;
+  }

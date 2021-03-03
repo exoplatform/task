@@ -1,7 +1,7 @@
 <template>
   <task-drawer
     ref="taskDrawer"
-    :task="task"/>
+    :task="task" />
 </template>
 
 <script>

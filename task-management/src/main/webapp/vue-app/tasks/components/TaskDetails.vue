@@ -22,7 +22,7 @@
               class="taskTitle"
               @click="openTaskDrawer()">
               <v-list-item-title
-                v-text="task.task.title"/>
+                v-text="task.task.title" />
               <v-list-item-subtitle><div class="color-title">{{ dateFormatter(task.dueDate) }}</div></v-list-item-subtitle>
             </a>
           </v-list-item-content>
@@ -54,7 +54,9 @@
             @click="openTaskDrawer()">
             <v-icon
               :color="getTaskPriorityColor(task.task.priority)"
-              class="ml-n1">mdi-flag-variant</v-icon>
+              class="ml-n1">
+              mdi-flag-variant
+            </v-icon>
           </v-card>
         </v-flex>
       </v-layout>
@@ -63,54 +65,54 @@
 </template>
 
 <script>
-  export default {
-    props: {
-      task: {
-        type: Object,
-        default: () => {
-          return {};
-        }
-      },
-    },
-    data() {
-      return {
-        drawer: false,
+export default {
+  props: {
+    task: {
+      type: Object,
+      default: () => {
+        return {};
       }
     },
-    computed : {
-      projectBorder() {
-        return `${this.task.status.project.color  }_border`
-      }
-    },
-    methods: {
-      dateFormatter(dueDate) {
-        if (dueDate) {
-          const date = new Date(dueDate.time);
-          const day = date.getDate();
-          const month = date.getMonth()+1;
-          const year = date.getFullYear();
-          const formattedTime = `${day  }-${  month  }-${  year}`;
-          return formattedTime
-        }
-      },
-      getTaskPriorityColor(priority) {
-        switch(priority) {
-          case "HIGH":
-            return "#bc4343";
-          case "NORMAL":
-            return "#ffb441";
-          case "LOW":
-            return "#2eb58c";
-          case "NONE":
-            return "#578dc9";
-        }
-      },
-      openTaskDrawer() {
-        this.$root.$emit('open-task-drawer', this.task.task);
-      },
-      navigateTo(pagelink) {
-        location.href=`${ eXo.env.portal.context }/${ eXo.env.portal.portalName }/tasks/projectDetail/${ pagelink }` ;
-      },
+  },
+  data() {
+    return {
+      drawer: false,
+    };
+  },
+  computed: {
+    projectBorder() {
+      return `${this.task.status.project.color  }_border`;
     }
+  },
+  methods: {
+    dateFormatter(dueDate) {
+      if (dueDate) {
+        const date = new Date(dueDate.time);
+        const day = date.getDate();
+        const month = date.getMonth()+1;
+        const year = date.getFullYear();
+        const formattedTime = `${day  }-${  month  }-${  year}`;
+        return formattedTime;
+      }
+    },
+    getTaskPriorityColor(priority) {
+      switch (priority) {
+      case 'HIGH':
+        return '#bc4343';
+      case 'NORMAL':
+        return '#ffb441';
+      case 'LOW':
+        return '#2eb58c';
+      case 'NONE':
+        return '#578dc9';
+      }
+    },
+    openTaskDrawer() {
+      this.$root.$emit('open-task-drawer', this.task.task);
+    },
+    navigateTo(pagelink) {
+      location.href=`${ eXo.env.portal.context }/${ eXo.env.portal.portalName }/tasks/projectDetail/${ pagelink }` ;
+    },
   }
+};
 </script>

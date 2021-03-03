@@ -14,7 +14,7 @@
               xl="3"
               class="pa-0 projectItem">
               <task-card
-                :task="task"/>
+                :task="task" />
             </v-col>
           </v-row>
         </v-container>
@@ -23,13 +23,13 @@
   </v-app>
 </template>
 <script>
-  export default {
-    props: {
-      tasks: {
-        type: Array,
-        default: () =>[],
-      }
-    },
+export default {
+  props: {
+    tasks: {
+      type: Array,
+      default: () =>[],
+    }
+  },
 
-  }
+};
 </script>

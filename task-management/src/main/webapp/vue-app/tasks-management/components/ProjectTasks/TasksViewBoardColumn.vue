@@ -13,13 +13,13 @@
       @cancel-add-column="cancelAddColumn"
       @move-column="moveColumn"
       @open-quick-add="quickAddTask1=true"
-      @add-column ="addColumn"/>
-    <v-divider/>
+      @add-column="addColumn" />
+    <v-divider />
     <quick-add-card 
       :status="status"
       :quick-add-task="quickAddTask1" 
       class="status-add-task" 
-      @close-quick-form="quickAddTask1=false"/>
+      @close-quick-form="quickAddTask1=false" />
     <draggable 
       v-model="tasksList" 
       :move="checkMove"
@@ -30,17 +30,17 @@
       @start="drag=true"
       @end="drag=false">
       <task-view-card
-        v-for="task in tasksList"
-        :key="task.task.id"
-        :task="task"
+        v-for="taskItem in tasksList"
+        :key="taskItem.task.id"
+        :task="taskItem"
         :show-completed-tasks="showCompletedTasks"
-        @update-task-completed="updateTaskCompleted"/>
+        @update-task-completed="updateTaskCompleted" />
 
      
       <quick-add-card 
         :status="status" 
         :quick-add-task="quickAddTask" 
-        @close-quick-form="quickAddTask=false"/>
+        @close-quick-form="quickAddTask=false" />
 
       <v-btn 
         v-if="!quickAddTask"
@@ -56,116 +56,83 @@
 </template>
 <script>
 
-  export default {
-    props: {
-      tasksList: {
-        type: Array,
-        default: () => []
-      },
-      status: {
-        type: String,
-        default: ""
-      },
-      index: {
-        type: Number,
-        default: 0
-      },
-      project: {
-        type: Number,
-        default: 0
-      },
-      statusListLength: {
-        type: Number,
-        default: 0
-      },
-      showCompletedTasks: {
-        type: Boolean,
-        default: false
-      }
+export default {
+  props: {
+    tasksList: {
+      type: Array,
+      default: () => []
     },
-    data() {
+    status: {
+      type: String,
+      default: ''
+    },
+    index: {
+      type: Number,
+      default: 0
+    },
+    project: {
+      type: Number,
+      default: 0
+    },
+    statusListLength: {
+      type: Number,
+      default: 0
+    },
+    showCompletedTasks: {
+      type: Boolean,
+      default: false
+    }
+  },
+  data() {
     return {
-      quickAddTask:false,
-      quickAddTask1:false,
+      quickAddTask: false,
+      quickAddTask1: false,
       drag: false,
-      task:null,
-      newStatus:null
+      task: null,
+      newStatus: null
     };
   },
-    watch: {
-      drag(val) {
-        if(!val&&this.task&&this.newStatus&&this.task.status.id !== this.newStatus){
-             this.$emit('updateTaskStatus', this.task,this.newStatus);
-             Array.from(document.getElementsByClassName("draggable-palceholder")).forEach(element => element.style.backgroundColor= "#FFFFFF");
-        }},
-   },
-    methods: {
-      updateTaskCompleted(e){
-        this.$emit('updateTaskCompleted', e);
-      },
-      checkMove(evt){
-        if(evt){
-          Array.from(document.getElementsByClassName("draggable-palceholder")).forEach(element => element.style.backgroundColor= "#FFFFFF");
-          Array.from(evt.to.parentElement.getElementsByClassName("draggable-palceholder")).forEach(element => element.style.backgroundColor= "#f2f2f2");
-          this.task = evt.draggedContext.element.task
-          this.newStatus = evt.to.parentElement.id;
-        }
-      },
+  watch: {
+    drag(val) {
+      if (!val&&this.task&&this.newStatus&&this.task.status.id !== this.newStatus){
+        this.$emit('updateTaskStatus', this.task,this.newStatus);
+        Array.from(document.getElementsByClassName('draggable-palceholder')).forEach(element => element.style.backgroundColor= '#FFFFFF');
+      }},
+  },
+  methods: {
+    updateTaskCompleted(e){
+      this.$emit('updateTaskCompleted', e);
+    },
+    checkMove(evt){
+      if (evt){
+        Array.from(document.getElementsByClassName('draggable-palceholder')).forEach(element => element.style.backgroundColor= '#FFFFFF');
+        Array.from(evt.to.parentElement.getElementsByClassName('draggable-palceholder')).forEach(element => element.style.backgroundColor= '#f2f2f2');
+        this.task = evt.draggedContext.element.task;
+        this.newStatus = evt.to.parentElement.id;
+      }
+    },
     deleteStatus(status) {
-          this.$emit('delete-status', status);
-      },
+      this.$emit('delete-status', status);
+    },
     updateStatus(status) {
-          this.$emit('update-status', status);
-      },
+      this.$emit('update-status', status);
+    },
     createStatus() {
-          this.$emit('create-status');
-      },
+      this.$emit('create-status');
+    },
      
     addColumn(index) {  
-        this.$emit('add-column',index);
-      },
+      this.$emit('add-column',index);
+    },
      
     moveColumn(index,orientation) {  
-        this.$emit('move-column',index,orientation);
-      },
+      this.$emit('move-column',index,orientation);
+    },
     cancelAddColumn(index) {
-          this.$emit('cancel-add-column',index);         
-      }, 
+      this.$emit('cancel-add-column',index);         
+    }, 
   
   }
-    }
+};
 
 </script>
-<style>
-  @keyframes beginDrag {
-    from {
-      transform: rotate(0deg)
-    }
-    10% {
-      -webkit-transform: rotate(-12deg);
-      transform: rotate(-12deg)
-    }
-    30% {
-      -webkit-transform: rotate(8deg);
-      transform: rotate(8deg)
-    }
-    55% {
-      -webkit-transform: rotate(-5deg);
-      transform: rotate(-5deg)
-    }
-    80% {
-      -webkit-transform: rotate(3deg);
-      transform: rotate(3deg)
-    }
-    to {
-      -webkit-transform: rotate(-1deg);
-      transform: rotate(-1deg)
-    }
-  }
-  .ghost-card {
-    opacity: 0.5;
-    background: #F7FAFC;
-    border: 1px solid #578dc9;
-    animation: beginDrag 1s ease forwards;
-  }
-</style>

@@ -10,13 +10,13 @@
   </v-app>
 </template>
 <script>
-  export default {
-    props: {
-      tasks: {
-        type: Array,
-        default: () => [],
-      }
-    },
-  }
+export default {
+  props: {
+    tasks: {
+      type: Array,
+      default: () => [],
+    }
+  },
+};
 
 </script>

@@ -57,105 +57,105 @@
 </template>
 
 <script>
-  import {getProjects, updateTask, getDefaultStatusByProjectId} from '../../taskDrawerApi'
-  export default {
-    props: {
-      task: {
-        type: Object,
-        default: () => {
-          return {};
-        }
+import {getProjects, updateTask, getDefaultStatusByProjectId} from '../../taskDrawerApi';
+export default {
+  props: {
+    task: {
+      type: Object,
+      default: () => {
+        return {};
       }
-    },
-    data() {
-      return {
-        projects: [],
-        projectModel:null,
-        search: null,
-        projectLabel: '',
-        menuId: `ProjectMenu${parseInt(Math.random() * 10000)
-          .toString()
-          .toString()}`,
-      }
-    },
-    watch: {
-      projectModel () {
-        setTimeout(() => {
-          this.$refs.select.isMenuActive = false;
-          }, 50);
-      },
-      task() {
-        if(this.task && this.task.status && this.task.status.project && !this.task.status.name) {
-          getDefaultStatusByProjectId(this.task.status.project.id).then((status) => {
-            this.task.status = status;
-          })
-        }
-      }
-      },
-    created() {
-      this.getProjects();
-      $(document).on('mousedown', () => {
-        if (this.$refs.select.isMenuActive) {
-          window.setTimeout(() => {
-            this.$refs.select.isMenuActive = false;
-          }, 200);
-        }
-      });
-      document.addEventListener('closeProjectList',()=> {
-        setTimeout(() => {
-          if (typeof this.$refs.select !== 'undefined') {
-            this.$refs.select.isMenuActive = false;
-          }
-        }, 100);
-      });
-      document.addEventListener('loadProjectName', event => {
-        if (event && event.detail) {
-          const task = event.detail;
-          if(task.id!=null && task.status && task.status.project) {
-            this.projectModel = this.task.status.project;
-            this.projectLabel = this.$t('label.tapProject.name')
-          } else if (task.id==null && task.status && task.status.project){
-            this.projectModel = this.task.status.project;
-            this.projectLabel = this.$t('label.tapProject.name')
-          } else {
-            this.projectModel = null;
-            this.projectLabel = this.$t('label.noProject');
-          }
-        }
-      });
-    },
-    methods: {
-      getProjects() {
-        getProjects().then((projects) => {
-          this.projects = projects.projects;
-        })
-      },
-      filterProjects(item, queryText) {
-        return ( item.name.toLocaleLowerCase().indexOf(queryText.toLocaleLowerCase()) >-1 || item.name.toLocaleLowerCase().indexOf(queryText.toLocaleLowerCase()) > -1 );},
-      updateTask() {
-        updateTask(this.task.id, this.task)
-            .then(task => {
-               this.$root.$emit('show-alert', { type: 'success', message: this.$t('alert.success.task.project') });})
-              .catch(e => {
-                console.debug("Error when updating task's title", e);
-                this.$root.$emit('show-alert',{type:'error',message:this.$t('alert.error')} );
-                   });
-        },
-      updateTaskProject(project) {
-        getDefaultStatusByProjectId(project.id).then((status) => {
-          this.task.status = status;
-          this.updateTask();
-          this.projectModel = project;
-        })
-      },
-      deleteProject(event) {
-        this.task.status = null;
-        this.projectModel = null;
-        this.projectLabel = this.$t('label.noProject');
-        this.updateTask();
-        event.preventDefault();
-        event.stopPropagation();
-        },
     }
+  },
+  data() {
+    return {
+      projects: [],
+      projectModel: null,
+      search: null,
+      projectLabel: '',
+      menuId: `ProjectMenu${parseInt(Math.random() * 10000)
+        .toString()
+        .toString()}`,
+    };
+  },
+  watch: {
+    projectModel () {
+      setTimeout(() => {
+        this.$refs.select.isMenuActive = false;
+      }, 50);
+    },
+    task() {
+      if (this.task && this.task.status && this.task.status.project && !this.task.status.name) {
+        getDefaultStatusByProjectId(this.task.status.project.id).then((status) => {
+          this.task.status = status;
+        });
+      }
+    }
+  },
+  created() {
+    this.getProjects();
+    $(document).on('mousedown', () => {
+      if (this.$refs.select.isMenuActive) {
+        window.setTimeout(() => {
+          this.$refs.select.isMenuActive = false;
+        }, 200);
+      }
+    });
+    document.addEventListener('closeProjectList',()=> {
+      setTimeout(() => {
+        if (typeof this.$refs.select !== 'undefined') {
+          this.$refs.select.isMenuActive = false;
+        }
+      }, 100);
+    });
+    document.addEventListener('loadProjectName', event => {
+      if (event && event.detail) {
+        const task = event.detail;
+        if (task.id!=null && task.status && task.status.project) {
+          this.projectModel = this.task.status.project;
+          this.projectLabel = this.$t('label.tapProject.name');
+        } else if (task.id==null && task.status && task.status.project){
+          this.projectModel = this.task.status.project;
+          this.projectLabel = this.$t('label.tapProject.name');
+        } else {
+          this.projectModel = null;
+          this.projectLabel = this.$t('label.noProject');
+        }
+      }
+    });
+  },
+  methods: {
+    getProjects() {
+      getProjects().then((projects) => {
+        this.projects = projects.projects;
+      });
+    },
+    filterProjects(item, queryText) {
+      return ( item.name.toLocaleLowerCase().indexOf(queryText.toLocaleLowerCase()) >-1 || item.name.toLocaleLowerCase().indexOf(queryText.toLocaleLowerCase()) > -1 );},
+    updateTask() {
+      updateTask(this.task.id, this.task)
+        .then( () => {
+          this.$root.$emit('show-alert', { type: 'success', message: this.$t('alert.success.task.project') });})
+        .catch(e => {
+          console.error('Error when updating task\'s title', e);
+          this.$root.$emit('show-alert',{type: 'error',message: this.$t('alert.error')} );
+        });
+    },
+    updateTaskProject(project) {
+      getDefaultStatusByProjectId(project.id).then((status) => {
+        this.task.status = status;
+        this.updateTask();
+        this.projectModel = project;
+      });
+    },
+    deleteProject(event) {
+      this.task.status = null;
+      this.projectModel = null;
+      this.projectLabel = this.$t('label.noProject');
+      this.updateTask();
+      event.preventDefault();
+      event.stopPropagation();
+    },
   }
+};
 </script>
