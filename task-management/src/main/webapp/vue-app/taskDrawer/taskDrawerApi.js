@@ -1,17 +1,17 @@
-import {tasksConstants} from "../../js/tasksConstants";
+import {tasksConstants} from '../../js/tasksConstants';
 
 export function getUserInformations(userName) {
   return fetch(`/portal/rest/v1/social/users/${userName}`, {
     method: 'GET',
     credentials: 'include',
   }).then((resp) => {
-    if(resp && resp.ok) {
+    if (resp && resp.ok) {
       return resp.json();
     }
     else {
       throw new Error ('Error when getting user informations');
     }
-  })
+  });
 }
 
 export function updateTask(taskId, task) {
@@ -34,21 +34,21 @@ export function updateTask(taskId, task) {
 }
 
 export function addTask(task) {
-    return fetch(`/portal/rest/tasks`, {
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json'
-        },
-        method: 'POST',
-        credentials: 'include',
-        body: JSON.stringify(task)
-    }).then((resp) => {
-        if (resp && resp.ok) {
-            return resp.json();
-        } else {
-            throw new Error('Error when adding task');
-        }
-    })
+  return fetch('/portal/rest/tasks', {
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
+    },
+    method: 'POST',
+    credentials: 'include',
+    body: JSON.stringify(task)
+  }).then((resp) => {
+    if (resp && resp.ok) {
+      return resp.json();
+    } else {
+      throw new Error('Error when adding task');
+    }
+  });
 }
 
 export function getMyAllLabels() {
@@ -56,13 +56,13 @@ export function getMyAllLabels() {
     method: 'GET',
     credentials: 'include',
   }).then((resp) => {
-    if(resp && resp.ok) {
+    if (resp && resp.ok) {
       return resp.json();
     }
     else {
       throw new Error ('Error when getting my all labels');
     }
-  })
+  });
 }
 
 export function getTaskLabels(taskId) {
@@ -70,13 +70,13 @@ export function getTaskLabels(taskId) {
     method: 'GET',
     credentials: 'include',
   }).then((resp) => {
-    if(resp && resp.ok) {
+    if (resp && resp.ok) {
       return resp.json();
     }
     else {
       throw new Error ('Error when getting task labels');
     }
-  })
+  });
 }
 
 export function addTaskToLabel(taskId, label) {
@@ -89,66 +89,66 @@ export function addTaskToLabel(taskId, label) {
     credentials: 'include',
     body: JSON.stringify(label)
   }).then((resp) => {
-    if(resp && resp.ok) {
+    if (resp && resp.ok) {
       return resp.json();
     }
     else {
       throw new Error ('Error when adding task to label');
     }
-  })
+  });
 }
 
 export function removeTaskFromLabel(taskId, labelId) {
   return fetch(`/portal/rest/tasks/labels/${taskId}/${labelId}`, {
     credentials: 'include',
-    method: "delete",
+    method: 'delete',
   }).then((resp) => {
-    if(resp && resp.ok) {
+    if (resp && resp.ok) {
       return resp.json();
     }
     else {
       throw new Error ('Error when deleting task from label');
     }
-  })
+  });
 }
 
 export function getProjects() {
-    return fetch('/portal/rest/projects/projects', {
-        method: 'GET',
-        credentials: 'include',
-    }).then((resp) => {
-        if (resp && resp.ok) {
-            return resp.json();
-        } else {
-            throw new Error('Error when getting projects');
-        }
-    })
+  return fetch('/portal/rest/projects/projects', {
+    method: 'GET',
+    credentials: 'include',
+  }).then((resp) => {
+    if (resp && resp.ok) {
+      return resp.json();
+    } else {
+      throw new Error('Error when getting projects');
+    }
+  });
 }
 
 export function getDefaultStatusByProjectId(projectId) {
-    return fetch(`/portal/rest/projects/projects/status/${projectId}`, {
-        method: 'GET',
-        credentials: 'include',
-    }).then((resp) => {
-        if (resp && resp.ok) {
-            return resp.json();
-        } else {
-            throw new Error('Error when getting default status');
-        }
-    })
+  return fetch(`/portal/rest/projects/projects/status/${projectId}`, {
+    method: 'GET',
+    credentials: 'include',
+  }).then((resp) => {
+    if (resp && resp.ok) {
+      return resp.json();
+    } else {
+      throw new Error('Error when getting default status');
+    }
+  });
 }
 
 export function getStatusesByProjectId(projectId) {
-    return fetch(`/portal/rest/projects/projects/statuses/${projectId}`, {
-        method: 'GET',
-        credentials: 'include',
-    }).then((resp) => {
-        if (resp && resp.ok) {
-            return resp.json();
-        } else {
-            throw new Error('Error when getting project statuses');
-        }
-    })
+  return fetch(`/portal/rest/projects/projects/statuses/${projectId}`, {
+    method: 'GET',
+    credentials: 'include',
+  }).then((resp) => {
+    if (resp && resp.ok) {
+      return resp.json();
+    } else {
+      throw new Error('Error when getting project statuses');
+    }
+  });
 }
 
 export function getAllUsers() {
@@ -156,13 +156,13 @@ export function getAllUsers() {
     method: 'GET',
     credentials: 'include',
   }).then((resp) => {
-    if(resp && resp.ok) {
+    if (resp && resp.ok) {
       return resp.json();
     }
     else {
       throw new Error ('Error when getting users');
     }
-  })
+  });
 }
 
 export function getTaskLogs(taskId) {
@@ -170,13 +170,13 @@ export function getTaskLogs(taskId) {
     method: 'GET',
     credentials: 'include',
   }).then((resp) => {
-    if(resp && resp.ok) {
+    if (resp && resp.ok) {
       return resp.json();
     }
     else {
       throw new Error ('Error when getting task logs');
     }
-  })
+  });
 }
 
 export function getTaskComments(taskId) {
@@ -184,13 +184,13 @@ export function getTaskComments(taskId) {
     method: 'GET',
     credentials: 'include',
   }).then((resp) => {
-    if(resp && resp.ok) {
+    if (resp && resp.ok) {
       return resp.json();
     }
     else {
       throw new Error ('Error when getting task comments');
     }
-  })
+  });
 }
 
 export function addTaskComments(taskId, comment) {
@@ -203,13 +203,13 @@ export function addTaskComments(taskId, comment) {
     },
     body: comment
   }).then((resp) => {
-    if(resp && resp.ok) {
+    if (resp && resp.ok) {
       return resp.json();
     }
     else {
       throw new Error ('Error when adding task comment');
     }
-  })
+  });
 }
 
 export function addTaskSubComment(taskId, parentCommentId, comment) {
@@ -222,32 +222,32 @@ export function addTaskSubComment(taskId, parentCommentId, comment) {
     },
     body: comment
   }).then((resp) => {
-    if(resp && resp.ok) {
+    if (resp && resp.ok) {
       return resp.json();
     }
     else {
       throw new Error ('Error when adding task sub comment');
     }
-  })
+  });
 }
 
 export function removeTaskComment(commentId) {
   return fetch(`/portal/rest/tasks/comments/${commentId}`, {
-    method: "delete",
+    method: 'delete',
     credentials: 'include',
   }).then((resp) => {
-    if(resp && resp.ok) {
+    if (resp && resp.ok) {
       return resp.json();
     }
     else {
       throw new Error ('Error when removing task comment');
     }
-  })
+  });
 }
 
 export function findUsersToMention(projectId, query) {
   const fetchUrl = projectId ? `/portal/rest/projects/projectParticipants/${projectId}/${query}`
-      : `/portal/rest/tasks/usersToMention/${query}/${eXo.env.portal.language}`;
+    : `/portal/rest/tasks/usersToMention/${query}/${eXo.env.portal.language}`;
   return fetch(fetchUrl, {
     method: 'GET',
     credentials: 'include',
@@ -257,7 +257,7 @@ export function findUsersToMention(projectId, query) {
     } else {
       throw new Error('Error when getting users to mention');
     }
-  })
+  });
 }
 
 export function getSuggestedUsers(query, projectName) {
@@ -265,13 +265,13 @@ export function getSuggestedUsers(query, projectName) {
     method: 'GET',
     credentials: 'include',
   }).then((resp) => {
-    if(resp && resp.ok) {
+    if (resp && resp.ok) {
       return resp.json();
     }
     else {
       throw new Error ('Error when getting suggested users');
     }
-  })
+  });
 }
 
 export function getUser(username) {
@@ -279,7 +279,7 @@ export function getUser(username) {
     method: 'GET',
     credentials: 'include',
   }).then((resp) => {
-    if(resp && resp.ok) {
+    if (resp && resp.ok) {
       return resp.json();
     }
     else {
@@ -289,19 +289,19 @@ export function getUser(username) {
 }
 
 export function urlVerify(text) {
-    return text.replace(/((?:href|src)=")?((((https?|ftp|file):\/\/)|www\.)[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])/ig,
-        function (matchedText, hrefOrSrc) {
-          // the second group of the regex captures the html attribute 'html' or 'src',
-          // so if it exists it means that it is already an html link or an image and it should not be converted
-          if (hrefOrSrc) {
-            return matchedText;
-          }
-          let url = matchedText;
-          if (url.indexOf('www.') === 0) {
-            url = `//${url}`;
-          }
-          return `<a href="${url}" target="_blank">${matchedText}</a>`;
-        });
+  return text.replace(/((?:href|src)=")?((((https?|ftp|file):\/\/)|www\.)[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])/ig,
+    function (matchedText, hrefOrSrc) {
+      // the second group of the regex captures the html attribute 'html' or 'src',
+      // so if it exists it means that it is already an html link or an image and it should not be converted
+      if (hrefOrSrc) {
+        return matchedText;
+      }
+      let url = matchedText;
+      if (url.indexOf('www.') === 0) {
+        url = `//${url}`;
+      }
+      return `<a href="${url}" target="_blank">${matchedText}</a>`;
+    });
 }
 
 export function cloneTask(taskId) {
@@ -309,7 +309,7 @@ export function cloneTask(taskId) {
     credentials: 'include',
     method: 'POST',
   }).then(resp => {
-    if(resp && resp.ok) {
+    if (resp && resp.ok) {
       return resp.json();
     } else {
       throw new Error ('Error when cloning task');

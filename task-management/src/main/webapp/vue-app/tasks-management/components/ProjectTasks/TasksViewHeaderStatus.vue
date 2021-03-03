@@ -32,10 +32,11 @@
       <div
         v-else
         class="text-truncate subtitle-2 text-color my-auto"
-        @click="editStatus = true">{{ status.name }} <span class="text-truncate subtitle-2 text-color my-auto">({{ tasksNumber }})</span></div>
-
+        @click="editStatus = true">
+        {{ status.name }} <span class="text-truncate subtitle-2 text-color my-auto">({{ tasksNumber }})</span>
+      </div>
     </div>
-    <v-divider class="mx-1"/>
+    <v-divider class="mx-1" />
     <div class="taskNumberAndActions d-flex align-center mb-1">
       <span class="caption">{{ tasksNumber }}</span>
       <!-- <span v-if="tasksNumber < maxTasksToShow" class="caption">{{ tasksNumber }}</span>
@@ -65,7 +66,7 @@
         content-class="taskStatusActionMenu"
         offset-y>
         <v-list class="pa-0" dense>
-          <v-list-item class="menu-list" @click="openTaskDrawer()" >
+          <v-list-item class="menu-list" @click="openTaskDrawer()">
             <v-list-item-title class="subtitle-2">
               <i class="uiIcon uiIconTask pr-1"></i>
               <span>{{ $t('label.addTask') }}</span>
@@ -74,7 +75,7 @@
           <v-list-item 
             v-if="project.canManage" 
             class="menu-list" 
-            @click="addColumn(index)" >
+            @click="addColumn(index)">
             <v-list-item-title class="subtitle-2">
               <i class="uiIcon uiIconRotateLeft pr-1"></i>
               <span>{{ $t('label.status.before') }}</span>
@@ -83,7 +84,7 @@
           <v-list-item 
             v-if="project.canManage" 
             class="menu-list" 
-            @click="addColumn(index+1)" >
+            @click="addColumn(index+1)">
             <v-list-item-title class="subtitle-2">
               <i class="uiIcon uiIconRotateRight pr-1"></i>
               <span> {{ $t('label.status.after') }} </span>
@@ -92,144 +93,142 @@
           <v-list-item 
             v-if="project.canManage" 
             class="menu-list" 
-            @click="deleteStatus()" >
+            @click="deleteStatus()">
             <v-list-item-title class="subtitle-2">
               <i class="uiIcon uiIconDelete pr-1"></i>
               <span>{{ $t('label.delete') }}</span>
             </v-list-item-title>
           </v-list-item>
-
-
         </v-list>
       </v-menu>
     </div>
   </div>
 </template>
 <script>
-  export default {
-    props: {
-      status: {
-        type: Object,
-        default: null
-      },
-      viewType: {
-        type: String,
-        default: ''
-      },
-      tasksNumber: {
-        type: Number,
-        default: 0
-      },
-      maxTasksToShow: {
-        type: Number,
-        default: 0
-      },
-      index: {
-        type: Number,
-        default: 0
-      },
-      project: {
-        type: Number,
-        default: 0
-      }
+export default {
+  props: {
+    status: {
+      type: Object,
+      default: null
     },
-    data() {
-      return {
-        displayActionMenu: false,
-        editStatus: false,
-        tasksStatsStartValue:1,
-        originalTasksToShow: this.maxTasksToShow,
-        disableBtnLoadMore: false,
-      }
+    viewType: {
+      type: String,
+      default: ''
     },
-    computed: {
-      initialTasksToShow() {
-        return this.originalTasksToShow;
-      },
-      limitTasksToshow() {
-        return this.tasksStatsStartValue;
-      }
+    tasksNumber: {
+      type: Number,
+      default: 0
     },
-    created() {
-      $(document).on('mousedown', () => {
-        if (this.displayActionMenu) {
-          window.setTimeout(() => {
-            this.displayActionMenu = false;
-          }, 200);
-        }
-/*         if (this.editStatus || this.status.edit) {
+    maxTasksToShow: {
+      type: Number,
+      default: 0
+    },
+    index: {
+      type: Number,
+      default: 0
+    },
+    project: {
+      type: Number,
+      default: 0
+    }
+  },
+  data() {
+    return {
+      displayActionMenu: false,
+      editStatus: false,
+      tasksStatsStartValue: 1,
+      originalTasksToShow: this.maxTasksToShow,
+      disableBtnLoadMore: false,
+    };
+  },
+  computed: {
+    initialTasksToShow() {
+      return this.originalTasksToShow;
+    },
+    limitTasksToshow() {
+      return this.tasksStatsStartValue;
+    }
+  },
+  created() {
+    $(document).on('mousedown', () => {
+      if (this.displayActionMenu) {
+        window.setTimeout(() => {
+          this.displayActionMenu = false;
+        }, 200);
+      }
+      /*         if (this.editStatus || this.status.edit) {
           window.setTimeout(() => {
             this.cancelAddColumn(this.index);
           }, 200);
         } */
-      });
+    });
+  },
+  methods: {
+    loadNextTasks() {
+      if (this.tasksNumber - this.originalTasksToShow >= this.maxTasksToShow) {
+        this.tasksStatsStartValue = this.originalTasksToShow+1;
+        this.originalTasksToShow += this.maxTasksToShow;
+      } else {
+        this.tasksStatsStartValue = this.originalTasksToShow;
+        this.originalTasksToShow = this.tasksNumber;
+        this.disableBtnLoadMore = true;
+      }
     },
-    methods: {
-      loadNextTasks() {
-        if(this.tasksNumber - this.originalTasksToShow >= this.maxTasksToShow) {
-          this.tasksStatsStartValue = this.originalTasksToShow+1;
-          this.originalTasksToShow += this.maxTasksToShow;
-        } else {
-          this.tasksStatsStartValue = this.originalTasksToShow;
-          this.originalTasksToShow = this.tasksNumber;
-          this.disableBtnLoadMore = true;
-        }
-      },
-      openTaskDrawer() {
-        const defaultTask= {id:null,
-        status:this.status,
-        priority:'NONE',
-        description:'',
-        title:''}
-        this.$root.$emit('open-task-drawer', defaultTask)
-      },
-      checkImput: function(e,index) {
+    openTaskDrawer() {
+      const defaultTask= {id: null,
+        status: this.status,
+        priority: 'NONE',
+        description: '',
+        title: ''};
+      this.$root.$emit('open-task-drawer', defaultTask);
+    },
+    checkImput: function(e,index) {
       if (e.keyCode === 13) {
-        this.saveStatus(index)
+        this.saveStatus(index);
       } 
       if (e.keyCode === 27) {
-        this.cancelAddColumn(index)
+        this.cancelAddColumn(index);
       }      
     },
     
-      deleteStatus() {
-          this.$emit('delete-status', this.status);
-      },
-      saveStatus(index) {
-        if(this.status.id){
-          this.$emit('update-status', this.status);
-          this.editStatus=false
-        }else{
-          this.status.rank=index
-          this.$emit('add-status');
-          this.editStatus=false
-        }
-      },
-      addColumn(index) {       
-          this.$emit('add-column',index);    
-      },
-      cancelAddColumn(index) {
-        if(this.status.id){
-          this.editStatus=false
-          this.status.edit=false
-        }else{
-          this.$emit('cancel-add-column',index);
-        }
-      },
-      showDetailsTask(viewType,id){
-        const uiIconMiniArrowDown = document.querySelector(`#${`uiIconMiniArrowDown${viewType}${id}`}`);
-        const uiIconMiniArrowRight = document.querySelector(`#${`uiIconMiniArrowRight${viewType}${id}`}`);
+    deleteStatus() {
+      this.$emit('delete-status', this.status);
+    },
+    saveStatus(index) {
+      if (this.status.id){
+        this.$emit('update-status', this.status);
+        this.editStatus=false;
+      } else {
+        this.status.rank=index;
+        this.$emit('add-status');
+        this.editStatus=false;
+      }
+    },
+    addColumn(index) {       
+      this.$emit('add-column',index);    
+    },
+    cancelAddColumn(index) {
+      if (this.status.id){
+        this.editStatus=false;
+        this.status.edit=false;
+      } else {
+        this.$emit('cancel-add-column',index);
+      }
+    },
+    showDetailsTask(viewType,id){
+      const uiIconMiniArrowDown = document.querySelector(`#${`uiIconMiniArrowDown${viewType}${id}`}`);
+      const uiIconMiniArrowRight = document.querySelector(`#${`uiIconMiniArrowRight${viewType}${id}`}`);
 
-        const detailsTask = document.querySelector(`#${`taskView${id}`}`);
-        if (detailsTask.style.display !== 'none') {
-          detailsTask.style.display = 'none';
-          uiIconMiniArrowDown.style.display = 'none';
-          uiIconMiniArrowRight.style.display = 'block'
-        }
-        else {detailsTask.style.display = 'block'
-          uiIconMiniArrowDown.style.display = 'block';
-          uiIconMiniArrowRight.style.display = 'none'}
-      },
-    }
+      const detailsTask = document.querySelector(`#${`taskView${id}`}`);
+      if (detailsTask.style.display !== 'none') {
+        detailsTask.style.display = 'none';
+        uiIconMiniArrowDown.style.display = 'none';
+        uiIconMiniArrowRight.style.display = 'block';
+      }
+      else {detailsTask.style.display = 'block';
+        uiIconMiniArrowDown.style.display = 'block';
+        uiIconMiniArrowRight.style.display = 'none';}
+    },
   }
+};
 </script>

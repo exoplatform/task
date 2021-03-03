@@ -8,7 +8,7 @@
         :avatar-url="comment.author.avatar"
         :title="comment.author.displayName"
         :size="30"
-        :url="comment.author.url"/>
+        :url="comment.author.url" />
       <div class="commentContent pl-3 d-flex align-center">
         <a
           class="primary-color--text font-weight-bold subtitle-2 pr-2">{{ comment.author.displayName }} <span v-if="comment.author.external" class="externalTagClass">{{ ` (${$t('label.external')})` }}</span></a>
@@ -25,7 +25,8 @@
         text
         small
         color="primary"
-        @click="openCommentDrawer">{{ $t('comment.message.Reply') }}
+        @click="openCommentDrawer">
+        {{ $t('comment.message.Reply') }}
       </v-btn>
     </div>
     <div v-if="comment.subComments && comment.subComments.length" class="py-0 TaskSubComments">
@@ -40,7 +41,7 @@
                 :avatar-url="item.author.avatar"
                 :title="item.author.displayName"
                 :size="30"
-                :url="item.author.url"/>
+                :url="item.author.url" />
               <div class="commentContent pl-3 d-flex align-center">
                 <a
                   class="primary-color--text font-weight-bold subtitle-2 pr-2">{{ item.author.displayName }} <span v-if="lastSubComment.author.external" class="externalTagClass">{{ ` (${$t('label.external')})` }}</span></a>
@@ -57,7 +58,8 @@
                 text
                 small
                 color="primary"
-                @click="openCommentDrawer">{{ $t('comment.message.Reply') }}
+                @click="openCommentDrawer">
+                {{ $t('comment.message.Reply') }}
               </v-btn>
             </div>
           </div>
@@ -67,20 +69,20 @@
   </div>
 </template>
 <script>
-  export default {
-    props: {
-      task: {
-        type: Boolean,
-        default: false
-      },
-      comment: {
-        type: Object,
-        default: () => {
-          return {};
-        }
-      },
+export default {
+  props: {
+    task: {
+      type: Boolean,
+      default: false
     },
-    data () {
+    comment: {
+      type: Object,
+      default: () => {
+        return {};
+      }
+    },
+  },
+  data () {
     return {
       lang: eXo.env.portal.language,
       dateTimeFormat: {
@@ -92,51 +94,51 @@
       },
     };
   },
-    computed: {
-      relativeTime() {
-        return this.getRelativeTime(this.comment.comment.createdTime.time)
-      },
-      lastSubComment() {
-        return this.comment.subComments && this.comment.subComments[this.comment.subComments.length-1];
-      },
-      id() {
-        return `comment-${this.comment.comment.id}`
+  computed: {
+    relativeTime() {
+      return this.getRelativeTime(this.comment.comment.createdTime.time);
+    },
+    lastSubComment() {
+      return this.comment.subComments && this.comment.subComments[this.comment.subComments.length-1];
+    },
+    id() {
+      return `comment-${this.comment.comment.id}`;
+    }
+  },
+  methods: {
+    getRelativeTime(previous) {
+      const msPerMinute = 60 * 1000;
+      const msPerHour = msPerMinute * 60;
+      const msPerDay = msPerHour * 24;
+      const msPerMaxDays = msPerDay * 2;
+      const elapsed = new Date().getTime() - previous;
+
+      if (elapsed < msPerMinute) {
+        return this.$t('task.timeConvert.Less_Than_A_Minute');
+      } else if (elapsed === msPerMinute) {
+        return this.$t('task.timeConvert.About_A_Minute');
+      } else if (elapsed < msPerHour) {
+        return this.$t('task.timeConvert.About_?_Minutes').replace('{0}', Math.round(elapsed / msPerMinute));
+      } else if (elapsed === msPerHour) {
+        return this.$t('task.timeConvert.About_An_Hour');
+      } else if (elapsed < msPerDay) {
+        return this.$t('task.timeConvert.About_?_Hours').replace('{0}', Math.round(elapsed / msPerHour));
+      } else if (elapsed === msPerDay) {
+        return this.$t('task.timeConvert.About_A_Day');
+      } else if (elapsed < msPerMaxDays) {
+        return this.$t('task.timeConvert.About_?_Days').replace('{0}', Math.round(elapsed / msPerDay));
+      } else {
+        return this.displayCommentDate(this.comment.comment.createdTime.time);
       }
     },
-    methods: {
-      getRelativeTime(previous) {
-        const msPerMinute = 60 * 1000;
-        const msPerHour = msPerMinute * 60;
-        const msPerDay = msPerHour * 24;
-        const msPerMaxDays = msPerDay * 2;
-        const elapsed = new Date().getTime() - previous;
-
-        if (elapsed < msPerMinute) {
-          return this.$t('task.timeConvert.Less_Than_A_Minute');
-        } else if (elapsed === msPerMinute) {
-          return this.$t('task.timeConvert.About_A_Minute');
-        } else if (elapsed < msPerHour) {
-          return this.$t('task.timeConvert.About_?_Minutes').replace('{0}', Math.round(elapsed / msPerMinute));
-        } else if (elapsed === msPerHour) {
-          return this.$t('task.timeConvert.About_An_Hour');
-        } else if (elapsed < msPerDay) {
-          return this.$t('task.timeConvert.About_?_Hours').replace('{0}', Math.round(elapsed / msPerHour));
-        } else if (elapsed === msPerDay) {
-          return this.$t('task.timeConvert.About_A_Day');
-        } else if (elapsed < msPerMaxDays) {
-          return this.$t('task.timeConvert.About_?_Days').replace('{0}', Math.round(elapsed / msPerDay));
-        } else {
-          return this.displayCommentDate(this.comment.comment.createdTime.time);
-        }
-      },
-      displayCommentDate( dateTimeValue ) {
-        return dateTimeValue && this.$dateUtil.formatDateObjectToDisplay(new Date(dateTimeValue), this.dateTimeFormat, this.lang) || '';
-      },
-      openCommentDrawer() {
-        this.$root.$emit('displayTaskComment');
-        this.$root.$emit('displaySubCommentEditor', this.id);
-      }
+    displayCommentDate( dateTimeValue ) {
+      return dateTimeValue && this.$dateUtil.formatDateObjectToDisplay(new Date(dateTimeValue), this.dateTimeFormat, this.lang) || '';
+    },
+    openCommentDrawer() {
+      this.$root.$emit('displayTaskComment');
+      this.$root.$emit('displaySubCommentEditor', this.id);
     }
-
   }
+
+};
 </script>

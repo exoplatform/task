@@ -14,7 +14,7 @@
           </span>
         </v-btn>
       </v-toolbar-title>
-      <v-spacer/>
+      <v-spacer />
       <div class="taskDisplay">
         <v-tabs class="projectTasksViewTabs">
           <v-tab
@@ -40,14 +40,14 @@
           </v-tab>-->
         </v-tabs>
       </div>
-      <v-spacer/>
+      <v-spacer />
       <v-scale-transition>
         <v-text-field
           v-model="keyword"
           :placeholder=" $t('label.filterTask') "
           prepend-inner-icon="fa-filter"
           class="inputTasksFilter pa-0 mr-3 my-auto"
-          clearable/>
+          clearable />
       </v-scale-transition>
       <v-scale-transition>
         <v-btn
@@ -68,91 +68,91 @@
       :status-list="statusList"
       @filter-num-changed="filterNumChanged"
       @filter-task="filterTasks"
-      @reset-filter-task="resetFilterTask"/>
+      @reset-filter-task="resetFilterTask" />
   </v-app>
 </template>
 <script>
-  export default {
-    props: {
-      project:{
-        type: Object,
-        default: null
-      },
-      statusList: {
-        type: Array,
-        default: () => []
-      },
-      taskCardTabView:{
-        type: String,
-        default: ''
-      },
-      taskListTabView: {
-        type: String,
-        default: ''
-      },
-      taskGanttTabView: {
-        type: String,
-        default: ''
-      },
+export default {
+  props: {
+    project: {
+      type: Object,
+      default: null
     },
-    data () {
-      return {
-        keyword: null,
-        awaitingSearch: false,
-        filterNumber:0,
-        searchonkeyChange:true
+    statusList: {
+      type: Array,
+      default: () => []
+    },
+    taskCardTabView: {
+      type: String,
+      default: ''
+    },
+    taskListTabView: {
+      type: String,
+      default: ''
+    },
+    taskGanttTabView: {
+      type: String,
+      default: ''
+    },
+  },
+  data () {
+    return {
+      keyword: null,
+      awaitingSearch: false,
+      filterNumber: 0,
+      searchonkeyChange: true
+    };
+  },
+  watch: {        
+    keyword() {  
+      if (!this.awaitingSearch) {
+        const searchonkeyChange = this.searchonkeyChange;
+        setTimeout(() => {
+          this.$emit('keyword-changed', this.keyword,searchonkeyChange);
+          this.awaitingSearch = false;
+        }, 1000);
       }
+      this.awaitingSearch = true;
+      if (this.searchonkeyChange){
+        this.resetFields('query'); }      
+      this.searchonkeyChange= true;
     },
-    watch: {        
-       keyword() {  
-          if (!this.awaitingSearch) {
-            const searchonkeyChange = this.searchonkeyChange
-            setTimeout(() => {
-              this.$emit('keyword-changed', this.keyword,searchonkeyChange);
-              this.awaitingSearch = false;
-            }, 1000);
-          }
-          this.awaitingSearch = true;
-          if(this.searchonkeyChange){
-          this.resetFields("query") }      
-        this.searchonkeyChange= true;
-      },
+  },
+  methods: {
+    openDrawer() {
+      this.$refs.filterTasksDrawer.open();
     },
-    methods: {
-      openDrawer() {
-        this.$refs.filterTasksDrawer.open();
-      },
-      openTaskDrawer() {
-        const defaultTask= {id:null,
-        status:{project:this.project},
-        priority:'NONE',
-        description:'',
-        title:''}
-        this.$root.$emit('open-task-drawer', defaultTask);
-      },
-      resetFilterTask(){
-        this.searchonkeyChange=false
-        this.keyword=""
-        this.searchonkeyChange=true
-        this.$emit('reset-filter-task-dashboard');
-      },
-      filterTasks(e){
-        this.searchonkeyChange=false
-        this.showCompleteTasks=e.showCompleteTasks;
-        this.keyword=e.tasks.query
-        this.$emit('filter-task-dashboard', { tasks:e.tasks,filterLabels:e.filterLabels,showCompleteTasks:e.showCompleteTasks });
-      },
-      resetFields(activeField){
-          this.$refs.filterTasksDrawer.resetFields(activeField);
-      },
-      filterNumChanged(filtersnumber){
-        this.filterNumber=filtersnumber
-      },
-      getFilterNum(){
-        if(this.filterNumber>0){
-          return `(${this.filterNumber})`
-        } return ''
-      }
+    openTaskDrawer() {
+      const defaultTask= {id: null,
+        status: {project: this.project},
+        priority: 'NONE',
+        description: '',
+        title: ''};
+      this.$root.$emit('open-task-drawer', defaultTask);
+    },
+    resetFilterTask(){
+      this.searchonkeyChange=false;
+      this.keyword='';
+      this.searchonkeyChange=true;
+      this.$emit('reset-filter-task-dashboard');
+    },
+    filterTasks(e){
+      this.searchonkeyChange=false;
+      this.showCompleteTasks=e.showCompleteTasks;
+      this.keyword=e.tasks.query;
+      this.$emit('filter-task-dashboard', { tasks: e.tasks,filterLabels: e.filterLabels,showCompleteTasks: e.showCompleteTasks });
+    },
+    resetFields(activeField){
+      this.$refs.filterTasksDrawer.resetFields(activeField);
+    },
+    filterNumChanged(filtersnumber){
+      this.filterNumber=filtersnumber;
+    },
+    getFilterNum(){
+      if (this.filterNumber>0){
+        return `(${this.filterNumber})`;
+      } return '';
     }
   }
+};
 </script>

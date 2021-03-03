@@ -19,15 +19,15 @@
   </exo-drawer>
 </template>
 <script>
-  export default {
-    data: () => ({
-      projectManagers: [],
-    }),
-    mounted() {
-      this.$root.$on('displayProjectManagers', projectManagers => {
-        this.projectManagers = projectManagers;
-        this.$refs.managersDrawer.open();
-      });
-    }
-  };
+export default {
+  data: () => ({
+    projectManagers: [],
+  }),
+  mounted() {
+    this.$root.$on('displayProjectManagers', projectManagers => {
+      this.projectManagers = projectManagers;
+      this.$refs.managersDrawer.open();
+    });
+  }
+};
 </script>

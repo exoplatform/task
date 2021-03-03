@@ -9,7 +9,7 @@
         :username="comment.author.username"
         :title="comment.author.displayName"
         :size="30"
-        :url="comment.author.url"/>
+        :url="comment.author.url" />
       <div class="commentContent pl-3 d-flex align-center">
         <a
           class="primary-color--text font-weight-bold subtitle-2 pr-2">{{ comment.author.displayName }} <span v-if="comment.author.external" class="externalTagClass">{{ ` (${$t('label.external')})` }}</span></a>
@@ -39,7 +39,8 @@
         text
         small
         color="primary"
-        @click="openEditor()">{{ $t('comment.message.Reply') }}
+        @click="openEditor()">
+        {{ $t('comment.message.Reply') }}
       </v-btn>
     </div>
     <div class="py-0 TaskSubComments">
@@ -54,7 +55,7 @@
           :comments="comment.subComments"
           @confirmDialogOpened="$emit('confirmDialogOpened')"
           @confirmDialogClosed="$emit('confirmDialogClosed')"
-          @openSubEditor="openEditor()"/>
+          @openSubEditor="openEditor()" />
       </div>
       <div
         v-focus
@@ -64,7 +65,7 @@
           :username="currentUserName"
           :avatar-url="currentUserAvatar"
           :size="30"
-          :url="null"/>
+          :url="null" />
         <div class="editorContent ml-2">
           <task-comment-editor
             ref="subCommentEditor"
@@ -74,14 +75,15 @@
             :task="task"
             :id="id"
             class="subComment subCommentEditor"
-            @subShowEditor="openEditor"/>
+            @subShowEditor="openEditor" />
           <v-btn
             :disabled="postDisabled"
             depressed
             small
             type="button" 
             class="btn btn-primary ignore-vuetify-classes btnStyle mt-1 mb-2 commentBtn"
-            @click="addTaskSubComment(comment)">{{ $t('comment.label.comment') }}
+            @click="addTaskSubComment(comment)">
+            {{ $t('comment.label.comment') }}
           </v-btn>
         </div>
       </div>
@@ -100,188 +102,188 @@
 </template>
 
 <script>
-  import {addTaskSubComment, urlVerify, removeTaskComment} from '../../taskDrawerApi';
+import {addTaskSubComment, urlVerify, removeTaskComment} from '../../taskDrawerApi';
 
-    export default {
-        name: "TaskComments",
-        directives: {
-          focus: {
-            inserted: function (el) {
-              el.focus()
-            }
-          }
-        },
-        props: {
-          comment: {
-            type: Object,
-            default: () => {
-              return {};
-            }
-          },
-          comments: {
-            type: Object,
-            default: () => {
-              return {};
-            }
-          },
-          task: {
-            type: Object,
-            default: () => null
-          },
-          sub: {
-            type: Boolean,
-            default: false
-          },
-          closeEditor: {
-            type: Boolean,
-            default: false
-          },
-          isOpen:{
-            type: Boolean,
-            default: false
-          },
-          id: {
-            type: String,
-            default: ''
-          },
-          commentId: {
-            type: String,
-            default: ''
-          }
-        },
-        data() {
-            return {
-                hover: false,
-                editorData: '',
-                disabledComment: '',
-                confirmDeleteComment: false,
-                commentPlaceholder: this.$t('comment.message.addYourComment'),
-                showEditor : false,
-                currentUserName: eXo.env.portal.userName,
-                MESSAGE_MAX_LENGTH:1250,
-                lang: eXo.env.portal.language,
-                dateTimeFormat: {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit',
-                },
-            }
-        },
-      computed: {
-            relativeTime() {
-                return this.getRelativeTime(this.comment.comment.createdTime.time)
-            },
-            showDeleteButtom() {
-                return this.hover && eXo.env.portal.userName === this.comment.author.username;
-            },
-           postDisabled: function () {
-           if (this.disabledComment) {
-             return true
-           } else if (this.editorData !== null && this.editorData!=='') {
-           let pureText = this.editorData ? this.editorData.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, '').trim() : '';
-           const div = document.createElement('div');
-           div.innerHTML = pureText;
-           pureText = div.textContent || div.innerText || '';
-           return pureText.length > this.MESSAGE_MAX_LENGTH;
-          }else {return true}
-        },
-        },
-        watch: {
-            editorData(val) {
-              this.disabledComment = val === '';
-            },
-            showEditor(val) {
-              this.$emit('showSubEditor', val);
-            },
-            closeEditor(val) {
-              if (val === true) {
-                this.showEditor = false
-              }
-            },
-          commentId() {
-              if( this.commentId === `comment-${this.comment.comment.id}` ) {
-                this.openSubEditor();
-              }
-          }
-        },
-      mounted() {
-          document.addEventListener('openSubComment', event => {
-            if (event && event.detail && event.detail === `comment-${this.comment.comment.id}`) {
-              this.commentId = event.detail;
-            }
-          })
-      },
-      methods: {
-          openEditor() {
-            if (this.isOpen) {
-              this.$emit('isOpen')
-                setTimeout(this.openSubEditor, 100)
-              } else {
-                this.openSubEditor()
-              }
-            },
-            openSubEditor() {
-              this.showEditor = true;
-              this.editorData = '';
-              if (this.sub) {
-                this.$emit('openSubEditor')
-              }
-            },
-            addTaskSubComment(commentItem) {
-              let subComment = this.$refs.subCommentEditor.getMessage();
-              subComment = this.urlVerify(subComment);
-              addTaskSubComment(this.task.id, commentItem.comment.id, subComment).then((comment => {
-                        this.comment.subComments = this.comment.subComments || [];
-                        this.comment.subComments.push(comment)
-                      })
-              );
-              this.showEditor = false;
-            },
-            removeTaskComment() {
-              removeTaskComment(this.comment.comment.id);
-                for (let i = 0; i < this.comments.length; i++) {
-                  if (this.comments[i] === this.comment) {
-                    this.comments.splice(i, 1);
-                  }
-                }
-                this.$emit('confirmDialogClosed')
-            },
-            getRelativeTime(previous) {
-                const msPerMinute = 60 * 1000;
-                const msPerHour = msPerMinute * 60;
-                const msPerDay = msPerHour * 24;
-                const msPerMaxDays = msPerDay * 2;
-                const elapsed = new Date().getTime() - previous;
-
-                if (elapsed < msPerMinute) {
-                    return this.$t('task.timeConvert.Less_Than_A_Minute');
-                } else if (elapsed === msPerMinute) {
-                    return this.$t('task.timeConvert.About_A_Minute');
-                } else if (elapsed < msPerHour) {
-                    return this.$t('task.timeConvert.About_?_Minutes').replace('{0}', Math.round(elapsed / msPerMinute));
-                } else if (elapsed === msPerHour) {
-                    return this.$t('task.timeConvert.About_An_Hour');
-                } else if (elapsed < msPerDay) {
-                    return this.$t('task.timeConvert.About_?_Hours').replace('{0}', Math.round(elapsed / msPerHour));
-                } else if (elapsed === msPerDay) {
-                    return this.$t('task.timeConvert.About_A_Day');
-                } else if (elapsed < msPerMaxDays) {
-                    return this.$t('task.timeConvert.About_?_Days').replace('{0}', Math.round(elapsed / msPerDay));
-                } else {
-                  return this.displayCommentDate(this.comment.comment.createdTime.time);
-                }
-            },
-           displayCommentDate( dateTimeValue ) {
-             return dateTimeValue && this.$dateUtil.formatDateObjectToDisplay(new Date(dateTimeValue), this.dateTimeFormat, this.lang) || '';
-           },
-            urlVerify(text) {
-              return urlVerify(text);
-            },
-            confirmCommentDelete: function () {
-              this.$refs.CancelSavingCommentDialog.open();
-            },
-        }
+export default {
+  name: 'TaskComments',
+  directives: {
+    focus: {
+      inserted: function (el) {
+        el.focus();
+      }
     }
+  },
+  props: {
+    comment: {
+      type: Object,
+      default: () => {
+        return {};
+      }
+    },
+    comments: {
+      type: Object,
+      default: () => {
+        return {};
+      }
+    },
+    task: {
+      type: Object,
+      default: () => null
+    },
+    sub: {
+      type: Boolean,
+      default: false
+    },
+    closeEditor: {
+      type: Boolean,
+      default: false
+    },
+    isOpen: {
+      type: Boolean,
+      default: false
+    },
+    id: {
+      type: String,
+      default: ''
+    },
+    commentId: {
+      type: String,
+      default: ''
+    }
+  },
+  data() {
+    return {
+      hover: false,
+      editorData: '',
+      disabledComment: '',
+      confirmDeleteComment: false,
+      commentPlaceholder: this.$t('comment.message.addYourComment'),
+      showEditor: false,
+      currentUserName: eXo.env.portal.userName,
+      MESSAGE_MAX_LENGTH: 1250,
+      lang: eXo.env.portal.language,
+      dateTimeFormat: {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      },
+    };
+  },
+  computed: {
+    relativeTime() {
+      return this.getRelativeTime(this.comment.comment.createdTime.time);
+    },
+    showDeleteButtom() {
+      return this.hover && eXo.env.portal.userName === this.comment.author.username;
+    },
+    postDisabled: function () {
+      if (this.disabledComment) {
+        return true;
+      } else if (this.editorData !== null && this.editorData!=='') {
+        let pureText = this.editorData ? this.editorData.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, '').trim() : '';
+        const div = document.createElement('div');
+        div.innerHTML = pureText;
+        pureText = div.textContent || div.innerText || '';
+        return pureText.length > this.MESSAGE_MAX_LENGTH;
+      } else {return true;}
+    },
+  },
+  watch: {
+    editorData(val) {
+      this.disabledComment = val === '';
+    },
+    showEditor(val) {
+      this.$emit('showSubEditor', val);
+    },
+    closeEditor(val) {
+      if (val === true) {
+        this.showEditor = false;
+      }
+    },
+    commentId() {
+      if ( this.commentId === `comment-${this.comment.comment.id}` ) {
+        this.openSubEditor();
+      }
+    }
+  },
+  mounted() {
+    document.addEventListener('openSubComment', event => {
+      if (event && event.detail && event.detail === `comment-${this.comment.comment.id}`) {
+        this.commentId = event.detail;
+      }
+    });
+  },
+  methods: {
+    openEditor() {
+      if (this.isOpen) {
+        this.$emit('isOpen');
+        setTimeout(this.openSubEditor, 100);
+      } else {
+        this.openSubEditor();
+      }
+    },
+    openSubEditor() {
+      this.showEditor = true;
+      this.editorData = '';
+      if (this.sub) {
+        this.$emit('openSubEditor');
+      }
+    },
+    addTaskSubComment(commentItem) {
+      let subComment = this.$refs.subCommentEditor.getMessage();
+      subComment = this.urlVerify(subComment);
+      addTaskSubComment(this.task.id, commentItem.comment.id, subComment).then((comment => {
+        this.comment.subComments = this.comment.subComments || [];
+        this.comment.subComments.push(comment);
+      })
+      );
+      this.showEditor = false;
+    },
+    removeTaskComment() {
+      removeTaskComment(this.comment.comment.id);
+      for (let i = 0; i < this.comments.length; i++) {
+        if (this.comments[i] === this.comment) {
+          this.comments.splice(i, 1);
+        }
+      }
+      this.$emit('confirmDialogClosed');
+    },
+    getRelativeTime(previous) {
+      const msPerMinute = 60 * 1000;
+      const msPerHour = msPerMinute * 60;
+      const msPerDay = msPerHour * 24;
+      const msPerMaxDays = msPerDay * 2;
+      const elapsed = new Date().getTime() - previous;
+
+      if (elapsed < msPerMinute) {
+        return this.$t('task.timeConvert.Less_Than_A_Minute');
+      } else if (elapsed === msPerMinute) {
+        return this.$t('task.timeConvert.About_A_Minute');
+      } else if (elapsed < msPerHour) {
+        return this.$t('task.timeConvert.About_?_Minutes').replace('{0}', Math.round(elapsed / msPerMinute));
+      } else if (elapsed === msPerHour) {
+        return this.$t('task.timeConvert.About_An_Hour');
+      } else if (elapsed < msPerDay) {
+        return this.$t('task.timeConvert.About_?_Hours').replace('{0}', Math.round(elapsed / msPerHour));
+      } else if (elapsed === msPerDay) {
+        return this.$t('task.timeConvert.About_A_Day');
+      } else if (elapsed < msPerMaxDays) {
+        return this.$t('task.timeConvert.About_?_Days').replace('{0}', Math.round(elapsed / msPerDay));
+      } else {
+        return this.displayCommentDate(this.comment.comment.createdTime.time);
+      }
+    },
+    displayCommentDate( dateTimeValue ) {
+      return dateTimeValue && this.$dateUtil.formatDateObjectToDisplay(new Date(dateTimeValue), this.dateTimeFormat, this.lang) || '';
+    },
+    urlVerify(text) {
+      return urlVerify(text);
+    },
+    confirmCommentDelete: function () {
+      this.$refs.CancelSavingCommentDialog.open();
+    },
+  }
+};
 </script>
