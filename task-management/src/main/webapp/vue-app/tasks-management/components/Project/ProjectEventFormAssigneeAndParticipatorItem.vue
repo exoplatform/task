@@ -24,10 +24,10 @@ export default {
       default: () => ({}),
     },
   },
-   data () {
-      return {
-        isExternal : false,
-      }
+  data () {
+    return {
+      isExternal: false,
+    };
   },
   computed: {
     canRemoveAttendee() {
@@ -48,12 +48,12 @@ export default {
     },
   },
   created() {
-   if(this.attendee.providerId === 'organization'){
-    this.$userService.getUser(this.attendee.remoteId)
-      .then(user => {
-        this.isExternal = user.external === 'true';
-      });
-   }
+    if (this.attendee.providerId === 'organization'){
+      this.$userService.getUser(this.attendee.remoteId)
+        .then(user => {
+          this.isExternal = user.external === 'true';
+        });
+    }
   },
 };
 </script>

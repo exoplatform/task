@@ -23,7 +23,7 @@
               @add-column="addColumn"
               @move-column="moveColumn"
               @cancel-add-column="cancelAddColumn"
-              @create-status="createStatus"/>
+              @create-status="createStatus" />
           </v-col>
         </v-row>
       </v-container>
@@ -32,98 +32,98 @@
 </template>
 <script>
 import {updateTask} from '../../../taskDrawer/taskDrawerApi';
-  export default {
-    props: {
-      statusList: {
-        type: Array,
-        default: () => []
-      },
-      tasksList: {
-        type: Array,
-        default: () => []
-      },
-      project: {
-        type: Number,
-        default: 0
-      },
-      filterTaskCompleted: {
-        type: Boolean,
-        default: false
-      }
+export default {
+  props: {
+    statusList: {
+      type: Array,
+      default: () => []
     },
-    data() {
+    tasksList: {
+      type: Array,
+      default: () => []
+    },
+    project: {
+      type: Number,
+      default: 0
+    },
+    filterTaskCompleted: {
+      type: Boolean,
+      default: false
+    }
+  },
+  data() {
     return {
-      index: -1
+      indexItem: -1
     };
   },
-    methods: {
-      getTasksByStatus(items ,statusName) {
-        const tasksByStatus = [];
-        items.forEach((item) => {
-          if(item.task) {
-            if (item.task.status) {
-              if (item.task.status.name === statusName) {
-                tasksByStatus.push(item);
-              }
+  methods: {
+    getTasksByStatus(items ,statusName) {
+      const tasksByStatus = [];
+      items.forEach((item) => {
+        if (item.task) {
+          if (item.task.status) {
+            if (item.task.status.name === statusName) {
+              tasksByStatus.push(item);
             }
           }
-        });
-        return tasksByStatus;
-      },
-      updateTaskCompleted(e){
-        if( !this.filterTaskCompleted ) {
-          this.$root.$emit('update-task-completed', e);
         }
-      },
-      updateTaskStatus(task,newStatus){
-               // eslint-disable-next-line eqeqeq
-              const status = this.statusList.find(s => s.id == newStatus);
-              if(status){
-               task.status = status;
-               this.updateTask(task)
-              } 
-      },
-      updateTask(task) {
-        if(task.id!=null){
-          updateTask(task.id,task).then(task => {
+      });
+      return tasksByStatus;
+    },
+    updateTaskCompleted(e){
+      if ( !this.filterTaskCompleted ) {
+        this.$root.$emit('update-task-completed', e);
+      }
+    },
+    updateTaskStatus(task,newStatus){
+      // eslint-disable-next-line eqeqeq
+      const status = this.statusList.find(s => s.id == newStatus);
+      if (status){
+        task.status = status;
+        this.updateTask(task);
+      } 
+    },
+    updateTask(task) {
+      if (task.id!=null){
+        updateTask(task.id,task).then( () => {
           this.$root.$emit('show-alert', { type: 'success', message: this.$t('alert.success.task.status') });
         }).catch(e => {
-          console.debug("Error when updating task's status", e);
-          this.$root.$emit('show-alert',{type:'error',message: this.$t('alert.error')} );
-          });
-        }
-      },
-      deleteStatus(status) {
-          this.$emit('delete-status', status);
-          this.index=-1
-      },
-      updateStatus(status) {
-          this.$emit('update-status', status);
-          this.index=-1
-      },
-      createStatus() {
-          this.$emit('create-status');
-          this.index=-1
-      },
-      addColumn(index) {
-        if(this.index!==-1){
-         this.statusList.splice( this.index, 1)  
-        }
-        const newStatus = {name:""}
-        newStatus.edit=true;
-        this.statusList.splice( index, 0, newStatus)
-        this.index=index
-      },
-      moveColumn(fromIndex,toIndex) {  
-        const element = this.statusList[fromIndex];
-        this.statusList.splice(fromIndex, 1);
-        this.statusList.splice(toIndex, 0, element);
-        this.$emit('move-status');
-      },
-      cancelAddColumn(index) {
-        this.statusList.splice( index, 1)       
-      },
+          console.error('Error when updating task\'s status', e);
+          this.$root.$emit('show-alert',{type: 'error',message: this.$t('alert.error')} );
+        });
+      }
+    },
+    deleteStatus(status) {
+      this.$emit('delete-status', status);
+      this.indexItem=-1;
+    },
+    updateStatus(status) {
+      this.$emit('update-status', status);
+      this.indexItem=-1;
+    },
+    createStatus() {
+      this.$emit('create-status');
+      this.indexItem=-1;
+    },
+    addColumn(index) {
+      if (this.indexItem!==-1){
+        this.statusList.splice( this.indexItem, 1);  
+      }
+      const newStatus = {name: ''};
+      newStatus.edit=true;
+      this.statusList.splice( index, 0, newStatus);
+      this.indexItem=index;
+    },
+    moveColumn(fromIndex,toIndex) {  
+      const element = this.statusList[fromIndex];
+      this.statusList.splice(fromIndex, 1);
+      this.statusList.splice(toIndex, 0, element);
+      this.$emit('move-status');
+    },
+    cancelAddColumn(index) {
+      this.statusList.splice( index, 1);       
+    },
 
-    }
   }
+};
 </script>

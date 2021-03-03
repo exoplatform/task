@@ -58,10 +58,10 @@
                       class="v-divider theme&#45;&#45;light separator">
                   </div>
                   <div
-                    v-for="task in tasksOverdueList"
-                    :key="task.id"
+                    v-for="taskItem in tasksOverdueList"
+                    :key="taskItem.id"
                     class="list-item">
-                    <task-details :task="task" @removeTask="removeTask"/>
+                    <task-details :task="taskItem" @removeTask="removeTask" />
                   </div>
                 </div>
                 <div v-if="tasksTodaySize > 0">
@@ -75,10 +75,10 @@
                   </div>
 
                   <div
-                    v-for="task in tasksTodayList"
-                    :key="task.id"
+                    v-for="taskItem in tasksTodayList"
+                    :key="taskItem.id"
                     class="list-item">
-                    <task-details :task="task" @removeTask="removeTask"/>
+                    <task-details :task="taskItem" @removeTask="removeTask" />
                   </div>
                 </div>
 
@@ -93,10 +93,10 @@
                   </div>
 
                   <div
-                    v-for="task in tasksTomorrowList"
-                    :key="task.id"
+                    v-for="taskItem in tasksTomorrowList"
+                    :key="taskItem.id"
                     class="list-item">
-                    <task-details :task="task" @removeTask="removeTask"/>
+                    <task-details :task="taskItem" @removeTask="removeTask" />
                   </div>
                 </div>
 
@@ -111,10 +111,10 @@
                   </div>
 
                   <div
-                    v-for="task in tasksUpcomingList"
-                    :key="task.id"
+                    v-for="taskItem in tasksUpcomingList"
+                    :key="taskItem.id"
                     class="list-item">
-                    <task-details :task="task" @removeTask="removeTask"/>
+                    <task-details :task="taskItem" @removeTask="removeTask" />
                   </div>
                 </div>
 
@@ -122,7 +122,9 @@
                   <button
                     type="button"
                     class="btn color-title btn-show"
-                    @click="navigateTo('tasks/myTasks','ALL')">{{ $t('label.tasks.btn.show') }}</button>
+                    @click="navigateTo('tasks/myTasks','ALL')">
+                    {{ $t('label.tasks.btn.show') }}
+                  </button>
                 </div>
               </div>
 
@@ -132,215 +134,222 @@
                   <div class="noTasksTitle">{{ $t('label.noTask') }}</div>
                 </div>
               </div>
-        </v-flex></v-layout></v-flex>
+            </v-flex>
+          </v-layout>
+        </v-flex>
       </v-layout>
       <task-drawer
         ref="taskDrawer"
-        :task="task"/>
+        :task="task" />
     </v-container>
   </v-app>
 </template>
 
 <script>
-  import {filterTasksList} from '../../../js/tasksService'
+import {filterTasksList} from '../../../js/tasksService';
 
-  export default {
+export default {
 
-    data() {
-      return {
-        placeholder: '',
-        tasks: [],
-        tasksOverdue: [],
-        tasksToday: [],
-        tasksTomorrow: [],
-        tasksUpcoming: [],
-        tasksOverdueSize:'',
-        tasksTodaySize:'',
-        tasksTomorrowSize:'',
-        tasksUpcomingSize:'',
-        primaryFilterSelected:'ALL',
-        loadingTasks: true,
-        TasksWithoutUpcomingSize:'',
-        TasksSize:'',
-        task: {
-          id:null,
-          status:{project:this.project},
-          priority:'NONE',
-          description:'',
-          title:''
-        },
-        priorityStatus :['High', 'In Normal', 'Low', 'None', null],
-      }
-    },computed:{
+  data() {
+    return {
+      placeholder: '',
+      tasks: [],
+      tasksOverdue: [],
+      tasksToday: [],
+      tasksTomorrow: [],
+      tasksUpcoming: [],
+      tasksOverdueSize: '',
+      tasksTodaySize: '',
+      tasksTomorrowSize: '',
+      tasksUpcomingSize: '',
+      primaryFilterSelected: 'ALL',
+      loadingTasks: true,
+      TasksWithoutUpcomingSize: '',
+      TasksSize: '',
+      task: {
+        id: null,
+        status: {project: this.project},
+        priority: 'NONE',
+        description: '',
+        title: ''
+      },
+      priorityStatus: ['High', 'In Normal', 'Low', 'None', null],
+    };
+  },computed: {
     tasksOverdueList(){
-      if(this.tasksOverdue){
-        if(this.tasksOverdueSize>10){
+      if (this.tasksOverdue){
+        if (this.tasksOverdueSize>10){
           return  this.tasksOverdue.slice(0, 10);
-        }else {
+        } else {
           return this.tasksOverdue;
         }
       }
       else {return this.tasksOverdue;}
     },
     tasksTodayList(){
-      if(this.tasksToday){
-        if(this.tasksTodaySize && this.tasksOverdueSize<11){
-            return  this.tasksToday.slice(0, 10-this.tasksOverdueSize);
+      if (this.tasksToday){
+        if (this.tasksTodaySize && this.tasksOverdueSize<11){
+          return  this.tasksToday.slice(0, 10-this.tasksOverdueSize);
+        } else {
+          return '';
         }
-      }else {return this.tasksToday.slice(0, 0);}
+      } else {return this.tasksToday.slice(0, 0);}
 
     },
     tasksTomorrowList(){
-      if(this.tasksTomorrow){
-        if(this.tasksTomorrowSize && this.tasksOverdueSize+this.tasksTodaySize<11){
+      if (this.tasksTomorrow){
+        if (this.tasksTomorrowSize && this.tasksOverdueSize+this.tasksTodaySize<11){
           return  this.tasksTomorrow.slice(0, 10-this.tasksOverdueSize-this.tasksTodaySize);
+        } else {
+          return '';
         }
-      }else {return this.tasksTomorrow.slice(0, 0);}
+      } else {return this.tasksTomorrow.slice(0, 0);}
     },
     tasksUpcomingList(){
-      if(this.tasksUpcoming){
-        if(this.tasksUpcomingSize && this.tasksOverdueSize+this.tasksTodaySize+this.tasksTomorrowSize<11){
+      if (this.tasksUpcoming){
+        if (this.tasksUpcomingSize && this.tasksOverdueSize+this.tasksTodaySize+this.tasksTomorrowSize<11){
           return  this.tasksUpcoming.slice(0, 10-this.tasksOverdueSize-this.tasksTodaySize-this.tasksTomorrowSize);
         }
-      }else {return this.tasksUpcoming.slice(0, 0);}
+      } else {return this.tasksUpcoming.slice(0, 0);}
+      return '';
     },
   },
-    created(){
-      this.$root.$on('update-task-list', task => {
-        this.retrieveTask(task);
-      });
-      this.$root.$on('open-task-drawer', task => {
-        this.$refs.taskDrawer.open(task);
-      });
-      this.itemsLimit = this.$parent.$data.itemsLimit;
-      this.getMyOverDueTasks();
-      this.getMyTodayTasks();
-      this.getMyTomorrowTasks();
-      this.getMyUpcomingTasks();
+  created(){
+    this.$root.$on('update-task-list', task => {
+      this.retrieveTask(task);
+    });
+    this.$root.$on('open-task-drawer', task => {
+      this.$refs.taskDrawer.open(task);
+    });
+    this.itemsLimit = this.$parent.$data.itemsLimit;
+    this.getMyOverDueTasks();
+    this.getMyTodayTasks();
+    this.getMyTomorrowTasks();
+    this.getMyUpcomingTasks();
+  },
+  methods: {
+    getMyOverDueTasks() {
+      const task = {
+        dueCategory: 'overDue',
+        offset: 0,
+        limit: 0,
+        showCompleteTasks: false,
+      };
+      filterTasksList(task,'','priority','','-2').then(
+        (data) => {
+          this.tasksOverdue = data.tasks;
+          this.tasksOverdue=this.tasksOverdue.sort((a, b) => {
+            return this.priorityStatus.indexOf(a.task.priority) - this.priorityStatus.indexOf(b.task.priority);
+          });
+          this.tasksOverdueSize=data.tasksNumber;
+          this.tasks = this.tasks.concat(this.tasksOverdue);
+          this.loadingTasks = false;
+        }
+      );
     },
-    methods: {
-      getMyOverDueTasks() {
-        const task = {
-          dueCategory: 'overDue',
-          offset: 0,
-          limit: 0,
-          showCompleteTasks:false,
-        };
-        filterTasksList(task,'','priority','','-2').then(
-                (data) => {
-                  this.tasksOverdue = data.tasks;
-                  this.tasksOverdue=this.tasksOverdue.sort((a, b) => {
-                    return this.priorityStatus.indexOf(a.task.priority) - this.priorityStatus.indexOf(b.task.priority);
-                  });
-                  this.tasksOverdueSize=data.tasksNumber;
-                  this.tasks = this.tasks.concat(this.tasksOverdue);
-                  this.loadingTasks = false
-                }
-        )
-      },
-      getMyTodayTasks() {
-        const task = {
-          dueCategory: 'today',
-          offset: 0,
-          limit: 0,
-          showCompleteTasks:false,
-        };
-        filterTasksList(task,'','priority','','-2').then(
-                (data) => {
-                  this.tasksToday = data.tasks;
-                  this.tasksToday=this.tasksToday.sort((a, b) => {
-                    return this.priorityStatus.indexOf(a.task.priority) - this.priorityStatus.indexOf(b.task.priority);
-                  });
-                  this.tasksTodaySize=data.tasksNumber;
-                  this.tasks = this.tasks.concat(this.tasksToday);
-                  this.loadingTasks = false
-                }
-        )
-      },getMyTomorrowTasks() {
-        const task = {
-          dueCategory: 'tomorrow',
-          offset: 0,
-          limit: 0,
-          showCompleteTasks:false,
-        };
-        filterTasksList(task,'','priority','','-2').then(
-                (data) => {
-                  this.tasksTomorrow = data.tasks;
-                  this.tasksTomorrow=this.tasksTomorrow.sort((a, b) => {
-                    return this.priorityStatus.indexOf(a.task.priority) - this.priorityStatus.indexOf(b.task.priority);
-                  });
-                  this.tasksTomorrowSize=data.tasksNumber;
-                  this.tasks = this.tasks.concat(this.tasksTomorrow);
-                  this.loadingTasks = false
-                }
-        )
-      },getMyUpcomingTasks() {
-        const task = {
-          dueCategory: 'upcoming',
-          offset: 0,
-          showCompleteTasks:false,
-        };
-        filterTasksList(task,'','priority','','-2').then(
-                (data) => {
-                  this.tasksUpcoming = data.tasks;
-                  this.tasksUpcoming=this.tasksUpcoming.sort((a, b) => {
-                    return this.priorityStatus.indexOf(a.task.priority) - this.priorityStatus.indexOf(b.task.priority);
-                  });
-                  this.tasksUpcomingSize=data.tasksNumber;
-                  this.tasks = this.tasks.concat(this.tasksUpcoming);
-                  this.loadingTasks = false
-                }
-        )
-      },
-      openTaskDrawer() {
-        const defaultTask={
-          id:null,
-          status:{project:this.project},
-          priority:'NONE',
-          description:'',
-          title:''
+    getMyTodayTasks() {
+      const task = {
+        dueCategory: 'today',
+        offset: 0,
+        limit: 0,
+        showCompleteTasks: false,
+      };
+      filterTasksList(task,'','priority','','-2').then(
+        (data) => {
+          this.tasksToday = data.tasks;
+          this.tasksToday=this.tasksToday.sort((a, b) => {
+            return this.priorityStatus.indexOf(a.task.priority) - this.priorityStatus.indexOf(b.task.priority);
+          });
+          this.tasksTodaySize=data.tasksNumber;
+          this.tasks = this.tasks.concat(this.tasksToday);
+          this.loadingTasks = false;
         }
-        this.$root.$emit('open-task-drawer', defaultTask);
-      },
-      removeTask(value) {
-        this.tasks.splice(this.tasks.findIndex(function(i){
-          return i.id === value;
-        }), 1);
-        document.body.style.overflow = 'auto';
-      },
-      navigateTo(pagelink,primaryFilterSelected) {
-        this.primaryFilterSelected=primaryFilterSelected;
-        localStorage.setItem('primary-filter-tasks', this.primaryFilterSelected);
-        location.href=`${ eXo.env.portal.context }/${ eXo.env.portal.portalName }/${ pagelink }` ;
+      );
+    },getMyTomorrowTasks() {
+      const task = {
+        dueCategory: 'tomorrow',
+        offset: 0,
+        limit: 0,
+        showCompleteTasks: false,
+      };
+      filterTasksList(task,'','priority','','-2').then(
+        (data) => {
+          this.tasksTomorrow = data.tasks;
+          this.tasksTomorrow=this.tasksTomorrow.sort((a, b) => {
+            return this.priorityStatus.indexOf(a.task.priority) - this.priorityStatus.indexOf(b.task.priority);
+          });
+          this.tasksTomorrowSize=data.tasksNumber;
+          this.tasks = this.tasks.concat(this.tasksTomorrow);
+          this.loadingTasks = false;
+        }
+      );
+    },getMyUpcomingTasks() {
+      const task = {
+        dueCategory: 'upcoming',
+        offset: 0,
+        showCompleteTasks: false,
+      };
+      filterTasksList(task,'','priority','','-2').then(
+        (data) => {
+          this.tasksUpcoming = data.tasks;
+          this.tasksUpcoming=this.tasksUpcoming.sort((a, b) => {
+            return this.priorityStatus.indexOf(a.task.priority) - this.priorityStatus.indexOf(b.task.priority);
+          });
+          this.tasksUpcomingSize=data.tasksNumber;
+          this.tasks = this.tasks.concat(this.tasksUpcoming);
+          this.loadingTasks = false;
+        }
+      );
+    },
+    openTaskDrawer() {
+      const defaultTask={
+        id: null,
+        status: {project: this.project},
+        priority: 'NONE',
+        description: '',
+        title: ''
+      };
+      this.$root.$emit('open-task-drawer', defaultTask);
+    },
+    removeTask(value) {
+      this.tasks.splice(this.tasks.findIndex(function(i){
+        return i.id === value;
+      }), 1);
+      document.body.style.overflow = 'auto';
+    },
+    navigateTo(pagelink,primaryFilterSelected) {
+      this.primaryFilterSelected=primaryFilterSelected;
+      localStorage.setItem('primary-filter-tasks', this.primaryFilterSelected);
+      location.href=`${ eXo.env.portal.context }/${ eXo.env.portal.portalName }/${ pagelink }` ;
 
-      },
-      dateFormatter(dueDate) {
-        if (dueDate) {
-          const date = new Date(dueDate.time);
-          const day = date.getDate();
-          const month = date.getMonth()+1;
-          const year = date.getFullYear();
-          const formattedTime = `${  year}-${  month  }-${day  }`;
-          return formattedTime
+    },
+    dateFormatter(dueDate) {
+      if (dueDate) {
+        const date = new Date(dueDate.time);
+        const day = date.getDate();
+        const month = date.getMonth()+1;
+        const year = date.getFullYear();
+        const formattedTime = `${  year}-${  month  }-${day  }`;
+        return formattedTime;
+      }
+    },
+    retrieveTask(task){
+      if (task.dueDate){
+        const Today = new Date();
+        const formattedTimeToday = `${  Today.getFullYear()}-${  Today.getMonth()+1  }-${Today.getDate()  }`;
+        const formattedTimeTomorrow = `${  Today.getFullYear()}-${  Today.getMonth()+1  }-${Today.getDate()+1  }`;
+        const date = this.dateFormatter(task.dueDate);
+        if (date===formattedTimeToday){
+          return this.getMyTodayTasks();
+        } else if (new Date(task.dueDate.time).getTime () < Today.getTime()){
+          return  this.getMyOverDueTasks();
+        } else if (date===formattedTimeTomorrow){
+          return this.getMyTomorrowTasks();
+        } else {
+          return this.getMyUpcomingTasks();
         }
-      },
-      retrieveTask(task){
-        if(task.dueDate){
-          const Today = new Date();
-          const formattedTimeToday = `${  Today.getFullYear()}-${  Today.getMonth()+1  }-${Today.getDate()  }`;
-          const formattedTimeTomorrow = `${  Today.getFullYear()}-${  Today.getMonth()+1  }-${Today.getDate()+1  }`;
-          const date = this.dateFormatter(task.dueDate);
-          if(date===formattedTimeToday){
-            return this.getMyTodayTasks();
-          }else if (new Date(task.dueDate.time).getTime () < Today.getTime()){
-            return  this.getMyOverDueTasks();
-          }else if (date===formattedTimeTomorrow){
-            return this.getMyTomorrowTasks();
-          }else {
-            return this.getMyUpcomingTasks();
-          }
-        }
-      },
-    }
+      }
+    },
   }
+};
 </script>

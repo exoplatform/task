@@ -14,46 +14,44 @@
       mandatory>
       <v-radio
         :label="$t('label.task.none')"
-        value="none"/>
+        value="none" />
       <v-radio
         :label="$t('label.task.project')"
-        value="project"/>
+        value="project" />
       <v-radio
         :label="$t('label.task.labels')"
-        value="label"/>
+        value="label" />
       <v-radio
         :label="$t('label.task.dueDate')"
-        value="dueDate"/>
+        value="dueDate" />
       <v-radio
         :label="$t('label.task.assignee')"
-        value="assignee"/>
+        value="assignee" />
     </v-radio-group>
-
-
   </div>
 </template>
 <script>
-  export default {
-    props: {
-      value: {
-        type: String,
-        default: ''
-      },
+export default {
+  props: {
+    value: {
+      type: String,
+      default: ''
     },
-    data() {
-      return {
-        groupBy: this.value,
-      }
+  },
+  data() {
+    return {
+      groupBy: this.value,
+    };
+  },
+  watch: {
+    groupBy(val) {
+      this.$emit('input', val);
     },
-    watch: {
-      groupBy(val) {
-        this.$emit('input', val);
-      },
-    },created() {
-      this.$root.$on('reset-filter-task-group-sort',tasks =>{
-        this.groupBy = tasks;
-      });
-    }
+  },created() {
+    this.$root.$on('reset-filter-task-group-sort',tasks =>{
+      this.groupBy = tasks;
+    });
   }
+};
 </script>
 
