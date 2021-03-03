@@ -1,12 +1,21 @@
 <template>
   <div :id="status.id">
-    <task-view-list-item
-      v-for="task in tasksList"
-      :key="task.task.id"
-      :task="task"
-      :show-completed-tasks="showCompletedTasks"
-      @update-task-completed="updateTaskCompleted"/>
-      <!--<draggable
+    <div v-if="filterByStatus===true">
+      <tasks-view-header-status
+        :status="status"
+        :view-type="'list'"
+        :max-tasks-to-show="maxTasksToShow"
+        :tasks-number="tasksList.length"/>
+    </div>
+    <div :id="'taskView'+status.id" :class="filterByStatus===true ? 'pt-5 ml-7 mr-2' : ''">
+      <task-view-list-item
+        v-for="task in tasksList"
+        :key="task.task.id"
+        :task="task"
+        :show-completed-tasks="showCompletedTasks"
+        @update-task-completed="updateTaskCompleted"/>
+    </div>
+    <!--<draggable
       v-model="tasksList"
       group="people" 
       @start="drag=true" 
@@ -37,6 +46,10 @@
       showCompletedTasks: {
         type: Boolean,
         default: false
+      },
+      filterByStatus: {
+        type: Boolean,
+        default: false
       }
     },
     data() {
@@ -44,7 +57,7 @@
       maxTasksToShow: 6,
       drag: false,
       task:null,
-      newStatus:null
+      newStatus:null,
     };
   },
     methods: {

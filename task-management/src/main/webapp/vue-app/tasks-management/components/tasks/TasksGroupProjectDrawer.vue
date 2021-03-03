@@ -25,6 +25,10 @@
         :label="$t('label.task.dueDate')"
         value="dueDate"/>
       <v-radio
+        v-if="taskViewTabName === 'list'"
+        :label="$t('label.task.status')"
+        value="status"/>
+      <v-radio
         :label="$t('label.task.completed')"
         value="completed"/>
     </v-radio-group>
@@ -38,6 +42,10 @@
       value: {
         type: String,
         default: ''
+      },
+      taskViewTabName: {
+        type: String,
+        default:''
       },
     },
     data() {
