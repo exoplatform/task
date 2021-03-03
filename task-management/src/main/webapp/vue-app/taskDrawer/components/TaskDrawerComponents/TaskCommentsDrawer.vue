@@ -17,7 +17,7 @@
                 :title="$t('comment.message.addYourComment')"
                 class="addCommentBtn"
                 @click="openEditorToBottom">
-                <i class="uiIcon uiIconComment"></i>
+                <i class="uiIcon uiIconTaskAddComment"></i>
               </div>
               <v-btn icon>
                 <v-icon @click="closeDrawer()">mdi-close</v-icon>
@@ -41,6 +41,8 @@
                 :comment-id="commentId"
                 :id="id"
                 @isOpen="OnCloseAllEditor()"
+                @confirmDialogOpened="$emit('confirmDialogOpened')"
+                @confirmDialogClosed="$emit('confirmDialogClosed')"
                 @showSubEditor="OnUpdateEditorStatus"/>
             </div>
           </div>
@@ -148,6 +150,15 @@
     mounted() {
       this.$root.$on('displayTaskComment', taskCommentDrawer => {
         this.showTaskCommentDrawer = true;
+        window.setTimeout(() => {
+            const commentsDiv = document.getElementById("commentDrawerContent");
+            $('#commentDrawerContent').animate({
+              scrollTop: commentsDiv.scrollHeight
+            }, 1000);
+          }, 500);
+          if( this.comments && !this.comments.length ) {
+            this.openEditor();
+          }
       });
 
       this.$root.$on('displaySubCommentEditor', id => {
@@ -199,7 +210,7 @@
       openEditorToBottom() {
         const commentsDiv = document.getElementById("commentDrawerContent");
         $('#commentDrawerContent').animate({
-          scrollTop: commentsDiv.scrollHeight - commentsDiv.clientHeight
+          scrollTop: commentsDiv.scrollHeight
         }, 500);
         this.openEditor();
       }

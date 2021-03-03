@@ -23,6 +23,17 @@ export function updateStatus(status) {
     }).then(resp => resp.json());
 }
 
+export function moveStatus(statusList) {
+    return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/status/move`, {
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+        method: 'PUT',
+        body: JSON.stringify(statusList)
+    }).then(resp => resp.json());
+}
+
 export function deleteStatus(statusId) {
     return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/status/${statusId}`, {
         credentials: 'include',

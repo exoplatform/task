@@ -35,11 +35,10 @@
                     :size="30"
                     :url="null"
                     class="changeUserAvatar"/>
-
                   <p class="changesText mb-0 pl-1" v-html="renderChangeHTML(item)"></p>
                 </div>
                 <div>
-                  <div class="dateTime caption">
+                  <div class="dateTime caption changeItem">
                     <date-format :value="item.createdTime" :format="dateTimeFormat" />
                   </div>
                 </div>
@@ -107,9 +106,18 @@
             `<span>${ this.$t(this.logMsg(item))}</span>`+
             `<a href='/portal/dw/profile/${item.target}'> ${item.targetFullName} </a>`+
             `</p>`
+        } else if ( item.actionName === 'edit_project' ) {
+          str = `<p class='changesItem assignDiv text-truncate mb-0' title='${item.authorFullName} ${this.$t(this.logMsg(item))}  ${item.target}'>` +
+            `<span>${ this.$t(this.logMsg(item))}</span>`+
+            `<a href='#'> ${item.target} </a>`+
+            `</p>`
+        } else if ( item.actionName === 'edit_priority' ) {
+          str = `<p class='changesItem mb-0'>` +
+            `<p class='text-truncate mb-0' title='${item.authorFullName} ${this.$t(this.logMsg(item))} ${item.task.status.priority}'> ${ this.$t(this.logMsg(item)) } ${item.task.priority}</p>`+
+          `</p>`;
         } else {
           str = `<p class='changesItem mb-0'>` +
-            `<p class='text-truncate mb-0' title='${item.authorFullName} ${this.$t(this.logMsg(item))} ${item.target}'> ${ this.$t(this.logMsg(item))  }${item.target}</p>`+
+            `<p class='text-truncate mb-0' title='${item.authorFullName} ${this.$t(this.logMsg(item))} ${item.target}'> ${ this.$t(this.logMsg(item)) } ${item.target}</p>`+
           `</p>`
         }
         return str;
