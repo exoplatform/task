@@ -273,7 +273,9 @@ export default {
           this.$emit('updateTaskAssignement', value.remoteId);
         }
         else {
-          this.$emit('updateTaskAssignement', this.taskAssigneeObj.remoteId);
+          if ( this.task.id ===null ) {
+            this.$emit('updateTaskAssignement', this.taskAssigneeObj.remoteId);
+          }
         }
       }
     },
