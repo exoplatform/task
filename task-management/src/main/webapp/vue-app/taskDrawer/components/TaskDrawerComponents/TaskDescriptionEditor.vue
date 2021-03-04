@@ -95,7 +95,8 @@ export default {
     },
   },
   created() {
-    document.addEventListener('drawerClosed', () => {
+    this.$root.$off('drawerClosed');
+    this.$root.$on('drawerClosed', () => {
       this.saveDescription(this.inputVal);
       this.editorReady = false;
     });
@@ -106,17 +107,16 @@ export default {
   },
   methods: {
     saveDescription: function (newValue) {
-      if (newValue !== this.task.description) {
+      if (newValue !== this.taskDescription) {
         if (this.task.id && !isNaN(this.task.id)){
           this.task.description = newValue;
           updateTask(this.task.id ,this.task)
             .then( () => {
-              this.$root.$emit('show-alert', { type: 'success', message: this.$t('alert.success.task.description') });});
-          this.$root.$emit('show-alert', {
-            type: 'success',
-            message: this.$t('alert.success.task.description')
-          })
-            .catch(e => {
+              this.$root.$emit('show-alert', {
+                type: 'success',
+                message: this.$t('alert.success.task.description')
+              });
+            }).catch(e => {
               console.error('Error when updating task\'s title', e);
               this.$root.$emit('show-alert',{type: 'error',message: this.$t('alert.error')} );
             });
