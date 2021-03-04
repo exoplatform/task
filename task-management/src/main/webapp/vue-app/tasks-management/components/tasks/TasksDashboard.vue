@@ -365,8 +365,9 @@ export default {
               groupBy: this.groupBy,
               sortBy: this.sortBy,
               projectId: 'None',
+              tabView: 'list'
             };
-            localStorage.setItem('filterStorageNone',JSON.stringify(jsonToSave));
+            localStorage.setItem('filterStorageNone+list',JSON.stringify(jsonToSave));
             this.filterTasks.projectId=-2;
             this.searchTasks(this.filterTasks);
           });
@@ -436,7 +437,7 @@ export default {
         uiIconMiniArrowRight.style.display = 'none';}
     },
     getFilterProject(){
-      return this.$projectService.getFilterSettings('None').then((resp) =>{
+      return this.$projectService.getFilterSettings('None','list').then((resp) =>{
         if (resp && resp.value){
           const StorageSaveFilter = resp.value;
           if (StorageSaveFilter.split('"')[11] === 'None') {
