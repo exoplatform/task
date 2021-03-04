@@ -49,7 +49,7 @@
 </template>
 
 <script>
-import {getMyAllLabels, getTaskLabels} from '../../../taskDrawer/taskDrawerApi';
+import {getMyAllLabels, getProjectLabels, getTaskLabels} from '../../../taskDrawer/taskDrawerApi';
 export default {
   props: {
     task: {
@@ -57,6 +57,10 @@ export default {
       default: () => {
         return {};
       }
+    },
+    projectId: {
+      type: Number,
+      default: 0
     },
   },
   data() {
@@ -95,7 +99,7 @@ export default {
 
   },
   created() {
-    this.getMyAllLabels();
+    this.getProjectLabels(this.projectId);
     $(document).on('mousedown', () => {
       if (this.$refs.selectLabel.isMenuActive) {
         window.setTimeout(() => {
@@ -154,6 +158,15 @@ export default {
     getTaskLabels() {
       getTaskLabels(this.task.id).then((labels) => {
         this.model = labels.map(function (el) {
+          const o = Object.assign({}, el);
+          o.text = o.name;
+          return o;
+        });
+      });
+    },
+    getProjectLabels(projectId) {
+      getProjectLabels(projectId).then((labels) => {
+        this.items = labels.map(function (el) {
           const o = Object.assign({}, el);
           o.text = o.name;
           return o;

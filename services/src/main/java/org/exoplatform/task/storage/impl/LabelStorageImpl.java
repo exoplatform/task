@@ -10,12 +10,15 @@ import javax.inject.Inject;
 
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.exoplatform.services.security.Identity;
 import org.exoplatform.task.dao.DAOHandler;
 import org.exoplatform.task.domain.Label;
+import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.dto.LabelDto;
 import org.exoplatform.task.dto.TaskDto;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.storage.LabelStorage;
+import org.exoplatform.task.storage.ProjectStorage;
 import org.exoplatform.task.util.StorageUtil;
 
 public class LabelStorageImpl implements LabelStorage {
@@ -44,11 +47,22 @@ public class LabelStorageImpl implements LabelStorage {
   }
 
   @Override
-  public List<LabelDto> findLabelsByTask(long taskId, String username, int offset, int limit) {
+  public List<LabelDto> findLabelsByProject(long projectId, Identity currentUser, ProjectStorage projectStorage, int offset, int limit) {
     try {
-      return Arrays.asList(daoHandler.getLabelHandler().findLabelsByTask(taskId, username).load(offset, limit))
+      return Arrays.asList(daoHandler.getLabelHandler().findLabelsByProject(projectId).load(offset, limit))
                    .stream()
-                   .map(StorageUtil::labelToDto)
+                   .map((Label label) -> StorageUtil.labelToDto(label,currentUser, projectStorage))
+                   .collect(Collectors.toList());
+    } catch (Exception e) {
+      return new ArrayList<LabelDto>();
+    }
+  }
+  @Override
+  public List<LabelDto> findLabelsByTask(TaskDto task, long projectId, Identity currentUser, ProjectStorage projectStorage, int offset, int limit) {
+    try {
+      return Arrays.asList(daoHandler.getLabelHandler().findLabelsByTask(task.getId(), projectId).load(offset, limit))
+                   .stream()
+                   .map((Label label) -> StorageUtil.labelToDto(label,task,currentUser,projectStorage))
                    .collect(Collectors.toList());
     } catch (Exception e) {
       return new ArrayList<LabelDto>();

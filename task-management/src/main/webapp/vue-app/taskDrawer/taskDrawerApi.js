@@ -65,6 +65,19 @@ export function getMyAllLabels() {
   });
 }
 
+export function getProjectLabels(projectId) {
+  return fetch(`/portal/rest/tasks/labels/project/${projectId}`, {
+    method: 'GET',
+    credentials: 'include',
+  }).then((resp) => {
+    if (resp && resp.ok) {
+      return resp.json();
+    } else {
+      throw new Error('Error when getting my all labels');
+    }
+  });
+}
+
 export function getTaskLabels(taskId) {
   return fetch(`/portal/rest/tasks/labels/${taskId}`, {
     method: 'GET',

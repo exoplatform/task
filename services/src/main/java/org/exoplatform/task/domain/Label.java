@@ -32,9 +32,13 @@ import org.exoplatform.commons.api.persistence.ExoEntity;
 @Table(name = "TASK_LABELS")
 @NamedQueries({  
   @NamedQuery(name = "Label.findLabelsByTask",
-      query = "SELECT lbl FROM TaskLabel lbl inner join lbl.lblMapping m WHERE lbl.username = :username AND m.task.id = :taskid"),
+      query = "SELECT lbl FROM TaskLabel lbl inner join lbl.lblMapping m WHERE lbl.project.id = :projectId AND m.task.id = :taskid"),
       @NamedQuery(name = "Label.findLabelsByTaskCount",
-      query = "SELECT count(*) FROM TaskLabel lbl inner join lbl.lblMapping m WHERE lbl.username = :username AND m.task.id = :taskid")
+      query = "SELECT count(*) FROM TaskLabel lbl inner join lbl.lblMapping m WHERE lbl.project.id = :projectId AND m.task.id = :taskid"),
+  @NamedQuery(name = "Label.findLabelsByProject",
+      query = "SELECT lbl FROM TaskLabel lbl WHERE lbl.project.id = :projectId"),
+      @NamedQuery(name = "Label.findLabelsByProjectCount",
+      query = "SELECT count(*) FROM TaskLabel lbl WHERE lbl.project.id = :projectId")
 })
 public class Label {
   @Id
@@ -67,12 +71,18 @@ public class Label {
   @OneToMany(mappedBy = "label", fetch=FetchType.LAZY)
   private Set<LabelTaskMapping> lblMapping = new HashSet<LabelTaskMapping>();
 
+  @ManyToOne
+  @JoinColumn(name = "PROJECT_ID")
+  private Project project;
+
   public Label() {
   }
 
-  public Label(String name, String username) {
+  public Label(String name, String username, Project project) {
     this.name = name;
     this.username = username;
+    this.username = username;
+    this.project = project;
   }
 
   public long getId() {
@@ -123,12 +133,22 @@ public class Label {
     this.username = username;
   }
 
+  public Project getProject() {
+    return project;
+  }
+
+  public void setProject(Project project) {
+    this.project = project;
+  }
+
   public boolean isHidden() {
     return hidden;
   }
 
   public void setHidden(boolean hidden) {
     this.hidden = hidden;
-  }  
+  }
+
+
   
 }

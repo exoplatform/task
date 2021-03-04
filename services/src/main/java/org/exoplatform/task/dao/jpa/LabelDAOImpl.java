@@ -41,7 +41,7 @@ public class LabelDAOImpl extends CommonJPADAO<Label, Long> implements LabelHand
         delete(child);
       }
     }
-    super.delete(entity);    
+    super.delete(entity);
   }
 
   @Override
@@ -64,13 +64,23 @@ public class LabelDAOImpl extends CommonJPADAO<Label, Long> implements LabelHand
   }
 
   @Override
-  public ListAccess<Label> findLabelsByTask(long taskId, String username) {
+  public ListAccess<Label> findLabelsByProject(long projectId) {
+    TypedQuery<Label> query = getEntityManager().createNamedQuery("Label.findLabelsByProject", Label.class);
+    query.setParameter("projectId", projectId);
+
+    TypedQuery<Long> count = getEntityManager().createNamedQuery("Label.findLabelsByProjectCount", Long.class);
+    count.setParameter("projectId", projectId);
+    return new JPAQueryListAccess<Label>(Label.class, count, query);
+  }
+
+  @Override
+  public ListAccess<Label> findLabelsByTask(long taskId, long projectId) {
     TypedQuery<Label> query = getEntityManager().createNamedQuery("Label.findLabelsByTask", Label.class);
-    query.setParameter("username", username);
+    query.setParameter("projectId", projectId);
     query.setParameter("taskid", taskId);
-    
+
     TypedQuery<Long> count = getEntityManager().createNamedQuery("Label.findLabelsByTaskCount", Long.class);
-    count.setParameter("username", username);
+    count.setParameter("projectId", projectId);
     count.setParameter("taskid", taskId);
     return new JPAQueryListAccess<Label>(Label.class, count, query);
   }
