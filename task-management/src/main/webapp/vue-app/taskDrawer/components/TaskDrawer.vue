@@ -138,7 +138,7 @@
           xs12
           class="pt-2 taskCommentsAndChanges">
           <div class="taskComments">
-            <div v-if="comments && comments.length" class="taskCommentNumber pb-3">
+            <div v-if="comments && comments.length" class="taskCommentNumber d-flex pb-3">
               <span class="ViewAllCommentLabel" @click="$root.$emit('displayTaskComment')">{{ $t('comment.message.viewAllComment') }} ({{ comments.length }})</span>
               <div
                 :title="$t('comment.message.addYourComment')"
@@ -618,7 +618,7 @@ export default {
       this.$root.$emit('task-drawer-closed', this.task);
       this.showEditor = false;
       this.task = {};
-      document.dispatchEvent(new CustomEvent('drawerClosed'));
+      this.$root.$emit('drawerClosed');
       document.dispatchEvent(new CustomEvent('loadTaskLabels', {
         detail: {}
       }));
