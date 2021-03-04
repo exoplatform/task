@@ -259,20 +259,21 @@ export default {
   methods: {
     open() {
       const urlPath = document.location.pathname;
+      this.getTabView();
       if (urlPath.includes('projectDetail')){
         let projectId = urlPath.split('projectDetail/')[1].split(/[^0-9]/)[0];
         projectId = projectId && Number(projectId) || 0;
-        if (localStorage.getItem(`filterStorage${projectId}`) !== null) {
-          const localStorageSaveFilter = localStorage.getItem(`filterStorage${projectId}`);
-          if (localStorageSaveFilter.split('"')[10].split('}')[0].split(':')[1] === projectId.toString()) {
+        if (localStorage.getItem(`filterStorage${projectId}+${this.taskViewTabName}`) !== null) {
+          const localStorageSaveFilter = localStorage.getItem(`filterStorage${projectId}+${this.taskViewTabName}`);
+          if (localStorageSaveFilter.split('"')[10].split('}')[0].split(':')[1].split(',')[0] === projectId.toString()) {
             this.groupBy = localStorageSaveFilter.split('"')[3];
             this.sortBy = localStorageSaveFilter.split('"')[7];
           }
         }
       }
       else if (urlPath.includes('myTasks')){
-        if (localStorage.getItem('filterStorageNone') !== null) {
-          const localStorageSaveFilter = localStorage.getItem('filterStorageNone');
+        if (localStorage.getItem('filterStorageNone+list') !== null) {
+          const localStorageSaveFilter = localStorage.getItem('filterStorageNone+list');
           if (localStorageSaveFilter.split('"')[11] === 'None') {
             this.groupBy = localStorageSaveFilter.split('"')[3];
             this.sortBy = localStorageSaveFilter.split('"')[7];
@@ -281,7 +282,9 @@ export default {
       }
       this.$root.$emit('reset-filter-task-group-sort',this.groupBy);
       this.$root.$emit('reset-filter-task-sort',this.sortBy);
-      this.taskViewTabName = document.getElementsByClassName('taskTabList')[0].getAttribute('aria-selected')==='true' ? 'list' : 'borad';
+      if (document.getElementsByClassName('taskTabList')[0]){
+        this.taskViewTabName = document.getElementsByClassName('taskTabList')[0].getAttribute('aria-selected')==='true' ? 'list' : 'borad';
+      }
       this.$refs.filterTasksDrawer.open();
     },
     cancel() {
@@ -309,13 +312,15 @@ export default {
       this.labels='';
       this.showCompleteTasks=false;
       this.getFilterNumber();
+      this.getTabView();
       const jsonToSave = {
         groupBy: this.groupBy,
         sortBy: this.sortBy,
         projectId: this.project || 'None',
+        tabView: this.taskViewTabName || '',
       };
       this.saveValueFilterInStorage(JSON.parse(JSON.stringify(jsonToSave)));
-      localStorage.setItem(`filterStorage${jsonToSave.projectId}`,JSON.stringify(jsonToSave));
+      localStorage.setItem(`filterStorage${jsonToSave.projectId}+${jsonToSave.tabView}`,JSON.stringify(jsonToSave));
       this.$root.$emit('reset-filter-task-group-sort',this.groupBy);
       this.$emit('reset-filter-task');
     },
@@ -358,10 +363,12 @@ export default {
       if (this.assignee){
         tasks.assignee = this.assignee.remoteId;
       }
+      this.getTabView();
       const jsonToSave = {
         groupBy: this.groupBy,
         sortBy: this.sortBy,
         projectId: this.project || 'None',
+        tabView: this.taskViewTabName || '',
       };
       this.saveValueFilterInStorage(JSON.parse(JSON.stringify(jsonToSave)));
       if (this.project){
@@ -405,7 +412,7 @@ export default {
     saveValueFilterInStorage(value){
       this.$projectService.saveFilterSettings(value).then((response) => {
         if (response){
-          localStorage.setItem(`filterStorage${value.projectId}`,JSON.stringify(value));
+          localStorage.setItem(`filterStorage${value.projectId}+${value.tabView}`,JSON.stringify(value));
         }
       });
     },
@@ -415,6 +422,22 @@ export default {
       } else {
         return this.$t(`label.status.${item.toLowerCase()}`);
       }
+    },
+    getTabView(){
+      if (document.getElementsByClassName('taskTabList')[0] && document.getElementsByClassName('v-tab')[0].getAttribute('aria-selected')==='false') {
+        if (document.getElementsByClassName('taskTabList')[0].getAttribute('aria-selected')==='true'){
+          this.taskViewTabName='list';
+        } else if (document.getElementsByClassName('taskTabBoard')[0].getAttribute('aria-selected')==='true'){
+          this.taskViewTabName='board';
+        } else if (document.getElementsByClassName('taskTabGantt')[0].getAttribute('aria-selected')==='true'){
+          this.taskViewTabName='gantt';
+        } else {
+          this.taskViewTabName='';
+        }
+      } else {
+        this.taskViewTabName='list';
+      }
+      return this.taskViewTabName;
     },
 
   }
