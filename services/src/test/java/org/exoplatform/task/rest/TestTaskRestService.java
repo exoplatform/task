@@ -11,6 +11,9 @@ import javax.ws.rs.ext.RuntimeDelegate;
 import org.exoplatform.task.TestUtils;
 import org.exoplatform.task.dao.TaskQuery;
 import org.exoplatform.task.domain.Priority;
+import org.exoplatform.task.domain.Project;
+import org.exoplatform.task.domain.Status;
+import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.model.User;
 import org.exoplatform.task.rest.model.PaginatedTaskList;
 import org.exoplatform.task.rest.model.ViewState;
@@ -325,6 +328,18 @@ public class TestTaskRestService {
     Identity root = new Identity("root");
     ConversationState.setCurrent(new ConversationState(root));
 
+    ProjectDto project = new ProjectDto();
+    project.setName("project1");
+
+    StatusDto status = new StatusDto();
+    status.setName("status1");
+    status.setRank(1);
+    status.setProject(project);
+
+    TaskDto task = new TaskDto();
+    task.setId(1);
+    task.setStatus(status);
+
     LabelDto label1 = new LabelDto();
     label1.setId(1);
     label1.setName("label1");
@@ -366,6 +381,19 @@ public class TestTaskRestService {
     Identity root = new Identity("root");
     ConversationState.setCurrent(new ConversationState(root));
 
+
+    ProjectDto project = new ProjectDto();
+    project.setName("project1");
+
+    StatusDto status = new StatusDto();
+    status.setName("status1");
+    status.setRank(1);
+    status.setProject(project);
+
+    TaskDto task = new TaskDto();
+    task.setId(1);
+    task.setStatus(status);
+
     LabelDto label1 = new LabelDto();
     label1.setId(1);
     label1.setName("label1");
@@ -395,7 +423,8 @@ public class TestTaskRestService {
       }
     };
 
-    when(labelService.findLabelsByTask(1, root.getUserId(), 0, -1)).thenReturn(labels);
+    when(taskService.getTask(1)).thenReturn(task);
+    when(labelService.findLabelsByTask(task, 0, root, 0,-1)).thenReturn(labels);
     // When
     Response response = taskRestService.getLabelsByTaskId(1);
 
@@ -419,24 +448,39 @@ public class TestTaskRestService {
     Identity root = new Identity("root");
     ConversationState.setCurrent(new ConversationState(root));
 
+    ProjectDto project = new ProjectDto();
+    project.setId(1);
+    Set<String> manager = new HashSet<String>();
+    manager.add("root");
+    project.setManager(manager);
+    StatusDto status = new StatusDto();
+    status.setId(Long.valueOf(1));
+    status.setName("status 1");
+    status.setProject(project);
+
     TaskDto task = new TaskDto();
     task.setId(1);
     task.setCreatedBy("root");
     task.setAssignee("root");
+    task.setStatus(status);
     taskService.createTask(task);
 
     LabelDto label1 = new LabelDto();
     label1.setId(1);
     label1.setName("label1");
+    label1.setProject(project);
 
     LabelDto label2 = new LabelDto();
     label2.setId(2);
     label2.setName("label1");
+    label2.setProject(project);
 
     LabelDto label3 = new LabelDto();
     label3.setId(0);
+    label3.setProject(project);
 
     when(labelService.createLabel(label1)).thenReturn(label1);
+    when(projectService.getProject(project.getId())).thenReturn(project);
     when(taskService.getTask(1)).thenReturn(task);
 
     // When
@@ -483,6 +527,13 @@ public class TestTaskRestService {
     Identity root = new Identity("root");
     ConversationState.setCurrent(new ConversationState(root));
 
+    ProjectDto project = new ProjectDto();
+    project.setId(1);
+    StatusDto status = new StatusDto();
+    status.setId(Long.valueOf(1));
+    status.setName("status 1");
+    status.setProject(project);
+
     TaskDto task = new TaskDto();
     task.setId(1);
     task.setCreatedBy("root");
@@ -515,21 +566,35 @@ public class TestTaskRestService {
             labelService);
     Identity root = new Identity("root");
     ConversationState.setCurrent(new ConversationState(root));
+    ProjectDto project = new ProjectDto();
+    project.setId(1);
+    Set<String> manager = new HashSet<String>();
+    manager.add("root");
+    project.setManager(manager);
+    StatusDto status = new StatusDto();
+    status.setId(Long.valueOf(1));
+    status.setName("status 1");
+    status.setProject(project);
 
     TaskDto task = new TaskDto();
     task.setId(1);
     task.setCreatedBy("root");
     task.setAssignee("root");
+    task.setStatus(status);
     taskService.createTask(task);
 
     LabelDto label1 = new LabelDto();
     label1.setId(1);
     label1.setName("label1");
+    label1.setProject(project);
 
     LabelDto label2 = new LabelDto();
     label2.setId(2);
-    label2.setName("label1");
+    label2.setName("label2");
+    label2.setProject(project);
 
+
+    when(projectService.getProject(project.getId())).thenReturn(project);
     when(labelService.createLabel(label1)).thenReturn(label1);
     when(taskService.getTask(1)).thenReturn(task);
 

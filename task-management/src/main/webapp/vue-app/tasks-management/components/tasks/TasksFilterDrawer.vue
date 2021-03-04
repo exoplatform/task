@@ -141,6 +141,7 @@
                 <v-card>
                   <tasks-labels-drawer
                     ref="filterLabelsTasksDrawer"
+                    :project-id="projectId"
                     :labels="labels" />
                 </v-card>
               </v-tab-item>
@@ -216,6 +217,7 @@ export default {
       dueDateSelected: '',
       prioritySelected: '',
       statusSelected: '',
+      projectId: 0,
       assignee: '',
       assigneeTask: '',
       dueDate: [

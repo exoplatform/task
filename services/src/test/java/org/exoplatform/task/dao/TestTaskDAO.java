@@ -216,6 +216,11 @@ public class TestTaskDAO extends AbstractTest {
 
   @Test
   public void testFindTaskByQueryAdvance() throws Exception {
+    Project project = new Project();
+    project.setName("Project1");
+    project.setParticipator(new HashSet<String>(Arrays.asList("root")));
+    project = daoHandler.getProjectHandler().create(project);
+
     Task task = newTaskInstance("testTask", "task with label", username);
     tDAO.create(task);
 
@@ -225,7 +230,7 @@ public class TestTaskDAO extends AbstractTest {
     Assert.assertEquals(1, tasks.getSize());
     
     //Find by label
-    Label label = new Label("testLabel", username);    
+    Label label = new Label("testLabel", username, project);
     labelHandler.create(label);
     LabelTaskMapping mapping = new LabelTaskMapping(label, task);
     daoHandler.getLabelTaskMappingHandler().create(mapping);
@@ -237,10 +242,7 @@ public class TestTaskDAO extends AbstractTest {
     Assert.assertEquals(1, tasks.getSize());
     
     //Find by status
-    Project project = new Project();
-    project.setName("Project1");
-    project.setParticipator(new HashSet<String>(Arrays.asList("root")));
-    project = daoHandler.getProjectHandler().create(project);
+
     Status status = newStatusInstance("TO DO", 1);
     status.setProject(project);
     status = daoHandler.getStatusHandler().create(status);
@@ -373,7 +375,7 @@ public class TestTaskDAO extends AbstractTest {
     //This is for the case user create task in label then search by unified search
     Task task2 = newTaskInstance("task2", "", null);
     tDAO.create(task2);
-    Label label = new Label("label1", username);
+    Label label = new Label("label1", username ,project);
     labelHandler.create(label);
     LabelTaskMapping mapping = new LabelTaskMapping(label, task2);
     daoHandler.getLabelTaskMappingHandler().create(mapping);
@@ -399,7 +401,7 @@ public class TestTaskDAO extends AbstractTest {
     Task task = newTaskInstance("task1", "", username);
     task.setStatus(status);
     tDAO.create(task);
-    Label label = new Label("label1", username);
+    Label label = new Label("label1", username ,project);
     labelHandler.create(label);
     //
     LabelTaskMapping mapping = new LabelTaskMapping(label, task);
@@ -416,21 +418,32 @@ public class TestTaskDAO extends AbstractTest {
   
   @Test
   public void testRemoveTaskLabel() throws Exception {
+    Project project = new Project();
+    project.setName("project1");
+    daoHandler.getProjectHandler().create(project);
+
+    Status status = new Status();
+    status.setName("status1");
+    status.setRank(1);
+    status.setProject(project);
+    daoHandler.getStatusHandler().create(status);
     Task task = newTaskInstance("task1", "", username);
+    task.setStatus(status);
     tDAO.create(task);
-    Label label = new Label("label1", username);
+    Label label = new Label("label1", username ,project);
+    label.setProject(project);
     labelHandler.create(label);
     //
     LabelTaskMapping mapping = new LabelTaskMapping(label, task);
     daoHandler.getLabelTaskMappingHandler().create(mapping);
     
-    ListAccess<Label> labels = labelHandler.findLabelsByTask(task.getId(), username);
+    ListAccess<Label> labels = labelHandler.findLabelsByTask(task.getId(), project.getId());
     Assert.assertEquals(1, labels.getSize());
     //
     endRequestLifecycle();
     initializeContainerAndStartRequestLifecycle();
     tDAO.delete(tDAO.find(task.getId()));
-    labels = labelHandler.findLabelsByTask(task.getId(), username);
+    labels = labelHandler.findLabelsByTask(task.getId(), project.getId());
     Assert.assertEquals(0, labels.getSize());
   }
 
