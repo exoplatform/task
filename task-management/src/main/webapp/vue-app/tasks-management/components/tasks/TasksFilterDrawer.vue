@@ -279,7 +279,9 @@ export default {
       }
       this.$root.$emit('reset-filter-task-group-sort',this.groupBy);
       this.$root.$emit('reset-filter-task-sort',this.sortBy);
-      this.taskViewTabName = document.getElementsByClassName('taskTabList')[0].getAttribute('aria-selected')==='true' ? 'list' : 'borad';
+      if (document.getElementsByClassName('taskTabList')[0]){
+        this.taskViewTabName = document.getElementsByClassName('taskTabList')[0].getAttribute('aria-selected')==='true' ? 'list' : 'borad';
+      }
       this.$refs.filterTasksDrawer.open();
     },
     cancel() {
