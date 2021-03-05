@@ -9,7 +9,8 @@
 
     <v-tabs 
       v-if="!spaceName"
-      v-model="tab" 
+      v-model="tab"
+      optional
       slider-size="4" 
       class="tasksMenuParent white">
       <v-tab href="#tab-1" @click="getMyTasks()">
@@ -41,7 +42,7 @@
 export default {
   data () {
     return {
-      tab: 'tab-1',
+      tab: '',
       spaceName: '',
       alert: false,
       type: '',
@@ -52,7 +53,6 @@ export default {
       }
     };
   },
- 
   created(){
     this.$root.$on('show-alert', message => {
       this.displayMessage(message);
@@ -110,9 +110,8 @@ export default {
       let taskId = urlPath.split('taskDetail/')[1].split(/[^0-9]/)[0];
       taskId = taskId && Number(taskId) || 0;
       if (taskId) {
-        this.tab='tab-2';
         this.$tasksService.getTaskById(taskId).then(data => {
-          this.task = data;  
+          this.task = data;
           if (this.task.status && this.task.status.project){
             document.dispatchEvent(new CustomEvent('showProjectTasks', {detail: this.task.status.project}));
             this.tab='tab-2';
