@@ -177,6 +177,8 @@ export default {
         return this.$t('exo.tasks.status.waitingon');
       case 'Done':
         return this.$t('exo.tasks.status.done');
+      default:
+        return status;
       }
     },
     getTaskAssigneeAndCoworkers() {
