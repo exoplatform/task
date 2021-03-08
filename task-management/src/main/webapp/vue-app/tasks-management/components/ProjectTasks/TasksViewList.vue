@@ -5,13 +5,24 @@
       flat>
       <v-item-group>
         <div class="ma-0 border-box-sizing">
-          <div
-            v-for="(status, index) in statusList"
-            :key="index"
-            :class="filterByStatus===true ? 'pt-5 px-3 projectTaskItem' : 'pt-0 px-3 projectTaskItem'">
+          <div v-if="filterByStatus">
+            <div
+              v-for="(status, index) in statusList"
+              :key="index"
+              class="pt-5 px-3 projectTaskItem">
+              <tasks-view-list-column
+                :status="status"
+                :tasks-list="getTasksByStatus(tasksList,status.name)"
+                :show-completed-tasks="filterTaskCompleted"
+                :filter-by-status="filterByStatus"
+                @updateTaskCompleted="updateTaskCompleted"
+                @updateTaskStatus="updateTaskStatus" />
+            </div>
+          </div>
+
+          <div v-else class="pt-0 px-3 projectTaskItem">
             <tasks-view-list-column
-              :status="status"
-              :tasks-list="getTasksByStatus(tasksList,status.name)"
+              :tasks-list="tasksList"
               :show-completed-tasks="filterTaskCompleted"
               :filter-by-status="filterByStatus"
               @updateTaskCompleted="updateTaskCompleted"
