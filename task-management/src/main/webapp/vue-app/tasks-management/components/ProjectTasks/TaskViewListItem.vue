@@ -13,7 +13,7 @@
         :class="getTaskCompleted()" 
         @click="updateCompleted"></i>
     </div>
-    <div class="taskTitle pr-3">
+    <div class="taskTitle pr-10">
       <a
         ref="tooltip"
         :class="getTitleTaskClass()"
@@ -21,7 +21,7 @@
         @click="openTaskDrawer()">{{ task.task.title }}
       </a>
     </div>
-    <div class="taskAssignee d-flex flex-nowrap">
+    <div class="taskAssignee d-flex flex-nowrap pr-7">
       <exo-user-avatar
         v-for="user in avatarToDisplay"
         :key="user"
@@ -46,7 +46,7 @@
         </div>
       </div>
     </div>
-    <div class="taskLabels " @click="openTaskDrawer()">
+    <div class="taskLabels pr-7" @click="openTaskDrawer()">
       <v-chip
         v-if="task.labels && task.labels.length == 1"
         :color="task.labels[0].color"
@@ -65,14 +65,19 @@
         <span class="taskAttachNumber caption">{{ task.labels.length }}</span>
       </div>
     </div>
-    <div class="taskActions d-flex justify-center align-center" @click="openTaskDrawer()">
+    <div class="taskActions d-flex justify-center align-center pr-9" @click="openTaskDrawer()">
       <div v-if="task.commentCount" class="taskComment d-flex">
         <i class="uiIcon uiCommentIcon"></i>
         <span class="taskCommentNumber caption">{{ task.commentCount }}</span>
       </div>
     </div>
+    <div class="taskStat d-lg-block d-md-none pr-9" @click="openTaskDrawer()">
+      <span v-if="task && task.task && task.task.status && task.task.status" class="taskStatLabel pl-2">
+        {{ getTaskStatusLabel(task.task.status.name) }}
+      </span>
+    </div>
     <div class="taskDueDate" @click="openTaskDrawer()">
-      <div v-if="taskDueDate">
+      <div v-if="taskDueDate" :class="getOverdueTask(taskDueDate) ? 'red--text' : ''">
         <date-format :value="taskDueDate" :format="dateTimeFormat" />
       </div>
     </div>
