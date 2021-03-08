@@ -226,6 +226,43 @@ export default {
         return 'text-color';
       }
     },
+    getTaskStatusLabel(status) {
+      switch (status) {
+      case 'ToDo':
+        return this.$t('exo.tasks.status.todo');
+      case 'InProgress':
+        return this.$t('exo.tasks.status.inprogress');
+      case 'WaitingOn':
+        return this.$t('exo.tasks.status.waitingon');
+      case 'Done':
+        return this.$t('exo.tasks.status.done');
+      default:
+        return status;
+      }
+    },
+    dateFormatter(dueDate) {
+      if (dueDate) {
+        const date = new Date(dueDate);
+        const day = date.getDate();
+        const month = date.getMonth()+1;
+        const year = date.getFullYear();
+        const formattedTime = `${  year}-${  month  }-${day  }`;
+        return formattedTime;
+      }
+    },
+    getOverdueTask(value){
+      const Today = new Date();
+      const formattedTimeToday = `${  Today.getFullYear()}-${  Today.getMonth()+1  }-${Today.getDate()  }`;
+      const date = this.dateFormatter(value);
+      if (date===formattedTimeToday){
+        return false;
+      }
+      else if (new Date(value) < new Date().getTime()){
+        return true;
+      } else {
+        return false;
+      }
+    },
   }
 };
 </script>
