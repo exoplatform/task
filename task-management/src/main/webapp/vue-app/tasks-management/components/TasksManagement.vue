@@ -77,24 +77,23 @@ export default {
        if(this.tab==='tab-1'){
          this.getMyTasks()
        }
-
-       else if(task && task.status && task.status.project) {
-         this.setProjectUrl(task.status.project.id)
-          }else{
-           this.tab='tab-1' 
-          }
-      });
-    const urlPath = document.location.pathname
-    if(urlPath.includes('g/:spaces')){
-      this.spaceName = urlPath.split('g/:spaces:')[1].split('/')[0]
-      this.tab='tab-2'
-    }else{
-        if(urlPath.includes('myTasks')){
-        this.tab='tab-1'
-     }
-     if(urlPath.includes('myProjects')){
-        this.tab='tab-2'
-     }
+      else if (task && task.status && task.status.project) {
+        this.setProjectUrl(task.status.project.id);
+      } else {
+        this.tab='tab-1'; 
+      }
+    });
+    const urlPath = document.location.pathname;
+    if (urlPath.includes('g/:spaces')){
+      this.spaceName = urlPath.split('g/:spaces:')[1].split('/')[0];
+      this.tab='tab-2';
+    } else {
+      if (urlPath.includes('myTasks') || urlPath.includes('tasks')){
+        this.tab='tab-1';
+      }
+      if (urlPath.includes('myProjects')){
+        this.tab='tab-2';
+      }
     }
       if(urlPath.includes('taskDetail')){
       let taskId = urlPath.split('taskDetail/')[1].split(/[^0-9]/)[0]
@@ -142,6 +141,6 @@ export default {
         const urlPath = document.location.pathname
         window.history.pushState('task', 'Task details', `${urlPath.split('tasks')[0]}tasks/projectDetail/${id}`); 
       }
+  }
 }
-   }
 </script>
