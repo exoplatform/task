@@ -27,7 +27,7 @@
         </a>
       </div>
     </div>
-    <div class="taskTitle pr-3 d-lg-block d-md-none" @click="openTaskDrawer()">
+    <div class="taskTitle pr-14 d-lg-block d-md-none" @click="openTaskDrawer()">
       <a
         ref="tooltip"
         :class="getTitleTaskClass()"
@@ -35,7 +35,7 @@
         {{ task.task.title }}
       </a>
     </div>
-    <div class="taskProject pr-4">
+    <div class="taskProject">
       <div
         v-if="!isPersonnalTask"
         class="projectSpaceDetails d-flex align-center TasksListViewProject">
@@ -70,7 +70,7 @@
         </div>
       </div>
     </div>
-    <div class="taskAssignee d-flex flex-nowrap">
+    <div class="taskAssignee d-flex  pl-10 pr-7 flex-nowrap">
       <exo-user-avatar
         v-for="user in avatarToDisplay"
         :key="user"
@@ -95,7 +95,7 @@
         </div>
       </div>
     </div>
-    <div class="taskLabels " @click="openTaskDrawer()">
+    <div class="taskLabels pr-6" @click="openTaskDrawer()">
       <v-chip
         v-if="task.labels && task.labels.length == 1"
         :color="task.labels[0].color"
@@ -114,13 +114,13 @@
         <span class="taskAttachNumber caption">{{ task.labels.length }}</span>
       </div>
     </div>
-    <div class="taskActions d-flex justify-center align-center" @click="openTaskDrawer()">
+    <div class="taskActions d-flex justify-center pr-9 align-center " @click="openTaskDrawer()">
       <div v-if="task.commentCount" class="taskComment d-flex">
         <i class="uiIcon uiCommentIcon"></i>
         <span class="taskCommentNumber caption">{{ task.commentCount }}</span>
       </div>
     </div>
-    <div class="taskStat d-lg-block d-md-none" @click="openTaskDrawer()">
+    <div class="taskStat pr-9 d-lg-block d-md-none " @click="openTaskDrawer()">
       <span v-if="task && task.task && task.task.status && task.task.status" class="taskStatLabel pl-2">
         {{ getTaskStatusLabel(task.task.status.name) }}
       </span>
@@ -131,8 +131,8 @@
           {{ getTaskStatusLabel(task.task.status.name) }}
         </span>
       </div>
-      <div class="taskDueDate" @click="openTaskDrawer()">
-        <div v-if="taskDueDate">
+      <div class="taskDueDate ">
+        <div v-if="taskDueDate" :class="getOverdueTask(taskDueDate) ? 'red--text' : ''">
           <date-format :value="taskDueDate" :format="dateTimeFormat" />
         </div>
       </div>
@@ -329,6 +329,29 @@ export default {
     showProjectTasksDetails() {
       this.$root.$emit('show-project-details-tasks', this.task.task.status.project);
     },
+    dateFormatter(dueDate) {
+      if (dueDate) {
+        const date = new Date(dueDate);
+        const day = date.getDate();
+        const month = date.getMonth()+1;
+        const year = date.getFullYear();
+        const formattedTime = `${  year}-${  month  }-${day  }`;
+        return formattedTime;
+      }
+    },
+    getOverdueTask(value){
+      const Today = new Date();
+      const formattedTimeToday = `${  Today.getFullYear()}-${  Today.getMonth()+1  }-${Today.getDate()  }`;
+      const date = this.dateFormatter(value);
+      if (date===formattedTimeToday){
+        return false;
+      }
+      else if (new Date(value) < new Date().getTime()){
+        return true;
+      } else {
+        return false;
+      }
+    }
   }
 };
 </script>
