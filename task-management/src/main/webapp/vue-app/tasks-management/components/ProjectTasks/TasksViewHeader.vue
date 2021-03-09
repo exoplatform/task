@@ -34,11 +34,11 @@
         v-else
         class="taskStatusName font-weight-bold text-color mb-1"
         @click="editStatus = true">
-        {{ getI18N(status.name) }} <span v-if="viewType=== 'list'" class="caption font-weight-bold">({{ tasksNumber }})</span>
+        {{ getI18N(status.name) }}
       </div>
+      <span class="uiTaskNumber">{{ tasksNumber }}</span>
     </div>
     <div class="taskNumberAndActions d-flex align-center mb-1">
-      <span class="uiTaskNumber">{{ tasksNumber }}</span>
       <!-- <span v-if="tasksNumber < maxTasksToShow" class="caption">{{ tasksNumber }}</span>
       <div v-else class="showTasksPagination">
         <span class="caption">
