@@ -46,6 +46,39 @@
             }
           }
         }
+      .projectLabelsName {
+        .inputProjectLabel{
+          box-shadow: none!important;
+          border: none!important;
+          padding-top: 20px !important;
+          .v-input__prepend-outer {
+            margin-top: 8px;
+            i {
+              color: @primaryColor;
+              font-size: 18px;
+            }
+          }
+          .v-input__control {
+            min-height: 38px!important;
+            > .v-input__slot {
+              box-shadow: none!important;
+              padding: 0!important;
+              margin-bottom: 0!important;
+              .v-select__slot {
+                .v-select__selections {
+                  max-width: 100%!important;
+                }
+                label {
+                  color: @greyColorLighten1;
+                }
+              }
+            }
+            .v-input__append-inner {
+              display: none;
+            }
+          }
+        }
+      }
         .projectPermissionsUsers {
           .permisionLabel {
             color: @textLightColor;

@@ -607,6 +607,75 @@ public class TaskRestService implements ResourceContainer {
         }
   }
 
+  @POST
+  @Path("labels")
+  @RolesAllowed("users")
+  @ApiOperation(value = "Adds a specific task by id to a label", httpMethod = "POST", response = Response.class, notes = "This adds a specific task by id to a label")
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled"),
+      @ApiResponse(code = 400, message = "Invalid query input"), @ApiResponse(code = 403, message = "Unauthorized operation"),
+      @ApiResponse(code = 404, message = "Resource not found") })
+  public Response addLabel(@ApiParam(value = "label", required = true) LabelDto addedLabel) {
+    try {
+    Identity currentUser = ConversationState.getCurrent().getIdentity();
+    if (addedLabel == null) {
+      return Response.status(Response.Status.BAD_REQUEST).build();
+    }
+
+      try {
+        ProjectDto project = projectService.getProject(addedLabel.getProject().getId());
+        if (project == null) {
+          return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        if (!project.canEdit(currentUser)) {
+          return Response.status(Response.Status.FORBIDDEN).build();
+        }
+      }catch (Exception e) {
+        return Response.status(Response.Status.BAD_REQUEST).build();
+      }
+    if (addedLabel.getId() == 0) {// Create a new label and add a task to it
+      addedLabel.setUsername(currentUser.getUserId());
+      LabelDto label = labelService.createLabel(addedLabel);
+    }
+    return Response.ok(addedLabel).build();
+        } catch (Exception e) {
+        LOG.error("Can't add  Label", e);
+        return Response.serverError().entity(e.getMessage()).build();
+        }
+  }
+
+  @DELETE
+  @Path("labels/{labelId}")
+  @RolesAllowed("users")
+  @Produces(MediaType.APPLICATION_JSON)
+  @ApiOperation(value = "Deletes a specific  label", httpMethod = "DELETE", response = Response.class, notes = "This deletes a specific task association to a specific label")
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled"),
+      @ApiResponse(code = 403, message = "Unauthorized operation"), @ApiResponse(code = 404, message = "Resource not found") })
+  public Response removeLabel(@ApiParam(value = "label id", required = true) @PathParam("labelId") long labelId) {
+    try {
+      Identity currentUser = ConversationState.getCurrent().getIdentity();
+    LabelDto label = labelService.getLabel(labelId);
+    if (label == null) {
+      return Response.status(Response.Status.NOT_FOUND).build();
+    }
+      try {
+        ProjectDto project = projectService.getProject(label.getProject().getId());
+        if (project == null) {
+          return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        if (!project.canEdit(currentUser)) {
+          return Response.status(Response.Status.FORBIDDEN).build();
+        }
+      }catch (Exception e) {
+        return Response.status(Response.Status.BAD_REQUEST).build();
+      }
+    labelService.removeLabel(labelId);
+    return Response.ok().build();
+        } catch (Exception e) {
+        LOG.error("Can't remove Label {}",  labelId, e);
+        return Response.serverError().entity(e.getMessage()).build();
+        }
+  }
+
   @GET
   @Path("logs/{id}")
   @RolesAllowed("users")
