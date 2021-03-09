@@ -1115,20 +1115,25 @@
               .taskStatusName {
 
               }
+              .uiTaskNumber {
+                border-radius: 10px;
+                background: #c7e5f9c9;
+                border-color: var(--allPagesPrimaryColor, #578dc9) !important;
+                color: var(--allPagesPrimaryColor, #578dc9);
+                border: thin solid rgba(0, 0, 0, 0.12);
+                width: 30px;
+                height: 21px;
+                margin-left: 5px;
+                text-align: center;
+                margin-block-end: 5px;
+                cursor: pointer;
+              }
               .taskNumberAndActions {
                 .uiIconThreeDots {
                   font-size: 15px;
                   &:before {
                     content: '\e79c';
                   }
-                }
-                .uiTaskNumber {
-                  margin-right: 5px;
-                  margin-top: 5px;
-                  font-size: 1rem !important;
-                  line-height: 1.25rem;
-                  letter-spacing: 0.0333333333em !important;
-                  font-weight: 500;
                 }
                 .showTasksPagination {
                   .uiIconArrowNext {
@@ -1313,8 +1318,8 @@
               }
               .taskTitle {
                 cursor: pointer;
-                width: 75%;
-                max-width: 75%;
+                width: 90%;
+                max-width: 90%;
                 .strikethrough{
                   text-decoration: line-through;
                 }
@@ -1338,8 +1343,6 @@
               }
             }
             .taskAssignee {
-              height: 35px;
-              min-height: 35px;
               .assigneDetails {
                 padding-top: 2px;
                 padding-bottom: 2px;
@@ -1826,8 +1829,7 @@
               left: 0;
               right: 0;
               text-align: center;
-              width: 30px;
-              height: 30px;
+              height: 27px;
               color: white;
               display: flex;
               align-items: center;
@@ -1873,7 +1875,9 @@
       .taskActionsAndDate{
         cursor: pointer;
         .taskActionsAndLabels {
+          max-width: 70%;
           .taskLabels{
+            max-width: 37%;
             .v-chip{
               cursor:pointer;
             }
