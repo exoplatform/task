@@ -650,7 +650,7 @@ public class TaskRestService implements ResourceContainer {
   @ApiOperation(value = "Deletes a specific  label", httpMethod = "DELETE", response = Response.class, notes = "This deletes a specific task association to a specific label")
   @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled"),
       @ApiResponse(code = 403, message = "Unauthorized operation"), @ApiResponse(code = 404, message = "Resource not found") })
-  public Response removeTaskFromLabel(@ApiParam(value = "label id", required = true) @PathParam("labelId") long labelId) {
+  public Response removeLabel(@ApiParam(value = "label id", required = true) @PathParam("labelId") long labelId) {
     try {
       Identity currentUser = ConversationState.getCurrent().getIdentity();
     LabelDto label = labelService.getLabel(labelId);
