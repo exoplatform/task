@@ -619,6 +619,79 @@ public class TestTaskRestService {
   }
 
   @Test
+  public void testAddLabel() throws Exception {
+    // Given
+    TaskRestService taskRestService = new TaskRestService(taskService,
+            commentService,
+            projectService,
+            statusService,
+            userService,
+            spaceService,
+            labelService);
+    Identity root = new Identity("root");
+    ConversationState.setCurrent(new ConversationState(root));
+    ProjectDto project = new ProjectDto();
+    project.setId(1);
+    Set<String> manager = new HashSet<String>();
+    manager.add("root");
+    project.setManager(manager);
+
+    LabelDto label1 = new LabelDto();
+    label1.setId(1);
+    label1.setName("label1");
+    label1.setProject(project);
+
+    when(projectService.getProject(project.getId())).thenReturn(project);
+    when(labelService.getLabel(1)).thenReturn(label1);
+
+    // When
+    Response response = taskRestService.addLabel(label1);
+
+    // Then
+    assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+    LabelDto addedLabel = (LabelDto) response.getEntity();
+    assertNotNull(addedLabel);
+  }
+
+  @Test
+  public void testRemoveLabel() throws Exception {
+    // Given
+    TaskRestService taskRestService = new TaskRestService(taskService,
+            commentService,
+            projectService,
+            statusService,
+            userService,
+            spaceService,
+            labelService);
+    Identity root = new Identity("root");
+    ConversationState.setCurrent(new ConversationState(root));
+    ProjectDto project = new ProjectDto();
+    project.setId(1);
+    Set<String> manager = new HashSet<String>();
+    manager.add("root");
+    project.setManager(manager);
+
+    LabelDto label1 = new LabelDto();
+    label1.setId(1);
+    label1.setName("label1");
+    label1.setProject(project);
+
+    when(projectService.getProject(project.getId())).thenReturn(project);
+    when(labelService.getLabel(1)).thenReturn(label1);
+
+    // When
+    Response response = taskRestService.addLabel(label1);
+
+    // Then
+    assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+    LabelDto addedLabel = (LabelDto) response.getEntity();
+    assertNotNull(addedLabel);
+    Response response2 = taskRestService.removeLabel(1);
+    assertEquals(Response.Status.OK.getStatusCode(), response2.getStatus());
+
+  }
+
+  @Test
   public void testAddTaskComment() throws Exception {
     // Given
     TaskRestService taskRestService = new TaskRestService(taskService,
