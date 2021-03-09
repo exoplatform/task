@@ -148,6 +148,15 @@
             :id="project.id"
             :placeholder="$t('task.placeholder').replace('{0}', MESSAGE_MAX_LENGTH)" />
         </div>
+        <v-divider class="py-3" />
+        <div class="projectLabelsName mt-3 mb-3">
+          <v-label
+            for="labels">
+            {{ $t('label.labels') }}
+          </v-label>
+          <project-labels
+            :project="project" />
+        </div>
       </v-form>
     </template>
     <template slot="footer">
@@ -260,7 +269,13 @@ export default {
             name: '',
             description: '',
             id: '',
-          };
+          };    
+          window.setTimeout(() => {
+            document.dispatchEvent(new CustomEvent('loadAllProjectLabels', {
+              detail: this.project
+            }));
+          },
+          200);
           if (this.project.name !== null ||this.project.name !==''){
             this.projectInformation.name=this.project.name;
           }
@@ -357,7 +372,6 @@ export default {
               }));
             }
           }
-
           this.$refs.addProjectDrawer.open();
           window.setTimeout(() => this.$refs.addProjectTitle.querySelector('input').focus(), 200);
 
