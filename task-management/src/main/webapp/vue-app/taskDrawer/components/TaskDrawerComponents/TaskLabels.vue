@@ -88,6 +88,7 @@ export default {
       x: 0,
       search: null,
       y: 0,
+      currentUserName: eXo.env.portal.userName,
     };
   },
   watch: {
@@ -101,6 +102,7 @@ export default {
           v = {
             text: v,
             name: v,
+            canEdit: this.task.createdBy===this.currentUserName||this.task.status.project.canManage
           };
           this.items.push(v);
           this.nonce++;
