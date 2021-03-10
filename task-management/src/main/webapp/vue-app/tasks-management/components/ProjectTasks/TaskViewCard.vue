@@ -86,8 +86,8 @@
               label
               small>
               <span class="text-truncate">
-          {{ task.labels[0].name }}
-        </span>
+                {{ task.labels[0].name }}
+              </span>
             </v-chip>
             <div
               v-else-if="task.labels && task.labels.length > 1"
