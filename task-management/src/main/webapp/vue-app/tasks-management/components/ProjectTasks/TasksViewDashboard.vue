@@ -16,6 +16,7 @@
       </a>
     </div>
     <tasks-view-toolbar
+      :allow-gantt="allowGantt"
       :project="project"
       :status-list="statusList"
       :task-card-tab-view="'#tasks-view-board'"
@@ -146,8 +147,8 @@
           :filter-by-status="filterByStatus"
           @update-status="updateStatus" />
       </div>
-      <!--<v-tab-item
-        v-show="taskViewTabName == 'gantt'"
+      <v-tab-item
+        v-show="taskViewTabName == 'gantt' && allowGantt"
         eager>
         <tasks-view-gantt
           :tasks-list="tasksList"/>
@@ -158,7 +159,6 @@
       class="noTasksProject">
       <div class="noTasksProjectIcon"><i class="uiIcon uiIconTask"></i></div>
       <div class="noTasksProjectLabel"><span>{{ $t('label.noTasks') }}</span></div>
-      <!-- <div class="noTasksProjectLink"><a href="#">{{ $t('label.addTask') }}</a></div> -->
     </div>
     <div class="ma-0 border-box-sizing">
       <v-btn
@@ -195,6 +195,7 @@ export default {
       filterByStatus: false,
       status: null,
       filterAsCompleted: false,
+      allowGantt: false
     };
   },
   watch: {
@@ -204,6 +205,7 @@ export default {
     }
   },
   created() {
+    this.$featureService.isFeatureEnabled('tasks.gantt').then(enabled => this.allowGantt = enabled);
     this.$root.$on('update-task-list', () => {
       this.getTasksByProject(this.project.id,'');
     });
