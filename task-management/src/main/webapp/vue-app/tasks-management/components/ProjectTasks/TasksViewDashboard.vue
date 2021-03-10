@@ -155,8 +155,8 @@
         v-show="taskViewTabName == 'gantt' && allowGantt"
         eager>
         <tasks-view-gantt
-          :tasks-list="tasksList"/>
-      </v-tab-item>-->
+          :tasks-list="tasksList" />
+      </v-tab-item>
     </v-tabs-items>
     <div
       v-if="(!tasksList || !tasksList.length) && !loadingTasks"
