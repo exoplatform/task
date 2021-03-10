@@ -31,7 +31,7 @@
       v-else
       id="myChart"
       ref="chart"
-      style="margin: auto; height: 500px;"></div>
+      style="margin: auto; height: 70vh;margin-bottom: 20px;"></div>
   </div>
 </template>
 <script>
@@ -42,9 +42,19 @@ export default {
       default: () => []
     }
   },
+  data () {
+    return {
+      TasksGanttdimensions: [
+        'Index',
+        'Task ID',
+        'Start Date',
+        'Due Date'
+      ],
+    };
+  },
   mounted() {
     setTimeout(() => {
-      this.drawLine();
+      this.drawTasksGantt();
     }, 200);
   },
   methods: {
@@ -63,7 +73,7 @@ export default {
     getTasksTitle(tasksList) {
       const taskByElement = [];
       tasksList.forEach((element) => {
-        taskByElement.push(element.title);
+        taskByElement.push(element[4]);
       });
       return taskByElement;
     },
@@ -174,20 +184,6 @@ export default {
         width: params.coordSys.width,
         height: params.coordSys.height
       });
-    },
-    test (value) {
-      const lang = eXo.env.portal.language;
-      const today = new Date(value).toLocaleDateString(lang, {
-        weekday: 'long',
-        day: '2-digit',
-        month: 'long'
-      });
-      const dayString = today.toString();
-      const dayLabel = dayString.split(' ')[0].substring(0,3).toUpperCase();
-      const day = dayString.split(' ')[1];
-      const month = dayString.split(' ')[2];
-      const monthLabel = month.charAt(0).toUpperCase() + month.slice(1);
-      return `${dayLabel} ${day}\n${monthLabel}`;
     },
     drawTasksGantt () {
       if ( this.$refs.chart ) {
