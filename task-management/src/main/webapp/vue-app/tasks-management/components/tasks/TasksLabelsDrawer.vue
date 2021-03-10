@@ -99,14 +99,15 @@ export default {
 
   },
   created() {
-    this.getProjectLabels(this.projectId);
-    $(document).on('mousedown', () => {
-      if (this.$refs.selectLabel.isMenuActive) {
-        window.setTimeout(() => {
-          this.$refs.selectLabel.isMenuActive = false;
-        }, 200);
-      }
-    });
+    const urlPath = document.location.pathname;
+    if (urlPath.includes('projectDetail')){
+      let projectId = urlPath.split('projectDetail/')[1].split(/[^0-9]/)[0];
+      projectId = projectId && Number(projectId) || 0;
+      this.getProjectLabels(projectId);
+      this.projectId=projectId;
+    } else {
+      this.getMyAllLabels();
+    }
     document.addEventListener('closeLabelsList',()=> {
       setTimeout(() => {
         if (typeof this.$refs.selectLabel !== 'undefined') {
@@ -128,6 +129,12 @@ export default {
             });
           });
         }
+      }
+    });
+    document.addEventListener('loadFilterProjectLabels', event => {
+      if (event && event.detail) {
+        this.projectId=event.detail;
+        this.getProjectLabels(this.projectId);
       }
     });
     this.$root.$on('reset-filter-task-group-sort',() =>{
