@@ -18,6 +18,7 @@
         ref="tooltip"
         :class="getTitleTaskClass()"
         class="text-truncate"
+        :title="task.task.title"
         @click="openTaskDrawer()">{{ task.task.title }}
       </a>
     </div>
@@ -50,6 +51,7 @@
       <v-chip
         v-if="task.labels && task.labels.length == 1"
         :color="task.labels[0].color"
+        :title="task.labels[0].name"
         class="mx-1 font-weight-bold"
         label
         small>
@@ -72,7 +74,10 @@
       </div>
     </div>
     <div class="taskStat d-lg-block d-md-none pr-9" @click="openTaskDrawer()">
-      <span v-if="task && task.task && task.task.status && task.task.status" class="taskStatLabel pl-2">
+      <span
+        v-if="task && task.task && task.task.status && task.task.status"
+        :title="getTaskStatusLabel(task.task.status.name)"
+        class="taskStatLabel pl-2">
         {{ getTaskStatusLabel(task.task.status.name) }}
       </span>
     </div>
@@ -107,7 +112,7 @@ export default {
       assigneeAndCoworkerArray: [],
       isPersonnalTask: this.task.task.status === null,
       labelList: '',
-      maxAvatarToShow: 3,
+      maxAvatarToShow: 1,
       removeCompletedTask: false,
       showCompleteTasks: false,
     };
