@@ -21,7 +21,7 @@
         @click="openTaskDrawer()">{{ task.task.title }}
       </a>
     </div>
-    <div class="taskAssignee d-flex flex-nowrap pr-7">
+    <div class="taskAssignee d-flex v-avatar flex-nowrap pr-7">
       <exo-user-avatar
         v-for="user in avatarToDisplay"
         :key="user"
@@ -50,7 +50,7 @@
       <v-chip
         v-if="task.labels && task.labels.length == 1"
         :color="task.labels[0].color"
-        class="mx-1 white--text font-weight-bold"
+        class="mx-1 font-weight-bold"
         label
         small>
         <span class="text-truncate">

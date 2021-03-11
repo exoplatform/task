@@ -35,7 +35,7 @@
         {{ task.task.title }}
       </a>
     </div>
-    <div class="taskProject">
+    <div class="taskProject pr-10">
       <div
         v-if="!isPersonnalTask"
         class="projectSpaceDetails d-flex align-center TasksListViewProject">
@@ -70,7 +70,7 @@
         </div>
       </div>
     </div>
-    <div class="taskAssignee d-flex  pl-10 pr-7 flex-nowrap">
+    <div class="taskAssignee v-avatar d-flex pr-7 flex-nowrap">
       <exo-user-avatar
         v-for="user in avatarToDisplay"
         :key="user"
@@ -99,7 +99,8 @@
       <v-chip
         v-if="task.labels && task.labels.length == 1"
         :color="task.labels[0].color"
-        class="mx-1 white--text font-weight-bold"
+        class="mx-1 font-weight-bold"
+        style="max-width: 70%"
         label
         small>
         <span class="text-truncate">
