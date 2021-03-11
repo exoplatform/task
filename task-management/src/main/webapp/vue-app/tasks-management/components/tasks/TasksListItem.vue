@@ -22,6 +22,7 @@
         <a
           ref="tooltip"
           :class="getTitleTaskClass()"
+          :title="task.task.title"
           class="text-truncate">
           {{ task.task.title }}
         </a>
@@ -31,6 +32,7 @@
       <a
         ref="tooltip"
         :class="getTitleTaskClass()"
+        :title="task.task.title"
         class="text-truncate">
         {{ task.task.title }}
       </a>
@@ -56,14 +58,14 @@
             </v-avatar>
           </a>
         </div>
-        <div class="taskProjectNameChip">
+        <div :class="task.space ? 'taskProjectNameChipSpace' : 'taskProjectNameChip'">
           <v-chip
             :color="getTaskColor()"
             text-color="white"
             class="font-weight-bold"
             small
             @click="showProjectTasksDetails()">
-            <span class="text-truncate">
+            <span class="text-truncate" :title="getNameProject()">
               {{ getNameProject() }}
             </span>
           </v-chip>
@@ -99,6 +101,7 @@
       <v-chip
         v-if="task.labels && task.labels.length == 1"
         :color="task.labels[0].color"
+        :title="task.labels[0].name"
         class="mx-1 font-weight-bold"
         style="max-width: 70%"
         label
@@ -122,7 +125,10 @@
       </div>
     </div>
     <div class="taskStat pr-9 d-lg-block d-md-none " @click="openTaskDrawer()">
-      <span v-if="task && task.task && task.task.status && task.task.status" class="taskStatLabel pl-2">
+      <span
+        v-if="task && task.task && task.task.status && task.task.status"
+        :title="getTaskStatusLabel(task.task.status.name)"
+        class="taskStatLabel pl-2">
         {{ getTaskStatusLabel(task.task.status.name) }}
       </span>
     </div>
@@ -161,7 +167,7 @@ export default {
       isPersonnalTask: this.task.status === null,
       labelList: '',
       isSpaceProject: this.task.space !== null,
-      maxAvatarToShow: 3,
+      maxAvatarToShow: 1,
       showCompleteTasks: false
     };
   },
