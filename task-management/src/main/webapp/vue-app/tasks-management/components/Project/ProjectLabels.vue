@@ -45,7 +45,6 @@
             {{ item.text }}
           </span>
           <v-icon
-            v-if="item.canEdit"
             x-small
             class="pr-0"
             @click="parent.selectItem(item);removeLabel(item)">
