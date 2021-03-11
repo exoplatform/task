@@ -1497,8 +1497,8 @@
               .strikethrough{
                 text-decoration: line-through;
               }
-              max-width: 35%;
-              width: 35%;
+              max-width: 40%;
+              width: 40%;
               text-align: left;
               flex: 1 1 100%;
               overflow: hidden;
@@ -1526,10 +1526,16 @@
                   //min-width: 30px;
                 }
                 .taskProjectNameChip {
-                  max-width: 60%;
+                  max-width: 72%;
                   .v-chip.v-size--small {
                     height: auto!important;
-                    max-width: 70%;
+                    cursor: pointer;
+                  }
+                }
+                .taskProjectNameChipSpace {
+                  max-width: 47%;
+                  .v-chip.v-size--small {
+                    height: auto!important;
                     cursor: pointer;
                   }
                 }
@@ -1539,14 +1545,14 @@
               }
             }
             .taskAssignee {
-              max-width: 9%;
-              width: 9%;
+              max-width: 3%;
+              width: 3%;
               border-radius: inherit;
               text-align: left;
             }
             .taskLabels {
-              max-width: 6%;
-              width: 6%;
+              max-width: 8%;
+              width: 8%;
               text-align: center;
               cursor: pointer;
               .taskTags {
@@ -1568,9 +1574,14 @@
               cursor: pointer;
             }
             .taskStat {
-              max-width: 8%;
-              width: 8%;
+              max-width: 7%;
+              width: 7%;
               cursor: pointer;
+              text-align: left;
+              flex: 1 1 100%;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
               .taskStatLabel {
 
               }
@@ -1613,12 +1624,12 @@
         }
         .tasksViewList {
           .taskTitle {
-            width: 53%!important;
-            max-width: 53%!important;
+            width: 59%!important;
+            max-width: 59%!important;
           }
           .taskAssignee {
-            max-width: 11%!important;
-            width: 11%!important;
+            max-width: 5%!important;
+            width: 5%!important;
             border-radius: initial;
           }
           .taskLabels {
