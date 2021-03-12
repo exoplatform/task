@@ -225,6 +225,7 @@ export default {
     },
     getChangeTabValue(value) {
       this.taskViewTabName = value;
+      this.getTasksByProject(this.project.id,'');
     },
     getStatusByProject(ProjectId) {
       return this.$tasksService.getStatusesByProjectId(ProjectId).then(data => {
@@ -237,10 +238,10 @@ export default {
       }
     },
     getTasksByProject(ProjectId,query) {
-      this.loadingTasks = true;
-      if (localStorage.getItem(`filterStorage${ProjectId}`)!==null){
-        const localStorageSaveFilter = localStorage.getItem(`filterStorage${ProjectId}`);
-        if (localStorageSaveFilter.split('"')[10].split('}')[0].split(':')[1] === ProjectId.toString()) {
+      const currentTab= this.taskViewTabName;
+      if (localStorage.getItem(`filterStorage${ProjectId}+${currentTab}`)!==null){
+        const localStorageSaveFilter = localStorage.getItem(`filterStorage${ProjectId}+${currentTab}`);
+        if (localStorageSaveFilter.split('"')[10].split('}')[0].split(':')[1].split(',')[0] === ProjectId.toString() && localStorageSaveFilter.split('"')[13] === currentTab) {
           this.groupBy = localStorageSaveFilter.split('"')[3];
           this.sortBy = localStorageSaveFilter.split('"')[7];
           const tasksFilter = {
@@ -254,7 +255,7 @@ export default {
           return this.getFilter(tasksFilter,ProjectId);
         }
       } else {
-        this.getFilterProject(ProjectId).then(() => {
+        this.getFilterProject(ProjectId,currentTab).then(() => {
           const tasksFilter = {
             query: query,
             groupBy: this.groupBy,
@@ -267,8 +268,9 @@ export default {
             groupBy: this.groupBy,
             sortBy: this.sortBy,
             projectId: ProjectId,
+            tabView: this.taskViewTabName || '',
           };
-          localStorage.setItem(`filterStorage${ProjectId}`,JSON.stringify(jsonToSave));
+          localStorage.setItem(`filterStorage${ProjectId}+${jsonToSave.tabView}`,JSON.stringify(jsonToSave));
           return this.getFilter(tasksFilter,ProjectId);
         });
       }
@@ -290,6 +292,8 @@ export default {
       }
       if (tasks.groupBy==='status'){
         tasks.groupBy='';
+        this.filterProjectActive=false;
+        this.filterByStatus=true;
         return this.$tasksService.filterTasksList(tasks,'','','',this.project.id).then(data => {
           this.filterProjectActive=false;
           this.filterByStatus=true;
@@ -395,25 +399,36 @@ export default {
       });
     },
     getFilter(tasksFilter,ProjectId){
-      this.$tasksService.filterTasksList(tasksFilter,'','','',ProjectId).then(data => {
-        if (data.projectName){
-          this.filterProjectActive=true;
-          this.tasksList = data && data.tasks || [];
-          this.groupName=data;
-        }
-        else {
+      if (tasksFilter.groupBy==='status') {
+        tasksFilter.groupBy = '';
+        this.filterProjectActive=false;
+        this.filterByStatus=true;
+        this.$tasksService.filterTasksList(tasksFilter,'','','',ProjectId).then(data => {
           this.filterProjectActive=false;
           this.tasksList = data && data.tasks || [];
-        }
+        }).finally(() => this.loadingTasks = false);
+      }  else {
+        this.$tasksService.filterTasksList(tasksFilter,'','','',ProjectId).then(data => {
+          if (data.projectName){
+            this.filterProjectActive=true;
+            this.tasksList = data && data.tasks || [];
+            this.groupName=data;
+          }
+          else {
+            this.filterProjectActive=false;
+            this.tasksList = data && data.tasks || [];
+          }
 
-      })
-        .finally(() => this.loadingTasks = false);
+        }).finally(() => this.loadingTasks = false);
+      }
+
+
     },
-    getFilterProject(ProjectId){
-      return this.$projectService.getFilterSettings(ProjectId).then((resp) =>{
+    getFilterProject(ProjectId,currentTab){
+      return this.$projectService.getFilterSettings(ProjectId,currentTab).then((resp) =>{
         if (resp && resp.value){
           const StorageSaveFilter = resp.value;
-          if (StorageSaveFilter.split('"')[10].split('}')[0].split(':')[1] === ProjectId.toString()) {
+          if (StorageSaveFilter.split('"')[10].split('}')[0].split(':')[1].split(',')[0] === ProjectId.toString()) {
             this.groupBy = StorageSaveFilter.split('"')[3];
             this.sortBy = StorageSaveFilter.split('"')[7];
           }

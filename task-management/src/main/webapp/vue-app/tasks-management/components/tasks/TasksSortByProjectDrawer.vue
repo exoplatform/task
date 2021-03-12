@@ -49,6 +49,9 @@ export default {
     this.$root.$on('reset-filter-task-group-sort', () =>{
       this.sortBy = '';
     });
+    this.$root.$on('reset-filter-task-sort',sortBy =>{
+      this.sortBy = sortBy;
+    });
   }
 };
 </script>

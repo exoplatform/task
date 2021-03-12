@@ -93,7 +93,7 @@ export function updateProjectColor(project, color) {
 }
 
 export function saveFilterSettings(valueOfFilter) {
-  return fetch(`${eXo.env.portal.context}/${eXo.env.portal.rest}/v1/settings/USER,${eXo.env.portal.userName}/APPLICATION,task-${valueOfFilter.projectId}/filterTask`, {
+  return fetch(`${eXo.env.portal.context}/${eXo.env.portal.rest}/v1/settings/USER,${eXo.env.portal.userName}/APPLICATION,task-${valueOfFilter.projectId}-${valueOfFilter.tabView}/filterTask`, {
     method: 'PUT',
     credentials: 'include',
     headers: {
@@ -111,8 +111,8 @@ export function saveFilterSettings(valueOfFilter) {
     return resp;
   });
 }
-export function getFilterSettings(ProjectId) {
-  return fetch(`${eXo.env.portal.context}/${eXo.env.portal.rest}/v1/settings/USER,${eXo.env.portal.userName}/APPLICATION,task-${ProjectId}/filterTask`, {
+export function getFilterSettings(ProjectId,currentTabView) {
+  return fetch(`${eXo.env.portal.context}/${eXo.env.portal.rest}/v1/settings/USER,${eXo.env.portal.userName}/APPLICATION,task-${ProjectId}-${currentTabView}/filterTask`, {
     method: 'GET',
     credentials: 'include',
     headers: {
