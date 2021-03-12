@@ -287,7 +287,6 @@
       }
       .view-project-group-sort{
         margin-left: 19px;
-        margin-left: 63px;
         display: block
       }
       span.amount-item{
@@ -1498,8 +1497,8 @@
               .strikethrough{
                 text-decoration: line-through;
               }
-              width: 22%;
-              max-width: 22%;
+              max-width: 40%;
+              width: 40%;
               text-align: left;
               flex: 1 1 100%;
               overflow: hidden;
@@ -1509,7 +1508,6 @@
             }
             .taskTitleAndId {
               width: 25%!important;
-              max-width: 25%!important;
               .taskTitle {
                 width: 100%!important;
                 max-width: 100%!important;
@@ -1519,21 +1517,25 @@
               }
             }
             .taskProject {
-              max-width: 15%;
-              width: 15%;
-              min-width: 15%;
+              max-width: 10%;
+              width: 10%;
               text-align: left;
-              margin-right: 10px;
               .projectSpaceDetails {
                 cursor: pointer;
                 .spaceAvatar {
                   //min-width: 30px;
                 }
                 .taskProjectNameChip {
-                  max-width: 90%;
+                  max-width: 72%;
                   .v-chip.v-size--small {
                     height: auto!important;
-                    max-width: 80%;
+                    cursor: pointer;
+                  }
+                }
+                .taskProjectNameChipSpace {
+                  max-width: 47%;
+                  .v-chip.v-size--small {
+                    height: auto!important;
                     cursor: pointer;
                   }
                 }
@@ -1543,13 +1545,14 @@
               }
             }
             .taskAssignee {
-              max-width: 13%;
-              width: 13%;
+              max-width: 3%;
+              width: 3%;
+              border-radius: inherit;
               text-align: left;
             }
             .taskLabels {
-              max-width: 16%;
-              width: 16%;
+              max-width: 8%;
+              width: 8%;
               text-align: center;
               cursor: pointer;
               .taskTags {
@@ -1565,28 +1568,33 @@
               }
             }
             .taskActions {
-              max-width: 12%;
-              width: 12%;
+              max-width: 3%;
+              width: 3%;
               text-align: center;
               cursor: pointer;
             }
             .taskStat {
-              max-width: 12%;
-              width: 12%;
+              max-width: 7%;
+              width: 7%;
               cursor: pointer;
+              text-align: left;
+              flex: 1 1 100%;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
               .taskStatLabel {
 
               }
             }
             .taskDueDate {
-              max-width: 12%;
-              width: 12%;
+              max-width: 6%;
+              width: 6%;
               text-align: right;
               cursor: pointer;
             }
             .taskDateAndStat {
-              max-width: 15%;
-              width: 15%;
+              max-width: 6%;
+              width: 6%;
               text-align: right;
               font-size: 14px;
               cursor: pointer;
@@ -1616,27 +1624,32 @@
         }
         .tasksViewList {
           .taskTitle {
-            width: 32%!important;
-            max-width: 32%!important;
+            width: 59%!important;
+            max-width: 59%!important;
           }
           .taskAssignee {
-            max-width: 15%!important;
-            width: 15%!important;
+            max-width: 5%!important;
+            width: 5%!important;
+            border-radius: initial;
           }
           .taskLabels {
-            max-width: 20%!important;
-            width: 20%!important;
+            max-width: 10%!important;
+            width: 10%!important;
             .v-chip__content {
               cursor: pointer;
             }
           }
           .taskActions {
-            max-width: 15%!important;
-            width: 15%!important;
+            max-width: 6%!important;
+            width: 6%!important;
+          }
+          .taskStat {
+            max-width: 10%!important;
+            width: 10%!important;
           }
           .taskDueDate {
-            max-width: 15%!important;
-            width: 15%!important;
+            max-width: 7%!important;
+            width: 7%!important;
           }
         }
       }
