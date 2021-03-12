@@ -2,7 +2,8 @@
   <v-app id="TasksManagementPortlet">
     <v-tabs 
       v-if="!spaceName"
-      v-model="tab" 
+      v-model="tab"
+      optional
       slider-size="4" 
       class="tasksMenuParent white">
       <v-tab href="#tab-1" @click="getMyTasks()">
@@ -31,18 +32,20 @@
   </v-app>
 </template>
 <script>
-  export default {
-    data () {
-      return {
-        tab: 'tab-2',
-        spaceName: '',
-        task: {
+export default {
+  data () {
+    return {
+      tab: '',
+      spaceName: '',
+      alert: false,
+      type: '',
+      message: '',
+      task: {
         type: Object,
         default: () => ({}),
       }
-      }
-    },
- 
+    };
+  },
   created(){
      this.$root.$on('open-project-drawer', project => {
        this.$refs.addProjectDrawer.open(project);
@@ -74,34 +77,33 @@
        if(this.tab==='tab-1'){
          this.getMyTasks()
        }
-
-       else if(task && task.status && task.status.project) {
-         this.setProjectUrl(task.status.project.id)
-          }else{
-           this.tab='tab-1' 
-          }
-      });
-    const urlPath = document.location.pathname
-    if(urlPath.includes('g/:spaces')){
-      this.spaceName = urlPath.split('g/:spaces:')[1].split('/')[0]
-      this.tab='tab-2'
-    }else{
-        if(urlPath.includes('myTasks')){
-        this.tab='tab-1'
-     }
-     if(urlPath.includes('myProjects')){
-        this.tab='tab-2'
-     }
+      else if (task && task.status && task.status.project) {
+        this.setProjectUrl(task.status.project.id);
+      } else {
+        this.tab='tab-1'; 
+      }
+    });
+    const urlPath = document.location.pathname;
+    if (urlPath.includes('g/:spaces')){
+      this.spaceName = urlPath.split('g/:spaces:')[1].split('/')[0];
+      this.tab='tab-2';
+    } else {
+      if (urlPath.includes('myTasks') || urlPath.includes('tasks')){
+        this.tab='tab-1';
+      }
+      if (urlPath.includes('myProjects')){
+        this.tab='tab-2';
+      }
     }
       if(urlPath.includes('taskDetail')){
       let taskId = urlPath.split('taskDetail/')[1].split(/[^0-9]/)[0]
       taskId = taskId && Number(taskId) || 0;
       if (taskId) {
-          this.$tasksService.getTaskById(taskId).then(data => {
-          this.task = data  
-          if(this.task.status && this.task.status.project){
-              document.dispatchEvent(new CustomEvent('showProjectTasks', {detail: this.task.status.project}));
-            this.tab='tab-2'
+        this.$tasksService.getTaskById(taskId).then(data => {
+          this.task = data;
+          if (this.task.status && this.task.status.project){
+            document.dispatchEvent(new CustomEvent('showProjectTasks', {detail: this.task.status.project}));
+            this.tab='tab-2';
           } else {
             this.tab='tab-1'
           }
@@ -139,6 +141,6 @@
         const urlPath = document.location.pathname
         window.history.pushState('task', 'Task details', `${urlPath.split('tasks')[0]}tasks/projectDetail/${id}`); 
       }
+  }
 }
-   }
 </script>
