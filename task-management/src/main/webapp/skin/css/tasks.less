@@ -1113,7 +1113,7 @@
             }
             .tasksViewHeader {
               .taskStatusName {
-
+                max-width: 83%;
               }
               .uiTaskNumber {
                 border-radius: 10px;
@@ -1121,12 +1121,13 @@
                 border-color: var(--allPagesPrimaryColor, #578dc9) !important;
                 color: var(--allPagesPrimaryColor, #578dc9);
                 border: thin solid rgba(0, 0, 0, 0.12);
-                width: 30px;
+                width: 28px;
                 height: 21px;
                 margin-left: 5px;
                 text-align: center;
                 margin-block-end: 5px;
                 cursor: pointer;
+                margin-top: 1%;
               }
               .taskNumberAndActions {
                 .uiIconThreeDots {
@@ -1890,9 +1891,22 @@
         .taskActionsAndLabels {
           max-width: 70%;
           .taskLabels{
-            max-width: 37%;
+            max-width: 100%;
             .v-chip{
               cursor:pointer;
+            }
+          }
+          .taskLabelsAssignee{
+            max-width: 77%;
+            .v-chip{
+              cursor:pointer;
+            }
+          }
+          .taskLabelsAssigneeComment {
+            max-width: 62%;
+
+            .v-chip {
+              cursor: pointer;
             }
           }
           .taskTags {
