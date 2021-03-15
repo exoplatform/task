@@ -191,14 +191,6 @@
   </div>
 </template>
 <script>
-import {
-  updateTask,
-  addTask,
-  addTaskToLabel,
-  getTaskLogs,
-  getTaskComments,
-  cloneTask
-} from '../taskDrawerApi';
 export default {
   props: {
     task: {
@@ -342,7 +334,7 @@ export default {
       } else if (!this.taskTitleValid){
         this.$root.$emit('show-alert', {type: 'error',message: this.$t('alert.error.title.length')});
       } else if (this.task.id != null) {
-        updateTask(this.task.id, this.task).then(() => {
+        this.$taskDrawerApi.updateTask(this.task.id, this.task).then(() => {
           this.taskTitle_ = this.task.title; 
           this.$root.$emit('show-alert', {
             type: 'success',
@@ -363,7 +355,7 @@ export default {
       if (value) {
         if (this.task.id != null) {
           this.task.priority = value;
-          updateTask(this.task.id, this.task).then( () => {
+          this.$taskDrawerApi.updateTask(this.task.id, this.task).then( () => {
             this.$root.$emit('show-alert', {
               type: 'success',
               message: this.$t('alert.success.task.priority')
@@ -384,7 +376,7 @@ export default {
       if (value) {
         if (this.task.id != null) {
           this.task.status = value;
-          updateTask(this.task.id, this.task).then( () => {
+          this.$taskDrawerApi.updateTask(this.task.id, this.task).then( () => {
             this.$root.$emit('show-alert', {
               type: 'success',
               message: this.$t('alert.success.task.status')
@@ -403,7 +395,7 @@ export default {
       if (value) {
         if (this.task.id != null) {
           this.task.startDate = value;
-          updateTask(this.task.id, this.task).then( () => {
+          this.$taskDrawerApi.updateTask(this.task.id, this.task).then( () => {
             this.$root.$emit('show-alert', {
               type: 'success',
               message: this.$t('alert.success.task.startDate')
@@ -424,7 +416,7 @@ export default {
       if (value && value !== 'none') {
         if (this.task.id != null) {
           this.task.dueDate = value;
-          updateTask(this.task.id, this.task).then( () => {
+          this.$taskDrawerApi.updateTask(this.task.id, this.task).then( () => {
             this.$root.$emit('show-alert', {
               type: 'success',
               message: this.$t('alert.success.task.duetDate')
@@ -441,7 +433,7 @@ export default {
         }
       } else if (value === 'none') {
         this.task.dueDate = null;
-        updateTask(this.task.id, this.task).then( () => {
+        this.$taskDrawerApi.updateTask(this.task.id, this.task).then( () => {
           this.$root.$emit('show-alert', {
             type: 'success',
             message: this.$t('alert.success.task.duetDate')
@@ -457,7 +449,7 @@ export default {
     },
     updateTask() {
       if (this.task.id != null) {
-        updateTask(this.task.id, this.task).then( () => {
+        this.$taskDrawerApi.updateTask(this.task.id, this.task).then( () => {
           this.$root.$emit('update-task-list', this.task);
           this.$root.$emit('show-alert', {
             type: 'success',
@@ -480,9 +472,9 @@ export default {
       this.task.startDate = this.taskStartDate;
       this.task.dueDate = this.taskDueDate;
       this.task.priority = this.taskPriority;
-      addTask(this.task).then(task => {
+      this.$taskDrawerApi.addTask(this.task).then(task => {
         this.labelsToAdd.forEach(item => {
-          addTaskToLabel(task.id, item);
+          this.$taskDrawerApi.addTaskToLabel(task.id, item);
         });
         this.$emit('addTask', this.task);
         this.$root.$emit('update-task-list', this.task);
@@ -508,7 +500,7 @@ export default {
         } else {
           this.task.assignee = null;
         }
-        updateTask(this.task.id, this.task).then( () => {
+        this.$taskDrawerApi.updateTask(this.task.id, this.task).then( () => {
           this.$root.$emit('show-alert', {
             type: 'success',
             message: this.$t('alert.success.task.assignee')
@@ -535,7 +527,7 @@ export default {
         } else {
           this.task.coworker = [];
         }
-        updateTask(this.task.id, this.task).then( () => {
+        this.$taskDrawerApi.updateTask(this.task.id, this.task).then( () => {
           this.$root.$emit('show-alert', {
             type: 'success',
             message: this.$t('alert.success.task.coworker')
@@ -559,14 +551,14 @@ export default {
       this.task.description = value;
     },
     retrieveTaskLogs() {
-      getTaskLogs(this.task.id).then(
+      this.$taskDrawerApi.getTaskLogs(this.task.id).then(
         (data) => {
           this.logs = data;
         });
       return this.logs;
     },
     getTaskComments() {
-      getTaskComments(this.task.id).then(
+      this.$taskDrawerApi.getTaskComments(this.task.id).then(
         (data) => {
           this.comments = data;
         });
@@ -634,7 +626,7 @@ export default {
       this.$refs.deleteConfirmDialog.open();
     },
     cloneTask() {
-      cloneTask(this.task.id).then(task => {
+      this.$taskDrawerApi.cloneTask(this.task.id).then(task => {
         this.$root.$emit('show-alert', {
           type: 'success',
           message: this.$t('alert.success.task.cloned') 

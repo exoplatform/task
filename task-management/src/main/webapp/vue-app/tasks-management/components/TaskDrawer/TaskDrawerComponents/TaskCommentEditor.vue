@@ -21,7 +21,6 @@
 </template>
 
 <script>
-import {findUsersToMention} from '../../taskDrawerApi';
 
 export default {
   props: {
@@ -72,7 +71,7 @@ export default {
     $('body').suggester('addProvider', 'task:people', function (query, callback) {
       const _this = this;
       const projectId = thiss.task.status ? thiss.task.status.project.id : null;
-      findUsersToMention(projectId, query).then((data) => {
+      this.$taskDrawerApi.findUsersToMention(projectId, query).then((data) => {
         const result = [];
         for (let i = 0; i < data.length; i++) {
           const d = data[i];
