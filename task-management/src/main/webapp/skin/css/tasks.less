@@ -1130,6 +1130,14 @@
                 margin-top: 1%;
               }
               .taskNumberAndActions {
+                .uiIconVerticalDots {
+                  font-size: 16px;
+                    margin-top: -3px;
+                    color:@greyColorLighten1!important;
+                  }
+                .uiIconVerticalDots:hover {
+                    color:@primaryColor!important;
+                }
                 .uiIconThreeDots {
                   font-size: 15px;
                   &:before {
@@ -1420,6 +1428,11 @@
         .quickAddNewTaskButton {
           width: 100%;
           margin-top: 10px;
+          color:@greyColorLighten1!important;
+        }
+        .quickAddNewTaskButton:hover {
+          color: @btnPrimaryColor!important;
+          background: @btnPrimaryBackground!important;
         }
         .taskBoardColumn {
           max-height: 60vh;

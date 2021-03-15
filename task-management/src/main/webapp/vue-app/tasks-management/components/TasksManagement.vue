@@ -8,10 +8,9 @@
     </v-alert>
 
     <v-tabs 
-      v-if="!spaceName"
+      v-if="!spaceName&&!projectId"
       v-model="tab"
-      optional
-      slider-size="4" 
+      slider-size="4"
       class="tasksMenuParent white">
       <v-tab href="#tab-1" @click="getMyTasks()">
         {{ $t('label.tasks.header') }}
@@ -44,6 +43,7 @@ export default {
     return {
       tab: '',
       spaceName: '',
+      projectId: '',
       alert: false,
       type: '',
       message: '',
@@ -126,6 +126,7 @@ export default {
       let projectId = urlPath.split('projectDetail/')[1].split(/[^0-9]/)[0];
       projectId = projectId && Number(projectId) || 0;
       if (projectId) {
+        this.projectId=projectId;
         this.tab='tab-2';
         this.$projectService.getProject(projectId).then(data => {
           document.dispatchEvent(new CustomEvent('showProjectTasks', {detail: data}));
@@ -135,9 +136,11 @@ export default {
   },
   methods: {
     getMyTasks(){
+      this.projectId='';
       window.history.pushState('mytasks', 'My Tasks', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/tasks/myTasks`);
     },
     getMyProjects(){
+      this.projectId='';
       const urlPath = document.location.pathname;
       if (urlPath.includes('g/:spaces')){
         window.history.pushState('task', 'Task details', `${urlPath.split('tasks')[0]}tasks`); 
@@ -146,11 +149,13 @@ export default {
       }       
     },
     setTaskUrl(id){
+      this.projectId='';
       const urlPath = document.location.pathname;
       window.history.pushState('task', 'Task details', `${urlPath.split('tasks')[0]}tasks/taskDetail/${id}`);
     },
     setProjectUrl(id){
       const urlPath = document.location.pathname;
+      this.projectId=id;
       window.history.pushState('task', 'Task details', `${urlPath.split('tasks')[0]}tasks/projectDetail/${id}`); 
     },
     displayMessage(message) {
