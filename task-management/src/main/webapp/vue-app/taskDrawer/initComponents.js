@@ -4,7 +4,6 @@ import TaskProjects from './components/TaskDrawerComponents/TaskProject.vue';
 import TaskAssignment from './components/TaskDrawerComponents/TaskAssignment.vue';
 import TaskCommentEditor from './components/TaskDrawerComponents/TaskCommentEditor.vue';
 import TaskDescriptionEditor from './components/TaskDrawerComponents/TaskDescriptionEditor.vue';
-import LogDetails from './components/TaskDrawerComponents/LogDetails.vue';
 import TaskComments from './components/TaskDrawerComponents/TaskComments.vue';
 import TaskPriority from './components/TaskDrawerComponents/TaskPriority.vue';
 import TaskStatus from './components/TaskDrawerComponents/TasksStatus.vue';
@@ -20,7 +19,6 @@ const components = {
   'task-assignment': TaskAssignment,
   'task-comment-editor': TaskCommentEditor,
   'task-description-editor': TaskDescriptionEditor,
-  'log-details': LogDetails,
   'task-comments': TaskComments,
   'task-last-comment': TaskLastComment,
   'task-priority': TaskPriority,
