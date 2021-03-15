@@ -102,7 +102,6 @@
 </template>
 
 <script>
-import {addTaskSubComment, urlVerify, removeTaskComment} from '../../taskDrawerApi';
 
 export default {
   name: 'TaskComments',
@@ -234,7 +233,7 @@ export default {
     addTaskSubComment(commentItem) {
       let subComment = this.$refs.subCommentEditor.getMessage();
       subComment = this.urlVerify(subComment);
-      addTaskSubComment(this.task.id, commentItem.comment.id, subComment).then((comment => {
+      this.$taskDrawerApi.addTaskSubComment(this.task.id, commentItem.comment.id, subComment).then((comment => {
         this.comment.subComments = this.comment.subComments || [];
         this.comment.subComments.push(comment);
       })
@@ -242,7 +241,7 @@ export default {
       this.showEditor = false;
     },
     removeTaskComment() {
-      removeTaskComment(this.comment.comment.id);
+      this.$taskDrawerApi.removeTaskComment(this.comment.comment.id);
       for (let i = 0; i < this.comments.length; i++) {
         if (this.comments[i] === this.comment) {
           this.comments.splice(i, 1);
@@ -279,7 +278,7 @@ export default {
       return dateTimeValue && this.$dateUtil.formatDateObjectToDisplay(new Date(dateTimeValue), this.dateTimeFormat, this.lang) || '';
     },
     urlVerify(text) {
-      return urlVerify(text);
+      return this.$taskDrawerApi.urlVerify(text);
     },
     confirmCommentDelete: function () {
       this.$refs.CancelSavingCommentDialog.open();

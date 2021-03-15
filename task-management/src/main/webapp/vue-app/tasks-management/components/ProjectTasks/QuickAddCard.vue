@@ -30,9 +30,6 @@
   </v-card>
 </template>
 <script>
-import {
-  addTask,
-} from '../../../taskDrawer/taskDrawerApi';
 export default {
   props: {
     status: {
@@ -64,7 +61,7 @@ export default {
     addTask() {
       this.newTask.title=this.taskTitle;
       this.newTask.status=this.status;
-      addTask(this.newTask).then( () => {
+      this.$taskDrawerApi.addTask(this.newTask).then( () => {
         this.quickAddTask=false;
         this.$root.$emit('update-task-list', this.task);
         this.$root.$emit('show-alert', {

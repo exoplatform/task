@@ -1,4 +1,4 @@
-import { tasksConstants } from '../../js/tasksConstants';
+import { tasksConstants } from './tasksConstants.js';
 
 export function getUserInformations(userName) {
   return fetch(`/portal/rest/v1/social/users/${userName}`, {

@@ -1,5 +1,5 @@
 import './initComponents.js';
-import '../taskDrawer/initComponents.js';
+import '../tasks-management/initComponents.js';
 
 Vue.use(Vuetify);
 

@@ -18,7 +18,6 @@
   </div>
 </template>
 <script>
-import { getStatusesByProjectId } from '../../taskDrawerApi';
 export default {
   props: {
     task: {
@@ -70,7 +69,7 @@ export default {
   methods: {
     updateTaskStatus() {
       if (this.taskStatus != null) {
-        getStatusesByProjectId(this.task.status.project.id).then(
+        this.$taskDrawerApi.getStatusesByProjectId(this.task.status.project.id).then(
           (projectStatuses) => {
             const status = projectStatuses.find(s => s.name === this.taskStatus);
             this.task.status = status;
@@ -79,7 +78,7 @@ export default {
       }
     },
     getStatusesByProjectId(task) {
-      getStatusesByProjectId(task.status.project.id).then(
+      this.$taskDrawerApi.getStatusesByProjectId(task.status.project.id).then(
         (data) => {
           this.projectStatuses = data;
           for (let i = 0; i < data.length; i++) {

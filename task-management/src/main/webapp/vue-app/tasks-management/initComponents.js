@@ -40,6 +40,20 @@ import TasksViewBoardColumn from './components/ProjectTasks/TasksViewBoardColumn
 import QuickAddCard from './components/ProjectTasks/QuickAddCard.vue';
 import TasksViewHeaderStatus from './components/ProjectTasks/TasksViewHeaderStatus.vue';
 
+import TaskDrawer from './components/TaskDrawer/TaskDrawer.vue';
+import TaskLabels from './components/TaskDrawer/TaskDrawerComponents/TaskLabels.vue';
+import TaskProjects from './components/TaskDrawer/TaskDrawerComponents/TaskProject.vue';
+import TaskAssignment from './components/TaskDrawer/TaskDrawerComponents/TaskAssignment.vue';
+import TaskCommentEditor from './components/TaskDrawer/TaskDrawerComponents/TaskCommentEditor.vue';
+import TaskDescriptionEditor from './components/TaskDrawer/TaskDrawerComponents/TaskDescriptionEditor.vue';
+import TaskComments from './components/TaskDrawer/TaskDrawerComponents/TaskComments.vue';
+import TaskPriority from './components/TaskDrawer/TaskDrawerComponents/TaskPriority.vue';
+import TaskStatus from './components/TaskDrawer/TaskDrawerComponents/TasksStatus.vue';
+import TaskFormDatePickers from './components/TaskDrawer/TaskDrawerComponents/TaskFormDatePickers.vue';
+import TaskCommentsDrawer from './components/TaskDrawer/TaskDrawerComponents/TaskCommentsDrawer.vue';
+import TaskLastComment from './components/TaskDrawer/TaskDrawerComponents/TaskLastComment.vue';
+import TaskChangesDrawer from './components/TaskDrawer/TaskDrawerComponents/TaskChangesDrawer.vue';
+
 const components = {
   'tasks-management': TasksManagement,
   'project-dashboard': ProjectDashboard,
@@ -82,6 +96,20 @@ const components = {
   'task-view-list-item': TaskViewListItem,
   'quick-add-card': QuickAddCard,
   'tasks-view-header-status': TasksViewHeaderStatus,
+
+  'task-drawer': TaskDrawer,
+  'task-labels': TaskLabels,
+  'task-projects': TaskProjects,
+  'task-assignment': TaskAssignment,
+  'task-comment-editor': TaskCommentEditor,
+  'task-description-editor': TaskDescriptionEditor,
+  'task-comments': TaskComments,
+  'task-last-comment': TaskLastComment,
+  'task-priority': TaskPriority,
+  'task-status': TaskStatus,
+  'task-form-date-pickers': TaskFormDatePickers,
+  'task-comments-drawer': TaskCommentsDrawer,
+  'task-changes-drawer': TaskChangesDrawer
 };
 
 for (const key in components) {
