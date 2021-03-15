@@ -52,13 +52,13 @@
           <i class="uiIcon uiIconArrowNext text-color"></i>
         </v-btn>
 
-      </div> -->
+      </div> 
       <i
         icon
         small
         class="uiIconSocSimplePlus d-flex"
         @click="openQuickAdd">
-      </i>
+      </i>-->
       <i
         icon
         small
@@ -72,7 +72,7 @@
         content-class="taskStatusActionMenu"
         offset-y>
         <v-list class="pa-0" dense>
-          <v-list-item class="menu-list" @click="openTaskDrawer()">
+          <v-list-item class="menu-list" @click="openQuickAdd">
             <v-list-item-title class="subtitle-2">
               <i class="uiIcon uiIconTask pr-1"></i>
               <span>{{ $t('label.addTask') }}</span>
