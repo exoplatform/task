@@ -3,7 +3,7 @@
     v-if="quickAddTask"
     class="addTaskCard pa-3"
     flat>
-    <v-textarea
+    <v-text-field
       v-model="taskTitle"
       :placeholder="$t('label.tapTask.name')"
       :autofocus="quickAddTask"
@@ -12,8 +12,9 @@
       auto-grow
       rows="1"
       row-height="13"
-      required />
-    <div class="d-flex">
+      required 
+      @keyup="checkImput($event)" />
+    <div class="d-md-none">
       <v-spacer />
       <v-btn
         class="btn mr-2"
@@ -63,6 +64,8 @@ export default {
       this.newTask.status=this.status;
       this.$taskDrawerApi.addTask(this.newTask).then( () => {
         this.quickAddTask=false;
+        this.taskTitle='';
+        this.$emit('close-quick-form');
         this.$root.$emit('update-task-list', this.task);
         this.$root.$emit('show-alert', {
           type: 'success',
@@ -76,7 +79,16 @@ export default {
         });
       });
     },
-    
+    checkImput: function(e) {
+      if (e.keyCode === 13) {
+        if (this.taskTitle && this.taskTitle.trim() && this.taskTitle.trim().length >= 3 && this.taskTitle.length < 1024){
+          this.addTask() ;
+        }       
+      } 
+      if (e.keyCode === 27) {
+        this.closeForm();
+      }      
+    },
     openForm(){
       this.quickAddTask=true;
     },
