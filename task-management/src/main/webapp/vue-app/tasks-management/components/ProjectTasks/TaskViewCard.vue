@@ -76,7 +76,7 @@
           </div>
           <div
             v-if="task.labels && task.labels.length"
-            class="taskLabels "
+            :class="getClassLabels()"
             @click="openTaskDrawer()">
             <v-chip
               v-if="task.labels && task.labels.length == 1"
@@ -290,6 +290,18 @@ export default {
         return true;
       } else {
         return false;
+      }
+    },
+    getClassLabels(){
+      if (this.task && this.task.labels && this.task.labels.length === 1){
+        if (this.assigneeAndCoworkerArray && this.assigneeAndCoworkerArray.length && this.task.commentCount){
+          return 'taskLabelsAssigneeComment';
+        } else if ((this.assigneeAndCoworkerArray && this.assigneeAndCoworkerArray.length && !this.task.commentCount)
+            || (!this.assigneeAndCoworkerArray && !this.assigneeAndCoworkerArray.length && this.task.commentCount)){
+          return 'taskLabelsAssignee';
+        } else {
+          return 'taskLabels';
+        }
       }
     },
   }
