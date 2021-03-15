@@ -822,9 +822,9 @@ public class TaskRestService implements ResourceContainer {
       if (index > -1) {
         String groupId = permission.substring(index + 1);
         Space space = spaceService.getSpaceByGroupId(groupId);
-        SpaceEntity spaceEntity = new SpaceEntity(space.getId(), space.getDisplayName(), space.getGroupId(), space.getUrl(), space.getPrettyName(), space.getAvatarUrl());
-        return spaceEntity;
-
+        if(space != null) {
+          return new SpaceEntity(space.getId(), space.getDisplayName(), space.getGroupId(), space.getUrl(), space.getPrettyName(), space.getAvatarUrl());
+        }
       }
     }
     return null;
