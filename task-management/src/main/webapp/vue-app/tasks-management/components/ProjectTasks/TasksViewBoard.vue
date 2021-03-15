@@ -31,7 +31,6 @@
   </v-card>
 </template>
 <script>
-import {updateTask} from '../../../taskDrawer/taskDrawerApi';
 export default {
   props: {
     statusList: {
@@ -85,7 +84,7 @@ export default {
     },
     updateTask(task) {
       if (task.id!=null){
-        updateTask(task.id,task).then( () => {
+        this.$taskDrawerApi.updateTask(task.id,task).then( () => {
           this.$root.$emit('show-alert', { type: 'success', message: this.$t('alert.success.task.status') });
         }).catch(e => {
           console.error('Error when updating task\'s status', e);

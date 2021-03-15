@@ -83,7 +83,6 @@
   </div>
 </template>
 <script>
-import {addTaskComments, urlVerify} from '../../taskDrawerApi';
 
 export default {
   props: {
@@ -182,7 +181,7 @@ export default {
     addTaskComment() {
       let comment = this.$refs.commentEditor.getMessage();
       comment = this.urlVerify(comment);
-      addTaskComments(this.task.id,comment).then(comment => {
+      this.$taskDrawerApi.addTaskComments(this.task.id,comment).then(comment => {
         this.comments.push(comment);
         this.reset = !this.reset;
       });
@@ -207,7 +206,7 @@ export default {
       this.subEditorIsOpen = false;
     },
     urlVerify(text) {
-      return urlVerify(text);
+      return this.$taskDrawerApi.urlVerify(text);
     },
     openEditorToBottom() {
       const commentsDiv = document.getElementById('commentDrawerContent');

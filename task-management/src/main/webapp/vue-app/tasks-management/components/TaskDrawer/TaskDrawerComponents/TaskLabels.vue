@@ -69,7 +69,6 @@
 </template>
 
 <script>
-import {getMyAllLabels, getProjectLabels, getTaskLabels, addTaskToLabel,removeTaskFromLabel} from '../../taskDrawerApi';
 export default {
   props: {
     task: {
@@ -143,7 +142,7 @@ export default {
         this.model = [];
         if (task.id!=null) {
           this.getTaskLabels();
-          getTaskLabels(task.id).then((labels) => {
+          this.$taskDrawerApi.getTaskLabels(task.id).then((labels) => {
             this.model = labels.map(function (el) {
               const o = Object.assign({}, el);
               o.text = o.name;
@@ -167,7 +166,7 @@ export default {
       return text.toString().toLowerCase().indexOf(query.toString().toLowerCase()) > -1;
     },
     getMyAllLabels() {
-      getMyAllLabels().then((labels) => {
+      this.$taskDrawerApi.getMyAllLabels().then((labels) => {
         this.items = labels.map(function (el) {
           const o = Object.assign({}, el);
           o.text = o.name;
@@ -176,7 +175,7 @@ export default {
       });
     },
     getProjectLabels(projectId) {
-      getProjectLabels(projectId).then((labels) => {
+      this.$taskDrawerApi.getProjectLabels(projectId).then((labels) => {
         this.items = labels.map(function (el) {
           const o = Object.assign({}, el);
           o.text = o.name;
@@ -185,7 +184,7 @@ export default {
       });
     },
     getTaskLabels() {
-      getTaskLabels(this.task.id).then((labels) => {
+      this.$taskDrawerApi.getTaskLabels(this.task.id).then((labels) => {
         this.model = labels.map(function (el) {
           const o = Object.assign({}, el);
           o.text = o.name;
@@ -195,7 +194,7 @@ export default {
     },
     addTaskToLabel(label) {
       if ( this.task.id!= null ) {
-        addTaskToLabel(this.task.id, label).then( () => {
+        this.$taskDrawerApi.addTaskToLabel(this.task.id, label).then( () => {
           this.$root.$emit('show-alert', {
             type: 'success',
             message: this.$t('alert.success.task.label')
@@ -215,7 +214,7 @@ export default {
       document.getElementById('labelInput').focus();
     },
     removeTaskFromLabel(item) {
-      removeTaskFromLabel(this.task.id, item.id).then( () => {
+      this.$taskDrawerApi.removeTaskFromLabel(this.task.id, item.id).then( () => {
         this.$root.$emit('show-alert', {
           type: 'success',
           message: this.$t('alert.success.task.label')

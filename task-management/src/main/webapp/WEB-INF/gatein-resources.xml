@@ -276,37 +276,6 @@
   </module>
 
   <module>
-    <name>taskDrawer</name>
-    <script>
-      <minify>false</minify>
-      <path>/js/taskDrawer.bundle.js</path>
-    </script>
-    <depends>
-      <module>vue</module>
-    </depends>
-    <depends>
-      <module>vuetify</module>
-    </depends>
-    <depends>
-      <module>eXoVueI18n</module>
-    </depends>
-    <depends>
-      <module>commons-editor</module>
-      <as>editor</as>
-    </depends>
-    <depends>
-      <module>jquery</module>
-      <as>$</as>
-    </depends>
-    <depends>
-      <module>extensionRegistry</module>
-    </depends>
-    <depends>
-      <module>userPopupPlugin</module>
-    </depends>
-  </module>
-
-  <module>
     <name>TaskSearch</name>
     <script>
       <minify>false</minify>
@@ -372,4 +341,3 @@
   </portlet>
 
 </gatein-resources>
-

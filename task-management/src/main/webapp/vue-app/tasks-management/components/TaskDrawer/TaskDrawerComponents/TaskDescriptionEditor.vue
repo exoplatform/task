@@ -23,7 +23,6 @@
 </template>
 
 <script>
-import {urlVerify, updateTask} from '../../taskDrawerApi';
 export default {
   props: {
     value: {
@@ -110,7 +109,7 @@ export default {
       if (newValue !== this.taskDescription) {
         if (this.task.id && !isNaN(this.task.id)){
           this.task.description = newValue;
-          updateTask(this.task.id ,this.task)
+          this.$taskDrawerApi.updateTask(this.task.id ,this.task)
             .then( () => {
               this.$root.$emit('show-alert', {
                 type: 'success',
@@ -168,7 +167,7 @@ export default {
     },
 
     urlVerify(text) {
-      return urlVerify(text);
+      return this.$taskDrawerApi.urlVerify(text);
     }
   }
 };

@@ -126,13 +126,21 @@ export default {
     this.actualTask = this.task;
     this.reset();
     document.addEventListener('closeDates',()=> {
-      this.$refs.taskStartDate.menu = false;
-      this.$refs.taskDueDate.menu = false;
+      if (this.$refs.taskStartDate && this.$refs.taskStartDate.menu) {
+        this.$refs.taskStartDate.menu = false;
+      }
+      if (this.$refs.taskDueDate && this.$refs.taskDueDate.menu) {
+        this.$refs.taskDueDate.menu = false;
+      }
     });
 
     $('.taskAssignItem').off('click').on('click', () => {
-      this.$refs.taskStartDate.menu = false;
-      this.$refs.taskDueDate.menu = false;
+      if (this.$refs.taskStartDate && this.$refs.taskStartDate.menu) {
+        this.$refs.taskStartDate.menu = false;
+      }
+      if (this.$refs.taskDueDate && this.$refs.taskDueDate.menu) {
+        this.$refs.taskDueDate.menu = false;
+      }
     });
   },
   methods: {
@@ -206,12 +214,16 @@ export default {
       } else {
         this.dueDate = new Date();
       }
-      this.$refs.taskDueDate.menu = false;
+      if (this.$refs.taskDueDate && this.$refs.taskDueDate.menu) {
+        this.$refs.taskDueDate.menu = false;
+      }
     },
     resetDueDate() {
       this.dueDate = null;
       this.$emit('dueDateChanged','none');
-      this.$refs.taskDueDate.menu = false;
+      if (this.$refs.taskDueDate && this.$refs.taskDueDate.menu) {
+        this.$refs.taskDueDate.menu = false;
+      }
     },
     emitStartDate(date) {
       if ((!date && this.actualTask.startDate) || (date && !this.actualTask.startDate) || (this.actualTask.startDate && date !== this.actualTask.startDate.time)) {
