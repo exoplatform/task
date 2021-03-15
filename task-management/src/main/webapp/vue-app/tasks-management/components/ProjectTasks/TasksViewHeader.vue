@@ -36,9 +36,9 @@
         @click="editStatus = true">
         {{ getI18N(status.name) }}
       </div>
-      <span class="uiTaskNumber">{{ tasksNumber }}</span>
+      <span v-if="editStatus === false" class="uiTaskNumber" >{{ tasksNumber }}</span>
     </div>
-    <div class="taskNumberAndActions d-flex align-center mb-1">
+    <div class="taskNumberAndActions d-flex align-center mb-1" @click="editStatus = false">
       <!-- <span v-if="tasksNumber < maxTasksToShow" class="caption">{{ tasksNumber }}</span>
       <div v-else class="showTasksPagination">
         <span class="caption">
