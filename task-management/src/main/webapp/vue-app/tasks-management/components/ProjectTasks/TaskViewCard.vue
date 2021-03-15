@@ -81,6 +81,7 @@
             <v-chip
               v-if="task.labels && task.labels.length == 1"
               :color="task.labels[0].color"
+              :title="task.labels[0].name"
               class="mx-1 font-weight-bold theme--light"
               label
               small>
