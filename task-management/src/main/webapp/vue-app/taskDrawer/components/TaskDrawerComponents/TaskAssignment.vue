@@ -128,7 +128,9 @@
           return {
             searchUrl: '/portal/rest/projects/projectParticipants/'.concat(this.task.status.project.id).concat('/')
           };
-        }
+        } else {
+        return this.currentUser;
+      }
       },
       taskAssigneeFullName() {
         return this.taskAssigneeObj.profile.external ? this.taskAssigneeObj.profile.fullName.concat(' (').concat(this.$t('label.external')).concat(')') : this.taskAssigneeObj.profile.fullName;
@@ -270,6 +272,9 @@
           if (value.remoteId !== this.currentUser && this.task.assignee !== value.remoteId) {
             this.taskAssigneeObj = value;
             this.$emit('updateTaskAssignement', value.remoteId);
+          }
+          else if (this.task.id ===null){
+            this.$emit('updateTaskAssignement', this.taskAssigneeObj.remoteId);
           }
         }
       },
