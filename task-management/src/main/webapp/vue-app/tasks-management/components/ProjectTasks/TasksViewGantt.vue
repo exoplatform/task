@@ -159,7 +159,6 @@ export default {
               trigger: 'item',
               backgroundColor: '#000000', 
               formatter: function (params) {
-                console.warn('params',params);
                 const lang = eXo.env.portal.language;
                 return `ID: ${ params.value[1]  }<br/> 
                         Start: ${  new Date(params.value[2]).toLocaleDateString(lang, {

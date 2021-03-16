@@ -7,7 +7,8 @@ const config = {
   entry: {
     tasks: './src/main/webapp/vue-app/tasks/main.js',
     taskSearch: './src/main/webapp/vue-app/taskSearch/main.js',
-    tasksManagement: './src/main/webapp/vue-app/tasks-management/main.js'
+    tasksManagement: './src/main/webapp/vue-app/tasks-management/main.js',
+    taskDrawer: './src/main/webapp/vue-app/taskDrawer/main.js',
   },
   output: {
     filename: 'js/[name].bundle.js',
