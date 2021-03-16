@@ -7,7 +7,7 @@
       :class="[getTaskPriorityColor(task.task.priority)]"
       class="taskCard taskViewCard pa-3"
       flat>
-      <div class="taskTitleId  d-flex justify-space-between">
+      <div class="taskTitleId  d-flex justify-space-between" style="height: 60%">
         <div class="taskCheckBox">
           <v-switch
             ref="autoFocusInput2"
@@ -28,71 +28,81 @@
             <span class="taskTitleEllipsis">{{ task.task.title }}</span>
           </a>
         </div>
-        <div class="taskId" @click="openTaskDrawer()">
-          <span class="caption text-sub-title">ID : {{ task.task.id }}</span>
-        </div>
       </div>
+
+      <v-divider v-if="taskDueDate || (task.labels && task.labels.length) || (assigneeAndCoworkerArray && assigneeAndCoworkerArray.length)" />
       <div 
-        v-if="assigneeAndCoworkerArray && assigneeAndCoworkerArray.length"
-        class="taskWorker d-flex justify-space-between align-center my-3">
-        <div
-          :class="assigneeAndCoworkerArray && !assigneeAndCoworkerArray.length && task && task.labels && !task.labels.length && 'hideTaskAssignee'"
-          class="taskAssignee d-flex flex-nowrap">
-          <exo-user-avatar
-            v-for="userAvatar in avatarToDisplay"
-            :key="userAvatar"
-            :username="userAvatar.username"
-            :title="userAvatar.displayName"
-            :avatar-url="userAvatar.avatar"
-            :size="iconSize"
-            :style="'background-image: url('+userAvatar.avatar+')'"
-            class="mx-1 taskWorkerAvatar" />
-          <div class="seeMoreAvatars">
-            <div
-              v-if="assigneeAndCoworkerArray.length > maxAvatarToShow"
-              class="seeMoreItem"
-              @click="$root.$emit('displayTasksAssigneeAndCoworker', assigneeAndCoworkerArray)">
-              <v-avatar
-                :size="iconSize">
-                <img
-                  :src="assigneeAndCoworkerArray[maxAvatarToShow].avatar"
-                  :title="assigneeAndCoworkerArray[maxAvatarToShow].displayName">
-              </v-avatar>
-              <span class="seeMoreAvatarList">+{{ showMoreAvatarsNumber }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <v-divider v-if="taskDueDate || (task.labels && task.labels.length)" />
-      <div 
-        class="taskActionsAndDate d-flex justify-space-between pt-3"
-        @click="openTaskDrawer()">
+        class="taskActionsAndDate d-flex align-center justify-space-between pt-3">
         <div 
           class="taskActionsAndLabels d-flex align-center">
-          <div v-if="task.commentCount" class="taskComment d-flex pr-2">
+          <div
+            v-if="assigneeAndCoworkerArray && assigneeAndCoworkerArray.length"
+            class="taskWorker  justify-space-between pr-2">
+            <div
+              :class="assigneeAndCoworkerArray && !assigneeAndCoworkerArray.length && task && task.labels && !task.labels.length && 'hideTaskAssignee'"
+              class="taskAssignee d-flex flex-nowrap">
+              <exo-user-avatar
+                v-for="userAvatar in avatarToDisplay"
+                :key="userAvatar"
+                :username="userAvatar.username"
+                :title="userAvatar.displayName"
+                :avatar-url="userAvatar.avatar"
+                :size="iconSize"
+                :style="'background-image: url('+userAvatar.avatar+')'"
+                class="mx-1 taskWorkerAvatar" />
+              <div class="seeMoreAvatars">
+                <div
+                  v-if="assigneeAndCoworkerArray.length > maxAvatarToShow"
+                  class="seeMoreItem"
+                  :title="getAssigneeAndCoworkerList(assigneeAndCoworkerArray)"
+                  @click="$root.$emit('displayTasksAssigneeAndCoworker', assigneeAndCoworkerArray)">
+                  <v-avatar
+                    :size="iconSize">
+                    <img
+                      :src="assigneeAndCoworkerArray[maxAvatarToShow].avatar"
+                      :title="assigneeAndCoworkerArray[maxAvatarToShow].displayName">
+                  </v-avatar>
+                  <span class="seeMoreAvatarList">+{{ showMoreAvatarsNumber }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            v-if="task.commentCount"
+            class="taskComment d-flex pr-2"
+            @click="openTaskDrawer()">
             <i class="uiIcon uiCommentIcon"></i>
             <span class="taskCommentNumber caption">{{ task.commentCount }}</span>
           </div>
-          <div v-if="task.labels && task.labels.length" class="taskLabels ">
+          <div
+            v-if="task.labels && task.labels.length"
+            :class="getClassLabels()"
+            @click="openTaskDrawer()">
             <v-chip
               v-if="task.labels && task.labels.length == 1"
               :color="task.labels[0].color"
-              class="mx-1 white--text font-weight-bold"
+              :title="task.labels[0].name"
+              class="mx-1 font-weight-bold theme--light"
               label
               small>
-              {{ task.labels[0].name }}
+              <span class="text-truncate">
+          {{ task.labels[0].name }}
+        </span>
             </v-chip>
             <div
               v-else-if="task.labels && task.labels.length > 1"
               :title="getLabelsList(task.labels)"
-              class="taskTags d-flex">
+              class="taskTags d-flex theme--light">
               <i class="uiIcon uiTagIcon"></i>
               <span class="taskAttachNumber caption">{{ task.labels.length }}</span>
             </div>
           </div>
         </div>
-        <div v-if="taskDueDate" class="taskStatusAndDate">
-          <div class="taskDueDate">
+        <div
+          v-if="taskDueDate"
+          class="taskStatusAndDate"
+          @click="openTaskDrawer()">
+          <div class="taskDueDate" :class="getOverdueTask(taskDueDate) ? 'red--text' : ''">
             <div>
               <date-format :value="taskDueDate" :format="dateTimeFormat" />
             </div>
@@ -126,7 +136,7 @@ export default {
       assigneeAndCoworkerArray: [],
       isPersonnalTask: this.task.task.status === null,
       drawer: null,
-      maxAvatarToShow: 3,
+      maxAvatarToShow: 1,
       showCompleteTasks: false,
       removeCompletedTask: false
     };
@@ -181,6 +191,15 @@ export default {
           labelText += `${label.name}\r\n`;
         });
         return labelText;
+      }
+    },
+    getAssigneeAndCoworkerList(assigneeAndCoworker) {
+      if (assigneeAndCoworker.length > 1) {
+        let assigneeAndCoworkerText = '';
+        assigneeAndCoworker.forEach((label) => {
+          assigneeAndCoworkerText += `${label.displayName}\r\n`;
+        });
+        return assigneeAndCoworkerText;
       }
     },
     openTaskDrawer() {
@@ -249,6 +268,41 @@ export default {
         return 'text-color strikethrough';
       } else {
         return 'text-color';
+      }
+    },
+    dateFormatter(dueDate) {
+      if (dueDate) {
+        const date = new Date(dueDate);
+        const day = date.getDate();
+        const month = date.getMonth()+1;
+        const year = date.getFullYear();
+        const formattedTime = `${  year}-${  month  }-${day  }`;
+        return formattedTime;
+      }
+    },
+    getOverdueTask(value){
+      const Today = new Date();
+      const formattedTimeToday = `${  Today.getFullYear()}-${  Today.getMonth()+1  }-${Today.getDate()  }`;
+      const date = this.dateFormatter(value);
+      if (date===formattedTimeToday){
+        return false;
+      }
+      else if (new Date(value) < new Date().getTime()){
+        return true;
+      } else {
+        return false;
+      }
+    },
+    getClassLabels(){
+      if (this.task && this.task.labels && this.task.labels.length === 1){
+        if (this.assigneeAndCoworkerArray && this.assigneeAndCoworkerArray.length && this.task.commentCount){
+          return 'taskLabelsAssigneeComment';
+        } else if ((this.assigneeAndCoworkerArray && this.assigneeAndCoworkerArray.length && !this.task.commentCount)
+            || (!this.assigneeAndCoworkerArray && !this.assigneeAndCoworkerArray.length && this.task.commentCount)){
+          return 'taskLabelsAssignee';
+        } else {
+          return 'taskLabels';
+        }
       }
     },
   }
