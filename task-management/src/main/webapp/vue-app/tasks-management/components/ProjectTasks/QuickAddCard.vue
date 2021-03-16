@@ -63,9 +63,7 @@ export default {
       this.newTask.title=this.taskTitle;
       this.newTask.status=this.status;
       this.$taskDrawerApi.addTask(this.newTask).then( () => {
-        this.quickAddTask=false;
-        this.taskTitle='';
-        this.$emit('close-quick-form');
+        this.closeForm();
         this.$root.$emit('update-task-list', this.task);
         this.$root.$emit('show-alert', {
           type: 'success',
@@ -96,6 +94,7 @@ export default {
       this.quickAddTask=false;
       this.taskTitle='';
       this.$emit('close-quick-form');
+      this.$root.$emit('close-quick-task-form');
     }
   },
 };
