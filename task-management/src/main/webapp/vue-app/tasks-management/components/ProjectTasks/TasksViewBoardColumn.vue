@@ -35,8 +35,7 @@
         :task="taskItem"
         :show-completed-tasks="showCompletedTasks"
         @update-task-completed="updateTaskCompleted" />
-
-     
+    
       <quick-add-card 
         :status="status" 
         :quick-add-task="quickAddTask" 
@@ -92,6 +91,11 @@ export default {
       newStatus: null
     };
   },
+  created(){
+    this.$root.$on('close-quick-task-form', () => {
+      this.closeForm();
+    });
+  },
   watch: {
     drag(val) {
       if (!val&&this.task&&this.newStatus&&this.task.status.id !== this.newStatus){
@@ -130,7 +134,11 @@ export default {
     },
     cancelAddColumn(index) {
       this.$emit('cancel-add-column',index);         
-    }, 
+    },
+    closeForm() {
+      this.quickAddTask=false;
+      this.quickAddTask1=false;
+    }
   
   }
 };
