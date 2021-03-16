@@ -273,7 +273,7 @@
             this.taskAssigneeObj = value;
             this.$emit('updateTaskAssignement', value.remoteId);
           }
-          else {
+          else if (this.task.id ===null){
             this.$emit('updateTaskAssignement', this.taskAssigneeObj.remoteId);
           }
         }
