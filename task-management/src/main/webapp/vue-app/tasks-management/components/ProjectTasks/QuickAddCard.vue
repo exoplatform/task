@@ -99,6 +99,7 @@ export default {
       this.quickAddTask=false;
       this.taskTitle='';
       this.$emit('close-quick-form');
+      this.$root.$emit('close-quick-task-form');
     }
   },
 };
