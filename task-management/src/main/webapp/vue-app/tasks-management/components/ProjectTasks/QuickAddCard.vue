@@ -41,12 +41,15 @@ export default {
       type: Boolean,
       default: false
     },
+    taskTitle: {
+      type: String,
+      default: ''
+    },
   },
   data() {
     return {
       newTask: {title: '',
-        priority: 'NORMAL'},
-      taskTitle: ''       
+        priority: 'NORMAL'}
     };
   },
   computed: {
