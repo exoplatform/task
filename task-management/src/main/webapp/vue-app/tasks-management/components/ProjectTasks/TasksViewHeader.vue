@@ -1,9 +1,9 @@
 <template>
   <div
     :id="'task-'+viewType+'-'+status.id"
-    class="tasksViewHeader d-flex justify-space-between align-center">
+    class="tasksViewHeader  d-flex justify-space-between align-center">
     <div
-      class="py-3 d-flex">
+      class="py-3 d-flex tasksViewHeaderLeft">
       <a
         v-if="viewType=== 'list'"
         class="toggle-collapse-group d-flex"
@@ -20,19 +20,43 @@
           style="display: none">
         </i>
       </a>
-      <input
-        v-if="editStatus || status.edit"
-        ref="autoFocusInput1"
-        v-model="status.name"
-        :placeholder="$t('label.tapStatus.name')"
-        type="text"
-        class="taskStatusName font-weight-bold text-color mb-1"
-        required
-        autofocus
-        @keyup="checkImput($event,index)">
+      <div v-if="editStatus || status.edit">
+        <v-text-field
+          v-if="editStatus || status.edit"
+          ref="autoFocusInput1"
+          v-model="status.name"
+          :placeholder="$t('label.tapStatus.name')"
+          type="text"
+          @focus="editStatus = true"
+          @blur="editStatus = false"
+          class="taskStatusNameEdit font-weight-bold text-color mb-1"
+          required
+          autofocus
+          outlined
+          dense
+          @keyup="checkInput($event,index)">
+          <v-icon
+            dark
+            class="uiIconLightGray"
+            color="green"
+            slot="append"
+            @click="checkInput(13,status.name)">
+            mdi-checkbox-marked
+          </v-icon>
+          <v-icon
+            dark
+            color="red"
+            slot="append"
+            @click="removeStatus()">
+            mdi-close
+          </v-icon>
+        </v-text-field>
+      </div>
+
       <div
         v-else
-        class="taskStatusName font-weight-bold text-color mb-1"
+        class="taskStatusName text-truncate font-weight-bold text-color mb-1"
+        :title="getI18N(status.name)"
         @click="editStatus = true">
         {{ getI18N(status.name) }}
       </div>
@@ -205,8 +229,8 @@ export default {
         title: ''};
       this.$root.$emit('open-task-drawer', defaultTask);
     },
-    checkImput: function(e,index) {
-      if (e.keyCode === 13) {
+    checkInput: function(e,index) {
+      if (e.keyCode === 13 || e === 13) {
         this.saveStatus(index);
       }
       if (e.keyCode === 27) {
@@ -266,6 +290,9 @@ export default {
         uiIconMiniArrowDown.style.display = 'block';
         uiIconMiniArrowRight.style.display = 'none';}
     },
+    removeStatus(){
+      this.status.name = '';
+    }
   }
 };
 </script>
