@@ -17,7 +17,8 @@
     <v-divider />
     <quick-add-card 
       :status="status"
-      :quick-add-task="quickAddTask1" 
+      :quick-add-task="quickAddTask1"
+      :task-title=taskTitle1
       class="status-add-task" 
       @close-quick-form="quickAddTask1=false" />
     <draggable 
@@ -38,7 +39,8 @@
     
       <quick-add-card 
         :status="status" 
-        :quick-add-task="quickAddTask" 
+        :quick-add-task="quickAddTask"
+        :task-title=taskTitle
         @close-quick-form="quickAddTask=false" />
 
       <v-btn 
@@ -86,6 +88,8 @@ export default {
     return {
       quickAddTask: false,
       quickAddTask1: false,
+      taskTitle: '',
+      taskTitle1: '',
       drag: false,
       task: null,
       newStatus: null
@@ -138,6 +142,8 @@ export default {
     closeForm() {
       this.quickAddTask=false;
       this.quickAddTask1=false;
+      this.taskTitle='';
+      this.taskTitle1='';
     }
   
   }
