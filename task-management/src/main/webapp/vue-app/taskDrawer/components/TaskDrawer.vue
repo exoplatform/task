@@ -154,6 +154,11 @@
               <span class="ViewAllCommentText" @click="$root.$emit('displayTaskComment')">{{ $t('comment.message.addYourComment') }}</span>
             </div>
             <div v-if="comments && comments.length" class="pr-0 pl-0 TaskCommentItem">
+              <!--<task-comments
+                :task="task"
+                :comment="comments[comments.length-1]"
+                :comments="comments"
+                :can-delete="false" />-->
               <task-last-comment
                 :task="task"
                 :comment="comments[comments.length-1]" />
@@ -706,8 +711,7 @@ export default {
       return value && this.$dateUtil.formatDateObjectToDisplay(new Date(value), this.dateTimeFormat, this.lang) || '';
     },
     openCommentDrawer() {
-      this.$root.$emit('displayTaskComment');
-      this.$root.$emit('displaySubCommentEditor', null);
+      this.$root.$emit('displayTaskComment', this.comments[this.comments.length-1].comment.id, true);
     },
   }
 };

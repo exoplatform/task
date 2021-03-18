@@ -1,21 +1,37 @@
 <template>
-  <div>
-    <textarea 
-      ref="editor"
-      :id="id" 
-      v-model="inputVal" 
-      :placeholder="placeholder" 
-      cols="30" 
-      rows="10" 
-      class="textarea"
-      autofocus></textarea>
-    <div
-      v-show="editorReady"
-      :class="charsCount > maxLength ? 'tooManyChars' : ''"
-      class="activityCharsCount"
-      style="">
-      {{ charsCount }}{{ maxLength > -1 ? ' / ' + maxLength : '' }}
-      <i class="uiIconMessageLength"></i>
+  <div class="comment d-flex align-start" :class="editorReady && 'activeEditor' || 'inactiveEditor'">
+    <exo-user-avatar
+      :username="currentUserName"
+      :avatar-url="currentUserAvatar"
+      :size="24"
+      :url="null"
+      class="pr-2" />
+    <div class="editorContainer">
+      <textarea 
+        :ref="`editor-${id}`"
+        :id="id" 
+        v-model="inputVal" 
+        :placeholder="placeholder" 
+        cols="30" 
+        rows="10" 
+        class="textarea"
+        autofocus></textarea>
+      <div
+        :class="charsCount > maxLength ? 'tooManyChars' : ''"
+        class="activityCharsCount"
+        style="">
+        {{ charsCount }}{{ maxLength > -1 ? ' / ' + maxLength : '' }}
+        <i class="uiIconMessageLength"></i>
+      </div>
+      <v-btn
+        :disabled="postDisabled"
+        depressed
+        small
+        type="button" 
+        class="btn btn-primary ignore-vuetify-classes btnStyle mt-1 mb-2 commentBtn"
+        @click="$emit('addNewComment')">
+        {{ $t('comment.label.comment') }}
+      </v-btn>
     </div>
   </div>
 </template>
@@ -32,10 +48,6 @@ export default {
       type: Object,
       default: null
     },
-    reset: {
-      type: Boolean,
-      default: false
-    },
     placeholder: {
       type: String,
       default: ''
@@ -47,26 +59,54 @@ export default {
     id: {
       type: String,
       default: ''
-    }
+    },
+    editorReady: {
+      type: Boolean,
+      default: false
+    },
+    showCommentEditor: {
+      type: Boolean,
+      default: false
+    },
+    lastComment: {
+      type: String,
+      default: ''
+    },
   },
   data() {
     return {
       inputVal: this.value,
       charsCount: 0,
-      editorReady: false,
+      disabledComment: '',
+      currentUserName: eXo.env.portal.userName,
+      currentCommentId: '',
+      commentEditorId: 'commentContent-1000'
     };
   },
   watch: {
     inputVal(val) {
       this.$emit('input', val);
+      this.disabledComment = val === '';
     },
-    reset() {
-      CKEDITOR.instances[this.id].destroy(true);
-      this.initCKEditor();
-    },
+    editorReady ( val ) {
+      if ( val === true ) {
+        this.initCKEditor();
+      } else {
+        CKEDITOR.instances[this.id].destroy(true);
+      }
+    }
+  },
+  created() {
+    this.$root.$on('showEditor', commentId => {
+      this.$nextTick().then(() => {
+        this.showEditor(commentId);
+      });
+    });
   },
   mounted() {
-    this.initCKEditor();
+    if ( this.showCommentEditor ) {
+      this.editorReady = true;
+    }
     const thiss = this;
     $('body').suggester('addProvider', 'task:people', function (query, callback) {
       const _this = this;
@@ -95,10 +135,9 @@ export default {
         // Disable suggester on smart-phone landscape
         extraPlugins = 'selectImage';
       }
-      // this line is mandatory when a custom skin is defined
       CKEDITOR.basePath = '/commons-extension/ckeditor/';
       const self = this;
-      $(this.$refs.editor).ckeditor({
+      $(this.$refs[`editor-${this.id}`]).ckeditor({
         customConfig: '/commons-extension/ckeditorCustom/config.js',
         extraPlugins: extraPlugins,
         removePlugins: 'confirmBeforeReload,maximize,resize',
@@ -106,7 +145,6 @@ export default {
         autoGrow_onStartup: true,
         on: {
           instanceReady: function() {
-            self.editorReady = true;
             self.setFocus();
           },
           change: function(evt) {
@@ -121,6 +159,7 @@ export default {
           destroy: function () {
             self.inputVal = '';
             self.charsCount = 0;
+            self.editorReady = false;
           },
         },
         suggester: {
@@ -139,6 +178,21 @@ export default {
     setFocus: function() {
       CKEDITOR.instances[this.id].focus();
     },
-  }
+    postDisabled: function () {
+      if (this.disabledComment) {
+        return true;
+      } else if (this.inputVal !== null && this.inputVal!=='') {
+        let pureText = this.inputVal ? this.inputVal.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, '').trim() : '';
+        const div = document.createElement('div');
+        div.innerHTML = pureText;
+        pureText = div.textContent || div.innerText || '';
+        return pureText.length > this.MESSAGE_MAX_LENGTH;
+      } else {return true;}
+    },
+    showEditor(commentId) {
+      this.currentCommentId = commentId;
+      this.editorReady = commentId === this.id;
+    }
+  },
 };
 </script>

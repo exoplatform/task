@@ -1,18 +1,31 @@
 <template>
-  <div 
-    :id="id"
-    class="commentItem">
+  <div
+    class="commentItem"
+    @mouseover="hover = true"
+    @mouseleave="hover = false">
     <div class="commentHeader d-flex">
       <exo-user-avatar
         :username="comment.author.username"
-        :avatar-url="comment.author.avatar"
         :title="comment.author.displayName"
-        :size="30"
+        :size="avatarSize"
         :url="comment.author.url" />
       <div class="commentContent pl-3 d-flex align-center">
         <a
           class="primary-color--text font-weight-bold subtitle-2 pr-2">{{ comment.author.displayName }} <span v-if="comment.author.external" class="externalTagClass">{{ ` (${$t('label.external')})` }}</span></a>
         <span :title="displayCommentDate" class="dateTime caption font-italic d-block">{{ relativeTime }}</span>
+      </div>
+      <div class="removeCommentBtn">
+        <v-btn
+          v-show="showDeleteButtom"
+          :title="$t('label.remove')"
+          :size="32"
+          class="deleteComment"
+          icon
+          small
+          @click="$emit('openConfirmDeleteDialog')"
+          v-on="on">
+          <i class="uiIconTrashMini uiIconLightGray "></i>
+        </v-btn>
       </div>
     </div>
     <div class="commentBody ml-10 mt-1">
@@ -25,45 +38,21 @@
         text
         small
         color="primary"
-        @click="openCommentDrawer">
+        @click="$emit('openCommentEditor',comment.comment.id)">
         {{ $t('comment.message.Reply') }}
       </v-btn>
     </div>
-    <div v-if="comment.subComments && comment.subComments.length" class="py-0 TaskSubComments">
+    <div v-if="comment && comment.subComments" class="py-0 TaskSubComments">
       <div
         v-for="(item, i) in comment.subComments"
-        :key="i">
-        <div class="TaskSubCommentItem pl-10 pr-0 pb-2">
-          <div class="commentItem">
-            <div class="commentHeader d-flex">
-              <exo-user-avatar
-                :username="item.author.username"
-                :avatar-url="item.author.avatar"
-                :title="item.author.displayName"
-                :size="30"
-                :url="item.author.url" />
-              <div class="commentContent pl-3 d-flex align-center">
-                <a
-                  class="primary-color--text font-weight-bold subtitle-2 pr-2">{{ item.author.displayName }} <span v-if="lastSubComment.author.external" class="externalTagClass">{{ ` (${$t('label.external')})` }}</span></a>
-                <span :title="displayCommentDate" class="dateTime caption font-italic d-block">{{ relativeTime }}</span>
-              </div>
-            </div>
-            <div class="commentBody ml-10 mt-1">
-              <div
-                class="taskContentComment"
-                v-html="item.formattedComment"></div>
-              <v-btn
-                id="reply_btn"
-                depressed
-                text
-                small
-                color="primary"
-                @click="openCommentDrawer">
-                {{ $t('comment.message.Reply') }}
-              </v-btn>
-            </div>
-          </div>
-        </div>
+        :key="i"
+        class="TaskSubCommentItem pr-0 pb-2">
+        <task-comment-item 
+          :comment="item"
+          :can-delete="canDelete"
+          :avatar-size="24"
+          @openCommentEditor="$emit('openCommentEditor',comment.comment.id)"
+          @openConfirmDeleteDialog="confirmCommentDelete()" />
       </div>
     </div>
   </div>
@@ -71,19 +60,25 @@
 <script>
 export default {
   props: {
-    task: {
-      type: Boolean,
-      default: false
-    },
     comment: {
       type: Object,
       default: () => {
         return {};
       }
     },
+    showOnly: {
+      type: Boolean,
+      default: true
+    },
+    avatarSize: {
+      type: Number,
+      // eslint-disable-next-line no-magic-numbers
+      default: () => 30,
+    }
   },
-  data () {
+  data() {
     return {
+      hover: false,
       lang: eXo.env.portal.language,
       dateTimeFormat: {
         year: 'numeric',
@@ -95,17 +90,17 @@ export default {
     };
   },
   computed: {
+    showDeleteButtom() {
+      return this.hover && this.canDelete && eXo.env.portal.userName === this.comment.author.username;
+    },
     relativeTime() {
       return this.getRelativeTime(this.comment.comment.createdTime.time);
     },
-    lastSubComment() {
-      return this.comment.subComments && this.comment.subComments[this.comment.subComments.length-1];
-    },
-    id() {
-      return `comment-${this.comment.comment.id}`;
-    }
   },
   methods: {
+    displayCommentDate( dateTimeValue ) {
+      return dateTimeValue && this.$dateUtil.formatDateObjectToDisplay(new Date(dateTimeValue), this.dateTimeFormat, this.lang) || '';
+    },
     getRelativeTime(previous) {
       const msPerMinute = 60 * 1000;
       const msPerHour = msPerMinute * 60;
@@ -131,13 +126,7 @@ export default {
         return this.displayCommentDate(this.comment.comment.createdTime.time);
       }
     },
-    displayCommentDate( dateTimeValue ) {
-      return dateTimeValue && this.$dateUtil.formatDateObjectToDisplay(new Date(dateTimeValue), this.dateTimeFormat, this.lang) || '';
-    },
-    openCommentDrawer() {
-      this.$root.$emit('displayTaskComment', this.comment.comment.id, false );
-    }
-  }
-
+  },
 };
 </script>
+

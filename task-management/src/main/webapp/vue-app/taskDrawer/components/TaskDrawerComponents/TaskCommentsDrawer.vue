@@ -16,7 +16,7 @@
               <div
                 :title="$t('comment.message.addYourComment')"
                 class="addCommentBtn"
-                @click="openEditorToBottom">
+                @click="openEditorToBottom()">
                 <i class="uiIcon uiIconTaskAddComment"></i>
               </div>
               <v-btn icon>
@@ -36,54 +36,18 @@
                 :task="task"
                 :comment="item"
                 :comments="comments"
-                :is-open="!showEditor"
-                :close-editor="subEditorIsOpen"
-                :comment-id="commentId"
-                :id="id"
-                @isOpen="OnCloseAllEditor()"
+                :last-comment="commentId"
+                :show-new-comment-editor="showNewCommentEditor"
                 @confirmDialogOpened="$emit('confirmDialogOpened')"
-                @confirmDialogClosed="$emit('confirmDialogClosed')"
-                @showSubEditor="OnUpdateEditorStatus" />
+                @confirmDialogClosed="$emit('confirmDialogClosed')" />
             </div>
-          </div>
-          <div v-if="showEditor" class="comment commentEditor d-flex align-start">
-            <exo-user-avatar
-              :username="currentUserName"
-              :avatar-url="currentUserAvatar"
-              :size="30"
-              :url="null" />
-            <div class="editorContent ml-2">
-              <task-comment-editor
-                ref="commentEditor"
-                v-model="editorData"
-                :max-length="MESSAGE_MAX_LENGTH"
-                :placeholder="$t('task.placeholder').replace('{0}', MESSAGE_MAX_LENGTH)"
-                :reset="reset"
-                :task="task"
-                :id="id"
-                class="comment" />
-              <v-btn
-                :disabled="postDisabled"
-                depressed
-                small
-                type="button"
-                class="btn btn-primary ignore-vuetify-classes btnStyle mt-1 mb-2 commentBtn"
-                @click="addTaskComment()">
-                {{ $t('comment.label.comment') }}
-              </v-btn>
-            </div>
-          </div>
-          <!--<a
-            v-else
-            class="pl-4"
-            @click="openEditor">{{ $t('comment.label.comment') }}</a>-->
+          </div>   
         </v-flex>
       </v-layout>
     </v-container>
   </div>
 </template>
 <script>
-
 export default {
   props: {
     comment: {
@@ -106,72 +70,25 @@ export default {
       type: Boolean,
       default: false
     },
-    subEditorIsOpen: {
-      type: Boolean,
-      default: false
-    },
   },
   data() {
     return {
-      currentUserName: eXo.env.portal.userName,
-      showEditor: false,
-      showSubEditor: false,
-      disabledComment: true,
-      editorData: null,
-      MESSAGE_MAX_LENGTH: 1250,
-      id: `commentContent${parseInt(Math.random() * 10000).toString()}`,
-      commentId: ''
+      commentId: '',
+      showNewCommentEditor: false,
+      test: false
     };
   },
-  computed: {
-    currentUserAvatar() {
-      return `/portal/rest/v1/social/users/${eXo.env.portal.userName}/avatar`;
-    },
-    postDisabled: function() {
-      if (this.disabledComment){
-        return true;
-      }
-      else if (this.editorData !== null && this.editorData!==''){
-        let pureText = this.editorData ? this.editorData.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, '').trim() : '';
-        const div = document.createElement('div');
-        div.innerHTML = pureText;
-        pureText = div.textContent || div.innerText || '';
-        return pureText.length> this.MESSAGE_MAX_LENGTH ;
-      } else {return true;}
-    },
-  },
-  watch: {
-    editorData(val) {
-      this.disabledComment = val === '';
-    },
-    showEditor() {
-      this.showSubEditor = !this.showEditor;
-    },
-  },
   mounted() {
-    this.$root.$on('displayTaskComment', () => {
+    this.$root.$on('displayTaskComment', (commentId, isNewComment) => {
       this.showTaskCommentDrawer = true;
+      this.commentId = commentId;
+      this.showNewCommentEditor = isNewComment;
       window.setTimeout(() => {
         const commentsDiv = document.getElementById('commentDrawerContent');
         $('#commentDrawerContent').animate({
           scrollTop: commentsDiv.scrollHeight
         }, 1000);
       }, 500);
-      if ( this.comments && !this.comments.length ) {
-        this.openEditor();
-      }
-    });
-
-    this.$root.$on('displaySubCommentEditor', id => {
-      if ( id == null ) {
-        window.setTimeout(() => {
-          this.openEditorToBottom();
-        }, 500);
-      } else {
-        window.setTimeout(() => {
-          document.dispatchEvent(new CustomEvent('openSubComment',{'detail': id}));
-        }, 500);
-      }
     });
     this.$root.$on('hideTaskComment', () => {
       this.showTaskCommentDrawer = false;
@@ -183,37 +100,20 @@ export default {
       comment = this.urlVerify(comment);
       this.$taskDrawerApi.addTaskComments(this.task.id,comment).then(comment => {
         this.comments.push(comment);
-        this.reset = !this.reset;
       });
-    },
-    openEditor() {
-      this.showEditor = true;
-      this.subEditorIsOpen = true;
-      this.editorData = null;
-    },
-    OnUpdateEditorStatus: function (val) {
-      this.showEditor = !val;
-      if (val === false) {
-        this.subEditorIsOpen = false;
-      }
-    },
-    OnCloseAllEditor() {
-      this.subEditorIsOpen = true;
     },
     closeDrawer() {
       this.showTaskCommentDrawer = false;
-      this.showEditor = false;
-      this.subEditorIsOpen = false;
     },
     urlVerify(text) {
       return this.$taskDrawerApi.urlVerify(text);
     },
     openEditorToBottom() {
+      this.$root.$emit('showNewCommentEditor');
       const commentsDiv = document.getElementById('commentDrawerContent');
       $('#commentDrawerContent').animate({
         scrollTop: commentsDiv.scrollHeight
       }, 500);
-      this.openEditor();
     }
   }
 };
