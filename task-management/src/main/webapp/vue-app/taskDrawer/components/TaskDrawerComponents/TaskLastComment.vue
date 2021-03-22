@@ -135,7 +135,7 @@ export default {
       return dateTimeValue && this.$dateUtil.formatDateObjectToDisplay(new Date(dateTimeValue), this.dateTimeFormat, this.lang) || '';
     },
     openCommentDrawer() {
-      this.$root.$emit('displayTaskComment', this.comment.comment.id, false );
+      this.$root.$emit('displayTaskComment', this.comment.comment.id );
     }
   }
 

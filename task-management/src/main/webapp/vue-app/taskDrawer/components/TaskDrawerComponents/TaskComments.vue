@@ -93,14 +93,13 @@ export default {
         this.$taskDrawerApi.addTaskComments(this.task.id,commentText).then(comment => {
           this.comments.push(comment);
         });
-        console.warn('new comment');
       } else {
         this.$taskDrawerApi.addTaskSubComment(this.task.id, commentId, commentText).then((comment => {
           this.comment.subComments = this.comment.commentText || [];
           this.comment.subComments.push(comment);
         }));
-        console.warn('sub comment');
       }
+      this.$emit('newCommentAdded');
     },
     removeTaskComment() {
       this.$taskDrawerApi.removeTaskComment(this.comment.comment.id);

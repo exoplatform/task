@@ -13,12 +13,14 @@
               <span class="pl-2">{{ $t('label.comments') }}</span>
             </v-list-item-content>
             <v-list-item-action class="drawerIcons align-end d-flex flex-row">
-              <div
+              <v-btn
+                :disabled="isEditorActive"
+                icon
                 :title="$t('comment.message.addYourComment')"
                 class="addCommentBtn"
-                @click="openEditorToBottom(commentId)">
+                @click="openEditorToBottom(commentId, false)">
                 <i class="uiIcon uiIconTaskAddComment"></i>
-              </div>
+              </v-btn>
               <v-btn icon>
                 <v-icon @click="closeDrawer()">mdi-close</v-icon>
               </v-btn>
@@ -27,7 +29,7 @@
         </v-flex>
         <v-divider class="my-0" />
         <v-flex id="commentDrawerContent" class="drawerContent flex-grow-1 overflow-auto border-box-sizing">
-          <div class="TaskCommentContent">
+          <div v-if="this.comments && this.comments.length" class="TaskCommentContent">
             <div
               v-for="(item, i) in comments"
               :key="i"
@@ -38,10 +40,24 @@
                 :comments="comments"
                 :last-comment="commentId"
                 :show-new-comment-editor="showNewCommentEditor"
+                @newCommentAdded="disableAddComment"
                 @confirmDialogOpened="$emit('confirmDialogOpened')"
                 @confirmDialogClosed="$emit('confirmDialogClosed')" />
             </div>
-          </div>   
+          </div> 
+          <div v-else>
+            <div class="editorContent commentEditorContainer newCommentEditor">
+              <task-comment-editor
+                ref="commentEditor"
+                :max-length="MESSAGE_MAX_LENGTH"
+                :placeholder="$t('task.placeholder').replace('{0}', MESSAGE_MAX_LENGTH)"
+                :task="task"
+                :show-comment-editor="true"
+                :id="'commentContent-editor'"
+                class="subComment subCommentEditor"
+                @addNewComment="addTaskComment($event)" />
+            </div>
+          </div>  
         </v-flex>
       </v-layout>
     </v-container>
@@ -75,8 +91,14 @@ export default {
     return {
       commentId: '',
       showNewCommentEditor: false,
-      test: false
+      test: false,
+      MESSAGE_MAX_LENGTH: 1250,
     };
+  },
+  computed: {
+    isEditorActive() {
+      return this.showNewCommentEditor || !this.comments.length;
+    }
   },
   mounted() {
     this.$root.$on('displayTaskComment', (commentId, isNewComment) => {
@@ -84,6 +106,10 @@ export default {
       this.commentId = commentId;
       this.showNewCommentEditor = isNewComment;
       this.openEditorToBottom(commentId);
+    });
+    this.$root.$on('displayFirstCommentEditor', () => {
+      this.showTaskCommentDrawer = true;
+      this.$root.$emit('showFirstCommentEditor');
     });
     this.$root.$on('hideTaskComment', () => {
       this.showTaskCommentDrawer = false;
@@ -105,13 +131,16 @@ export default {
     },
     openEditorToBottom(commentId) {
       this.$root.$emit('showNewCommentEditor',commentId);
-
       window.setTimeout(() => {
         const commentsDiv = document.getElementById('commentDrawerContent');
         $('#commentDrawerContent').animate({
           scrollTop: commentsDiv.scrollHeight
         }, 1000);
       }, 500);
+      this.showNewCommentEditor = false;
+    },
+    disableAddComment() {
+      this.showNewCommentEditor = false;
     }
   }
 };
