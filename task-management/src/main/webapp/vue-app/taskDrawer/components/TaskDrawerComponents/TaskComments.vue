@@ -5,7 +5,7 @@
       :can-delete="canDelete"
       @openConfirmDeleteDialog="confirmCommentDelete()"
       @openCommentEditor="commentActions($event)" />
-    <div class="editorContent commentEditorContainer" :class="comment.comment.id === lastComment && showNewCommentEditor && 'newCommentEditor'">
+    <div class="editorContent commentEditorContainer" :class="comment.comment.id === lastComment && newCommentEditor && 'newCommentEditor'">
       <task-comment-editor
         ref="commentEditor"
         :max-length="MESSAGE_MAX_LENGTH"
@@ -73,8 +73,15 @@ export default {
   },
   mounted() {
     this.$root.$on('showNewCommentEditor', () => {
+      this.lastComment = this.comments[this.comments.length-1].comment.id;
       this.showNewCommentEditor = true;
-    })
+      this.$root.$emit('newCommentEditor', `commentContent-${this.lastComment}`);
+    });
+  },
+  computed: {
+    newCommentEditor() {
+      return this.showNewCommentEditor;
+    }
   },
   methods: {
     addTaskSubComment(commentItem) {

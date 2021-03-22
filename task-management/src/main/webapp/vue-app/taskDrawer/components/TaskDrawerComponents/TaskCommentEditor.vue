@@ -79,8 +79,7 @@ export default {
       charsCount: 0,
       disabledComment: '',
       currentUserName: eXo.env.portal.userName,
-      currentCommentId: '',
-      commentEditorId: 'commentContent-1000'
+      currentCommentId: ''
     };
   },
   watch: {
@@ -91,6 +90,7 @@ export default {
     editorReady ( val ) {
       if ( val === true ) {
         this.initCKEditor();
+        console.warn('last comment', this.lastComment);
       } else {
         CKEDITOR.instances[this.id].destroy(true);
       }
@@ -107,6 +107,13 @@ export default {
     if ( this.showCommentEditor ) {
       this.editorReady = true;
     }
+    this.$root.$on('newCommentEditor', (lastComment) => {
+      this.editorReady = false;
+      this.showCommentEditor = lastComment === this.id;
+      if ( this.showCommentEditor ) {
+        this.editorReady = true;
+      }
+    });
     const thiss = this;
     $('body').suggester('addProvider', 'task:people', function (query, callback) {
       const _this = this;
