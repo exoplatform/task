@@ -82,15 +82,29 @@ export default {
       currentCommentId: ''
     };
   },
+  computed: {
+    postDisabled() {
+      if (this.disabledComment) {
+        return true;
+      } else if (this.inputVal !== null && this.inputVal!=='') {
+        let pureText = this.inputVal ? this.inputVal.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, '').trim() : '';
+        const div = document.createElement('div');
+        div.innerHTML = pureText;
+        pureText = div.textContent || div.innerText || '';
+        return pureText.length > this.MESSAGE_MAX_LENGTH;
+      } else {return true;}
+    }
+  },
   watch: {
     inputVal(val) {
       this.$emit('input', val);
       this.disabledComment = val === '';
+      const test = this.postDisabled;
+      console.warn('past disabled', test );
     },
     editorReady ( val ) {
       if ( val === true ) {
         this.initCKEditor();
-        console.warn('last comment', this.lastComment);
       } else {
         CKEDITOR.instances[this.id].destroy(true);
       }
@@ -134,7 +148,7 @@ export default {
     });
   },
   methods: {
-    initCKEditor: function () {
+    initCKEditor() {
       let extraPlugins = 'suggester,widget,embedsemantic';
       const windowWidth = $(window).width();
       const windowHeight = $(window).height();
@@ -178,23 +192,12 @@ export default {
 
       });
     },
-    getMessage: function() {
+    getMessage() {
       const newData = CKEDITOR.instances[this.id].getData();
       return newData ? newData.trim() : '';
     },
-    setFocus: function() {
+    setFocus() {
       CKEDITOR.instances[this.id].focus();
-    },
-    postDisabled: function () {
-      if (this.disabledComment) {
-        return true;
-      } else if (this.inputVal !== null && this.inputVal!=='') {
-        let pureText = this.inputVal ? this.inputVal.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, '').trim() : '';
-        const div = document.createElement('div');
-        div.innerHTML = pureText;
-        pureText = div.textContent || div.innerText || '';
-        return pureText.length > this.MESSAGE_MAX_LENGTH;
-      } else {return true;}
     },
     showEditor(commentId) {
       this.currentCommentId = commentId;
