@@ -151,7 +151,6 @@ public interface TaskService {
      * @param user  username
      * @param query term to search in title or description
      * @return tasks count
-     * @throws Exception when therer is an exception on get tasks.
      */
     long countTasks(String user, String query);
 
