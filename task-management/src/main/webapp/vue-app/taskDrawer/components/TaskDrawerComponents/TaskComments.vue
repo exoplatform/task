@@ -14,7 +14,9 @@
         :show-comment-editor="comment.comment.id === lastComment"
         :last-comment="lastComment"
         :id="'commentContent-'+comment.comment.id"
-        class="subComment subCommentEditor" />
+        :comment-id="comment.comment.id"
+        class="subComment subCommentEditor"
+        @addNewComment="addTaskComment($event)" />
     </div>
     <exo-confirm-dialog
       ref="CancelSavingCommentDialog"
@@ -75,7 +77,7 @@ export default {
     this.$root.$on('showNewCommentEditor', () => {
       this.lastComment = this.comments[this.comments.length-1].comment.id;
       this.showNewCommentEditor = true;
-      this.$root.$emit('newCommentEditor', `commentContent-${this.lastComment}`);
+      this.$root.$emit('newCommentEditor', this.lastComment);
     });
   },
   computed: {
@@ -84,13 +86,21 @@ export default {
     }
   },
   methods: {
-    addTaskSubComment(commentItem) {
-      let subComment = this.$refs.subCommentEditor.getMessage();
-      subComment = this.urlVerify(subComment);
-      this.$taskDrawerApi.addTaskSubComment(this.task.id, commentItem.comment.id, subComment).then((comment => {
-        this.comment.subComments = this.comment.subComments || [];
-        this.comment.subComments.push(comment);
-      }));
+    addTaskComment(commentId) {
+      let commentText = this.$refs.commentEditor.getMessage();
+      commentText = this.urlVerify(commentText);
+      if (this.newCommentEditor) {
+        this.$taskDrawerApi.addTaskComments(this.task.id,commentText).then(comment => {
+          this.comments.push(comment);
+        });
+        console.warn('new comment');
+      } else {
+        this.$taskDrawerApi.addTaskSubComment(this.task.id, commentId, commentText).then((comment => {
+          this.comment.subComments = this.comment.commentText || [];
+          this.comment.subComments.push(comment);
+        }));
+        console.warn('sub comment');
+      }
     },
     removeTaskComment() {
       this.$taskDrawerApi.removeTaskComment(this.comment.comment.id);
@@ -112,7 +122,7 @@ export default {
     },
     commentActions(value) {
       this.showNewCommentEditor = false;
-      this.$nextTick().then(() => this.$root.$emit('showEditor', `commentContent-${value}`));
+      this.$nextTick().then(() => this.$root.$emit('showEditor', value));
     }
   }
 };

@@ -1,46 +1,49 @@
 <template>
   <div
-    class="commentItem"
-    @mouseover="hover = true"
-    @mouseleave="hover = false">
-    <div class="commentHeader d-flex">
-      <exo-user-avatar
-        :username="comment.author.username"
-        :title="comment.author.displayName"
-        :size="avatarSize"
-        :url="comment.author.url" />
-      <div class="commentContent pl-3 d-flex align-center">
-        <a
-          class="primary-color--text font-weight-bold subtitle-2 pr-2">{{ comment.author.displayName }} <span v-if="comment.author.external" class="externalTagClass">{{ ` (${$t('label.external')})` }}</span></a>
-        <span :title="displayCommentDate" class="dateTime caption font-italic d-block">{{ relativeTime }}</span>
+    class="commentItem">
+    <div
+      class="commentWrapper"
+      @mouseover="hover = true"
+      @mouseleave="hover = false">
+      <div class="commentHeader d-flex">
+        <exo-user-avatar
+          :username="comment.author.username"
+          :title="comment.author.displayName"
+          :size="30"
+          :url="comment.author.url" />
+        <div class="commentContent pl-3 d-flex align-center">
+          <a
+            class="primary-color--text font-weight-bold subtitle-2 pr-2">{{ comment.author.displayName }} <span v-if="comment.author.external" class="externalTagClass">{{ ` (${$t('label.external')})` }}</span></a>
+          <span :title="displayCommentDate" class="dateTime caption font-italic d-block">{{ relativeTime }}</span>
+        </div>
+        <div class="removeCommentBtn">
+          <v-btn
+            v-show="showDeleteButtom"
+            :title="$t('label.remove')"
+            :size="32"
+            class="deleteComment"
+            icon
+            small
+            @click="$emit('openConfirmDeleteDialog')"
+            v-on="on">
+            <i class="uiIconTrashMini uiIconLightGray "></i>
+          </v-btn>
+        </div>
       </div>
-      <div class="removeCommentBtn">
+      <div class="commentBody ml-10 mt-1">
+        <div
+          class="taskContentComment"
+          v-html="comment.formattedComment"></div>
         <v-btn
-          v-show="showDeleteButtom"
-          :title="$t('label.remove')"
-          :size="32"
-          class="deleteComment"
-          icon
+          id="reply_btn"
+          depressed
+          text
           small
-          @click="$emit('openConfirmDeleteDialog')"
-          v-on="on">
-          <i class="uiIconTrashMini uiIconLightGray "></i>
+          color="primary"
+          @click="$emit('openCommentEditor',comment.comment.id)">
+          {{ $t('comment.message.Reply') }}
         </v-btn>
       </div>
-    </div>
-    <div class="commentBody ml-10 mt-1">
-      <div
-        class="taskContentComment"
-        v-html="comment.formattedComment"></div>
-      <v-btn
-        id="reply_btn"
-        depressed
-        text
-        small
-        color="primary"
-        @click="$emit('openCommentEditor',comment.comment.id)">
-        {{ $t('comment.message.Reply') }}
-      </v-btn>
     </div>
     <div v-if="comment && comment.subComments" class="py-0 TaskSubComments">
       <div
@@ -49,10 +52,9 @@
         class="TaskSubCommentItem pr-0 pb-2">
         <task-comment-item 
           :comment="item"
-          :can-delete="canDelete"
-          :avatar-size="24"
+          :avatar-size="30"
           @openCommentEditor="$emit('openCommentEditor',comment.comment.id)"
-          @openConfirmDeleteDialog="confirmCommentDelete()" />
+          @openConfirmDeleteDialog="$emit('openConfirmDeleteDialog')" />
       </div>
     </div>
   </div>
@@ -70,11 +72,6 @@ export default {
       type: Boolean,
       default: true
     },
-    avatarSize: {
-      type: Number,
-      // eslint-disable-next-line no-magic-numbers
-      default: () => 30,
-    }
   },
   data() {
     return {
@@ -91,7 +88,7 @@ export default {
   },
   computed: {
     showDeleteButtom() {
-      return this.hover && this.canDelete && eXo.env.portal.userName === this.comment.author.username;
+      return this.hover && eXo.env.portal.userName === this.comment.author.username;
     },
     relativeTime() {
       return this.getRelativeTime(this.comment.comment.createdTime.time);

@@ -16,7 +16,7 @@
               <div
                 :title="$t('comment.message.addYourComment')"
                 class="addCommentBtn"
-                @click="openEditorToBottom()">
+                @click="openEditorToBottom(commentId)">
                 <i class="uiIcon uiIconTaskAddComment"></i>
               </div>
               <v-btn icon>
@@ -83,12 +83,7 @@ export default {
       this.showTaskCommentDrawer = true;
       this.commentId = commentId;
       this.showNewCommentEditor = isNewComment;
-      window.setTimeout(() => {
-        const commentsDiv = document.getElementById('commentDrawerContent');
-        $('#commentDrawerContent').animate({
-          scrollTop: commentsDiv.scrollHeight
-        }, 1000);
-      }, 500);
+      this.openEditorToBottom(commentId);
     });
     this.$root.$on('hideTaskComment', () => {
       this.showTaskCommentDrawer = false;
@@ -108,11 +103,14 @@ export default {
     urlVerify(text) {
       return this.$taskDrawerApi.urlVerify(text);
     },
-    openEditorToBottom() {
-      this.$root.$emit('showNewCommentEditor');
-      const commentsDiv = document.getElementById('commentDrawerContent');
-      $('#commentDrawerContent').animate({
-        scrollTop: commentsDiv.scrollHeight
+    openEditorToBottom(commentId) {
+      this.$root.$emit('showNewCommentEditor',commentId);
+
+      window.setTimeout(() => {
+        const commentsDiv = document.getElementById('commentDrawerContent');
+        $('#commentDrawerContent').animate({
+          scrollTop: commentsDiv.scrollHeight
+        }, 1000);
       }, 500);
     }
   }

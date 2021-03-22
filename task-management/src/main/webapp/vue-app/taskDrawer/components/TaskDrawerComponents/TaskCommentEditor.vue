@@ -3,7 +3,7 @@
     <exo-user-avatar
       :username="currentUserName"
       :avatar-url="currentUserAvatar"
-      :size="24"
+      :size="30"
       :url="null"
       class="pr-2" />
     <div class="editorContainer">
@@ -29,7 +29,7 @@
         small
         type="button" 
         class="btn btn-primary ignore-vuetify-classes btnStyle mt-1 mb-2 commentBtn"
-        @click="$emit('addNewComment')">
+        @click="addNewComment()">
         {{ $t('comment.label.comment') }}
       </v-btn>
     </div>
@@ -72,6 +72,10 @@ export default {
       type: String,
       default: ''
     },
+    commentId: {
+      type: String,
+      default: ''
+    }
   },
   data() {
     return {
@@ -93,20 +97,20 @@ export default {
         pureText = div.textContent || div.innerText || '';
         return pureText.length > this.MESSAGE_MAX_LENGTH;
       } else {return true;}
-    }
+    },
   },
   watch: {
     inputVal(val) {
       this.$emit('input', val);
       this.disabledComment = val === '';
-      const test = this.postDisabled;
-      console.warn('past disabled', test );
     },
     editorReady ( val ) {
       if ( val === true ) {
         this.initCKEditor();
       } else {
-        CKEDITOR.instances[this.id].destroy(true);
+        if (CKEDITOR.instances[this.id]) {
+          CKEDITOR.instances[this.id].destroy(true);
+        }
       }
     }
   },
@@ -123,7 +127,7 @@ export default {
     }
     this.$root.$on('newCommentEditor', (lastComment) => {
       this.editorReady = false;
-      this.showCommentEditor = lastComment === this.id;
+      this.showCommentEditor = `commentContent-${lastComment}` === this.id;
       if ( this.showCommentEditor ) {
         this.editorReady = true;
       }
@@ -181,6 +185,7 @@ export default {
             self.inputVal = '';
             self.charsCount = 0;
             self.editorReady = false;
+            self.showCommentEditor =false;
           },
         },
         suggester: {
@@ -199,9 +204,16 @@ export default {
     setFocus() {
       CKEDITOR.instances[this.id].focus();
     },
+    destroyEditor() {
+      CKEDITOR.instances[this.id].destroy();
+    },
     showEditor(commentId) {
       this.currentCommentId = commentId;
-      this.editorReady = commentId === this.id;
+      this.editorReady =  `commentContent-${commentId}`  === this.id;
+    },
+    addNewComment() {
+      this.$emit('addNewComment', this.commentId);
+      this.destroyEditor();
     }
   },
 };
