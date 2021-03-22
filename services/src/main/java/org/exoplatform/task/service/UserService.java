@@ -38,8 +38,8 @@ public interface UserService {
   /**
    * For now, this method is used only for search user in assignee, permission or mention.
    * These function use username, fullName and avatar, so some other infos will be null to avoid recall organizationService
-   * @param keyword
-   * @return
+   * @param keyword name of the user
+   * @return List of users
    */
   ListAccess<User> findUserByName(String keyword);
 

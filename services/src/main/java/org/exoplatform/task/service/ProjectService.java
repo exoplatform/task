@@ -59,7 +59,6 @@ public interface ProjectService {
      * It should throws EntityNotFoundException if the project has been removed OR not existed from database.
      *
      * @param project the given project.
-     * @return update the project.
      */
     void updateProjectNoReturn(ProjectDto project);
     /**
@@ -68,6 +67,7 @@ public interface ProjectService {
      * It should throws EntityNotFoundException if the project has been removed OR not existed from database.
      *
      * @param project the given project.
+     * @return The updated project.
      */
     ProjectDto updateProject(ProjectDto project);
 
@@ -97,6 +97,8 @@ public interface ProjectService {
      * Return a list of children of a parent project with given <code>parentId</code>.
      *
      * @param parentId The parent id of a project.
+     * @param offset term to offset results.
+     * @param limit term to limit results.
      * @return The list of children of a parent project.
      */
     List<ProjectDto> getSubProjects(long parentId,int offset ,int limit);

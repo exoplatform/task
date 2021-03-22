@@ -695,6 +695,7 @@ public final class TaskUtil {
   /**
    * Gets platform language of current user. In case of any errors return null.
    *
+   * @param userId user Id
    * @return the platform language
    */
   public static String getCurrentUserLanguage(String userId) {
@@ -712,9 +713,9 @@ public final class TaskUtil {
    * 
    * Added for tests using a specific instance of taskService
    * 
-   * @param taskService
-   * @param taskId
-   * @return
+   * @param taskService TaskService instance
+   * @param taskId Task Id
+   * @return List of Coworkers
    */
   public static Set<String> getCoworker(TaskService taskService, long taskId) {
     return taskService.getCoworker(taskId);

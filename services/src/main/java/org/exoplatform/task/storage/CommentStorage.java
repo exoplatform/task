@@ -27,7 +27,7 @@ public interface CommentStorage {
    * Fetch sub comments of designed comments
    *
    * @param listComments the given list of comments.
-   * @return
+   * @return List of SubComments
    */
   List<CommentDto> loadSubComments(List<CommentDto> listComments);
 
