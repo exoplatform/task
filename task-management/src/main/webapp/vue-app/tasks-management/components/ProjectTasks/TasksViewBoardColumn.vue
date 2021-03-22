@@ -44,7 +44,7 @@
         @close-quick-form="quickAddTask=false" />
 
       <v-btn 
-        v-if="!quickAddTask"
+        v-if="!quickAddTask && !editStatusValue"
         class="btn px-2 quickAddNewTaskButton"
         @click="quickAddTask=true">
         <v-icon dark class="d-block d-sm-none">mdi-plus</v-icon>
@@ -92,12 +92,16 @@ export default {
       taskTitle1: '',
       drag: false,
       task: null,
-      newStatus: null
+      newStatus: null,
+      editStatusValue: false,
     };
   },
   created(){
     this.$root.$on('close-quick-task-form', () => {
       this.closeForm();
+    });
+    this.$root.$on('edit-status-mode', editStatusValue => {
+      this.editStatusValue=editStatusValue;
     });
   },
   watch: {
