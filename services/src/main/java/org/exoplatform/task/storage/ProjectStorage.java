@@ -79,7 +79,10 @@ public interface ProjectStorage {
      * Return a list of children of a parent project with given <code>parentId</code>.
      *
      * @param parentId The parent id of a project.
+     * @param offset term to offset results.
+     * @param limit term to limit results.
      * @return The list of children of a parent project.
+     * @throws Exception when can't get sub projects.
      */
     List<ProjectDto> getSubProjects(long parentId,int offset ,int limit) throws Exception;
 

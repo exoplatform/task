@@ -97,8 +97,9 @@ public final class CommentUtil {
   }
 
   /**
-   * Chech if is an external user.
+   * Check if is an external user.
    *
+   * @param userName user name
    * @return true if is an external
    */
   public static boolean isExternal(String userName){
