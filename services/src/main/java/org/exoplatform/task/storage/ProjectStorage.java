@@ -43,15 +43,10 @@ public interface ProjectStorage {
      */
     ProjectDto createProject(ProjectDto project, long parentId) throws EntityNotFoundException;
 
-    /**
-     * Update the project.
-     * <p>
-     * It should throws EntityNotFoundException if the project has been removed OR not existed from database.
-     *
-     * @param project the given project.
-     * @return update the project.
-     */
+
     ProjectDto updateProject(ProjectDto project);
+
+    void updateProjectNoReturn(ProjectDto project);
 
     /**
      * Remove the project with given <code>projectId</code>,

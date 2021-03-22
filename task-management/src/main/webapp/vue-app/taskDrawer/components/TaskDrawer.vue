@@ -235,7 +235,8 @@ export default {
       },
       lang: eXo.env.portal.language,
       commentId: '',
-      isDrawerClose: true
+      isDrawerClose: true,
+      oldTask: {}
     };
   },
   computed: {
@@ -329,33 +330,37 @@ export default {
       document.dispatchEvent(new CustomEvent('closeAssignments'));
     },
     updateTaskTitle() {
-      if (!this.task.title || this.task.title.length===0){
-        this.$root.$emit('show-alert', {type: 'error',message: this.$t('alert.error.title.mandatory')});
-      } else if (!this.taskTitleValid){
-        this.$root.$emit('show-alert', {type: 'error',message: this.$t('alert.error.title.length')});
-      } else if (this.task.id != null) {
-        this.$taskDrawerApi.updateTask(this.task.id, this.task).then(() => {
-          this.taskTitle_ = this.task.title; 
-          this.$root.$emit('show-alert', {
-            type: 'success',
-            message: this.$t('alert.success.task.title')
-          });
-        })
-          .catch(e => {
-            this.task.title = this.taskTitle_;
-            console.error('Error when updating task\'s title', e);
+      if (this.oldTask.title!==this.task.title){
+        if (!this.task.title || this.task.title.length===0 ){
+          this.$root.$emit('show-alert', {type: 'error',message: this.$t('alert.error.title.mandatory')});
+        } else if (!this.taskTitleValid){
+          this.$root.$emit('show-alert', {type: 'error',message: this.$t('alert.error.title.length')});
+        } else if (this.task.id != null) {
+          this.$taskDrawerApi.updateTask(this.task.id, this.task).then(() => {
+            this.taskTitle_ = this.task.title;
+            this.oldTask.title = this.task.title;
             this.$root.$emit('show-alert', {
-              type: 'error',
-              message: this.$t('alert.error')
+              type: 'success',
+              message: this.$t('alert.success.task.title')
             });
-          });
+          })
+            .catch(e => {
+              this.task.title = this.taskTitle_;
+              console.error('Error when updating task\'s title', e);
+              this.$root.$emit('show-alert', {
+                type: 'error',
+                message: this.$t('alert.error')
+              });
+            });
+        }
       }
     },
     updateTaskPriority(value) {
-      if (value) {
+      if (value && this.oldTask.priority!==value) {
         if (this.task.id != null) {
           this.task.priority = value;
           this.$taskDrawerApi.updateTask(this.task.id, this.task).then( () => {
+            this.oldTask.priority = this.task.priority;
             this.$root.$emit('show-alert', {
               type: 'success',
               message: this.$t('alert.success.task.priority')
@@ -373,10 +378,11 @@ export default {
       }
     },
     updateTaskStatus(value) {
-      if (value) {
+      if (value && this.oldTask.status.id!==value.id) {
         if (this.task.id != null) {
           this.task.status = value;
           this.$taskDrawerApi.updateTask(this.task.id, this.task).then( () => {
+            this.oldTask.status = this.task.status;
             this.$root.$emit('show-alert', {
               type: 'success',
               message: this.$t('alert.success.task.status')
@@ -392,10 +398,11 @@ export default {
       }
     },
     updateTaskStartDate(value) {
-      if (value) {
+      if (value && value !== 'none'  && (!this.oldTask.startDate|| this.oldTask.startDate.time!==value.time)) {
         if (this.task.id != null) {
           this.task.startDate = value;
           this.$taskDrawerApi.updateTask(this.task.id, this.task).then( () => {
+            this.oldTask.startDate = this.task.startDate;
             this.$root.$emit('show-alert', {
               type: 'success',
               message: this.$t('alert.success.task.startDate')
@@ -413,10 +420,11 @@ export default {
       }
     },
     updateTaskDueDate(value) {
-      if (value && value !== 'none') {
+      if (value && value !== 'none' && (!this.oldTask.dueDate|| this.oldTask.dueDate.time!==value.time)) {
         if (this.task.id != null) {
           this.task.dueDate = value;
           this.$taskDrawerApi.updateTask(this.task.id, this.task).then( () => {
+            this.oldTask.dueDate=this.task.dueDate;
             this.$root.$emit('show-alert', {
               type: 'success',
               message: this.$t('alert.success.task.duetDate')
@@ -434,6 +442,7 @@ export default {
       } else if (value === 'none') {
         this.task.dueDate = null;
         this.$taskDrawerApi.updateTask(this.task.id, this.task).then( () => {
+          this.oldTask.dueDate=this.task.dueDate;
           this.$root.$emit('show-alert', {
             type: 'success',
             message: this.$t('alert.success.task.duetDate')
@@ -494,13 +503,14 @@ export default {
       });
     },
     updateTaskAssignee(value) {
-      if (this.task.id !== null) {
+      if (this.task.id !== null && this.oldTask.assignee!==value) {
         if (value) {
           this.task.assignee = value;
         } else {
           this.task.assignee = null;
         }
         this.$taskDrawerApi.updateTask(this.task.id, this.task).then( () => {
+          this.oldTask.assignee=this.task.assignee;
           this.$root.$emit('show-alert', {
             type: 'success',
             message: this.$t('alert.success.task.assignee')
@@ -521,13 +531,14 @@ export default {
       }
     },
     updateTaskCoworker(value) {
-      if (this.task.id !== null) {
+      if (this.task.id !== null && this.oldTask.coworker!==value) {
         if (value && value.length) {
           this.task.coworker = value;
         } else {
           this.task.coworker = [];
         }
         this.$taskDrawerApi.updateTask(this.task.id, this.task).then( () => {
+          this.oldTask.coworker = this.task.coworker;
           this.$root.$emit('show-alert', {
             type: 'success',
             message: this.$t('alert.success.task.coworker')
@@ -568,6 +579,7 @@ export default {
       window.open(`${ eXo.env.portal.context }/${ eXo.env.portal.portalName }/${ pagelink }`, '_blank');
     },
     open(task) {
+      this.oldTask= Object.assign({}, task);
       this.taskTitle_= task.title;
       this.task = task;
       window.setTimeout(() => {

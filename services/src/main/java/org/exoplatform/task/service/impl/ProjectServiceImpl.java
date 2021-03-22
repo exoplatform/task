@@ -123,6 +123,13 @@ public class ProjectServiceImpl implements ProjectService {
 
   @Override
   @ExoTransactional
+  public void updateProjectNoReturn(ProjectDto proj) {
+    proj.setLastModifiedDate(System.currentTimeMillis());
+    projectStorage.updateProjectNoReturn(proj);
+  }
+
+  @Override
+  @ExoTransactional
   public void removeProject(long id, boolean deleteChild) throws EntityNotFoundException {
     ProjectDto project = getProject(id);
     if (project == null)
