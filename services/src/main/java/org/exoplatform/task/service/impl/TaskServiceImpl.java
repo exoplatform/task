@@ -120,21 +120,18 @@ public class TaskServiceImpl implements TaskService {
     @ExoTransactional
     public void removeTask(long id) throws EntityNotFoundException {
         TaskDto task = getTask(id);// Can throw TaskNotFoundException
-
         taskStorage.delete(task);
+        LOG.info("Task {} removed", id);
     }
 
     @Override
     @ExoTransactional
     public TaskDto cloneTask(long id) throws EntityNotFoundException {
-
         TaskDto task = getTask(id);// Can throw TaskNotFoundException
-
         TaskDto newTask = task.clone();
         newTask.setId(0L);
         newTask.setCoworker(getCoworker(id));
         newTask.setTitle(Task.PREFIX_CLONE + newTask.getTitle());
-
         return createTask(newTask);
     }
 

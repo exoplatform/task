@@ -549,7 +549,7 @@ public class ProjectRestService implements ResourceContainer {
     }
 
     ProjectDto project = ProjectUtil.saveProjectField(projectService, projectId, fields);
-    projectService.updateProject(project);
+    projectService.updateProjectNoReturn(project);
     return Response.ok(Response.Status.OK).build();
         }
         catch (Exception e) {
@@ -646,7 +646,7 @@ public class ProjectRestService implements ResourceContainer {
     }
 
     project = ProjectUtil.saveProjectField(projectService, projectId, fields);
-    projectService.updateProject(project);
+    projectService.updateProjectNoReturn(project);
     return Response.ok(Response.Status.OK).build();
         }
         catch (Exception e) {

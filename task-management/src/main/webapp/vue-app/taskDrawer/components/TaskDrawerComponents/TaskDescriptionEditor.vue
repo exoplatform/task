@@ -106,7 +106,8 @@ export default {
   },
   methods: {
     saveDescription: function (newValue) {
-      if (newValue !== this.taskDescription) {
+      newValue = newValue.replace('&nbsp;',' ');
+      if (newValue !== this.taskDescription && newValue !== this.task.description) {
         if (this.task.id && !isNaN(this.task.id)){
           this.task.description = newValue;
           this.$taskDrawerApi.updateTask(this.task.id ,this.task)
@@ -116,11 +117,11 @@ export default {
                 message: this.$t('alert.success.task.description')
               });
             }).catch(e => {
-              console.error('Error when updating task\'s title', e);
+              console.error('Error when updating task\'s descriprion', e);
               this.$root.$emit('show-alert',{type: 'error',message: this.$t('alert.error')} );
             });
         }
-        this.inputVal = '';
+        //this.inputVal = '';
       }
     },
     initCKEditor: function () {
@@ -165,10 +166,10 @@ export default {
         this.editorReady = !this.editorReady;
       }
     },
-
     urlVerify(text) {
       return this.$taskDrawerApi.urlVerify(text);
     }
+
   }
 };
 </script>
