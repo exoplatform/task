@@ -141,6 +141,7 @@
                 <v-card>
                   <tasks-labels-drawer
                     ref="filterLabelsTasksDrawer"
+                    :project-id="projectId"
                     :labels="labels" />
                 </v-card>
               </v-tab-item>
@@ -216,6 +217,7 @@ export default {
       dueDateSelected: '',
       prioritySelected: '',
       statusSelected: '',
+      projectId: 0,
       assignee: '',
       assigneeTask: '',
       dueDate: [
@@ -261,6 +263,12 @@ export default {
       if (urlPath.includes('projectDetail')){
         let projectId = urlPath.split('projectDetail/')[1].split(/[^0-9]/)[0];
         projectId = projectId && Number(projectId) || 0;
+        window.setTimeout(() => {
+          document.dispatchEvent(new CustomEvent('loadFilterProjectLabels', {
+            detail: projectId
+          }));
+        },
+        200);
         if (localStorage.getItem(`filterStorage${projectId}+${this.taskViewTabName}`) !== null) {
           const localStorageSaveFilter = localStorage.getItem(`filterStorage${projectId}+${this.taskViewTabName}`);
           if (localStorageSaveFilter.split('"')[10].split('}')[0].split(':')[1].split(',')[0] === projectId.toString()) {

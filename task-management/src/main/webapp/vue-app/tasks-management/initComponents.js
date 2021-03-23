@@ -11,6 +11,7 @@ import ProjectManagersDrawer from './components/Project/ProjectManagersDrawer.vu
 import ProjectAssigneeManager from './components/Project/ProjectAssigneeManager.vue';
 import ProjectEventFormAssigneeAndParticipatorItem from './components/Project/ProjectEventFormAssigneeAndParticipatorItem.vue';
 import ProjectAssigneeParticipator from './components/Project/ProjectAssigneeParticipator.vue';
+import ProjectLabels from './components/Project/ProjectLabels.vue';
 
 import TasksDashboard from './components/tasks/TasksDashboard.vue';
 import TasksListToolbar from './components/tasks/TasksListToolbar.vue';
@@ -53,6 +54,7 @@ const components = {
   'project-assignee-manager': ProjectAssigneeManager,
   'project-event-form-assignee-and-participator-item': ProjectEventFormAssigneeAndParticipatorItem,
   'project-assignee-participator': ProjectAssigneeParticipator,
+  'project-labels': ProjectLabels,
 
   'tasks-dashboard': TasksDashboard,
   'tasks-list-toolbar': TasksListToolbar,

@@ -10,7 +10,7 @@
       :search-input.sync="search"
       :label="$t('label.tapLabel.name')"
       attach
-      class="pt-0 inputTaskLabel"
+      class="pt-0 inputProjectLabel"
       hide-selected
       multiple
       small-chips
@@ -45,16 +45,15 @@
             {{ item.text }}
           </span>
           <v-icon
-            v-if="item.canEdit"
             x-small
             class="pr-0"
-            @click="parent.selectItem(item);removeTaskFromLabel(item)">
+            @click="parent.selectItem(item);removeLabel(item)">
             close
           </v-icon>
         </v-chip>
       </template>
       <template v-slot:item="{ index, item }">
-        <v-list-item @click="addTaskToLabel(item)">
+        <v-list-item @click="addLabel(item)">
           <v-chip
             :color="`${item.color} lighten-3`"
             dark
@@ -69,10 +68,10 @@
 </template>
 
 <script>
-import {getMyAllLabels, getProjectLabels, getTaskLabels, addTaskToLabel,removeTaskFromLabel} from '../../taskDrawerApi';
+import {getProjectLabels, addLabel,removeLabel} from '../../../taskDrawer/taskDrawerApi';
 export default {
   props: {
-    task: {
+    project: {
       type: Object,
       default: () => {
         return {};
@@ -88,7 +87,6 @@ export default {
       x: 0,
       search: null,
       y: 0,
-      currentUserName: eXo.env.portal.userName,
     };
   },
   watch: {
@@ -102,11 +100,10 @@ export default {
           v = {
             text: v,
             name: v,
-            canEdit: this.task.createdBy===this.currentUserName||this.task.status.project.canManage
           };
           this.items.push(v);
           this.nonce++;
-          this.addTaskToLabel(v);
+          this.addLabel(v);
         }
         return v;
       });
@@ -128,29 +125,11 @@ export default {
         }
       }, 100);
     });
-    document.addEventListener('loadProjectLabels', event => {
+    document.addEventListener('loadAllProjectLabels', event => {
       if (event && event.detail) {
-        const task = event.detail;
+        const project = event.detail;
         this.model = [];
-        if (task.status.project!=null) {
-          this.getProjectLabels(task.status.project.id);
-        }
-      }
-    });
-    document.addEventListener('loadTaskLabels', event => {
-      if (event && event.detail) {
-        const task = event.detail;
-        this.model = [];
-        if (task.id!=null) {
-          this.getTaskLabels();
-          getTaskLabels(task.id).then((labels) => {
-            this.model = labels.map(function (el) {
-              const o = Object.assign({}, el);
-              o.text = o.name;
-              return o;
-            });
-          });
-        }
+        this.getProjectLabels(project.id);
       }
     });
   },
@@ -166,26 +145,9 @@ export default {
       const query = hasValue(queryText);
       return text.toString().toLowerCase().indexOf(query.toString().toLowerCase()) > -1;
     },
-    getMyAllLabels() {
-      getMyAllLabels().then((labels) => {
-        this.items = labels.map(function (el) {
-          const o = Object.assign({}, el);
-          o.text = o.name;
-          return o;
-        });
-      });
-    },
+
     getProjectLabels(projectId) {
       getProjectLabels(projectId).then((labels) => {
-        this.items = labels.map(function (el) {
-          const o = Object.assign({}, el);
-          o.text = o.name;
-          return o;
-        });
-      });
-    },
-    getTaskLabels() {
-      getTaskLabels(this.task.id).then((labels) => {
         this.model = labels.map(function (el) {
           const o = Object.assign({}, el);
           o.text = o.name;
@@ -193,16 +155,18 @@ export default {
         });
       });
     },
-    addTaskToLabel(label) {
-      if ( this.task.id!= null ) {
-        addTaskToLabel(this.task.id, label).then( () => {
+
+    addLabel(label) {
+      if ( this.project.id!= null ) {
+        label.project=this.project;
+        addLabel(label).then( () => {
           this.$root.$emit('show-alert', {
             type: 'success',
-            message: this.$t('alert.success.task.label')
+            message: this.$t('alert.success.label.created')
           });
-          this.getTaskLabels();
+          this.getProjectLabels(this.project.id);
         }).catch(e => {
-          console.error('Error when updating task\'s labels', e);
+          console.error('Error when adding labels', e);
           this.$root.$emit('show-alert', {
             type: 'error',
             message: this.$t('alert.error')
@@ -214,14 +178,14 @@ export default {
       this.model.push(label);
       document.getElementById('labelInput').focus();
     },
-    removeTaskFromLabel(item) {
-      removeTaskFromLabel(this.task.id, item.id).then( () => {
+    removeLabel(item) {
+      removeLabel(item.id).then( () => {
         this.$root.$emit('show-alert', {
           type: 'success',
-          message: this.$t('alert.success.task.label')
+          message: this.$t('alert.success.label.deleted')
         });
       }).catch(e => {
-        console.error('Error when updating task\'s labels', e);
+        console.error('Error when removibg labels', e);
         this.$root.$emit('show-alert', {
           type: 'error',
           message: this.$t('alert.error')

@@ -49,7 +49,7 @@
 </template>
 
 <script>
-import {getMyAllLabels, getTaskLabels} from '../../../taskDrawer/taskDrawerApi';
+import {getMyAllLabels, getProjectLabels, getTaskLabels} from '../../../taskDrawer/taskDrawerApi';
 export default {
   props: {
     task: {
@@ -57,6 +57,10 @@ export default {
       default: () => {
         return {};
       }
+    },
+    projectId: {
+      type: Number,
+      default: 0
     },
   },
   data() {
@@ -95,14 +99,15 @@ export default {
 
   },
   created() {
-    this.getMyAllLabels();
-    $(document).on('mousedown', () => {
-      if (this.$refs.selectLabel.isMenuActive) {
-        window.setTimeout(() => {
-          this.$refs.selectLabel.isMenuActive = false;
-        }, 200);
-      }
-    });
+    const urlPath = document.location.pathname;
+    if (urlPath.includes('projectDetail')){
+      let projectId = urlPath.split('projectDetail/')[1].split(/[^0-9]/)[0];
+      projectId = projectId && Number(projectId) || 0;
+      this.getProjectLabels(projectId);
+      this.projectId=projectId;
+    } else {
+      this.getMyAllLabels();
+    }
     document.addEventListener('closeLabelsList',()=> {
       setTimeout(() => {
         if (typeof this.$refs.selectLabel !== 'undefined') {
@@ -124,6 +129,12 @@ export default {
             });
           });
         }
+      }
+    });
+    document.addEventListener('loadFilterProjectLabels', event => {
+      if (event && event.detail) {
+        this.projectId=event.detail;
+        this.getProjectLabels(this.projectId);
       }
     });
     this.$root.$on('reset-filter-task-group-sort',() =>{
@@ -154,6 +165,15 @@ export default {
     getTaskLabels() {
       getTaskLabels(this.task.id).then((labels) => {
         this.model = labels.map(function (el) {
+          const o = Object.assign({}, el);
+          o.text = o.name;
+          return o;
+        });
+      });
+    },
+    getProjectLabels(projectId) {
+      getProjectLabels(projectId).then((labels) => {
+        this.items = labels.map(function (el) {
           const o = Object.assign({}, el);
           o.text = o.name;
           return o;

@@ -1,4 +1,4 @@
-import {tasksConstants} from '../../js/tasksConstants';
+import { tasksConstants } from '../../js/tasksConstants';
 
 export function getUserInformations(userName) {
   return fetch(`/portal/rest/v1/social/users/${userName}`, {
@@ -7,9 +7,8 @@ export function getUserInformations(userName) {
   }).then((resp) => {
     if (resp && resp.ok) {
       return resp.json();
-    }
-    else {
-      throw new Error ('Error when getting user informations');
+    } else {
+      throw new Error('Error when getting user informations');
     }
   });
 }
@@ -58,9 +57,21 @@ export function getMyAllLabels() {
   }).then((resp) => {
     if (resp && resp.ok) {
       return resp.json();
+    } else {
+      throw new Error('Error when getting my all labels');
     }
-    else {
-      throw new Error ('Error when getting my all labels');
+  });
+}
+
+export function getProjectLabels(projectId) {
+  return fetch(`/portal/rest/tasks/labels/project/${projectId}`, {
+    method: 'GET',
+    credentials: 'include',
+  }).then((resp) => {
+    if (resp && resp.ok) {
+      return resp.json();
+    } else {
+      throw new Error('Error when getting my all labels');
     }
   });
 }
@@ -72,9 +83,8 @@ export function getTaskLabels(taskId) {
   }).then((resp) => {
     if (resp && resp.ok) {
       return resp.json();
-    }
-    else {
-      throw new Error ('Error when getting task labels');
+    } else {
+      throw new Error('Error when getting task labels');
     }
   });
 }
@@ -91,9 +101,8 @@ export function addTaskToLabel(taskId, label) {
   }).then((resp) => {
     if (resp && resp.ok) {
       return resp.json();
-    }
-    else {
-      throw new Error ('Error when adding task to label');
+    } else {
+      throw new Error('Error when adding task to label');
     }
   });
 }
@@ -104,10 +113,40 @@ export function removeTaskFromLabel(taskId, labelId) {
     method: 'delete',
   }).then((resp) => {
     if (resp && resp.ok) {
-      return resp.json();
+      return resp;
+    } else {
+      throw new Error('Error when deleting task from label');
     }
-    else {
-      throw new Error ('Error when deleting task from label');
+  });
+}
+
+export function addLabel(label) {
+  return fetch('/portal/rest/tasks/labels', {
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    method: 'POST',
+    credentials: 'include',
+    body: JSON.stringify(label)
+  }).then((resp) => {
+    if (resp && resp.ok) {
+      return resp.json();
+    } else {
+      throw new Error('Error when adding task to label');
+    }
+  });
+}
+
+export function removeLabel(labelId) {
+  return fetch(`/portal/rest/tasks/labels/${labelId}`, {
+    credentials: 'include',
+    method: 'delete',
+  }).then((resp) => {
+    if (resp && resp.ok) {
+      return resp;
+    } else {
+      throw new Error('Error when deleting label');
     }
   });
 }
@@ -158,9 +197,8 @@ export function getAllUsers() {
   }).then((resp) => {
     if (resp && resp.ok) {
       return resp.json();
-    }
-    else {
-      throw new Error ('Error when getting users');
+    } else {
+      throw new Error('Error when getting users');
     }
   });
 }
@@ -172,9 +210,8 @@ export function getTaskLogs(taskId) {
   }).then((resp) => {
     if (resp && resp.ok) {
       return resp.json();
-    }
-    else {
-      throw new Error ('Error when getting task logs');
+    } else {
+      throw new Error('Error when getting task logs');
     }
   });
 }
@@ -186,9 +223,8 @@ export function getTaskComments(taskId) {
   }).then((resp) => {
     if (resp && resp.ok) {
       return resp.json();
-    }
-    else {
-      throw new Error ('Error when getting task comments');
+    } else {
+      throw new Error('Error when getting task comments');
     }
   });
 }
@@ -205,9 +241,8 @@ export function addTaskComments(taskId, comment) {
   }).then((resp) => {
     if (resp && resp.ok) {
       return resp.json();
-    }
-    else {
-      throw new Error ('Error when adding task comment');
+    } else {
+      throw new Error('Error when adding task comment');
     }
   });
 }
@@ -224,9 +259,8 @@ export function addTaskSubComment(taskId, parentCommentId, comment) {
   }).then((resp) => {
     if (resp && resp.ok) {
       return resp.json();
-    }
-    else {
-      throw new Error ('Error when adding task sub comment');
+    } else {
+      throw new Error('Error when adding task sub comment');
     }
   });
 }
@@ -238,16 +272,15 @@ export function removeTaskComment(commentId) {
   }).then((resp) => {
     if (resp && resp.ok) {
       return resp.json();
-    }
-    else {
-      throw new Error ('Error when removing task comment');
+    } else {
+      throw new Error('Error when removing task comment');
     }
   });
 }
 
 export function findUsersToMention(projectId, query) {
-  const fetchUrl = projectId ? `/portal/rest/projects/projectParticipants/${projectId}/${query}`
-    : `/portal/rest/tasks/usersToMention/${query}/${eXo.env.portal.language}`;
+  const fetchUrl = projectId ? `/portal/rest/projects/projectParticipants/${projectId}/${query}` :
+    `/portal/rest/tasks/usersToMention/${query}/${eXo.env.portal.language}`;
   return fetch(fetchUrl, {
     method: 'GET',
     credentials: 'include',
@@ -267,9 +300,8 @@ export function getSuggestedUsers(query, projectName) {
   }).then((resp) => {
     if (resp && resp.ok) {
       return resp.json();
-    }
-    else {
-      throw new Error ('Error when getting suggested users');
+    } else {
+      throw new Error('Error when getting suggested users');
     }
   });
 }
@@ -281,16 +313,15 @@ export function getUser(username) {
   }).then((resp) => {
     if (resp && resp.ok) {
       return resp.json();
-    }
-    else {
-      throw new Error ('Error when getting user');
+    } else {
+      throw new Error('Error when getting user');
     }
   });
 }
 
 export function urlVerify(text) {
   return text.replace(/((?:href|src)=")?((((https?|ftp|file):\/\/)|www\.)[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])/ig,
-    function (matchedText, hrefOrSrc) {
+    function(matchedText, hrefOrSrc) {
       // the second group of the regex captures the html attribute 'html' or 'src',
       // so if it exists it means that it is already an html link or an image and it should not be converted
       if (hrefOrSrc) {
@@ -312,7 +343,7 @@ export function cloneTask(taskId) {
     if (resp && resp.ok) {
       return resp.json();
     } else {
-      throw new Error ('Error when cloning task');
+      throw new Error('Error when cloning task');
     }
   });
 }

@@ -124,7 +124,8 @@ public class TaskRestService implements ResourceContainer {
                            @ApiParam(value = "Returning All Details", defaultValue = "false") @QueryParam("returnDetails") boolean returnDetails) {
 
       try {
-      String currentUser = ConversationState.getCurrent().getIdentity().getUserId();
+      Identity currentId = ConversationState.getCurrent().getIdentity();
+      String currentUser = currentId.getUserId();
 
     long tasksSize;
     List<TaskDto> tasks = null;
@@ -173,7 +174,7 @@ public class TaskRestService implements ResourceContainer {
       tasks = taskService.findTasks(currentUser, query, limit);
       tasksSize = taskService.countTasks(currentUser, query);
     }
-        return Response.ok(new PaginatedTaskList(tasks.stream().map(task -> getTaskDetails((TaskDto) task, currentUser)).collect(Collectors.toList()),tasksSize)).build();
+        return Response.ok(new PaginatedTaskList(tasks.stream().map(task -> getTaskDetails((TaskDto) task, currentId)).collect(Collectors.toList()),tasksSize)).build();
   } catch (Exception e) {
     LOG.error("Can't Gets uncompleted tasks of the authenticated user", e);
     return Response.serverError().entity(e.getMessage()).build();
@@ -273,10 +274,10 @@ public class TaskRestService implements ResourceContainer {
 
     Map<GroupKey, List<TaskEntity>> groupTasks = new HashMap<GroupKey, List<TaskEntity>>();
     if (groupBy != null && groupBy!= TaskUtil.DUEDATE && !groupBy.isEmpty() && !TaskUtil.NONE.equalsIgnoreCase(groupBy)) {
-      groupTasks = TaskUtil.groupTasks(tasks.getListTasks().stream().map(task -> getTaskDetails((TaskDto) task, currentUser)).collect(Collectors.toList()), groupBy, currentUser, userTimezone, labelService, userService);
+      groupTasks = TaskUtil.groupTasks(tasks.getListTasks().stream().map(task -> getTaskDetails((TaskDto) task, currIdentity)).collect(Collectors.toList()), groupBy, currIdentity, userTimezone, labelService, userService);
       return Response.ok(new FiltreTaskList(groupTasks)).build();
     }
-    return Response.ok(new PaginatedTaskList(tasks.getListTasks().stream().map(task -> getTaskDetails((TaskDto) task, currentUser)).collect(Collectors.toList()),tasks.getTasksSize())).build();
+    return Response.ok(new PaginatedTaskList(tasks.getListTasks().stream().map(task -> getTaskDetails((TaskDto) task, currIdentity)).collect(Collectors.toList()),tasks.getTasksSize())).build();
   } catch (Exception e) {
         LOG.error("Can't filter Tasks", e);
         return Response.serverError().entity(e.getMessage()).build();
@@ -296,7 +297,7 @@ public class TaskRestService implements ResourceContainer {
                                       @ApiParam(value = "Returning the number of tasks or not", defaultValue = "false") @QueryParam("returnSize") boolean returnSize,
                                       @ApiParam(value = "Returning All Details", defaultValue = "false") @QueryParam("returnDetails") boolean returnDetails) {
     try {
-    String currentUser = ConversationState.getCurrent().getIdentity().getUserId();
+    Identity currentUser = ConversationState.getCurrent().getIdentity();
     ProjectDto project = projectService.getProject(id);
     if (project==null || !project.canView(ConversationState.getCurrent().getIdentity())) {
       return Response.status(Response.Status.UNAUTHORIZED).build();
@@ -481,6 +482,28 @@ public class TaskRestService implements ResourceContainer {
         return Response.serverError().entity(e.getMessage()).build();
         }
   }
+  @GET
+  @Path("labels/project/{id}")
+  @RolesAllowed("users")
+  @Produces(MediaType.APPLICATION_JSON)
+  @ApiOperation(value = "Gets labels of the given project", httpMethod = "GET", response = Response.class, notes = "This returns labels of the given project")
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled") })
+  public Response getLabelsByProjectId(@ApiParam(value = "project id", required = true) @PathParam("id") long id) {
+    try {
+      Identity currentUser = ConversationState.getCurrent().getIdentity();
+      ProjectDto project = projectService.getProject(id);
+      if (project == null) {
+        return Response.status(Response.Status.NOT_FOUND).build();
+      }
+      if (!project.canView(currentUser)) {
+        return Response.status(Response.Status.FORBIDDEN).build();
+      }
+    return Response.ok(labelService.findLabelsByProject(id, currentUser,0, -1)).build();
+        } catch (Exception e) {
+        LOG.error("Can't get Labels", e);
+        return Response.serverError().entity(e.getMessage()).build();
+        }
+  }
 
   @GET
   @Path("labels/{id}")
@@ -491,8 +514,16 @@ public class TaskRestService implements ResourceContainer {
       @ApiResponse(code = 500, message = "Internal server error") })
   public Response getLabelsByTaskId(@ApiParam(value = "Task id", required = true) @PathParam("id") long id) {
     try {
-    String currentUser = ConversationState.getCurrent().getIdentity().getUserId();
-    return Response.ok(labelService.findLabelsByTask(id, currentUser, 0, -1)).build();
+    Identity currentUser = ConversationState.getCurrent().getIdentity();
+      TaskDto task = taskService.getTask(id);
+      if (task == null) {
+        return Response.status(Response.Status.NOT_FOUND).build();
+      }
+    List<LabelDto> labels = new ArrayList<>();
+    if(task.getStatus()!=null && task.getStatus().getProject()!=null){
+      labels = labelService.findLabelsByTask(task, task.getStatus().getProject().getId(), currentUser,0, -1);
+    }
+    return Response.ok(labels).build();
         } catch (Exception e) {
         LOG.error("Can't get Labels By TaskId {}", id, e);
         return Response.serverError().entity(e.getMessage()).build();
@@ -509,7 +540,7 @@ public class TaskRestService implements ResourceContainer {
   public Response addTaskToLabel(@ApiParam(value = "label", required = true) LabelDto addedLabel,
                                  @ApiParam(value = "Task id", required = true) @PathParam("id") long id) {
     try {
-    String currentUser = ConversationState.getCurrent().getIdentity().getUserId();
+    Identity currentUser = ConversationState.getCurrent().getIdentity();
     if (addedLabel == null) {
       return Response.status(Response.Status.BAD_REQUEST).build();
     }
@@ -520,8 +551,21 @@ public class TaskRestService implements ResourceContainer {
     if (!TaskUtil.hasEditPermission(taskService,task)) {
       return Response.status(Response.Status.FORBIDDEN).build();
     }
+      try {
+        ProjectDto project = projectService.getProject(task.getStatus().getProject().getId());
+        if (project == null) {
+          return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        if (!project.canView(currentUser)) {
+          return Response.status(Response.Status.FORBIDDEN).build();
+        }
+        addedLabel.setProject(project);
+      }catch (Exception e) {
+        return Response.status(Response.Status.BAD_REQUEST).build();
+      }
     if (addedLabel.getId() == 0) {// Create a new label and add a task to it
-      addedLabel.setUsername(currentUser);
+
+      addedLabel.setUsername(currentUser.getUserId());
       LabelDto label = labelService.createLabel(addedLabel);
       labelService.addTaskToLabel(task, label.getId());
     } else {// Add a task to an existing label
@@ -537,6 +581,7 @@ public class TaskRestService implements ResourceContainer {
   @DELETE
   @Path("labels/{id}/{labelId}")
   @RolesAllowed("users")
+  @Produces(MediaType.APPLICATION_JSON)
   @ApiOperation(value = "Deletes a specific task association to a specific label", httpMethod = "DELETE", response = Response.class, notes = "This deletes a specific task association to a specific label")
   @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled"),
       @ApiResponse(code = 403, message = "Unauthorized operation"), @ApiResponse(code = 404, message = "Resource not found") })
@@ -555,9 +600,78 @@ public class TaskRestService implements ResourceContainer {
       return Response.status(Response.Status.FORBIDDEN).build();
     }
     labelService.removeTaskFromLabel(task, labelId);
-    return Response.ok(label).build();
+    return Response.ok().build();
         } catch (Exception e) {
         LOG.error("Can't remove Task {} From Label {}", id, labelId, e);
+        return Response.serverError().entity(e.getMessage()).build();
+        }
+  }
+
+  @POST
+  @Path("labels")
+  @RolesAllowed("users")
+  @ApiOperation(value = "Adds a specific task by id to a label", httpMethod = "POST", response = Response.class, notes = "This adds a specific task by id to a label")
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled"),
+      @ApiResponse(code = 400, message = "Invalid query input"), @ApiResponse(code = 403, message = "Unauthorized operation"),
+      @ApiResponse(code = 404, message = "Resource not found") })
+  public Response addLabel(@ApiParam(value = "label", required = true) LabelDto addedLabel) {
+    try {
+    Identity currentUser = ConversationState.getCurrent().getIdentity();
+    if (addedLabel == null) {
+      return Response.status(Response.Status.BAD_REQUEST).build();
+    }
+
+      try {
+        ProjectDto project = projectService.getProject(addedLabel.getProject().getId());
+        if (project == null) {
+          return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        if (!project.canEdit(currentUser)) {
+          return Response.status(Response.Status.FORBIDDEN).build();
+        }
+      }catch (Exception e) {
+        return Response.status(Response.Status.BAD_REQUEST).build();
+      }
+    if (addedLabel.getId() == 0) {// Create a new label and add a task to it
+      addedLabel.setUsername(currentUser.getUserId());
+      LabelDto label = labelService.createLabel(addedLabel);
+    }
+    return Response.ok(addedLabel).build();
+        } catch (Exception e) {
+        LOG.error("Can't add  Label", e);
+        return Response.serverError().entity(e.getMessage()).build();
+        }
+  }
+
+  @DELETE
+  @Path("labels/{labelId}")
+  @RolesAllowed("users")
+  @Produces(MediaType.APPLICATION_JSON)
+  @ApiOperation(value = "Deletes a specific  label", httpMethod = "DELETE", response = Response.class, notes = "This deletes a specific task association to a specific label")
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled"),
+      @ApiResponse(code = 403, message = "Unauthorized operation"), @ApiResponse(code = 404, message = "Resource not found") })
+  public Response removeLabel(@ApiParam(value = "label id", required = true) @PathParam("labelId") long labelId) {
+    try {
+      Identity currentUser = ConversationState.getCurrent().getIdentity();
+    LabelDto label = labelService.getLabel(labelId);
+    if (label == null) {
+      return Response.status(Response.Status.NOT_FOUND).build();
+    }
+      try {
+        ProjectDto project = projectService.getProject(label.getProject().getId());
+        if (project == null) {
+          return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        if (!project.canEdit(currentUser)) {
+          return Response.status(Response.Status.FORBIDDEN).build();
+        }
+      }catch (Exception e) {
+        return Response.status(Response.Status.BAD_REQUEST).build();
+      }
+    labelService.removeLabel(labelId);
+    return Response.ok().build();
+        } catch (Exception e) {
+        LOG.error("Can't remove Label {}",  labelId, e);
         return Response.serverError().entity(e.getMessage()).build();
         }
   }
@@ -802,7 +916,7 @@ public class TaskRestService implements ResourceContainer {
   }
 
 
-  private TaskEntity getTaskDetails(TaskDto task, String userName) {
+  private TaskEntity getTaskDetails(TaskDto task, Identity userIdentity) {
 
     long taskId = task.getId();
     int commentCount;
@@ -814,7 +928,7 @@ public class TaskRestService implements ResourceContainer {
     }
     List<LabelDto> labels = new ArrayList<>();
     try {
-      labels = labelService.findLabelsByTask(taskId, userName, 0, -1);
+      labels = labelService.findLabelsByTask(task, task.getStatus().getProject().getId(), userIdentity,0, -1);
     } catch (Exception e) {
       LOG.warn("Error retrieving task '{}' labels", taskId, e);
     }
