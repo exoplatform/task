@@ -52,6 +52,7 @@
         class="TaskSubCommentItem pr-0 pb-2">
         <task-comment-item 
           :comment="item"
+          :comments="comment.subComments"
           :avatar-size="30"
           @openCommentEditor="$emit('openCommentEditor',comment.comment.id)"
           @openConfirmDeleteDialog="$emit('openConfirmDeleteDialog')" />
@@ -71,6 +72,12 @@ export default {
     showOnly: {
       type: Boolean,
       default: true
+    },
+    comments: {
+      type: Object,
+      default: () => {
+        return {};
+      }
     },
   },
   data() {

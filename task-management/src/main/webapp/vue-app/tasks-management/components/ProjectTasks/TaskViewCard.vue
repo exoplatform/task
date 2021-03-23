@@ -1,13 +1,12 @@
 <template>
   <v-app
     id="taskCardItem"
-    :class="removeCompletedTask && 'completedTask' || ''"
-    class="pt-3">
+    :class="removeCompletedTask && 'completedTask' || ''">
     <v-card
       :class="[getTaskPriorityColor(task.task.priority)]"
-      class="taskCard taskViewCard pa-3"
+      class="taskCard taskViewCard pa-2"
       flat>
-      <div class="taskTitleId  d-flex justify-space-between" style="height: 60%">
+      <div class="taskTitleId  d-flex justify-space-between">
         <div class="taskCheckBox">
           <v-switch
             ref="autoFocusInput2"
@@ -30,9 +29,10 @@
         </div>
       </div>
 
-      <v-divider v-if="taskDueDate || (task.labels && task.labels.length) || (assigneeAndCoworkerArray && assigneeAndCoworkerArray.length)" />
+      <v-divider v-if="displayCardBottomSection" />
       <div 
-        class="taskActionsAndDate d-flex align-center justify-space-between pt-3">
+        v-if="displayCardBottomSection" 
+        class="taskActionsAndDate d-flex align-center justify-space-between">
         <div 
           class="taskActionsAndLabels d-flex align-center">
           <div
@@ -154,6 +154,9 @@ export default {
     },
     showMoreAvatarsNumber() {
       return this.assigneeAndCoworkerArray.length - this.maxAvatarToShow;
+    },
+    displayCardBottomSection() {
+      return this.taskDueDate || (this.task.labels && this.task.labels.length) || (this.assigneeAndCoworkerArray && this.assigneeAndCoworkerArray.length);
     }
   },
   created() {

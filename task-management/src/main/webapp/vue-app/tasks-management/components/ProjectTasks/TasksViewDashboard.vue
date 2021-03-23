@@ -1,5 +1,8 @@
 <template>
-  <v-app :id="'projectTask-'+project.id" class="projectTasksDashboard px-4">
+  <v-app
+    :id="'projectTask-'+project.id"
+    :class="taskViewTabName === 'board' && !filterProjectActive && 'projectTaskBoardContainer'"
+    class="projectTasksDashboard px-4">
     <exo-confirm-dialog
       ref="deleteConfirmDialog"
       :message="deleteConfirmMessage"
@@ -132,6 +135,7 @@
           :status-list="statusList"
           :tasks-list="tasksList"
           :filter-task-completed="filterAsCompleted"
+          :filter-no-active="true"
           @update-status="updateStatus"
           @create-status="createStatus"
           @move-status="moveStatus"
