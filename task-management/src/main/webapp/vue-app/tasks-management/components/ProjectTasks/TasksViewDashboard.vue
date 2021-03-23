@@ -205,6 +205,7 @@ export default {
   watch: {
     project(){
       this.getStatusByProject(this.project.id);
+      this.tasksList=[];
       this.getTasksByProject(this.project.id,'');
     }
   },
@@ -414,7 +415,6 @@ export default {
       });
     },
     getFilter(tasksFilter,ProjectId){
-      this.tasksList=[];
       if (tasksFilter.groupBy==='status') {
         tasksFilter.groupBy = '';
         this.filterProjectActive=false;
