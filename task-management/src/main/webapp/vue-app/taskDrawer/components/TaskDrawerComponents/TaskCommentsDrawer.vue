@@ -13,12 +13,14 @@
               <span class="pl-2">{{ $t('label.comments') }}</span>
             </v-list-item-content>
             <v-list-item-action class="drawerIcons align-end d-flex flex-row">
-              <div
+              <v-btn
+                :disabled="isEditorActive"
+                icon
                 :title="$t('comment.message.addYourComment')"
                 class="addCommentBtn"
-                @click="openEditorToBottom">
+                @click="openEditorToBottom(commentId, false)">
                 <i class="uiIcon uiIconTaskAddComment"></i>
-              </div>
+              </v-btn>
               <v-btn icon>
                 <v-icon @click="closeDrawer()">mdi-close</v-icon>
               </v-btn>
@@ -27,7 +29,7 @@
         </v-flex>
         <v-divider class="my-0" />
         <v-flex id="commentDrawerContent" class="drawerContent flex-grow-1 overflow-auto border-box-sizing">
-          <div class="TaskCommentContent">
+          <div v-if="this.comments && this.comments.length" class="TaskCommentContent">
             <div
               v-for="(item, i) in comments"
               :key="i"
@@ -36,54 +38,32 @@
                 :task="task"
                 :comment="item"
                 :comments="comments"
-                :is-open="!showEditor"
-                :close-editor="subEditorIsOpen"
-                :comment-id="commentId"
-                :id="id"
-                @isOpen="OnCloseAllEditor()"
+                :last-comment="commentId"
+                :show-new-comment-editor="showNewCommentEditor"
+                @newCommentAdded="disableAddComment"
                 @confirmDialogOpened="$emit('confirmDialogOpened')"
-                @confirmDialogClosed="$emit('confirmDialogClosed')"
-                @showSubEditor="OnUpdateEditorStatus" />
+                @confirmDialogClosed="$emit('confirmDialogClosed')" />
             </div>
-          </div>
-          <div v-if="showEditor" class="comment commentEditor d-flex align-start">
-            <exo-user-avatar
-              :username="currentUserName"
-              :avatar-url="currentUserAvatar"
-              :size="30"
-              :url="null" />
-            <div class="editorContent ml-2">
+          </div> 
+          <div v-else>
+            <div class="editorContent commentEditorContainer newCommentEditor">
               <task-comment-editor
                 ref="commentEditor"
-                v-model="editorData"
                 :max-length="MESSAGE_MAX_LENGTH"
                 :placeholder="$t('task.placeholder').replace('{0}', MESSAGE_MAX_LENGTH)"
-                :reset="reset"
                 :task="task"
-                :id="id"
-                class="comment" />
-              <v-btn
-                :disabled="postDisabled"
-                depressed
-                small
-                type="button"
-                class="btn btn-primary ignore-vuetify-classes btnStyle mt-1 mb-2 commentBtn"
-                @click="addTaskComment()">
-                {{ $t('comment.label.comment') }}
-              </v-btn>
+                :show-comment-editor="true"
+                :id="'commentContent-editor'"
+                class="subComment subCommentEditor"
+                @addNewComment="addTaskComment($event)" />
             </div>
-          </div>
-          <!--<a
-            v-else
-            class="pl-4"
-            @click="openEditor">{{ $t('comment.label.comment') }}</a>-->
+          </div>  
         </v-flex>
       </v-layout>
     </v-container>
   </div>
 </template>
 <script>
-
 export default {
   props: {
     comment: {
@@ -106,72 +86,30 @@ export default {
       type: Boolean,
       default: false
     },
-    subEditorIsOpen: {
-      type: Boolean,
-      default: false
-    },
   },
   data() {
     return {
-      currentUserName: eXo.env.portal.userName,
-      showEditor: false,
-      showSubEditor: false,
-      disabledComment: true,
-      editorData: null,
+      commentId: '',
+      showNewCommentEditor: false,
+      test: false,
       MESSAGE_MAX_LENGTH: 1250,
-      id: `commentContent${parseInt(Math.random() * 10000).toString()}`,
-      commentId: ''
     };
   },
   computed: {
-    currentUserAvatar() {
-      return `/portal/rest/v1/social/users/${eXo.env.portal.userName}/avatar`;
-    },
-    postDisabled: function() {
-      if (this.disabledComment){
-        return true;
-      }
-      else if (this.editorData !== null && this.editorData!==''){
-        let pureText = this.editorData ? this.editorData.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, '').trim() : '';
-        const div = document.createElement('div');
-        div.innerHTML = pureText;
-        pureText = div.textContent || div.innerText || '';
-        return pureText.length> this.MESSAGE_MAX_LENGTH ;
-      } else {return true;}
-    },
-  },
-  watch: {
-    editorData(val) {
-      this.disabledComment = val === '';
-    },
-    showEditor() {
-      this.showSubEditor = !this.showEditor;
-    },
+    isEditorActive() {
+      return this.showNewCommentEditor || !this.comments.length;
+    }
   },
   mounted() {
-    this.$root.$on('displayTaskComment', () => {
+    this.$root.$on('displayTaskComment', (commentId, isNewComment) => {
       this.showTaskCommentDrawer = true;
-      window.setTimeout(() => {
-        const commentsDiv = document.getElementById('commentDrawerContent');
-        $('#commentDrawerContent').animate({
-          scrollTop: commentsDiv.scrollHeight
-        }, 1000);
-      }, 500);
-      if ( this.comments && !this.comments.length ) {
-        this.openEditor();
-      }
+      this.commentId = commentId;
+      this.showNewCommentEditor = isNewComment;
+      this.openEditorToBottom(commentId);
     });
-
-    this.$root.$on('displaySubCommentEditor', id => {
-      if ( id == null ) {
-        window.setTimeout(() => {
-          this.openEditorToBottom();
-        }, 500);
-      } else {
-        window.setTimeout(() => {
-          document.dispatchEvent(new CustomEvent('openSubComment',{'detail': id}));
-        }, 500);
-      }
+    this.$root.$on('displayFirstCommentEditor', () => {
+      this.showTaskCommentDrawer = true;
+      this.$root.$emit('showFirstCommentEditor');
     });
     this.$root.$on('hideTaskComment', () => {
       this.showTaskCommentDrawer = false;
@@ -183,37 +121,26 @@ export default {
       comment = this.urlVerify(comment);
       this.$taskDrawerApi.addTaskComments(this.task.id,comment).then(comment => {
         this.comments.push(comment);
-        this.reset = !this.reset;
       });
-    },
-    openEditor() {
-      this.showEditor = true;
-      this.subEditorIsOpen = true;
-      this.editorData = null;
-    },
-    OnUpdateEditorStatus: function (val) {
-      this.showEditor = !val;
-      if (val === false) {
-        this.subEditorIsOpen = false;
-      }
-    },
-    OnCloseAllEditor() {
-      this.subEditorIsOpen = true;
     },
     closeDrawer() {
       this.showTaskCommentDrawer = false;
-      this.showEditor = false;
-      this.subEditorIsOpen = false;
     },
     urlVerify(text) {
       return this.$taskDrawerApi.urlVerify(text);
     },
-    openEditorToBottom() {
-      const commentsDiv = document.getElementById('commentDrawerContent');
-      $('#commentDrawerContent').animate({
-        scrollTop: commentsDiv.scrollHeight
+    openEditorToBottom(commentId) {
+      this.$root.$emit('showNewCommentEditor',commentId);
+      window.setTimeout(() => {
+        const commentsDiv = document.getElementById('commentDrawerContent');
+        $('#commentDrawerContent').animate({
+          scrollTop: commentsDiv.scrollHeight
+        }, 1000);
       }, 500);
-      this.openEditor();
+      this.showNewCommentEditor = false;
+    },
+    disableAddComment() {
+      this.showNewCommentEditor = false;
     }
   }
 };

@@ -28,7 +28,7 @@ public interface CommentService {
    * Fetch sub comments of designed comments
    *
    * @param listComments the given list of comments.
-   * @return
+   * @return List of sub comments
    */
   List<CommentDto> loadSubComments(List<CommentDto> listComments);
 }
