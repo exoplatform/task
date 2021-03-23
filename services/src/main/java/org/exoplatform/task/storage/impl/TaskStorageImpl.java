@@ -233,7 +233,7 @@ public class TaskStorageImpl implements TaskStorage {
      *
      * @param user  username
      * @param query term to search in title or description
-     * @param limit
+     * @param limit term to limit results.
      * @return {@link List} of {@link Task}
      */
     @Override
