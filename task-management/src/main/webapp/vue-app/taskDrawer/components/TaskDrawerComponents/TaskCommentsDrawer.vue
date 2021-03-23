@@ -125,7 +125,6 @@ export default {
       return this.$taskDrawerApi.urlVerify(text);
     },
     openEditorToBottom(commentId) {
-      console.warn('commentId',commentId);
       this.$root.$emit('showNewCommentEditor');
       window.setTimeout(() => {
         const commentsDiv = document.getElementById('commentDrawerContent');

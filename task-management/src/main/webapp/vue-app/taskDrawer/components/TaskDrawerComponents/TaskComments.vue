@@ -96,7 +96,7 @@ export default {
         });
       } else {
         this.$taskDrawerApi.addTaskSubComment(this.task.id, commentId, commentText).then((comment => {
-          this.comment.subComments = this.comment.commentText || [];
+          this.comment.subComments = this.comment.subComments || [];
           this.comment.subComments.push(comment);
         }));
       }
