@@ -31,9 +31,6 @@
   </v-card>
 </template>
 <script>
-import {
-  addTask,
-} from '../../../taskDrawer/taskDrawerApi';
 export default {
   props: {
     status: {
