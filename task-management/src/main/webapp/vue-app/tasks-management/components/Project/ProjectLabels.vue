@@ -172,7 +172,7 @@ export default {
           });
         });
       } else {
-        document.dispatchEvent(new CustomEvent('labelListChanged', {detail: label}));
+        this.$emit('add-label', label);
       }
       this.model.push(label);
       document.getElementById('labelInput').focus();

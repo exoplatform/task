@@ -155,7 +155,8 @@
             {{ $t('label.labels') }}
           </v-label>
           <project-labels
-            :project="project" />
+            :project="project"
+            @add-label="addLabelOnCreate" />
         </div>
       </v-form>
     </template>
@@ -194,7 +195,8 @@ export default {
       project: {},
       maxAvatarToShow: 3,
       showManager: true,
-      showParticipant: true
+      showParticipant: true,
+      labelsToAdd: [],
     };
   },
   computed: {
@@ -259,6 +261,9 @@ export default {
   },
  
   methods: {
+    addLabelOnCreate(label){
+      this.labelsToAdd.push(label);
+    },
     open(project) {
       if (project && project.id){
         return this.$projectService.getProject(project.id,true).then(project => {
@@ -490,6 +495,10 @@ export default {
             });
         } else {
           return this.$projectService.addProject(projects).then(project => {
+            this.labelsToAdd.forEach(item => {
+              item.project=project;
+              this.$taskDrawerApi.addLabel(item);
+            });
             this.$emit('update-cart', project);
             this.$root.$emit('update-projects-list', {});
             this.postProject = false;
