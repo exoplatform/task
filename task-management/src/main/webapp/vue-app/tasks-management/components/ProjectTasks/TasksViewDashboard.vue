@@ -228,7 +228,6 @@ export default {
     hideProjectDetails() {
       this.$root.$emit('set-url', {type: 'myProjects',id: ''});
       this.$root.$emit('close-quick-task-form');
-      this.tasksList=[];
       document.dispatchEvent(new CustomEvent('hideProjectTasks'));
     },
     getChangeTabValue(value) {
@@ -415,6 +414,7 @@ export default {
       });
     },
     getFilter(tasksFilter,ProjectId){
+      this.tasksList=[];
       if (tasksFilter.groupBy==='status') {
         tasksFilter.groupBy = '';
         this.filterProjectActive=false;
