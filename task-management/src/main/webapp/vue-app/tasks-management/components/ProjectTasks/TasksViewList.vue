@@ -79,7 +79,7 @@ export default {
       }
     },
     updateTaskStatus(task,newStatus){
-      const status = this.statusList.find(s => s.name === newStatus);
+      const status = this.statusList.find(s => s.id.toString() === newStatus || s.name === newStatus);
       if (status){
         task.status = status;
         this.updateTask(task);
@@ -87,10 +87,12 @@ export default {
     },
     updateTask(task) {
       if (task.id!=null){
-        this.$taskDrawerApi.updateTask(task.id,task);
-        /*           window.setTimeout(() => {
-             this.$root.$emit('update-task-list', this.task)
-          }, 200); */
+        this.$taskDrawerApi.updateTask(task.id,task).then( () => {
+          this.$root.$emit('show-alert', { type: 'success', message: this.$t('alert.success.task.status') });
+        }).catch(e => {
+          console.error('Error when updating task\'s status', e);
+          this.$root.$emit('show-alert',{type: 'error',message: this.$t('alert.error')} );
+        });
       }
     },
   }
