@@ -1,6 +1,7 @@
 import { tasksConstants } from './tasksConstants';
 
 export function getProjectsList(spaceName, query, projectFilter, offset, limit, participatorParam) {
+  document.dispatchEvent(new CustomEvent('displayTopBarLoading'));
   return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/projects/projects?q=${query || ''}&spaceName=${spaceName || ''}&projectsFilter=${projectFilter || ''}&offset=${offset || 0}&limit=${limit|| 0}&participatorParam=${participatorParam|| false}`, {
     method: 'GET',
     credentials: 'include',
@@ -10,7 +11,7 @@ export function getProjectsList(spaceName, query, projectFilter, offset, limit, 
     } else {
       return resp.json();
     }
-  });
+  }).finally(() => document.dispatchEvent(new CustomEvent('hideTopBarLoading')));
 }
 
 export function getProjectStats(id) {
@@ -40,6 +41,7 @@ export function getProject(id, participatorParam) {
 }
 
 export function addProject(project) {
+  document.dispatchEvent(new CustomEvent('displayTopBarLoading'));
   return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/projects/createproject`, {
     headers: {
       'Content-Type': 'application/json'
@@ -49,10 +51,11 @@ export function addProject(project) {
     body: JSON.stringify(project)
   }).then((data) => {
     return data.json();
-  });
+  }).finally(() => document.dispatchEvent(new CustomEvent('hideTopBarLoading')));
 }
 
 export function updateProjectInfo(project) {
+  document.dispatchEvent(new CustomEvent('displayTopBarLoading'));
   return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/projects/updateproject/${project.id}`, {
     headers: {
       'Content-Type': 'application/json'
@@ -60,17 +63,19 @@ export function updateProjectInfo(project) {
     credentials: 'include',
     method: 'PUT',
     body: JSON.stringify(project)
-  }).then(resp => resp.json());
+  }).then(resp => resp.json()).finally(() => document.dispatchEvent(new CustomEvent('hideTopBarLoading')));
 }
 
 export function deleteProjectInfo(project) {
+  document.dispatchEvent(new CustomEvent('displayTopBarLoading'));
   return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/projects/${project.id}?&deleteChild=false`, {
     credentials: 'include',
     method: 'DELETE'
-  });
+  }).finally(() => document.dispatchEvent(new CustomEvent('hideTopBarLoading')));
 }
 
 export function cloneProject(project) {
+  document.dispatchEvent(new CustomEvent('displayTopBarLoading'));
   return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/projects/cloneproject`, {
     headers: {
       'Content-Type': 'application/json'
@@ -78,7 +83,7 @@ export function cloneProject(project) {
     credentials: 'include',
     method: 'POST',
     body: JSON.stringify(project)
-  });
+  }).finally(() => document.dispatchEvent(new CustomEvent('hideTopBarLoading')));
 }
 
 export function updateProjectColor(project, color) {

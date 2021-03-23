@@ -14,6 +14,7 @@ export function getUserInformations(userName) {
 }
 
 export function updateTask(taskId, task) {
+  document.dispatchEvent(new CustomEvent('displayTopBarLoading'));
   return fetch(`/portal/rest/tasks/${taskId}`, {
     method: 'PUT',
     credentials: 'include',
@@ -29,10 +30,11 @@ export function updateTask(taskId, task) {
     } else {
       return resp.json();
     }
-  });
+  }).finally(() => document.dispatchEvent(new CustomEvent('hideTopBarLoading')));
 }
 
 export function addTask(task) {
+  document.dispatchEvent(new CustomEvent('displayTopBarLoading'));
   return fetch('/portal/rest/tasks', {
     headers: {
       Accept: 'application/json',
@@ -47,7 +49,7 @@ export function addTask(task) {
     } else {
       throw new Error('Error when adding task');
     }
-  });
+  }).finally(() => document.dispatchEvent(new CustomEvent('hideTopBarLoading')));
 }
 
 export function getMyAllLabels() {
