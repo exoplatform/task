@@ -1,6 +1,7 @@
 import { tasksConstants } from './tasksConstants';
 
 export function getMyTasksList(type, query, offset, limit) {
+  document.dispatchEvent(new CustomEvent('displayTopBarLoading'));
   return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/tasks?status=${type || ''}&q=${query || ''}&offset=${offset || 0}&limit=${limit|| 0}&returnDetails=true`, {
     method: 'GET',
     credentials: 'include',
@@ -10,10 +11,11 @@ export function getMyTasksList(type, query, offset, limit) {
     } else {
       return resp.json();
     }
-  });
+  }).finally(() => document.dispatchEvent(new CustomEvent('hideTopBarLoading')));
 }
 
 export function filterTasksList(tasks, groupBy, sortBy, filterLabelIds, projectId) {
+  document.dispatchEvent(new CustomEvent('displayTopBarLoading'));
   return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/tasks/filter?projectId=${projectId || tasks.projectId || -2}&query=${tasks.query || ''}&dueDate=${tasks.dueDate || ''}&priority=${tasks.priority || ''}&statusId=${tasks.statusId || ''}&showCompleted=${tasks.showCompleteTasks || ''}&assignee=${tasks.assignee || ''}&watcher=${tasks.watcher || ''}&coworker=${tasks.coworker || ''}&groupBy=${groupBy || tasks.groupBy || ''}&orderBy=${sortBy || tasks.orderBy || ''}&dueCategory=${tasks.dueCategory || ''}&filterLabelIds=${filterLabelIds || tasks.filterLabelIds || ''}&offset=${tasks.offset || 0}&limit=${tasks.limit|| 0}`, {
     method: 'GET',
     credentials: 'include',
@@ -23,7 +25,7 @@ export function filterTasksList(tasks, groupBy, sortBy, filterLabelIds, projectI
     } else {
       return resp.json();
     }
-  });
+  }).finally(() => document.dispatchEvent(new CustomEvent('hideTopBarLoading')));
 }
 
 
@@ -94,6 +96,7 @@ export function getTasksByProjectId(projectId) {
 }
 
 export function updateCompleted(task) {
+  document.dispatchEvent(new CustomEvent('displayTopBarLoading'));
   return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/tasks/updateCompleted/${task.id}?&showCompleteTasks=${task.showCompleteTasks}`, {
     headers: {
       'Content-Type': 'application/json'
@@ -101,5 +104,5 @@ export function updateCompleted(task) {
     credentials: 'include',
     method: 'PUT',
     body: JSON.stringify(task)
-  }).then(resp => resp.json());
+  }).then(resp => resp.json()).finally(() => document.dispatchEvent(new CustomEvent('hideTopBarLoading')));
 }
