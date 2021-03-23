@@ -91,7 +91,7 @@ export default {
       else if (task && task.status && task.status.project) {
         this.setProjectUrl(task.status.project.id);
       } else {
-        this.tab='tab-1'; 
+        this.tab='tab-1';
       }
     });
     const urlPath = document.location.pathname;
@@ -101,6 +101,7 @@ export default {
     } else {
       if (urlPath.includes('myTasks') || urlPath.includes('tasks')){
         this.tab='tab-1';
+        this.projectId='';
       }
       if (urlPath.includes('myProjects')){
         this.tab='tab-2';
@@ -114,11 +115,13 @@ export default {
           this.task = data;
           if (this.task.status && this.task.status.project){
             this.tab='tab-2';
+            this.projectId=this.task.status.project.id;
             window.setTimeout(() => {
               document.dispatchEvent(new CustomEvent('showProjectTasks', {detail: this.task.status.project}));
             }, 200);
           } else {
             this.tab='tab-1';
+            this.projectId='';
           }
           window.setTimeout(() => {
             this.$refs.taskDrawer.open(this.task);
@@ -140,7 +143,6 @@ export default {
   },
   methods: {
     getMyTasks(){
-      this.projectId='';
       window.history.pushState('mytasks', 'My Tasks', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/tasks/myTasks`);
     },
     getMyProjects(){
@@ -153,7 +155,7 @@ export default {
       }       
     },
     setTaskUrl(id){
-      this.projectId='';
+      // this.projectId='';
       const urlPath = document.location.pathname;
       window.history.pushState('task', 'Task details', `${urlPath.split('tasks')[0]}tasks/taskDetail/${id}`);
     },

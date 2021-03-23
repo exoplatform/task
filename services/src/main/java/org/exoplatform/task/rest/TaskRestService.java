@@ -928,7 +928,9 @@ public class TaskRestService implements ResourceContainer {
     }
     List<LabelDto> labels = new ArrayList<>();
     try {
-      labels = labelService.findLabelsByTask(task, task.getStatus().getProject().getId(), userIdentity,0, -1);
+      if(task.getStatus()!=null&&task.getStatus().getProject()!=null) {
+        labels = labelService.findLabelsByTask(task, task.getStatus().getProject().getId(), userIdentity, 0, -1);
+      }
     } catch (Exception e) {
       LOG.warn("Error retrieving task '{}' labels", taskId, e);
     }
