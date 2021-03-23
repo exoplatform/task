@@ -2,6 +2,7 @@
   <div :id="'comment-'+comment.comment.id">
     <task-comment-item
       :comment="comment"
+      :comments="comments"
       :can-delete="canDelete"
       @openConfirmDeleteDialog="confirmCommentDelete()"
       @openCommentEditor="commentActions($event)" />
@@ -99,7 +100,6 @@ export default {
           this.comment.subComments.push(comment);
         }));
       }
-      this.$emit('newCommentAdded');
     },
     removeTaskComment() {
       this.$taskDrawerApi.removeTaskComment(this.comment.comment.id);

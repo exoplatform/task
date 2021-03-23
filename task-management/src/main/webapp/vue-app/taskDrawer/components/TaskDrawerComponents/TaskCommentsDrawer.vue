@@ -18,7 +18,7 @@
                 icon
                 :title="$t('comment.message.addYourComment')"
                 class="addCommentBtn"
-                @click="openEditorToBottom(commentId, false)">
+                @click="openEditorToBottom(commentId)">
                 <i class="uiIcon uiIconTaskAddComment"></i>
               </v-btn>
               <v-btn icon>
@@ -40,7 +40,6 @@
                 :comments="comments"
                 :last-comment="commentId"
                 :show-new-comment-editor="showNewCommentEditor"
-                @newCommentAdded="disableAddComment"
                 @confirmDialogOpened="$emit('confirmDialogOpened')"
                 @confirmDialogClosed="$emit('confirmDialogClosed')" />
             </div>
@@ -97,7 +96,7 @@ export default {
   },
   computed: {
     isEditorActive() {
-      return this.showNewCommentEditor || !this.comments.length;
+      return !this.comments.length;
     }
   },
   mounted() {
@@ -106,10 +105,6 @@ export default {
       this.commentId = commentId;
       this.showNewCommentEditor = isNewComment;
       this.openEditorToBottom(commentId);
-    });
-    this.$root.$on('displayFirstCommentEditor', () => {
-      this.showTaskCommentDrawer = true;
-      this.$root.$emit('showFirstCommentEditor');
     });
     this.$root.$on('hideTaskComment', () => {
       this.showTaskCommentDrawer = false;
@@ -130,18 +125,15 @@ export default {
       return this.$taskDrawerApi.urlVerify(text);
     },
     openEditorToBottom(commentId) {
-      this.$root.$emit('showNewCommentEditor',commentId);
+      console.warn('commentId',commentId);
+      this.$root.$emit('showNewCommentEditor');
       window.setTimeout(() => {
         const commentsDiv = document.getElementById('commentDrawerContent');
         $('#commentDrawerContent').animate({
           scrollTop: commentsDiv.scrollHeight
         }, 1000);
       }, 500);
-      this.showNewCommentEditor = false;
     },
-    disableAddComment() {
-      this.showNewCommentEditor = false;
-    }
   }
 };
 </script>
