@@ -2432,7 +2432,7 @@
             content: '\e620';
             font-family: "PLF-FONT-ICONS";
             font-size: 16px;
-            color: @greyColorLighten1;
+            color: @primaryColor;
           }
           &:hover {
             &:before {
@@ -2486,6 +2486,9 @@
       }
       .TaskSubComments{
         margin-left: -20px!important;
+        .TaskSubCommentItem {
+          padding-left: 60px;
+        }
       }
       .taskCommentEmpty {
         .uiIconComment{
@@ -2530,12 +2533,12 @@
     .uiIconTaskAddComment {
       position: relative;
       cursor: pointer;
-      top: -2px;
+      top: 0px;
       &:before {
         content: '\e620';
         font-family: "PLF-FONT-ICONS";
         font-size: 18px;
-        color: @greyColorLighten1;
+        color: @primaryColor;
       }
       &:hover {
         &:before {
@@ -2600,15 +2603,30 @@
               font-weight: normal;
             }
           }
-        }
+        }    
       }
       .TaskSubComments{
         margin-left: -20px!important;
+        .TaskSubCommentItem {
+          padding-left: 60px;
+        }
+      }
+      .commentEditorContainer {
+        padding-left: 40px;
+      }
+      .newCommentEditor {
+        padding-left: 0;
       }
     }
-    .commentEditor {
+    .editorContent {
+      .inactiveEditor {
+        display: none !important;
+      }
       .comment {
         position: relative;
+        .editorContainer {
+          width: 100%;
+        }
       }
       .tooManyChars {
         color: #bc4343!important;
@@ -2618,25 +2636,15 @@
       }
       .activityCharsCount{
         position: absolute;
-        bottom: 5px;
-        right:  5px;
+        bottom: 46px;
+        font-size: 12px;
+        right: 3px;
         .uiIconMessageLength {
           font-size: 14px;
           color: #2eb58c;
           &:before {
             content: "\e910";
           }
-        }
-      }
-    }
-    .editorContent {
-      width: 100%;
-      .subComment.subCommentEditor{
-        position: relative;
-        .activityCharsCount {
-          position: absolute;
-          bottom: 5px;
-          right:  5px;
         }
       }
       .cke_bottom.cke_reset_all {
@@ -2654,15 +2662,6 @@
       }
       .tooManyChars .uiIconMessageLength {
         color: #bc4343!important;
-      }
-      .activityCharsCount{
-        .uiIconMessageLength {
-          font-size: 14px;
-          color: #2eb58c;
-          &:before {
-            content: "\e910";
-          }
-        }
       }
     }
     .changeUserAvatar {
