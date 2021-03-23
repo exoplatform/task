@@ -20,36 +20,33 @@
           style="display: none">
         </i>
       </a>
-      <div v-if="editStatus || status.edit">
+      <div v-if="(editStatus || status.edit) && project.canManage">
         <v-text-field
           v-if="editStatus || status.edit"
           ref="autoFocusInput1"
           v-model="status.name"
           :placeholder="$t('label.tapStatus.name')"
           type="text"
-          @focus="editStatus = true"
-          @blur="editStatus = false"
+          @focus="editStatusMode(project.canManage)"
+          @blur="cancelAddColumn(status.name)"
           class="taskStatusNameEdit font-weight-bold text-color mb-1"
           required
           autofocus
           outlined
           dense
           @keyup="checkInput($event,index)">
-          <v-icon
+          <i
             dark
-            class="uiIconLightGray"
-            color="green"
+            class="uiIcon40x40TickBlue ma-1"
             slot="append"
             @click="checkInput(13,status.name)">
-            mdi-checkbox-marked
-          </v-icon>
-          <v-icon
+          </i>
+          <i
             dark
-            color="red"
+            class="uiIconClose ma-1"
             slot="append"
-            @click="removeStatus()">
-            mdi-close
-          </v-icon>
+            @click="cancelAddColumn(status.name)">
+          </i>
         </v-text-field>
       </div>
 
@@ -57,7 +54,7 @@
         v-else
         class="taskStatusName text-truncate font-weight-bold text-color mb-1"
         :title="getI18N(status.name)"
-        @click="editStatus = true">
+        @click="editStatusMode(project.canManage)">
         {{ getI18N(status.name) }}
       </div>
       <span v-if="editStatus === false" class="uiTaskNumber">{{ tasksNumber }}</span>
@@ -250,6 +247,7 @@ export default {
         this.$emit('add-status');
         this.editStatus=false;
       }
+      this.$root.$emit('edit-status-mode',this.editStatus);
     },
     openQuickAdd() {
       this.$emit('open-quick-add');
@@ -267,9 +265,23 @@ export default {
       if (this.status.id){
         this.editStatus=false;
         this.status.edit=false;
+        this.$emit('update-status', null);
+        this.$root.$emit('edit-status-mode',this.editStatus);
       } else {
+        this.editStatus=false;
+        this.status.edit=false;
         this.$emit('cancel-add-column',index);
+        this.$emit('update-status', null);
+        this.$root.$emit('edit-status-mode',this.editStatus);
+
       }
+    },
+    editStatusMode(canManage){
+      if (canManage){
+        this.editStatus=true;
+        this.$root.$emit('edit-status-mode',this.editStatus);
+      }
+
     },
     getI18N(label){
       const fieldLabelI18NKey = `tasks.status.${label}`;
@@ -290,9 +302,6 @@ export default {
         uiIconMiniArrowDown.style.display = 'block';
         uiIconMiniArrowRight.style.display = 'none';}
     },
-    removeStatus(){
-      this.status.name = '';
-    }
   }
 };
 </script>
