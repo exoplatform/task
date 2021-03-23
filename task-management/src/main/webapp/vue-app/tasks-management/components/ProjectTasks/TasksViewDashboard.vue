@@ -226,6 +226,7 @@ export default {
     hideProjectDetails() {
       this.$root.$emit('set-url', {type: 'myProjects',id: ''});
       this.$root.$emit('close-quick-task-form');
+      this.tasksList=[];
       document.dispatchEvent(new CustomEvent('hideProjectTasks'));
     },
     getChangeTabValue(value) {
