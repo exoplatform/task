@@ -27,6 +27,7 @@
           v-model="status.name"
           :placeholder="$t('label.tapStatus.name')"
           type="text"
+          :rules="nameRules"
           @focus="editStatusMode(project.canManage)"
           @blur="cancelAddColumn(status.name)"
           class="taskStatusNameEdit font-weight-bold text-color mb-1"
@@ -51,13 +52,17 @@
       </div>
 
       <div
+        class="d-flex taskStatusName  font-weight-bold text-color mb-1"
         v-else
-        class="taskStatusName text-truncate font-weight-bold text-color mb-1"
-        :title="getI18N(status.name)"
+
         @click="editStatusMode(project.canManage)">
-        {{ getI18N(status.name) }}
+        <div
+          class="statusName text-truncate"
+          :title="getI18N(status.name)">
+          {{ getI18N(status.name) }}
+        </div>
+        <div class="uiTaskNumber">{{ tasksNumber }}</div>
       </div>
-      <span v-if="editStatus === false" class="uiTaskNumber">{{ tasksNumber }}</span>
     </div>
     <div class="taskNumberAndActions d-flex align-center mb-1" @click="editStatus = false">
       <!-- <span v-if="tasksNumber < maxTasksToShow" class="caption">{{ tasksNumber }}</span>
@@ -187,7 +192,8 @@ export default {
       editStatus: false,
       tasksStatsStartValue: 1,
       originalTasksToShow: this.maxTasksToShow,
-      disableBtnLoadMore: false,
+      disableBtnLoadMore: false,rules: [],
+      nameRules: []
     };
   },
   computed: {
@@ -196,6 +202,9 @@ export default {
     },
     limitTasksToshow() {
       return this.tasksStatsStartValue;
+    },
+    limitStatusLabel() {
+      return this.$t('label.status.name.rules');
     }
   },
   created() {
@@ -206,6 +215,7 @@ export default {
         }, 200);
       }
     });
+    this.nameRules = [v => !v || (v.length > 2 && v.length < 51) || this.limitStatusLabel];
   },
   methods: {
     loadNextTasks() {
@@ -239,15 +249,16 @@ export default {
       this.$emit('delete-status', this.status);
     },
     saveStatus(index) {
-      if (this.status.id){
-        this.$emit('update-status', this.status);
-        this.editStatus=false;
-      } else {
-        this.status.rank=index;
-        this.$emit('add-status');
-        this.editStatus=false;
+      if (this.status.name.length>=3 && this.status.name.length<=50){
+        if (this.status.id){
+          this.$emit('update-status', this.status);
+          this.editStatus=false;
+        } else {
+          this.status.rank=index;
+          this.$emit('add-status');
+          this.editStatus=false;
+        }
       }
-      this.$root.$emit('edit-status-mode',this.editStatus);
     },
     openQuickAdd() {
       this.$emit('open-quick-add');
@@ -266,20 +277,17 @@ export default {
         this.editStatus=false;
         this.status.edit=false;
         this.$emit('update-status', null);
-        this.$root.$emit('edit-status-mode',this.editStatus);
       } else {
         this.editStatus=false;
         this.status.edit=false;
         this.$emit('cancel-add-column',index);
         this.$emit('update-status', null);
-        this.$root.$emit('edit-status-mode',this.editStatus);
 
       }
     },
     editStatusMode(canManage){
       if (canManage){
         this.editStatus=true;
-        this.$root.$emit('edit-status-mode',this.editStatus);
       }
 
     },
