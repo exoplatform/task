@@ -8,25 +8,22 @@
         :tasks-number="tasksList.length" />
     </div>
     <div :id="'taskView'+status.id" :class="filterByStatus===true ? 'pt-5 ml-7 mr-2' : ''">
-      <task-view-list-item
-        v-for="taskItem in tasksList"
-        :key="taskItem.task.id"
-        :task="taskItem"
-        :show-completed-tasks="showCompletedTasks"
-        @update-task-completed="updateTaskCompleted" />
+      <div :id="status.id">
+        <draggable
+          v-model="tasksList"
+          :move="checkMove"
+          group="people"
+          @start="drag=true"
+          @end="drag=false">
+          <task-view-list-item
+            v-for="tasks in tasksList"
+            :key="tasks.task.id"
+            :task="tasks"
+            :show-completed-tasks="showCompletedTasks"
+            @update-task-completed="updateTaskCompleted" />
+        </draggable>
+      </div>
     </div>
-    <!--<draggable
-      v-model="tasksList"
-      group="people" 
-      @start="drag=true" 
-      @end="drag=false">
-      <task-view-list-item
-        v-for="task in tasksList"
-        :key="task.task.id"
-        :task="task"
-        :show-completed-tasks="showCompletedTasks"
-        @update-task-completed="updateTaskCompleted"/>
-    </draggable>-->
   </div>
 </template>
 <script>
@@ -59,9 +56,23 @@ export default {
       newStatus: null,
     };
   },
+  watch: {
+    drag(val) {
+      if (!val&&this.task&&this.newStatus&&this.task.status.id.toString() !== this.newStatus){
+        this.$emit('updateTaskStatus', this.task,this.newStatus);
+      }
+    },
+  },
   methods: {
     updateTaskCompleted(e){
       this.$emit('updateTaskCompleted', e);
+    },
+    checkMove(evt){
+      if (evt){
+        this.task = evt.draggedContext.element.task;
+        this.newStatus = evt.to.parentElement.id;
+      }
+
     },
   }
 };
