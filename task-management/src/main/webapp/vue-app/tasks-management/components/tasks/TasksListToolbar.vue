@@ -2,6 +2,7 @@
   <v-app id="TasksToolbar">
     <v-toolbar
       id="TasksListToolbar"
+      :class="showMobileTaskFilter && 'toolbarLarge'"
       flat
       class="tasksToolbar">
       <v-toolbar-title>
@@ -14,18 +15,31 @@
           </span>
         </v-btn>
       </v-toolbar-title>
-      <v-spacer />
-      <v-spacer />
       <v-scale-transition>
         <v-text-field
           v-model="keyword"
           :placeholder=" $t('label.filterTask') "
           prepend-inner-icon="fa-filter"
-          class="inputTasksFilter pa-0 mr-3 my-auto"
-          clearable />
+          :append-outer-icon="showMobileTaskFilter && 'mdi-close'"
+          class="inputTasksFilter pa-0 ml-4 mr-2 my-auto"
+          :class="showMobileTaskFilter && 'inputTasksFilterMobile'"
+          @click:append-outer="clearMessage"
+          :clearable="!showMobileTaskFilter" />
       </v-scale-transition>
       <v-scale-transition>
+        <v-icon
+          size="20"
+          class="taskFilterMobile"
+          :class="showMobileTaskFilter && 'tasksFilterMobile'"
+          @click="showMobileTaskFilter = !showMobileTaskFilter">
+          fas fa-filter
+        </v-icon>
+      </v-scale-transition>
+      <v-spacer />
+      <v-spacer />
+      <v-scale-transition>
         <select
+          id="filterTaskSelect"
           v-model="primaryFilterSelected"
           name="primaryFilter"
           class="selectPrimaryFilter input-block-level ignore-vuetify-classes  pa-0 mr-3 my-auto"
@@ -36,6 +50,11 @@
             :value="item.name">
             {{ $t('label.dueDate.'+item.name.toLowerCase()) }}
           </option>
+        </select>
+      </v-scale-transition>
+      <v-scale-transition>
+        <select id="widthTmpSelectTaskFilter">
+          <option id="widthTmpSelectOption"></option>
         </select>
       </v-scale-transition>
       <v-scale-transition>
@@ -80,6 +99,7 @@ export default {
       filterNumber: 0,
       primaryFilterSelected: 'ALL',
       drawer: null,
+      showMobileTaskFilter: false,
       primaryFilter: [
         {name: 'ALL'},{name: 'ASSIGNED'},{name: 'COLLABORATED'},{name: 'OVERDUE'},{name: 'TODAY'},{name: 'TOMORROW'},{name: 'UPCOMING'}
       ],
@@ -100,6 +120,11 @@ export default {
   },created() {
     this.primaryFilterSelected = localStorage.getItem('primary-filter-tasks');
     localStorage.setItem('primary-filter-tasks', 'ALL');
+  },
+  mounted() {
+    $('#widthTmpSelectOption').html($('#filterTaskSelect option:selected').text());
+    const widthElem = $('#widthTmpSelectTaskFilter').width() + 40;
+    $('#filterTaskSelect').width(widthElem);
     this.changePrimaryFilter();
   },
   methods: {
@@ -133,7 +158,10 @@ export default {
     changePrimaryFilter(){  
       this.searchOnKeyChange=false; 
       this.keyword='';   
-      this.$emit('primary-filter-task', this.primaryFilterSelected);     
+      this.$emit('primary-filter-task', this.primaryFilterSelected);
+      $('#widthTmpSelectOption').html($('#filterTaskSelect option:selected').text());
+      const widthElem = $('#widthTmpSelectTaskFilter').width() + 40;
+      $('#filterTaskSelect').width(widthElem);   
     },
     resetFields(activeField){
       this.searchOnKeyChange=false;
@@ -147,6 +175,10 @@ export default {
       if (this.filterNumber>0){
         return `(${this.filterNumber})`;
       } return '';
+    },
+    clearMessage() {
+      this.keyword = '';
+      this.showMobileTaskFilter = !this.showMobileTaskFilter;
     }
 
   }

@@ -19,21 +19,33 @@
           .uiIconProject {
             font-family: "PLF-FONT-ICONS" !important;
             font-style: normal;
-            font-size: 22px;
+            font-size: 20px;
             color: @primaryColor;
-            margin-right: 15px;
+            margin-right: 4px;
+            margin-top: -4px;
             &:before {
               content: "\e665";
             }
           }
           .projectInputTitle {
             margin-bottom:0px;
+            border: none!important;
+            padding: 3px 6px!important;
+            width: 100%!important;
+            font-size: 16px;
+            color: @textColor!important;
+            &::placeholder {
+              font-size: 16px!important;
+            }
             &:before {
               display: none;
             }
             &:after{
               border: Solid 1px @borderColor!important;
               border-radius: 5px!important;
+            }
+            &:focus {
+              box-shadow: none!important;
             }
             .v-input__slot {
               label {
@@ -275,6 +287,9 @@
         }
       }
     }
+    #tasksListApplication {
+      min-height: calc(~"100vh - 200px");
+    }
     .projectAndTasksContainer {
       .nameGroup {
         font-size: 18px;
@@ -336,6 +351,7 @@
         }
         .inputTasksFilter {
           max-width: 250px;
+          margin-top: -2px!important;
           .v-input__slot {
             margin-bottom: 0!important;
             .v-text-field__slot {
@@ -351,14 +367,52 @@
             }
           }
         }
-        .selectPrimaryFilter {
-          max-width: 250px;
-          height: 38px;
+        .inputProjectFilter {
+          margin-top: 0!important;
         }
+        .taskFilterMobile {
+          color: @greyColorLighten1!important;
+          font-size: 16px!important;
+          margin-left: 12px;
+          display: none;
+        }
+        .inputTasksFilterMobile {
+          display: flex!important;
+          width: 90%;
+          max-width: 90%;
+          position: absolute;
+          top: 50px;
+          .v-input__append-outer {
+            margin-left: -25px!important;
+          }
+        }
+        .tasksFilterMobile {
+          display: none!important;
+        }
+        .selectPrimaryFilter {
+          width: auto;
+          height: 38px;
+          color: @darkGrey;
+          &:focus {
+            outline: none;
+            box-shadow: none;
+          }
+        }
+
+        #widthTmpSelectTaskFilter {
+          display:none;
+          visibility:hidden;
+          width: inherit!important;
+        }
+
         .selectTasksFilter {
           height: 40px;
           width: auto;
           padding-right: 20px;
+          &:focus {
+            outline: none;
+            box-shadow: none;
+          }
         }
         .taskDisplay {
           .uiIcon {
@@ -1961,8 +2015,20 @@
         height: auto!important;
         .v-toolbar__content {
           height: auto!important;
-          padding: 0!important;
+          padding: 0;
         }
+      }
+      .toolbarLarge {
+        .v-toolbar__content {
+          padding-bottom: 50px!important;
+        }
+      }
+    }
+    #ProjectListToolbar {
+      height: auto!important;
+      .v-toolbar__content {
+        height: auto!important;
+        padding: 0;
       }
     }
 
@@ -3039,11 +3105,14 @@
 }
 @media (max-width: 599px) {
   #TasksManagementPortlet .projectAndTasksContainer .tasksToolbar{
-    .v-input__icon.v-input__icon--prepend-inner {
+    /*.v-input__icon.v-input__icon--prepend-inner {
+      display: none;
+    }*/
+    .inputTasksFilter {
       display: none;
     }
-    .selectPrimaryFilter {
-      max-width: 51px!important;;
+    .taskFilterMobile {
+      display: block;
     }
     .v-toolbar__title {
       min-width: 40px!important;
@@ -3054,6 +3123,33 @@
     }
     button.btn.px-2.btn-primary.filterTasksSetting.v-btn.v-btn--depressed.v-btn--flat.v-btn--outlined.theme--light.v-size--default {
       min-width: auto!important;
+    }
+  }
+}
+
+@media (max-width: 399px) {
+  #TasksManagementPortlet {
+    .projectAndTasksContainer {
+      .tasksToolbar  {
+        .selectPrimaryFilter {
+          width: 120px!important;
+          max-width: 120px!important;
+          text-overflow: ellipsis;
+        }
+        .selectTasksFilter {
+          width: 120px!important;
+          max-width: 120px!important;
+          text-overflow: ellipsis;
+        }
+        .taskFilterMobile {
+          margin-left: 2px;
+        }
+        .filterTasksSetting {
+          .uiIconFilterSetting {
+            padding-right: 0px !important;
+          }
+        }
+      }
     }
   }
 }
