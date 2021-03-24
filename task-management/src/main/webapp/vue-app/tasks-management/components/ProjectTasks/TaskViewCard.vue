@@ -156,7 +156,7 @@ export default {
       return this.assigneeAndCoworkerArray.length - this.maxAvatarToShow;
     },
     displayCardBottomSection() {
-      return this.taskDueDate || (this.task.labels && this.task.labels.length) || (this.assigneeAndCoworkerArray && this.assigneeAndCoworkerArray.length);
+      return this.taskDueDate || (this.task.labels && this.task.labels.length) || (this.assigneeAndCoworkerArray && this.assigneeAndCoworkerArray.length) || this.task.commentCount;
     }
   },
   created() {
