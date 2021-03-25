@@ -123,7 +123,7 @@ public class TaskLoggingListener extends Listener<TaskService, TaskPayload> {
         service.addTaskLog(after.getId(), username, "remove_project", "");
       }
 
-    } else if (isDiff(before.getStatus(), after.getStatus())) {
+    } else if (before.getStatus().getId() != after.getStatus().getId()) {
       service.addTaskLog(after.getId(), username, "edit_status", after.getStatus().getName());
 
       NotificationContext ctx = buildContext(after);
@@ -160,14 +160,14 @@ public class TaskLoggingListener extends Listener<TaskService, TaskPayload> {
   }
 
   private boolean isProjectChange(TaskDto before, TaskDto after) {
-    if (!isDiff(before.getStatus(), after.getStatus())) {
+    if (before.getStatus().getId()==after.getStatus().getId()) {
       return false;
 
     } else if(before.getStatus() != null) {
       if (after.getStatus() == null) {
         return true;
       } else {
-        return !before.getStatus().getProject().equals(after.getStatus().getProject());
+        return before.getStatus().getProject().getId()!=after.getStatus().getProject().getId();
       }
     } else {
       return true;
