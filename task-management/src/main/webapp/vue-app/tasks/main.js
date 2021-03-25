@@ -1,5 +1,7 @@
 import tasksApp from './components/TasksApp.vue';
 import TaskDetails from './components/TaskDetails.vue';
+import * as projectService from '../../js/projectService.js';
+import * as taskDrawerApi from '../../js/taskDrawerApi.js';
 
 Vue.use(Vuetify);
 Vue.component('task-details', TaskDetails);
@@ -7,6 +9,14 @@ Vue.component('task-details', TaskDetails);
 const vuetify = new Vuetify({
   dark: true,
   iconfont: '',
+});
+
+window.Object.defineProperty(Vue.prototype, '$projectService', {
+  value: projectService,
+});
+
+window.Object.defineProperty(Vue.prototype, '$taskDrawerApi', {
+  value: taskDrawerApi,
 });
 
 // getting language of user

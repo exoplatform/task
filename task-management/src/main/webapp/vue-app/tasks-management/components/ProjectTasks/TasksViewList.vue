@@ -34,7 +34,6 @@
   </v-app>
 </template>
 <script>
-import {updateTask} from '../../../taskDrawer/taskDrawerApi';
 export default {
 
   props: {
@@ -88,10 +87,7 @@ export default {
     },
     updateTask(task) {
       if (task.id!=null){
-        updateTask(task.id,task);
-        /*           window.setTimeout(() => {
-             this.$root.$emit('update-task-list', this.task)
-          }, 200); */
+        this.$taskDrawerApi.updateTask(task.id,task);
       }
     },
   }

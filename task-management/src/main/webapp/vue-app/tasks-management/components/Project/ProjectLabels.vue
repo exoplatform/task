@@ -68,7 +68,6 @@
 </template>
 
 <script>
-import {getProjectLabels, addLabel,removeLabel} from '../../../taskDrawer/taskDrawerApi';
 export default {
   props: {
     project: {
@@ -147,7 +146,7 @@ export default {
     },
 
     getProjectLabels(projectId) {
-      getProjectLabels(projectId).then((labels) => {
+      this.$taskDrawerApi.getProjectLabels(projectId).then((labels) => {
         this.model = labels.map(function (el) {
           const o = Object.assign({}, el);
           o.text = o.name;
@@ -159,7 +158,7 @@ export default {
     addLabel(label) {
       if ( this.project.id!= null ) {
         label.project=this.project;
-        addLabel(label).then( () => {
+        this.$taskDrawerApi.addLabel(label).then( () => {
           this.$root.$emit('show-alert', {
             type: 'success',
             message: this.$t('alert.success.label.created')
@@ -179,7 +178,7 @@ export default {
       document.getElementById('labelInput').focus();
     },
     removeLabel(item) {
-      removeLabel(item.id).then( () => {
+      this.$taskDrawerApi.removeLabel(item.id).then( () => {
         this.$root.$emit('show-alert', {
           type: 'success',
           message: this.$t('alert.success.label.deleted')
