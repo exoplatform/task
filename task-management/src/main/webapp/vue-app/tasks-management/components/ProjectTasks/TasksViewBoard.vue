@@ -2,7 +2,7 @@
   <v-card
     class="tasksView tasksViewBoard tasksCardsContainer"
     flat>
-    <v-item-group class="pb-4 pt-5 px-0">
+    <v-item-group class="pb-0 pt-5 px-0">
       <v-container class="pa-0 mx-0">
         <v-row class="ma-0 border-box-sizing tasksViewBoardRowContainer">
           <v-col
@@ -16,6 +16,7 @@
               :index="index"
               :show-completed-tasks="filterTaskCompleted"
               :status-list-length="statusList.length"
+              :filter-no-active="filterNoActive"
               @updateTaskCompleted="updateTaskCompleted"
               @updateTaskStatus="updateTaskStatus"
               @delete-status="deleteStatus"
@@ -31,7 +32,6 @@
   </v-card>
 </template>
 <script>
-import {updateTask} from '../../../taskDrawer/taskDrawerApi';
 export default {
   props: {
     statusList: {
@@ -47,6 +47,10 @@ export default {
       default: 0
     },
     filterTaskCompleted: {
+      type: Boolean,
+      default: false
+    },
+    filterNoActive: {
       type: Boolean,
       default: false
     }
@@ -85,7 +89,7 @@ export default {
     },
     updateTask(task) {
       if (task.id!=null){
-        updateTask(task.id,task).then( () => {
+        this.$taskDrawerApi.updateTask(task.id,task).then( () => {
           this.$root.$emit('show-alert', { type: 'success', message: this.$t('alert.success.task.status') });
         }).catch(e => {
           console.error('Error when updating task\'s status', e);

@@ -28,6 +28,7 @@
       group="people"
       ghost-class="ghost-card"
       class="draggable-palceholder taskBoardColumn"
+      :class="filterNoActive && 'taskBoardNoFilterColumn'"
       @start="drag=true"
       @end="drag=false">
       <task-view-card
@@ -80,6 +81,10 @@ export default {
       default: 0
     },
     showCompletedTasks: {
+      type: Boolean,
+      default: false
+    },
+    filterNoActive: {
       type: Boolean,
       default: false
     }

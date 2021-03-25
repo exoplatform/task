@@ -12,11 +12,11 @@
       v-model="tab"
       slider-size="4"
       class="tasksMenuParent white">
-      <v-tab href="#tab-1" @click="getMyTasks()">
-        {{ $t('label.tasks.header') }}
-      </v-tab>
       <v-tab href="#tab-2" @click="getMyProjects()">
         {{ $t('label.projects') }}
+      </v-tab>
+      <v-tab href="#tab-1" @click="getMyTasks()">
+        {{ $t('label.tasks.header') }}
       </v-tab>
     </v-tabs>
     <v-tabs-items v-model="tab">

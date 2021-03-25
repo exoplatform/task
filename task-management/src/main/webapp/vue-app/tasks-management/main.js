@@ -4,6 +4,7 @@ import { tasksConstants } from '../../js/tasksConstants.js';
 import * as tasksService from '../../js/tasksService.js';
 import * as projectService from '../../js/projectService.js';
 import * as statusService from '../../js/statusService.js';
+import * as taskDrawerApi from '../../js/taskDrawerApi.js';
 
 Vue.use(Vuetify);
 Vue.use(VueEllipsis);
@@ -22,6 +23,10 @@ window.Object.defineProperty(Vue.prototype, '$projectService', {
 
 window.Object.defineProperty(Vue.prototype, '$statusService', {
   value: statusService,
+});
+
+window.Object.defineProperty(Vue.prototype, '$taskDrawerApi', {
+  value: taskDrawerApi,
 });
 
 

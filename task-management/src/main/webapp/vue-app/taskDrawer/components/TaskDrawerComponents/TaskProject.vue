@@ -57,7 +57,6 @@
 </template>
 
 <script>
-import {getProjects, updateTask, getDefaultStatusByProjectId} from '../../taskDrawerApi';
 export default {
   props: {
     task: {
@@ -80,13 +79,15 @@ export default {
   },
   watch: {
     projectModel () {
-      setTimeout(() => {
-        this.$refs.select.isMenuActive = false;
-      }, 50);
+      if (this.$refs.select && this.$refs.select.isMenuActive) {
+        setTimeout(() => {
+          this.$refs.select.isMenuActive = false;
+        }, 50);
+      }
     },
     task() {
       if (this.task && this.task.status && this.task.status.project && !this.task.status.name) {
-        getDefaultStatusByProjectId(this.task.status.project.id).then((status) => {
+        this.$taskDrawerApi.getDefaultStatusByProjectId(this.task.status.project.id).then((status) => {
           this.task.status = status;
         });
       }
@@ -126,14 +127,14 @@ export default {
   },
   methods: {
     getProjects() {
-      getProjects().then((projects) => {
+      this.$taskDrawerApi.getProjects().then((projects) => {
         this.projects = projects.projects;
       });
     },
     filterProjects(item, queryText) {
       return ( item.name.toLocaleLowerCase().indexOf(queryText.toLocaleLowerCase()) >-1 || item.name.toLocaleLowerCase().indexOf(queryText.toLocaleLowerCase()) > -1 );},
     updateTask() {
-      updateTask(this.task.id, this.task)
+      this.$taskDrawerApi.updateTask(this.task.id, this.task)
         .then( () => {
           this.$root.$emit('show-alert', { type: 'success', message: this.$t('alert.success.task.project') });})
         .catch(e => {
@@ -142,7 +143,7 @@ export default {
         });
     },
     updateTaskProject(project) {
-      getDefaultStatusByProjectId(project.id).then((status) => {
+      this.$taskDrawerApi.getDefaultStatusByProjectId(project.id).then((status) => {
         this.task.status = status;
         this.updateTask();
         this.projectModel = project;
