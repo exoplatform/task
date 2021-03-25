@@ -12,7 +12,9 @@
         <draggable
           v-model="tasksList"
           :move="checkMove"
+          :animation="200"
           group="people"
+          ghost-class="ghost-card"
           @start="drag=true"
           @end="drag=false">
           <task-view-list-item
