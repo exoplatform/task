@@ -18,17 +18,6 @@
         </v-btn>
       </v-toolbar-title>
       <v-scale-transition>
-        <v-text-field
-          v-model="keyword"
-          :placeholder="$t('label.filterProject')"
-          prepend-inner-icon="fa-filter"
-          :append-outer-icon="showMobileTaskFilter && 'mdi-close'"
-          class="inputTasksFilter inputProjectFilter pa-0 ml-4 mr-2 my-auto"
-          :class="showMobileTaskFilter && 'inputTasksFilterMobile'"
-          @click:append-outer="clearMessage"
-          :clearable="!showMobileTaskFilter" />
-      </v-scale-transition>
-      <v-scale-transition>
         <v-icon
           size="20"
           class="taskFilterMobile"
@@ -38,6 +27,17 @@
         </v-icon>
       </v-scale-transition>
       <v-spacer />
+      <v-scale-transition>
+        <v-text-field
+          v-model="keyword"
+          :placeholder="$t('label.filterProject')"
+          prepend-inner-icon="fa-filter"
+          :append-outer-icon="showMobileTaskFilter && 'mdi-close'"
+          class="inputTasksFilter inputProjectFilter pa-0 ml-3 mr-3 my-auto"
+          :class="showMobileTaskFilter && 'inputTasksFilterMobile'"
+          @click:append-outer="clearMessage"
+          :clearable="!showMobileTaskFilter" />
+      </v-scale-transition>
       <v-scale-transition v-if="!spaceName">
         <select
           id="filterTaskSelect"
