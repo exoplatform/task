@@ -106,7 +106,9 @@ export default {
   },
   methods: {
     saveDescription: function (newValue) {
-      newValue = newValue.replace('&nbsp;',' ');
+      if (newValue){
+        newValue = newValue.replace('&nbsp;',' ');
+      }
       if (newValue !== this.taskDescription && newValue !== this.task.description) {
         if (this.task.id && !isNaN(this.task.id)){
           this.task.description = newValue;

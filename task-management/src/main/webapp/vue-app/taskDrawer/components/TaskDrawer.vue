@@ -439,7 +439,7 @@ export default {
         } else {
           this.taskDueDate = value;
         }
-      } else if (value === 'none') {
+      } else if (value === 'none' && this.oldTask.dueDate) {
         this.task.dueDate = null;
         this.$taskDrawerApi.updateTask(this.task.id, this.task).then( () => {
           this.oldTask.dueDate=this.task.dueDate;
