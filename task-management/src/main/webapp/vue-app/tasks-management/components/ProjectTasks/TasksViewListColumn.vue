@@ -14,6 +14,7 @@
           :move="checkMove"
           :animation="200"
           group="people"
+          class="draggable-palceholder"
           ghost-class="ghost-card"
           @start="drag=true"
           @end="drag=false">
@@ -62,6 +63,7 @@ export default {
     drag(val) {
       if (!val&&this.task&&this.newStatus&&this.task.status.id.toString() !== this.newStatus){
         this.$emit('updateTaskStatus', this.task,this.newStatus);
+        Array.from(document.getElementsByClassName('draggable-palceholder')).forEach(element => element.style.backgroundColor= '#FFFFFF');
       }
     },
   },
@@ -71,6 +73,8 @@ export default {
     },
     checkMove(evt){
       if (evt){
+        Array.from(document.getElementsByClassName('draggable-palceholder')).forEach(element => element.style.backgroundColor= '#FFFFFF');
+        Array.from(evt.to.parentElement.getElementsByClassName('draggable-palceholder')).forEach(element => element.style.backgroundColor= '#f2f2f2');
         this.task = evt.draggedContext.element.task;
         this.newStatus = evt.to.parentElement.id;
       }
