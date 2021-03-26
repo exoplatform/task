@@ -104,7 +104,7 @@
             style="display: block"
             eager>
             <tasks-view-board
-              :project="projectItem" 
+              :project="project"
               :status-list="statusList"
               :tasks-list="tasksList[i]"
               @update-status="updateStatus"
