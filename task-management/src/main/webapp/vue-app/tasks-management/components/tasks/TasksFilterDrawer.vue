@@ -430,7 +430,7 @@ export default {
       }
     },
     getTabView(){
-      if (document.getElementsByClassName('taskTabList')[0] && document.getElementsByClassName('v-tab')[0].getAttribute('aria-selected')==='false') {
+      if (document.getElementsByClassName('taskTabList')[0] ) {
         if (document.getElementsByClassName('taskTabList')[0].getAttribute('aria-selected')==='true'){
           this.taskViewTabName='list';
         } else if (document.getElementsByClassName('taskTabBoard')[0].getAttribute('aria-selected')==='true'){
