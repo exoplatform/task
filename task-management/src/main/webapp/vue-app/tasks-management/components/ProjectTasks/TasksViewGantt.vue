@@ -33,6 +33,10 @@ export default {
         'Start Date',
         'Due Date'
       ],
+      task: {
+        type: Object,
+        default: () => ({}),
+      }
     };
   },
   mounted() {
@@ -63,7 +67,7 @@ export default {
     getTasksTitle(tasksList) {
       const taskByElement = [];
       tasksList.forEach((element) => {
-        taskByElement.push(element[4]);
+        taskByElement.push(`${element[1]}~${element[4]}`);
       });
       return taskByElement;
     },
@@ -92,8 +96,12 @@ export default {
       const x = timeArrival[0];
       const y = timeArrival[1];
       const rectNormal = this.clipRectByRect(params, {
-        x: x, y: y, width: barLength, height: barHeight
+        x: x,
+        y: y,
+        width: barLength,
+        height: barHeight,
       });
+
       return {
         type: 'group',
         children: [{
@@ -113,11 +121,11 @@ export default {
           realtime: true,
           height: 10,
           bottom: 0,
-          startValue: (new Date().setHours(24,0,0,0)) - 1000 * 60 * 60 * 24 * 4,
+          startValue: (new Date().setHours(24,0,0,0)) - 1000 * 60 * 60 * 24 * 6,
           minValueSpan: 3600 * 24 * 1000,
-          maxValueSpan: 3600 * 24 * 1000 * 6,
+          maxValueSpan: 3600 * 24 * 1000 * 11,
           minSpan: 0,
-          maxSpan: 7,
+          maxSpan: 11,
           handleIcon: 'path://M10.7,11.9H9.3c-4.9,0.3-8.8,4.4-8.8,9.4c0,5,3.9,9.1,8.8,9.4h1.3c4.9-0.3,8.8-4.4,8.8-9.4C19.5,16.3,15.6,12.2,10.7,11.9z M13.3,24.4H6.7V23h6.6V24.4z M13.3,19.6H6.7v-1.4h6.6V19.6z',
           handleSize: '0',
           showDetail: false,
@@ -129,7 +137,7 @@ export default {
           xAxisIndex: 0,
           filterMode: 'weakFilter',
           minValueSpan: 3600 * 24 * 1000,
-          maxValueSpan: 3600 * 24 * 1000 * 6,
+          maxValueSpan: 3600 * 24 * 1000 * 11,
           minSpan: 0,
           maxSpan: 7,
           zoomOnMouseWheel: false,
@@ -215,13 +223,13 @@ export default {
               min: 0,
               max: GanttTasksList.length-1,
               axisLine: {
-                show: false,
+                show: true,
                 lineStyle: {
                   color: ['#f2f2f2']
                 }
               },
               axisTick: {
-                show: false,
+                show: true,
               },
               splitLine: {
                 show: false,
@@ -245,12 +253,13 @@ export default {
                 padding: 8,
                 color: '#636363',
                 formatter: function(params) {
+                  const taskTitle = params.split('~')[1];
                   let val='';
-                  if (params.length >30){
-                    val = `${params.substr(0,30)}...`;
+                  if (taskTitle.length >40){
+                    val = `${taskTitle.substr(0,40)}...`;
                     return val;
                   } else {
-                    return params;
+                    return taskTitle;
                   }
                 }
               },
@@ -284,46 +293,45 @@ export default {
                 borderRadius: 3,
                 color: '#636363',
                 formatter: function (value) {
-                  const lang = eXo.env.portal.language;
+                  const lang = eXo && eXo.env.portal.language || 'en';
                   const axisDate = new Date(value);
                   const toDay = new Date();
                   const valueDay = axisDate.toLocaleDateString(lang, {
-                    weekday: 'long',
                     day: '2-digit',
                     month: 'long'
                   });
+                  let monthLabel= '';
+                  let day = '';
                   const dayString = valueDay.toString();
-                  const dayLabel = dayString.split(' ')[0].substring(0,3).toUpperCase();
-                  const day = dayString.split(' ')[1];
-                  const month = dayString.split(' ')[2];
-                  const monthLabel = month.charAt(0).toUpperCase() + month.slice(1);
-                  if ( axisDate.setHours(0,0,0,0) === toDay.setHours(0,0,0,0)) {
-                    return `{toDayStyleDay| ${ dayLabel } ${ day  }}\n{toDayStyleMonth|${  monthLabel  }}`;
+                  
+                  if ( lang === 'en') {
+                    monthLabel = dayString.split(' ')[0].substring(0,3).toUpperCase();
+                    day = dayString.split(' ')[1];
                   } else {
-                    return `${dayLabel} ${day}\n{styleMonth|${monthLabel}}`;
+                    monthLabel = dayString.split(' ')[1].substring(0,3).toUpperCase();
+                    day = dayString.split(' ')[0];
+                  }
+                  if ( axisDate.setHours(0,0,0,0) === toDay.setHours(0,0,0,0)) {
+                    return `{toDayStyleMonth|${  monthLabel  }}{toDayStyleDay|${ day  }}`;
+                  } else {
+                    return `${monthLabel} ${day}`;
                   }
                 },
                 rich: {
                   styleMonth: {
                     align: 'center',
                   },
-                  toDayStyleDay: {
-                    color: '#ffffff',
-                    fontWeight: 'bold',
-                    backgroundColor: '#578dc9',
-                    width: 50,
-                    align: 'center',
-                    padding: [2,0],
-                    borderRadius: [4, 4, 0, 0],
-                  },
                   toDayStyleMonth: {
                     color: '#ffffff',
-                    fontWeight: 'bold',
                     backgroundColor: '#578dc9',
-                    width: 50,
-                    align: 'center',
-                    padding: [2,0],
-                    borderRadius: [0, 0, 4, 4],
+                    padding: [2,4],
+                    borderRadius: [4, 0, 0, 4],
+                  },
+                  toDayStyleDay: {
+                    color: '#ffffff',
+                    backgroundColor: '#578dc9',
+                    padding: [2,4],
+                    borderRadius: [0, 4, 4, 0],
                   }
                 }
               }
@@ -359,6 +367,21 @@ export default {
             }]
           };
           myChart.setOption(option,true);
+          myChart.on('click', params => {
+            let taskId = '';
+            if (params.componentType === 'yAxis') {
+              taskId = params.value.split('~')[0];
+            }
+            else if (params.componentType === 'series') {
+              taskId = params.value[1];
+            }
+            if (taskId) {
+              this.$tasksService.getTaskById(taskId).then(data => {
+                this.task = data;
+                this.$root.$emit('open-task-drawer', this.task);
+              });
+            } 
+          });
         }
       }
       
