@@ -99,7 +99,7 @@ export default {
       this.spaceName = urlPath.split('g/:spaces:')[1].split('/')[0];
       this.tab='tab-2';
     } else {
-      if (urlPath.includes('myTasks') || urlPath.includes('tasks')){
+      if (urlPath.includes('myTasks')){
         this.tab='tab-1';
         this.projectId='';
       }
