@@ -204,6 +204,7 @@ export default {
   watch: {
     project(){
       this.getStatusByProject(this.project.id);
+      this.tasksList=[];
       this.getTasksByProject(this.project.id,'');
     }
   },

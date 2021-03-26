@@ -31,7 +31,7 @@ public class ProjectModifiedListener extends Listener<ProjectService, ProjectDto
     ProjectStorage storage = CommonsUtils.getService(ProjectStorage.class);
     ProjectDto data = event.getData();
     data.setLastModifiedDate(System.currentTimeMillis());
-    storage.updateProject(data);
+    storage.updateProjectNoReturn(data);
   }
 
 }

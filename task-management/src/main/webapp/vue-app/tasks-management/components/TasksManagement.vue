@@ -113,12 +113,16 @@ export default {
         this.$tasksService.getTaskById(taskId).then(data => {
           this.task = data;
           if (this.task.status && this.task.status.project){
-            document.dispatchEvent(new CustomEvent('showProjectTasks', {detail: this.task.status.project}));
             this.tab='tab-2';
+            window.setTimeout(() => {
+              document.dispatchEvent(new CustomEvent('showProjectTasks', {detail: this.task.status.project}));
+            }, 200);
           } else {
             this.tab='tab-1';
           }
-          this.$refs.taskDrawer.open(this.task);
+          window.setTimeout(() => {
+            this.$refs.taskDrawer.open(this.task);
+          }, 200);
         });
       } 
     }

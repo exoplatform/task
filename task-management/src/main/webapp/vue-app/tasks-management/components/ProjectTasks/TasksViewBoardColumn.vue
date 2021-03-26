@@ -18,7 +18,7 @@
     <quick-add-card 
       :status="status"
       :quick-add-task="quickAddTask1"
-      :task-title=taskTitle1
+      :task-title="taskTitle1"
       class="status-add-task" 
       @close-quick-form="quickAddTask1=false" />
     <draggable 
@@ -41,7 +41,7 @@
       <quick-add-card 
         :status="status" 
         :quick-add-task="quickAddTask"
-        :task-title=taskTitle
+        :task-title="taskTitle"
         @close-quick-form="quickAddTask=false" />
 
       <v-btn 

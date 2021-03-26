@@ -59,6 +59,15 @@ public interface ProjectService {
      * It should throws EntityNotFoundException if the project has been removed OR not existed from database.
      *
      * @param project the given project.
+
+     */
+    void updateProjectNoReturn(ProjectDto project);
+    /**
+     * Update the project.
+     * <p>
+     * It should throws EntityNotFoundException if the project has been removed OR not existed from database.
+     *
+     * @param project the given project.
      * @return The updated project.
      */
     ProjectDto updateProject(ProjectDto project);
