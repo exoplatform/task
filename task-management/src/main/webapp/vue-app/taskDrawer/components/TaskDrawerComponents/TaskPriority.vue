@@ -72,8 +72,8 @@ export default {
           this.priority = task.priority;
           this.priorityDefaultColor = this.getTaskPriorityColor(task.priority);
         } else {
-          this.priority = 'NORMAL';
-          this.priorityDefaultColor = this.getTaskPriorityColor('NORMAL');
+          this.priority = 'NONE';
+          this.priorityDefaultColor = this.getTaskPriorityColor('NONE');
         }
       }
     });
