@@ -92,7 +92,7 @@ export default {
       const timeArrival = api.coord([api.value(2), categoryIndex]);
       const timeDeparture = api.coord([api.value(3), categoryIndex]);
       const barLength = timeDeparture[0] - timeArrival[0];
-      const barHeight = 15;
+      const barHeight = 10;
       const x = timeArrival[0];
       const y = timeArrival[1];
       const rectNormal = this.clipRectByRect(params, {
@@ -113,36 +113,91 @@ export default {
       };
     },
     renderZoomInAxis() {
-      return  [
-        {
-          type: 'slider',
-          xAxisIndex: 0,
-          filterMode: 'none',
-          realtime: true,
-          height: 10,
-          bottom: 0,
-          startValue: (new Date().setHours(24,0,0,0)) - 1000 * 60 * 60 * 24 * 6,
-          minValueSpan: 3600 * 24 * 1000,
-          maxValueSpan: 3600 * 24 * 1000 * 11,
-          minSpan: 0,
-          maxSpan: 11,
-          handleIcon: 'path://M10.7,11.9H9.3c-4.9,0.3-8.8,4.4-8.8,9.4c0,5,3.9,9.1,8.8,9.4h1.3c4.9-0.3,8.8-4.4,8.8-9.4C19.5,16.3,15.6,12.2,10.7,11.9z M13.3,24.4H6.7V23h6.6V24.4z M13.3,19.6H6.7v-1.4h6.6V19.6z',
-          handleSize: '0',
-          showDetail: false,
-          borderColor: 'transparent'
-        },
-        {
-          type: 'inside',
-          id: 'insideX',
-          xAxisIndex: 0,
-          filterMode: 'weakFilter',
-          minValueSpan: 3600 * 24 * 1000,
-          maxValueSpan: 3600 * 24 * 1000 * 11,
-          minSpan: 0,
-          maxSpan: 7,
-          zoomOnMouseWheel: false,
-          moveOnMouseMove: true
-        }];
+      const GanttTasksList = this.getTasksToDisplay(this.tasksList);
+      if ( GanttTasksList.length > 7 ) {
+        return  [
+          {
+            type: 'slider',
+            xAxisIndex: 0,
+            filterMode: 'none',
+            realtime: true,
+            height: 10,
+            bottom: 0,
+            startValue: (new Date().setHours(24,0,0,0)) - 1000 * 60 * 60 * 24 * 6,
+            minValueSpan: 3600 * 24 * 1000,
+            maxValueSpan: 3600 * 24 * 1000 * 11,
+            minSpan: 0,
+            maxSpan: 11,
+            handleIcon: 'path://M10.7,11.9H9.3c-4.9,0.3-8.8,4.4-8.8,9.4c0,5,3.9,9.1,8.8,9.4h1.3c4.9-0.3,8.8-4.4,8.8-9.4C19.5,16.3,15.6,12.2,10.7,11.9z M13.3,24.4H6.7V23h6.6V24.4z M13.3,19.6H6.7v-1.4h6.6V19.6z',
+            handleSize: '0',
+            showDetail: false,
+            borderColor: 'transparent'
+          },
+          {
+            type: 'inside',
+            id: 'insideX',
+            xAxisIndex: 0,
+            filterMode: 'weakFilter',
+            minValueSpan: 3600 * 24 * 1000,
+            maxValueSpan: 3600 * 24 * 1000 * 11,
+            minSpan: 0,
+            maxSpan: 7,
+            zoomOnMouseWheel: false,
+            moveOnMouseMove: true
+          },{
+            type: 'slider',
+            yAxisIndex: 0,
+            zoomLock: true,
+            width: 10,
+            right: 10,
+            top: 70,
+            bottom: 20,
+            start: 60,
+            end: 100,
+            handleSize: 0,
+            showDetail: false,
+          }, {
+            type: 'inside',
+            id: 'insideY',
+            yAxisIndex: 0,
+            start: 50,
+            end: 100,
+            zoomOnMouseWheel: false,
+            moveOnMouseMove: true,
+            moveOnMouseWheel: true
+          }];
+      } else {
+        return  [
+          {
+            type: 'slider',
+            xAxisIndex: 0,
+            filterMode: 'none',
+            realtime: true,
+            height: 10,
+            bottom: 0,
+            startValue: (new Date().setHours(24,0,0,0)) - 1000 * 60 * 60 * 24 * 6,
+            minValueSpan: 3600 * 24 * 1000,
+            maxValueSpan: 3600 * 24 * 1000 * 11,
+            minSpan: 0,
+            maxSpan: 11,
+            handleIcon: 'path://M10.7,11.9H9.3c-4.9,0.3-8.8,4.4-8.8,9.4c0,5,3.9,9.1,8.8,9.4h1.3c4.9-0.3,8.8-4.4,8.8-9.4C19.5,16.3,15.6,12.2,10.7,11.9z M13.3,24.4H6.7V23h6.6V24.4z M13.3,19.6H6.7v-1.4h6.6V19.6z',
+            handleSize: '0',
+            showDetail: false,
+            borderColor: 'transparent'
+          },
+          {
+            type: 'inside',
+            id: 'insideX',
+            xAxisIndex: 0,
+            filterMode: 'weakFilter',
+            minValueSpan: 3600 * 24 * 1000,
+            maxValueSpan: 3600 * 24 * 1000 * 11,
+            minSpan: 0,
+            maxSpan: 7,
+            zoomOnMouseWheel: false,
+            moveOnMouseMove: true
+          }];
+      }
     },
     clipRectByRect(params, rect) {
       return echarts.graphic.clipRectByRect(rect, {
@@ -159,7 +214,10 @@ export default {
         if (barDv) {
           const myChart = echarts.init(barDv);
           const GanttTasksList = this.getTasksToDisplay(this.tasksList);
-          this.autoHeight = GanttTasksList.length * 50 + 100;
+          const intViewportHeight = window.innerHeight;
+          this.autoHeight = intViewportHeight - 200;
+          //this.autoHeight = 7 * 50 + 100;
+          console.warn(' this.autoHeight ',  this.autoHeight );
           myChart.getDom().style.height = `${this.autoHeight  }px`;
           myChart.resize(); 
           const option={
