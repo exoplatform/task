@@ -1,6 +1,7 @@
 <template>
   <div
-    class="commentItem">
+    class="commentItem"
+    :id="`commentItem-${comment.comment.id}`">
     <div
       class="commentWrapper"
       @mouseover="hover = true"
@@ -24,7 +25,7 @@
             class="deleteComment"
             icon
             small
-            @click="$emit('openConfirmDeleteDialog')"
+            @click="$emit('openConfirmDeleteDialog', comment.comment.id)"
             v-on="on">
             <i class="uiIconTrashMini uiIconLightGray "></i>
           </v-btn>
@@ -55,7 +56,7 @@
           :comments="comment.subComments"
           :avatar-size="30"
           @openCommentEditor="$emit('openCommentEditor',comment.comment.id)"
-          @openConfirmDeleteDialog="$emit('openConfirmDeleteDialog')" />
+          @openConfirmDeleteDialog="$emit('openConfirmDeleteDialog',item.comment.id,true)" />
       </div>
     </div>
   </div>

@@ -4,7 +4,7 @@
       :comment="comment"
       :comments="comments"
       :can-delete="canDelete"
-      @openConfirmDeleteDialog="confirmCommentDelete()"
+      @openConfirmDeleteDialog="confirmCommentDelete($event)"
       @openCommentEditor="commentActions($event)" />
     <div class="editorContent commentEditorContainer" :class="comment.comment.id === lastComment && newCommentEditor && 'newCommentEditor'">
       <task-comment-editor
@@ -65,6 +65,7 @@ export default {
       MESSAGE_MAX_LENGTH: 1250,
       lang: eXo.env.portal.language,
       commentId: '',
+      commentToDelete: '',
       dateTimeFormat: {
         year: 'numeric',
         month: 'long',
@@ -102,12 +103,20 @@ export default {
       }
     },
     removeTaskComment() {
-      this.$taskDrawerApi.removeTaskComment(this.comment.comment.id);
-      for (let i = 0; i < this.comments.length; i++) {
-        if (this.comments[i] === this.comment) {
-          this.comments.splice(i, 1);
+      this.$taskDrawerApi.removeTaskComment(this.commentToDelete);
+      this.comments.forEach((comment,index) => {
+        if ( comment === this.comment) {
+          if ( this.comment.comment.id === this.commentToDelete ) {
+            this.comments.splice(index, 1);
+          } else {
+            comment.subComments.forEach((subComment,index) => {
+              if ( subComment.comment.id === this.commentToDelete) {
+                this.comment.subComments.splice(index,1);
+              }
+            });
+          }
         }
-      }
+      });
       this.$emit('confirmDialogClosed');
     },
     displayCommentDate(dateTimeValue) {
@@ -116,7 +125,8 @@ export default {
     urlVerify(text) {
       return this.$taskDrawerApi.urlVerify(text);
     },
-    confirmCommentDelete: function () {
+    confirmCommentDelete (value) {
+      this.commentToDelete = value;
       this.$refs.CancelSavingCommentDialog.open();
     },
     commentActions(value) {
