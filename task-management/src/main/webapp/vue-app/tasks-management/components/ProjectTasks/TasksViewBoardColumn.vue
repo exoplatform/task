@@ -97,7 +97,7 @@ export default {
       taskTitle1: '',
       drag: false,
       task: null,
-      newStatus: null
+      newStatus: null,
     };
   },
   created(){

@@ -103,7 +103,7 @@
             style="display: block"
             eager>
             <tasks-view-board
-              :project="projectItem" 
+              :project="project"
               :status-list="statusList"
               :tasks-list="tasksList[i]"
               @update-status="updateStatus"
@@ -366,13 +366,21 @@ export default {
       });
     },
     updateStatus(status) {
-      return this.$statusService.updateStatus(status).then( () => {
-        this.$root.$emit('show-alert',{type: 'success',message: this.$t('alert.success.status.update')} );
+      if (status!=null){
+        return this.$statusService.updateStatus(status).then( () => {
+          this.$root.$emit('show-alert',{type: 'success',message: this.$t('alert.success.status.update')} );
+          this.getStatusByProject(this.project.id);
+        }).then( () => {
+          this.getTasksByProject(this.project.id,'');
+        }).catch(e => {
+          console.error('Error when updating status', e);
+          this.$root.$emit('show-alert',{type: 'error',message: this.$t('alert.error')} );
+        });
+      } else {
         this.getStatusByProject(this.project.id);
-      }).catch(e => {
-        console.error('Error when updating status', e);
-        this.$root.$emit('show-alert',{type: 'error',message: this.$t('alert.error')} );
-      });
+        this.getTasksByProject(this.project.id,'');
+      }
+
     },
     createStatus() {
       this.statusList.forEach(function (element, index) {

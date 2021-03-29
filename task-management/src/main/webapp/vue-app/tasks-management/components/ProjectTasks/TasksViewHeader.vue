@@ -1,9 +1,9 @@
 <template>
   <div
     :id="'task-'+viewType+'-'+status.id"
-    class="tasksViewHeader d-flex justify-space-between align-center">
+    class="tasksViewHeader  d-flex justify-space-between align-center">
     <div
-      class="py-3 d-flex">
+      class="py-3 d-flex tasksViewHeaderLeft">
       <a
         v-if="viewType=== 'list'"
         class="toggle-collapse-group d-flex"
@@ -20,23 +20,49 @@
           style="display: none">
         </i>
       </a>
-      <input
-        v-if="editStatus || status.edit"
-        ref="autoFocusInput1"
-        v-model="status.name"
-        :placeholder="$t('label.tapStatus.name')"
-        type="text"
-        class="taskStatusName font-weight-bold text-color mb-1"
-        required
-        autofocus
-        @keyup="checkImput($event,index)">
-      <div
-        v-else
-        class="taskStatusName font-weight-bold text-color mb-1"
-        @click="editStatus = true">
-        {{ getI18N(status.name) }}
+      <div v-if="(editStatus || status.edit) && project.canManage">
+        <v-text-field
+          v-if="editStatus || status.edit"
+          ref="autoFocusInput1"
+          v-model="status.name"
+          :placeholder="$t('label.tapStatus.name')"
+          type="text"
+          :rules="nameRules"
+          @focus="editStatusMode(project.canManage)"
+          @blur="cancelAddColumn(status.name)"
+          class="taskStatusNameEdit font-weight-bold text-color mb-1"
+          required
+          autofocus
+          outlined
+          dense
+          @keyup="checkInput($event,index)">
+          <i
+            dark
+            class="uiIcon40x40TickBlue ma-1"
+            slot="append"
+            @click="checkInput(13,status.name)">
+          </i>
+          <i
+            dark
+            class="uiIconClose ma-1"
+            slot="append"
+            @click="cancelAddColumn(status.name)">
+          </i>
+        </v-text-field>
       </div>
-      <span v-if="editStatus === false" class="uiTaskNumber">{{ tasksNumber }}</span>
+
+      <div
+        class="d-flex taskStatusName  font-weight-bold text-color mb-1"
+        v-else
+
+        @click="editStatusMode(project.canManage)">
+        <div
+          class="statusName text-truncate"
+          :title="getI18N(status.name)">
+          {{ getI18N(status.name) }}
+        </div>
+        <div class="uiTaskNumber">{{ tasksNumber }}</div>
+      </div>
     </div>
     <div class="taskNumberAndActions d-flex align-center mb-1" @click="editStatus = false">
       <!-- <span v-if="tasksNumber < maxTasksToShow" class="caption">{{ tasksNumber }}</span>
@@ -166,7 +192,8 @@ export default {
       editStatus: false,
       tasksStatsStartValue: 1,
       originalTasksToShow: this.maxTasksToShow,
-      disableBtnLoadMore: false,
+      disableBtnLoadMore: false,rules: [],
+      nameRules: []
     };
   },
   computed: {
@@ -175,6 +202,9 @@ export default {
     },
     limitTasksToshow() {
       return this.tasksStatsStartValue;
+    },
+    limitStatusLabel() {
+      return this.$t('label.status.name.rules');
     }
   },
   created() {
@@ -185,6 +215,7 @@ export default {
         }, 200);
       }
     });
+    this.nameRules = [v => !v || (v.length > 2 && v.length < 51) || this.limitStatusLabel];
   },
   methods: {
     loadNextTasks() {
@@ -205,8 +236,8 @@ export default {
         title: ''};
       this.$root.$emit('open-task-drawer', defaultTask);
     },
-    checkImput: function(e,index) {
-      if (e.keyCode === 13) {
+    checkInput: function(e,index) {
+      if (e.keyCode === 13 || e === 13) {
         this.saveStatus(index);
       }
       if (e.keyCode === 27) {
@@ -218,13 +249,15 @@ export default {
       this.$emit('delete-status', this.status);
     },
     saveStatus(index) {
-      if (this.status.id){
-        this.$emit('update-status', this.status);
-        this.editStatus=false;
-      } else {
-        this.status.rank=index;
-        this.$emit('add-status');
-        this.editStatus=false;
+      if (this.status.name.length>=3 && this.status.name.length<=50){
+        if (this.status.id){
+          this.$emit('update-status', this.status);
+          this.editStatus=false;
+        } else {
+          this.status.rank=index;
+          this.$emit('add-status');
+          this.editStatus=false;
+        }
       }
     },
     openQuickAdd() {
@@ -243,9 +276,20 @@ export default {
       if (this.status.id){
         this.editStatus=false;
         this.status.edit=false;
+        this.$emit('update-status', null);
       } else {
+        this.editStatus=false;
+        this.status.edit=false;
         this.$emit('cancel-add-column',index);
+        this.$emit('update-status', null);
+
       }
+    },
+    editStatusMode(canManage){
+      if (canManage){
+        this.editStatus=true;
+      }
+
     },
     getI18N(label){
       const fieldLabelI18NKey = `tasks.status.${label}`;
