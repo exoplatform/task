@@ -50,7 +50,7 @@ export default {
   data() {
     return {
       newTask: {title: '',
-        priority: 'NORMAL'}
+        priority: 'NONE'}
     };
   },
   computed: {
