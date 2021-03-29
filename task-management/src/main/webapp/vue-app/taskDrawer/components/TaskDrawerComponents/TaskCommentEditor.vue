@@ -136,7 +136,7 @@ export default {
     $('body').suggester('addProvider', 'task:people', function (query, callback) {
       const _this = this;
       const projectId = thiss.task.status ? thiss.task.status.project.id : null;
-      this.$taskDrawerApi.findUsersToMention(projectId, query).then((data) => {
+      thiss.$taskDrawerApi.findUsersToMention(projectId, query).then((data) => {
         const result = [];
         for (let i = 0; i < data.length; i++) {
           const d = data[i];
