@@ -215,7 +215,7 @@ export default {
       logs: [],
       comments: [],
       subEditorIsOpen: false,
-      taskPriority: 'NORMAL',
+      taskPriority: 'NONE',
       labelsToAdd: [],
       assignee: null,
       taskCoworkers: [],
