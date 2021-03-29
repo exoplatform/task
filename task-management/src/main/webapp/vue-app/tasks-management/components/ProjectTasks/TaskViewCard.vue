@@ -159,7 +159,9 @@
         }
         if (this.task.coworker || this.task.coworker.length > 0) {
           this.task.coworker.forEach((coworker) => {
-            this.assigneeAndCoworkerArray.push(coworker);
+            if (coworker){
+              this.assigneeAndCoworkerArray.push(coworker);
+            }
           })
         }
       },

@@ -256,6 +256,29 @@
     },
     methods: {
       open() {
+        const urlPath = document.location.pathname
+        if(urlPath.includes('projectDetail')){
+          let projectId = urlPath.split('projectDetail/')[1].split(/[^0-9]/)[0]
+          projectId = projectId && Number(projectId) || 0;
+          if (localStorage.getItem(`filterStorage${projectId}`) !== null) {
+            const localStorageSaveFilter = localStorage.getItem(`filterStorage${projectId}`);
+            if (localStorageSaveFilter.split('"')[10].split('}')[0].split(':')[1] === projectId.toString()) {
+              this.groupBy = localStorageSaveFilter.split('"')[3];
+              this.sortBy = localStorageSaveFilter.split('"')[7];
+            }
+          }
+        }
+        else if(urlPath.includes('myTasks')){
+          if (localStorage.getItem(`filterStorageNone`) !== null) {
+            const localStorageSaveFilter = localStorage.getItem(`filterStorageNone`);
+            if (localStorageSaveFilter.split('"')[11] === "None") {
+              this.groupBy = localStorageSaveFilter.split('"')[3];
+              this.sortBy = localStorageSaveFilter.split('"')[7];
+            }
+          }
+        }
+        this.$root.$emit('reset-filter-task-group-sort',this.groupBy);
+        this.$root.$emit('reset-filter-task-sort',this.sortBy);
         this.$refs.filterTasksDrawer.open();
       },
       cancel() {
@@ -269,7 +292,7 @@
         this.sortBy='';
         this.labels='';
         this.showCompleteTasks=false;
-        this.getFilterNumber()
+        this.getFilterNumber();
         this.$root.$emit('reset-filter-task-group-sort',this.groupBy);
       },
       reset() {
@@ -282,7 +305,14 @@
         this.sortBy='';
         this.labels='';
         this.showCompleteTasks=false;
-        this.getFilterNumber()
+        this.getFilterNumber();
+        const jsonToSave = {
+          groupBy: this.groupBy,
+          sortBy: this.sortBy,
+          projectId: this.project || "None",
+        }
+        this.saveValueFilterInStorage(JSON.parse(JSON.stringify(jsonToSave)));
+        localStorage.setItem(`filterStorage${jsonToSave.projectId}`,JSON.stringify(jsonToSave));
         this.$root.$emit('reset-filter-task-group-sort',this.groupBy);
         this.$emit('reset-filter-task');
       },
@@ -317,18 +347,26 @@
         const filterLabels = {
           labels: [],
         };
-        if(this.labels && this.labels!== null && this.labels !== ''){
+        if(this.labels){
           this.labels.forEach(user => {
             filterLabels.labels.push(user.id)
           })
         }
-        if (this.assignee !== null && this.assignee !== undefined && this.assignee !== ''){
+        if (this.assignee){
           tasks.assignee = this.assignee.remoteId;
         }
+        const jsonToSave = {
+          groupBy: this.groupBy,
+          sortBy: this.sortBy,
+          projectId: this.project || 'None',
+        }
+        this.saveValueFilterInStorage(JSON.parse(JSON.stringify(jsonToSave)));
         if(this.project){
           this.$emit('filter-task',{ tasks,filterLabels,showCompleteTasks:this.showCompleteTasks });
           this.getFilterNumber()
-          this.$refs.filterTasksDrawer.close();
+          if (this.$refs.filterTasksDrawer){
+            this.$refs.filterTasksDrawer.close();
+          }
         }else{
           this.$emit('filter-task-query', tasks,filterGroupSort,filterLabels);
        
@@ -362,11 +400,18 @@
         this.$emit('filter-num-changed',filtersnumber,source)
       },
       statusFilterLabel(item) {
-        if(this.$t(`label.status.${item.toLowerCase()}`).includes('label.status')) {
+        if (this.$t(`label.status.${item.toLowerCase()}`).includes('label.status')) {
           return item;
         } else {
           return this.$t(`label.status.${item.toLowerCase()}`);
         }
+      },
+      saveValueFilterInStorage(value){
+        this.$projectService.saveFilterSettings(value).then((response) => {
+          if (response){
+            localStorage.setItem(`filterStorage${value.projectId}`,JSON.stringify(value));
+          }
+        });
       },
 
     }

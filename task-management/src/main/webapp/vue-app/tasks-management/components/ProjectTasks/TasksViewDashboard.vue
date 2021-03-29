@@ -26,7 +26,7 @@
       @taskViewChangeTab="getChangeTabValue"
       @filter-task-dashboard="filterTaskDashboard"
       @reset-filter-task-dashboard="resetFiltertaskDashboard"/>
-    <div v-if="filterProjectActive">
+    <div v-if="filterProjectActive && groupName && groupName.projectName">
       <div v-for="(project,i) in groupName.projectName" :key="project.name">
 
         <div
@@ -228,19 +228,40 @@
       },
       getTasksByProject(ProjectId,query) {
         this.loadingTasks = true;
-        const tasks = {
-          query: query,
-          offset: 0,
-          limit: 0,
-          showCompleteTasks:false,
-        };
-        return this.$tasksService.filterTasksList(tasks,'','','',ProjectId).then(data => {
-          this.tasksList = data && data.tasks || [];
-          this.filterProjectActive=false;
-
-        })
-        .finally(() => this.loadingTasks = false);
-
+        if(localStorage.getItem(`filterStorage${ProjectId}`)!==null){
+          const localStorageSaveFilter = localStorage.getItem(`filterStorage${ProjectId}`);
+          if (localStorageSaveFilter.split('"')[10].split('}')[0].split(':')[1] === ProjectId.toString()) {
+            this.groupBy = localStorageSaveFilter.split('"')[3];
+            this.sortBy = localStorageSaveFilter.split('"')[7];
+            const tasksFilter = {
+              query: query,
+              groupBy: this.groupBy,
+              orderBy: this.sortBy,
+              offset: 0,
+              limit: 0,
+              showCompleteTasks:false,
+            };
+            return this.getFilter(tasksFilter,ProjectId);
+          }
+        }else {
+          this.getFilterProject(ProjectId).then(() => {
+            const tasksFilter = {
+              query: query,
+              groupBy: this.groupBy,
+              orderBy: this.sortBy,
+              offset: 0,
+              limit: 0,
+              showCompleteTasks:false,
+            };
+            const jsonToSave = {
+              groupBy: this.groupBy,
+              sortBy: this.sortBy,
+              projectId: ProjectId,
+            }
+            localStorage.setItem(`filterStorage${ProjectId}`,JSON.stringify(jsonToSave));
+            return this.getFilter(tasksFilter,ProjectId);
+          });
+        }
       },
       resetFiltertaskDashboard(){
         this.getTasksByProject(this.project.id,"");
@@ -321,6 +342,35 @@
            this.getStatusByProject(this.project.id)
         })
       },
+    getFilter(tasksFilter,ProjectId){
+      this.$tasksService.filterTasksList(tasksFilter,'','','',ProjectId).then(data => {
+        if(data.projectName){
+          this.filterProjectActive=true
+          this.tasksList = data && data.tasks || [];
+          this.groupName=data;
+        }
+        else {
+          this.filterProjectActive=false
+          this.tasksList = data && data.tasks || [];
+        }
+
+      })
+              .finally(() => this.loadingTasks = false);
+    },
+    getFilterProject(ProjectId){
+      return this.$projectService.getFilterSettings(ProjectId).then((resp) =>{
+        if (resp && resp.value){
+          const StorageSaveFilter = resp.value;
+          if (StorageSaveFilter.split('"')[10].split('}')[0].split(':')[1] === ProjectId.toString()) {
+            this.groupBy = StorageSaveFilter.split('"')[3];
+            this.sortBy = StorageSaveFilter.split('"')[7];
+          }
+        }else {
+          this.groupBy = 'none';
+          this.sortBy = '';
+        }
+      });
+    },
     }
   }
 </script>
