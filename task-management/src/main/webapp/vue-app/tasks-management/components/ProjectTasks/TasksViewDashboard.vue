@@ -276,7 +276,7 @@ export default {
             groupBy: this.groupBy,
             sortBy: this.sortBy,
             projectId: ProjectId,
-            tabView: this.taskViewTabName || '',
+            tabView: (this.taskViewTabName!==''? this.taskViewTabName : 'list'),
           };
           localStorage.setItem(`filterStorage${ProjectId}+${jsonToSave.tabView}`,JSON.stringify(jsonToSave));
           return this.getFilter(tasksFilter,ProjectId);
@@ -309,6 +309,7 @@ export default {
 
         }).finally(() => this.loadingTasks = false);
       } else {
+        this.filterByStatus=false;
         return this.$tasksService.filterTasksList(e.tasks,'','',e.filterLabels.labels,this.project.id).then(data => {
           if (data.projectName){
             this.filterProjectActive=true;
@@ -425,6 +426,7 @@ export default {
         }).finally(() => this.loadingTasks = false);
       }  else {
         this.$tasksService.filterTasksList(tasksFilter,'','','',ProjectId).then(data => {
+          this.filterByStatus=false;
           if (data.projectName){
             this.filterProjectActive=true;
             this.tasksList = data && data.tasks || [];
