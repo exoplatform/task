@@ -90,6 +90,20 @@ public class LabelServiceImpl implements LabelService {
         return StorageUtil.labelToDto(daoHandler.getLabelHandler().update(StorageUtil.mappingLabelToEntity(lb)));
     }
 
+
+    @Override
+    @ExoTransactional
+    public LabelDto updateLabel(LabelDto label) throws EntityNotFoundException {
+        LabelDto lb = getLabel(label.getId());
+        if (lb == null) {
+            throw new EntityNotFoundException(label.getId(), LabelDto.class);
+        }
+        lb.setName(label.getName());
+        lb.setColor(label.getColor());
+        lb.setHidden(label.isHidden());
+        return StorageUtil.labelToDto(daoHandler.getLabelHandler().update(StorageUtil.labelToEntity(lb)));
+    }
+
     @Override
     @ExoTransactional
     public void removeLabel(long labelId) {
