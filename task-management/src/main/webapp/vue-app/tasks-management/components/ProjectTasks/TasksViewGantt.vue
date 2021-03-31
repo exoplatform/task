@@ -123,11 +123,11 @@ export default {
             realtime: true,
             height: 10,
             bottom: 0,
-            startValue: (new Date().setHours(24,0,0,0)) - 1000 * 60 * 60 * 24 * 6,
+            startValue: (new Date().setHours(24,0,0,0)) - 1000 * 60 * 60 * 24 * 8,
             minValueSpan: 3600 * 24 * 1000,
-            maxValueSpan: 3600 * 24 * 1000 * 11,
+            maxValueSpan: 3600 * 24 * 1000 * (this.getXaxisLabelsToDisplay()),
             minSpan: 0,
-            maxSpan: 11,
+            maxSpan: this.getXaxisLabelsToDisplay()-1,
             handleIcon: 'path://M10.7,11.9H9.3c-4.9,0.3-8.8,4.4-8.8,9.4c0,5,3.9,9.1,8.8,9.4h1.3c4.9-0.3,8.8-4.4,8.8-9.4C19.5,16.3,15.6,12.2,10.7,11.9z M13.3,24.4H6.7V23h6.6V24.4z M13.3,19.6H6.7v-1.4h6.6V19.6z',
             handleSize: '0',
             showDetail: false,
@@ -139,9 +139,9 @@ export default {
             xAxisIndex: 0,
             filterMode: 'weakFilter',
             minValueSpan: 3600 * 24 * 1000,
-            maxValueSpan: 3600 * 24 * 1000 * 11,
+            maxValueSpan: 3600 * 24 * 1000 * (this.getXaxisLabelsToDisplay()),
             minSpan: 0,
-            maxSpan: 7,
+            maxSpan: this.getXaxisLabelsToDisplay()-1,
             zoomOnMouseWheel: false,
             moveOnMouseMove: true
           },{
@@ -152,7 +152,7 @@ export default {
             right: 10,
             top: 70,
             bottom: 20,
-            start: 60,
+            start: this.getYaxisLabelsToDisplay(),
             end: 100,
             handleSize: 0,
             showDetail: false,
@@ -160,7 +160,7 @@ export default {
             type: 'inside',
             id: 'insideY',
             yAxisIndex: 0,
-            start: 50,
+            start: this.getYaxisLabelsToDisplay(),
             end: 100,
             zoomOnMouseWheel: false,
             moveOnMouseMove: true,
@@ -177,9 +177,9 @@ export default {
             bottom: 0,
             startValue: (new Date().setHours(24,0,0,0)) - 1000 * 60 * 60 * 24 * 6,
             minValueSpan: 3600 * 24 * 1000,
-            maxValueSpan: 3600 * 24 * 1000 * 11,
+            maxValueSpan: 3600 * 24 * 1000 * (this.getXaxisLabelsToDisplay()),
             minSpan: 0,
-            maxSpan: 11,
+            maxSpan: this.getXaxisLabelsToDisplay()-1,
             handleIcon: 'path://M10.7,11.9H9.3c-4.9,0.3-8.8,4.4-8.8,9.4c0,5,3.9,9.1,8.8,9.4h1.3c4.9-0.3,8.8-4.4,8.8-9.4C19.5,16.3,15.6,12.2,10.7,11.9z M13.3,24.4H6.7V23h6.6V24.4z M13.3,19.6H6.7v-1.4h6.6V19.6z',
             handleSize: '0',
             showDetail: false,
@@ -191,9 +191,9 @@ export default {
             xAxisIndex: 0,
             filterMode: 'weakFilter',
             minValueSpan: 3600 * 24 * 1000,
-            maxValueSpan: 3600 * 24 * 1000 * 11,
+            maxValueSpan: 3600 * 24 * 1000 * (this.getXaxisLabelsToDisplay()),
             minSpan: 0,
-            maxSpan: 7,
+            maxSpan: this.getXaxisLabelsToDisplay()-1,
             zoomOnMouseWheel: false,
             moveOnMouseMove: true
           }];
@@ -207,6 +207,16 @@ export default {
         height: params.coordSys.height
       });
     },
+    getYaxisLabelsToDisplay() {
+      const intViewportHeight = window.innerHeight;
+      const autoHeight = Math.ceil((intViewportHeight - 250)/100)*10;
+      return 100 - autoHeight;
+    },
+    getXaxisLabelsToDisplay() {
+      const intViewportWidth = window.innerWidth;
+      const autoWidth = Math.ceil((intViewportWidth - 140)/82);
+      return autoWidth;
+    },
     drawTasksGantt () {
       if ( this.$refs.chart ) {
         const barDv = this.$refs.chart;
@@ -216,14 +226,12 @@ export default {
           const GanttTasksList = this.getTasksToDisplay(this.tasksList);
           const intViewportHeight = window.innerHeight;
           this.autoHeight = intViewportHeight - 200;
-          //this.autoHeight = 7 * 50 + 100;
-          console.warn(' this.autoHeight ',  this.autoHeight );
           myChart.getDom().style.height = `${this.autoHeight  }px`;
           myChart.resize(); 
           const option={
             tooltip: {
               trigger: 'item',
-              backgroundColor: '#000000', 
+              backgroundColor: '#000000',
               formatter: function (params) {
                 const lang = eXo.env.portal.language;
                 return `ID: ${ params.value[1]  }<br/> 
@@ -248,8 +256,8 @@ export default {
             dataZoom: this.renderZoomInAxis(),
             grid: {
               show: true,
-              left: 300,
-              right: 50,
+              left: 200,
+              right: 40,
               bottom: 40,
               top: 80,
               backgroundColor: '#fff',
@@ -290,7 +298,7 @@ export default {
                 show: true,
               },
               splitLine: {
-                show: false,
+                show: true,
                 lineStyle: {
                   color: ['#f2f2f2']
                 }
@@ -302,19 +310,18 @@ export default {
                 }
               },
               axisLabel: {
-                margin: 300,
+                margin: 200,
                 show: true,
                 inside: false,
                 align: 'left',
                 fontSize: 14,
                 borderRadius: 3,
-                padding: 8,
                 color: '#636363',
                 formatter: function(params) {
                   const taskTitle = params.split('~')[1];
                   let val='';
-                  if (taskTitle.length >40){
-                    val = `${taskTitle.substr(0,40)}...`;
+                  if (taskTitle.length >25){
+                    val = `${taskTitle.substr(0,25)}...`;
                     return val;
                   } else {
                     return taskTitle;
@@ -372,24 +379,27 @@ export default {
                   if ( axisDate.setHours(0,0,0,0) === toDay.setHours(0,0,0,0)) {
                     return `{toDayStyleMonth|${  monthLabel  }}{toDayStyleDay|${ day  }}`;
                   } else {
-                    return `${monthLabel} ${day}`;
+                    return `{styleMonth|${monthLabel} ${day}}`;
                   }
                 },
                 rich: {
                   styleMonth: {
                     align: 'center',
+                    fontSize: 12
                   },
                   toDayStyleMonth: {
                     color: '#ffffff',
                     backgroundColor: '#578dc9',
-                    padding: [2,4],
+                    padding: [2,2],
                     borderRadius: [4, 0, 0, 4],
+                    fontSize: 12
                   },
                   toDayStyleDay: {
                     color: '#ffffff',
                     backgroundColor: '#578dc9',
-                    padding: [2,4],
+                    padding: [2,2],
                     borderRadius: [0, 4, 4, 0],
+                    fontSize: 12
                   }
                 }
               }
@@ -439,6 +449,10 @@ export default {
                 this.$root.$emit('open-task-drawer', this.task);
               });
             } 
+          });
+
+          myChart.on('mouseover', params => {
+            console.warn('param param', params.componentType);
           });
         }
       }
