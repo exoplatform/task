@@ -63,6 +63,8 @@ public class TaskRestService implements ResourceContainer {
 
   private CommentStorage   commentStorage;
 
+  private static final String PERCENT_ENCODED_REGEX = "%(?![0-9a-fA-F]{2})";
+
   public TaskRestService(TaskService taskService,
                          CommentService commentService,
                          ProjectService projectService,
@@ -772,6 +774,7 @@ public class TaskRestService implements ResourceContainer {
     if (!TaskUtil.hasEditPermission(taskService,task)) {
       return Response.status(Response.Status.FORBIDDEN).build();
     }
+    commentText = commentText.replaceAll(PERCENT_ENCODED_REGEX, "%25");
     commentText = URLDecoder.decode(commentText, "UTF-8");
     CommentDto addedComment = commentService.addComment(task, currentUser, commentText);
     if (addedComment != null) {
@@ -808,6 +811,7 @@ public class TaskRestService implements ResourceContainer {
       return Response.status(Response.Status.BAD_REQUEST).build();
     }
 
+    commentText = commentText.replaceAll(PERCENT_ENCODED_REGEX, "%25");
     commentText = URLDecoder.decode(commentText, "UTF-8");
     CommentDto addedComment = commentService.addComment(task, commentId, currentUser, commentText);
     if (addedComment != null) {
