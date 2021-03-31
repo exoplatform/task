@@ -20,21 +20,21 @@
           <v-tab
             :href="taskCardTabView"
             class="taskTabBoard"
-            @change="$emit('taskViewChangeTab', 'board')">
+            @change="changeTaskViewTab('board')">
             <i class="uiIcon uiIconBoard"></i>
             <span>{{ $t('label.boardView') }}</span>
           </v-tab>
           <v-tab
             :href="taskListTabView"
             class="taskTabList"
-            @change="$emit('taskViewChangeTab', 'list')">
+            @change="changeTaskViewTab('list')">
             <i class="uiIcon uiIconList"></i>
             <span>{{ $t('label.listView') }}</span>
           </v-tab>
           <!--<v-tab
             :href="taskGanttTabView"
             class="taskTabGantt"
-            @change="$emit('taskViewChangeTab', 'gantt')">
+            @change="changeTaskViewTab('gantt')">
             <i class="uiIcon uiIconGantt"></i>
             <span>Gantt</span>
           </v-tab>-->
@@ -66,6 +66,7 @@
       :project="project.id"
       :query="keyword"
       :status-list="statusList"
+      :task-view-tab-name="taskViewTabName"
       @filter-num-changed="filterNumChanged"
       @filter-task="filterTasks"
       @reset-filter-task="resetFilterTask" />
@@ -100,7 +101,8 @@ export default {
       keyword: null,
       awaitingSearch: false,
       filterNumber: 0,
-      searchonkeyChange: true
+      searchonkeyChange: true,
+      taskViewTabName: '',
     };
   },
   watch: {        
@@ -152,6 +154,10 @@ export default {
       if (this.filterNumber>0){
         return `(${this.filterNumber})`;
       } return '';
+    },
+    changeTaskViewTab(view){
+      this.taskViewTabName=view;
+      this.$emit('taskViewChangeTab', view);
     }
   }
 };
