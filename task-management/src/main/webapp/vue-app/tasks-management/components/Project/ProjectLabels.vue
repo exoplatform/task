@@ -53,7 +53,6 @@ export default {
   },
   data() {
     return {
-      displayActionMenu: false,
       index: -1,
       items: [],
       nonce: 1,
@@ -61,32 +60,6 @@ export default {
       x: 0,
       search: null,
       y: 0,
-      labelColors: [
-        { class: 'asparagus' },
-        { class: 'munsell_blue' },
-        { class: 'navy_blue' },
-        { class: 'purple' },
-        { class: 'red' },
-        { class: 'brown' },
-        { class: 'laurel_green' },
-        { class: 'sky_blue' },
-        { class: 'blue_gray' },
-        { class: 'light_purple' },
-        { class: 'hot_pink' },
-        { class: 'light_brown' },
-        { class: 'moss_green' },
-        { class: 'powder_blue' },
-        { class: 'light_blue' },
-        { class: 'pink' },
-        { class: 'Orange' },
-        { class: 'gray' },
-        { class: 'green' },
-        { class: 'baby_blue' },
-        { class: 'light_gray' },
-        { class: 'beige' },
-        { class: 'yellow' },
-        { class: 'plum' },
-      ],
     };
   },
   watch: {
@@ -184,7 +157,7 @@ export default {
         label.editMenu=false;
         this.$root.$emit('show-alert', {
           type: 'success',
-          message: this.$t('alert.success.label.edited')
+          message: this.$t('alert.success.label.updated')
         });
         this.getProjectLabels(this.project.id);
       }).catch(e => {
