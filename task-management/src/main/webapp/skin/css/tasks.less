@@ -61,6 +61,7 @@
           }
         }
       .projectLabelsName {
+
         .inputProjectLabel{
           box-shadow: none!important;
           border: none!important;
@@ -215,6 +216,7 @@
             }
           }
         }
+
         .cke_browser_webkit{
           margin: 16px 16px;
         }
@@ -3601,3 +3603,60 @@
     //border: 1px solid #578dc9;
     animation: beginDrag 1s ease forwards;
   }
+
+.labelsActionMenu {
+  .label-edit-name{
+    max-width: 136px;
+  }
+  .label-btn {
+    cursor: pointer;
+  }
+
+  .VuetifyApp .theme--light.v-list-item:hover::before {
+    opacity: 0;
+    .uiIcon,span {
+      color: #ffffff!important;
+    }
+    background-image: linear-gradient(to bottom, @primaryColor, @primaryColor);
+  }
+  .v-list-item.menu-list,.v-list-item.draftButton, .v-list-item.clone{
+    &:hover{
+      .uiIcon,span {
+        color: #ffffff!important;
+      }
+      background-image: linear-gradient(to bottom, @primaryColor, @primaryColor);
+    }
+  }
+  .v-list-item {
+    min-height: 30px!important;
+    .uiIcon {
+      font-size: 16px;
+    }
+    .noColorLabel {
+      border: 1px solid @borderColor;
+      cursor: pointer;
+    }
+    .projectColorPicker {
+      width: 144px;
+      max-width: 144px;
+      .projectColorCell {
+        width: 20px;
+        height: 20px;
+        min-width: 20px;
+        min-height: 20px;
+        margin: 2px;
+        cursor: pointer;
+      }
+      .isSelected {
+        position: relative;
+        text-align: center;
+        &:before {
+          content: '\e9c6';
+          font-family: 'PLF-FONT-ICONS' !important;
+          color: white;
+          font-size: 14px;
+        }
+      }
+    }
+  }
+}

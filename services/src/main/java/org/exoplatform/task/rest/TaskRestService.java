@@ -644,6 +644,42 @@ public class TaskRestService implements ResourceContainer {
         return Response.serverError().entity(e.getMessage()).build();
         }
   }
+  @PUT
+  @Path("labels/{labelId}")
+  @RolesAllowed("users")
+  @ApiOperation(value = "Adds a specific task by id to a label", httpMethod = "POST", response = Response.class, notes = "This adds a specific task by id to a label")
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled"),
+      @ApiResponse(code = 400, message = "Invalid query input"), @ApiResponse(code = 403, message = "Unauthorized operation"),
+      @ApiResponse(code = 404, message = "Resource not found") })
+  public Response editLabel(@ApiParam(value = "label id", required = true) @PathParam("labelId") long labelId,
+                            @ApiParam(value = "label", required = true) LabelDto addedLabel) {
+    try {
+    Identity currentUser = ConversationState.getCurrent().getIdentity();
+    if (addedLabel == null) {
+      return Response.status(Response.Status.BAD_REQUEST).build();
+    }
+
+      try {
+        ProjectDto project = projectService.getProject(addedLabel.getProject().getId());
+        if (project == null) {
+          return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        if (!project.canEdit(currentUser)) {
+          return Response.status(Response.Status.FORBIDDEN).build();
+        }
+      }catch (Exception e) {
+        return Response.status(Response.Status.BAD_REQUEST).build();
+      }
+    if (labelService.getLabel(labelId)==null) {
+      return Response.status(Response.Status.NOT_FOUND).build();
+    }
+      LabelDto label = labelService.updateLabel(addedLabel);
+    return Response.ok(addedLabel).build();
+        } catch (Exception e) {
+        LOG.error("Can't add  Label", e);
+        return Response.serverError().entity(e.getMessage()).build();
+        }
+  }
 
   @DELETE
   @Path("labels/{labelId}")

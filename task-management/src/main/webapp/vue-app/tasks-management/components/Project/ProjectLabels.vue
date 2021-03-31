@@ -32,36 +32,10 @@
         </v-list-item>
       </template>
       <template v-slot:selection="{ attrs, item, parent, selected }">
-        <v-chip
-          v-if="item === Object(item)"
-          v-bind="attrs"
-          :color="`${item.color} lighten-3`"
-          :input-value="selected"
-          class="pe-1 font-weight-bold"
-          label
-          dark
-          small>
-          <span class="pe-2">
-            {{ item.text }}
-          </span>
-          <v-icon
-            x-small
-            class="pe-0"
-            @click="parent.selectItem(item);removeLabel(item)">
-            close
-          </v-icon>
-        </v-chip>
-      </template>
-      <template v-slot:item="{ index, item }">
-        <v-list-item @click="addLabel(item)">
-          <v-chip
-            :color="`${item.color} lighten-3`"
-            dark
-            label
-            small>
-            {{ item.text }}
-          </v-chip>
-        </v-list-item>
+        <editable-labels
+          :item="item"
+          @edit-label="editLabel"
+          @remove-label="removeLabel" />
       </template>
     </v-combobox>
   </div>
@@ -79,6 +53,7 @@ export default {
   },
   data() {
     return {
+      displayActionMenu: false,
       index: -1,
       items: [],
       nonce: 1,
@@ -86,6 +61,32 @@ export default {
       x: 0,
       search: null,
       y: 0,
+      labelColors: [
+        { class: 'asparagus' },
+        { class: 'munsell_blue' },
+        { class: 'navy_blue' },
+        { class: 'purple' },
+        { class: 'red' },
+        { class: 'brown' },
+        { class: 'laurel_green' },
+        { class: 'sky_blue' },
+        { class: 'blue_gray' },
+        { class: 'light_purple' },
+        { class: 'hot_pink' },
+        { class: 'light_brown' },
+        { class: 'moss_green' },
+        { class: 'powder_blue' },
+        { class: 'light_blue' },
+        { class: 'pink' },
+        { class: 'Orange' },
+        { class: 'gray' },
+        { class: 'green' },
+        { class: 'baby_blue' },
+        { class: 'light_gray' },
+        { class: 'beige' },
+        { class: 'yellow' },
+        { class: 'plum' },
+      ],
     };
   },
   watch: {
@@ -150,6 +151,7 @@ export default {
         this.model = labels.map(function (el) {
           const o = Object.assign({}, el);
           o.text = o.name;
+          o.editMenu=false;
           return o;
         });
       });
@@ -172,10 +174,26 @@ export default {
           });
         });
       } else {
-        document.dispatchEvent(new CustomEvent('labelListChanged', {detail: label}));
+        this.$emit('add-label', label);
       }
       this.model.push(label);
       document.getElementById('labelInput').focus();
+    },
+    editLabel(label) {
+      this.$taskDrawerApi.editLabel(label).then( () => {
+        label.editMenu=false;
+        this.$root.$emit('show-alert', {
+          type: 'success',
+          message: this.$t('alert.success.label.edited')
+        });
+        this.getProjectLabels(this.project.id);
+      }).catch(e => {
+        console.error('Error when adding labels', e);
+        this.$root.$emit('show-alert', {
+          type: 'error',
+          message: this.$t('alert.error')
+        });
+      });
     },
     removeLabel(item) {
       this.$taskDrawerApi.removeLabel(item.id).then( () => {
