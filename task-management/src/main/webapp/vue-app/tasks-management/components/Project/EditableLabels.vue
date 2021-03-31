@@ -57,7 +57,7 @@
                 dark
                 class="uiIconClose label-btn ma-1"
                 slot="append"
-                @click="item.text=item.name;item.editMenu=false">
+                @click="item.text=item.name;displayActionMenu=false">
               </i>
             </v-text-field>
           </v-list-item-content>
