@@ -36,7 +36,7 @@ export default {
       task: {
         type: Object,
         default: () => ({}),
-      }
+      },
     };
   },
   mounted() {
@@ -77,9 +77,20 @@ export default {
         const task =[];
         task.push(index);
         task.push(item.task.id);
-        if (item.task.startDate != null) { task.push(item.task.startDate.time);}
-        if (item.task.dueDate != null) { task.push(item.task.dueDate.time);}
-        if (item.task.startDate != null && item.task.dueDate != null) {
+        if (item.task.startDate != null) { 
+          task.push(item.task.startDate.time-3600000);
+          if ( item.task.dueDate === null ) {
+            task.push(item.task.startDate.time + 3600000 );
+          } else {
+            task.push(item.task.dueDate.time + 3600000);
+          }
+        } else {
+          if (item.task.dueDate != null) { 
+            task.push(item.task.dueDate.time - 3600000 );
+            task.push(item.task.dueDate.time + 3600000 );
+          }
+        }
+        if (item.task.startDate != null || item.task.dueDate != null) {
           task.push(item.task.title);
           task.push(item.task.priority);
           GanttTasksList.push(task);
@@ -92,7 +103,7 @@ export default {
       const timeArrival = api.coord([api.value(2), categoryIndex]);
       const timeDeparture = api.coord([api.value(3), categoryIndex]);
       const barLength = timeDeparture[0] - timeArrival[0];
-      const barHeight = 10;
+      const barHeight = 15;
       const x = timeArrival[0];
       const y = timeArrival[1];
       const rectNormal = this.clipRectByRect(params, {
@@ -114,7 +125,7 @@ export default {
     },
     renderZoomInAxis() {
       const GanttTasksList = this.getTasksToDisplay(this.tasksList);
-      if ( GanttTasksList.length > 7 ) {
+      if ( GanttTasksList.length > this.getTasksNumberToDisplay() ) {
         return  [
           {
             type: 'slider',
@@ -123,7 +134,7 @@ export default {
             realtime: true,
             height: 10,
             bottom: 0,
-            startValue: (new Date().setHours(24,0,0,0)) - 1000 * 60 * 60 * 24 * 8,
+            startValue: (new Date().setHours(24,0,0,0)) - 1000 * 60 * 60 * 24 * (this.getXaxisLabelsToDisplay()/2),
             minValueSpan: 3600 * 24 * 1000,
             maxValueSpan: 3600 * 24 * 1000 * (this.getXaxisLabelsToDisplay()),
             minSpan: 0,
@@ -175,7 +186,7 @@ export default {
             realtime: true,
             height: 10,
             bottom: 0,
-            startValue: (new Date().setHours(24,0,0,0)) - 1000 * 60 * 60 * 24 * 6,
+            startValue: (new Date().setHours(24,0,0,0)) - 1000 * 60 * 60 * 24 * (this.getXaxisLabelsToDisplay()/2),
             minValueSpan: 3600 * 24 * 1000,
             maxValueSpan: 3600 * 24 * 1000 * (this.getXaxisLabelsToDisplay()),
             minSpan: 0,
@@ -217,6 +228,11 @@ export default {
       const autoWidth = Math.ceil((intViewportWidth - 140)/82);
       return autoWidth;
     },
+    getTasksNumberToDisplay() {
+      const intViewportHeight = window.innerHeight;
+      const autoHeight = Math.ceil((intViewportHeight - 250)/100)*2;
+      return autoHeight;
+    },
     drawTasksGantt () {
       if ( this.$refs.chart ) {
         const barDv = this.$refs.chart;
@@ -230,22 +246,15 @@ export default {
           myChart.resize(); 
           const option={
             tooltip: {
-              trigger: 'item',
-              backgroundColor: '#000000',
-              formatter: function (params) {
+              trigger: 'axis',
+              axisPointer: {            
+                type: 'shadow' 
+              },
+              formatter: function(params) {
                 const lang = eXo.env.portal.language;
-                return `ID: ${ params.value[1]  }<br/> 
-                        Start: ${  new Date(params.value[2]).toLocaleDateString(lang, {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric'
-  }) }<br/>
-                  Due Date: ${  new Date(params.value[3]).toLocaleDateString(lang, {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric'
-  }) } `;
-              }
+                return `<span style="font-weight: bold;">${ params[0].data[4]  }</span><br/>ID: ${ params[0].data[1]  }<br/> Start: ${  new Date(params[0].data[2]).toLocaleDateString(lang, {day: '2-digit',month: '2-digit',year: 'numeric'}) }<br/>Due Date: ${  new Date(params[0].data[3]).toLocaleDateString(lang, {day: '2-digit',month: '2-digit',year: 'numeric'}) } `;
+              },
+              backgroundColor: '#000000',
             },
             animation: true,
             toolbox: {
@@ -267,7 +276,6 @@ export default {
               type: 'category',
               name: 'Task Name',
               nameLocation: 'start',
-              inverse: true,
               offset: 0,
               nameTextStyle: {
                 color: '#333333',
@@ -276,7 +284,6 @@ export default {
                 fontSize: 14,
                 padding: [10, 220, 10 ,10],
                 margin: 10,
-                
                 borderColor: 'transparent',
                 shadowOffsetY: 4,
                 shadowOffsetX: 4,
@@ -411,7 +418,8 @@ export default {
               dimensions: this.TasksGanttdimensions,
               encode: {
                 x: [2, 3],
-                y: 0
+                y: 0,
+                //tooltip: [1,2,3]
               },
               data: GanttTasksList,
               markLine: {
@@ -449,10 +457,6 @@ export default {
                 this.$root.$emit('open-task-drawer', this.task);
               });
             } 
-          });
-
-          myChart.on('mouseover', params => {
-            console.warn('param param', params.componentType);
           });
         }
       }
