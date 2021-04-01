@@ -1,9 +1,18 @@
 <template>
-  <div id="echartContent" style="margin: auto; width: 100%;">
-    <div 
-      id="myChart" 
+  <div v-if="tasksList && tasksList.length > 0 && getTasksToDisplay(tasksList).length === 0">
+    <div class="noTasksProject">
+      <div class="noTasksProjectIcon"><i class="uiIcon uiIconTask"></i></div>
+      <div class="noTasksProjectLabel"><span>{{ $t('label.noTasks') }}</span></div>
+    </div>
+  </div>
+  <div
+    v-else
+    class="echartsContainer"
+    style="margin-bottom: 20px; min-height:60vh">
+    <div
+      id="myChart"
       ref="chart"
-      style="margin: auto; height: 500px;"></div>
+      style="margin: auto;margin-bottom: 20px;"></div>
   </div>
 </template>
 <script>
@@ -12,252 +21,446 @@ export default {
     tasksList: {
       type: Array,
       default: () => []
-    },
-    lang: {
-      type: String,
-      default: function() {
-        return eXo.env.portal.language;
-      },
-    },
+    }
   },
   data () {
     return {
-      dateFormat: {
-        month: 'long',
-        day: 'numeric'
+      axisTimeLength: 0,
+      autoHeight: 0,
+      TasksGanttdimensions: [
+        'Index',
+        'Task ID',
+        'Start Date',
+        'Due Date'
+      ],
+      task: {
+        type: Object,
+        default: () => ({}),
       },
     };
   },
   mounted() {
     setTimeout(() => {
-      this.drawLine();
+      this.drawTasksGantt();
     }, 200);
   },
+  watch: {
+    tasksList () {
+      setTimeout(() => {
+        this.drawTasksGantt();
+      }, 200);
+    }
+  },
   methods: {
-    setDates(test) {
-      try {
-        test.sort((a, b) => {
-          if (a.isCurrent) {
-            return -1;
-          }
-          if (b.isCurrent) {
-            return 1;
-          }
-          if (!a.startDate && !b.startDate ) {
-            return 0;
-          }
-          if (!a.startDate) {
-            return 1;
-          }
-          if (!b.startDate) {
-            return -1;
-          }
-          return new Date(b.startDate).getTime() - new Date(a.startDate).getTime();
-        });
-      } catch (e) {
-        console.error('Error sorting experiences', e); // eslint-disable-line no-console
+    getTaskPriorityColor(priority) {
+      switch (priority) {
+      case 'HIGH':
+        return '#bc4343';
+      case 'NORMAL':
+        return '#ffb441';
+      case 'LOW':
+        return '#2eb58c';
+      case 'NONE':
+        return '#476a9c';
       }
     },
     getTasksTitle(tasksList) {
       const taskByElement = [];
       tasksList.forEach((element) => {
-        taskByElement.push(element.title);
+        taskByElement.push(`${element[1]}~${element[4]}`);
       });
       return taskByElement;
     },
-    getTasksStartDate(tasksList) {
-      const taskByDate = [];
-      tasksList.forEach((element) => {
-        taskByDate.push(element.startDate);
-      });
-      return taskByDate;
-    },
-    dateFormatter(date, index) {
-      return this.$dateUtil.formatDateObjectToDisplay(new Date(date + (86400000*index)), this.dateFormat, this.lang);
-
-    },
-    drawLine () {
-      const barDv = this.$refs.chart;
-      barDv.style.width=`${window.innerWidth -100 }px`;
-      if (barDv) {
-        const myChart = echarts.init(barDv);
-        const GanttTasksList = [];
-        const numberOfDays = [];
-        const tasksDate = [];
-        let startDayTime = '';
-        this.tasksList.forEach((item) => {
-          const task = {
-            'title': '',
-            'startDate': '',
-            'endDate': '',
-            'startDateTime': '',
-            'DaysNumber': ''
-          };
-          if (item.task.startDate != null) {
-            const startDate = this.$dateUtil.formatDateObjectToDisplay(new Date(item.task.startDate.time), this.dateFormat, this.lang);
-            task.startDate = startDate;
-            task.startDateTime = item.task.startDate.time;
+    getTasksToDisplay(tasksList) {
+      const GanttTasksList = [];
+      tasksList.forEach((item,index) => {
+        const task =[];
+        task.push(index);
+        task.push(item.task.id);
+        if (item.task.startDate != null) { 
+          task.push(item.task.startDate.time-3600000);
+          if ( item.task.dueDate === null ) {
+            task.push(item.task.startDate.time + 3600000 );
+          } else {
+            task.push(item.task.dueDate.time + 3600000);
           }
-          if (item.task.endDate != null) {
-            const endDate = this.$dateUtil.formatDateObjectToDisplay(new Date(item.task.endDate.time), this.dateFormat, this.lang);
-            task.endDate = endDate;
+        } else {
+          if (item.task.dueDate != null) { 
+            task.push(item.task.dueDate.time - 3600000 );
+            task.push(item.task.dueDate.time + 3600000 );
           }
-          if (item.task.startDate != null && item.task.endDate != null) {
-            task.title= item.task.title;
-            numberOfDays.push(Math.round((item.task.endDate.time - item.task.startDate.time) / 86400000)-1);
-            task.DaysNumber = Math.round((item.task.endDate.time - item.task.startDate.time) / 86400000);
-            GanttTasksList.push(task);
-          }
-        });
-        this.setDates(GanttTasksList);
-        startDayTime = GanttTasksList.reverse()[0].startDateTime;
-        for (let step=0;  step < 14; step++ ) {
-          tasksDate.push(this.$dateUtil.formatDateObjectToDisplay(new Date(startDayTime + (86400000*step)), this.dateFormat, this.lang));
         }
-        const startTaskDelay = [];
-        const tasksToDisplay = [];
-        const delayToDisplay = [];
-        GanttTasksList.forEach((item) => {
-          for (let step=0;  step < 14; step++ ) {
-            if (item && item.startDate === tasksDate[step]) {
-              startTaskDelay.push(step);
-              tasksToDisplay.push(item);
-              delayToDisplay.push(item.DaysNumber-1);
-              break;
-            }
-          }
-        });
-        const option={
-          grid: {
-            left: 250,
-            right: 20,
-            bottom: 20,
+        if (item.task.startDate != null || item.task.dueDate != null) {
+          task.push(item.task.title);
+          task.push(item.task.priority);
+          GanttTasksList.push(task);
+        }
+      });
+      return GanttTasksList;
+    },
+    renderGanttItem(params, api) {
+      const categoryIndex = api.value(0);
+      const timeArrival = api.coord([api.value(2), categoryIndex]);
+      const timeDeparture = api.coord([api.value(3), categoryIndex]);
+      const barLength = timeDeparture[0] - timeArrival[0];
+      const barHeight = 15;
+      const x = timeArrival[0];
+      const y = timeArrival[1];
+      const rectNormal = this.clipRectByRect(params, {
+        x: x,
+        y: y,
+        width: barLength,
+        height: barHeight,
+      });
+
+      return {
+        type: 'group',
+        children: [{
+          type: 'rect',
+          ignore: !rectNormal,
+          shape: rectNormal,
+          style: api.style({fill: this.getTaskPriorityColor(api.value(5))})
+        }]
+      };
+    },
+    renderZoomInAxis() {
+      const GanttTasksList = this.getTasksToDisplay(this.tasksList);
+      if ( GanttTasksList.length > this.getTasksNumberToDisplay() ) {
+        return  [
+          {
+            type: 'slider',
+            xAxisIndex: 0,
+            filterMode: 'none',
+            realtime: true,
+            height: 10,
+            bottom: 0,
+            startValue: (new Date().setHours(24,0,0,0)) - 1000 * 60 * 60 * 24 * (this.getXaxisLabelsToDisplay()/2),
+            minValueSpan: 3600 * 24 * 1000,
+            maxValueSpan: 3600 * 24 * 1000 * (this.getXaxisLabelsToDisplay()),
+            minSpan: 0,
+            maxSpan: this.getXaxisLabelsToDisplay()-1,
+            handleIcon: 'path://M10.7,11.9H9.3c-4.9,0.3-8.8,4.4-8.8,9.4c0,5,3.9,9.1,8.8,9.4h1.3c4.9-0.3,8.8-4.4,8.8-9.4C19.5,16.3,15.6,12.2,10.7,11.9z M13.3,24.4H6.7V23h6.6V24.4z M13.3,19.6H6.7v-1.4h6.6V19.6z',
+            handleSize: '0',
+            showDetail: false,
+            borderColor: 'transparent'
+          },
+          {
+            type: 'inside',
+            id: 'insideX',
+            xAxisIndex: 0,
+            filterMode: 'weakFilter',
+            minValueSpan: 3600 * 24 * 1000,
+            maxValueSpan: 3600 * 24 * 1000 * (this.getXaxisLabelsToDisplay()),
+            minSpan: 0,
+            maxSpan: this.getXaxisLabelsToDisplay()-1,
+            zoomOnMouseWheel: false,
+            moveOnMouseMove: true
+          },{
+            type: 'slider',
+            yAxisIndex: 0,
+            zoomLock: true,
+            width: 10,
+            right: 10,
             top: 70,
+            bottom: 20,
+            start: this.getYaxisLabelsToDisplay(),
+            end: 100,
+            handleSize: 0,
+            showDetail: false,
+          }, {
+            type: 'inside',
+            id: 'insideY',
+            yAxisIndex: 0,
+            start: this.getYaxisLabelsToDisplay(),
+            end: 100,
+            zoomOnMouseWheel: false,
+            moveOnMouseMove: true,
+            moveOnMouseWheel: true
+          }];
+      } else {
+        return  [
+          {
+            type: 'slider',
+            xAxisIndex: 0,
+            filterMode: 'none',
+            realtime: true,
+            height: 10,
+            bottom: 0,
+            startValue: (new Date().setHours(24,0,0,0)) - 1000 * 60 * 60 * 24 * (this.getXaxisLabelsToDisplay()/2),
+            minValueSpan: 3600 * 24 * 1000,
+            maxValueSpan: 3600 * 24 * 1000 * (this.getXaxisLabelsToDisplay()),
+            minSpan: 0,
+            maxSpan: this.getXaxisLabelsToDisplay()-1,
+            handleIcon: 'path://M10.7,11.9H9.3c-4.9,0.3-8.8,4.4-8.8,9.4c0,5,3.9,9.1,8.8,9.4h1.3c4.9-0.3,8.8-4.4,8.8-9.4C19.5,16.3,15.6,12.2,10.7,11.9z M13.3,24.4H6.7V23h6.6V24.4z M13.3,19.6H6.7v-1.4h6.6V19.6z',
+            handleSize: '0',
+            showDetail: false,
+            borderColor: 'transparent'
           },
-          tooltip: {
-            trigger: 'item',
-            axisPointer: {
-              type: 'none'
-            }
-          },
-          yAxis: {
-            type: 'category',
-            min: 0,
-            max: tasksToDisplay.length-1,
-            scale: true,
-            triggerEvent: true,
-            axisLine: {
-              show: false
-            },
-            axisTick: {
-              show: false,
-            },
-            axisLabel: {
-              margin: 250,
-              show: true,
-              inside: false,
-              align: 'left',
-              fontSize: 14,
-              formatter: function(params) {
-                let val='';
-                if (params.length >36){
-                  val = `${params.substr(0,36)}...`;
-                  return val;
-                } else {
-                  return params;
-                }
-              }
-            },
-            data: this.getTasksTitle(tasksToDisplay.reverse())
-          },
-          xAxis: {
-            type: 'value',
-            position: 'top',
-            min: 0,
-            max: 6,
-            splitNumber: 7,
-            splitLine: {
-              show: true,
-              lineStyle: {
-                color: '#f6f8fa'
-              }
-            },
-            /*name: "Tasks",
-              nameLocation: "start",
-              nameTextStyle: {
-                align: "left",
-                padding: [0, 0, 0, 250]
-              },*/
-            axisLine: {
-              show: false
-            },
-            axisTick: {
-              show: false,
-            },
-            axisLabel: {
-              show: true,
-              align: 'center',
-              inside: false,
-              fontSize: 13,
-              fontWeight: 'bold',
-              backgroundColor: '#f6f8fa',
-              borderRadius: 3,
-              padding: 8,
-              interval: 0,
-              formatter: function (value,index) {
-                const tasksByDate = [];
-                tasksToDisplay.forEach((element) => {
-                  tasksByDate.push(element.startTime);
-                });
-                return tasksDate[index];
-              }
-            }
-          },
-          series: [
-            {
-              name: 'planDate',
-              type: 'bar',
-              stack: 'planTasks',
-              barCategoryGap: '2',
-              barBorderRadius: [3, 3, 3, 3],
-              barWidth: 15,
-              itemStyle: {
-                normal: {
-                  borderColor: 'rgba(0,0,0,0)',
-                  color: 'rgba(0,0,0,0)'
-                },
-                emphasis: {
-                  borderColor: 'rgba(0,0,0,0)',
-                  color: 'rgba(0,0,0,0)'
-                }
-              },
-              data: startTaskDelay.reverse()
-            },
-            {
-              name: 'planTasks',
-              type: 'bar',
-              stack: 'planTasks',
-              barWidth: 70,
-              barCategoryGap: '2%',
-              itemStyle: {
-                normal: {
-                  label: {
-                    show: false,
-                    position: 'right',
-                    textStyle: {
-                      fontSize: 14
-                    }
-                  },
-                  color: '#ffcc02',
-                }
-              },
-              data: delayToDisplay.reverse()
-            },
-          ]
-        };
-        myChart.setOption(option,true);
-        myChart.resize();
+          {
+            type: 'inside',
+            id: 'insideX',
+            xAxisIndex: 0,
+            filterMode: 'weakFilter',
+            minValueSpan: 3600 * 24 * 1000,
+            maxValueSpan: 3600 * 24 * 1000 * (this.getXaxisLabelsToDisplay()),
+            minSpan: 0,
+            maxSpan: this.getXaxisLabelsToDisplay()-1,
+            zoomOnMouseWheel: false,
+            moveOnMouseMove: true
+          }];
       }
+    },
+    clipRectByRect(params, rect) {
+      return echarts.graphic.clipRectByRect(rect, {
+        x: params.coordSys.x,
+        y: params.coordSys.y,
+        width: params.coordSys.width,
+        height: params.coordSys.height
+      });
+    },
+    getYaxisLabelsToDisplay() {
+      const intViewportHeight = window.innerHeight;
+      const autoHeight = Math.ceil((intViewportHeight - 250)/100)*10;
+      return 100 - autoHeight;
+    },
+    getXaxisLabelsToDisplay() {
+      const intViewportWidth = window.innerWidth;
+      const autoWidth = Math.ceil((intViewportWidth - 140)/82);
+      return autoWidth;
+    },
+    getTasksNumberToDisplay() {
+      const intViewportHeight = window.innerHeight;
+      const autoHeight = Math.ceil((intViewportHeight - 250)/100)*2;
+      return autoHeight;
+    },
+    drawTasksGantt () {
+      if ( this.$refs.chart ) {
+        const barDv = this.$refs.chart;
+        barDv.style.width=`${window.innerWidth -100 }px`;
+        if (barDv) {
+          const myChart = echarts.init(barDv);
+          const GanttTasksList = this.getTasksToDisplay(this.tasksList);
+          const intViewportHeight = window.innerHeight;
+          this.autoHeight = intViewportHeight - 200;
+          myChart.getDom().style.height = `${this.autoHeight  }px`;
+          myChart.resize(); 
+          const option={
+            tooltip: {
+              trigger: 'axis',
+              axisPointer: {            
+                type: 'shadow' 
+              },
+              formatter: function(params) {
+                const lang = eXo.env.portal.language;
+                return `<span style="font-weight: bold;">${ params[0].data[4]  }</span><br/>ID: ${ params[0].data[1]  }<br/> Start: ${  new Date(params[0].data[2]).toLocaleDateString(lang, {day: '2-digit',month: '2-digit',year: 'numeric'}) }<br/>Due Date: ${  new Date(params[0].data[3]).toLocaleDateString(lang, {day: '2-digit',month: '2-digit',year: 'numeric'}) } `;
+              },
+              backgroundColor: '#000000',
+            },
+            animation: true,
+            toolbox: {
+              left: 20,
+              top: 0,
+              itemSize: 20,
+            },
+            dataZoom: this.renderZoomInAxis(),
+            grid: {
+              show: true,
+              left: 200,
+              right: 40,
+              bottom: 40,
+              top: 80,
+              backgroundColor: '#fff',
+              borderWidth: 0
+            },
+            yAxis: {
+              type: 'category',
+              name: 'Task Name',
+              nameLocation: 'start',
+              offset: 0,
+              nameTextStyle: {
+                color: '#333333',
+                align: 'right',
+                fontWeight: 'bold',
+                fontSize: 14,
+                padding: [10, 220, 10 ,10],
+                margin: 10,
+                borderColor: 'transparent',
+                shadowOffsetY: 4,
+                shadowOffsetX: 4,
+                borderRadius: [8, 8, 8, 8],
+                shadowBlur: 2
+              },
+              nameGap: 6,
+              scale: true,
+              triggerEvent: true,
+              min: 0,
+              max: GanttTasksList.length-1,
+              axisLine: {
+                show: true,
+                lineStyle: {
+                  color: ['#f2f2f2']
+                }
+              },
+              axisTick: {
+                show: true,
+              },
+              splitLine: {
+                show: true,
+                lineStyle: {
+                  color: ['#f2f2f2']
+                }
+              },
+              splitArea: {
+                show: true,
+                areaStyle: {
+                  color: ['rgba(250,250,250,0.9)','#ffffff']
+                }
+              },
+              axisLabel: {
+                margin: 200,
+                show: true,
+                inside: false,
+                align: 'left',
+                fontSize: 14,
+                borderRadius: 3,
+                color: '#636363',
+                formatter: function(params) {
+                  const taskTitle = params.split('~')[1];
+                  let val='';
+                  if (taskTitle.length >25){
+                    val = `${taskTitle.substr(0,25)}...`;
+                    return val;
+                  } else {
+                    return taskTitle;
+                  }
+                }
+              },
+              data: this.getTasksTitle(GanttTasksList)
+            },
+            xAxis: {
+              type: 'time',
+              position: 'top',
+              minInterval: 3600 * 1000 * 24,
+              maxInterval: 3600 * 1000 * 24,
+              splitLine: {
+                show: true,
+                lineStyle: {
+                  color: ['#f2f2f2']
+                }
+              },
+              axisLine: {
+                show: true,
+                lineStyle: {
+                  color: ['#f2f2f2']
+                }
+              },
+              axisTick: {
+                show: true,
+                alignWithLabel: true
+              },
+              axisLabel: {
+                show: true,
+                inside: false,
+                fontSize: 12,
+                borderRadius: 3,
+                color: '#636363',
+                formatter: function (value) {
+                  const lang = eXo && eXo.env.portal.language || 'en';
+                  const axisDate = new Date(value);
+                  const toDay = new Date();
+                  const valueDay = axisDate.toLocaleDateString(lang, {
+                    day: '2-digit',
+                    month: 'long'
+                  });
+                  let monthLabel= '';
+                  let day = '';
+                  const dayString = valueDay.toString();
+                  
+                  if ( lang === 'en') {
+                    monthLabel = dayString.split(' ')[0].substring(0,3).toUpperCase();
+                    day = dayString.split(' ')[1];
+                  } else {
+                    monthLabel = dayString.split(' ')[1].substring(0,3).toUpperCase();
+                    day = dayString.split(' ')[0];
+                  }
+                  if ( axisDate.setHours(0,0,0,0) === toDay.setHours(0,0,0,0)) {
+                    return `{toDayStyleMonth|${  monthLabel  }}{toDayStyleDay|${ day  }}`;
+                  } else {
+                    return `{styleMonth|${monthLabel} ${day}}`;
+                  }
+                },
+                rich: {
+                  styleMonth: {
+                    align: 'center',
+                    fontSize: 12
+                  },
+                  toDayStyleMonth: {
+                    color: '#ffffff',
+                    backgroundColor: '#578dc9',
+                    padding: [2,2],
+                    borderRadius: [4, 0, 0, 4],
+                    fontSize: 12
+                  },
+                  toDayStyleDay: {
+                    color: '#ffffff',
+                    backgroundColor: '#578dc9',
+                    padding: [2,2],
+                    borderRadius: [0, 4, 4, 0],
+                    fontSize: 12
+                  }
+                }
+              }
+            },
+            series: [{
+              id: 'tasksData',
+              type: 'custom',
+              renderItem: this.renderGanttItem,
+              dimensions: this.TasksGanttdimensions,
+              encode: {
+                x: [2, 3],
+                y: 0,
+                //tooltip: [1,2,3]
+              },
+              data: GanttTasksList,
+              markLine: {
+                silent: true,
+                symbol: ['circle', 'none'],
+                itemStyle: {
+                  normal: {
+                    lineStyle: {
+                      type: 'dashed',
+                      color: '#578dc9',
+                    },
+                    label: {
+                      show: false,
+                    }
+                  }
+                },
+                data: [{
+                  xAxis: new Date().setHours(0,0,0,0)
+                }]
+              }
+            }]
+          };
+          myChart.setOption(option,true);
+          myChart.on('click', params => {
+            let taskId = '';
+            if (params.componentType === 'yAxis') {
+              taskId = params.value.split('~')[0];
+            }
+            else if (params.componentType === 'series') {
+              taskId = params.value[1];
+            }
+            if (taskId) {
+              this.$tasksService.getTaskById(taskId).then(data => {
+                this.task = data;
+                this.$root.$emit('open-task-drawer', this.task);
+              });
+            } 
+          });
+        }
+      }
+      
     }
   }
 };
