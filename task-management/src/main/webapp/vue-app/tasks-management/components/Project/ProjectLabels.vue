@@ -34,7 +34,7 @@
       <template v-slot:selection="{ attrs, item, parent, selected }">
         <editable-labels
           :item="item"
-          @edit-label="editLabel"
+          :parent="parent"
           @remove-label="removeLabel" />
       </template>
     </v-combobox>
@@ -152,22 +152,7 @@ export default {
       this.model.push(label);
       document.getElementById('labelInput').focus();
     },
-    editLabel(label) {
-      this.$taskDrawerApi.editLabel(label).then( () => {
-        label.editMenu=false;
-        this.$root.$emit('show-alert', {
-          type: 'success',
-          message: this.$t('alert.success.label.updated')
-        });
-        this.getProjectLabels(this.project.id);
-      }).catch(e => {
-        console.error('Error when adding labels', e);
-        this.$root.$emit('show-alert', {
-          type: 'error',
-          message: this.$t('alert.error')
-        });
-      });
-    },
+
     removeLabel(item) {
       this.$taskDrawerApi.removeLabel(item.id).then( () => {
         this.$root.$emit('show-alert', {
