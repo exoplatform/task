@@ -92,17 +92,16 @@ export default {
         return {};
       }
     },
+    parent: {
+      type: Object,
+      default: () => {
+        return {};
+      }
+    },
   },
   data() {
     return {
       displayActionMenu: false,
-      index: -1,
-      items: [],
-      nonce: 1,
-      model: [],
-      x: 0,
-      search: null,
-      y: 0,
       labelColors: [
         { class: 'asparagus' },
         { class: 'munsell_blue' },
@@ -133,8 +132,20 @@ export default {
   },
   methods: {
     editLabel(label) {
-      this.displayActionMenu= false;
-      this.$emit('edit-label', label);
+      this.$taskDrawerApi.editLabel(label).then( (editedLabel) => {
+        label=editedLabel;
+        this.displayActionMenu= false;
+        this.$root.$emit('show-alert', {
+          type: 'success',
+          message: this.$t('alert.success.label.updated')
+        });
+      }).catch(e => {
+        console.error('Error when adding labels', e);
+        this.$root.$emit('show-alert', {
+          type: 'error',
+          message: this.$t('alert.error')
+        });
+      });
     },
     removeLabel(label) {
       this.displayActionMenu= false;
