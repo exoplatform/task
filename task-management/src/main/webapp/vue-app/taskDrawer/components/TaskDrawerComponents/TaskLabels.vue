@@ -39,7 +39,7 @@
           :input-value="selected"
           class="pr-1 font-weight-bold"
           label
-          dark
+          :outlined="!item.color"
           small>
           <span class="pr-2">
             {{ item.text }}
@@ -57,7 +57,7 @@
         <v-list-item @click="addTaskToLabel(item)">
           <v-chip
             :color="`${item.color} lighten-3`"
-            dark
+            :outlined="!item.color"
             label
             small>
             {{ item.text }}

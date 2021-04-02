@@ -32,13 +32,13 @@ import org.exoplatform.commons.api.persistence.ExoEntity;
 @Table(name = "TASK_LABELS")
 @NamedQueries({  
   @NamedQuery(name = "Label.findLabelsByTask",
-      query = "SELECT lbl FROM TaskLabel lbl inner join lbl.lblMapping m WHERE lbl.project.id = :projectId AND m.task.id = :taskid"),
+      query = "SELECT lbl FROM TaskLabel lbl inner join lbl.lblMapping m WHERE lbl.project.id = :projectId AND m.task.id = :taskid ORDER BY lbl.id"),
       @NamedQuery(name = "Label.findLabelsByTaskCount",
       query = "SELECT count(*) FROM TaskLabel lbl inner join lbl.lblMapping m WHERE lbl.project.id = :projectId AND m.task.id = :taskid"),
   @NamedQuery(name = "Label.findLabelsByProject",
-      query = "SELECT lbl FROM TaskLabel lbl WHERE lbl.project.id = :projectId"),
+      query = "SELECT lbl FROM TaskLabel lbl WHERE lbl.project.id = :projectId ORDER BY lbl.id"),
       @NamedQuery(name = "Label.findLabelsByProjectCount",
-      query = "SELECT count(*) FROM TaskLabel lbl WHERE lbl.project.id = :projectId")
+      query = "SELECT count(*) FROM TaskLabel lbl WHERE lbl.project.id = :projectId ORDER BY lbl.id")
 })
 public class Label {
   @Id
