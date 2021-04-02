@@ -650,15 +650,15 @@ public class TaskRestService implements ResourceContainer {
       @ApiResponse(code = 400, message = "Invalid query input"), @ApiResponse(code = 403, message = "Unauthorized operation"),
       @ApiResponse(code = 404, message = "Resource not found") })
   public Response editLabel(@ApiParam(value = "label id", required = true) @PathParam("labelId") long labelId,
-                            @ApiParam(value = "label", required = true) LabelDto addedLabel) {
+                            @ApiParam(value = "label", required = true) LabelDto label) {
     try {
     Identity currentUser = ConversationState.getCurrent().getIdentity();
-    if (addedLabel == null) {
+    if (label == null) {
       return Response.status(Response.Status.BAD_REQUEST).build();
     }
 
       try {
-        ProjectDto project = projectService.getProject(addedLabel.getProject().getId());
+        ProjectDto project = projectService.getProject(label.getProject().getId());
         if (project == null) {
           return Response.status(Response.Status.NOT_FOUND).build();
         }
@@ -671,8 +671,8 @@ public class TaskRestService implements ResourceContainer {
     if (labelService.getLabel(labelId)==null) {
       return Response.status(Response.Status.NOT_FOUND).build();
     }
-      LabelDto label = labelService.updateLabel(addedLabel);
-    return Response.ok(addedLabel).build();
+      label = labelService.updateLabel(label);
+    return Response.ok(label).build();
         } catch (Exception e) {
         LOG.error("Can't add  Label", e);
         return Response.serverError().entity(e.getMessage()).build();
