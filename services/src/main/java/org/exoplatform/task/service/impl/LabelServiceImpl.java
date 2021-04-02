@@ -4,6 +4,7 @@ import org.exoplatform.commons.api.persistence.ExoTransactional;
 import org.exoplatform.services.listener.ListenerService;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.task.dao.DAOHandler;
 import org.exoplatform.task.domain.Label;
@@ -113,7 +114,7 @@ public class LabelServiceImpl implements LabelService {
         mapping.setLabel(StorageUtil.mappingLabelToEntity(getLabel(labelId)));
         mapping.setTask(StorageUtil.taskToEntity(task));
         daoHandler.getLabelTaskMappingHandler().create(mapping);
-        broadcastEvent(LABEL_ADDED_TO_TASK, this, mapping);
+        broadcastEvent(LABEL_ADDED_TO_TASK, mapping);
     }
 
     @Override
@@ -121,13 +122,15 @@ public class LabelServiceImpl implements LabelService {
     public void removeTaskFromLabel(TaskDto task, Long labelId) throws EntityNotFoundException {
       LabelTaskMapping mapping = daoHandler.getLabelTaskMappingHandler().findLabelTaskMapping(labelId, task.getId());
       daoHandler.getLabelTaskMappingHandler().delete(mapping);
-      broadcastEvent(LABEL_DELETED_FROM_TASK, this, mapping);
+      broadcastEvent(LABEL_DELETED_FROM_TASK, mapping);
     }
     
-    private void broadcastEvent(String eventName, LabelService labelService, LabelTaskMapping data) {
+    private void broadcastEvent(String eventName, LabelTaskMapping data) {
+      ConversationState conversationState = ConversationState.getCurrent();
+      String currentUserName = conversationState.getIdentity().getUserId();
       try {
         if (data != null) {
-          listenerService.broadcast(eventName, labelService, data);
+          listenerService.broadcast(eventName, currentUserName, data);
         }
       } catch (Exception e) {
         LOG.warn("Error while broadcasting event {}", eventName, e);
