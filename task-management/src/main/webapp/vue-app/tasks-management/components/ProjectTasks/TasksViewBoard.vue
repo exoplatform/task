@@ -5,22 +5,48 @@
     <v-item-group class="pb-0 pt-5 px-0">
       <v-container class="pa-0 mx-0">
         <v-row class="ma-0 border-box-sizing tasksViewBoardRowContainer">
-          <draggable
-            v-model="statusList"
-            :move="checkMoveStatus"
-            :animation="200"
-            group="people"
-            ghost-class="ghost-card"
-            class="d-flex draggable-palceholder"
-            @start="dragStatus=true"
-            @end="dragStatus=false"
-          >
+          <div v-if="project.canManage">
+            <draggable
+              :move="checkMoveStatus"
+              :list="statusList"
+              :animation="200"
+              group="people"
+              ghost-class="ghost-card"
+              class="d-flex"
+              @start="dragStatus=true"
+              @end="dragStatus=false">
+              <v-col
+                v-for="(status, index) in statusList"
+                :key="index"
+                :id="status.id"
+                class="py-0 px-3 projectTaskItem">
+                <tasks-view-board-column
+                  :project="project"
+                  :status="status"
+                  class="draggable-palceholder"
+                  :tasks-list="getTasksByStatus(tasksList,status.name)"
+                  :index="index"
+                  :show-completed-tasks="filterTaskCompleted"
+                  :status-list-length="statusList.length"
+                  :filter-no-active="filterNoActive"
+                  @updateTaskCompleted="updateTaskCompleted"
+                  @updateTaskStatus="updateTaskStatus"
+                  @delete-status="deleteStatus"
+                  @update-status="updateStatus"
+                  @add-column="addColumn"
+                  @move-column="moveColumn"
+                  @cancel-add-column="cancelAddColumn"
+                  @create-status="createStatus" />
+              </v-col>
+            </draggable>
+          </div>
+          <div v-else class="d-flex">
             <v-col
               v-for="(status, index) in statusList"
               :key="index"
+              :id="status.id"
               class="py-0 px-3 projectTaskItem">
               <tasks-view-board-column
-                :status-list="statusList"
                 :project="project"
                 :status="status"
                 :tasks-list="getTasksByStatus(tasksList,status.name)"
@@ -37,7 +63,7 @@
                 @cancel-add-column="cancelAddColumn"
                 @create-status="createStatus" />
             </v-col>
-          </draggable>
+          </div>
         </v-row>
       </v-container>
     </v-item-group>
@@ -78,7 +104,7 @@ export default {
   watch: {
     dragStatus(val) {
       if (!val){
-        this.$emit('move-status');
+        this.$emit('move-status',this.indexStatusTo);
         Array.from(document.getElementsByClassName('draggable-palceholder')).forEach(element => element.style.backgroundColor= '#FFFFFF');
       }},
   },
@@ -89,9 +115,6 @@ export default {
         Array.from(evt.to.parentElement.getElementsByClassName('draggable-palceholder')).forEach(element => element.style.backgroundColor= '#f2f2f2');
         this.indexStatusFrom = evt.draggedContext.index;
         this.indexStatusTo = evt.draggedContext.futureIndex;
-        const element = this.statusList[this.indexStatusFrom];
-        this.statusList.splice(this.indexStatusFrom, 1);
-        this.statusList.splice(this.indexStatusTo, 0, element);
       }
     },
     getTasksByStatus(items ,statusName) {
