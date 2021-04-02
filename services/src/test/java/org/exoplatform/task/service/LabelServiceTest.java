@@ -101,7 +101,7 @@ public class LabelServiceTest {
         statusStorage = new StatusStorageImpl(daoHandler, projectStorage);
         statusService = new StatusServiceImpl(daoHandler, statusStorage, projectStorage, listenerService);
         labelStorage = new LabelStorageImpl(daoHandler);
-        labelService = new LabelServiceImpl(labelStorage, daoHandler,projectStorage);
+        labelService = new LabelServiceImpl(labelStorage, daoHandler, projectStorage, listenerService);
         taskService =new TaskServiceImpl(taskStorage, daoHandler, listenerService);
         // Mock DAO handler to return Mocked DAO
         when(daoHandler.getTaskHandler()).thenReturn(taskHandler);
