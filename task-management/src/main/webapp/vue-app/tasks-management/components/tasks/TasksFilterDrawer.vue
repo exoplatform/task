@@ -262,6 +262,7 @@ export default {
   methods: {
     open() {
       const urlPath = document.location.pathname;
+      this.getTabView();
       if (urlPath.includes('projectDetail')){
         let projectId = urlPath.split('projectDetail/')[1].split(/[^0-9]/)[0];
         projectId = projectId && Number(projectId) || 0;
@@ -425,6 +426,19 @@ export default {
       } else {
         return this.$t(`label.status.${item.toLowerCase()}`);
       }
+    },
+    getTabView(){
+      const urlPath=document.location.pathname;
+      if (document.getElementsByClassName('taskTabList')[0] && urlPath.includes('projectDetail')) {
+        if (document.getElementsByClassName('taskTabList')[0].getAttribute('aria-selected')==='true'){
+          this.taskViewTabName='list';
+        } else if (document.getElementsByClassName('taskTabBoard')[0].getAttribute('aria-selected')==='true'){
+          this.taskViewTabName='board';
+        } else if (document.getElementsByClassName('taskTabGantt')[0].getAttribute('aria-selected')==='true'){
+          this.taskViewTabName='gantt';
+        }
+      }
+      return this.taskViewTabName;
     },
 
   }
