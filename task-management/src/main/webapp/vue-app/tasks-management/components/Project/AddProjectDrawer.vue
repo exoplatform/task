@@ -390,6 +390,12 @@ export default {
           description: '',
           id: '',
         };
+        window.setTimeout(() => {
+          document.dispatchEvent(new CustomEvent('loadAllProjectLabels', {
+            detail: null
+          }));
+        },
+        200);
         this.$refs.addProjectDrawer.open();
         window.setTimeout(() => this.$refs.addProjectTitle.querySelector('input').focus(), 200);
       }
