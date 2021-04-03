@@ -24,7 +24,7 @@ public class LabelServiceImpl implements LabelService {
 
     private static final Log LOG = ExoLogger.getExoLogger(LabelServiceImpl.class);
 
-    String                 LABEL_ADDED_TO_TASK     = "exo.task.labelAddToTask";
+    String                 LABEL_ADDED_TO_TASK     = "exo.task.labelAddedToTask";
 
     String                 LABEL_DELETED_FROM_TASK = "exo.task.labelDeletedFromTask";
 
