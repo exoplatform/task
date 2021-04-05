@@ -1,9 +1,11 @@
 <template>
-  <div @click.stop>
+  <div :id="`label-${item.id}`" @click.stop>
     <v-menu
+      :attach="`#label-${item.id}`"
       v-model="displayActionMenu"
       transition="slide-x-reverse-transition"
       content-class="labelsActionMenu"
+      @blur="cancel($event)"
       :close-on-content-click="false"
       offset-y>
       <template v-slot:activator="{ on }">
@@ -15,7 +17,8 @@
           class="pr-1 font-weight-bold"
           label
           :color="`${item.color} lighten-3`"
-          dark
+          :outlined="!item.color"
+          primary
           small>
           <span class="pr-2">
             {{ item.text }}
@@ -29,7 +32,7 @@
           <v-icon
             x-small
             class="pr-0"
-            @click="parent.selectItem(item);removeLabel(item)">
+            @click="parent.selectItem(item);removeLabel()">
             close
           </v-icon>
         </v-chip>
@@ -41,9 +44,8 @@
               ref="autoFocusInput1"
               v-model="item.text"
               type="text"
-              @blur="item.text=item.name;item.editMenu=false"
               class="font-weight-bold text-color mb-1 labels-edit-name"
-              style="max-width: 136px;"
+              @blur="cancel($event)"
               autofocus
               outlined
               dense>
@@ -51,21 +53,21 @@
                 dark
                 class="uiIcon40x40TickBlue label-btn ma-1"
                 slot="append"
-                @click="item.name=item.text;editLabel(item)">
+                @click="item.name=item.text;editLabel()">
               </i>
               <i
                 dark
                 class="uiIconClose label-btn ma-1"
                 slot="append"
-                @click="item.text=item.name;displayActionMenu=false">
+                @click="cancel($event)">
               </i>
             </v-text-field>
           </v-list-item-content>
         </v-list-item>
 
-        <v-list-item class="px-2 noColorProject">
-          <v-list-item-title class="noColorProject caption text-center text&#45;&#45;secondary">
-            <span @click="item.color='';editLabel(item)">{{ $t('label.noColor') }}</span>
+        <v-list-item class="px-2 noColorLabel">
+          <v-list-item-title class="noColorLabel caption text-center text&#45;&#45;secondary">
+            <span @click="item.color='';editLabel()">{{ $t('label.noColor') }}</span>
           </v-list-item-title>
         </v-list-item>
         <v-list-item>
@@ -75,7 +77,7 @@
               :key="i"
               :class="[ color.class , color.class === item.color ? 'isSelected' : '']"
               class="projectColorCell"
-              @click="item.color=color.class;editLabel(item)"></span>
+              @click="item.color=color.class;editLabel()"></span>
           </v-list-item-title>
         </v-list-item>
       </v-list>
@@ -131,9 +133,10 @@ export default {
     };
   },
   methods: {
-    editLabel(label) {
-      this.$taskDrawerApi.editLabel(label).then( (editedLabel) => {
-        label=editedLabel;
+    editLabel() {
+      this.$taskDrawerApi.editLabel(this.item).then( (editedLabel) => {
+        this.item=editedLabel;
+        this.item.text = this.item.name;
         this.displayActionMenu= false;
         this.$root.$emit('show-alert', {
           type: 'success',
@@ -147,9 +150,16 @@ export default {
         });
       });
     },
-    removeLabel(label) {
+    cancel(event) {
+      window.setTimeout(() => {
+        this.item.text = this.item.name;
+        this.displayActionMenu=false;
+        event.stopPropagation();
+      }, 200);
+    },
+    removeLabel() {
       this.displayActionMenu= false;
-      this.$emit('remove-label', label);
+      this.$emit('remove-label', this.item);
     }
   }
 };
