@@ -1,6 +1,7 @@
 <template>
   <div :id="`label-${item.id}`" @click.stop>
     <v-menu
+      :attach="`#label-${item.id}`"
       v-model="displayActionMenu"
       transition="slide-x-reverse-transition"
       content-class="labelsActionMenu"
@@ -44,7 +45,6 @@
               v-model="item.text"
               type="text"
               class="font-weight-bold text-color mb-1 labels-edit-name"
-              style="max-width: 136px;"
               @blur="cancel($event)"
               autofocus
               outlined
