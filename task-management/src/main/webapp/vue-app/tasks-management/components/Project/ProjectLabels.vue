@@ -99,6 +99,7 @@ export default {
       }, 100);
     });
     document.addEventListener('loadAllProjectLabels', event => {
+      this.model = [];
       if (event && event.detail) {
         const project = event.detail;
         this.model = [];

@@ -80,6 +80,23 @@
               .v-select__slot {
                 .v-select__selections {
                   max-width: 100%!important;
+                  .labelsActionMenu {
+                    .v-sheet {
+                      background-color: @lightWhite!important;
+                      .labels-edit-name {
+                        padding-top: 8px;
+                        .v-input__control {
+                          .v-text-field__slot {
+                            padding-left: 8px;
+                          }
+                          .v-input__append-inner {
+                            display: flex; 
+                          }
+                        }
+                      }
+                     
+                    }
+                  }
                 }
                 label {
                   color: @greyColorLighten1;
@@ -3437,6 +3454,8 @@
   }
 
 .labelsActionMenu {
+   max-width: 180px !important;
+   min-width: 160px !important;
   .label-edit-name{
     max-width: 136px;
   }
