@@ -10,26 +10,30 @@
       :ok-label="$t('label.ok')"
       :cancel-label="$t('popup.cancel')"
       @ok="deleteConfirm()" />
-    <div class="taskViewBreadcrumb px-0 pt-4 pb-5">
-      <a
-        class="text-color"
-        @click="hideProjectDetails()">
-        <i class="uiIcon uiBackIcon"></i>
-        <span>{{ project.name }}</span>
-      </a>
+    <div class="projectTasksWrapper d-flex justify-space-between">
+      <div class="taskViewBreadcrumb px-0 pt-1 pb-5">
+        <a
+          class="text-color"
+          @click="hideProjectDetails()">
+          <i class="uiIcon uiBackIcon"></i>
+          <span>{{ project.name }}</span>
+        </a>
+      </div>
+      <div class="projectTasksTabFilter">
+        <tasks-view-toolbar
+          :allow-gantt="allowGantt"
+          :project="project"
+          :status-list="statusList"
+          :task-card-tab-view="'#tasks-view-board'"
+          :task-list-tab-view="'#tasks-view-list'"
+          :task-gantt-tab-view="'#tasks-view-gantt'"
+          :tasks-view-tab-model="'tasks-view-board'"
+          @keyword-changed="filterByKeyword"
+          @taskViewChangeTab="getChangeTabValue"
+          @filter-task-dashboard="filterTaskDashboard"
+          @reset-filter-task-dashboard="resetFiltertaskDashboard" />
+      </div>
     </div>
-    <tasks-view-toolbar
-      :allow-gantt="allowGantt"
-      :project="project"
-      :status-list="statusList"
-      :task-card-tab-view="'#tasks-view-board'"
-      :task-list-tab-view="'#tasks-view-list'"
-      :task-gantt-tab-view="'#tasks-view-gantt'"
-      :tasks-view-tab-model="'tasks-view-board'"
-      @keyword-changed="filterByKeyword"
-      @taskViewChangeTab="getChangeTabValue"
-      @filter-task-dashboard="filterTaskDashboard"
-      @reset-filter-task-dashboard="resetFiltertaskDashboard" />
     <div v-if="filterProjectActive && groupName && groupName.projectName" class="px-0 pt-8 pb-4">
       <div 
         v-for="(projectItem,i) in groupName.projectName" 
