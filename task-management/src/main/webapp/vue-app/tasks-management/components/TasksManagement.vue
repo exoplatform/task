@@ -8,7 +8,7 @@
     </v-alert>
 
     <v-tabs 
-      v-if="!spaceName&&!projectId"
+      v-if="showTabs"
       v-model="tab"
       slider-size="4"
       class="tasksMenuParent white">
@@ -42,6 +42,7 @@ export default {
   data () {
     return {
       tab: '',
+      showTabs:false,
       spaceName: '',
       projectId: '',
       alert: false,
@@ -98,10 +99,12 @@ export default {
     if (urlPath.includes('g/:spaces')){
       this.spaceName = urlPath.split('g/:spaces:')[1].split('/')[0];
       this.tab='tab-2';
+      this.showTabs=false;
     } else {
       if (urlPath.includes('myTasks')){
         this.tab='tab-1';
         this.projectId='';
+        this.showTabs=true;
       }
       if (urlPath.includes('myProjects')){
         this.tab='tab-2';
@@ -116,12 +119,14 @@ export default {
           if (this.task.status && this.task.status.project){
             this.tab='tab-2';
             this.projectId=this.task.status.project.id;
+            this.showTabs=false;
             window.setTimeout(() => {
               document.dispatchEvent(new CustomEvent('showProjectTasks', {detail: this.task.status.project}));
-            }, 200);
+            }, 100);
           } else {
             this.tab='tab-1';
             this.projectId='';
+            this.showTabs=true;
           }
           window.setTimeout(() => {
             this.$refs.taskDrawer.open(this.task);
@@ -134,6 +139,7 @@ export default {
       projectId = projectId && Number(projectId) || 0;
       if (projectId) {
         this.projectId=projectId;
+        this.showTabs=false;
         this.tab='tab-2';
         this.$projectService.getProject(projectId).then(data => {
           document.dispatchEvent(new CustomEvent('showProjectTasks', {detail: data}));
@@ -143,10 +149,12 @@ export default {
   },
   methods: {
     getMyTasks(){
+      this.showTabs=true;
       window.history.pushState('mytasks', 'My Tasks', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/tasks/myTasks`);
     },
     getMyProjects(){
       this.projectId='';
+      this.showTabs=true;
       const urlPath = document.location.pathname;
       if (urlPath.includes('g/:spaces')){
         window.history.pushState('task', 'Task details', `${urlPath.split('tasks')[0]}tasks`); 
