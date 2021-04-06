@@ -518,6 +518,8 @@ export default {
             type: 'success',
             message: this.$t('alert.success.task.assignee')
           });
+        }).then( () => {
+          this.$root.$emit('update-task-assignee',value,this.task.id);
         }).catch(e => {
           console.error('Error when updating task\'s assignee', e);
           this.$root.$emit('show-alert', {
@@ -546,6 +548,8 @@ export default {
             type: 'success',
             message: this.$t('alert.success.task.coworker')
           });
+        }).then( () => {
+          this.$root.$emit('update-task-coworker',value,this.task.id);
         }).catch(e => {
           console.error('Error when updating task\'s coworkers', e);
           this.$root.$emit('show-alert', {
