@@ -7,6 +7,7 @@
       content-class="labelsActionMenu"
       @blur="cancel($event)"
       :close-on-content-click="false"
+      :close-on-click="true"
       offset-y>
       <template v-slot:activator="{ on }">
         <v-chip
@@ -26,7 +27,8 @@
           <v-icon
             x-small
             class="pr-0"
-            v-on="on">
+            v-on="on"
+            @click="closeLabelsList">
             edit
           </v-icon>
           <v-icon
@@ -155,11 +157,14 @@ export default {
         this.item.text = this.item.name;
         this.displayActionMenu=false;
         event.stopPropagation();
-      }, 200);
+      }, 100);
     },
     removeLabel() {
       this.displayActionMenu= false;
       this.$emit('remove-label', this.item);
+    },
+    closeLabelsList() {
+      document.dispatchEvent(new CustomEvent('closeLabelsList'));
     }
   }
 };
