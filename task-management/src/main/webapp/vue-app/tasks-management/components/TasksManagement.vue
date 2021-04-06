@@ -42,7 +42,7 @@ export default {
   data () {
     return {
       tab: '',
-      showTabs:false,
+      showTabs: false,
       spaceName: '',
       projectId: '',
       alert: false,
