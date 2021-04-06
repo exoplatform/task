@@ -20,16 +20,22 @@ import org.exoplatform.commons.api.persistence.GenericDAO;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.task.domain.Label;
 
+import java.util.List;
+
 public interface LabelHandler extends GenericDAO<Label, Long> {
   /**
    * @param username user name
    * @return List of labels
    */
   ListAccess<Label> findLabelsByUser(String username);
-  
+
+  List<Label> findLabelsByUserAndProject(String username, long projectId);
+
   ListAccess<Label> findLabelsByProject(long projectId);
 
   ListAccess<Label> findLabelsByTask(long taskId, long projectId);
+
+  List<Label> findOldLabels();
 
   ListAccess<Label> findLabels(LabelQuery query);
 }

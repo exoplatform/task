@@ -63,6 +63,8 @@ public class LabelDAOImpl extends CommonJPADAO<Label, Long> implements LabelHand
     return findLabels(query);
   }
 
+
+
   @Override
   public ListAccess<Label> findLabelsByProject(long projectId) {
     TypedQuery<Label> query = getEntityManager().createNamedQuery("Label.findLabelsByProject", Label.class);
@@ -85,6 +87,18 @@ public class LabelDAOImpl extends CommonJPADAO<Label, Long> implements LabelHand
     return new JPAQueryListAccess<Label>(Label.class, count, query);
   }
 
+  @Override
+  public List<Label> findOldLabels() {
+    TypedQuery<Label> query = getEntityManager().createNamedQuery("Label.findOldLabels", Label.class);
+    return query.getResultList();
+  }
+  @Override
+  public List<Label> findLabelsByUserAndProject(String username, long projectId) {
+    TypedQuery<Label> query = getEntityManager().createNamedQuery("Label.findLabelsByUserAndProject", Label.class);
+    query.setParameter("username", username);
+    query.setParameter("projectId", projectId);
+    return query.getResultList();
+  }
   @Override
   public ListAccess<Label> findLabels(LabelQuery query) {
     return findEntities(query, Label.class);

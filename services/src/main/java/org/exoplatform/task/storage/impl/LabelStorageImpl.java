@@ -70,6 +70,15 @@ public class LabelStorageImpl implements LabelStorage {
   }
 
   @Override
+  public List<Label> findOldLabels() {
+    try {
+      return daoHandler.getLabelHandler().findOldLabels();
+    } catch (Exception e) {
+      return new ArrayList<Label>();
+    }
+  }
+
+  @Override
   public LabelDto getLabel(long labelId) {
     return StorageUtil.labelToDto(daoHandler.getLabelHandler().find(labelId));
   }

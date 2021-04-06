@@ -32,13 +32,18 @@ import org.exoplatform.commons.api.persistence.ExoEntity;
 @Table(name = "TASK_LABELS")
 @NamedQueries({  
   @NamedQuery(name = "Label.findLabelsByTask",
-      query = "SELECT lbl FROM TaskLabel lbl inner join lbl.lblMapping m WHERE lbl.project.id = :projectId AND m.task.id = :taskid ORDER BY lbl.id"),
-      @NamedQuery(name = "Label.findLabelsByTaskCount",
-      query = "SELECT count(*) FROM TaskLabel lbl inner join lbl.lblMapping m WHERE lbl.project.id = :projectId AND m.task.id = :taskid"),
+   query = "SELECT lbl FROM TaskLabel lbl inner join lbl.lblMapping m WHERE lbl.project.id = :projectId AND m.task.id = :taskid"),
+  @NamedQuery(name = "Label.findLabelsByTaskCount",
+   query = "SELECT count(*) FROM TaskLabel lbl inner join lbl.lblMapping m WHERE lbl.project.id = :projectId AND m.task.id = :taskid"),
   @NamedQuery(name = "Label.findLabelsByProject",
-      query = "SELECT lbl FROM TaskLabel lbl WHERE lbl.project.id = :projectId ORDER BY lbl.id"),
-      @NamedQuery(name = "Label.findLabelsByProjectCount",
-      query = "SELECT count(*) FROM TaskLabel lbl WHERE lbl.project.id = :projectId ORDER BY lbl.id")
+   query = "SELECT lbl FROM TaskLabel lbl WHERE lbl.project.id = :projectId"),
+  @NamedQuery(name = "Label.findLabelsByUserAndProject",
+   query = "SELECT lbl FROM TaskLabel lbl WHERE lbl.username = :username and lbl.project.id = :projectId  "),
+  @NamedQuery(name = "Label.findLabelsByProjectCount",
+   query = "SELECT count(*) FROM TaskLabel lbl WHERE lbl.project.id = :projectId"),
+  @NamedQuery(name = "Label.findOldLabels",
+   query = "SELECT lbl FROM TaskLabel lbl WHERE lbl.project is NULL"),
+
 })
 public class Label {
   @Id

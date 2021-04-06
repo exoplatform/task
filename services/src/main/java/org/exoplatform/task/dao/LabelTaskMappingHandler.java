@@ -17,11 +17,13 @@
 package org.exoplatform.task.dao;
 
 import java.io.Serializable;
+import java.util.List;
 
 import org.exoplatform.commons.api.persistence.GenericDAO;
 import org.exoplatform.task.domain.LabelTaskMapping;
 
 public interface LabelTaskMappingHandler extends GenericDAO<LabelTaskMapping, Serializable> {
     LabelTaskMapping findLabelTaskMapping(long labelId, long taskId);
+    List<LabelTaskMapping> findLabelMappingByLabel(long labelId);
 }
 

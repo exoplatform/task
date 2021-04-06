@@ -38,7 +38,9 @@ import org.exoplatform.commons.api.persistence.ExoEntity;
   @NamedQuery(name = "LabelTaskMapping.removeLabelTaskMapping",
       query = "DELETE FROM TaskLabelTaskMapping m WHERE m.label.id = :labelId"),
   @NamedQuery(name = "LabelTaskMapping.findLabelMapping",
-       query = "SELECT m FROM TaskLabelTaskMapping m  WHERE m.label.id = :labelId and  m.task.id = :taskId")
+       query = "SELECT m FROM TaskLabelTaskMapping m  WHERE m.label.id = :labelId and  m.task.id = :taskId"),
+  @NamedQuery(name = "LabelTaskMapping.findLabelMappingByLabel",
+       query = "SELECT m FROM TaskLabelTaskMapping m  WHERE m.label.id = :labelId")
 })
 public class LabelTaskMapping implements Serializable {
   @Id

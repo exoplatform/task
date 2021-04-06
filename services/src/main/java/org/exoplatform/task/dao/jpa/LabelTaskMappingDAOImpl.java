@@ -47,5 +47,16 @@ public class LabelTaskMappingDAOImpl extends CommonJPADAO<LabelTaskMapping, Seri
             return null;
         }
     }
+    @Override
+    public List<LabelTaskMapping> findLabelMappingByLabel(long labelId) {
+        TypedQuery<LabelTaskMapping> query = getEntityManager().createNamedQuery("LabelTaskMapping.findLabelMappingByLabel", LabelTaskMapping.class);
+        query.setParameter("labelId", labelId);
+        try {
+            return cloneEntities((List<LabelTaskMapping>)query.getResultList());
+        } catch (PersistenceException e) {
+            log.error("Error when fetching label mapping", e);
+            return null;
+        }
+    }
 }
 

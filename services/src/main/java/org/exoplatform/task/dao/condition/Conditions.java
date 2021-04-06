@@ -53,6 +53,7 @@ public class Conditions {
   public static final String PARENT = "parent";
   public static final String USERNAME = "username";  
   public static final String LABEL_TASK_ID = "lblMapping.task.id";
+  public static final String LABEL_PROJECT_ID = "project.id ";
 
   public static <T> SingleCondition<T> eq(String fieldName, T value) {
     return new SingleCondition<T>(SingleCondition.EQ, fieldName, value);

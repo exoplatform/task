@@ -36,4 +36,11 @@ public class LabelQuery extends Query {
     return this;
   }
 
+  public LabelQuery setProjectId(Long projectId) {
+    if (projectId != null) {
+      this.add(Conditions.eq(Conditions.LABEL_PROJECT_ID, projectId));
+    }
+    return this;
+  }
+
 }

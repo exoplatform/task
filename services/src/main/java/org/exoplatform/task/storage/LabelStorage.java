@@ -16,6 +16,8 @@ public interface LabelStorage {
 
   List<LabelDto> findLabelsByTask(TaskDto task, long projectId, Identity currentUser, ProjectStorage projectStorage, int offset, int limit);
 
+  List<Label> findOldLabels();
+
   LabelDto getLabel(long labelId);
 
   LabelDto createLabel(LabelDto label);
