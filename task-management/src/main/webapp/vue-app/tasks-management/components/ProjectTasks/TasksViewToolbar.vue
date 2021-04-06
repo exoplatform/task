@@ -4,17 +4,6 @@
       id="TasksDashboardToolbar"
       flat
       class="tasksToolbar">
-      <v-toolbar-title>
-        <v-btn
-          class="btn px-2 btn-primary addNewTaskButton"
-          @click="openTaskDrawer()">
-          <v-icon dark class="d-block d-sm-none">mdi-plus</v-icon>
-          <span class="d-none font-weight-regular d-sm-inline">
-            + {{ $t('label.addTask') }}
-          </span>
-        </v-btn>
-      </v-toolbar-title>
-      <v-spacer />
       <div class="taskDisplay">
         <v-tabs class="projectTasksViewTabs">
           <v-tab
