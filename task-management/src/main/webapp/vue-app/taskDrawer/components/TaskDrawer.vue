@@ -203,7 +203,6 @@ export default {
   data() {
     return {
       displayActionMenu: false,
-      enableAutoSave: true,
       menuActions: [],
       reset: false,
       dates: [],
@@ -331,7 +330,7 @@ export default {
       document.dispatchEvent(new CustomEvent('closeAssignments'));
     },
     updateTaskTitle() {
-      if (this.enableAutoSave && this.oldTask.title!==this.task.title){
+      if (this.oldTask.title!==this.task.title){
         if (!this.task.title || this.task.title.length===0 ){
           this.$root.$emit('show-alert', {type: 'error',message: this.$t('alert.error.title.mandatory')});
         } else if (!this.taskTitleValid){
@@ -357,7 +356,7 @@ export default {
       }
     },
     updateTaskPriority(value) {
-      if (this.enableAutoSave && value && this.oldTask.priority!==value) {
+      if (value && this.oldTask.priority!==value) {
         if (this.task.id != null) {
           this.task.priority = value;
           this.$taskDrawerApi.updateTask(this.task.id, this.task).then( () => {
@@ -379,7 +378,7 @@ export default {
       }
     },
     updateTaskStatus(value) {
-      if (this.enableAutoSave && value && this.oldTask.status.id!==value.id) {
+      if (value && this.oldTask.status.id!==value.id) {
         if (this.task.id != null) {
           this.task.status = value;
           this.$taskDrawerApi.updateTask(this.task.id, this.task).then( () => {
@@ -399,7 +398,7 @@ export default {
       }
     },
     updateTaskStartDate(value) {
-      if (this.enableAutoSave && value && value !== 'none'  && (!this.oldTask.startDate|| this.oldTask.startDate.time!==value.time)) {
+      if (value && value !== 'none'  && (!this.oldTask.startDate|| !this.datesEquals(this.oldTask.startDate,value))) {
         if (this.task.id != null) {
           this.task.startDate = value;
           this.$taskDrawerApi.updateTask(this.task.id, this.task).then( () => {
@@ -421,28 +420,9 @@ export default {
       }
     },
     updateTaskDueDate(value) {
-      if (this.enableAutoSave) {
-        if (value && value !== 'none' && (!this.oldTask.dueDate || this.oldTask.dueDate.time !== value.time)) {
-          if (this.task.id != null) {
-            this.task.dueDate = value;
-            this.$taskDrawerApi.updateTask(this.task.id, this.task).then(() => {
-              this.oldTask.dueDate = this.task.dueDate;
-              this.$root.$emit('show-alert', {
-                type: 'success',
-                message: this.$t('alert.success.task.duetDate')
-              });
-            }).catch(e => {
-              console.error('Error when updating task\'s due date', e);
-              this.$root.$emit('show-alert', {
-                type: 'error',
-                message: this.$t('alert.error')
-              });
-            });
-          } else {
-            this.taskDueDate = value;
-          }
-        } else if (value === 'none' && this.oldTask.dueDate) {
-          this.task.dueDate = null;
+      if (value && value !== 'none' && (!this.oldTask.dueDate || !this.datesEquals(this.oldTask.dueDate,value))) {
+        if (this.task.id != null) {
+          this.task.dueDate = value;
           this.$taskDrawerApi.updateTask(this.task.id, this.task).then(() => {
             this.oldTask.dueDate = this.task.dueDate;
             this.$root.$emit('show-alert', {
@@ -456,7 +436,24 @@ export default {
               message: this.$t('alert.error')
             });
           });
+        } else {
+          this.taskDueDate = value;
         }
+      } else if (value === 'none' && this.oldTask.dueDate) {
+        this.task.dueDate = null;
+        this.$taskDrawerApi.updateTask(this.task.id, this.task).then(() => {
+          this.oldTask.dueDate = this.task.dueDate;
+          this.$root.$emit('show-alert', {
+            type: 'success',
+            message: this.$t('alert.success.task.duetDate')
+          });
+        }).catch(e => {
+          console.error('Error when updating task\'s due date', e);
+          this.$root.$emit('show-alert', {
+            type: 'error',
+            message: this.$t('alert.error')
+          });
+        });
       }
     },
     updateTask() {
@@ -506,7 +503,7 @@ export default {
       });
     },
     updateTaskAssignee(value) {
-      if (this.enableAutoSave && this.task.id !== null && this.oldTask.assignee!==value) {
+      if (this.task.id !== null && this.oldTask.assignee!==value) {
         if (value) {
           this.task.assignee = value;
         } else {
@@ -534,7 +531,7 @@ export default {
       }
     },
     updateTaskCoworker(value) {
-      if (this.enableAutoSave && this.task.id !== null && this.oldTask.coworker!==value) {
+      if (this.task.id !== null && this.oldTask.coworker!==value) {
         if (value && value.length) {
           this.task.coworker = value;
         } else {
@@ -582,7 +579,6 @@ export default {
       window.open(`${ eXo.env.portal.context }/${ eXo.env.portal.portalName }/${ pagelink }`, '_blank');
     },
     open(task) {
-      this.enableAutoSave=false;
       this.oldTask= Object.assign({}, task);
       this.taskTitle_= task.title;
       this.task = task;
@@ -618,7 +614,6 @@ export default {
           id: task.id
         });
       }
-      this.enableAutoSave=true;
       this.$refs.addTaskDrawer.open();
     },
     cancel() {
@@ -713,6 +708,12 @@ export default {
     openCommentDrawer() {
       this.$root.$emit('displayTaskComment', this.comments[this.comments.length-1].comment.id, true);
     },
+    datesEquals(date1,date2){
+      if (date1.month===date2.month&&date1.year===date2.year&&date1.day===date2.day){
+        return true;
+      }
+      return false;
+    }
   }
 };
 </script>
