@@ -171,6 +171,7 @@ export default {
     setProjectUrl(id){
       const urlPath = document.location.pathname;
       this.projectId=id;
+      this.showTabs=false;
       window.history.pushState('task', 'Task details', `${urlPath.split('tasks')[0]}tasks/projectDetail/${id}`); 
     },
     displayMessage(message) {
