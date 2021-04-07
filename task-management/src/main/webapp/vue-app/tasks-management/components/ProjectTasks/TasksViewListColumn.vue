@@ -3,6 +3,7 @@
     <div v-if="filterByStatus===true">
       <tasks-view-header-status
         :status="status"
+        :project="project"
         :view-type="'list'"
         :max-tasks-to-show="maxTasksToShow"
         :tasks-number="tasksList.length" />
@@ -45,6 +46,10 @@ export default {
     showCompletedTasks: {
       type: Boolean,
       default: false
+    },
+    project: {
+      type: Number,
+      default: 0
     },
     filterByStatus: {
       type: Boolean,

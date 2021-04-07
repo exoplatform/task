@@ -120,6 +120,7 @@
             v-show="taskViewTabName == 'list'"
             eager>
             <tasks-view-list
+              :project="project"
               :status-list="statusList"
               :tasks-list="tasksList[i]" />
           </div>
@@ -149,6 +150,7 @@
         v-show="taskViewTabName == 'list'"
         eager>
         <tasks-view-list
+          :project="project"
           :status-list="statusList"
           :tasks-list="tasksList"
           :filter-task-completed="filterAsCompleted"
