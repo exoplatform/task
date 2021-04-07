@@ -124,7 +124,7 @@
     </div>
     <v-tabs-items
       v-show="!filterProjectActive"
-      v-if="tasksList && tasksList.length && !loadingTasks"
+      v-if="!loadingTasks"
       :key="id">
       <div
         v-show="taskViewTabName == 'board'"
@@ -148,7 +148,7 @@
           :status-list="statusList"
           :tasks-list="tasksList"
           :filter-task-completed="filterAsCompleted"
-          :filter-by-status="filterByStatus"
+          :filter-by-status="filterByStatus=true"
           @update-status="updateStatus" />
       </div>
       <v-tab-item
@@ -158,12 +158,7 @@
           :tasks-list="tasksList" />
       </v-tab-item>
     </v-tabs-items>
-    <div
-      v-if="(!tasksList || !tasksList.length) && !loadingTasks"
-      class="noTasksProject">
-      <div class="noTasksProjectIcon"><i class="uiIcon uiIconTask"></i></div>
-      <div class="noTasksProjectLabel"><span>{{ $t('label.noTasks') }}</span></div>
-    </div>
+
     <div class="ma-0 border-box-sizing">
       <v-btn
         v-if="loadingTasks"
