@@ -106,7 +106,7 @@ export default {
         this.projectId='';
         this.showTabs=true;
       }
-      else if (urlPath.includes('myProjects') || urlPath.includes('tasks')){
+      else {
         this.tab='tab-2';
         this.showTabs=true;
       }
