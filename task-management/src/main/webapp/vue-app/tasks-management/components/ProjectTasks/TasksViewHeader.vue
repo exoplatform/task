@@ -101,14 +101,6 @@
         offset-y>
         <v-list class="pa-0" dense>
           <v-list-item
-            class="menu-list"
-            @click="openTaskDrawer()">
-            <v-list-item-title class="subtitle-2">
-              <i class="uiIcon uiIconTask pr-1"></i>
-              <span>{{ $t('label.addTask') }}</span>
-            </v-list-item-title>
-          </v-list-item>
-          <v-list-item
             v-if="index>0"
             class="menu-list"
             @click="moveBeforeColumn(index)">
