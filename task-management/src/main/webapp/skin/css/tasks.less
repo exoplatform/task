@@ -298,7 +298,17 @@
       }
       hr.my-0.v-divider.theme--light {
         margin-left: 5px;
+        margin-right: 5px;
        }
+      .uiIconSocSimplePlus {
+        font-size: 16px;
+        margin-top: -3px;
+        color:@greyColorLighten1!important;
+      }
+      .uiIconSocSimplePlus:hover {
+        color:@primaryColor!important;
+        cursor: pointer;
+      }
       i.uiIcon.uiIconMiniArrowDown,i.uiIcon.uiIconMiniArrowRight{
         margin-right: 8px;
         font-size: 13px;
@@ -1171,14 +1181,23 @@
                 text-align: left!important;
                 max-width: 100%!important;
               }
+              .uiIconSocSimplePlus {
+                font-size: 16px;
+                margin-top: -3px;
+                color:@greyColorLighten1!important;
+              }
+              .uiIconSocSimplePlus:hover {
+                color:@primaryColor!important;
+                cursor: pointer;
+              }
             }
             .tasksViewHeader {
               .tasksViewHeaderLeft{
-                max-width: 90%;
+                max-width: 85%;
               }
               .taskStatusName {
                 max-width: 100%;
-                padding-top: 0px;
+                margin-top: 3px;
                 .statusName{
                   max-width: 88%;
                   cursor: pointer;
@@ -1216,13 +1235,14 @@
               }
 
               .taskNumberAndActions {
-                .uiIconVerticalDots {
+                .uiIconVerticalDots,.uiIconSocSimplePlus {
                   font-size: 16px;
                     margin-top: -3px;
                     color:@greyColorLighten1!important;
                   }
-                .uiIconVerticalDots:hover {
+                .uiIconVerticalDots:hover,.uiIconSocSimplePlus:hover {
                     color:@primaryColor!important;
+                  cursor: pointer;
                 }
                 .uiIconThreeDots {
                   font-size: 15px;
