@@ -41,11 +41,11 @@
         class="pt-5">
         <div
           v-if=" projectItem.value && projectItem.value.displayName && projectItem.name!==''"
-          class="d-flex align-center assigneeFilter pointer"
-          @click="showDetailsTask(projectItem.rank)">
+          class="d-flex align-center mr-3 assigneeFilter pointer">
           <a
             class="toggle-collapse-group"
-            href="#">
+            href="#"
+            @click="showDetailsTask(projectItem.rank)">
             <i
               :id="'uiIconMiniArrowDown'+projectItem.rank"
               class="uiIcon uiIconMiniArrowDown"
@@ -81,12 +81,12 @@
         </div>
         <div
           v-else
-          class="d-flex align-center assigneeFilter pointer"
-          @click="showDetailsTask(projectItem.rank)">
+          class="d-flex align-center mr-3 assigneeFilter pointer">
           <a
             :id="'iconTask'+projectItem.rank"
             class="toggle-collapse-group"
-            href="#">
+            href="#"
+            @click="showDetailsTask(projectItem.rank)">
             <i
               :id="'uiIconMiniArrowDown'+projectItem.rank"
               class="uiIcon uiIconMiniArrowDown"

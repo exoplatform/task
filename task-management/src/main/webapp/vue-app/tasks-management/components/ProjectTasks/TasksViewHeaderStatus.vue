@@ -1,7 +1,7 @@
 <template>
   <div
     :id="'task-'+viewType+'-'+status.id"
-    class="tasksViewHeaderStatus d-flex justify-space-between align-center">
+    class="tasksViewHeaderStatus mr-2 d-flex justify-space-between align-center">
     <div
       class="d-flex align-center assigneeFilter pointer">
       <a
