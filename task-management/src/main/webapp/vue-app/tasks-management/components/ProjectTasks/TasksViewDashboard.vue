@@ -71,6 +71,13 @@
             role="separator"
             aria-orientation="horizontal"
             class="my-0 v-divider theme--light">
+          <i
+            v-if="taskViewTabName==='list'"
+            icon
+            small
+            class="uiIconSocSimplePlus d-flex"
+            @click="openTaskDrawer()">
+          </i>
         </div>
         <div
           v-else
@@ -101,6 +108,13 @@
             role="separator"
             aria-orientation="horizontal"
             class="my-0 v-divider theme--light">
+          <i
+            v-if="taskViewTabName==='list'"
+            icon
+            small
+            class="uiIconSocSimplePlus d-flex"
+            @click="openTaskDrawer()">
+          </i>
         </div>
         <div :id="'taskView'+projectItem.rank" class="view-project-group-sort">
           <div
@@ -456,6 +470,14 @@ export default {
           this.sortBy = '';
         }
       });
+    },
+    openTaskDrawer() {
+      const defaultTask= {id: null,
+        status: {project: this.project},
+        priority: 'NONE',
+        description: '',
+        title: ''};
+      this.$root.$emit('open-task-drawer', defaultTask);
     },
   }
 };

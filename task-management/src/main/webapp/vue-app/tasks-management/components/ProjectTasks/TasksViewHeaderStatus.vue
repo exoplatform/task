@@ -31,8 +31,7 @@
         @keyup="checkImput($event,index)">
       <div
         v-else
-        class="text-truncate subtitle-2 text-color my-auto"
-        @click="editStatus = true">
+        class="text-truncate subtitle-2 text-color my-auto">
         {{ status.name }} <span class="text-truncate subtitle-2 text-color my-auto">({{ tasksNumber }})</span>
       </div>
     </div>
@@ -58,7 +57,7 @@
         class="uiIconSocSimplePlus d-flex"
         @click="openTaskDrawer()">
       </i>
-      <i
+      <!--      <i
         icon
         small
         class="uiIconVerticalDots taskInfoIcon d-flex"
@@ -81,7 +80,7 @@
             </v-list-item-title>
           </v-list-item>
         </v-list>
-      </v-menu>
+      </v-menu>-->
     </div>
   </div>
 </template>
