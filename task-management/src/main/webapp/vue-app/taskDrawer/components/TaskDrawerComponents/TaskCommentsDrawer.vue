@@ -116,6 +116,8 @@ export default {
       comment = this.urlVerify(comment);
       this.$taskDrawerApi.addTaskComments(this.task.id,comment).then(comment => {
         this.comments.push(comment);
+      }).then( () => {
+        this.$root.$emit('update-task-comments',this.comments.length,this.task.id);
       });
     },
     closeDrawer() {
