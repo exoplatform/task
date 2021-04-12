@@ -1,7 +1,7 @@
 <template>
   <div
     :id="'task-'+viewType+'-'+status.id"
-    class="tasksViewHeaderStatus d-flex justify-space-between align-center">
+    class="tasksViewHeaderStatus mr-2 d-flex justify-space-between align-center">
     <div
       class="d-flex align-center assigneeFilter pointer">
       <a
@@ -31,14 +31,12 @@
         @keyup="checkImput($event,index)">
       <div
         v-else
-        class="text-truncate subtitle-2 text-color my-auto"
-        @click="editStatus = true">
+        class="text-truncate subtitle-2 text-color my-auto">
         {{ status.name }} <span class="text-truncate subtitle-2 text-color my-auto">({{ tasksNumber }})</span>
       </div>
     </div>
     <v-divider class="mx-1" />
     <div class="taskNumberAndActions d-flex align-center mb-1">
-      <span class="caption">{{ tasksNumber }}</span>
       <!-- <span v-if="tasksNumber < maxTasksToShow" class="caption">{{ tasksNumber }}</span>
       <div v-else class="showTasksPagination">
         <span class="caption">
@@ -56,6 +54,12 @@
       <i
         icon
         small
+        class="uiIconSocSimplePlus d-flex"
+        @click="openTaskDrawer()">
+      </i>
+      <!--      <i
+        icon
+        small
         class="uiIconVerticalDots taskInfoIcon d-flex"
         @click="displayActionMenu = true">
       </i>
@@ -66,41 +70,17 @@
         content-class="taskStatusActionMenu"
         offset-y>
         <v-list class="pa-0" dense>
-          <v-list-item class="menu-list" @click="openTaskDrawer()">
+          <v-list-item
+            v-if="!project.canManage"
+            class="menu-list"
+            @click="openTaskDrawer()">
             <v-list-item-title class="subtitle-2">
               <i class="uiIcon uiIconTask pr-1"></i>
               <span>{{ $t('label.addTask') }}</span>
             </v-list-item-title>
           </v-list-item>
-          <v-list-item 
-            v-if="project.canManage" 
-            class="menu-list" 
-            @click="addColumn(index)">
-            <v-list-item-title class="subtitle-2">
-              <i class="uiIcon uiIconRotateLeft pr-1"></i>
-              <span>{{ $t('label.status.before') }}</span>
-            </v-list-item-title>
-          </v-list-item>
-          <v-list-item 
-            v-if="project.canManage" 
-            class="menu-list" 
-            @click="addColumn(index+1)">
-            <v-list-item-title class="subtitle-2">
-              <i class="uiIcon uiIconRotateRight pr-1"></i>
-              <span> {{ $t('label.status.after') }} </span>
-            </v-list-item-title>
-          </v-list-item>
-          <v-list-item 
-            v-if="project.canManage" 
-            class="menu-list" 
-            @click="deleteStatus()">
-            <v-list-item-title class="subtitle-2">
-              <i class="uiIcon uiIconDelete pr-1"></i>
-              <span>{{ $t('label.delete') }}</span>
-            </v-list-item-title>
-          </v-list-item>
         </v-list>
-      </v-menu>
+      </v-menu>-->
     </div>
   </div>
 </template>

@@ -37,11 +37,11 @@
         class="pt-5">
         <div
           v-if=" projectItem.value && projectItem.value.displayName && projectItem.name!==''"
-          class="d-flex align-center assigneeFilter pointer"
-          @click="showDetailsTask(projectItem.rank)">
+          class="d-flex align-center mr-3 assigneeFilter pointer">
           <a
             class="toggle-collapse-group"
-            href="#">
+            href="#"
+            @click="showDetailsTask(projectItem.rank)">
             <i
               :id="'uiIconMiniArrowDown'+projectItem.rank"
               class="uiIcon uiIconMiniArrowDown"
@@ -67,15 +67,22 @@
             role="separator"
             aria-orientation="horizontal"
             class="my-0 v-divider theme--light">
+          <i
+            v-if="taskViewTabName==='list'"
+            icon
+            small
+            class="uiIconSocSimplePlus d-flex"
+            @click="openTaskDrawer()">
+          </i>
         </div>
         <div
           v-else
-          class="d-flex align-center assigneeFilter pointer"
-          @click="showDetailsTask(projectItem.rank)">
+          class="d-flex align-center mr-3 assigneeFilter pointer">
           <a
             :id="'iconTask'+projectItem.rank"
             class="toggle-collapse-group"
-            href="#">
+            href="#"
+            @click="showDetailsTask(projectItem.rank)">
             <i
               :id="'uiIconMiniArrowDown'+projectItem.rank"
               class="uiIcon uiIconMiniArrowDown"
@@ -97,6 +104,13 @@
             role="separator"
             aria-orientation="horizontal"
             class="my-0 v-divider theme--light">
+          <i
+            v-if="taskViewTabName==='list'"
+            icon
+            small
+            class="uiIconSocSimplePlus d-flex"
+            @click="openTaskDrawer()">
+          </i>
         </div>
         <div :id="'taskView'+projectItem.rank" class="view-project-group-sort">
           <div
@@ -116,6 +130,7 @@
             v-show="taskViewTabName == 'list'"
             eager>
             <tasks-view-list
+              :project="project"
               :status-list="statusList"
               :tasks-list="tasksList[i]" />
           </div>
@@ -145,6 +160,7 @@
         v-show="taskViewTabName == 'list'"
         eager>
         <tasks-view-list
+          :project="project"
           :status-list="statusList"
           :tasks-list="tasksList"
           :filter-task-completed="filterAsCompleted"
@@ -450,6 +466,14 @@ export default {
           this.sortBy = '';
         }
       });
+    },
+    openTaskDrawer() {
+      const defaultTask= {id: null,
+        status: {project: this.project},
+        priority: 'NONE',
+        description: '',
+        title: ''};
+      this.$root.$emit('open-task-drawer', defaultTask);
     },
   }
 };

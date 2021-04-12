@@ -12,6 +12,7 @@
               class="pt-5 px-3 projectTaskItem">
               <tasks-view-list-column
                 :status="status"
+                :project="project"
                 :tasks-list="getTasksByStatus(tasksList,status.name)"
                 :show-completed-tasks="filterTaskCompleted"
                 :filter-by-status="filterByStatus"
@@ -48,6 +49,10 @@ export default {
     filterTaskCompleted: {
       type: Boolean,
       default: false
+    },
+    project: {
+      type: Number,
+      default: 0
     },
     filterByStatus: {
       type: Boolean,

@@ -3,7 +3,7 @@
     :id="'task-'+viewType+'-'+status.id"
     class="tasksViewHeader  d-flex justify-space-between align-center">
     <div
-      class="py-3 d-flex tasksViewHeaderLeft">
+      class="d-flex tasksViewHeaderLeft">
       <a
         v-if="viewType=== 'list'"
         class="toggle-collapse-group d-flex"
@@ -78,14 +78,15 @@
           <i class="uiIcon uiIconArrowNext text-color"></i>
         </v-btn>
 
-      </div> 
+      </div> -->
       <i
         icon
         small
         class="uiIconSocSimplePlus d-flex"
-        @click="openQuickAdd">
-      </i>-->
+        @click="openTaskDrawer()">
+      </i>
       <i
+        v-if="project.canManage"
         icon
         small
         class="uiIconVerticalDots taskInfoIcon d-flex"
@@ -93,19 +94,14 @@
       </i>
       <v-menu
         v-model="displayActionMenu"
+        v-if="project.canManage"
         :attach="`#task-${viewType}-${status.id}`"
         transition="slide-x-reverse-transition"
         content-class="taskStatusActionMenu"
         offset-y>
         <v-list class="pa-0" dense>
-          <v-list-item class="menu-list" @click="openQuickAdd">
-            <v-list-item-title class="subtitle-2">
-              <i class="uiIcon uiIconTask pr-1"></i>
-              <span>{{ $t('label.addTask') }}</span>
-            </v-list-item-title>
-          </v-list-item>
           <v-list-item
-            v-if="project.canManage && index>0"
+            v-if="index>0"
             class="menu-list"
             @click="moveBeforeColumn(index)">
             <v-list-item-title class="subtitle-2">
@@ -114,7 +110,6 @@
             </v-list-item-title>
           </v-list-item>
           <v-list-item
-            v-if="project.canManage"
             class="menu-list"
             @click="addColumn(index)">
             <v-list-item-title class="subtitle-2">
@@ -123,7 +118,6 @@
             </v-list-item-title>
           </v-list-item>
           <v-list-item
-            v-if="project.canManage"
             class="menu-list"
             @click="addColumn(index+1)">
             <v-list-item-title class="subtitle-2">
@@ -132,7 +126,7 @@
             </v-list-item-title>
           </v-list-item>
           <v-list-item
-            v-if="project.canManage && index < statusListLength-1"
+            v-if="index < statusListLength-1"
             class="menu-list"
             @click="moveAfterColumn(index)">
             <v-list-item-title class="subtitle-2">
@@ -141,7 +135,6 @@
             </v-list-item-title>
           </v-list-item>
           <v-list-item
-            v-if="project.canManage"
             class="menu-list"
             @click="deleteStatus()">
             <v-list-item-title class="subtitle-2">
