@@ -398,7 +398,7 @@ export default {
       }
     },
     updateTaskStartDate(value) {
-      if (value && value !== 'none'  && (!this.oldTask.startDate|| this.oldTask.startDate.time!==value.time)) {
+      if (value && value !== 'none'  && (!this.oldTask.startDate|| !this.datesEquals(this.oldTask.startDate,value))) {
         if (this.task.id != null) {
           this.task.startDate = value;
           this.$taskDrawerApi.updateTask(this.task.id, this.task).then( () => {
@@ -420,11 +420,11 @@ export default {
       }
     },
     updateTaskDueDate(value) {
-      if (value && value !== 'none' && (!this.oldTask.dueDate|| this.oldTask.dueDate.time!==value.time)) {
+      if (value && value !== 'none' && (!this.oldTask.dueDate || !this.datesEquals(this.oldTask.dueDate,value))) {
         if (this.task.id != null) {
           this.task.dueDate = value;
-          this.$taskDrawerApi.updateTask(this.task.id, this.task).then( () => {
-            this.oldTask.dueDate=this.task.dueDate;
+          this.$taskDrawerApi.updateTask(this.task.id, this.task).then(() => {
+            this.oldTask.dueDate = this.task.dueDate;
             this.$root.$emit('show-alert', {
               type: 'success',
               message: this.$t('alert.success.task.duetDate')
@@ -441,8 +441,8 @@ export default {
         }
       } else if (value === 'none' && this.oldTask.dueDate) {
         this.task.dueDate = null;
-        this.$taskDrawerApi.updateTask(this.task.id, this.task).then( () => {
-          this.oldTask.dueDate=this.task.dueDate;
+        this.$taskDrawerApi.updateTask(this.task.id, this.task).then(() => {
+          this.oldTask.dueDate = this.task.dueDate;
           this.$root.$emit('show-alert', {
             type: 'success',
             message: this.$t('alert.success.task.duetDate')
@@ -708,6 +708,12 @@ export default {
     openCommentDrawer() {
       this.$root.$emit('displayTaskComment', this.comments[this.comments.length-1].comment.id, true);
     },
+    datesEquals(date1,date2){
+      if (date1.month===date2.month&&date1.year===date2.year&&date1.day===date2.day){
+        return true;
+      }
+      return false;
+    }
   }
 };
 </script>

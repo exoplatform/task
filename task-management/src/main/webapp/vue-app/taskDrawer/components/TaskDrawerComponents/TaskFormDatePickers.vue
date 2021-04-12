@@ -226,15 +226,23 @@ export default {
       }
     },
     emitStartDate(date) {
-      if ((!date && this.actualTask.startDate) || (date && !this.actualTask.startDate) || (this.actualTask.startDate && date !== this.actualTask.startDate.time)) {
-        this.$emit('startDateChanged',this.toDateObject(date));
+      const newDate = this.toDateObject(date);
+      if ((!date && this.actualTask.startDate) || (date && !this.actualTask.startDate) || (this.actualTask.startDate && !this.datesEquals(newDate,this.actualTask.startDate))) {
+        this.$emit('startDateChanged',newDate);
       }
     },
     emitDueDate(date) {
-      if ((!date && this.actualTask.dueDate) || (date && !this.actualTask.dueDate) || (this.actualTask.dueDate && date !== this.actualTask.dueDate.time)) {
-        this.$emit('dueDateChanged',this.toDateObject(date));
+      const newDate = this.toDateObject(date);
+      if ((!date && this.actualTask.dueDate) || (date && !this.actualTask.dueDate) || (this.actualTask.dueDate && !this.datesEquals(newDate,this.actualTask.dueDate))) {
+        this.$emit('dueDateChanged',newDate);
       }
     },
+    datesEquals(date1,date2){
+      if (date1.month===date2.month&&date1.year===date2.year&&date1.day===date2.day){
+        return true;
+      }
+      return false;
+    }
   }
 };
 </script>
