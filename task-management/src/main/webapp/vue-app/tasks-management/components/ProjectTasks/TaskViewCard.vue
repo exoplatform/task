@@ -161,6 +161,14 @@ export default {
     }
   },
   created() {
+    this.$root.$on('update-completed-task',(value,id)=>{
+      if (this.task.id === id){
+        this.task.task.completed=value;
+        if (this.task.task.completed === true && !this.showCompletedTasks){
+          this.removeCompletedTask = true;
+        }
+      }
+    });
     this.$root.$on('update-task-assignee',(value,id)=>{
       this.updateTaskAssignee(value,id);
     });
