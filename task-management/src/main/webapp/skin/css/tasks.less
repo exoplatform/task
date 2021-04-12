@@ -1120,7 +1120,7 @@
         }
       }
       .projectTasksDashboard {
-        min-height: calc(~"100vh - 104px")!important;
+        min-height: calc(~"100vh - 138px")!important;
         .projectTasksTabFilter {
           flex: 0 1 70%;
         }
@@ -3568,7 +3568,7 @@
   }
 }
 
-.gantt-container {
+/*.gantt-container {
   min-height: calc(~"100vh - 120px");
   height: calc(~"100vh - 120px");
   &::-webkit-scrollbar {
@@ -3595,7 +3595,7 @@
       background: @borderColorLight;
     }
   }
-}
+}*/
 .gantt {
   //min-height: calc(~"100vh - 120px")!important;
   //height: calc(~"100vh - 120px")!important;
@@ -3731,8 +3731,11 @@
 		color: #959da5;
 		border-radius: 3px;
 		.title {
-			border-bottom: 3px solid #a3a3ff;
-			padding: 10px;
+			padding: 8px;
+      border-bottom: 3px solid #ffffff;
+      padding: 10px;
+      font-size: 12px!important;
+      line-height: 1.2rem;
 		}
 		.subtitle {
 			padding: 10px;
@@ -3746,4 +3749,55 @@
 			border-top-color: rgba(0, 0, 0, .8);
 		}
 	}
+}
+
+.gantt-container {
+  overflow: hidden;
+}
+.gantt-grid {
+  max-height: calc(~"100vh - 290px")!important;
+  height: calc(~"100vh - 290px")!important;
+  overflow: scroll;
+  position: relative;
+  &::-webkit-scrollbar {
+    height: 6px;
+    width: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: white;
+    border-radius: 10px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: white;
+  }
+  &:hover {
+    &::-webkit-scrollbar {
+      height: 6px;
+      width: 6px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: @greyColorLighten1;
+      border-radius: 10px;
+    }
+    &::-webkit-scrollbar-thumb:hover {
+      background: @borderColorLight;
+    }
+  }
+}
+
+.gantt-dates {
+  overflow: auto;
+}
+
+.gantt-dates::-webkit-scrollbar {
+  width: 0;  /* Remove scrollbar space */
+  height: 0;
+  background: transparent;  /* Optional: just make scrollbar invisible */
+}
+/* Optional: show position indicator in red */
+.gantt-dates::-webkit-scrollbar-thumb {
+  background: #FFFFFF;
+}
+.gantt .arrow {
+  display: none;
 }
