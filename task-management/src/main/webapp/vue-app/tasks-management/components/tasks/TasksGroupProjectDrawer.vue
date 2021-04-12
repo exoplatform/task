@@ -13,8 +13,13 @@
       v-model="groupBy"
       mandatory>
       <v-radio
+        v-if="taskViewTabName !== 'list'"
         :label="$t('label.task.none')"
         value="none" />
+      <v-radio
+        v-if="taskViewTabName === 'list'"
+        :label="$t('label.task.status')"
+        value="status" />
       <v-radio
         :label="$t('label.task.assignee')"
         value="assignee" />
@@ -24,10 +29,6 @@
       <v-radio
         :label="$t('label.task.dueDate')"
         value="dueDate" />
-      <v-radio
-        v-if="taskViewTabName === 'list'"
-        :label="$t('label.task.status')"
-        value="status" />
       <v-radio
         :label="$t('label.task.completed')"
         value="completed" />
