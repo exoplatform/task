@@ -173,7 +173,9 @@
       },
       addTaskToLabel(label) {
         if( this.task.id!= null ) {
-          addTaskToLabel(this.task.id, label);
+          addTaskToLabel(this.task.id, label).then( () => {
+            this.$root.$emit('update-task-labels',label,this.task.id);
+          });
         } else {
           document.dispatchEvent(new CustomEvent('labelListChanged', {detail: label}));
         }
@@ -181,7 +183,9 @@
         document.getElementById('labelInput').focus()
       },
       removeTaskFromLabel(item) {
-        removeTaskFromLabel(this.task.id, item.id)
+        removeTaskFromLabel(this.task.id, item.id).then( () => {
+          this.$root.$emit('update-remove-task-labels',item.id,this.task.id);
+        })
       },
       openLabelsList() {
         this.$emit('labelsListOpened')

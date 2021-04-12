@@ -96,7 +96,7 @@
         assigneeAndCoworkerArray: [],
         isPersonnalTask : this.task.task.status === null,
         labelList: '',
-        maxAvatarToShow : 3
+        maxAvatarToShow : 1
       }
     },
     computed: {
@@ -104,6 +104,7 @@
         return this.task && this.task.task.dueDate && this.task.task.dueDate.time;
       },
       avatarToDisplay () {
+        this.getTaskAssigneeAndCoworkers();
         if(this.assigneeAndCoworkerArray.length > this. maxAvatarToShow) {
           return this.assigneeAndCoworkerArray.slice(0, this.maxAvatarToShow-1);
         } else {
@@ -139,13 +140,14 @@
         }
       },
       getTaskAssigneeAndCoworkers() {
-           if(this.task.assignee){
+        this.assigneeAndCoworkerArray=[];
+        if (this.task.assignee && !this.assigneeAndCoworkerArray.includes(this.task.assignee)) {
         this.assigneeAndCoworkerArray.push(this.task.assignee);
         } 
         if (this.task.coworker || this.task.coworker.length > 0 )
         {
           this.task.coworker.forEach((coworker) => {
-            if (coworker){
+            if (coworker && !this.assigneeAndCoworkerArray.includes(coworker)){
               this.assigneeAndCoworkerArray.push(coworker);
             }
           })
