@@ -300,7 +300,11 @@ export default {
       this.dueDateSelected='';
       this.prioritySelected='';
       this.statusSelected='';
-      this.groupBy='none';
+      if (this.taskViewTabName === 'list'){
+        this.groupBy='status';
+      } else {
+        this.groupBy='none';
+      }
       this.sortBy='';
       this.labels='';
       this.showCompleteTasks=false;
@@ -313,7 +317,11 @@ export default {
       this.dueDateSelected='';
       this.prioritySelected='';
       this.statusSelected='';
-      this.groupBy='';
+      if (this.taskViewTabName === 'list'){
+        this.groupBy='status';
+      } else {
+        this.groupBy='';
+      }
       this.sortBy='';
       this.labels='';
       this.showCompleteTasks=false;

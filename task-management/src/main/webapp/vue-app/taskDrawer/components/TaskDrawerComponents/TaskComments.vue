@@ -94,6 +94,8 @@ export default {
       if (this.newCommentEditor) {
         this.$taskDrawerApi.addTaskComments(this.task.id,commentText).then(comment => {
           this.comments.push(comment);
+        }).then( () => {
+          this.$root.$emit('update-task-comments',this.comments.length,this.task.id);
         });
       } else {
         this.$taskDrawerApi.addTaskSubComment(this.task.id, commentId, commentText).then((comment => {
