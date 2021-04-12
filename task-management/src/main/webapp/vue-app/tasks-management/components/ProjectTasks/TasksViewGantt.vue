@@ -7,12 +7,28 @@
   </div>
   <div
     v-else
-    class="echartsContainer"
-    style="margin-bottom: 20px; min-height:60vh">
-    <div
-      id="myChart"
-      ref="chart"
-      style="margin: auto;margin-bottom: 20px;"></div>
+    class="gantt-chart-container">
+    <div class="gantt-left-sidebar">
+      <v-btn-toggle
+        v-model="view_mode"
+        tile
+        color="deep-purple accent-3"
+        group
+        @change="getViewMode($event)">
+        <v-btn value="Day">
+          Day
+        </v-btn>
+
+        <v-btn value="Week">
+          Week
+        </v-btn>
+
+        <v-btn value="Month">
+          Month
+        </v-btn>
+      </v-btn-toggle>
+    </div>
+    <svg id="gantt"></svg>
   </div>
 </template>
 <script>
@@ -25,442 +41,95 @@ export default {
   },
   data () {
     return {
-      axisTimeLength: 0,
-      autoHeight: 0,
-      TasksGanttdimensions: [
-        'Index',
-        'Task ID',
-        'Start Date',
-        'Due Date'
-      ],
-      task: {
-        type: Object,
-        default: () => ({}),
+      gantt: '',
+      lang: eXo && eXo.env.portal.language || 'en',
+      fullDateFormat: {
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric',
       },
+      tasksToDisplay: [],
+      view_mode: 'Day',
     };
   },
   mounted() {
-    setTimeout(() => {
-      this.drawTasksGantt();
-    }, 200);
-  },
-  watch: {
-    tasksList () {
-      setTimeout(() => {
-        this.drawTasksGantt();
-      }, 200);
-    }
+    this.tasksToDisplay = this.getTasksToDisplay(this.tasksList);
+    this.initGanttChart();
+    this.addScrollToDateArea();
   },
   methods: {
-    getTaskPriorityColor(priority) {
-      switch (priority) {
-      case 'HIGH':
-        return '#bc4343';
-      case 'NORMAL':
-        return '#ffb441';
-      case 'LOW':
-        return '#2eb58c';
-      case 'NONE':
-        return '#476a9c';
-      }
-    },
-    getTasksTitle(tasksList) {
-      const taskByElement = [];
-      tasksList.forEach((element) => {
-        taskByElement.push(`${element[1]}~${element[4]}`);
-      });
-      return taskByElement;
-    },
     getTasksToDisplay(tasksList) {
       const GanttTasksList = [];
-      tasksList.forEach((item,index) => {
-        const task =[];
-        task.push(index);
-        task.push(item.task.id);
+      tasksList.forEach((item) => {
+        const task ={
+          id: '',
+          name: '',
+          start: '',
+          end: '',
+          custom_class: '',
+          progress: '',
+        };
+        task.id = `Task-${item.task.id}`;
+        task.name = item.task.title;
         if (item.task.startDate != null) { 
-          task.push(item.task.startDate.time-3600000);
+          task.start = this.dateFormat (item.task.startDate.time);
           if ( item.task.dueDate === null ) {
-            task.push(item.task.startDate.time + 3600000 );
+            task.end = this.dateFormat (item.task.startDate.time);
           } else {
-            task.push(item.task.dueDate.time + 3600000);
+            task.end = this.dateFormat (item.task.dueDate.time);
           }
         } else {
           if (item.task.dueDate != null) { 
-            task.push(item.task.dueDate.time - 3600000 );
-            task.push(item.task.dueDate.time + 3600000 );
+            task.start= this.dateFormat (item.task.dueDate.time );
+            task.end = this.dateFormat (item.task.dueDate.time);
           }
         }
+        task.custom_class=`bar_${item.task.priority}`;
         if (item.task.startDate != null || item.task.dueDate != null) {
-          task.push(item.task.title);
-          task.push(item.task.priority);
+          task.progress= 100;
           GanttTasksList.push(task);
         }
       });
       return GanttTasksList;
     },
-    renderGanttItem(params, api) {
-      const categoryIndex = api.value(0);
-      const timeArrival = api.coord([api.value(2), categoryIndex]);
-      const timeDeparture = api.coord([api.value(3), categoryIndex]);
-      const barLength = timeDeparture[0] - timeArrival[0];
-      const barHeight = 15;
-      const x = timeArrival[0];
-      const y = timeArrival[1];
-      const rectNormal = this.clipRectByRect(params, {
-        x: x,
-        y: y,
-        width: barLength,
-        height: barHeight,
-      });
-
-      return {
-        type: 'group',
-        children: [{
-          type: 'rect',
-          ignore: !rectNormal,
-          shape: rectNormal,
-          style: api.style({fill: this.getTaskPriorityColor(api.value(5))})
-        }]
-      };
+    dateFormat(date) {
+      const dateValue = new Date(date);
+      return `${dateValue.getFullYear()}-${dateValue.getMonth()}-${dateValue.getDate()}`;
     },
-    renderZoomInAxis() {
-      const GanttTasksList = this.getTasksToDisplay(this.tasksList);
-      if ( GanttTasksList.length > this.getTasksNumberToDisplay() ) {
-        return  [
-          {
-            type: 'slider',
-            xAxisIndex: 0,
-            filterMode: 'none',
-            realtime: true,
-            height: 10,
-            bottom: 0,
-            startValue: (new Date().setHours(24,0,0,0)) - 1000 * 60 * 60 * 24 * (this.getXaxisLabelsToDisplay()/2),
-            minValueSpan: 3600 * 24 * 1000,
-            maxValueSpan: 3600 * 24 * 1000 * (this.getXaxisLabelsToDisplay()),
-            minSpan: 0,
-            maxSpan: this.getXaxisLabelsToDisplay()-1,
-            handleIcon: 'path://M10.7,11.9H9.3c-4.9,0.3-8.8,4.4-8.8,9.4c0,5,3.9,9.1,8.8,9.4h1.3c4.9-0.3,8.8-4.4,8.8-9.4C19.5,16.3,15.6,12.2,10.7,11.9z M13.3,24.4H6.7V23h6.6V24.4z M13.3,19.6H6.7v-1.4h6.6V19.6z',
-            handleSize: '0',
-            showDetail: false,
-            borderColor: 'transparent'
-          },
-          {
-            type: 'inside',
-            id: 'insideX',
-            xAxisIndex: 0,
-            filterMode: 'weakFilter',
-            minValueSpan: 3600 * 24 * 1000,
-            maxValueSpan: 3600 * 24 * 1000 * (this.getXaxisLabelsToDisplay()),
-            minSpan: 0,
-            maxSpan: this.getXaxisLabelsToDisplay()-1,
-            zoomOnMouseWheel: false,
-            moveOnMouseMove: true
-          },{
-            type: 'slider',
-            yAxisIndex: 0,
-            zoomLock: true,
-            width: 10,
-            right: 10,
-            top: 70,
-            bottom: 20,
-            start: this.getYaxisLabelsToDisplay(),
-            end: 100,
-            handleSize: 0,
-            showDetail: false,
-          }, {
-            type: 'inside',
-            id: 'insideY',
-            yAxisIndex: 0,
-            start: this.getYaxisLabelsToDisplay(),
-            end: 100,
-            zoomOnMouseWheel: false,
-            moveOnMouseMove: true,
-            moveOnMouseWheel: true
-          }];
-      } else {
-        return  [
-          {
-            type: 'slider',
-            xAxisIndex: 0,
-            filterMode: 'none',
-            realtime: true,
-            height: 10,
-            bottom: 0,
-            startValue: (new Date().setHours(24,0,0,0)) - 1000 * 60 * 60 * 24 * (this.getXaxisLabelsToDisplay()/2),
-            minValueSpan: 3600 * 24 * 1000,
-            maxValueSpan: 3600 * 24 * 1000 * (this.getXaxisLabelsToDisplay()),
-            minSpan: 0,
-            maxSpan: this.getXaxisLabelsToDisplay()-1,
-            handleIcon: 'path://M10.7,11.9H9.3c-4.9,0.3-8.8,4.4-8.8,9.4c0,5,3.9,9.1,8.8,9.4h1.3c4.9-0.3,8.8-4.4,8.8-9.4C19.5,16.3,15.6,12.2,10.7,11.9z M13.3,24.4H6.7V23h6.6V24.4z M13.3,19.6H6.7v-1.4h6.6V19.6z',
-            handleSize: '0',
-            showDetail: false,
-            borderColor: 'transparent'
-          },
-          {
-            type: 'inside',
-            id: 'insideX',
-            xAxisIndex: 0,
-            filterMode: 'weakFilter',
-            minValueSpan: 3600 * 24 * 1000,
-            maxValueSpan: 3600 * 24 * 1000 * (this.getXaxisLabelsToDisplay()),
-            minSpan: 0,
-            maxSpan: this.getXaxisLabelsToDisplay()-1,
-            zoomOnMouseWheel: false,
-            moveOnMouseMove: true
-          }];
-      }
+    openTaskDraweryId(taskId) {
+      this.$tasksService.getTaskById(taskId).then(data => {
+        this.task = data;
+        this.$root.$emit('open-task-drawer', this.task);
+      }); 
     },
-    clipRectByRect(params, rect) {
-      return echarts.graphic.clipRectByRect(rect, {
-        x: params.coordSys.x,
-        y: params.coordSys.y,
-        width: params.coordSys.width,
-        height: params.coordSys.height
+    addScrollToDateArea() {
+      const target = $('.gantt-dates');
+      $('.gantt-grid').scroll(function() {
+        target.prop('scrollLeft', this.scrollLeft);
       });
     },
-    getYaxisLabelsToDisplay() {
-      const intViewportHeight = window.innerHeight;
-      const autoHeight = Math.ceil((intViewportHeight - 250)/100)*10;
-      return 100 - autoHeight;
+    getViewMode(value) {
+      console.warn('value',value);
+      this.gantt.change_view_mode(this.view_mode);
     },
-    getXaxisLabelsToDisplay() {
-      const intViewportWidth = window.innerWidth;
-      const autoWidth = Math.ceil((intViewportWidth - 140)/82);
-      return autoWidth;
-    },
-    getTasksNumberToDisplay() {
-      const intViewportHeight = window.innerHeight;
-      const autoHeight = Math.ceil((intViewportHeight - 250)/100)*2;
-      return autoHeight;
-    },
-    drawTasksGantt () {
-      if ( this.$refs.chart ) {
-        const barDv = this.$refs.chart;
-        barDv.style.width=`${window.innerWidth -100 }px`;
-        if (barDv) {
-          const myChart = echarts.init(barDv);
-          const GanttTasksList = this.getTasksToDisplay(this.tasksList);
-          const intViewportHeight = window.innerHeight;
-          this.autoHeight = intViewportHeight - 200;
-          myChart.getDom().style.height = `${this.autoHeight  }px`;
-          myChart.resize(); 
-          const option={
-            tooltip: {
-              trigger: 'axis',
-              axisPointer: {            
-                type: 'shadow' 
-              },
-              formatter: function(params) {
-                const lang = eXo.env.portal.language;
-                return `<span style="font-weight: bold;">${ params[0].data[4]  }</span><br/>ID: ${ params[0].data[1]  }<br/> Start: ${  new Date(params[0].data[2]).toLocaleDateString(lang, {day: '2-digit',month: '2-digit',year: 'numeric'}) }<br/>Due Date: ${  new Date(params[0].data[3]).toLocaleDateString(lang, {day: '2-digit',month: '2-digit',year: 'numeric'}) } `;
-              },
-              backgroundColor: '#000000',
-            },
-            animation: true,
-            toolbox: {
-              left: 20,
-              top: 0,
-              itemSize: 20,
-            },
-            dataZoom: this.renderZoomInAxis(),
-            grid: {
-              show: true,
-              left: 200,
-              right: 40,
-              bottom: 40,
-              top: 80,
-              backgroundColor: '#fff',
-              borderWidth: 0
-            },
-            yAxis: {
-              type: 'category',
-              name: 'Task Name',
-              nameLocation: 'start',
-              offset: 0,
-              nameTextStyle: {
-                color: '#333333',
-                align: 'right',
-                fontWeight: 'bold',
-                fontSize: 14,
-                padding: [10, 220, 10 ,10],
-                margin: 10,
-                borderColor: 'transparent',
-                shadowOffsetY: 4,
-                shadowOffsetX: 4,
-                borderRadius: [8, 8, 8, 8],
-                shadowBlur: 2
-              },
-              nameGap: 6,
-              scale: true,
-              triggerEvent: true,
-              min: 0,
-              max: GanttTasksList.length-1,
-              axisLine: {
-                show: true,
-                lineStyle: {
-                  color: ['#f2f2f2']
-                }
-              },
-              axisTick: {
-                show: true,
-              },
-              splitLine: {
-                show: true,
-                lineStyle: {
-                  color: ['#f2f2f2']
-                }
-              },
-              splitArea: {
-                show: true,
-                areaStyle: {
-                  color: ['rgba(250,250,250,0.9)','#ffffff']
-                }
-              },
-              axisLabel: {
-                margin: 200,
-                show: true,
-                inside: false,
-                align: 'left',
-                fontSize: 14,
-                borderRadius: 3,
-                color: '#636363',
-                formatter: function(params) {
-                  const taskTitle = params.split('~')[1];
-                  let val='';
-                  if (taskTitle.length >25){
-                    val = `${taskTitle.substr(0,25)}...`;
-                    return val;
-                  } else {
-                    return taskTitle;
-                  }
-                }
-              },
-              data: this.getTasksTitle(GanttTasksList)
-            },
-            xAxis: {
-              type: 'time',
-              position: 'top',
-              minInterval: 3600 * 1000 * 24,
-              maxInterval: 3600 * 1000 * 24,
-              splitLine: {
-                show: true,
-                lineStyle: {
-                  color: ['#f2f2f2']
-                }
-              },
-              axisLine: {
-                show: true,
-                lineStyle: {
-                  color: ['#f2f2f2']
-                }
-              },
-              axisTick: {
-                show: true,
-                alignWithLabel: true
-              },
-              axisLabel: {
-                show: true,
-                inside: false,
-                fontSize: 12,
-                borderRadius: 3,
-                color: '#636363',
-                formatter: function (value) {
-                  const lang = eXo && eXo.env.portal.language || 'en';
-                  const axisDate = new Date(value);
-                  const toDay = new Date();
-                  const valueDay = axisDate.toLocaleDateString(lang, {
-                    day: '2-digit',
-                    month: 'long'
-                  });
-                  let monthLabel= '';
-                  let day = '';
-                  const dayString = valueDay.toString();
-                  
-                  if ( lang === 'en') {
-                    monthLabel = dayString.split(' ')[0].substring(0,3).toUpperCase();
-                    day = dayString.split(' ')[1];
-                  } else {
-                    monthLabel = dayString.split(' ')[1].substring(0,3).toUpperCase();
-                    day = dayString.split(' ')[0];
-                  }
-                  if ( axisDate.setHours(0,0,0,0) === toDay.setHours(0,0,0,0)) {
-                    return `{toDayStyleMonth|${  monthLabel  }}{toDayStyleDay|${ day  }}`;
-                  } else {
-                    return `{styleMonth|${monthLabel} ${day}}`;
-                  }
-                },
-                rich: {
-                  styleMonth: {
-                    align: 'center',
-                    fontSize: 12
-                  },
-                  toDayStyleMonth: {
-                    color: '#ffffff',
-                    backgroundColor: '#578dc9',
-                    padding: [2,2],
-                    borderRadius: [4, 0, 0, 4],
-                    fontSize: 12
-                  },
-                  toDayStyleDay: {
-                    color: '#ffffff',
-                    backgroundColor: '#578dc9',
-                    padding: [2,2],
-                    borderRadius: [0, 4, 4, 0],
-                    fontSize: 12
-                  }
-                }
-              }
-            },
-            series: [{
-              id: 'tasksData',
-              type: 'custom',
-              renderItem: this.renderGanttItem,
-              dimensions: this.TasksGanttdimensions,
-              encode: {
-                x: [2, 3],
-                y: 0,
-                //tooltip: [1,2,3]
-              },
-              data: GanttTasksList,
-              markLine: {
-                silent: true,
-                symbol: ['circle', 'none'],
-                itemStyle: {
-                  normal: {
-                    lineStyle: {
-                      type: 'dashed',
-                      color: '#578dc9',
-                    },
-                    label: {
-                      show: false,
-                    }
-                  }
-                },
-                data: [{
-                  xAxis: new Date().setHours(0,0,0,0)
-                }]
-              }
-            }]
-          };
-          myChart.setOption(option,true);
-          myChart.on('click', params => {
-            let taskId = '';
-            if (params.componentType === 'yAxis') {
-              taskId = params.value.split('~')[0];
-            }
-            else if (params.componentType === 'series') {
-              taskId = params.value[1];
-            }
-            if (taskId) {
-              this.$tasksService.getTaskById(taskId).then(data => {
-                this.task = data;
-                this.$root.$emit('open-task-drawer', this.task);
-              });
-            } 
-          });
-        }
-      }
-      
+    initGanttChart() {
+      const self = this;
+      /*global Gantt :true*/
+      /*eslint no-undef: 2*/
+      this.gantt = new Gantt('#gantt', this.tasksToDisplay, {
+        bar_height: 18,
+        padding: 20,
+        bar_corner_radius: 5,
+        language: this.lang,
+        on_click: function (task) {
+          const taskId = task.id.split('-')[1];
+          if (taskId) {
+            self.openTaskDraweryId(taskId);
+          }
+          console.log(task);
+        },
+      });
+      this.gantt.change_view_mode('Day');
     }
   }
 };
