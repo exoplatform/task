@@ -231,6 +231,13 @@
     </script>
   </module>
 
+ <module>
+    <name>ganttChart</name>
+    <script>
+      <path>/js/frappe-gantt.min.js</path>
+    </script>
+  </module>
+
 
   <portlet>
     <name>tasks</name>
@@ -342,6 +349,9 @@
       </depends>
       <depends>
         <module>vuedraggable</module>
+      </depends>
+      <depends>
+        <module>ganttChart</module>
       </depends>
       <depends>
         <module>vue</module>
