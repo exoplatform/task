@@ -156,7 +156,8 @@
           </v-label>
           <project-labels
             :project="project"
-            @add-label="addLabelOnCreate" />
+            @add-label="addLabelOnCreate"
+            @edit-label-on-create="editLabelBeforeCreate" />
         </div>
       </v-form>
     </template>
@@ -263,6 +264,10 @@ export default {
   methods: {
     addLabelOnCreate(label){
       this.labelsToAdd.push(label);
+    },
+    editLabelBeforeCreate(label){
+      const objIndex = this.labelsToAdd.findIndex((obj => obj.name === label.name));
+      this.labelsToAdd[objIndex].name = label.text;
     },
     open(project) {
       if (project && project.id){

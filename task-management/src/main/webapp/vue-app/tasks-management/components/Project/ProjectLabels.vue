@@ -35,6 +35,7 @@
         <editable-labels
           :item="item"
           :parent="parent"
+          @edit-label-on-create="editLabelBeforeCreate"
           @remove-label="removeLabel" />
       </template>
     </v-combobox>
@@ -170,6 +171,9 @@ export default {
     },
     openLabelsList() {
       this.$emit('labelsListOpened');
+    },
+    editLabelBeforeCreate(label) {
+      this.$emit('edit-label-on-create', label);
     }
   }
 };
