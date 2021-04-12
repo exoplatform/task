@@ -29,15 +29,15 @@
             v-bind="attrs"
             :color="`${item.color} lighten-3`"
             :input-value="selected"
-            class="pr-1"
+            class="pe-1"
             label
             small>
-            <span class="pr-2">
+            <span class="pe-2">
               {{ item.text }}
             </span>
             <v-icon
               x-small
-              class="pr-0"
+              class="pe-0"
               @click="parent.selectItem(item)">
               close
             </v-icon>

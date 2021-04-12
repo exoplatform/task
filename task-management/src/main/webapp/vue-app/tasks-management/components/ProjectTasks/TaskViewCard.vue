@@ -37,7 +37,7 @@
           class="taskActionsAndLabels d-flex align-center">
           <div
             v-if="assigneeAndCoworkerArray && assigneeAndCoworkerArray.length"
-            class="taskWorker  justify-space-between pr-2">
+            class="taskWorker  justify-space-between pe-2">
             <div
               :class="assigneeAndCoworkerArray && !assigneeAndCoworkerArray.length && task && task.labels && !task.labels.length && 'hideTaskAssignee'"
               class="taskAssignee d-flex flex-nowrap">
@@ -69,7 +69,7 @@
           </div>
           <div
             v-if="task.commentCount"
-            class="taskComment d-flex pr-2"
+            class="taskComment d-flex pe-2"
             @click="openTaskDrawer()">
             <i class="uiIcon uiCommentIcon"></i>
             <span class="taskCommentNumber caption">{{ task.commentCount }}</span>

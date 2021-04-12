@@ -18,7 +18,7 @@
       solo
       @click="openLabelsList()"
       @change="search = ''">
-      <template v-slot:prepend class="mr-4">
+      <template v-slot:prepend class="me-4">
         <i class="uiIconTag uiIconBlue"></i>
       </template>
       <template v-slot:no-data>
@@ -37,16 +37,16 @@
           v-bind="attrs"
           :color="`${item.color} lighten-3`"
           :input-value="selected"
-          class="pr-1 font-weight-bold"
+          class="pe-1 font-weight-bold"
           label
           dark
           small>
-          <span class="pr-2">
+          <span class="pe-2">
             {{ item.text }}
           </span>
           <v-icon
             x-small
-            class="pr-0"
+            class="pe-0"
             @click="parent.selectItem(item);removeLabel(item)">
             close
           </v-icon>

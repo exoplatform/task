@@ -26,11 +26,11 @@
               :title="taskAssigneeObj.profile.fullName"
               :size="24"
               :url="null"
-              class="pr-2" />
+              class="pe-2" />
           </div>
           <span
             v-if="taskCoworkers.length > 0"
-            class="user-name coworkerNumber pr-2 caption font-italic lighten-2"> +{{ taskCoworkers.length }} {{ $t('label.coworker') }}
+            class="user-name coworkerNumber pe-2 caption font-italic lighten-2"> +{{ taskCoworkers.length }} {{ $t('label.coworker') }}
           </span>
           <a
             class="taskAssignBtn mt-n1">
@@ -42,7 +42,7 @@
       <v-card class="pb-4">
         <v-card-text class="assignTaskMenu pb-0 d-flex justify-space-between">
           <span>{{ $t('label.assignTo') }} :</span>
-          <a class="ml-4" @click="assignToMe()">
+          <a class="ms-4" @click="assignToMe()">
             <i class="uiIcon uiAssignToMeIcon"></i>
             <span>{{ $t('label.addMe') }}</span>
           </a>
@@ -61,7 +61,7 @@
         <v-divider class="mt-4 mb-4" />
         <v-card-text class="assignTaskMenu pt-0 pb-0 d-flex justify-space-between">
           <span>{{ $t('label.coworkers') }} :</span>
-          <a class="ml-4" @click="setMeAsCoworker()">
+          <a class="ms-4" @click="setMeAsCoworker()">
             <i class="uiIcon uiAddMeCoworkerIcon"></i>
             <span>{{ $t('label.addMe') }}</span>
           </a>

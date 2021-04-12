@@ -24,7 +24,7 @@
             v-model="projectInformation.name"
             :placeholder="$t('label.label.titleProject')"
             type="text"
-            class="projectInputTitle pl-3 pt-1"
+            class="projectInputTitle ps-3 pt-1"
             single-line
             @change="resetCustomValidity">
         </div>
@@ -45,7 +45,7 @@
                 </div>
                 <button
                   type="button"
-                  class="peopleInfoIcon d-flex not-clickable primary-border-color ml-1 v-btn v-btn--flat v-btn--icon v-btn--round theme--light v-size--small primary--text"
+                  class="peopleInfoIcon d-flex not-clickable primary-border-color ms-1 v-btn v-btn--flat v-btn--icon v-btn--round theme--light v-size--small primary--text"
                   title="Space manager">
                   <span class="v-btn__content">
                     <span class="d-flex uiIconMemberAdmin primary--text"></span>
@@ -163,7 +163,7 @@
       <div class="d-flex">
         <v-spacer />
         <v-btn
-          class="btn mr-2"
+          class="btn me-2"
           @click="cancel">
           {{ $t('popup.cancel') }}
         </v-btn>

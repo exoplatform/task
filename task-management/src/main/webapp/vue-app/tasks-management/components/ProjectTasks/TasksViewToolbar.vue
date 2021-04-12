@@ -47,7 +47,7 @@
           v-model="keyword"
           :placeholder=" $t('label.filterTask') "
           prepend-inner-icon="fa-filter"
-          class="inputTasksFilter pa-0 mr-3 my-auto"
+          class="inputTasksFilter pa-0 me-3 my-auto"
           clearable />
       </v-scale-transition>
       <v-scale-transition>
@@ -55,7 +55,7 @@
           class="btn px-2 btn-primary filterTasksSetting"
           outlined
           @click="openDrawer">
-          <i class="uiIcon uiIconFilterSetting pr-3"></i>
+          <i class="uiIcon uiIconFilterSetting pe-3"></i>
           <span class="d-none font-weight-regular caption d-sm-inline">
             {{ $t('label.filter') }} {{ getFilterNum() }}
           </span>

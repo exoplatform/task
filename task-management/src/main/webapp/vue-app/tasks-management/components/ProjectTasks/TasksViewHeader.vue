@@ -105,7 +105,7 @@
             class="menu-list"
             @click="moveBeforeColumn(index)">
             <v-list-item-title class="subtitle-2">
-              <i class="uiIcon uiIconArrowLeft pr-1"></i>
+              <i class="uiIcon uiIconArrowLeft pe-1"></i>
               <span>{{ $t('label.status.move.before') }}</span>
             </v-list-item-title>
           </v-list-item>
@@ -113,7 +113,7 @@
             class="menu-list"
             @click="addColumn(index)">
             <v-list-item-title class="subtitle-2">
-              <i class="uiIcon uiIconRotateLeft pr-1"></i>
+              <i class="uiIcon uiIconRotateLeft pe-1"></i>
               <span>{{ $t('label.status.before') }}</span>
             </v-list-item-title>
           </v-list-item>
@@ -121,7 +121,7 @@
             class="menu-list"
             @click="addColumn(index+1)">
             <v-list-item-title class="subtitle-2">
-              <i class="uiIcon uiIconRotateRight pr-1"></i>
+              <i class="uiIcon uiIconRotateRight pe-1"></i>
               <span> {{ $t('label.status.after') }} </span>
             </v-list-item-title>
           </v-list-item>
@@ -130,7 +130,7 @@
             class="menu-list"
             @click="moveAfterColumn(index)">
             <v-list-item-title class="subtitle-2">
-              <i class="uiIcon uiIconArrowRight pr-1"></i>
+              <i class="uiIcon uiIconArrowRight pe-1"></i>
               <span> {{ $t('label.status.move.after') }}</span>
             </v-list-item-title>
           </v-list-item>
@@ -138,7 +138,7 @@
             class="menu-list"
             @click="deleteStatus()">
             <v-list-item-title class="subtitle-2">
-              <i class="uiIcon uiIconDelete pr-1"></i>
+              <i class="uiIcon uiIconDelete pe-1"></i>
               <span>{{ $t('label.delete') }}</span>
             </v-list-item-title>
           </v-list-item>

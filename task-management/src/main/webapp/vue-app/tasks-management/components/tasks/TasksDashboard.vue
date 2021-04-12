@@ -49,7 +49,7 @@
               :avatar-url="project.value.avatar"
               :title="project.value.displayName"
               :size="26"
-              class="pr-2" />
+              class="pe-2" />
             <span class="amount-item">({{ tasksFilter.tasks[i].length }})</span>
             <hr
               role="separator"

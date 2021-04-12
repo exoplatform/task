@@ -6,7 +6,7 @@
     <v-flex
       d-flex
       xs12
-      pl-3>
+      ps-3>
       <v-layout
         row
         mx-0>
@@ -54,7 +54,7 @@
             @click="openTaskDrawer()">
             <v-icon
               :color="getTaskPriorityColor(task.task.priority)"
-              class="ml-n1">
+              class="ms-n1">
               mdi-flag-variant
             </v-icon>
           </v-card>

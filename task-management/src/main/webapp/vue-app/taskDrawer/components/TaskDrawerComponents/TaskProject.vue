@@ -4,7 +4,7 @@
       pa-0
       fluid
       d-flex>
-      <i class="uiIcon icon-ArrowRight uiIconLightGray mr-1"></i>
+      <i class="uiIcon icon-ArrowRight uiIconLightGray me-1"></i>
       <v-combobox
         ref="select"
         :filter="filterProjects"

@@ -25,7 +25,7 @@
           <span class="text-body-2 totalLabel">{{ $t('exo.tasks.label.leftTasks') }}</span>
         </div>
       </div>
-      <div v-if="statistics.length < maxStatusToShow" class="projectStatusNumber pl-4">
+      <div v-if="statistics.length < maxStatusToShow" class="projectStatusNumber ps-4">
         <p 
           v-for="item in statistics" 
           :key="item.name" 

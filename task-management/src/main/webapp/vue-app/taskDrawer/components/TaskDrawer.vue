@@ -38,7 +38,7 @@
             <v-list class="pa-0" dense>
               <v-list-item v-for="menuAction in menuActions" :key="menuAction.title">
                 <v-list-item-title class="subtitle-2" @click="menuAction.action">
-                  <i :class="`uiIcon ${menuAction.uiIcon} pr-2`"></i>
+                  <i :class="`uiIcon ${menuAction.uiIcon} pe-2`"></i>
                   <span>{{ menuAction.title }}</span>
                 </v-list-item-title>
               </v-list-item>
@@ -60,7 +60,7 @@
         <div class="taskTitleAndMark d-flex">
           <v-btn
             id="check_btn"
-            class="ml-n2"
+            class="ms-n2"
             icon
             dark
             @click="task.completed =!task.completed">
@@ -74,7 +74,7 @@
             :placeholder="$t('label.tapTask.name')"
             :autofocus="task && task.id === null"
             type="text"
-            class="pl-0 pt-0 task-name"
+            class="ps-0 pt-0 task-name"
             auto-grow
             rows="1"
             row-height="13"
@@ -86,12 +86,12 @@
           :title="$t('tooltip.viewAllChanges')"
           class="lastUpdatedTask pb-3"
           @click="$root.$emit('displayTaskChanges')">
-          <span class="pr-2">{{ $t('label.task.lastUpdate') }}
+          <span class="pe-2">{{ $t('label.task.lastUpdate') }}
             {{ displayedDate(lastTaskChangesLog) }}
             {{ $t('label.task.lastUpdateBy') }}
             {{ lastTaskChangesLogAuthor }}</span>
         </div>
-        <div class="taskAssignement ml-8 pb-3">
+        <div class="taskAssignement ms-8 pb-3">
           <task-assignment
             :task="task"
             @updateTaskAssignement="updateTaskAssignee($event)"
@@ -143,7 +143,7 @@
               <span class="ViewAllCommentLabel" @click="$root.$emit('displayTaskComment')">{{ $t('comment.message.viewAllComment') }} ({{ comments.length }})</span>
               <div
                 :title="$t('comment.message.addYourComment')"
-                class="addCommentBtn pl-3"
+                class="addCommentBtn ps-3"
                 @click="openCommentDrawer">
                 <i class="uiIcon uiIconTaskAddComment"></i>
               </div>
@@ -153,7 +153,7 @@
               <span class="noCommentLabel">{{ $t('comment.message.noComment') }}</span>
               <span class="ViewAllCommentText" @click="$root.$emit('displayTaskComment')">{{ $t('comment.message.addYourComment') }}</span>
             </div>
-            <div v-if="comments && comments.length" class="pr-0 pl-0 TaskCommentItem">
+            <div v-if="comments && comments.length" class="pe-0 ps-0 TaskCommentItem">
               <task-last-comment
                 :task="task"
                 :comment="comments[comments.length-1]" />
@@ -165,7 +165,7 @@
         <div class="d-flex">
           <v-spacer />
           <v-btn
-            class="btn mr-2"
+            class="btn me-2"
             @click="cancel">
             {{ $t('popup.cancel') }}
           </v-btn>

@@ -14,11 +14,11 @@
         :class="getTaskCompleted()"
         @click="updateCompleted"></i>
     </div>
-    <div class="taskTitleAndId pl-2 d-lg-none" @click="openTaskDrawer()">
+    <div class="taskTitleAndId ps-2 d-lg-none" @click="openTaskDrawer()">
       <div class="taskId">
         <span class="caption text-sub-title">ID : {{ task.task.id }}</span>
       </div>
-      <div class="taskTitle pr-3">
+      <div class="taskTitle pe-3">
         <a
           ref="tooltip"
           :class="getTitleTaskClass()"
@@ -28,7 +28,7 @@
         </a>
       </div>
     </div>
-    <div class="taskTitle pr-14 d-lg-block d-md-none" @click="openTaskDrawer()">
+    <div class="taskTitle pe-14 d-lg-block d-md-none" @click="openTaskDrawer()">
       <a
         ref="tooltip"
         :class="getTitleTaskClass()"
@@ -37,11 +37,11 @@
         {{ task.task.title }}
       </a>
     </div>
-    <div class="taskProject pr-10">
+    <div class="taskProject pe-10">
       <div
         v-if="!isPersonnalTask"
         class="projectSpaceDetails d-flex align-center TasksListViewProject">
-        <div class="spaceAvatar pr-1 d-lg-block d-md-none">
+        <div class="spaceAvatar pe-1 d-lg-block d-md-none">
           <a
             v-if="task.space!==null"
             :href="spaceUrl(task.space.url)">
@@ -72,7 +72,7 @@
         </div>
       </div>
     </div>
-    <div class="taskAssignee v-avatar d-flex pr-7 flex-nowrap">
+    <div class="taskAssignee v-avatar d-flex pe-7 flex-nowrap">
       <exo-user-avatar
         v-for="user in avatarToDisplay"
         :key="user"
@@ -97,7 +97,7 @@
         </div>
       </div>
     </div>
-    <div class="taskLabels pr-6" @click="openTaskDrawer()">
+    <div class="taskLabels pe-6" @click="openTaskDrawer()">
       <v-chip
         v-if="task.labels && task.labels.length == 1"
         :color="task.labels[0].color"
@@ -118,23 +118,23 @@
         <span class="taskAttachNumber caption">{{ task.labels.length }}</span>
       </div>
     </div>
-    <div class="taskActions d-flex justify-center pr-9 align-center " @click="openTaskDrawer()">
+    <div class="taskActions d-flex justify-center pe-9 align-center " @click="openTaskDrawer()">
       <div v-if="task.commentCount" class="taskComment d-flex">
         <i class="uiIcon uiCommentIcon"></i>
         <span class="taskCommentNumber caption">{{ task.commentCount }}</span>
       </div>
     </div>
-    <div class="taskStat pr-9 d-lg-block d-md-none " @click="openTaskDrawer()">
+    <div class="taskStat pe-9 d-lg-block d-md-none " @click="openTaskDrawer()">
       <span
         v-if="task && task.task && task.task.status && task.task.status"
         :title="getTaskStatusLabel(task.task.status.name)"
-        class="taskStatLabel pl-2">
+        class="taskStatLabel ps-2">
         {{ getTaskStatusLabel(task.task.status.name) }}
       </span>
     </div>
     <div class="taskDateAndStat" @click="openTaskDrawer()">
       <div class="taskStat d-lg-none">
-        <span v-if="task && task.task && task.task.status && task.task.status" class="taskStatLabel pl-2">
+        <span v-if="task && task.task && task.task.status && task.task.status" class="taskStatLabel ps-2">
           {{ getTaskStatusLabel(task.task.status.name) }}
         </span>
       </div>

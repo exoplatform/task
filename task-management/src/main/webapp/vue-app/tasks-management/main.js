@@ -8,10 +8,7 @@ import * as taskDrawerApi from '../../js/taskDrawerApi.js';
 
 Vue.use(Vuetify);
 Vue.use(VueEllipsis);
-const vuetify = new Vuetify({
-  dark: true,
-  iconfont: '',
-});
+const vuetify = new Vuetify(eXo.env.portal.vuetifyPreset);
 
 window.Object.defineProperty(Vue.prototype, '$tasksService', {
   value: tasksService,
