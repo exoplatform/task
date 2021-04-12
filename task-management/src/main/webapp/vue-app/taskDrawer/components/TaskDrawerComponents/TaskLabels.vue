@@ -200,6 +200,8 @@ export default {
             message: this.$t('alert.success.task.label')
           });
           this.getTaskLabels();
+        }).then( () => {
+          this.$root.$emit('update-task-labels',label,this.task.id);
         }).catch(e => {
           console.error('Error when updating task\'s labels', e);
           this.$root.$emit('show-alert', {
@@ -219,6 +221,8 @@ export default {
           type: 'success',
           message: this.$t('alert.success.task.label')
         });
+      }).then( () => {
+        this.$root.$emit('update-remove-task-labels',item.id,this.task.id);
       }).catch(e => {
         console.error('Error when updating task\'s labels', e);
         this.$root.$emit('show-alert', {
