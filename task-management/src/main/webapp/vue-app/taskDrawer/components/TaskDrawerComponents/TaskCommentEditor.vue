@@ -5,7 +5,7 @@
       :avatar-url="currentUserAvatar"
       :size="30"
       :url="null"
-      class="pr-2" />
+      class="pe-2" />
     <div class="editorContainer">
       <textarea 
         :ref="`editor-${id}`"

@@ -64,7 +64,7 @@
         class="taskStatusAndDate d-flex justify-space-between pt-3" 
         @click="openTaskDrawer()">
         <div class="taskActionsAndLabels d-flex align-center">
-          <div v-if="task.commentCount" class="taskComment d-flex pr-2">
+          <div v-if="task.commentCount" class="taskComment d-flex pe-2">
             <i class="uiIcon uiCommentIcon"></i>
             <span class="taskCommentNumber caption">{{ task.commentCount }}</span>
           </div>

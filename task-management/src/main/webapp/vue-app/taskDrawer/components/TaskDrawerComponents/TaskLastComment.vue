@@ -9,13 +9,13 @@
         :title="comment.author.displayName"
         :size="30"
         :url="comment.author.url" />
-      <div class="commentContent pl-3 d-flex align-center">
+      <div class="commentContent ps-3 d-flex align-center">
         <a
-          class="primary-color--text font-weight-bold subtitle-2 pr-2">{{ comment.author.displayName }} <span v-if="comment.author.external" class="externalTagClass">{{ ` (${$t('label.external')})` }}</span></a>
+          class="primary-color--text font-weight-bold subtitle-2 pe-2">{{ comment.author.displayName }} <span v-if="comment.author.external" class="externalTagClass">{{ ` (${$t('label.external')})` }}</span></a>
         <span :title="displayCommentDate" class="dateTime caption font-italic d-block">{{ relativeTime }}</span>
       </div>
     </div>
-    <div class="commentBody ml-10 mt-1">
+    <div class="commentBody ms-10 mt-1">
       <div
         class="taskContentComment"
         v-html="comment.formattedComment"></div>
@@ -33,7 +33,7 @@
       <div
         v-for="(item, i) in comment.subComments"
         :key="i">
-        <div class="TaskSubCommentItem pl-10 pr-0 pb-2">
+        <div class="TaskSubCommentItem ps-10 pe-0 pb-2">
           <div class="commentItem">
             <div class="commentHeader d-flex">
               <exo-user-avatar
@@ -42,13 +42,13 @@
                 :title="item.author.displayName"
                 :size="30"
                 :url="item.author.url" />
-              <div class="commentContent pl-3 d-flex align-center">
+              <div class="commentContent ps-3 d-flex align-center">
                 <a
-                  class="primary-color--text font-weight-bold subtitle-2 pr-2">{{ item.author.displayName }} <span v-if="lastSubComment.author.external" class="externalTagClass">{{ ` (${$t('label.external')})` }}</span></a>
+                  class="primary-color--text font-weight-bold subtitle-2 pe-2">{{ item.author.displayName }} <span v-if="lastSubComment.author.external" class="externalTagClass">{{ ` (${$t('label.external')})` }}</span></a>
                 <span :title="displayCommentDate" class="dateTime caption font-italic d-block">{{ relativeTime }}</span>
               </div>
             </div>
-            <div class="commentBody ml-10 mt-1">
+            <div class="commentBody ms-10 mt-1">
               <div
                 class="taskContentComment"
                 v-html="item.formattedComment"></div>

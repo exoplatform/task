@@ -163,7 +163,7 @@
         <v-spacer />
         <div class="d-btn">
           <v-btn
-            class="btn mr-2"
+            class="btn me-2"
             @click="cancel">
             <template>
               {{ $t('popup.cancel') }}

@@ -75,7 +75,7 @@
             class="menu-list"
             @click="openTaskDrawer()">
             <v-list-item-title class="subtitle-2">
-              <i class="uiIcon uiIconTask pr-1"></i>
+              <i class="uiIcon uiIconTask pe-1"></i>
               <span>{{ $t('label.addTask') }}</span>
             </v-list-item-title>
           </v-list-item>

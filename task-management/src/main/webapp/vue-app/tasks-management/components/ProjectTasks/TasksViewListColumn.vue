@@ -8,7 +8,7 @@
         :max-tasks-to-show="maxTasksToShow"
         :tasks-number="tasksList.length" />
     </div>
-    <div :id="'taskView'+status.id" :class="filterByStatus===true ? 'pt-5 ml-7 mr-2' : ''">
+    <div :id="'taskView'+status.id" :class="filterByStatus===true ? 'pt-5 ms-7 me-2' : ''">
       <div :id="status.id">
         <draggable
           v-model="tasksList"

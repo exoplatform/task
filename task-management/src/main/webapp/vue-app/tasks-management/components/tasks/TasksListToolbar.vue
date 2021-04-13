@@ -32,7 +32,7 @@
           :placeholder=" $t('label.filterTask') "
           prepend-inner-icon="fa-filter"
           :append-outer-icon="showMobileTaskFilter && 'mdi-close'"
-          class="inputTasksFilter pa-0 ml-3 mr-3 my-auto"
+          class="inputTasksFilter pa-0 ms-3 me-3 my-auto"
           :class="showMobileTaskFilter && 'inputTasksFilterMobile'"
           @click:append-outer="clearMessage"
           :clearable="!showMobileTaskFilter" />
@@ -42,7 +42,7 @@
           id="filterTaskSelect"
           v-model="primaryFilterSelected"
           name="primaryFilter"
-          class="selectPrimaryFilter input-block-level ignore-vuetify-classes  pa-0 mr-3 my-auto"
+          class="selectPrimaryFilter input-block-level ignore-vuetify-classes  pa-0 me-3 my-auto"
           @change="changePrimaryFilter">
           <option
             v-for="item in primaryFilter"
@@ -62,7 +62,7 @@
           class="btn px-2 btn-primary filterTasksSetting"
           outlined
           @click="openDrawer">
-          <i class="uiIcon uiIconFilterSetting pr-3"></i>
+          <i class="uiIcon uiIconFilterSetting pe-3"></i>
           <span class="d-none font-weight-regular caption d-sm-inline">
             {{ $t('label.filter') }} {{ getFilterNum() }}
           </span>

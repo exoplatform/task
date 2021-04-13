@@ -60,7 +60,7 @@
             :avatar-url="projectItem.value.avatar"
             :title="projectItem.value.displayName"
             :size="26"
-            class="pr-2" />
+            class="pe-2" />
           <span class="amount-item">({{ tasksList[i].length }})</span>
 
           <hr

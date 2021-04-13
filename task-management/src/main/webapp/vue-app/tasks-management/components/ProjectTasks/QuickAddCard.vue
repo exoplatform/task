@@ -8,7 +8,7 @@
       :placeholder="$t('label.tapTask.name')"
       :autofocus="quickAddTask"
       type="text"
-      class="pl-0 pt-0 task-name"
+      class="ps-0 pt-0 task-name"
       auto-grow
       rows="1"
       row-height="13"
@@ -18,7 +18,7 @@
     <div class="d-md-none">
       <v-spacer />
       <v-btn
-        class="btn mr-2"
+        class="btn me-2"
         @click="closeForm">
         {{ $t('popup.cancel') }}
       </v-btn>

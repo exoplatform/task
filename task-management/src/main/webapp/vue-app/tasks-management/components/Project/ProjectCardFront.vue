@@ -36,19 +36,19 @@
         <v-list class="pa-0" dense>
           <v-list-item class="menu-list" @click="openEditDrawer()">
             <v-list-item-title class="subtitle-2">
-              <i class="uiIcon uiIconEdit pr-1"></i>
+              <i class="uiIcon uiIconEdit pe-1"></i>
               <span>{{ $t('label.edit') }}</span>
             </v-list-item-title>
           </v-list-item>
           <v-list-item class="draftButton" @click="confirmDeleteProject()">
             <v-list-item-title class="subtitle-2">
-              <i class="uiIcon uiIconTrash pr-1"></i>
+              <i class="uiIcon uiIconTrash pe-1"></i>
               <span>{{ $t('label.delete') }}</span>
             </v-list-item-title>
           </v-list-item>
           <v-list-item class="clone" @click="confirmCloneProject()">
             <v-list-item-title class="subtitle-2">
-              <i class="uiIcon uiIconCloneNode pr-1"></i>
+              <i class="uiIcon uiIconCloneNode pe-1"></i>
               <span>{{ $t('label.clone') }}</span>
             </v-list-item-title>
           </v-list-item>
@@ -70,13 +70,13 @@
           <!--
          <v-list-item>
             <v-list-item-title class="subtitle-2">
-              <i class="uiIcon uiIconHide pr-1"></i>
+              <i class="uiIcon uiIconHide pe-1"></i>
               <span>{{ $t('label.hide') }}</span>
             </v-list-item-title>
           </v-list-item>
           <v-list-item>
             <v-list-item-title class="subtitle-2">
-              <i class="uiIcon uiIconStar pr-1"></i>
+              <i class="uiIcon uiIconStar pe-1"></i>
               <span>{{ $t('label.addAsFavorite') }}</span>
             </v-list-item-title>
           </v-list-item>
@@ -136,7 +136,7 @@
               :avatar-url="manager.avatar"
               :size="iconSize"
               :style="'background-image: url('+manager.avatar+')'"
-              class="mr-1 projectManagersAvatar" />
+              class="me-1 projectManagersAvatar" />
             <div class="seeMoreAvatars">
               <div
                 v-if="managerIdentities.length > maxAvatarToShow"

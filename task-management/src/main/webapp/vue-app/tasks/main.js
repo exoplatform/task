@@ -6,10 +6,7 @@ import * as taskDrawerApi from '../../js/taskDrawerApi.js';
 Vue.use(Vuetify);
 Vue.component('task-details', TaskDetails);
 
-const vuetify = new Vuetify({
-  dark: true,
-  iconfont: '',
-});
+const vuetify = new Vuetify(eXo.env.portal.vuetifyPreset);
 
 window.Object.defineProperty(Vue.prototype, '$projectService', {
   value: projectService,

@@ -16,7 +16,7 @@
         <v-icon :class="priorityDefaultColor" size="20">mdi-flag-variant</v-icon>
       </template>
       <template slot="item" slot-scope="data">
-        <v-list-avatar class="mr-2">
+        <v-list-avatar class="me-2">
           <v-icon :class="getTaskPriorityColor(data.item.key)" size="20">mdi-flag-variant</v-icon>
         </v-list-avatar>
         <v-list-tile-content>

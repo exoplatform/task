@@ -21,7 +21,8 @@
             font-style: normal;
             font-size: 20px;
             color: @primaryColor;
-            margin-right: 4px;
+            margin-right: 4px ~'; /** orientation=lt */ ';
+            margin-left: 4px ~'; /** orientation=rt */ ';
             margin-top: -4px;
             &:before {
               content: "\e665";
@@ -53,7 +54,8 @@
                 letter-spacing: .2px;
               }
               .v-text-field__slot{
-                margin-left: 5px;
+                margin-left: 5px ~'; /** orientation=lt */ ';
+                margin-right: 5px ~'; /** orientation=rt */ ';
               }
             }
           }
@@ -98,26 +100,32 @@
           .listOfManager,.listOfParticipant {
 
             .listOfParticipantavatar{
-              margin-right: -2px!important;
+              margin-right: -2px ~'!important; /** orientation=lt */ ';
+              margin-left: -2px ~'!important; /** orientation=rt */ ';
             }
             .listOfManageravatar{
               a.flex-nowrap.flex-shrink-0.d-flex {
-                margin-right: 17px;
+                margin-right: 17px ~'; /** orientation=lt */ ';
+                margin-left: 17px ~'; /** orientation=rt */ ';
               }
             }
             .listOfParticipantavatar{
               a.flex-nowrap.flex-shrink-0.d-flex {
-                margin-right: 10px;
+                margin-right: 10px ~'; /** orientation=lt */ ';
+                margin-left: 10px ~'; /** orientation=rt */ ';
               }
               .seeMoreAvatars{
-                margin-right: 7px;
+                margin-right: 7px ~'; /** orientation=lt */ ';
+                margin-left: 7px ~'; /** orientation=rt */ ';
               }
             }
 
             .listOfManageravatar,.listOfParticipantavatar{
-              float: left;
+              float: left ~'; /** orientation=lt */ ';
+              float: right ~'; /** orientation=rt */ ';
               display: flex;
-              margin-right: 5px;
+              margin-right: 5px ~'; /** orientation=lt */ ';
+              margin-left: 5px ~'; /** orientation=rt */ ';
               .seeMoreAvatars {
                 .seeMoreItem {
                   position: relative;
@@ -169,12 +177,15 @@
                 height: 19px;
                 width: 19px;
                 margin-top: 23px;
-                margin-left: -13px!important;
-                margin-right: -14px;
+                margin-left: -13px ~'!important; /** orientation=lt */ ';
+                margin-right: -14px ~'!important; /** orientation=lt */ ';
+                margin-right: -13px ~'!important; /** orientation=rt */ ';
+                margin-left: -14px ~'!important; /** orientation=rt */ ';
               }
             }
             .editManager,.editParticipant {
-              margin-left: 10px;
+              margin-left: 10px ~'; /** orientation=lt */ ';
+              margin-right: 10px ~'; /** orientation=rt */ ';
               margin-top: 10px;
               a.editManager,a.editParticipant {
                 text-decoration: underline;
@@ -190,7 +201,8 @@
                 font-size: 10px;
                 color: @textLightColor;
                 font-style: italic;
-                margin-left: 30px;
+                margin-left: 30px ~'; /** orientation=lt */ ';
+                margin-right: 30px ~'; /** orientation=rt */ ';
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
@@ -223,7 +235,8 @@
           .activityCharsCount{
             position: absolute;
             bottom: 8px;
-            right: 25px;
+            right: 25px ~'; /** orientation=lt */ ';
+            left: 25px ~'; /** orientation=rt */ ';
             color: #adadad;
             .uiIconMessageLength {
               font-size: 14px;
@@ -267,7 +280,8 @@
             button.v-icon.notranslate.pr-0.v-icon--link.material-icons.theme--light{
               border-radius: 40px;
               height: 14px;
-              padding-left: 0px;
+              padding-left: 0px ~'; /** orientation=lt */ ';
+              padding-right: 0px ~'; /** orientation=rt */ ';
             }
           }
         }
@@ -294,7 +308,8 @@
       .nameGroup {
         font-size: 18px;
         font-weight: normal;
-        margin-right: 8px;
+        margin-right: 8px ~'; /** orientation=lt */ ';
+        margin-left: 8px ~'; /** orientation=rt */ ';
       }
       hr.my-0.v-divider.theme--light {
         margin-left: 5px;
@@ -310,14 +325,16 @@
         cursor: pointer;
       }
       i.uiIcon.uiIconMiniArrowDown,i.uiIcon.uiIconMiniArrowRight{
-        margin-right: 8px;
+        margin-right: 8px ~'; /** orientation=lt */ ';
+        margin-left: 8px ~'; /** orientation=rt */ ';
         font-size: 13px;
       }
       .uiIconMiniArrowDown:before,.uiIconMiniArrowRight:before{
         color:DarkGrey;
       }
       .assigneeFilter{
-        margin-left: 10px;
+        margin-left: 10px ~'; /** orientation=lt */ ';
+        margin-right: 10px ~'; /** orientation=rt */ ';
         margin-block-end: 5px;
         .defaultAvatar
         img {
@@ -333,18 +350,21 @@
           text-align: center;
           vertical-align: middle;
           overflow: hidden;
-          margin-right: 8px;
+          margin-right: 8px ~'; /** orientation=lt */ ';
+          margin-left: 8px ~'; /** orientation=rt */ ';
         }
         .text-truncate{
           font-size: 18px!important;
         }
       }
       .view-task-group-sort{
-        margin-left: 28px;
+        margin-left: 28px ~'; /** orientation=lt */ ';
+        margin-right: 28px ~'; /** orientation=rt */ ';
         display: block
       }
       .view-project-group-sort{
-        margin-left: 19px;
+        margin-left: 19px ~'; /** orientation=lt */ ';
+        margin-right: 19px ~'; /** orientation=rt */ ';
         display: block
       }
       span.amount-item{
@@ -380,7 +400,8 @@
         .taskFilterMobile {
           color: @greyColorLighten1!important;
           font-size: 16px!important;
-          margin-left: 12px;
+          margin-left: 12px ~'; /** orientation=lt */ ';
+          margin-right: 12px ~'; /** orientation=rt */ ';
           display: none;
         }
         .inputTasksFilterMobile {
@@ -390,7 +411,8 @@
           position: absolute;
           top: 50px;
           .v-input__append-outer {
-            margin-left: -25px!important;
+            margin-left: -25px ~'!important; /** orientation=lt */ ';
+            margin-right: -25px ~'!important; /** orientation=rt */ ';
           }
         }
         .tasksFilterMobile {
@@ -415,7 +437,8 @@
         .selectTasksFilter {
           height: 40px;
           width: auto;
-          padding-right: 20px;
+          padding-right: 20px ~'; /** orientation=lt */ ';
+          padding-left: 20px ~'; /** orientation=rt */ ';
           &:focus {
             outline: none;
             box-shadow: none;
@@ -426,7 +449,8 @@
             font-family: "PLF-FONT-ICONS" !important;
             font-style: normal;
             font-size: 16px;
-            padding-right: 10px;
+            padding-right: 10px ~'; /** orientation=lt */ ';
+            padding-left: 10px ~'; /** orientation=rt */ ';
           }
           .uiIconCards {
             &:before {
@@ -473,19 +497,24 @@
       .filterTasksDrawer {
         .filterGroupTasksDrawer,.filterSortTasksDrawer{
           form.mt-4{
-            margin-left: 9px;
+            margin-left: 9px ~'; /** orientation=lt */ ';
+            margin-right: 9px ~'; /** orientation=rt */ ';
           }
           .v-input--radio-group--column{
-            margin-left: 9px;
+            margin-left: 9px ~'; /** orientation=lt */ ';
+            margin-right: 9px ~'; /** orientation=rt */ ';
           }
         }
         hr.my-0.v-divider.theme--light{
-          margin-left: -20px;
-          padding-left: 20px;
+          margin-left: -20px ~'; /** orientation=lt */ ';
+          padding-left: 20px ~'; /** orientation=lt */ ';
+          margin-right: -20px ~'; /** orientation=rt */ ';
+          padding-right: 20px ~'; /** orientation=rt */ ';
           width: 400px;
         }
         .v-navigation-drawer__content{
-          padding-left: 20px;
+          padding-left: 20px ~'; /** orientation=lt */ ';
+          padding-right: 20px ~'; /** orientation=rt */ ';
           /* switch */
           .switch {
             position: relative;
@@ -520,7 +549,8 @@
             content: "";
             height: 14px;
             width: 14px;
-            left: 5px;
+            left: 5px ~'; /** orientation=lt */ ';
+            right: 5px ~'; /** orientation=rt */ ';
             bottom: 3px;
             background-color: darkgrey;
             -webkit-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.22);
@@ -531,25 +561,29 @@
 
           .slider:after {
             position: absolute;
-            left: -20px;
+            left: -20px ~'; /** orientation=lt */ ';
+            right: -20px ~'; /** orientation=rt */ ';
             z-index: 1;
             content: "";
             font-size: 13px;
-            text-align: left !important;
+            text-align: start !important;
             line-height: 19px;
-            padding-left: 0;
+            padding-left: 0 ~'; /** orientation=lt */ ';
+            padding-right: 0 ~'; /** orientation=rt */ ';
             width: 95px;
             height: 26px !important;
             color: #f9f9f9;
             background-repeat: repeat-x;
             filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff578dc9', endColorstr='#ff2f5e92', GradientType=0);
             -moz-box-shadow: inset 0px 3px 5px #224469;
-            -webkit-border-top-left-radius: 9px;
+            -webkit-border-top-left-radius: 9px ~'; /** orientation=lt */ ';
+            -webkit-border-top-right-radius: 9px ~'; /** orientation=rt */ ';
             -moz-border-radius-topleft: 9px;
             border-top-left-radius: 9px;
             -webkit-border-bottom-left-radius: 9px;
             -moz-border-radius-bottomleft: 9px;
-            border-bottom-left-radius: 9px;
+            border-bottom-left-radius: 9px ~'; /** orientation=lt */ ';
+            border-bottom-right-radius: 9px ~'; /** orientation=rt */ ';
             height: 57px;
             border-radius: 100px;
             background-color: @primaryColor;
@@ -563,7 +597,8 @@
             -webkit-transform: translateX(0px);
             -ms-transform: translateX(0px);
             transform: translateX(0px);
-            padding-left: 25px;
+            padding-left: 25px ~'; /** orientation=lt */ ';
+            padding-right: 25px ~'; /** orientation=rt */ ';
           }
 
           input:checked + .slider:before {
@@ -590,9 +625,10 @@
 
           .absolute-no {
             position: absolute;
-            left: 27px;
+            left: 27px ~'; /** orientation=lt */ ';
+            right: 27px ~'; /** orientation=rt */ ';
             color: DarkGrey;
-            text-align: right !important;
+            text-align: end !important;
             font-size: 16px;
             width: calc(100% - 25px);
             line-height: 30px;
@@ -605,9 +641,10 @@
             -webkit-transform: translateX(-190px);
             -ms-transform: translateX(-190px);
             transform: translateX(-190px);
-            left: 2px;
+            left: 2px ~'; /** orientation=lt */ ';
+            right: 2px ~'; /** orientation=rt */ ';
             color: white;
-            text-align: right;
+            text-align: end;
             font-size: 16px;
             width: calc(100% - 25px);
             line-height: 22px;
@@ -621,22 +658,25 @@
             transform: translateX(0px);
             z-index: 15;
             position: absolute;
-            left: 2px;
+            left: 2px ~'; /** orientation=lt */ ';
+            right: 2px ~'; /** orientation=rt */ ';
             color: white;
-            text-align: right;
+            text-align: end;
             font-size: 16px;
             width: calc(100% - 25px);
             line-height: 22px;
             cursor: pointer;
             transition: all 0.4s ease-in-out;
-            padding-right: 10px;
+            padding-right: 10px ~'; /** orientation=lt */ ';
+            padding-left: 10px ~'; /** orientation=rt */ ';
           }
 
           .absolute-no {
             position: absolute;
-            left: 27px;
+            left: 27px ~'; /** orientation=lt */ ';
+            right: 27px ~'; /** orientation=rt */ ';
             color: DarkGrey;
-            text-align: right !important;
+            text-align: end !important;
             font-size: 16px;
             width: auto;
             line-height: 30px;
@@ -649,11 +689,13 @@
           }
 
           form.switchEnabled label.switch {
-            margin-left: 21px;
+            margin-left: 21px ~'; /** orientation=lt */ ';
+            margin-right: 21px ~'; /** orientation=rt */ ';
             margin-top: -7px;
           }
           .flex.drawerContent.flex-grow-1.overflow-auto.border-box-sizing{
-            padding-right: 20px;
+            padding-right: 20px ~'; /** orientation=lt */ ';
+            padding-left: 20px ~'; /** orientation=rt */ ';
           }
           button.reset.v-btn.v-btn--contained.theme--light.v-size--default{
             cursor: pointer!important;
@@ -662,12 +704,14 @@
             background-color: #FFFFFF!important;
             padding: 0px;
             margin: 0px;
-            margin-left: -16px;
+            margin-left: -16px ~'; /** orientation=lt */ ';
+            margin-right: -16px ~'; /** orientation=rt */ ';
           }
           .reset{
             i.fas.fa-redo{
               font-size: 11px;
-              margin-right: 5px;
+              margin-right: 5px ~'; /** orientation=lt */ ';
+              margin-left: 5px ~'; /** orientation=rt */ ';
             }
           }
         }
@@ -693,7 +737,8 @@
               backface-visibility: hidden;
               position: absolute;
               top: 0;
-              left: 0;
+              left: 0 ~'; /** orientation=lt */ ';
+              right: 0 ~'; /** orientation=rt */ ';
               height: @taskCardMaxHeight;
               max-height: @taskCardMaxHeight;
               width: 100%;
@@ -785,7 +830,8 @@
                   }
                   .projectCardTitle {
                     color: @textColor!important;
-                    padding-left: 8px;
+                    padding-left: 8px ~'; /** orientation=lt */ ';
+                    padding-right: 8px ~'; /** orientation=rt */ ';
                   }
                   .uiIconInformation {
                     font-size: 20px;
@@ -877,7 +923,8 @@
                   .uiIconStar {
                     position: absolute;
                     top: 85%;
-                    right: 10px;
+                    right: 10px ~'; /** orientation=lt */ ';
+                    left: 10px ~'; /** orientation=rt */ ';
                     z-index: 0;
                     &:before {
                       content: "\e97f";
@@ -932,7 +979,8 @@
                       .uiIconArrowBack {
                         font-size: 12px;
                         padding-top: 6px;
-                        padding-left: 4px;
+                        padding-left: 4px ~'; /** orientation=lt */ ';
+                        padding-right: 4px ~'; /** orientation=rt */ ';
                         cursor: pointer;
                         &:before {
                           content: "\e74f";
@@ -948,7 +996,8 @@
               backface-visibility: hidden;
               position: absolute;
               top: 0;
-              left: 0;
+              left: 0 ~'; /** orientation=lt */ ';
+              right: 0 ~'; /** orientation=rt */ ';
               height: @taskCardMaxHeight;
               max-height: @taskCardMaxHeight;
               width: 100%;
@@ -991,7 +1040,8 @@
                     position: relative;
                     .projectTasksTotalNumber {
                       position: absolute;
-                      left: 60px;
+                      left: 60px ~'; /** orientation=lt */ ';
+                      right: 60px ~'; /** orientation=rt */ ';
                       top: 35%;
                       span {
                         display: block;
@@ -1012,7 +1062,8 @@
                         width: 7px;
                         height: 7px;
                         border-radius: 50%;
-                        margin-left: -15px;
+                        margin-left: -15px ~'; /** orientation=lt */ ';
+                        margin-right: -15px ~'; /** orientation=rt */ ';
                         top: 5px;
                       }
                     }
@@ -1045,8 +1096,10 @@
             transform: rotateY(180deg);
           }
           .projectActionMenu {
-            right: 27px;
-            left: auto!important;
+            right: 27px ~'; /** orientation=lt */ ';
+            left: 27px ~'; /** orientation=rt */ ';
+            left: auto ~'!important; /** orientation=lt */ ';
+            right: auto ~'!important; /** orientation=rt */ ';
             top: 45px!important;
             .VuetifyApp .theme--light.v-list-item:hover::before {
               opacity: 0;
@@ -1111,7 +1164,8 @@
             span {
               font-size: 1.25rem;
               letter-spacing: .5px;
-              padding-left: 10px;
+              padding-left: 10px ~'; /** orientation=lt */ ';
+              padding-right: 10px ~'; /** orientation=rt */ ';
             }
           }
         }
@@ -1159,8 +1213,10 @@
             position: relative;
             .tasksViewHeaderStatus{
               .taskStatusActionMenu{
-                right: 22px;
-                left: auto!important;
+                right: 22px ~'; /** orientation=lt */ ';
+                left: 22px ~'; /** orientation=rt */ ';
+                left: auto ~'!important; /** orientation=lt */ ';
+                right: auto ~'!important; /** orientation=rt */ ';
                 top: 41px!important;
               }
               .text-truncate{
@@ -1210,7 +1266,8 @@
                   border: thin solid rgba(0, 0, 0, 0.12);
                   width: 28px;
                   height: 21px;
-                  margin-left: 5px;
+                  margin-left: 5px ~'; /** orientation=lt */ ';
+                  margin-right: 5px ~'; /** orientation=rt */ ';
                   text-align: center;
                   margin-block-end: 5px;
                   cursor: pointer;
@@ -1260,12 +1317,14 @@
                 }
               }
               .taskStatusActionMenu {
-                right: 27px;
-                left: auto!important;
+                right: 27px ~'; /** orientation=lt */ ';
+                left: 27px ~'; /** orientation=rt */ ';
+                left: auto ~'!important; /** orientation=lt */ ';
+                right: auto ~'!important; /** orientation=rt */ ';
                 top: 35px!important;
                 .v-list-item {
                   min-height: 30px!important;
-                  text-align: left!important;
+                  text-align: start!important;
                   max-width: 100%!important;
                 }
               }
@@ -1341,7 +1400,8 @@
               font-size: 29.5px;
               position: absolute;
               bottom: 12px;
-              right: -5px;
+              right: -5px ~'; /** orientation=lt */ ';
+              left: -5px ~'; /** orientation=rt */ ';
               background: -webkit-linear-gradient(-45deg, transparent 0%, transparent 46%, white 46%, white 56%,transparent 56%, transparent 100%), -webkit-linear-gradient(45deg, transparent 0%, transparent 46%, white 46%, white 56%,transparent 56%, transparent 100%);
             }
           }
@@ -1351,7 +1411,8 @@
               font-size: 29.5px;
               position: absolute;
               bottom: 12px;
-              right: -5px;
+              right: -5px ~'; /** orientation=lt */ ';
+              left: -5px ~'; /** orientation=rt */ ';
               background: white;
             }
           }
@@ -1412,7 +1473,8 @@
             background: @tableBackgroundAccent;
             .taskTitleId {
               .taskCheckBox{
-                padding-right: 10px;
+                padding-right: 10px ~'; /** orientation=lt */ ';
+                padding-left: 10px ~'; /** orientation=rt */ ';
                 .uiIconCircle {
                   font-family: "PLF-FONT-ICONS" !important;
                   color: @primaryColor;
@@ -1454,15 +1516,17 @@
                 cursor: pointer;
                 width: 25%;
                 max-width: 25%;
-                text-align: right;
+                text-align: end;
               }
             }
             .taskAssignee {
               .assigneDetails {
                 padding-top: 2px;
                 padding-bottom: 2px;
-                padding-right: 4px;
-                padding-left: 0;
+                padding-right: 4px ~'; /** orientation=lt */ ';
+                padding-left: 4px ~'; /** orientation=rt */ ';
+                padding-left: 0 ~'; /** orientation=lt */ ';
+                padding-right: 0 ~'; /** orientation=rt */ ';
               }
             }
             .hideTaskAssignee {
@@ -1476,8 +1540,10 @@
                 .assigneDetails {
                   padding-top: 2px;
                   padding-bottom: 2px;
-                  padding-right: 4px;
-                  padding-left: 0;
+                  padding-right: 4px ~'; /** orientation=lt */ ';
+                  padding-left: 4px ~'; /** orientation=rt */ ';
+                  padding-left: 0 ~'; /** orientation=lt */ ';
+                  padding-right: 0 ~'; /** orientation=rt */ ';
                 }
               }
             }
@@ -1509,23 +1575,28 @@
             height: inherit;
           }
           .taskHighPriority {
-            border-left: 5px solid @errorColor!important;
+            border-left: 5px solid @errorColor ~'!important; /** orientation=lt */ ';
+            border-right: 5px solid @errorColor ~'!important; /** orientation=rt */ ';
           }
           .taskNormalPriority {
-            border-left: 5px solid @warningColor!important;
+            border-left: 5px solid @warningColor ~'!important; /** orientation=lt */ ';
+            border-right: 5px solid @warningColor ~'!important; /** orientation=rt */ ';
           }
           .taskLowPriority {
-            border-left: 5px solid @successColor!important;
+            border-left: 5px solid @successColor ~'!important; /** orientation=lt */ ';
+            border-right: 5px solid @successColor ~'!important; /** orientation=rt */ ';
           }
           .taskNonePriority {
-            border-left: 5px solid @primaryColor!important;
+            border-left: 5px solid @primaryColor ~'!important; /** orientation=lt */ ';
+            border-right: 5px solid @primaryColor ~'!important; /** orientation=rt */ ';
           }
         }
         .draggable-palceholder{
           min-height: 180px;
         }
         .status-add-task{
-          margin-right: 10px;
+          margin-right: 10px ~'; /** orientation=lt */ ';
+          margin-left: 10px ~'; /** orientation=rt */ ';
         }
         .addTaskCard {
           margin-top: 10px;
@@ -1548,11 +1619,14 @@
           max-height: calc(~"100vh - 300px")!important;
           overflow-y: scroll;
           overflow-x: hidden;
-          padding-right:4px ;
+          padding-right:4px ~'; /** orientation=lt */ ';
+          padding-left:4px ~'; /** orientation=rt */ ';
           &::-webkit-scrollbar {
-            scroll-margin-left: 10px!important;
+            scroll-margin-left: 10px ~'!important; /** orientation=lt */ ';
+            scroll-margin-right: 10px ~'!important; /** orientation=rt */ ';
             width: 5px;
-            padding-left: 3px;
+            padding-left: 3px ~'; /** orientation=lt */ ';
+            padding-right: 3px ~'; /** orientation=rt */ ';
           }
           &::-webkit-scrollbar-thumb {
             background: white;
@@ -1565,15 +1639,18 @@
             overflow-y: scroll;
             overflow-x: hidden;
             &::-webkit-scrollbar {
-              scroll-margin-left: 10px!important;
+              scroll-margin-left: 10px ~'!important; /** orientation=lt */ ';
+              scroll-margin-right: 10px ~'!important; /** orientation=rt */ ';
               width: 5px;
-              padding-left: 3px;
+              padding-left: 3px ~'; /** orientation=lt */ ';
+              padding-right: 3px ~'; /** orientation=rt */ ';
             }
             /*&::-webkit-scrollbar-track {
               background: @primaryBackground;
             }*/
             &::-webkit-scrollbar-thumb {
-              scroll-margin-left: 10px!important;
+              scroll-margin-left: 10px ~'!important; /** orientation=lt */ ';
+              scroll-margin-right: 10px ~'!important; /** orientation=rt */ ';
               background: @greyColorLighten1;
               border-radius: 10px;
             }
@@ -1632,7 +1709,8 @@
               max-width: 3%;
               width: 3%;
               align-self: flex-start!important;
-              padding-right: 10px;
+              padding-right: 10px ~'; /** orientation=lt */ ';
+              padding-left: 10px ~'; /** orientation=rt */ ';
               .uiIconCircle {
                 font-family: "PLF-FONT-ICONS" !important;
                 color: @primaryColor;
@@ -1659,7 +1737,7 @@
               }
               max-width: 40%;
               width: 40%;
-              text-align: left;
+              text-align: start;
               flex: 1 1 100%;
               overflow: hidden;
               text-overflow: ellipsis;
@@ -1673,13 +1751,13 @@
                 max-width: 100%!important;
               }
               .taskId {
-                text-align: left!important;
+                text-align: start!important;
               }
             }
             .taskProject {
               max-width: 10%;
               width: 10%;
-              text-align: left;
+              text-align: start;
               .projectSpaceDetails {
                 cursor: pointer;
                 .spaceAvatar {
@@ -1708,7 +1786,7 @@
               max-width: 3%;
               width: 3%;
               border-radius: inherit;
-              text-align: left;
+              text-align: start;
             }
             .taskLabels {
               max-width: 8%;
@@ -1737,7 +1815,7 @@
               max-width: 7%;
               width: 7%;
               cursor: pointer;
-              text-align: left;
+              text-align: start;
               flex: 1 1 100%;
               overflow: hidden;
               text-overflow: ellipsis;
@@ -1749,13 +1827,13 @@
             .taskDueDate {
               max-width: 6%;
               width: 6%;
-              text-align: right;
+              text-align: end;
               cursor: pointer;
             }
             .taskDateAndStat {
               max-width: 6%;
               width: 6%;
-              text-align: right;
+              text-align: end;
               font-size: 14px;
               cursor: pointer;
               .taskDueDate {
@@ -1770,16 +1848,20 @@
             }
           }
           .taskHighPriority {
-            border-left: 5px solid @errorColor!important;
+            border-left: 5px solid @errorColor ~'!important; /** orientation=lt */ ';
+            border-right: 5px solid @errorColor ~'!important; /** orientation=rt */ ';
           }
           .taskNormalPriority {
-            border-left: 5px solid @warningColor!important;
+            border-left: 5px solid @warningColor ~'!important; /** orientation=lt */ ';
+            border-right: 5px solid @warningColor ~'!important; /** orientation=rt */ ';
           }
           .taskLowPriority {
-            border-left: 5px solid @successColor!important;
+            border-left: 5px solid @successColor ~'!important; /** orientation=lt */ ';
+            border-right: 5px solid @successColor ~'!important; /** orientation=rt */ ';
           }
           .taskNonePriority {
-            border-left: 5px solid @primaryColor!important;
+            border-left: 5px solid @primaryColor ~'!important; /** orientation=lt */ ';
+            border-right: 5px solid @primaryColor ~'!important; /** orientation=rt */ ';
           }
         }
         .tasksViewList {
@@ -1985,11 +2067,13 @@
         width: auto!important;
         display: inline-flex!important;
         padding: 2px 4px;
-        padding-left: 0;
+        padding-left: 0 ~'; /** orientation=lt */ ';
+        padding-right: 0 ~'; /** orientation=rt */ ';
         .uiIconArrowBack {
           font-size: 12px;
           padding-top: 6px;
-          padding-left: 4px;
+          padding-left: 4px ~'; /** orientation=lt */ ';
+          padding-right: 4px ~'; /** orientation=rt */ ';
           cursor: pointer;
           &:before {
             content: "\e74f";
@@ -1998,7 +2082,8 @@
       }
       .taskComment {
         .uiCommentIcon {
-          padding-right: 2px;
+          padding-right: 2px ~'; /** orientation=lt */ ';
+          padding-left: 2px ~'; /** orientation=rt */ ';
           margin-top: -2px;
           &:before {
             content: "\ea42";
@@ -2037,7 +2122,8 @@
           }
           .taskTags {
             .uiTagIcon {
-              padding-right: 2px;
+              padding-right: 2px ~'; /** orientation=lt */ ';
+              padding-left: 2px ~'; /** orientation=rt */ ';
               &:before {
                 content: "\ead3";
                 font-family: "PLF-FONT-ICONS" !important;
@@ -2049,7 +2135,8 @@
           }
           .taskAttachment {
             .uiAttachIcon {
-              padding-right: 2px;
+              padding-right: 2px ~'; /** orientation=lt */ ';
+              padding-left: 2px ~'; /** orientation=rt */ ';
               &:before {
                 content: "\e91f";
                 font-family: "PLF-FONT-ICONS" !important;
@@ -2106,8 +2193,10 @@
           }
         }
         .taskActionMenu {
-          right: 60px;
-          left: auto!important;
+          right: 60px ~'; /** orientation=lt */ ';
+          left: 60px ~'; /** orientation=rt */ ';
+          left: auto ~'!important; /** orientation=lt */ ';
+          right: auto ~'!important; /** orientation=rt */ ';
           top: 45px!important;
           background: white;
           .v-list-item {
@@ -2122,9 +2211,11 @@
         .taskProjectName {
           .icon-ArrowRight {
             margin-top: 6px;
-            margin-left: 10px;
+            margin-left: 10px ~'; /** orientation=lt */ ';
+            margin-right: 10px ~'; /** orientation=rt */ ';
             &:before {
-              content: '\e9cb';
+              content: '\e9cb' ~'; /** orientation=lt */ ';
+              content: '\e9ca' ~'; /** orientation=rt */ ';
               font-size: 16px;
               color: @btnDisableColor!important;
             }
@@ -2136,7 +2227,8 @@
       }
     }
     .drawerIcons {
-      margin-left: 2px!important;
+      margin-left: 2px ~'!important; /** orientation=lt */ ';
+      margin-right: 2px ~'!important; /** orientation=rt */ ';
     }
   }
   .taskProjectName {
@@ -2173,7 +2265,8 @@
       .v-menu__content {
         position: fixed!important;
         max-width: 70%!important;
-        left: 100px!important;
+        left: 100px ~'!important; /** orientation=lt */ ';
+        right: 100px ~'!important; /** orientation=rt */ ';
         top: 50px!important;
         &::-webkit-scrollbar {
           width: 5px;
@@ -2234,7 +2327,8 @@
     color: @greyColorLighten1;
     font-style: italic;
     font-size: 14px;
-    padding-left: 32px;
+    padding-left: 32px ~'; /** orientation=lt */ ';
+    padding-right: 32px ~'; /** orientation=rt */ ';
     cursor: pointer;
   }
   .taskLabelsName {
@@ -2269,6 +2363,12 @@
       }
     }
   }
+  .datePickerMenu {
+    .v-menu__content {
+      right: 30px ~'!important; /** orientation=rt */ ';
+      left: auto ~'!important; /** orientation=rt */ ';
+    }
+  }
   .taskAssignement {
     .taskAssignItem {
       .user-name {
@@ -2277,7 +2377,8 @@
       .taskAssignBtn {
         .uiAddAssignIcon {
           margin-top: -4px !important;
-          padding-right: 6px;
+          padding-right: 6px ~'; /** orientation=lt */ ';
+          padding-left: 6px ~'; /** orientation=rt */ ';
           &:before {
             content: "\e6c4";
             color: @greyColorLighten1Default;
@@ -2290,6 +2391,7 @@
       position: relative;
       .v-menu__content {
         top: 10px!important;
+        right: 30px ~'!important; /** orientation=rt */ ';
       }
     }
     .assignTaskMenu {
@@ -2297,7 +2399,8 @@
         margin-top: -4px;
         &:before {
           content: "\e6cc";
-          padding-right: 6px;
+          padding-right: 6px ~'; /** orientation=lt */ ';
+          padding-left: 6px ~'; /** orientation=rt */ ';
           content: "\e6cc";
           font-size: 16px;
         }
@@ -2307,7 +2410,8 @@
         &:before {
           content: "\e6cb";
           font-size: 18px;
-          padding-right: 8px;
+          padding-right: 8px ~'; /** orientation=lt */ ';
+          padding-left: 8px ~'; /** orientation=rt */ ';
         }
       }
     }
@@ -2331,7 +2435,8 @@
           height: auto!important;
           .v-select__slot {
             .v-select__selections {
-              padding-left: 0!important;
+              padding-left: 0 ~'!important; /** orientation=lt */ ';
+              padding-right: 0 ~'!important; /** orientation=rt */ ';
               .identitySuggesterItem {
                 margin-bottom: 3px!important;
               }
@@ -2343,15 +2448,18 @@
   }
   .taskDates {
     max-width: 50%;
-    padding-right: 10px;
+    padding-right: 10px ~'; /** orientation=lt */ ';
+    padding-left: 10px ~'; /** orientation=rt */ ';
     .datePickerComponent {
       &:after {
         display: none!important;
       }
       input {
         max-width: 90%!important;
-        padding-right: 10px!important;
-        padding-left: 5px!important;
+        padding-right: 10px ~'!important; /** orientation=lt */ ';
+        padding-left: 10px ~'!important; /** orientation=rt */ ';
+        padding-left: 5px ~'!important; /** orientation=lt */ ';
+        padding-right: 5px ~'!important; /** orientation=rt */ ';
         border: none;
         box-shadow: none;
         &::placeholder {
@@ -2364,7 +2472,8 @@
       .uiIconStartDate {
         color: @primaryColor;
         font-size: 24px;
-        margin-left: -2px;
+        margin-left: -2px ~'; /** orientation=lt */ ';
+        margin-right: -2px ~'; /** orientation=rt */ ';
         &:before {
           content: "\ebf3";
         }
@@ -2416,7 +2525,8 @@
               height: 30px;
               i {
                 position: absolute;
-                right: 0;
+                right: 0 ~'; /** orientation=lt */ ';
+                left: 0 ~'; /** orientation=rt */ ';
                 top: 4px;
               }
             }
@@ -2426,9 +2536,10 @@
               .v-select__selection {
                 max-width: 100%;
                 width: 100%;
-                text-align: right;
+                text-align: end;
                 display: inline;
-                margin-right: 0!important;
+                margin-right: 0 ~'!important; /** orientation=lt */ ';
+                margin-left: 0 ~'!important; /** orientation=rt */ ';
               }
             }
           }
@@ -2461,7 +2572,8 @@
               height: 30px;
               i {
                 position: absolute;
-                right: 0;
+                right: 0 ~'; /** orientation=lt */ ';
+                left: 0 ~'; /** orientation=rt */ ';
               }
             }
             .v-select__selections {
@@ -2470,9 +2582,10 @@
               .v-select__selection {
                 max-width: 100%;
                 width: 100%;
-                text-align: right;
+                text-align: end;
                 display: inline;
-                margin-right: 0!important;
+                margin-right: 0 ~'!important; /** orientation=lt */ ';
+                margin-left: 0 ~'!important; /** orientation=rt */ ';
               }
             }
           }
@@ -2512,7 +2625,8 @@
     }
 
     .cke_toolbar {
-      border-right: none!important;
+      border-right: none ~'; /** orientation=lt */ ';
+      border-left: none ~'; /** orientation=rt */ ';
     }
 
     .activityCharsCount.tooManyChars {
@@ -2584,7 +2698,8 @@
         .commentHeader {
           width: 100%;
           .removeCommentBtn {
-            margin-left: auto;
+            margin-left: auto ~'; /** orientation=lt */ ';
+            margin-right: auto ~'; /** orientation=rt */ ';
             margin-top: -4px;
           }
           .externalTagClass {
@@ -2610,9 +2725,11 @@
         }
       }
       .TaskSubComments{
-        margin-left: -20px!important;
+        margin-left: -20px ~'!important; /** orientation=lt */ ';
+        margin-right: -20px ~'!important; /** orientation=rt */ ';
         .TaskSubCommentItem {
-          padding-left: 60px;
+          padding-left: 60px ~'; /** orientation=lt */ ';
+          padding-right: 60px ~'; /** orientation=rt */ ';
         }
       }
       .taskCommentEmpty {
@@ -2678,7 +2795,8 @@
   .uiArrowBAckIcon {
     cursor: pointer;
     color: @btnDisableColor!important;
-    margin-left: -4px;
+    margin-left: -4px ~'; /** orientation=lt */ ';
+    margin-right: -4px ~'; /** orientation=rt */ ';
     &:before {
       content: "\e913";
       font-family: "PLF-FONT-ICONS" !important;
@@ -2690,12 +2808,14 @@
     padding: 16px;
     .dateTime.caption {
       color: @greyColorLighten1;
-      text-align: left;
-      padding-left: 10px;
+      text-align: start;
+      padding-left: 10px ~'; /** orientation=lt */ ';
+      padding-right: 10px ~'; /** orientation=rt */ ';
     }
     .changeItem {
       margin-top: -16px;
-      padding-left: 37px!important;
+      padding-left: 37px ~'!important; /** orientation=lt */ ';
+      padding-right: 37px ~'!important; /** orientation=rt */ ';
     }
     .TaskCommentContent {
       .commentItem {
@@ -2703,7 +2823,8 @@
         .commentHeader {
           width: 100%;
           .removeCommentBtn {
-            margin-left: auto;
+            margin-left: auto ~'; /** orientation=lt */ ';
+            margin-right: auto ~'; /** orientation=rt */ ';
             .uiIconTrashMini {
               font-size: 12px;
             }
@@ -2731,16 +2852,20 @@
         }    
       }
       .TaskSubComments{
-        margin-left: -20px!important;
+        margin-left: -20px ~'!important; /** orientation=lt */ ';
+        margin-right: -20px ~'!important; /** orientation=rt */ ';
         .TaskSubCommentItem {
-          padding-left: 60px;
+          padding-left: 60px ~'; /** orientation=lt */ ';
+          padding-right: 60px ~'; /** orientation=rt */ ';
         }
       }
       .commentEditorContainer {
-        padding-left: 40px;
+        padding-left: 40px ~'; /** orientation=lt */ ';
+        padding-right: 40px ~'; /** orientation=rt */ ';
       }
       .newCommentEditor {
-        padding-left: 0;
+        padding-left: 0 ~'; /** orientation=lt */ ';
+        padding-right: 0 ~'; /** orientation=rt */ ';
       }
     }
     .editorContent {
@@ -2763,7 +2888,8 @@
         position: absolute;
         bottom: 46px;
         font-size: 12px;
-        right: 3px;
+        right: 3px ~'; /** orientation=lt */ ';
+        left: 3px ~'; /** orientation=rt */ ';
         .uiIconMessageLength {
           font-size: 14px;
           color: #2eb58c;
@@ -2777,7 +2903,8 @@
         height: 30px!important;
       }
       .cke_toolbar {
-        border-right: none!important;
+        border-right: none ~'!important; /** orientation=lt */ ';
+        border-left: none ~'!important; /** orientation=rt */ ';
       }
       .cke_bottom .cke_button_icon {
         filter: opacity(0.2);
@@ -2835,7 +2962,8 @@
 .showTaskCommentDrawer {
   position: fixed;
   top: 0;
-  right: 0;
+  right: 0 ~'; /** orientation=lt */ ';
+  left: 0 ~'; /** orientation=rt */ ';
   width: 420px;
   background: white;
   height: 100%;
@@ -2851,7 +2979,8 @@
 .showTaskChangesDrawer {
   position: fixed;
   top: 0;
-  right: 0;
+  right: 0 ~'; /** orientation=lt */ ';
+  left: 0 ~'; /** orientation=rt */ ';
   width: 420px;
   background: white;
   height: 100%;
@@ -2884,7 +3013,8 @@
   }
   .projectCard {
     border-radius: 15px 15px 15px 15px;
-    margin-right: 10px;
+    margin-right: 10px ~'; /** orientation=lt */ ';
+    margin-left: 10px ~'; /** orientation=rt */ ';
     border: thin solid rgba(0, 0, 0, 0.12);
   }
   .amount-item{
@@ -2895,7 +3025,8 @@
     border: thin solid rgba(0, 0, 0, 0.12);
     width: 30px;
     height: 20px;
-    margin-left: 5px;
+    margin-left: 5px ~'; /** orientation=lt */ ';
+    margin-right: 5px ~'; /** orientation=rt */ ';
     text-align: center;
     margin-top: 5px;
     margin-block-end: 5px;
@@ -2903,8 +3034,10 @@
   }
   .separator{
     margin-block-start: 15px;
-    margin-left: 5px;
-    margin-right: 25px;
+    margin-left: 5px ~'; /** orientation=lt */ ';
+    margin-right: 5px ~'; /** orientation=rt */ ';
+    margin-right: 25px ~'; /** orientation=lt */ ';
+    margin-left: 25px ~'; /** orientation=rt */ ';
   }
 
   .flagCard {
@@ -2918,10 +3051,12 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    margin-right: 10px;
+    margin-right: 10px ~'; /** orientation=lt */ ';
+    margin-left: 10px ~'; /** orientation=rt */ ';
     cursor: pointer;
     span {
-      margin-left: 10px;
+      margin-left: 10px ~'; /** orientation=lt */ ';
+      margin-right: 10px ~'; /** orientation=rt */ ';
     }
   }
   .nameGroup{
@@ -2977,7 +3112,8 @@
   .list-item {
     display: flex;
     width: 100%;
-    margin-right: 10px;
+    margin-right: 10px ~'; /** orientation=lt */ ';
+    margin-left: 10px ~'; /** orientation=rt */ ';
   }
   .list-leave-active {
     transition: all 1s;
@@ -3052,7 +3188,8 @@
                     }
                     .projectCardTitle {
                       color: @textColor!important;
-                      padding-left: 8px;
+                      padding-left: 8px ~'; /** orientation=lt */ ';
+                      padding-right: 8px ~'; /** orientation=rt */ ';
                     }
                   }
                   .taskItemInfo {
@@ -3116,7 +3253,8 @@
             .taskAssignee {
               width: 15%!important;
               max-width: 15%!important;
-              padding-right: 12px;
+              padding-right: 12px ~'; /** orientation=lt */ ';
+              padding-left: 12px ~'; /** orientation=rt */ ';
             }
             .taskLabels {
               .v-chip.v-size--small {
@@ -3167,7 +3305,8 @@
     }
     .v-toolbar__title {
       min-width: 40px!important;
-      margin-right: 5px;
+      margin-right: 5px ~'; /** orientation=lt */ ';
+      margin-left: 5px ~'; /** orientation=rt */ ';
     }
     button.btn.px-2.btn-primary.addNewProjectButton.v-btn.v-btn--contained.theme--light.v-size--default {
       min-width: auto!important;
@@ -3193,11 +3332,13 @@
           text-overflow: ellipsis;
         }
         .taskFilterMobile {
-          margin-left: 2px;
+          margin-left: 2px ~'; /** orientation=lt */ ';
+          margin-right: 2px ~'; /** orientation=rt */ ';
         }
         .filterTasksSetting {
           .uiIconFilterSetting {
-            padding-right: 0px !important;
+            padding-right: 0px ~'!important; /** orientation=lt */ ';
+            padding-left: 0px ~'!important; /** orientation=rt */ ';
           }
         }
       }

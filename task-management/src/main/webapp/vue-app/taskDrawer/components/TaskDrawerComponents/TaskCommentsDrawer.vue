@@ -7,10 +7,10 @@
     <v-container fill-height class="pa-0">
       <v-layout column>
         <v-flex class="mx-0 drawerHeader flex-grow-0">
-          <v-list-item class="pr-0">
+          <v-list-item class="pe-0">
             <v-list-item-content class="drawerTitle d-flex text-header-title text-truncate">
               <i class="uiIcon uiArrowBAckIcon" @click="closeDrawer"></i>
-              <span class="pl-2">{{ $t('label.comments') }}</span>
+              <span class="ps-2">{{ $t('label.comments') }}</span>
             </v-list-item-content>
             <v-list-item-action class="drawerIcons align-end d-flex flex-row">
               <v-btn
@@ -33,7 +33,7 @@
             <div
               v-for="(item, i) in comments"
               :key="i"
-              class="pr-0 pl-0 TaskCommentItem">
+              class="pe-0 ps-0 TaskCommentItem">
               <task-comments
                 :task="task"
                 :comment="item"

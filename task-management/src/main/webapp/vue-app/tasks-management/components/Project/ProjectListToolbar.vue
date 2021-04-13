@@ -33,7 +33,7 @@
           :placeholder="$t('label.filterProject')"
           prepend-inner-icon="fa-filter"
           :append-outer-icon="showMobileTaskFilter && 'mdi-close'"
-          class="inputTasksFilter inputProjectFilter pa-0 ml-3 mr-3 my-auto"
+          class="inputTasksFilter inputProjectFilter pa-0 ms-3 me-3 my-auto"
           :class="showMobileTaskFilter && 'inputTasksFilterMobile'"
           @click:append-outer="clearMessage"
           :clearable="!showMobileTaskFilter" />
@@ -43,7 +43,7 @@
           id="filterTaskSelect"
           v-model="projectFilterSelected"
           name="projectFilter"
-          class="selectTasksFilter my-auto mr-2 subtitle-1 ignore-vuetify-classes d-sm-inline"
+          class="selectTasksFilter my-auto me-2 subtitle-1 ignore-vuetify-classes d-sm-inline"
           @change="changeProjectFilter">
           <option
             v-for="item in projectFilter"

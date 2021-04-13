@@ -7,10 +7,10 @@
     <v-container fill-height class="pa-0">
       <v-layout column>
         <v-flex class="mx-0 drawerHeader flex-grow-0">
-          <v-list-item class="pr-0">
+          <v-list-item class="pe-0">
             <v-list-item-content class="drawerTitle d-flex text-header-title text-truncate">
               <i class="uiIcon uiArrowBAckIcon" @click="closeDrawer"></i>
-              <span class="pl-2">{{ $t('label.changes') }}</span>
+              <span class="ps-2">{{ $t('label.changes') }}</span>
             </v-list-item-content>
             <v-list-item-action class="drawerIcons align-end d-flex flex-row">
               <v-btn icon>
@@ -25,7 +25,7 @@
             <v-list-item
               v-for="(item, i) in logs"
               :key="i"
-              class="pr-0">
+              class="pe-0">
               <v-list-item-content class="pt-1">
                 <div class="d-flex">
                   <exo-user-avatar
@@ -35,7 +35,7 @@
                     :size="30"
                     :url="null"
                     class="changeUserAvatar" />
-                  <p class="changesText mb-0 pl-1" v-html="renderChangeHTML(item)"></p>
+                  <p class="changesText mb-0 ps-1" v-html="renderChangeHTML(item)"></p>
                 </div>
                 <div>
                   <div class="dateTime caption changeItem">
