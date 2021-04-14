@@ -24,7 +24,7 @@
         <tasks-dashboard />
       </v-tab-item>
       <v-tab-item value="tab-2">
-        <project-dashboard :space-name="spaceName" />
+        <project-dashboard :space-name="spaceName" :display-details="displayDetails"/>
       </v-tab-item>
     </v-tabs-items>
     <add-project-drawer
@@ -42,6 +42,7 @@ export default {
   data () {
     return {
       tab: '',
+      displayDetails: false,
       showTabs: false,
       spaceName: '',
       projectId: '',
@@ -111,11 +112,12 @@ export default {
         this.$tasksService.getTaskById(taskId).then(data => {
           this.task = data;
           if (this.task.status && this.task.status.project){
+            this.displayDetails=true;
             this.projectId=this.task.status.project.id;
             this.showTabs=false;
             window.setTimeout(() => {
               document.dispatchEvent(new CustomEvent('showProjectTasks', {detail: this.task.status.project}));
-            }, 100);
+            }, 20);
             this.tab='tab-2';
           } else {
             this.tab='tab-1';
@@ -136,6 +138,7 @@ export default {
         this.$projectService.getProject(projectId).then(data => {
           document.dispatchEvent(new CustomEvent('showProjectTasks', {detail: data}));
         });
+        this.displayDetails=true;
         this.tab='tab-2';
       }
     } else {
@@ -146,11 +149,13 @@ export default {
   methods: {
     getMyTasks(){
       this.showTabs=true;
+      this.displayDetails=false;
       window.history.pushState('mytasks', 'My Tasks', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/tasks/myTasks`);
     },
     getMyProjects(){
       this.projectId='';
       this.showTabs=true;
+      this.displayDetails=false;
       const urlPath = document.location.pathname;
       if (urlPath.includes('g/:spaces')){
         window.history.pushState('task', 'Task details', `${urlPath.split('tasks')[0]}tasks`); 
@@ -167,6 +172,7 @@ export default {
       const urlPath = document.location.pathname;
       this.projectId=id;
       this.showTabs=false;
+      this.displayDetails=true;
       window.history.pushState('task', 'Task details', `${urlPath.split('tasks')[0]}tasks/projectDetail/${id}`); 
     },
     displayMessage(message) {
