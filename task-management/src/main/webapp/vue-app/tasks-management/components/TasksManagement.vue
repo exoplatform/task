@@ -100,29 +100,23 @@ export default {
       this.spaceName = urlPath.split('g/:spaces:')[1].split('/')[0];
       this.tab='tab-2';
       this.showTabs=false;
-    } else {
-      if (urlPath.includes('myTasks')){
-        this.tab='tab-1';
-        this.projectId='';
-        this.showTabs=true;
-      }
-      if (urlPath.includes('myProjects')){
-        this.tab='tab-2';
-      }
-    }
-    if (urlPath.includes('taskDetail')){
+    } else if (urlPath.includes('myTasks')){
+      this.tab='tab-1';
+      this.projectId='';
+      this.showTabs=true;
+    } else if (urlPath.includes('taskDetail')){
       let taskId = urlPath.split('taskDetail/')[1].split(/[^0-9]/)[0];
       taskId = taskId && Number(taskId) || 0;
       if (taskId) {
         this.$tasksService.getTaskById(taskId).then(data => {
           this.task = data;
           if (this.task.status && this.task.status.project){
-            this.tab='tab-2';
             this.projectId=this.task.status.project.id;
             this.showTabs=false;
             window.setTimeout(() => {
               document.dispatchEvent(new CustomEvent('showProjectTasks', {detail: this.task.status.project}));
             }, 100);
+            this.tab='tab-2';
           } else {
             this.tab='tab-1';
             this.projectId='';
@@ -133,18 +127,20 @@ export default {
           }, 200);
         });
       } 
-    }
-    if (urlPath.includes('projectDetail')){
+    } else if (urlPath.includes('projectDetail')){
       let projectId = urlPath.split('projectDetail/')[1].split(/[^0-9]/)[0];
       projectId = projectId && Number(projectId) || 0;
       if (projectId) {
         this.projectId=projectId;
         this.showTabs=false;
-        this.tab='tab-2';
         this.$projectService.getProject(projectId).then(data => {
           document.dispatchEvent(new CustomEvent('showProjectTasks', {detail: data}));
         });
+        this.tab='tab-2';
       }
+    } else {
+      this.showTabs=true;
+      this.tab='tab-2';
     }
   },
   methods: {
@@ -170,6 +166,7 @@ export default {
     setProjectUrl(id){
       const urlPath = document.location.pathname;
       this.projectId=id;
+      this.showTabs=false;
       window.history.pushState('task', 'Task details', `${urlPath.split('tasks')[0]}tasks/projectDetail/${id}`); 
     },
     displayMessage(message) {
