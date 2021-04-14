@@ -5,7 +5,8 @@
       flat
       class="tasksToolbar">
       <div class="taskDisplay">
-        <v-tabs class="projectTasksViewTabs">
+        <v-tabs
+          class="projectTasksViewTabs">
           <v-tab
             :href="taskCardTabView"
             class="taskTabBoard"
@@ -88,7 +89,7 @@ export default {
     allowGantt: {
       type: Boolean,
       default: false
-    }
+    },
   },
   data () {
     return {
@@ -113,6 +114,12 @@ export default {
         this.resetFields('query'); }      
       this.searchonkeyChange= true;
     },
+  },
+  created() {
+    this.$root.$on('hide-tasks-project', () => {
+      $('a.v-tab').removeClass('v-tab--active');
+      $('a.taskTabBoard').addClass('v-tab--active');
+    });
   },
   methods: {
     openDrawer() {
@@ -150,6 +157,18 @@ export default {
       } return '';
     },
     changeTaskViewTab(view){
+      $('a.v-tab').removeClass('v-tab--active');
+      if ( view === 'list') {
+        $('a.taskTabList').addClass('v-tab--active');
+      }
+
+      if ( view === 'board') {
+        $('a.taskTabBoard').addClass('v-tab--active');
+      }
+
+      if ( view === 'gantt') {
+        $('a.taskTabGantt').addClass('v-tab--active');
+      }
       this.taskViewTabName=view;
       this.$emit('taskViewChangeTab', view);
     }
