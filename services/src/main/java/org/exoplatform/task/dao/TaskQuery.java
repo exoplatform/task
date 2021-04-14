@@ -214,6 +214,10 @@ public class TaskQuery extends Query implements Cloneable {
     this.assignee = Arrays.asList(username);
   }
 
+  public void setAssigneeIsTodoOf(String username) {
+    this.add(Conditions.or(eq(TASK_ASSIGNEE, username)));
+  }
+
   public void setLabelIds(List<Long> labelIds) {
     if (labelIds != null) {
       List<Condition> cond = new LinkedList<Condition>();
