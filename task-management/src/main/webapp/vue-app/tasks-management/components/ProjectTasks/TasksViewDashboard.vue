@@ -27,7 +27,6 @@
           :task-card-tab-view="'#tasks-view-board'"
           :task-list-tab-view="'#tasks-view-list'"
           :task-gantt-tab-view="'#tasks-view-gantt'"
-          :tasks-view-tab-model="'tasks-view-board'"
           @keyword-changed="filterByKeyword"
           @taskViewChangeTab="getChangeTabValue"
           @filter-task-dashboard="filterTaskDashboard"
@@ -171,12 +170,11 @@
           :filter-by-status="filterByStatus=true"
           @update-status="updateStatus" />
       </div>
-      <v-tab-item
+      <div
         v-show="taskViewTabName == 'gantt' && allowGantt"
         eager>
-        <tasks-view-gantt
-          :tasks-list="tasksList" />
-      </v-tab-item>
+        <tasks-view-gantt :tasks-list="tasksList" />
+      </div>
     </v-tabs-items>
 
     <div class="ma-0 border-box-sizing">
@@ -245,10 +243,15 @@ export default {
       this.$root.$emit('set-url', {type: 'myProjects',id: ''});
       this.$root.$emit('close-quick-task-form');
       document.dispatchEvent(new CustomEvent('hideProjectTasks'));
+      this.taskViewTabName = 'board';
+      this.$root.$emit('hide-tasks-project');
     },
     getChangeTabValue(value) {
       this.taskViewTabName = value;
       this.getTasksByProject(this.project.id,'');
+      if ( value === 'gantt' ) {
+        this.$root.$emit('gantt-displayed', this.tasksList);
+      }
     },
     getStatusByProject(ProjectId) {
       return this.$tasksService.getStatusesByProjectId(ProjectId).then(data => {
