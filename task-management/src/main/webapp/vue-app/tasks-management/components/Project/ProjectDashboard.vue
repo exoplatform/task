@@ -42,9 +42,11 @@ export default {
   created() {
     document.addEventListener('showProjectTasks', (event) => {
       if (event && event.detail) {
-        this.displayDetails = true;
         this.project =  event.detail;
-        this.$root.$emit('set-url', {type: 'project',id: this.project.id});
+        window.setTimeout(() => {
+          this.displayDetails = true;
+          this.$root.$emit('set-url', {type: 'project',id: this.project.id});
+        }, 200);
       }
     });
     document.addEventListener('hideProjectTasks', () => {
