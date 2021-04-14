@@ -37,7 +37,8 @@
                   <tasks-group-project-drawer
                     ref="filterGroupTasksDrawer"
                     v-model="groupBy"
-                    :task-view-tab-name="taskViewTabName" />
+                    :task-view-tab-name="taskViewTabName"
+                    @scale-changed="changeScale" />
                   <tasks-sort-by-project-drawer
                     ref="filterSortTasksDrawer"
                     v-model="sortBy" />
@@ -351,49 +352,53 @@ export default {
       this.getFilterNumber(source);
     },
     filterTasks(){
-      const tasks = {
-        query: this.query,
-        assignee: '',
-        statusId: this.statusSelected,
-        dueDate: this.dueDateSelected,
-        priority: this.prioritySelected,
-        showCompleteTasks: this.showCompleteTasks,
-        groupBy: this.groupBy,
-        orderBy: this.sortBy,
-      };
-      const filterGroupSort = {
-        groupBy: this.groupBy,
-        sortBy: this.sortBy,
-      };
-      const filterLabels = {
-        labels: [],
-      };
-      if (this.labels){
-        this.labels.forEach(user => {
-          filterLabels.labels.push(user.id);
-        });
-      }
-      if (this.assignee){
-        tasks.assignee = this.assignee.remoteId;
-      }
-      const jsonToSave = {
-        groupBy: this.groupBy,
-        sortBy: this.sortBy,
-        projectId: this.project || 'None',
-        tabView: (this.taskViewTabName!==''? this.taskViewTabName : 'list'),
-      };
-      this.saveValueFilterInStorage(JSON.parse(JSON.stringify(jsonToSave)));
-      if (this.project){
-        this.$emit('filter-task',{ tasks,filterLabels,showCompleteTasks: this.showCompleteTasks });
-        this.getFilterNumber();
-        if (this.$refs.filterTasksDrawer){
+      if ( this.taskViewTabName === 'gantt' ) {
+        this.cancel();
+      } else {
+        const tasks = {
+          query: this.query,
+          assignee: '',
+          statusId: this.statusSelected,
+          dueDate: this.dueDateSelected,
+          priority: this.prioritySelected,
+          showCompleteTasks: this.showCompleteTasks,
+          groupBy: this.groupBy,
+          orderBy: this.sortBy,
+        };
+        const filterGroupSort = {
+          groupBy: this.groupBy,
+          sortBy: this.sortBy,
+        };
+        const filterLabels = {
+          labels: [],
+        };
+        if (this.labels){
+          this.labels.forEach(user => {
+            filterLabels.labels.push(user.id);
+          });
+        }
+        if (this.assignee){
+          tasks.assignee = this.assignee.remoteId;
+        }
+        const jsonToSave = {
+          groupBy: this.groupBy,
+          sortBy: this.sortBy,
+          projectId: this.project || 'None',
+          tabView: (this.taskViewTabName!==''? this.taskViewTabName : 'list'),
+        };
+        this.saveValueFilterInStorage(JSON.parse(JSON.stringify(jsonToSave)));
+        if (this.project){
+          this.$emit('filter-task',{ tasks,filterLabels,showCompleteTasks: this.showCompleteTasks });
+          this.getFilterNumber();
+          if (this.$refs.filterTasksDrawer){
+            this.$refs.filterTasksDrawer.close();
+          }
+        } else {
+          this.$emit('filter-task-query', tasks,filterGroupSort,filterLabels);
+       
+          this.getFilterNumber();
           this.$refs.filterTasksDrawer.close();
         }
-      } else {
-        this.$emit('filter-task-query', tasks,filterGroupSort,filterLabels);
-       
-        this.getFilterNumber();
-        this.$refs.filterTasksDrawer.close();
       }
     },
     getFilterNumber(source){
@@ -448,6 +453,9 @@ export default {
       }
       return this.taskViewTabName;
     },
+    changeScale(value) {
+      this.$root.$emit('scale-value-changed', value);
+    }
 
   }
 };
