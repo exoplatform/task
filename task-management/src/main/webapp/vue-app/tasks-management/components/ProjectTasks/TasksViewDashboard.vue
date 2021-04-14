@@ -434,7 +434,6 @@ export default {
       });
     },
     getFilter(tasksFilter,ProjectId){
-      this.tasksList=[];
       if (tasksFilter.groupBy==='status') {
         tasksFilter.groupBy = '';
         this.filterProjectActive=false;
