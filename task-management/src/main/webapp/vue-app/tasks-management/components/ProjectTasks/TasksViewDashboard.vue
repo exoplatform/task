@@ -234,7 +234,7 @@ export default {
     });
     this.$root.$on('update-task-completed', (event) => {
       if (event) {
-        window.setTimeout(() => this.tasksList = this.tasksList.filter((t) => t.id !== event.id), 500);
+        window.setTimeout(() => this.getTasksByProject(this.project.id,''), 500);
       }
     });
   },
