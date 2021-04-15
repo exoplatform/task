@@ -24,7 +24,7 @@
         <tasks-dashboard />
       </v-tab-item>
       <v-tab-item value="tab-2">
-        <project-dashboard :space-name="spaceName" :display-details="displayDetails"/>
+        <project-dashboard :space-name="spaceName" :display-details="displayDetails" />
       </v-tab-item>
     </v-tabs-items>
     <add-project-drawer
