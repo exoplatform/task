@@ -4,19 +4,9 @@
       id="TasksDashboardToolbar"
       flat
       class="tasksToolbar">
-      <v-toolbar-title>
-        <v-btn
-          class="btn px-2 btn-primary addNewTaskButton"
-          @click="openTaskDrawer()">
-          <v-icon dark class="d-block d-sm-none">mdi-plus</v-icon>
-          <span class="d-none font-weight-regular d-sm-inline">
-            + {{ $t('label.addTask') }}
-          </span>
-        </v-btn>
-      </v-toolbar-title>
-      <v-spacer />
       <div class="taskDisplay">
-        <v-tabs class="projectTasksViewTabs">
+        <v-tabs
+          class="projectTasksViewTabs">
           <v-tab
             :href="taskCardTabView"
             class="taskTabBoard"
@@ -99,7 +89,7 @@ export default {
     allowGantt: {
       type: Boolean,
       default: false
-    }
+    },
   },
   data () {
     return {
@@ -124,6 +114,12 @@ export default {
         this.resetFields('query'); }      
       this.searchonkeyChange= true;
     },
+  },
+  created() {
+    this.$root.$on('hide-tasks-project', () => {
+      $('a.v-tab').removeClass('v-tab--active');
+      $('a.taskTabBoard').addClass('v-tab--active');
+    });
   },
   methods: {
     openDrawer() {
@@ -161,6 +157,18 @@ export default {
       } return '';
     },
     changeTaskViewTab(view){
+      $('a.v-tab').removeClass('v-tab--active');
+      if ( view === 'list') {
+        $('a.taskTabList').addClass('v-tab--active');
+      }
+
+      if ( view === 'board') {
+        $('a.taskTabBoard').addClass('v-tab--active');
+      }
+
+      if ( view === 'gantt') {
+        $('a.taskTabGantt').addClass('v-tab--active');
+      }
       this.taskViewTabName=view;
       this.$emit('taskViewChangeTab', view);
     }
