@@ -1,7 +1,7 @@
 <template>
   <v-app
     id="projectListApplication"
-    class="projectAndTasksContainer pa-4 transparent"
+    class="projectAndTasksContainer pa-4 pb-2 transparent"
     flat>
     <div v-show="!displayDetails">
       <project-list-toolbar
