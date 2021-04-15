@@ -2,6 +2,7 @@ package org.exoplatform.task.service;
 
 import java.util.List;
 
+import org.exoplatform.commons.api.persistence.ExoTransactional;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.task.domain.Label;
 import org.exoplatform.task.dto.LabelDto;
@@ -19,7 +20,10 @@ public interface LabelService {
 
   LabelDto createLabel(LabelDto label);
 
+  @ExoTransactional
   LabelDto updateLabel(LabelDto label, List<Label.FIELDS> fields) throws EntityNotFoundException;
+
+  LabelDto updateLabel(LabelDto label) throws EntityNotFoundException;
 
   void removeLabel(long labelId);
 

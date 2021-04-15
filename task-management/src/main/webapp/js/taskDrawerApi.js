@@ -140,6 +140,24 @@ export function addLabel(label) {
   });
 }
 
+export function editLabel(label) {
+  return fetch(`/portal/rest/tasks/labels/${label.id}`, {
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    method: 'PUT',
+    credentials: 'include',
+    body: JSON.stringify(label)
+  }).then((resp) => {
+    if (resp && resp.ok) {
+      return resp.json();
+    } else {
+      throw new Error('Error when updateing label');
+    }
+  });
+}
+
 export function removeLabel(labelId) {
   return fetch(`/portal/rest/tasks/labels/${labelId}`, {
     credentials: 'include',

@@ -155,7 +155,9 @@
             {{ $t('label.labels') }}
           </v-label>
           <project-labels
-            :project="project" />
+            :project="project"
+            @add-label="addLabelOnCreate"
+            @edit-label-on-create="editLabelBeforeCreate" />
         </div>
       </v-form>
     </template>
@@ -194,7 +196,8 @@ export default {
       project: {},
       maxAvatarToShow: 3,
       showManager: true,
-      showParticipant: true
+      showParticipant: true,
+      labelsToAdd: [],
     };
   },
   computed: {
@@ -259,6 +262,13 @@ export default {
   },
  
   methods: {
+    addLabelOnCreate(label){
+      this.labelsToAdd.push(label);
+    },
+    editLabelBeforeCreate(label){
+      const objIndex = this.labelsToAdd.findIndex((obj => obj.name === label.name));
+      this.labelsToAdd[objIndex].name = label.text;
+    },
     open(project) {
       if (project && project.id){
         return this.$projectService.getProject(project.id,true).then(project => {
@@ -385,6 +395,12 @@ export default {
           description: '',
           id: '',
         };
+        window.setTimeout(() => {
+          document.dispatchEvent(new CustomEvent('loadAllProjectLabels', {
+            detail: null
+          }));
+        },
+        200);
         this.$refs.addProjectDrawer.open();
         window.setTimeout(() => this.$refs.addProjectTitle.querySelector('input').focus(), 200);
       }
@@ -490,6 +506,10 @@ export default {
             });
         } else {
           return this.$projectService.addProject(projects).then(project => {
+            this.labelsToAdd.forEach(item => {
+              item.project=project;
+              this.$taskDrawerApi.addLabel(item);
+            });
             this.$emit('update-cart', project);
             this.$root.$emit('update-projects-list', {});
             this.postProject = false;

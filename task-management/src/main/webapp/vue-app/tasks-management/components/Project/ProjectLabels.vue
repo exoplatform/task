@@ -32,36 +32,11 @@
         </v-list-item>
       </template>
       <template v-slot:selection="{ attrs, item, parent, selected }">
-        <v-chip
-          v-if="item === Object(item)"
-          v-bind="attrs"
-          :color="`${item.color} lighten-3`"
-          :input-value="selected"
-          class="pe-1 font-weight-bold"
-          label
-          dark
-          small>
-          <span class="pe-2">
-            {{ item.text }}
-          </span>
-          <v-icon
-            x-small
-            class="pe-0"
-            @click="parent.selectItem(item);removeLabel(item)">
-            close
-          </v-icon>
-        </v-chip>
-      </template>
-      <template v-slot:item="{ index, item }">
-        <v-list-item @click="addLabel(item)">
-          <v-chip
-            :color="`${item.color} lighten-3`"
-            dark
-            label
-            small>
-            {{ item.text }}
-          </v-chip>
-        </v-list-item>
+        <editable-labels
+          :item="item"
+          :parent="parent"
+          @edit-label-on-create="editLabelBeforeCreate"
+          @remove-label="removeLabel" />
       </template>
     </v-combobox>
   </div>
@@ -125,6 +100,7 @@ export default {
       }, 100);
     });
     document.addEventListener('loadAllProjectLabels', event => {
+      this.model = [];
       if (event && event.detail) {
         const project = event.detail;
         this.model = [];
@@ -150,6 +126,7 @@ export default {
         this.model = labels.map(function (el) {
           const o = Object.assign({}, el);
           o.text = o.name;
+          o.editMenu=false;
           return o;
         });
       });
@@ -172,11 +149,12 @@ export default {
           });
         });
       } else {
-        document.dispatchEvent(new CustomEvent('labelListChanged', {detail: label}));
+        this.$emit('add-label', label);
       }
       this.model.push(label);
       document.getElementById('labelInput').focus();
     },
+
     removeLabel(item) {
       this.$taskDrawerApi.removeLabel(item.id).then( () => {
         this.$root.$emit('show-alert', {
@@ -193,6 +171,9 @@ export default {
     },
     openLabelsList() {
       this.$emit('labelsListOpened');
+    },
+    editLabelBeforeCreate(label) {
+      this.$emit('edit-label-on-create', label);
     }
   }
 };
