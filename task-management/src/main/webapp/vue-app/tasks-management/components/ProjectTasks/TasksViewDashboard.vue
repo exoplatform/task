@@ -2,7 +2,7 @@
   <v-app
     :id="'projectTask-'+project.id"
     :class="taskViewTabName === 'board' && !filterProjectActive && 'projectTaskBoardContainer'"
-    class="projectTasksDashboard px-4">
+    class="projectTasksDashboard">
     <exo-confirm-dialog
       ref="deleteConfirmDialog"
       :message="deleteConfirmMessage"
@@ -33,7 +33,7 @@
           @reset-filter-task-dashboard="resetFiltertaskDashboard" />
       </div>
     </div>
-    <div v-if="filterProjectActive && groupName && groupName.projectName" class="px-0 pt-8 pb-4">
+    <div v-if="filterProjectActive && groupName && groupName.projectName" class="px-0 ">
       <div 
         v-for="(projectItem,i) in groupName.projectName" 
         :key="projectItem.name" 
