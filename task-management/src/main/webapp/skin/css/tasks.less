@@ -1403,8 +1403,11 @@
         min-height: calc(~"100vh - 104px")!important;
       }
     }
-
-    }
+}
+.TaskCommentItem .commentBody .taskContentComment ul li {
+  list-style-position: inside;
+  list-style-type: disc;
+}
 .projectAndTasksContainer {
       .noTasksProject {
         min-height: 50vh;
@@ -2629,6 +2632,10 @@
     }
   }
   .taskDescription {
+    ul li {
+      list-style-position: inside;
+      list-style-type: disc;
+    }
     .taskDescriptionToShow {
       &:focus {
         outline-width: 0 !important;
