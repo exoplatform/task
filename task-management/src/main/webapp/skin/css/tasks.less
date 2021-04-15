@@ -81,6 +81,25 @@
               .v-select__slot {
                 .v-select__selections {
                   max-width: 100%!important;
+                  .labelsActionMenu {
+                    .v-sheet {
+                      background-color: @lightWhite!important;
+                      .labels-edit-name {
+                        padding-top: 8px;
+                        .v-input__control {
+                          .v-text-field__slot {
+                            padding-left: 8px;
+                          }
+                          .v-input__append-inner {
+                            display: flex;
+                            margin-top: 0!important;
+                            margin-right: 8px;
+                          }
+                        }
+                      }
+
+                    }
+                  }
                 }
                 label {
                   color: @greyColorLighten1;
@@ -1152,7 +1171,7 @@
         }
       }
       .projectTasksDashboard {
-        min-height: calc(~"100vh - 104px")!important;
+        min-height: calc(~"100vh - 138px")!important;
         .projectTasksTabFilter {
           flex: 0 1 70%;
         }
@@ -3264,8 +3283,7 @@
             .taskAssignee {
               width: 15%!important;
               max-width: 15%!important;
-              padding-right: 12px ~'; /** orientation=lt */ ';
-              padding-left: 12px ~'; /** orientation=rt */ ';
+              padding-right: 12px;
             }
             .taskLabels {
               .v-chip.v-size--small {
@@ -3316,8 +3334,7 @@
     }
     .v-toolbar__title {
       min-width: 40px!important;
-      margin-right: 5px ~'; /** orientation=lt */ ';
-      margin-left: 5px ~'; /** orientation=rt */ ';
+      margin-right: 5px;
     }
     button.btn.px-2.btn-primary.addNewProjectButton.v-btn.v-btn--contained.theme--light.v-size--default {
       min-width: auto!important;
@@ -3343,13 +3360,11 @@
           text-overflow: ellipsis;
         }
         .taskFilterMobile {
-          margin-left: 2px ~'; /** orientation=lt */ ';
-          margin-right: 2px ~'; /** orientation=rt */ ';
+          margin-left: 2px;
         }
         .filterTasksSetting {
           .uiIconFilterSetting {
-            padding-right: 0px ~'!important; /** orientation=lt */ ';
-            padding-left: 0px ~'!important; /** orientation=rt */ ';
+            padding-right: 0px !important;
           }
         }
       }
@@ -3612,3 +3627,314 @@
     //border: 1px solid #578dc9;
     animation: beginDrag 1s ease forwards;
   }
+
+.labelsActionMenu {
+   max-width: 180px !important;
+   min-width: 160px !important;
+  .label-edit-name{
+    max-width: 136px;
+  }
+  .label-btn {
+    cursor: pointer;
+  }
+
+  .VuetifyApp .theme--light.v-list-item:hover::before {
+    opacity: 0;
+    .uiIcon,span {
+      color: #ffffff!important;
+    }
+    background-image: linear-gradient(to bottom, @primaryColor, @primaryColor);
+  }
+  .v-list-item.menu-list,.v-list-item.draftButton, .v-list-item.clone{
+    &:hover{
+      .uiIcon,span {
+        color: #ffffff!important;
+      }
+      background-image: linear-gradient(to bottom, @primaryColor, @primaryColor);
+    }
+  }
+  .v-list-item {
+    min-height: 30px!important;
+    .uiIcon {
+      font-size: 16px;
+    }
+    .noColorLabel {
+      border: 1px solid @borderColor;
+      cursor: pointer;
+    }
+    .projectColorPicker {
+      width: 144px;
+      max-width: 144px;
+      .projectColorCell {
+        width: 20px;
+        height: 20px;
+        min-width: 20px;
+        min-height: 20px;
+        margin: 2px;
+        cursor: pointer;
+      }
+      .isSelected {
+        position: relative;
+        text-align: center;
+        &:before {
+          content: '\e9c6';
+          font-family: 'PLF-FONT-ICONS' !important;
+          color: white;
+          font-size: 14px;
+        }
+      }
+    }
+  }
+}
+
+
+/*-----------------------------------------------------------
+                     GANTT CHART STYLE
+-----------------------------------------------------------*/
+.gantt-chart-container {
+  padding-top: 30px;
+  .gantt-tasks-title {
+    margin-top: 60px;
+    min-height: calc(~"100vh - 180px");
+    height: calc(~"100vh - 180px");
+    overflow: hidden;
+    min-width: 180px;
+    p {
+      max-width: 180px;
+      margin-bottom: 0!important;
+      padding-top: 10px;
+      padding-right: 10px;
+      height: 27px;
+      border-bottom: 1px solid #ebeff2;
+    }
+  }
+}
+
+/*.gantt-container {
+  min-height: calc(~"100vh - 120px");
+  height: calc(~"100vh - 120px");
+  &::-webkit-scrollbar {
+    height: 5px;
+    width: 5px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: white;
+    border-radius: 10px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: white;
+  }
+  &:hover {
+    &::-webkit-scrollbar {
+      height: 5px;
+      width: 5px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: @greyColorLighten1;
+      border-radius: 10px;
+    }
+    &::-webkit-scrollbar-thumb:hover {
+      background: @borderColorLight;
+    }
+  }
+}*/
+.gantt {
+  //min-height: calc(~"100vh - 120px")!important;
+  //height: calc(~"100vh - 120px")!important;
+	.grid-background {
+		fill: none;
+	}
+	.grid-header {
+		fill: #fff;
+		stroke: #e0e0e0;
+		stroke-width: 1.4;
+	}
+	.grid-row {
+		fill: #fff;
+		&:nth-child(even) {
+			fill: #f5f5f5;
+		}
+	}
+	.row-line {
+		stroke: #ebeff2;
+	}
+	.tick {
+		stroke: #e0e0e0;
+		stroke-width: .2;
+	}
+	.tick.thick {
+		stroke-width: .4;
+	}
+	.today-highlight {
+		fill: #fbff99a8;
+		opacity: .5;
+	}
+	.arrow {
+		fill: none;
+		stroke: #666;
+		stroke-width: 1.4;
+	}
+	.bar {
+		fill: #b8c2cc;
+		stroke: #8d99a6;
+		stroke-width: 0;
+		transition: stroke-width .3s ease;
+		user-select: none;
+	}
+	.bar-invalid {
+		fill: transparent;
+		stroke: #8d99a6;
+		stroke-width: 1;
+		stroke-dasharray: 5;
+	}
+	.bar-invalid~.bar-label {
+		fill: #555;
+	}
+	.bar-label {
+    fill: #fff;
+    dominant-baseline: central;
+    text-anchor: middle;
+    font-size: 12px;
+    font-weight: lighter;
+  }
+  .bar-label.big {
+    fill: #555;
+    text-anchor: start;
+  }
+	.handle {
+		fill: #ddd;
+		cursor: ew-resize;
+		opacity: 0;
+		visibility: hidden;
+		transition: opacity .3s ease;
+	}
+	.bar-wrapper {
+		cursor: pointer;
+		outline: 0;
+		&:hover {
+			.bar {
+				fill: #a9b5c1;
+			}
+			.handle {
+				visibility: visible;
+				opacity: 1;
+			}
+		}
+	}
+  .bar_LOW {
+    .bar-progress {
+      fill: @successColor
+    }
+  }
+  .bar_NORMAL {
+    .bar-progress {
+      fill: @warningColor;
+    }
+  }
+  .bar_HIGH {
+    .bar-progress {
+      fill: @errorColor;
+    }
+  }
+  .bar_NONE {
+    .bar-progress {
+      fill: @infoColor;
+    }
+  }
+	.bar-wrapper.active {
+		.bar {
+			fill: #a9b5c1;
+		}
+	}
+	.lower-text {
+		font-size: 12px;
+		text-anchor: middle;
+		fill: #333;
+	}
+	.upper-text {
+		font-size: 12px;
+		text-anchor: middle;
+		fill: #555;
+	}
+	.hide {
+		display: none;
+	}
+}
+.gantt-container {
+	position: relative;
+	overflow: auto;
+	font-size: 12px;
+	.popup-wrapper {
+		position: absolute;
+		top: 0;
+		left: 0;
+		background: rgba(0, 0, 0, .8);
+		padding: 0;
+		color: #959da5;
+		border-radius: 3px;
+		.title {
+			padding: 8px;
+      padding: 10px;
+      font-size: 12px!important;
+      line-height: 1.2rem;
+		}
+		.subtitle {
+			padding: 10px;
+			color: #dfe2e5;
+		}
+		.pointer {
+			display: none;
+		}
+	}
+}
+
+.gantt-container {
+  overflow: hidden;
+}
+.gantt-grid {
+  max-height: calc(~"100vh - 290px")!important;
+  height: calc(~"100vh - 290px")!important;
+  overflow: scroll;
+  position: relative;
+  &::-webkit-scrollbar {
+    height: 6px;
+    width: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: white;
+    border-radius: 10px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: white;
+  }
+  &:hover {
+    &::-webkit-scrollbar {
+      height: 6px;
+      width: 6px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: @greyColorLighten1;
+      border-radius: 10px;
+    }
+    &::-webkit-scrollbar-thumb:hover {
+      background: @borderColorLight;
+    }
+  }
+}
+
+.gantt-dates {
+  overflow: auto;
+}
+
+.gantt-dates::-webkit-scrollbar {
+  width: 0;  /* Remove scrollbar space */
+  height: 0;
+  background: transparent;  /* Optional: just make scrollbar invisible */
+}
+/* Optional: show position indicator in red */
+.gantt-dates::-webkit-scrollbar-thumb {
+  background: #FFFFFF;
+}
+.gantt .arrow {
+  display: none;
+}
