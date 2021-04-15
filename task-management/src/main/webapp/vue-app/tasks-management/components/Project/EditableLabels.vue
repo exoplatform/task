@@ -5,7 +5,6 @@
       v-model="displayActionMenu"
       transition="slide-x-reverse-transition"
       content-class="labelsActionMenu"
-      @blur="cancel($event)"
       :close-on-content-click="false"
       :close-on-click="true"
       offset-y>
@@ -55,7 +54,7 @@
                 dark
                 class="uiIcon40x40TickBlue label-btn ma-1"
                 slot="append"
-                @click="item.name=item.text;editLabel()">
+                @click="editLabel()">
               </i>
               <i
                 dark
@@ -136,21 +135,28 @@ export default {
   },
   methods: {
     editLabel() {
-      this.$taskDrawerApi.editLabel(this.item).then( (editedLabel) => {
-        this.item=editedLabel;
-        this.item.text = this.item.name;
+      if ( this.item.project ) {
+        this.item.name=this.item.text;
+        this.$taskDrawerApi.editLabel(this.item).then( (editedLabel) => {
+          this.item=editedLabel;
+          this.item.text = this.item.name;
+          this.displayActionMenu= false;
+          this.$root.$emit('show-alert', {
+            type: 'success',
+            message: this.$t('alert.success.label.updated')
+          });
+        }).catch(e => {
+          console.error('Error when adding labels', e);
+          this.$root.$emit('show-alert', {
+            type: 'error',
+            message: this.$t('alert.error')
+          });
+        });
+      } else {
+        this.$emit('edit-label-on-create', this.item);
+        this.item.name=this.item.text;
         this.displayActionMenu= false;
-        this.$root.$emit('show-alert', {
-          type: 'success',
-          message: this.$t('alert.success.label.updated')
-        });
-      }).catch(e => {
-        console.error('Error when adding labels', e);
-        this.$root.$emit('show-alert', {
-          type: 'error',
-          message: this.$t('alert.error')
-        });
-      });
+      }
     },
     cancel(event) {
       window.setTimeout(() => {
