@@ -91,7 +91,7 @@ export default {
       else if (task && task.status && task.status.project) {
         this.setProjectUrl(task.status.project.id);
       } else {
-        this.tab='tab-1'; 
+        this.tab='tab-1';
       }
     });
     const urlPath = document.location.pathname;

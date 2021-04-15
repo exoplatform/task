@@ -7,20 +7,20 @@
     <div v-if="taskViewTabName === 'gantt'">
       <form ref="form1" class="mt-4">
         <v-label for="name">
-          <span class="font-weight-bold body-2">Scale </span>
+          <span class="font-weight-bold body-2">{{ $t('label.gantt.scale') }} </span>
         </v-label>
       </form>
       <v-radio-group
         v-model="scaleBy"
         mandatory>
         <v-radio
-          label="Day"
+          :label="$t('label.gantt.scale.day')"
           value="Day" />
         <v-radio
-          label="Week"
+          :label="$t('label.gantt.scale.week')"
           value="Week" />
         <v-radio
-          label="Month"
+          :label="$t('label.gantt.scale.month')"
           value="Month" />
       </v-radio-group>
     </div>
