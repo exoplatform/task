@@ -184,12 +184,12 @@ export default {
     });
     this.$root.$on('update-cart', (event) => {
       if (event && !this.showCompleteTasks) {
-        window.setTimeout(() => this.tasks = this.tasks.filter((t) => t.id !== event.id), 500);
+        window.setTimeout(() => this.searchTasks(), 500);
       }
     });
     this.$root.$on('update-task-completed', (event) => {
       if (event && !this.showCompleteTasks) {
-        this.tasks = this.tasks.filter((t) => t.id !== event.id);
+        window.setTimeout(() => this.searchTasks(), 500);
       }
     });
   },
