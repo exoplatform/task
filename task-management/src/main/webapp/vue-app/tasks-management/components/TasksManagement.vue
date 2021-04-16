@@ -8,7 +8,7 @@
     </v-alert>
 
     <v-tabs 
-      v-if="!spaceName&&!projectId"
+      v-if="showTabs"
       v-model="tab"
       slider-size="4"
       class="tasksMenuParent white">
@@ -24,12 +24,12 @@
         <tasks-dashboard />
       </v-tab-item>
       <v-tab-item value="tab-2">
-        <project-dashboard :space-name="spaceName" />
+        <project-dashboard :space-name="spaceName" :display-details="displayDetails"/>
       </v-tab-item>
     </v-tabs-items>
     <add-project-drawer
       ref="addProjectDrawer" />
-      
+
     <task-drawer
       ref="taskDrawer"
       :task="task" />
@@ -42,6 +42,8 @@ export default {
   data () {
     return {
       tab: '',
+      displayDetails: false,
+      showTabs: false,
       spaceName: '',
       projectId: '',
       alert: false,
@@ -65,7 +67,7 @@ export default {
       this.tab='tab-2';
     });
     this.$root.$on('set-url',context =>{
-      
+
       if (context.type==='task'){
         this.setTaskUrl(context.id);
       }
@@ -73,7 +75,7 @@ export default {
         this.setProjectUrl(context.id);
       }
       if (context.type==='myProjects'){
-        this.getMyProjects(); 
+        this.getMyProjects();
       }
     });
     this.$root.$on('open-task-drawer', task => {
@@ -95,56 +97,66 @@ export default {
       }
     });
     const urlPath = document.location.pathname;
-    if (urlPath.includes('g/:spaces')){
-      this.spaceName = urlPath.split('g/:spaces:')[1].split('/')[0];
-      this.tab='tab-2';
-    } else {
-      if (urlPath.includes('myTasks')){
-        this.tab='tab-1';
-      }
-      if (urlPath.includes('myProjects')){
-        this.tab='tab-2';
-      }
-    }
-    if (urlPath.includes('taskDetail')){
+    if (urlPath.includes('myTasks')){
+      this.tab='tab-1';
+      this.projectId='';
+      this.showTabs=true;
+    } else if (urlPath.includes('taskDetail')){
       let taskId = urlPath.split('taskDetail/')[1].split(/[^0-9]/)[0];
       taskId = taskId && Number(taskId) || 0;
       if (taskId) {
         this.$tasksService.getTaskById(taskId).then(data => {
           this.task = data;
           if (this.task.status && this.task.status.project){
-            this.tab='tab-2';
+            this.displayDetails=true;
+            this.projectId=this.task.status.project.id;
+            this.showTabs=false;
             window.setTimeout(() => {
               document.dispatchEvent(new CustomEvent('showProjectTasks', {detail: this.task.status.project}));
-            }, 200);
+            }, 20);
+            this.tab='tab-2';
           } else {
             this.tab='tab-1';
+            this.projectId='';
+            this.showTabs=true;
           }
           window.setTimeout(() => {
             this.$refs.taskDrawer.open(this.task);
           }, 200);
         });
-      } 
-    }
-    if (urlPath.includes('projectDetail')){
+      }
+    } else if (urlPath.includes('projectDetail')){
       let projectId = urlPath.split('projectDetail/')[1].split(/[^0-9]/)[0];
       projectId = projectId && Number(projectId) || 0;
       if (projectId) {
         this.projectId=projectId;
-        this.tab='tab-2';
+        this.showTabs=false;
         this.$projectService.getProject(projectId).then(data => {
           document.dispatchEvent(new CustomEvent('showProjectTasks', {detail: data}));
         });
+        this.displayDetails=true;
+        this.tab='tab-2';
       }
+    } else {
+      this.showTabs=true;
+      this.tab='tab-2';
+    }
+    if (urlPath.includes('g/:spaces')){
+      this.spaceName = urlPath.split('g/:spaces:')[1].split('/')[0];
+      this.tab='tab-2';
+      this.showTabs=false;
     }
   },
   methods: {
     getMyTasks(){
-      this.projectId='';
+      this.showTabs=true;
+      this.displayDetails=false;
       window.history.pushState('mytasks', 'My Tasks', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/tasks/myTasks`);
     },
     getMyProjects(){
       this.projectId='';
+      this.showTabs=true;
+      this.displayDetails=false;
       const urlPath = document.location.pathname;
       if (urlPath.includes('g/:spaces')){
         window.history.pushState('task', 'Task details', `${urlPath.split('tasks')[0]}tasks`); 
@@ -153,13 +165,15 @@ export default {
       }       
     },
     setTaskUrl(id){
-      this.projectId='';
+      // this.projectId='';
       const urlPath = document.location.pathname;
       window.history.pushState('task', 'Task details', `${urlPath.split('tasks')[0]}tasks/taskDetail/${id}`);
     },
     setProjectUrl(id){
       const urlPath = document.location.pathname;
       this.projectId=id;
+      this.showTabs=false;
+      this.displayDetails=true;
       window.history.pushState('task', 'Task details', `${urlPath.split('tasks')[0]}tasks/projectDetail/${id}`); 
     },
     displayMessage(message) {
