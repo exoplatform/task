@@ -234,7 +234,7 @@
  <module>
     <name>ganttChart</name>
     <script>
-      <path>/js/frappe-gantt.min.js</path>
+      <path>/js/frappegantt.js</path>
     </script>
   </module>
 
@@ -382,4 +382,3 @@
   </portlet>
 
 </gatein-resources>
-
