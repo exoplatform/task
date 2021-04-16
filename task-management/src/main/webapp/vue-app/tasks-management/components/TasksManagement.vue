@@ -29,7 +29,7 @@
     </v-tabs-items>
     <add-project-drawer
       ref="addProjectDrawer" />
-      
+
     <task-drawer
       ref="taskDrawer"
       :task="task" />
@@ -67,7 +67,7 @@ export default {
       this.tab='tab-2';
     });
     this.$root.$on('set-url',context =>{
-      
+
       if (context.type==='task'){
         this.setTaskUrl(context.id);
       }
@@ -75,7 +75,7 @@ export default {
         this.setProjectUrl(context.id);
       }
       if (context.type==='myProjects'){
-        this.getMyProjects(); 
+        this.getMyProjects();
       }
     });
     this.$root.$on('open-task-drawer', task => {
@@ -97,11 +97,7 @@ export default {
       }
     });
     const urlPath = document.location.pathname;
-    if (urlPath.includes('g/:spaces')){
-      this.spaceName = urlPath.split('g/:spaces:')[1].split('/')[0];
-      this.tab='tab-2';
-      this.showTabs=false;
-    } else if (urlPath.includes('myTasks')){
+    if (urlPath.includes('myTasks')){
       this.tab='tab-1';
       this.projectId='';
       this.showTabs=true;
@@ -128,7 +124,7 @@ export default {
             this.$refs.taskDrawer.open(this.task);
           }, 200);
         });
-      } 
+      }
     } else if (urlPath.includes('projectDetail')){
       let projectId = urlPath.split('projectDetail/')[1].split(/[^0-9]/)[0];
       projectId = projectId && Number(projectId) || 0;
@@ -144,6 +140,11 @@ export default {
     } else {
       this.showTabs=true;
       this.tab='tab-2';
+    }
+    if (urlPath.includes('g/:spaces')){
+      this.spaceName = urlPath.split('g/:spaces:')[1].split('/')[0];
+      this.tab='tab-2';
+      this.showTabs=false;
     }
   },
   methods: {
