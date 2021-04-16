@@ -233,7 +233,7 @@ export default {
       }
     });
     this.$root.$on('update-task-completed', (event) => {
-      if (event) {
+      if (event && !this.filterAsCompleted) {
         window.setTimeout(() => this.getTasksByProject(this.project.id,''), 500);
       }
     });
@@ -278,6 +278,12 @@ export default {
             limit: 0,
             showCompleteTasks: false,
           };
+          if (this.groupBy==='completed'){
+            tasksFilter.showCompleteTasks=true;
+          }
+          else {
+            tasksFilter.showCompleteTasks=false;
+          }
           return this.getFilter(tasksFilter,ProjectId);
         }
       } else {
