@@ -371,8 +371,11 @@ public class TaskServiceImpl implements TaskService {
         } else if (projectId == ProjectUtil.TODO_PROJECT_ID) {
             defGroupBys =  Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT, TaskUtil.LABEL, TaskUtil.DUEDATE,TaskUtil.ASSIGNEE);
             defOrders =  Arrays.asList(TaskUtil.TITLE, TaskUtil.STATUS, TaskUtil.DUEDATE, TaskUtil.PRIORITY, TaskUtil.RANK);
-
-            taskQuery.setIsTodoOf(currIdentity.getUserId());
+            if (dueDate != null || !dueCategory.equals("")){
+                taskQuery.setAssigneeIsTodoOf(currIdentity.getUserId());
+            } else {
+                taskQuery.setIsTodoOf(currIdentity.getUserId());
+            }
 
             //TODO: process fiter here
             if ("overDue".equalsIgnoreCase(dueCategory)) {
