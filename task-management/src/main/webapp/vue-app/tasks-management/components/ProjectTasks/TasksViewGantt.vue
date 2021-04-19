@@ -172,6 +172,31 @@ export default {
         target.prop('scrollLeft', this.scrollLeft);
       });
     },
+    getTaskAssigneeAndCoworkers(task) {
+      const assigneeAndCoworkerArray = [];
+      if (task.assignee && !assigneeAndCoworkerArray.includes(task.assignee)) {
+        assigneeAndCoworkerArray.push(task.assignee);
+      }
+      if (task.coworker || task.coworker.length > 0) {
+        task.coworker.forEach((coworker) => {
+          if (coworker && !assigneeAndCoworkerArray.includes(coworker)){
+            assigneeAndCoworkerArray.push(coworker);
+          }
+        });
+      }
+      return assigneeAndCoworkerArray;
+    },
+    avatarToDisplay (task) {
+      const assigneeAndCoworkerArray = this.getTaskAssigneeAndCoworkers(task);
+      if (assigneeAndCoworkerArray.length > 1) {
+        return assigneeAndCoworkerArray.slice(0, 2);
+      } else {
+        return assigneeAndCoworkerArray;
+      }
+    },
+    popupTaskDates(start, end) {
+      return `<span class="popup-date">${this.$t('label.from')}</span> ${start.split('-').reverse().join('-')} <span class="popup-date">${this.$t('label.to')}</span> ${end.split('-').reverse().join('-')}`;
+    },
     initGanttChart(tasks) {
       const svgGantt = '<svg id=\'gantt\'></svg>';
       $('#gantt-chart').append(svgGantt);   
@@ -183,6 +208,26 @@ export default {
         padding: 20,
         bar_corner_radius: 5,
         language: this.lang,
+        custom_popup_html: function(task) {
+          const taskId = parseInt(task.id.split('-')[1]);
+          const taskPopupToDisplay = self.tasks.find((taskItem) => {
+            return taskItem.id === taskId;
+          });
+          const avatarListToDisplay = self.avatarToDisplay(taskPopupToDisplay);
+          let avatarToDisplay = '';
+          if (avatarListToDisplay.length ) {
+            avatarListToDisplay.forEach(avatar => {
+              avatarToDisplay += `<a class="assigneeAvatar" style="background-image:url(${avatar.avatar})"></a>`;
+            });
+          }
+          return `<div class="popup-container ${task.custom_class}">
+                <p class="popup-title">${task.name}</p>
+                <div class="d-flex justify-space-between align-center">
+                <div class="avatarToDisplay"> ${avatarToDisplay}</div>
+                <div class="taskDates"> ${self.popupTaskDates(task.start, task.end)} </div>
+                </div>
+              </div>`;
+        },
         on_click: function (task) {
           const taskId = task.id.split('-')[1];
           if (taskId) {
