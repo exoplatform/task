@@ -234,6 +234,7 @@
  <module>
     <name>ganttChart</name>
     <script>
+      <minify>false</minify>
       <path>/js/frappegantt.js</path>
     </script>
   </module>
