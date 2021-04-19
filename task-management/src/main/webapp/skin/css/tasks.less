@@ -881,7 +881,6 @@
                   padding: 8px!important;
                   .taskItemDescription {
                     min-height: 70px;
-                    margin-bottom: 10px;
                     display: -webkit-box;
                     -webkit-line-clamp: 4;
                     -webkit-box-orient: vertical;
@@ -899,7 +898,6 @@
                     }
                   }
                   .largeDescriptionArea {
-                    min-height: 120px!important;
                     margin-bottom: 0!important;
                   }
                   .ProjectSpace {
@@ -3169,13 +3167,10 @@
       font-size: 22px!important;
     }
     .drawerTitle .drawerTitleAndProject .taskProjectName .projectName {
-      max-width: 130px!important;
+      max-width: 140px!important;
     }
     .icon-ArrowRight:before {
       font-size: 14px!important;
-    }
-    .taskProjectName .inputTaskProjectName .v-input__control > .v-input__slot .v-select__slot .v-select__selections {
-      max-width: 60%!important;
     }
     .mdi-close {
       font-size: 22px!important;
@@ -3232,6 +3227,9 @@
                     .taskItemDescription {
                       min-height: inherit;
                     }
+                    .largeDescriptionAreaSpace{
+                      -webkit-line-clamp: 2;
+                    }
                   }
                 }
               }
@@ -3251,6 +3249,12 @@
                     }
                   }
                   .echartStatsContent {
+                    .echartAndLabel {
+                      margin-left: -35px;
+                    }
+                    .projectStatusNumber{
+                      margin-left: -25px
+                    }
                     .echartPieContent {
                       height: 130px!important;
                     }
@@ -3295,6 +3299,24 @@
               }
             }
           }
+        }
+      }
+    }
+    #taskCardItem {
+      .taskTitle {
+        cursor: pointer;
+        width: 80%;
+        max-width: 80%;
+        .strikethrough{
+          text-decoration: line-through;
+        }
+        .taskCardViewTitle{
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            cursor: pointer;
         }
       }
     }

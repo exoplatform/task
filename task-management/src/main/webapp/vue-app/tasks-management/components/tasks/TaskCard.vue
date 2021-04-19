@@ -1,94 +1,99 @@
 <template>
-  <v-app id="taskCardItem" class="pa-3">
+  <v-app
+    id="taskCardItem"
+    :class="removeCompletedTask && 'completedTask' || ''">
     <v-card
       :class="[getTaskPriorityColor(task.task.priority)]"
-      class="taskCard pa-3"
+      class="taskCard pa-2"
       flat>
       <div class="taskTitleId d-flex justify-space-between">
-        <div class="taskTitle d-flex align-start">
-          <div class="taskCheckBox" @click="updateCompleted">
-            <v-switch
-              ref="autoFocusInput2"
-              class="d-none"
-              true-value="true"
-              false-value="false" />
-            <i :title="$t(getTaskCompletedTitle())" :class="getTaskCompleted()"></i>
-          </div>
+        <div class="taskCheckBox" @click="updateCompleted">
+          <v-switch
+            ref="autoFocusInput2"
+            class="d-none"
+            true-value="true"
+            false-value="false" />
+          <i :title="$t(getTaskCompletedTitle())" :class="getTaskCompleted()"></i>
+        </div>
+        <div class="taskTitle d-flex align-start" @click="openTaskDrawer()">
           <a
             ref="tooltip"
-            :class="getTitleTaskClass()">
-            <ellipsis
-              v-if="task.task.title "
-              :title="task.task.title "
-              :data="task.task.title "
-              :line-clamp="2"
-              end-char=".." />
+            :class="getTitleTaskClass()"
+            :title="task.task.title"
+            class="taskCardViewTitle">
+            <span class="taskTitleEllipsis">{{ task.task.title }}</span>
           </a>
         </div>
-        <div 
-          class="taskId"
-          @click="openTaskDrawer()">
-          <span class="caption text-sub-title">ID : {{ task.task.id }}</span>
-        </div>
       </div>
-      <div class="taskAssigneeAndLabels d-flex justify-space-between align-center mt-3">
-        <div class="taskAssignee d-flex flex-nowrap">
-          <exo-user-avatar
-            v-for="userAvatar in avatarToDisplay"
-            :key="userAvatar"
-            :username="userAvatar.username"
-            :title="userAvatar.displayName"
-            :avatar-url="userAvatar.avatar"
-            :size="iconSize"
-            :style="'background-image: url('+userAvatar.avatar+')'"
-            class="mx-1 taskWorkerAvatar" />
-          <div class="seeMoreAvatars">
-            <div
-              v-if="assigneeAndCoworkerArray.length > maxAvatarToShow"
-              class="seeMoreItem"
-              @click="$root.$emit('displayTasksAssigneeAndCoworker', assigneeAndCoworkerArray)">
-              <v-avatar
-                :size="iconSize">
-                <img
-                  :src="assigneeAndCoworkerArray[maxAvatarToShow].avatar"
-                  :title="assigneeAndCoworkerArray[maxAvatarToShow].displayName">
-              </v-avatar>
-              <span class="seeMoreAvatarList">+{{ showMoreAvatarsNumber }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <v-divider v-if="task && commentCount || task && task.labels && task.labels.length || taskDueDate" />
-      <div 
-        v-if="task && commentCount || task && task.labels && task.labels.length || taskDueDate"
-        class="taskStatusAndDate d-flex justify-space-between pt-3" 
-        @click="openTaskDrawer()">
+      <v-divider v-if="displayCardBottomSection" />
+      <div
+        v-if="displayCardBottomSection"
+        class="taskActionsAndDate d-flex align-center justify-space-between">
         <div class="taskActionsAndLabels d-flex align-center">
-          <div v-if="task.commentCount" class="taskComment d-flex pe-2">
-            <i class="uiIcon uiCommentIcon"></i>
-            <span class="taskCommentNumber caption">{{ task.commentCount }}</span>
-          </div>
-          <div v-if="task.labels && task.labels.length" class="taskLabels ">
-            <v-chip
-              v-if="task.labels && task.labels.length == 1"
-              :color="task.labels[0].color"
-              class="mx-1 white--text font-weight-bold"
-              label
-              small>
-              {{ task.labels[0].name }}
-            </v-chip>
-            <div
-              v-else-if="task.labels && task.labels.length > 1"
-              :title="getLabelsList(task.labels)"
-              class="taskTags d-flex">
-              <i class="uiIcon uiTagIcon"></i>
-              <span class="taskAttachNumber caption">{{ task.labels.length }}</span>
+          <div class="taskAssignee d-flex flex-nowrap">
+            <exo-user-avatar
+              v-for="userAvatar in avatarToDisplay"
+              :key="userAvatar"
+              :username="userAvatar.username"
+              :title="userAvatar.displayName"
+              :avatar-url="userAvatar.avatar"
+              :size="iconSize"
+              :style="'background-image: url('+userAvatar.avatar+')'"
+              class="mx-1 taskWorkerAvatar" />
+            <div class="seeMoreAvatars">
+              <div
+                v-if="assigneeAndCoworkerArray.length > maxAvatarToShow"
+                class="seeMoreItem"
+                @click="$root.$emit('displayTasksAssigneeAndCoworker', assigneeAndCoworkerArray)">
+                <v-avatar
+                  :size="iconSize">
+                  <img
+                    :src="assigneeAndCoworkerArray[maxAvatarToShow].avatar"
+                    :title="assigneeAndCoworkerArray[maxAvatarToShow].displayName">
+                </v-avatar>
+                <span class="seeMoreAvatarList">+{{ showMoreAvatarsNumber }}</span>
+              </div>
             </div>
           </div>
         </div>
-        <div class="taskDueDate">
-          <div v-if="taskDueDate">
-            <date-format :value="taskDueDate" :format="dateTimeFormat" />
+        <div
+          v-if="task.commentCount"
+          class="taskComment d-flex pe-2"
+          @click="openTaskDrawer()">
+          <i class="uiIcon uiCommentIcon"></i>
+          <span class="taskCommentNumber caption">{{ task.commentCount }}</span>
+        </div>
+        <div
+          v-if="task.labels && task.labels.length"
+          :class="getClassLabels()"
+          @click="openTaskDrawer()">
+          <v-chip
+            v-if="task.labels && task.labels.length == 1"
+            :color="task.labels[0].color"
+            :title="task.labels[0].name"
+            class="mx-1 font-weight-bold theme--light"
+            label
+            small>
+            <span class="text-truncate">
+              {{ task.labels[0].name }}
+            </span>
+          </v-chip>
+          <div
+            v-else-if="task.labels && task.labels.length > 1"
+            :title="getLabelsList(task.labels)"
+            class="taskTags d-flex theme--light">
+            <i class="uiIcon uiTagIcon"></i>
+            <span class="taskAttachNumber caption">{{ task.labels.length }}</span>
+          </div>
+        </div>
+        <div
+          v-if="taskDueDate"
+          class="taskStatusAndDate"
+          @click="openTaskDrawer()">
+          <div class="taskDueDate" :class="getOverdueTask(taskDueDate) ? 'red--text' : ''">
+            <div>
+              <date-format :value="taskDueDate" :format="dateTimeFormat" />
+            </div>
           </div>
         </div>
       </div>
@@ -117,7 +122,8 @@ export default {
       isPersonnalTask: this.task.status === null,
       isSpaceProject: this.task.space !== null,
       maxAvatarToShow: 3,
-      showCompleteTasks: false
+      showCompleteTasks: false,
+      removeCompletedTask: false
     };
   },
   computed: {
@@ -134,7 +140,10 @@ export default {
     },
     showMoreAvatarsNumber() {
       return this.assigneeAndCoworkerArray.length - this.maxAvatarToShow;
-    }
+    },
+    displayCardBottomSection() {
+      return this.taskDueDate || (this.task.labels && this.task.labels.length) || (this.assigneeAndCoworkerArray && this.assigneeAndCoworkerArray.length) || this.task.commentCount;
+    },
   },
   methods: {
     getTaskColor() {
@@ -227,11 +236,12 @@ export default {
       if (typeof task.id !== 'undefined') {
         return this.$tasksService.updateCompleted(task).then(task => {
           if (task.completed){
-            this.$root.$emit('show-alert', {type: 'success',message: this.$t('alert.success.task.completed')});   
+            this.$root.$emit('show-alert', {type: 'success',message: this.$t('alert.success.task.completed')});
           } else {
             this.$root.$emit('show-alert', {type: 'success',message: this.$t('alert.success.task.unCompleted')});
           }
-          this.$emit('update-cart', task);
+          this.$root.$emit('update-task-completed', task);
+
         }).then(this.task.task.completed = task.showCompleteTasks)
           .catch(e => {
             console.error('Error updating project', e);
@@ -276,6 +286,41 @@ export default {
         this.showCompleteTasks=true;
       }
       return this.showCompleteTasks;
+    },
+    getClassLabels(){
+      if (this.task && this.task.labels && this.task.labels.length === 1){
+        if (this.assigneeAndCoworkerArray && this.assigneeAndCoworkerArray.length && this.task.commentCount){
+          return 'taskLabelsAssigneeComment';
+        } else if ((this.assigneeAndCoworkerArray && this.assigneeAndCoworkerArray.length && !this.task.commentCount)
+            || (!this.assigneeAndCoworkerArray && !this.assigneeAndCoworkerArray.length && this.task.commentCount)){
+          return 'taskLabelsAssignee';
+        } else {
+          return 'taskLabels';
+        }
+      }
+    },
+    getOverdueTask(value){
+      const Today = new Date();
+      const formattedTimeToday = `${  Today.getFullYear()}-${  Today.getMonth()+1  }-${Today.getDate()  }`;
+      const date = this.dateFormatter(value);
+      if (date===formattedTimeToday){
+        return false;
+      }
+      else if (new Date(value) < new Date().getTime()){
+        return true;
+      } else {
+        return false;
+      }
+    },
+    dateFormatter(dueDate) {
+      if (dueDate) {
+        const date = new Date(dueDate);
+        const day = date.getDate();
+        const month = date.getMonth()+1;
+        const year = date.getFullYear();
+        const formattedTime = `${  year}-${  month  }-${day  }`;
+        return formattedTime;
+      }
     },
   }
 };

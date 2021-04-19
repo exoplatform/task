@@ -86,7 +86,7 @@
     </div>
     <div class="taskItemInfo pa-3">
       <div
-        :class="project && !project.space && 'largeDescriptionArea'"
+        :class="getClassDescription()"
         class="taskItemDescription"
         @click="showProjectTasksDetails(project)">
         <p
@@ -290,6 +290,14 @@ export default {
       div.innerHTML = text;
       text = div.textContent || div.innerText || '';
       return text;
+    },
+    getClassDescription(){
+      if (this.project && !this.project.space){
+        return 'largeDescriptionArea';
+      } else if (this.project && this.project.space){
+        return 'largeDescriptionAreaSpace';
+      }
+
     }
   },
 
