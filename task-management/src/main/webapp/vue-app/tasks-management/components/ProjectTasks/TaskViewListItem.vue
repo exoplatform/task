@@ -135,6 +135,14 @@ export default {
   },
   created() {
     this.getTaskAssigneeAndCoworkers();
+    this.$root.$on('update-completed-task',(value,id)=>{
+      if (this.task.id === id){
+        this.task.task.completed=value;
+        if (this.task.task.completed === true && !this.showCompletedTasks){
+          this.removeCompletedTask = true;
+        }
+      }
+    });
   },
   methods: {
     getTaskPriorityColor(priority) {
