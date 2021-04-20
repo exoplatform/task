@@ -224,6 +224,14 @@ export default {
     this.$root.$on('update-task-list', task => {
       this.retrieveTask(task);
     });
+    this.$root.$on('update-task-widget-list', task => {
+      this.task=task;
+      this.getMyOverDueTasks();
+      this.getMyTodayTasks();
+      this.getMyTomorrowTasks();
+      this.getMyUpcomingTasks();
+      this.$root.$emit('open-task-drawer', this.task);
+    });
     this.$root.$on('open-task-drawer', task => {
       this.$refs.taskDrawer.open(task);
     });

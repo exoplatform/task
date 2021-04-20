@@ -136,6 +136,7 @@ export default {
     updateTask() {
       this.$taskDrawerApi.updateTask(this.task.id, this.task)
         .then( () => {
+          this.$root.$emit('update-task-list', this.task);
           this.$root.$emit('show-alert', { type: 'success', message: this.$t('alert.success.task.project') });})
         .catch(e => {
           console.error('Error when updating task\'s title', e);
