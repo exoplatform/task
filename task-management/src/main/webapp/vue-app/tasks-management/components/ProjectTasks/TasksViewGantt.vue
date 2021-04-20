@@ -1,5 +1,5 @@
 <template>
-  <div v-if="tasksList && tasksList.length === 0 || getTasksToDisplay(tasksList).length === 0">
+  <div v-if="hideGantt">
     <div class="noTasksProject">
       <div class="noTasksProjectIcon"><i class="uiIcon uiIconTask"></i></div>
       <div class="noTasksProjectLabel"><span>{{ $t('label.noTasks') }}</span></div>
@@ -34,12 +34,22 @@ export default {
       ganttScale: 'Week'
     };
   },
+  computed: {
+    ganttTasks() {
+      return this.tasksToDisplay.length;
+    },
+    hideGantt() {
+      return this.tasksList && this.tasksList.length === 0;
+    }
+  },
   created() {
     this.$root.$on('hide-tasks-project', () => {
       this.isGanttDisplayed = false;
       $('#gantt-chart').empty();
     });
     this.$root.$on('gantt-displayed', value => {
+      this.isGanttDisplayed = false;
+      $('#gantt-chart').empty();
       if ( value && value.length ) {
         this.tasks = value;
         this.tasksToDisplay = this.getTasksToDisplay(this.tasks);
@@ -47,6 +57,15 @@ export default {
           this.initGanttChart(this.tasksToDisplay);
         }
       }
+    });
+    this.$root.$on('task-updated', (task) => {
+      this.tasks.forEach((taskItem, index) => {
+        if (taskItem.id === task.id) {
+          this.tasks[index].task = task;
+        }
+      });
+      this.tasksToDisplay = this.getTasksToDisplay(this.tasks);
+      this.gantt.refresh(this.tasksToDisplay);
     });
   },
   mounted() {
@@ -58,36 +77,38 @@ export default {
   methods: {
     getTasksToDisplay(tasksList) {
       const GanttTasksList = [];
-      tasksList.forEach((item) => {
-        const task ={
-          id: '',
-          name: '',
-          start: '',
-          end: '',
-          custom_class: '',
-          progress: '',
-        };
-        task.id = `Task-${item.task.id}`;
-        task.name = item.task.title;
-        if (item.task.startDate != null) { 
-          task.start = this.dateFormat (item.task.startDate.time);
-          if ( item.task.dueDate === null ) {
-            task.end = this.dateFormat (item.task.startDate.time);
+      if ( tasksList && tasksList.length ) {
+        tasksList.forEach((item) => {
+          const task ={
+            id: '',
+            name: '',
+            start: '',
+            end: '',
+            custom_class: '',
+            progress: '',
+          };
+          task.id = `Task-${item.task.id}`;
+          task.name = item.task.title;
+          if (item.task.startDate != null) { 
+            task.start = this.dateFormat (item.task.startDate.time);
+            if ( item.task.dueDate === null ) {
+              task.end = this.dateFormat (item.task.startDate.time);
+            } else {
+              task.end = this.dateFormat (item.task.dueDate.time);
+            }
           } else {
-            task.end = this.dateFormat (item.task.dueDate.time);
+            if (item.task.dueDate != null) { 
+              task.start= this.dateFormat (item.task.dueDate.time );
+              task.end = this.dateFormat (item.task.dueDate.time);
+            }
           }
-        } else {
-          if (item.task.dueDate != null) { 
-            task.start= this.dateFormat (item.task.dueDate.time );
-            task.end = this.dateFormat (item.task.dueDate.time);
+          task.custom_class=`bar_${item.task.priority}`;
+          if (item.task.startDate != null || item.task.dueDate != null) {
+            task.progress= 100;
+            GanttTasksList.push(task);
           }
-        }
-        task.custom_class=`bar_${item.task.priority}`;
-        if (item.task.startDate != null || item.task.dueDate != null) {
-          task.progress= 100;
-          GanttTasksList.push(task);
-        }
-      });
+        });
+      }
       return GanttTasksList;
     },
     dateFormat(date) {
@@ -198,7 +219,7 @@ export default {
       return `<span class="popup-date">${this.$t('label.from')}</span> ${start.split('-').reverse().join('-')} <span class="popup-date">${this.$t('label.to')}</span> ${end.split('-').reverse().join('-')}`;
     },
     initGanttChart(tasks) {
-      const svgGantt = '<svg id=\'gantt\'></svg>';
+      const svgGantt = '<svg id="gantt"></svg>';
       $('#gantt-chart').append(svgGantt);   
       const self = this;
       /*global Gantt :true*/
