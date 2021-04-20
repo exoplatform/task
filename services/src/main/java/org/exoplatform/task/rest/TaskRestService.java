@@ -966,20 +966,18 @@ public class TaskRestService implements ResourceContainer {
       LOG.warn("Error retrieving task '{}' comments count", taskId, e);
       commentCount = 0;
     }
-    List<LabelDto> labels = new ArrayList<>();
-    try {
-      labels = labelService.findLabelsByTask(task, task.getStatus().getProject().getId(), userIdentity,0, -1);
-    } catch (Exception e) {
-      LOG.warn("Error retrieving task '{}' labels", taskId, e);
-    }
-    SpaceEntity space = null;
-    if (task.getStatus() != null && task.getStatus().getProject() != null) {
-      space = getProjectSpace(task.getStatus().getProject());
-    }
-
     TaskEntity taskEntity = new TaskEntity(((TaskDto) task), commentCount);
-    taskEntity.setLabels(labels);
-    taskEntity.setSpace(space);
+    if (task.getStatus() != null && task.getStatus().getProject() != null) {
+      List<LabelDto> labels = new ArrayList<>();
+      try {
+        labels = labelService.findLabelsByTask(task, task.getStatus().getProject().getId(), userIdentity,0, -1);
+      } catch (Exception e) {
+        LOG.warn("Error retrieving task '{}' labels", taskId, e);
+      }
+      SpaceEntity space = getProjectSpace(task.getStatus().getProject());
+      taskEntity.setLabels(labels);
+      taskEntity.setSpace(space);
+    }
     return taskEntity;
   }
 
