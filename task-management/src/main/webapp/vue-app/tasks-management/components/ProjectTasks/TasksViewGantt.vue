@@ -64,8 +64,10 @@ export default {
           this.tasks[index].task = task;
         }
       });
-      this.tasksToDisplay = this.getTasksToDisplay(this.tasks);
-      this.gantt.refresh(this.tasksToDisplay);
+      window.setTimeout(() => {
+        this.tasksToDisplay = this.getTasksToDisplay(this.tasks);
+        this.gantt.refresh(this.tasksToDisplay);
+      },200);
     });
   },
   mounted() {
