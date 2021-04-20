@@ -367,7 +367,7 @@ export default {
           } else {
             this.$root.$emit('show-alert', {type: 'success',message: this.$t('alert.success.task.unCompleted')});
           }
-          this.$emit('update-cart', task);
+          this.$root.$emit('update-task-completed', task);
         }).then( () => {
           this.$root.$emit('update-completed-task',this.task.completed,this.task.id);
         }).then(this.task.completed = task.showCompleteTasks)
@@ -387,6 +387,7 @@ export default {
           this.task.priority = value;
           this.$taskDrawerApi.updateTask(this.task.id, this.task).then( () => {
             this.oldTask.priority = this.task.priority;
+            this.$root.$emit('update-task-list', this.task);
             this.$root.$emit('show-alert', {
               type: 'success',
               message: this.$t('alert.success.task.priority')
@@ -455,6 +456,7 @@ export default {
               type: 'success',
               message: this.$t('alert.success.task.duetDate')
             });
+            this.$root.$emit('update-task-widget-list', this.task);
           }).catch(e => {
             console.error('Error when updating task\'s due date', e);
             this.$root.$emit('show-alert', {
@@ -537,6 +539,7 @@ export default {
         }
         this.$taskDrawerApi.updateTask(this.task.id, this.task).then( () => {
           this.oldTask.assignee=this.task.assignee;
+          this.$root.$emit('update-task-list', this.task);
           this.$root.$emit('show-alert', {
             type: 'success',
             message: this.$t('alert.success.task.assignee')
@@ -567,6 +570,7 @@ export default {
         }
         this.$taskDrawerApi.updateTask(this.task.id, this.task).then( () => {
           this.oldTask.coworker = this.task.coworker;
+          this.$root.$emit('update-task-list', this.task);
           this.$root.$emit('show-alert', {
             type: 'success',
             message: this.$t('alert.success.task.coworker')
