@@ -58,16 +58,14 @@ export default {
         }
       }
     });
-    this.$root.$on('task-updated', (task) => {
+    this.$root.$on('task-updated', task => {
       this.tasks.forEach((taskItem, index) => {
         if (taskItem.id === task.id) {
           this.tasks[index].task = task;
         }
       });
-      window.setTimeout(() => {
-        this.tasksToDisplay = this.getTasksToDisplay(this.tasks);
-        this.gantt.refresh(this.tasksToDisplay);
-      },200);
+      this.tasksToDisplay = this.getTasksToDisplay(this.tasks);
+      this.gantt.refresh(this.tasksToDisplay);
     });
   },
   mounted() {
