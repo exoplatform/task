@@ -1,6 +1,38 @@
 <template>
   <v-flex class="user-suggester">
+    <div v-if="participator" class="identitySuggester no-border mt-0">
+      <div v-if="spaces.length">
+        <div class="mt-4">{{ $t('label.spaceMembers') }}</div>
+        <project-event-form-assignee-and-participator-item
+          v-for="attendee in spaces"
+          :key="attendee.id"
+          :attendee="attendee"
+          :project="project"
+          :removable="participator.length<2"
+          @remove-attendee="removeAttendee" />
+      </div>
+      <div v-if="spaces.length && users.length" class="mt-2">{{ $t('label.and') }}</div>
+      <div v-if="users.length">
+        <project-event-form-assignee-and-participator-item
+          v-for="attendee in users"
+          :key="attendee.id"
+          :attendee="attendee"
+          :project="project"
+          :removable="participator.length>1"
+          @remove-attendee="removeAttendee" />
+      </div>
+    </div>
+    <div
+      v-show="!showParticipant"
+      class="editParticipant"
+      @click="showParticipant = true">
+      <a class="editParticipant" href="#">
+        <i class="fas fa-plus"></i>
+        {{ $t('label.editParticipant') }}
+      </a>
+    </div>
     <exo-identity-suggester
+      v-show="showParticipant"
       ref="invitedAttendeeAutoComplete"
       v-model="invitedAttendee"
       :labels="participantSuggesterLabels"
@@ -10,13 +42,6 @@
       name="inviteAttendee"
       include-users
       include-spaces />
-    <div v-if="participator" class="identitySuggester no-border mt-0">
-      <project-event-form-assignee-and-participator-item
-        v-for="attendee in participator"
-        :key="attendee.id"
-        :attendee="attendee"
-        @remove-attendee="removeAttendee" />
-    </div>
   </v-flex>
 </template>
 
@@ -38,6 +63,9 @@ export default {
     return {
       currentUser: null,
       invitedAttendee: [],
+      users: [],
+      spaces: [],
+      showParticipant: false,
     };
   },
   computed: {
@@ -74,6 +102,9 @@ export default {
     currentUser() {
       this.reset();
     },
+    project() {
+      this.reset();
+    },
     invitedAttendee() {
       if (!this.invitedAttendee) {
         this.$nextTick(this.$refs.invitedAttendeeAutoComplete.$refs.selectAutoComplete.deleteCurrentItem);
@@ -92,6 +123,8 @@ export default {
           this.$suggesterService.convertSuggesterItemToIdentity(this.invitedAttendee),
         );
       }
+      this.spaces = this.participator.filter(attendee => attendee.providerId === 'space');
+      this.users = this.participator.filter(attendee => attendee.providerId === 'organization');
       this.$root.$emit('task-project-participator',this.participator);
       this.invitedAttendee = null;
     },
@@ -105,6 +138,9 @@ export default {
     });
   },
   methods: {
+    showParticipant_(e) {
+      this.showParticipant=e;
+    },
     reset() {
       if (this.participator && !this.participator.length>0) { // In case of edit existing event
         // Add current user as default attendee
@@ -135,6 +171,8 @@ export default {
           }
         }
       }
+      this.spaces = this.participator.filter(attendee => attendee.providerId === 'space');
+      this.users = this.participator.filter(attendee => attendee.providerId === 'organization');
       this.$refs.invitedAttendeeAutoComplete.focus();
       this.$emit('initialized');
     },
@@ -146,6 +184,8 @@ export default {
       if (index >= 0) {
         this.participator.splice(index, 1);
       }
+      this.spaces = this.participator.filter(attendee => attendee.providerId === 'space');
+      this.users = this.participator.filter(attendee => attendee.providerId === 'organization');
       this.$root.$emit('task-project-participator',this.participator);
     },
   }

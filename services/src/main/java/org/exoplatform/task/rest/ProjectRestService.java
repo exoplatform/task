@@ -333,12 +333,16 @@ public class ProjectRestService implements ResourceContainer {
       }
 
     if (projectParticipators.size() > 0 && participatorParam) {
-      for (String permission : projectService.getParticipator(projectId)) {
+      for (String permission : projectParticipators) {
         int index = permission.indexOf(':');
         if (index > -1) {
           String groupId = permission.substring(index + 1);
           space = spaceService.getSpaceByGroupId(groupId);
-          if(space!=null)  participators.addAll(Arrays.asList(space.getMembers()));
+          if(space!=null){
+            participators.addAll(Arrays.asList(space.getMembers()));
+          }else{
+            projectParticipators.remove(permission);
+          }
         } else {
           participators.add(permission);
         }
@@ -397,7 +401,7 @@ public class ProjectRestService implements ResourceContainer {
       projectJson.put("id", projectId);
       projectJson.put("name", project.getName());
       projectJson.put("color", project.getColor());
-      projectJson.put("participator", projectService.getParticipator(projectId));
+      projectJson.put("participator", projectParticipators);
       projectJson.put("hiddenOn", project.getHiddenOn());
       projectJson.put("manager", projectService.getManager(projectId));
       //projectJson.put("children", projectService.getSubProjects(projectId, 0, -1));
