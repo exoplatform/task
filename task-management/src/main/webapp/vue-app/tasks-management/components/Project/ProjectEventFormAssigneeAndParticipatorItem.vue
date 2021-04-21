@@ -1,7 +1,7 @@
 <template>
   <v-chip
     :close="canRemoveAttendee"
-    class="identitySuggesterItem me-4 mt-4"
+    class="identitySuggesterItem me-2 mt-2"
     @click:close="$emit('remove-attendee', attendee)">
     <v-avatar left>
       <v-img :src="avatarUrl" />
@@ -13,16 +13,21 @@
 </template>
 
 <script>
+
 export default {
   props: {
     attendee: {
       type: Object,
       default: () => ({}),
     },
-    creator: {
+    project: {
       type: Object,
       default: () => ({}),
     },
+    removable: {
+      type: Boolean,
+      default: true,
+    }
   },
   data () {
     return {
@@ -31,10 +36,13 @@ export default {
   },
   computed: {
     canRemoveAttendee() {
-      if (this.creator && this.creator.id) {
-        return Number(this.attendee.id) !== Number(this.creator.id);
+      if (this.removable===false){
+        return false;
+      }
+      if (this.project.spaceDetails && this.project.spaceDetails.prettyName) {
+        return this.attendee.id !== `space:${this.project.spaceDetails.prettyName}`;
       } else {
-        return Number(this.attendee.id) !== Number(eXo.env.portal.userIdentityId);
+        return true;
       }
     },
     avatarUrl() {
