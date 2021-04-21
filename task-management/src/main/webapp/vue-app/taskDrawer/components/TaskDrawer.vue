@@ -336,10 +336,10 @@ export default {
         } else if (!this.taskTitleValid){
           this.$root.$emit('show-alert', {type: 'error',message: this.$t('alert.error.title.length')});
         } else if (this.task.id != null) {
+          this.$root.$emit('task-updated', this.task);
           this.$taskDrawerApi.updateTask(this.task.id, this.task).then(() => {
             this.taskTitle_ = this.task.title;
             this.oldTask.title = this.task.title;
-            this.$root.$emit('task-updated', this.task);
             this.$root.$emit('show-alert', {
               type: 'success',
               message: this.$t('alert.success.task.title')
