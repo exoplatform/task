@@ -62,7 +62,7 @@
             class="ml-n2"
             icon
             dark
-            @click="task.completed =!task.completed">
+            @click="updateCompleted">
             <v-icon v-if="task.completed" class="markAsCompletedBtn">mdi-checkbox-marked-circle</v-icon>
             <v-icon v-else class="markAsCompletedBtn">mdi-checkbox-blank-circle-outline</v-icon>
           </v-btn>
@@ -362,6 +362,32 @@
       updateTaskTitle() {
         if(this.task.id!=null){
           updateTask(this.task.id,this.task);
+        }
+      },
+      updateCompleted() {
+        const task = {
+          id: this.task.id,
+          showCompleteTasks: !this.task.completed,
+        };
+        if (typeof task.id !== 'undefined') {
+          return this.$tasksService.updateCompleted(task).then(task => {
+            if (task.completed){
+              this.$root.$emit('show-alert', {type: 'success',message: this.$t('alert.success.task.completed')});
+            } else {
+              this.$root.$emit('show-alert', {type: 'success',message: this.$t('alert.success.task.unCompleted')});
+            }
+            this.$emit('update-cart', task);
+          }).then( () => {
+            this.$root.$emit('update-completed-task',this.task.completed,this.task.id);
+          }).then(this.task.completed = task.showCompleteTasks)
+              .catch(e => {
+                console.error('Error updating project', e);
+                this.$root.$emit('show-alert', {
+                  type: 'error',
+                  message: this.$t('alert.error')
+                });
+                this.postProject = false;
+              });
         }
       },
       updateTaskPriority(value) {

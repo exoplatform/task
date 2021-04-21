@@ -182,6 +182,17 @@
         return this.assigneeAndCoworkerArray.length - this.maxAvatarToShow;
       }
     },
+    created() {
+      this.$root.$on('update-completed-task', (value, id) => {
+        if (this.task.id === id) {
+          this.task.task.completed = value;
+          if (this.task.task.completed === true) {
+            this.$root.$emit('update-cart', this.task.task);
+            this.$root.$emit('update-task-completed', this.task.task);
+          }
+        }
+      });
+    },
     methods: {
       getTaskPriorityColor(priority) {
         switch(priority) {
