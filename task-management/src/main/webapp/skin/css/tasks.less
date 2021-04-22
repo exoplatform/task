@@ -2140,7 +2140,7 @@
             }
           }
           .taskLabelsAssigneeComment {
-            max-width: 58%;
+            max-width: 50%;
 
             .v-chip {
               cursor: pointer;
@@ -3166,8 +3166,8 @@
     .taskDrawer .drawerHeader .drawerTitle #taskActionMenu .uiThreeDotsIcon:before {
       font-size: 22px!important;
     }
-    .drawerTitle .drawerTitleAndProject .taskProjectName .projectName {
-      max-width: 140px!important;
+    .drawerTitle .taskProjectName .projectName {
+      max-width: 61%!important;
     }
     .icon-ArrowRight:before {
       font-size: 14px!important;
@@ -3178,7 +3178,7 @@
       height: 23px!important;
     }
     .drawerTitleAndProject {
-      max-width: 240px!important;
+      max-width: 90%!important;
     }
     .taskAssignItem {
       .assigneeName {
@@ -3368,9 +3368,24 @@
     }
   }
 }
+@media (max-width: 599px) {
+  .projectTasksDashboard {
+    .taskViewBreadcrumb {
+      flex: 0 1 80% !important;
+    }
+    .projectTasksTabFilter{
+      flex: 0 1 20% !important;
+    }
+  }
+}
 
 @media (max-width: 399px) {
   #TasksManagementPortlet {
+    .taskDrawer {
+      .drawerTitle .taskProjectName .projectName {
+        max-width: 47% !important;
+      }
+    }
     .projectAndTasksContainer {
       .tasksToolbar  {
         .selectPrimaryFilter {
