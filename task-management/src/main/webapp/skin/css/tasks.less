@@ -1246,14 +1246,6 @@
                 font-size: 18px!important;
               }
             }
-            .taskCard {
-              .v-divider {
-                border-top-width: 1px!important;
-                margin-top: 8px!important;
-                margin-bottom: 8px!important;
-              }
-
-            }
             .tasksViewHeaderStatus {
               .v-list-item {
                 min-height: 30px!important;
@@ -1403,6 +1395,256 @@
         min-height: calc(~"100vh - 104px")!important;
       }
     }
+    #taskCardItem {
+      margin-top: 8px;
+      .taskCard {
+        border: 1px solid @tableBorder!important;
+        background: @tableBackgroundAccent;
+        .taskTitleId {
+          .taskCheckBox{
+            padding-right: 10px ~'; /** orientation=lt */ ';
+            padding-left: 10px ~'; /** orientation=rt */ ';
+            .uiIconCircle {
+              font-family: "PLF-FONT-ICONS" !important;
+              color: @primaryColor;
+              font-style: normal;
+              font-weight: bold;
+              font-size: 19px;
+              cursor: pointer;
+              &:before {
+                content: "\ea47";
+              }
+            }
+            .uiIconValidate{
+              font-style: normal;
+              font-weight: bold;
+              font-size: 19px;
+              cursor: pointer;
+            }
+          }
+          .taskTitle {
+            cursor: pointer;
+            width: 90%;
+            max-width: 90%;
+            .strikethrough{
+              text-decoration: line-through;
+            }
+            .taskCardViewTitle{
+              .taskTitleEllipsis {
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-height: 50%;
+                cursor: pointer;
+              }
+            }
+          }
+          .taskId {
+            cursor: pointer;
+            width: 25%;
+            max-width: 25%;
+            text-align: end;
+          }
+        }
+        .taskAssignee {
+          .assigneDetails {
+            padding-top: 2px;
+            padding-bottom: 2px;
+            padding-right: 4px ~'; /** orientation=lt */ ';
+            padding-left: 4px ~'; /** orientation=rt */ ';
+            padding-left: 0 ~'; /** orientation=lt */ ';
+            padding-right: 0 ~'; /** orientation=rt */ ';
+          }
+        }
+        .hideTaskAssignee {
+          height: 0!important;
+          min-height: 0!important;
+        }
+        .taskAssigneeAndLabels {
+          .taskAssignee {
+            height: 35px;
+            min-height: 35px;
+            .assigneDetails {
+              padding-top: 2px;
+              padding-bottom: 2px;
+              padding-right: 4px ~'; /** orientation=lt */ ';
+              padding-left: 4px ~'; /** orientation=rt */ ';
+              padding-left: 0 ~'; /** orientation=lt */ ';
+              padding-right: 0 ~'; /** orientation=rt */ ';
+            }
+          }
+        }
+        .taskActionsAndProject {
+          .taskProject {
+            max-width: 70%;
+            width: 70%;
+            .projectSpaceDetails {
+              align-items: center;
+              max-width: 80%;
+              display: inherit;
+              .taskProjectNameChip {
+                max-width: 100%;
+                width: 100%;
+                .v-chip.v-size--small {
+                  height: auto!important;
+                }
+              }
+            }
+          }
+        }
+      }
+      .smallTaskCard {
+        min-height: 170px!important;
+        height: 170px!important;
+      }
+      .taskViewCard {
+        min-height: inherit;
+        height: inherit;
+      }
+      .taskHighPriority {
+        border-left: 5px solid @errorColor ~'!important; /** orientation=lt */ ';
+        //border-right: 5px solid @errorColor ~'!important; /** orientation=rt */ ';
+      }
+      .taskNormalPriority {
+        border-left: 5px solid @warningColor ~'!important; /** orientation=lt */ ';
+        //border-right: 5px solid @warningColor ~'!important; /** orientation=rt */ ';
+      }
+      .taskLowPriority {
+        border-left: 5px solid @successColor ~'!important; /** orientation=lt */ ';
+        //border-right: 5px solid @successColor ~'!important; /** orientation=rt */ ';
+      }
+      .taskNonePriority {
+        border-left: 5px solid @primaryColor ~'!important; /** orientation=lt */ ';
+        //border-right: 5px solid @primaryColor ~'!important; /** orientation=rt */ ';
+      }
+      .taskComment {
+        .uiCommentIcon {
+          padding-right: 2px ~'; /** orientation=lt */ ';
+          padding-left: 2px ~'; /** orientation=rt */ ';
+          margin-top: -2px;
+          &:before {
+            content: "\ea42";
+            font-family: "PLF-FONT-ICONS" !important;
+            color: @likeButtonColor;
+            font-style: normal;
+            font-size: 20px;
+          }
+        }
+      }
+      .taskActionsAndDate{
+        cursor: pointer;
+        .taskDueDate {
+          font-size: 13px;
+        }
+        .taskActionsAndLabels {
+          max-width: 70%;
+          .taskLabels{
+            max-width: 100%;
+            .v-chip{
+              cursor:pointer;
+            }
+          }
+          .taskLabelsAssignee{
+            max-width: 77%;
+            .v-chip{
+              cursor:pointer;
+            }
+          }
+          .taskLabelsAssigneeComment {
+            max-width: 50%;
+
+            .v-chip {
+              cursor: pointer;
+            }
+          }
+          .taskTags {
+            .uiTagIcon {
+              padding-right: 2px ~'; /** orientation=lt */ ';
+              padding-left: 2px ~'; /** orientation=rt */ ';
+              &:before {
+                content: "\ead3";
+                font-family: "PLF-FONT-ICONS" !important;
+                color: @likeButtonColor;
+                font-style: normal;
+                font-size: 18px;
+              }
+            }
+          }
+          .taskAttachment {
+            .uiAttachIcon {
+              padding-right: 2px ~'; /** orientation=lt */ ';
+              padding-left: 2px ~'; /** orientation=rt */ ';
+              &:before {
+                content: "\e91f";
+                font-family: "PLF-FONT-ICONS" !important;
+                color: @likeButtonColor;
+                font-style: normal;
+                font-size: 18px;
+              }
+            }
+          }
+        }
+      }
+      .taskAssignee {
+        //padding: 2px 4px;
+        //padding-left: 0;
+        .taskWorkerAvatar {
+          background-position: center;
+          background-size: cover;
+          border-radius: 50%;
+          width: 26px;
+          height: 26px;
+          img {
+            display: none;
+          }
+        }
+        .seeMoreAvatars {
+          .seeMoreItem {
+            position: relative;
+            &:before {
+              content: "";
+              width: 100%;
+              height: 100%;
+              position: absolute;
+              background: @baseColorMedium;
+              border-radius: 50%;
+              opacity: .5;
+              z-index: 1;
+            }
+            .seeMoreAvatarList {
+              position: absolute;
+              top: 0;
+              left: 0;
+              right: 0;
+              text-align: center;
+              height: 27px;
+              color: white;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              cursor: pointer;
+              font-size: 15px;
+              font-weight: bold;
+              z-index: 1;
+            }
+          }
+        }
+      }
+      .taskCard {
+        .v-divider {
+          border-top-width: 1px!important;
+          margin-top: 8px!important;
+          margin-bottom: 8px!important;
+        }
+      }
+    }
+    .unscheduledTasksDrawer {
+      .drawerContent {
+        padding: 8px 16px;
+      }
+    }
 }
 .TaskCommentItem .commentBody .taskContentComment ul li {
   list-style-position: inside;
@@ -1491,131 +1733,6 @@
           animation-fill-mode: both;
           -webkit-animation-name: zoomOut;
           animation-name: zoomOut;
-        }
-        #taskCardItem {
-          margin-top: 8px;
-          .taskCard {
-            border: 1px solid @tableBorder!important;
-            background: @tableBackgroundAccent;
-            .taskTitleId {
-              .taskCheckBox{
-                padding-right: 10px ~'; /** orientation=lt */ ';
-                padding-left: 10px ~'; /** orientation=rt */ ';
-                .uiIconCircle {
-                  font-family: "PLF-FONT-ICONS" !important;
-                  color: @primaryColor;
-                  font-style: normal;
-                  font-weight: bold;
-                  font-size: 19px;
-                  cursor: pointer;
-                  &:before {
-                    content: "\ea47";
-                  }
-                }
-                .uiIconValidate{
-                  font-style: normal;
-                  font-weight: bold;
-                  font-size: 19px;
-                  cursor: pointer;
-                }
-              }
-              .taskTitle {
-                cursor: pointer;
-                width: 90%;
-                max-width: 90%;
-                .strikethrough{
-                  text-decoration: line-through;
-                }
-                .taskCardViewTitle{
-                  .taskTitleEllipsis {
-                    display: -webkit-box;
-                    -webkit-line-clamp: 2;
-                    -webkit-box-orient: vertical;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    max-height: 50%;
-                    cursor: pointer;
-                  }
-                }
-              }
-              .taskId {
-                cursor: pointer;
-                width: 25%;
-                max-width: 25%;
-                text-align: end;
-              }
-            }
-            .taskAssignee {
-              .assigneDetails {
-                padding-top: 2px;
-                padding-bottom: 2px;
-                padding-right: 4px ~'; /** orientation=lt */ ';
-                padding-left: 4px ~'; /** orientation=rt */ ';
-                padding-left: 0 ~'; /** orientation=lt */ ';
-                padding-right: 0 ~'; /** orientation=rt */ ';
-              }
-            }
-            .hideTaskAssignee {
-              height: 0!important;
-              min-height: 0!important;
-            }
-            .taskAssigneeAndLabels {
-              .taskAssignee {
-                height: 35px;
-                min-height: 35px;
-                .assigneDetails {
-                  padding-top: 2px;
-                  padding-bottom: 2px;
-                  padding-right: 4px ~'; /** orientation=lt */ ';
-                  padding-left: 4px ~'; /** orientation=rt */ ';
-                  padding-left: 0 ~'; /** orientation=lt */ ';
-                  padding-right: 0 ~'; /** orientation=rt */ ';
-                }
-              }
-            }
-            .taskActionsAndProject {
-              .taskProject {
-                max-width: 70%;
-                width: 70%;
-                .projectSpaceDetails {
-                  align-items: center;
-                  max-width: 80%;
-                  display: inherit;
-                  .taskProjectNameChip {
-                    max-width: 100%;
-                    width: 100%;
-                    .v-chip.v-size--small {
-                      height: auto!important;
-                    }
-                  }
-                }
-              }
-            }
-          }
-          .smallTaskCard {
-            min-height: 170px!important;
-            height: 170px!important;
-          }
-          .taskViewCard {
-            min-height: inherit;
-            height: inherit;
-          }
-          .taskHighPriority {
-            border-left: 5px solid @errorColor ~'!important; /** orientation=lt */ ';
-            border-right: 5px solid @errorColor ~'!important; /** orientation=rt */ ';
-          }
-          .taskNormalPriority {
-            border-left: 5px solid @warningColor ~'!important; /** orientation=lt */ ';
-            border-right: 5px solid @warningColor ~'!important; /** orientation=rt */ ';
-          }
-          .taskLowPriority {
-            border-left: 5px solid @successColor ~'!important; /** orientation=lt */ ';
-            border-right: 5px solid @successColor ~'!important; /** orientation=rt */ ';
-          }
-          .taskNonePriority {
-            border-left: 5px solid @primaryColor ~'!important; /** orientation=lt */ ';
-            border-right: 5px solid @primaryColor ~'!important; /** orientation=rt */ ';
-          }
         }
         .draggable-palceholder{
           min-height: 180px;
@@ -2042,51 +2159,6 @@
           color: @greyColorLighten1;
         }
       }
-      .taskAssignee {
-        //padding: 2px 4px;
-        //padding-left: 0;
-        .taskWorkerAvatar {
-          background-position: center;
-          background-size: cover;
-          border-radius: 50%;
-          width: 26px;
-          height: 26px;
-          img {
-            display: none;
-          }
-        }
-        .seeMoreAvatars {
-          .seeMoreItem {
-            position: relative;
-            &:before {
-              content: "";
-              width: 100%;
-              height: 100%;
-              position: absolute;
-              background: @baseColorMedium;
-              border-radius: 50%;
-              opacity: .5;
-              z-index: 1;
-            }
-            .seeMoreAvatarList {
-              position: absolute;
-              top: 0;
-              left: 0;
-              right: 0;
-              text-align: center;
-              height: 27px;
-              color: white;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              cursor: pointer;
-              font-size: 15px;
-              font-weight: bold;
-              z-index: 1;
-            }
-          }
-        }
-      }
       .AllAssigneeAvatar {
         box-shadow: 0 0 2px 1px @greyColor;
         border-radius: 25px;
@@ -2106,75 +2178,6 @@
           }
         }
       }
-      .taskComment {
-        .uiCommentIcon {
-          padding-right: 2px ~'; /** orientation=lt */ ';
-          padding-left: 2px ~'; /** orientation=rt */ ';
-          margin-top: -2px;
-          &:before {
-            content: "\ea42";
-            font-family: "PLF-FONT-ICONS" !important;
-            color: @likeButtonColor;
-            font-style: normal;
-            font-size: 20px;
-          }
-        }
-      }
-      .taskActionsAndDate{
-        cursor: pointer;
-        .taskDueDate {
-          font-size: 13px;
-        }
-        .taskActionsAndLabels {
-          max-width: 70%;
-          .taskLabels{
-            max-width: 100%;
-            .v-chip{
-              cursor:pointer;
-            }
-          }
-          .taskLabelsAssignee{
-            max-width: 77%;
-            .v-chip{
-              cursor:pointer;
-            }
-          }
-          .taskLabelsAssigneeComment {
-            max-width: 50%;
-
-            .v-chip {
-              cursor: pointer;
-            }
-          }
-          .taskTags {
-            .uiTagIcon {
-              padding-right: 2px ~'; /** orientation=lt */ ';
-              padding-left: 2px ~'; /** orientation=rt */ ';
-              &:before {
-                content: "\ead3";
-                font-family: "PLF-FONT-ICONS" !important;
-                color: @likeButtonColor;
-                font-style: normal;
-                font-size: 18px;
-              }
-            }
-          }
-          .taskAttachment {
-            .uiAttachIcon {
-              padding-right: 2px ~'; /** orientation=lt */ ';
-              padding-left: 2px ~'; /** orientation=rt */ ';
-              &:before {
-                content: "\e91f";
-                font-family: "PLF-FONT-ICONS" !important;
-                color: @likeButtonColor;
-                font-style: normal;
-                font-size: 18px;
-              }
-            }
-          }
-        }
-      }
-
       #TasksListToolbar {
         height: auto!important;
         .v-toolbar__content {
@@ -3730,252 +3733,281 @@
 /*-----------------------------------------------------------
                      GANTT CHART STYLE
 -----------------------------------------------------------*/
-.gantt-chart-container {
-  padding-top: 20px;
-  .gantt-tasks-title {
-    margin-top: 60px;
-    min-height: calc(~"100vh - 180px");
-    height: calc(~"100vh - 180px");
-    overflow: hidden;
-    min-width: 180px;
-    p {
-      max-width: 180px;
-      margin-bottom: 0!important;
-      padding-top: 10px;
-      padding-right: 10px;
-      height: 27px;
-      border-bottom: 1px solid #ebeff2;
+.gantt-wrapper {
+  .unscheduled-task-container {
+    position: fixed;
+    z-index: 999;
+    top: 50%;
+    left: 30px;
+    .unscheduled-task-btn {
+      background-color: @greyColor!important;
+      .mdi-calendar-range {
+        color: @baseColorLight!important;
+      }
+      .unscheduled-task-badge {
+        position: absolute;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        top: -5px;
+        right: 1px;
+        background: @warningColor;
+        font-size: 10px;
+        border-radius: 50%;
+        width: 18px;
+        height: 18px;
+    }
     }
   }
-}
-
-.gantt {
-
-	.grid-background {
-		fill: none;
-	}
-	.grid-header {
-		fill: #fff;
-		stroke: #e0e0e0;
-		stroke-width: 1.4;
-	}
-	.grid-row {
-		fill: #fff;
-		&:nth-child(even) {
-			fill: #f5f5f5;
-		}
-	}
-	.row-line {
-		stroke: #ebeff2;
-	}
-	.tick {
-		stroke: #e0e0e0;
-		stroke-width: .2;
-	}
-	.tick.thick {
-		stroke-width: .4;
-	}
-	.today-highlight {
-		fill: #fbff99a8;
-		opacity: .5;
-	}
-	.arrow {
-		fill: none;
-		stroke: #666;
-		stroke-width: 1.4;
-	}
-	.bar {
-		fill: #b8c2cc;
-		stroke: #8d99a6;
-		stroke-width: 0;
-		transition: stroke-width .3s ease;
-		user-select: none;
-	}
-	.bar-invalid {
-		fill: transparent;
-		stroke: #8d99a6;
-		stroke-width: 1;
-		stroke-dasharray: 5;
-	}
-	.bar-invalid~.bar-label {
-		fill: #555;
-	}
-	.bar-label {
-    fill: #fff;
-    dominant-baseline: central;
-    text-anchor: middle;
+  .gantt-chart-container {
+    padding-top: 20px;
+    .gantt-tasks-title {
+      margin-top: 60px;
+      min-height: calc(~"100vh - 180px");
+      height: calc(~"100vh - 180px");
+      overflow: hidden;
+      min-width: 180px;
+      p {
+        max-width: 180px;
+        margin-bottom: 0!important;
+        padding-top: 10px;
+        padding-right: 10px;
+        height: 27px;
+        border-bottom: 1px solid #ebeff2;
+      }
+    }
+  }
+  
+  .gantt {
+  
+    .grid-background {
+      fill: none;
+    }
+    .grid-header {
+      fill: #fff;
+      stroke: #e0e0e0;
+      stroke-width: 1.4;
+    }
+    .grid-row {
+      fill: #fff;
+      &:nth-child(even) {
+        fill: #f5f5f5;
+      }
+    }
+    .row-line {
+      stroke: #ebeff2;
+    }
+    .tick {
+      stroke: #e0e0e0;
+      stroke-width: .2;
+    }
+    .tick.thick {
+      stroke-width: .4;
+    }
+    .today-highlight {
+      fill: #fbff99a8;
+      opacity: .5;
+    }
+    .arrow {
+      fill: none;
+      stroke: #666;
+      stroke-width: 1.4;
+    }
+    .bar {
+      fill: #b8c2cc;
+      stroke: #8d99a6;
+      stroke-width: 0;
+      transition: stroke-width .3s ease;
+      user-select: none;
+    }
+    .bar-invalid {
+      fill: transparent;
+      stroke: #8d99a6;
+      stroke-width: 1;
+      stroke-dasharray: 5;
+    }
+    .bar-invalid~.bar-label {
+      fill: #555;
+    }
+    .bar-label {
+      fill: #fff;
+      dominant-baseline: central;
+      text-anchor: middle;
+      font-size: 12px;
+      font-weight: lighter;
+    }
+    .bar-label.big {
+      fill: #555;
+      text-anchor: start;
+    }
+    .handle {
+      fill: #ddd;
+      cursor: ew-resize;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity .3s ease;
+    }
+    .bar-wrapper {
+      cursor: pointer;
+      outline: 0;
+      &:hover {
+        .bar {
+          fill: #a9b5c1;
+        }
+        .handle {
+          visibility: visible;
+          opacity: 1;
+        }
+      }
+    }
+    .bar_LOW {
+      .bar-progress {
+        fill: @successColor
+      }
+    }
+    .bar_NORMAL {
+      .bar-progress {
+        fill: @warningColor;
+      }
+    }
+    .bar_HIGH {
+      .bar-progress {
+        fill: @errorColor;
+      }
+    }
+    .bar_NONE {
+      .bar-progress {
+        fill: @infoColor;
+      }
+    }
+    .bar-wrapper.active {
+      .bar {
+        fill: #a9b5c1;
+      }
+    }
+    .lower-text {
+      font-size: 12px;
+      text-anchor: middle;
+      fill: #333;
+    }
+    .upper-text {
+      font-size: 12px;
+      text-anchor: middle;
+      fill: #555;
+    }
+    .hide {
+      display: none;
+    }
+  }
+  .gantt-container {
+    position: relative;
+    overflow: auto;
     font-size: 12px;
-    font-weight: lighter;
-  }
-  .bar-label.big {
-    fill: #555;
-    text-anchor: start;
-  }
-	.handle {
-		fill: #ddd;
-		cursor: ew-resize;
-		opacity: 0;
-		visibility: hidden;
-		transition: opacity .3s ease;
-	}
-	.bar-wrapper {
-		cursor: pointer;
-		outline: 0;
-		&:hover {
-			.bar {
-				fill: #a9b5c1;
-			}
-			.handle {
-				visibility: visible;
-				opacity: 1;
-			}
-		}
-	}
-  .bar_LOW {
-    .bar-progress {
-      fill: @successColor
+    .popup-wrapper {
+      position: absolute;
+      top: 0;
+      left: 0;
+      min-width: 280px;
+      width: 280px;
+      max-width: 280px;
+      color: #959da5;
+      border-radius: 3px;
+      -webkit-box-shadow: 0px -1px 28px -9px rgba(148,148,148,1);
+      -moz-box-shadow: 0px -1px 28px -9px rgba(148,148,148,1);
+      box-shadow: 0px -1px 28px -9px rgba(148,148,148,1);
+      background: @tableBackgroundAccent;
+      .popup-container {
+        padding: 10px;
+        border: 1px solid @borderColor!important;
+        border-radius: 5px;
+        .popup-title {
+        padding-bottom: 6px;
+        border-bottom: 1px solid @borderColor;
+        margin-bottom: 6px!important;
+        font-weight: bold;
+        font-size: 13px;
+        color: @textColor;
+      }
+      .assigneeAvatar {
+        height: 25px;
+        width: 25px;
+        border-radius: 50%;
+        background-size: cover;
+        background-position: center;
+        display: inline-flex;
+        margin-right: 5px;
     }
-  }
-  .bar_NORMAL {
-    .bar-progress {
-      fill: @warningColor;
-    }
-  }
-  .bar_HIGH {
-    .bar-progress {
-      fill: @errorColor;
-    }
-  }
-  .bar_NONE {
-    .bar-progress {
-      fill: @infoColor;
-    }
-  }
-	.bar-wrapper.active {
-		.bar {
-			fill: #a9b5c1;
-		}
-	}
-	.lower-text {
-		font-size: 12px;
-		text-anchor: middle;
-		fill: #333;
-	}
-	.upper-text {
-		font-size: 12px;
-		text-anchor: middle;
-		fill: #555;
-	}
-	.hide {
-		display: none;
-	}
-}
-.gantt-container {
-	position: relative;
-	overflow: auto;
-	font-size: 12px;
-  .popup-wrapper {
-    position: absolute;
-    top: 0;
-    left: 0;
-    min-width: 280px;
-    width: 280px;
-    max-width: 280px;
-    color: #959da5;
-    border-radius: 3px;
-    -webkit-box-shadow: 0px -1px 28px -9px rgba(148,148,148,1);
-    -moz-box-shadow: 0px -1px 28px -9px rgba(148,148,148,1);
-    box-shadow: 0px -1px 28px -9px rgba(148,148,148,1);
-    background: @tableBackgroundAccent;
-    .popup-container {
-      padding: 10px;
-      border: 1px solid @borderColor!important;
-      border-radius: 5px;
-      .popup-title {
-      padding-bottom: 6px;
-      border-bottom: 1px solid @borderColor;
-      margin-bottom: 6px!important;
+    .popup-date {
       font-weight: bold;
-      font-size: 13px;
+      text-transform: capitalize;
       color: @textColor;
     }
-    .assigneeAvatar {
-      height: 25px;
-      width: 25px;
-      border-radius: 50%;
-      background-size: cover;
-      background-position: center;
-      display: inline-flex;
-      margin-right: 5px;
+    }
+    .bar_LOW {
+      border-left: 5px solid @successColor !important;
+    }
+    .bar_NORMAL {
+      border-left: 5px solid @warningColor !important;
+    }
+    .bar_HIGH {
+      border-left: 5px solid @errorColor !important;
+    }
+    .bar_NONE {
+      border-left: 5px solid @infoColor !important;
+    }
+    }
   }
-  .popup-date {
-    font-weight: bold;
-    text-transform: capitalize;
-    color: @textColor;
+  
+  .gantt-container {
+    overflow: hidden;
   }
-  }
-  .bar_LOW {
-    border-left: 5px solid @successColor !important;
-  }
-  .bar_NORMAL {
-    border-left: 5px solid @warningColor !important;
-  }
-  .bar_HIGH {
-    border-left: 5px solid @errorColor !important;
-  }
-  .bar_NONE {
-    border-left: 5px solid @infoColor !important;
-  }
-  }
-}
-
-.gantt-container {
-  overflow: hidden;
-}
-.gantt-grid {
-  max-height: calc(~"100vh - 250px")!important;
-  height: calc(~"100vh - 250px")!important;
-  overflow: scroll;
-  position: relative;
-  &::-webkit-scrollbar {
-    height: 6px;
-    width: 6px;
-  }
-  &::-webkit-scrollbar-thumb {
-    background: white;
-    border-radius: 10px;
-  }
-  &::-webkit-scrollbar-thumb:hover {
-    background: white;
-  }
-  &:hover {
+  .gantt-grid {
+    max-height: calc(~"100vh - 250px")!important;
+    height: calc(~"100vh - 250px")!important;
+    overflow: scroll;
+    position: relative;
     &::-webkit-scrollbar {
       height: 6px;
       width: 6px;
     }
     &::-webkit-scrollbar-thumb {
-      background: @greyColorLighten1;
+      background: white;
       border-radius: 10px;
     }
     &::-webkit-scrollbar-thumb:hover {
-      background: @borderColorLight;
+      background: white;
+    }
+    &:hover {
+      &::-webkit-scrollbar {
+        height: 6px;
+        width: 6px;
+      }
+      &::-webkit-scrollbar-thumb {
+        background: @greyColorLighten1;
+        border-radius: 10px;
+      }
+      &::-webkit-scrollbar-thumb:hover {
+        background: @borderColorLight;
+      }
     }
   }
-}
+  
+  .gantt-dates {
+    overflow: auto;
+  }
+  
+  .gantt-dates::-webkit-scrollbar {
+    width: 0;  /* Remove scrollbar space */
+    height: 0;
+    background: transparent;  /* Optional: just make scrollbar invisible */
+  }
+  /* Optional: show position indicator in red */
+  .gantt-dates::-webkit-scrollbar-thumb {
+    background: #FFFFFF;
+  }
+  .gantt .arrow {
+    display: none;
+  }
+  
 
-.gantt-dates {
-  overflow: auto;
-}
-
-.gantt-dates::-webkit-scrollbar {
-  width: 0;  /* Remove scrollbar space */
-  height: 0;
-  background: transparent;  /* Optional: just make scrollbar invisible */
-}
-/* Optional: show position indicator in red */
-.gantt-dates::-webkit-scrollbar-thumb {
-  background: #FFFFFF;
-}
-.gantt .arrow {
-  display: none;
 }
