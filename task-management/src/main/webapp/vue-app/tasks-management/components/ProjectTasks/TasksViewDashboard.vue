@@ -173,7 +173,7 @@
       <div
         v-show="taskViewTabName == 'gantt' && allowGantt"
         eager>
-        <tasks-view-gantt :tasks-list="tasksList" />
+        <tasks-view-gantt :tasks-list="allProjectTasks" />
       </div>
     </v-tabs-items>
 
@@ -207,6 +207,7 @@ export default {
       deleteConfirmMessage: null,
       statusList: [],
       tasksList: [],
+      allProjectTasks: [],
       groupName: null,
       filterProjectActive: true,
       filterByStatus: false,
@@ -220,6 +221,7 @@ export default {
       this.getStatusByProject(this.project.id);
       this.tasksList=[];
       this.getTasksByProject(this.project.id,'');
+      this.getAllProjectTasks(this.project.id);
     }
   },
   created() {
@@ -250,8 +252,14 @@ export default {
       this.taskViewTabName = value;
       this.getTasksByProject(this.project.id,'');
       if ( value === 'gantt' ) {
-        this.$root.$emit('gantt-displayed', this.tasksList);
+        this.getAllProjectTasks(this.project.id);
       }
+    },
+    getAllProjectTasks(projectId) {
+      return this.$tasksService.getTasksByProjectId(projectId).then(data => {
+        this.allProjectTasks = data && data || [];
+        this.$root.$emit('gantt-displayed', this.allProjectTasks);
+      });
     },
     getStatusByProject(ProjectId) {
       return this.$tasksService.getStatusesByProjectId(ProjectId).then(data => {
