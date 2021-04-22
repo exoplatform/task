@@ -11,7 +11,7 @@
       :cancel-label="$t('popup.cancel')"
       @ok="deleteConfirm()" />
     <div class="projectTasksWrapper d-flex justify-space-between">
-      <div class="taskViewBreadcrumb px-0 pt-1 pb-5">
+      <div class="taskViewBreadcrumb text-truncate px-0 pt-1 pb-5">
         <a
           class="text-color"
           @click="hideProjectDetails()">
