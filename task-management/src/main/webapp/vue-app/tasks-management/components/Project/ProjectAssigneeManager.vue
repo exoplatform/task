@@ -11,7 +11,7 @@
           :removable="manager.length>1"
           @remove-attendee="removeAttendee" />
       </div>
-      <div v-if="spaces.length && users.length" class="mt-2">{{ $t('label.and') }}</div>
+      <div v-if="spaces.length && users.length" class="mt-2 font-weight-bold">{{ $t('label.and') }}</div>
       <div v-if="users.length">
         <project-event-form-assignee-and-participator-item
           v-for="attendee in users"
@@ -41,12 +41,9 @@
       :ignore-items="ignoredMembers"
       :type-of-relations="relationsType"
       name="inviteAttendee"
-      include-users
-      include-spaces />
+      include-users />
   </v-flex>
 </template>
-
-
 
 <script>
 export default {
