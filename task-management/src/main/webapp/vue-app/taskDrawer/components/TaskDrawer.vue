@@ -20,6 +20,10 @@
         slot="title" 
         class="d-flex justify-space-between">
         <div class="drawerTitleAndProject d-flex">
+          <i
+            v-if="addBackArrow"
+            class="uiIcon uiArrowBAckIcon"
+            @click="closeTaskDrawer"></i>
           <span>{{ $t('label.drawer.header') }}</span>
           <div class="taskProjectName">
             <task-projects
@@ -236,7 +240,8 @@ export default {
       lang: eXo.env.portal.language,
       commentId: '',
       isDrawerClose: true,
-      oldTask: {}
+      oldTask: {},
+      showBackArrow: false
     };
   },
   computed: {
@@ -266,6 +271,9 @@ export default {
     },
     taskId() {
       return this.task && this.task.id;
+    },
+    addBackArrow() {
+      return this.showBackArrow;
     }
   },
   watch: {
@@ -305,6 +313,9 @@ export default {
       if (event && event.detail) {
         this.taskCoworkers = event.detail;
       }
+    });
+    this.$root.$on('display-back-arrow', () => {
+      this.showBackArrow = true;
     });
   },
   destroyed: function() {
@@ -752,6 +763,11 @@ export default {
         return true;
       }
       return false;
+    },
+    closeTaskDrawer() {
+      this.$refs.addTaskDrawer.close();
+      this.$root.$emit('displayUnscheduledDrawer', '');
+      this.showBackArrow = false;    
     }
   }
 };

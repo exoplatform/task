@@ -24,9 +24,16 @@ export default {
     this.$root.$on('displayTasksUnscheduledDrawer', tasksList => {
       this.unscheduledTasks = tasksList;
       this.$refs.unscheduledTasksDrawer.open();
+      this.$root.$emit('display-back-arrow');
     });
     this.$root.$on('open-task-drawer', () => {
+      if (this.$refs.unscheduledTasksDrawer && this.$refs.unscheduledTasksDrawer.drawer) {
+        this.$root.$emit('display-back-arrow');
+      }
       this.$refs.unscheduledTasksDrawer.close();
+    });
+    this.$root.$on('displayUnscheduledDrawer', () => {
+      this.$refs.unscheduledTasksDrawer.open();
     });
   }
 };
