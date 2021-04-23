@@ -133,6 +133,18 @@
             :task="task"
             @labelsListOpened="closePriority(); closeStatus(); closeProjectsList();closeTaskDates();closeAssignements()" />
         </div>
+        <div class="taskAttachments d-flex">
+          <attachments-app
+            :entity-id="task.id"
+            entity-type="task"
+            :space-id="taskSpaceId">
+            <template
+              slot="attachmentsButton">
+              <i class="uiIconAttach"></i>
+            </template>
+          </attachments-app>
+          <span class="ms-2">attachments ({{ this.task.attachments && this.task.attachments.length }})</span>
+        </div>
         <v-divider class="my-0" />
         <v-flex
           v-if="task.id!=null"
@@ -266,6 +278,12 @@ export default {
     },
     taskId() {
       return this.task && this.task.id;
+    },
+    taskSpaceId() {
+      return this.task && this.task.status && this.task.status.project && this.task.status.project.id;
+    },
+    taskAttachmentsLength() {
+      return this.task && this.task.attachments && this.task.attachments.length;
     }
   },
   watch: {
@@ -305,6 +323,9 @@ export default {
       if (event && event.detail) {
         this.taskCoworkers = event.detail;
       }
+    });
+    document.addEventListener('attachments-upload-finished', () => {
+      this.getTaskAttachments();
     });
   },
   destroyed: function() {
@@ -652,6 +673,7 @@ export default {
           id: task.id
         });
       }
+      this.getTaskAttachments();
       this.$refs.addTaskDrawer.open();
     },
     cancel() {
@@ -751,6 +773,11 @@ export default {
         return true;
       }
       return false;
+    },
+    getTaskAttachments() {
+      this.$taskDrawerApi.getTaskAttachments('task',this.task.id).then(attachments => {
+        this.task.attachments = attachments;
+      });
     }
   }
 };
