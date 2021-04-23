@@ -179,6 +179,9 @@ export default {
         description: '',
         title: ''
       },
+      alert: false,
+      type: '',
+      message: '',
       priorityStatus: ['High', 'In Normal', 'Low', 'None', null],
     };
   },computed: {
@@ -231,6 +234,9 @@ export default {
       this.getMyTomorrowTasks();
       this.getMyUpcomingTasks();
       this.$root.$emit('open-task-drawer', this.task);
+    });
+    this.$root.$on('show-alert', message => {
+      this.displayMessage(message);
     });
     this.$root.$on('open-task-drawer', task => {
       this.$refs.taskDrawer.open(task);
@@ -364,6 +370,12 @@ export default {
         }
       }
     },
+    displayMessage(message) {
+      this.message=message.message;
+      this.type=message.type;
+      this.alert = true;
+      window.setTimeout(() => this.alert = false, 5000);
+    }
   }
 };
 </script>
