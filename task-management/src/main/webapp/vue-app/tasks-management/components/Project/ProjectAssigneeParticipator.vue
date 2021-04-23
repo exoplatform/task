@@ -8,10 +8,10 @@
           :key="attendee.id"
           :attendee="attendee"
           :project="project"
-          :removable="participator.length<2"
+          :removable="participator.length>1"
           @remove-attendee="removeAttendee" />
       </div>
-      <div v-if="spaces.length && users.length" class="mt-2">{{ $t('label.and') }}</div>
+      <div v-if="spaces.length && users.length" class="mt-2 font-weight-bold">{{ $t('label.and') }}</div>
       <div v-if="users.length">
         <project-event-form-assignee-and-participator-item
           v-for="attendee in users"
@@ -23,7 +23,7 @@
       </div>
     </div>
     <div
-      v-show="!showParticipant"
+      v-show="!showParticipant && canEditParticipant"
       class="editParticipant"
       @click="showParticipant = true">
       <a class="editParticipant" href="#">
@@ -32,7 +32,7 @@
       </a>
     </div>
     <exo-identity-suggester
-      v-show="showParticipant"
+      v-show="showParticipant && canEditParticipant"
       ref="invitedAttendeeAutoComplete"
       v-model="invitedAttendee"
       :labels="participantSuggesterLabels"
@@ -41,7 +41,7 @@
       :type-of-relations="relationsType"
       name="inviteAttendee"
       include-users
-      include-spaces />
+      :include-spaces="canEditParticipant" />
   </v-flex>
 </template>
 
@@ -69,6 +69,9 @@ export default {
     };
   },
   computed: {
+    canEditParticipant() {
+      return !this.project.spaceDetails;
+    },
     searchOptions(){
       if (this.project.spaceDetails){
         return {
@@ -87,7 +90,7 @@ export default {
     participantSuggesterLabels() {
       return {
         searchPlaceholder: this.$t('label.searchPlaceholder'),
-        placeholder: this.$t('label.inviteManagers'),
+        placeholder: this.$t('label.inviteParticipant'),
         noDataLabel: this.$t('label.noDataLabel'),
       };
     },

@@ -27,7 +27,7 @@
             class="taskTabGantt"
             @change="changeTaskViewTab('gantt')">
             <i class="uiIcon uiIconGantt"></i>
-            <span>Gantt</span>
+            <span>{{ $t('label.ganttView') }}</span>
           </v-tab>
         </v-tabs>
       </div>

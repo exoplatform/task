@@ -27,7 +27,7 @@
             single-line
             @change="resetCustomValidity">
         </div>
-        <v-divider class="py-3" />
+        <v-divider class="my-4" />
         <div class="projectPermissionsUsers">
           <div class="listOfManager">
             <div class="editManager">
@@ -42,6 +42,7 @@
                 :manager="manager" />
             </div>
           </div>
+          <v-divider class="my-4" />
           <div class="listOfParticipant">
             <div class="editParticipant">
               <div class="permisionLabel body-1"> {{ $t('label.projectParticipants') }}</div>
