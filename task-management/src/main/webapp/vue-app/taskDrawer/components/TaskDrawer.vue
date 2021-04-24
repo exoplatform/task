@@ -52,6 +52,10 @@
       </template>
       <template v-else slot="title">
         <div class="drawerTitleAndProject d-flex">
+         <i
+            v-if="addBackArrow"
+            class="uiIcon uiArrowBAckIcon"
+            @click="closeTaskDrawer"></i>
           <span>{{ $t('label.drawer.header.add') }}</span>
           <div class="taskProjectName">
             <task-projects
