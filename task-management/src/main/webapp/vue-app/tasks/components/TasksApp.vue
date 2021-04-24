@@ -4,9 +4,9 @@
     class="VuetifyApp"
     flat>
     <v-alert
-        v-model="alert"
-        :type="type"
-        dismissible>
+      v-model="alert"
+      :type="type"
+      dismissible>
       {{ message }}
     </v-alert>
     <v-container pa-0>
