@@ -52,7 +52,7 @@
       </template>
       <template v-else slot="title">
         <div class="drawerTitleAndProject d-flex">
-         <i
+          <i
             v-if="addBackArrow"
             class="uiIcon uiArrowBAckIcon"
             @click="closeTaskDrawer"></i>
