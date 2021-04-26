@@ -142,7 +142,7 @@
               <template
                 slot="attachmentsButton">
                 <i class="uiIconAttach"></i>
-                <span class="viewAttachementLabel"> View all attachment  ({{ attachements.length }})</span>
+                <span class="viewAttachementLabel"> {{ $t('attachement.message.viewAllAttachment')}} ({{ attachements.length }})</span>
               </template>
             </attachments-app>
 
@@ -160,28 +160,16 @@
                 </v-list-item>
               </v-list-item-group>
             </v-list>
-
-            <!--            <div class="uploadedFilesItems ml-5">
-              <transition-group name="list-complete" tag="div" class="d-flex flex-column">
-                <span
-                    v-for="attachment in attachements"
-                    :key="attachment"
-                    class="list-complete-item"
-                >
-                  <attachment-item :file="attachment"></attachment-item>
-                </span>
-              </transition-group>
-            </div>-->
           </div>
           <div v-else class="taskAttachementEmpty align-center pt-6 pb-3">
             <i class="uiIcon uiIconAttach"></i>
-            <span class="noAttachementLabel">{{ $t('comment.message.noComment') }}</span>
+            <span class="noAttachementLabel">{{ $t('attachement.message.noAttachement') }}</span>
             <attachments-app
               :entity-id="task.id"
               entity-type="task">
               <template
                 slot="attachmentsButton">
-                <div class="viewAttachementLabel"> Add new Attachment</div>
+                <div class="viewAttachementLabel">{{ $t('attachement.message.addNewAttachment')}}</div>
               </template>
             </attachments-app>
           </div>
