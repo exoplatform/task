@@ -67,11 +67,19 @@
         <span class="taskAttachNumber caption">{{ task.labels.length }}</span>
       </div>
     </div>
-    <div class="taskActions d-flex justify-center align-center pe-9" @click="openTaskDrawer()">
-      <div v-if="task.commentCount" class="taskComment d-flex">
-        <i class="uiIcon uiCommentIcon"></i>
-        <span class="taskCommentNumber caption">{{ task.commentCount }}</span>
-      </div>
+    <div
+      v-if="attachements.length"
+      class="taskComment d-flex justify-center align-center pe-9"
+      @click="openTaskDrawer()">
+      <i class="uiIcon uiIconAttach"></i>
+      <span class="taskAttachementtNumber caption">{{ attachements.length }}</span>
+    </div>
+    <div
+      v-if="task.commentCount"
+      class="taskAttachement d-flex justify-center align-center pe-9"
+      @click="openTaskDrawer()">
+      <i class="uiIcon uiCommentIcon"></i>
+      <span class="taskCommentNumber caption">{{ task.commentCount }}</span>
     </div>
     <div class="taskStat d-lg-block d-md-none pe-9" @click="openTaskDrawer()">
       <span
@@ -109,6 +117,7 @@ export default {
         month: 'numeric',
         day: 'numeric',
       },
+      attachements: [],
       assigneeAndCoworkerArray: [],
       isPersonnalTask: this.task.task.status === null,
       labelList: '',
@@ -135,6 +144,7 @@ export default {
   },
   created() {
     this.getTaskAssigneeAndCoworkers();
+    this.getTaskAttachments();
     this.$root.$on('update-completed-task',(value,id)=>{
       if (this.task.id === id){
         this.task.task.completed=value;
@@ -142,6 +152,9 @@ export default {
           this.removeCompletedTask = true;
         }
       }
+    });
+    document.addEventListener('attachments-upload-finished', () => {
+      this.getTaskAttachments();
     });
   },
   methods: {
@@ -282,6 +295,11 @@ export default {
         return false;
       }
     },
+    getTaskAttachments() {
+      this.$taskDrawerApi.getTaskAttachments('task',this.task.id).then(attachments => {
+        this.attachements = attachments;
+      });
+    }
   }
 };
 </script>

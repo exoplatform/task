@@ -75,6 +75,13 @@
             <span class="taskCommentNumber caption">{{ task.commentCount }}</span>
           </div>
           <div
+            v-if="attachements.length"
+            class="taskAttachement d-flex pe-2"
+            @click="openTaskDrawer()">
+            <i class="uiIcon uiIconAttach"></i>
+            <span class="taskAttachementtNumber caption">{{ attachements.length }}</span>
+          </div>
+          <div
             v-if="task.labels && task.labels.length"
             :class="getClassLabels()"
             @click="openTaskDrawer()">
@@ -133,6 +140,7 @@ export default {
         month: 'numeric',
         day: 'numeric',
       },
+      attachements: [],
       assigneeAndCoworkerArray: [],
       isPersonnalTask: this.task.task.status === null,
       drawer: null,
@@ -157,7 +165,7 @@ export default {
       return this.assigneeAndCoworkerArray.length - this.maxAvatarToShow;
     },
     displayCardBottomSection() {
-      return this.taskDueDate || (this.task.labels && this.task.labels.length) || (this.assigneeAndCoworkerArray && this.assigneeAndCoworkerArray.length) || this.task.commentCount;
+      return this.taskDueDate || (this.task.labels && this.task.labels.length) || (this.assigneeAndCoworkerArray && this.assigneeAndCoworkerArray.length) || this.task.commentCount || this.attachements;
     }
   },
   created() {
@@ -185,7 +193,11 @@ export default {
     this.$root.$on('update-task-coworker',(value,id)=>{
       this.updateTaskCoworker(value,id);
     });
+    document.addEventListener('attachments-upload-finished', () => {
+      this.getTaskAttachments();
+    });
     this.getTaskAssigneeAndCoworkers();
+    this.getTaskAttachments();
   },
   methods: {
     updateRemoveTaskLabels(value,id){
@@ -394,6 +406,12 @@ export default {
         }
       }
     },
+
+    getTaskAttachments() {
+      this.$taskDrawerApi.getTaskAttachments('task',this.task.id).then(attachments => {
+        this.attachements = attachments;
+      });
+    }
   }
 };
 </script>

@@ -1532,6 +1532,20 @@
           }
         }
       }
+      .taskAttachement {
+        .uiIconAttach {
+          padding-right: 2px ~'; /** orientation=lt */ ';
+          padding-left: 2px ~'; /** orientation=rt */ ';
+          margin-top: -2px;
+          &:before {
+            content: "\eb4e";
+            font-family: "PLF-FONT-ICONS" !important;
+            color: @likeButtonColor;
+            font-style: normal;
+            font-size: 20px;
+          }
+        }
+      }
       .taskActionsAndDate{
         cursor: pointer;
         .taskDueDate {
@@ -1847,6 +1861,7 @@
             background-color: @tableBackgroundAccent;
             border: 1px solid @tableBorder;
             border-radius: 4px;
+
             .taskCheckBox {
               max-width: 3%;
               width: 3%;
@@ -1944,6 +1959,34 @@
                     font-style: normal;
                     font-size: 18px;
                   }
+                }
+              }
+            }
+            .taskComment {
+              .uiCommentIcon {
+                padding-right: 2px ~'; /** orientation=lt */ ';
+                padding-left: 2px ~'; /** orientation=rt */ ';
+                margin-top: -2px;
+                &:before {
+                  content: "\ea42";
+                  font-family: "PLF-FONT-ICONS" !important;
+                  color: @likeButtonColor;
+                  font-style: normal;
+                  font-size: 20px;
+                }
+              }
+            }
+            .taskAttachement {
+              .uiIconAttach {
+                padding-right: 2px ~'; /** orientation=lt */ ';
+                padding-left: 2px ~'; /** orientation=rt */ ';
+                margin-top: -2px;
+                &:before {
+                  content: "\eb4e";
+                  font-family: "PLF-FONT-ICONS" !important;
+                  color: @likeButtonColor;
+                  font-style: normal;
+                  font-size: 20px;
                 }
               }
             }
@@ -2797,6 +2840,33 @@
       text-transform: capitalize;
     }
   }
+
+  .taskAttachments {
+    .viewAttachementLabel {
+      font-size: 16px;
+      color: @primaryColor;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+    .taskAttachementEmpty {
+      .uiIconAttach{
+        display: block;
+        margin-bottom: 10px;
+        &:before {
+          font-family: "PLF-FONT-ICONS" !important;
+          content: '\e780';
+          font-style: normal;
+          font-size: 34px;
+          color: @greyColor;
+        }
+      }
+      .noAttachementLabel {
+        display: block;
+        color: @greyColorLighten1;
+        font-size: 16px;
+      }
+    }
+   }
   .drawerContent {
     padding: 16px;
   }

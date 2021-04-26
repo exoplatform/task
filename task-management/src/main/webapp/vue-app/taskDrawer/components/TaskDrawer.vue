@@ -133,17 +133,58 @@
             :task="task"
             @labelsListOpened="closePriority(); closeStatus(); closeProjectsList();closeTaskDates();closeAssignements()" />
         </div>
-        <div class="taskAttachments d-flex">
-          <attachments-app
-            :entity-id="task.id"
-            entity-type="task"
-            :space-id="taskSpaceId">
-            <template
-              slot="attachmentsButton">
-              <i class="uiIconAttach"></i>
-            </template>
-          </attachments-app>
-          <span class="ms-2">attachments ({{ this.task.attachments && this.task.attachments.length }})</span>
+        <v-divider class="my-0" />
+        <div class="taskAttachments py-4">
+          <div v-if="attachements.length>0" class="ms-2">
+            <attachments-app
+              :entity-id="task.id"
+              entity-type="task">
+              <template
+                slot="attachmentsButton">
+                <i class="uiIconAttach"></i>
+                <span class="viewAttachementLabel"> View all attachment  ({{ attachements.length }})</span>
+              </template>
+            </attachments-app>
+
+            <v-list dense disabled>
+              <v-list-item-group>
+                <v-list-item
+                  v-for="(item, i) in attachements.slice(0, 2)"
+                  :key="i">
+                  <v-list-item-icon>
+                    <i :class="getIconClassFromFileMimeType(item)"></i>
+                  </v-list-item-icon>
+                  <v-list-item-content>
+                    <v-list-item-title v-text="item.title" />
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list-item-group>
+            </v-list>
+
+            <!--            <div class="uploadedFilesItems ml-5">
+              <transition-group name="list-complete" tag="div" class="d-flex flex-column">
+                <span
+                    v-for="attachment in attachements"
+                    :key="attachment"
+                    class="list-complete-item"
+                >
+                  <attachment-item :file="attachment"></attachment-item>
+                </span>
+              </transition-group>
+            </div>-->
+          </div>
+          <div v-else class="taskAttachementEmpty align-center pt-6 pb-3">
+            <i class="uiIcon uiIconAttach"></i>
+            <span class="noAttachementLabel">{{ $t('comment.message.noComment') }}</span>
+            <attachments-app
+              :entity-id="task.id"
+              entity-type="task">
+              <template
+                slot="attachmentsButton">
+                <div class="viewAttachementLabel"> Add new Attachment</div>
+              </template>
+            </attachments-app>
+          </div>
         </div>
         <v-divider class="my-0" />
         <v-flex
@@ -226,6 +267,7 @@ export default {
       taskTitle_: '',
       logs: [],
       comments: [],
+      attachements: [],
       subEditorIsOpen: false,
       taskPriority: 'NONE',
       labelsToAdd: [],
@@ -281,9 +323,6 @@ export default {
     },
     taskSpaceId() {
       return this.task && this.task.status && this.task.status.project && this.task.status.project.id;
-    },
-    taskAttachmentsLength() {
-      return this.task && this.task.attachments && this.task.attachments.length;
     }
   },
   watch: {
@@ -332,6 +371,16 @@ export default {
     document.removeEventListener('keyup', this.escapeKeyListener);
   },
   methods: {
+    getIconClassFromFileMimeType: function (file) {
+      if (file.mimetype) {
+        const fileMimeTypeClass = file.mimetype.replace(/\./g, '').replace('/', '').replace('\\', '');
+        return file.isCloudFile
+          ? `uiIcon32x32${file.mimetype.replace(/[/.]/g, '')}`
+          : `uiIconFileType${fileMimeTypeClass} uiIconFileTypeDefault`;
+      } else {
+        return 'uiIconFileTypeDefault';
+      }
+    },
     closePriority() {
       document.dispatchEvent(new CustomEvent('closePriority'));
     },
@@ -639,6 +688,7 @@ export default {
     },
     open(task) {
       this.oldTask= Object.assign({}, task);
+      this.attachements= [];
       this.taskTitle_= task.title;
       this.task = task;
       window.setTimeout(() => {
@@ -668,12 +718,12 @@ export default {
       if (task.id != null) {
         this.retrieveTaskLogs();
         this.getTaskComments();
+        this.getTaskAttachments();
         this.$root.$emit('set-url', {
           type: 'task',
           id: task.id
         });
       }
-      this.getTaskAttachments();
       this.$refs.addTaskDrawer.open();
     },
     cancel() {
@@ -776,7 +826,7 @@ export default {
     },
     getTaskAttachments() {
       this.$taskDrawerApi.getTaskAttachments('task',this.task.id).then(attachments => {
-        this.task.attachments = attachments;
+        this.attachements = attachments;
       });
     }
   }
