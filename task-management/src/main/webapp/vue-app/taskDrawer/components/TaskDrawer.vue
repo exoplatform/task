@@ -355,7 +355,6 @@ export default {
           this.$taskDrawerApi.updateTask(this.task.id, this.task).then(() => {
             this.taskTitle_ = this.task.title;
             this.oldTask.title = this.task.title;
-            this.$root.$emit('update-task-list', this.task);
             this.$root.$emit('show-alert', {
               type: 'success',
               message: this.$t('alert.success.task.title')
