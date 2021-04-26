@@ -1,7 +1,5 @@
 import tasksApp from './components/TasksApp.vue';
 import TaskDetails from './components/TaskDetails.vue';
-import * as projectService from '../../js/projectService.js';
-import * as taskDrawerApi from '../../js/taskDrawerApi.js';
 
 Vue.use(Vuetify);
 Vue.component('task-details', TaskDetails);
