@@ -272,6 +272,7 @@ export default {
           if (taskId) {
             self.openTaskDraweryId(taskId);
           }
+          $('.popup-wrapper').css('opacity', '0');
         },
         on_date_change: function(task, start, end) {
           const taskId = task.id.split('-')[1];
