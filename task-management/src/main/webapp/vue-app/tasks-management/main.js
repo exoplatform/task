@@ -31,7 +31,7 @@ window.Object.defineProperty(Vue.prototype, '$taskDrawerApi', {
 const lang = eXo && tasksConstants.LANG || 'en';
 
 //should expose the locale ressources as REST API
-const url = `${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/i18n/bundle/locale.portlet.taskManagement-${lang}.json`;
+const url = [`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/i18n/bundle/locale.portlet.taskManagement-${lang}.json`,`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/i18n/bundle/locale.attachmentsSelector.attachments-${lang}.json`];
 
 export function init() {
   exoi18n.loadLanguageAsync(lang, url).then(i18n => {
