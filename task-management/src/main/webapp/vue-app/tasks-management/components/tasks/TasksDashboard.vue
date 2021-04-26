@@ -189,7 +189,7 @@
       });
       this.$root.$on('update-task-completed', (event) => {
         if (event && !this.showCompleteTasks) {
-          this.tasks = this.tasks.filter((t) => t.id !== event.id);
+          window.setTimeout(() => this.searchTasks(), 500);
         }
       });
     },

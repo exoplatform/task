@@ -204,7 +204,7 @@
       });
       this.$root.$on('update-task-completed', (event) => {
         if (event) {
-          window.setTimeout(() => this.tasksList = this.tasksList.filter((t) => t.id !== event.id), 500);
+          window.setTimeout(() => this.getTasksByProject(this.project.id,''), 500);
         }
       });
     },
@@ -241,6 +241,9 @@
               limit: 0,
               showCompleteTasks:false,
             };
+            if (this.groupBy==='completed'){
+              tasksFilter.showCompleteTasks=true;
+            }
             return this.getFilter(tasksFilter,ProjectId);
           }
         }else {
@@ -253,6 +256,9 @@
               limit: 0,
               showCompleteTasks:false,
             };
+            if (this.groupBy==='completed'){
+              tasksFilter.showCompleteTasks=true;
+            }
             const jsonToSave = {
               groupBy: this.groupBy,
               sortBy: this.sortBy,
