@@ -317,6 +317,7 @@ public class ProjectRestService implements ResourceContainer {
       Set<String> managers = new LinkedHashSet();
       Set<String> projectParticipators = projectService.getParticipator(projectId);
       Set<String> participators = new LinkedHashSet();
+    JSONArray participatorsDetail = new JSONArray();
     JSONObject projectJson = new JSONObject();
 
     if (projectManagers.size() > 0) {
@@ -337,15 +338,37 @@ public class ProjectRestService implements ResourceContainer {
         int index = permission.indexOf(':');
         if (index > -1) {
           String groupId = permission.substring(index + 1);
-          space = spaceService.getSpaceByGroupId(groupId);
-          if(space!=null){
-            participators.addAll(Arrays.asList(space.getMembers()));
+          Space spaceP = spaceService.getSpaceByGroupId(groupId);
+          if(spaceP!=null){
+            participators.addAll(Arrays.asList(spaceP.getMembers()));
+            JSONObject participator = new JSONObject();
+            participator.put("id", "space:"+spaceP.getPrettyName());
+            participator.put("remoteId", spaceP.getPrettyName());
+            participator.put("providerId", "space");
+              JSONObject profile = new JSONObject();
+              profile.put("fullName", spaceP.getDisplayName());
+              profile.put("originalName", spaceP.getPrettyName());
+              profile.put("avatarUrl", "/portal/rest/v1/social/spaces/"+spaceP.getPrettyName()+"/avatar");
+            participator.put("profile", profile);
+            participatorsDetail.put(participator);
           }else{
             projectParticipators.remove(permission);
           }
         } else {
           participators.add(permission);
+          User user_ = UserUtil.getUser(permission);
+            JSONObject participator = new JSONObject();
+            participator.put("id", "organization:"+permission);
+            participator.put("remoteId",permission );
+            participator.put("providerId", "organization");
+            JSONObject profile = new JSONObject();
+            profile.put("fullName", user_.getDisplayName());
+            profile.put("avatarUrl", user_.getAvatar());
+            participator.put("profile", profile);
+            participatorsDetail.put(participator);
+          }
         }
+
       }
       if (participators.size() > 0) {
         JSONArray participatorsJsonArray = new JSONArray();
@@ -365,7 +388,7 @@ public class ProjectRestService implements ResourceContainer {
         }
         projectJson.put("participatorIdentities", participatorsJsonArray);
       }
-    }
+
       if (managers.size() > 0) {
         JSONArray managersJsonArray = new JSONArray();
         for (String usr : managers) {
@@ -402,6 +425,7 @@ public class ProjectRestService implements ResourceContainer {
       projectJson.put("name", project.getName());
       projectJson.put("color", project.getColor());
       projectJson.put("participator", projectParticipators);
+      projectJson.put("participatorsDetail", participatorsDetail);
       projectJson.put("hiddenOn", project.getHiddenOn());
       projectJson.put("manager", projectService.getManager(projectId));
       //projectJson.put("children", projectService.getSubProjects(projectId, 0, -1));
@@ -446,7 +470,7 @@ public class ProjectRestService implements ResourceContainer {
         return Response.status(Response.Status.UNAUTHORIZED).build();
       }
       List<String> memberships = UserUtil.getSpaceMemberships(space.getGroupId());
-      Set<String> managers = new HashSet<String>(Arrays.asList(currentUser, memberships.get(0)));
+      Set<String> managers = new HashSet<String>(Arrays.asList(memberships.get(0)));
       Set<String> participators = new HashSet<String>(Arrays.asList(memberships.get(1)));
       project = ProjectUtil.newProjectInstanceDto(projectDto.getName(), description, managers, participators);
     } else if ((projectDto.getManager()!=null && projectDto.getManager().size() !=0 )|| (projectDto.getParticipator()!=null && projectDto.getParticipator().size() !=0)){

@@ -39,7 +39,8 @@
               <project-assignee-manager
                 ref="projectManager"
                 :project="project"
-                :manager="manager" />
+                :manager="manager"
+                @managerAssignmentsOpened="closeParticipantAssignement" />
             </div>
           </div>
           <v-divider class="my-4" />
@@ -53,7 +54,8 @@
               <project-assignee-participator
                 ref="projectParticipator"
                 :project="project"
-                :participator="participator" />
+                :participator="participator"
+                @participatorAssignmentsOpened="closeManagerAssignement" />
             </div>
           </div>
         </div>
@@ -224,49 +226,8 @@ export default {
               }));
             }
           }
-
           if (this.project && this.project.participator && this.project.participator.length ){
-            this.participator = this.project.participator;
-            const participatorIdentity = this.project.participatorIdentities;
-            if (this.project && this.project.space) {
-              this.participator = this.participator.map((item) => {
-                if (item.includes('member:/spaces/')) {
-                  const spacePrettyName = item.substr((item.indexOf(/spaces/)+8)).slice(0,item.length);
-                  const spaceFullName = this.project.space.substr(0, this.project.space.indexOf(/spaces/)-2);
-                  return {
-                    id: `space:${spacePrettyName}`,
-                    remoteId: spacePrettyName,
-                    providerId: 'space',
-                    profile: {
-                      fullName: spaceFullName,
-                      originalName: spacePrettyName,
-                      avatarUrl: `/portal/rest/v1/social/spaces/${spacePrettyName}/avatar`,
-                    },
-                  };
-                } else {
-                  const participatorIdentityElement = participatorIdentity.filter(element => element.username === item);
-                  return {
-                    id: `organization:${item}`,
-                    remoteId: item,
-                    providerId: 'organization',
-                    profile: {
-                      fullName: participatorIdentityElement[0].displayName,
-                      avatarUrl: participatorIdentityElement[0].avatar,
-                    },
-                  };
-                }
-              });
-            } else {
-              this.participator = participatorIdentity.map(user => ({
-                id: `organization:${user.username}`,
-                remoteId: user.username,
-                providerId: 'organization',
-                profile: {
-                  fullName: user.displayName,
-                  avatarUrl: user.avatar,
-                },
-              }));
-            }
+            this.participator = this.project.participatorsDetail;
           }
           this.$refs.addProjectDrawer.open();
           window.setTimeout(() => this.$refs.addProjectTitle.querySelector('input').focus(), 200);
@@ -274,6 +235,11 @@ export default {
         });
       } else {
         this.project=project;
+        const urlPath = document.location.pathname;
+        if (urlPath.includes('g/:spaces')) {
+          const spaceName =urlPath.split(':')[2].split('/')[1];
+          this.project.spaceName=spaceName;
+        }
         this.manager=[];
         this.participator=[];
         this.projectInformation={
@@ -304,6 +270,12 @@ export default {
       this.$refs.addProjectDrawer.close();
       this.$refs.projectManager.showManager_(false);
       this.$refs.projectParticipator.showParticipant_(false);
+    },
+    closeParticipantAssignement(){
+      this.$refs.projectParticipator.showParticipant_(false);
+    },
+    closeManagerAssignement(){
+      this.$refs.projectManager.showManager_(false);
     },
     resetCustomValidity() {
       if (this.$refs.autoFocusInput1) {
@@ -361,6 +333,8 @@ export default {
             this.participator.forEach(participator_el => {
               if (participator_el.providerId !=='space') {
                 projects.participator.push(participator_el.remoteId);
+              } else {
+                projects.participator.push(`member:/spaces/${participator_el.remoteId}`);
               }
             });
           }
