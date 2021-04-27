@@ -142,7 +142,7 @@ export default {
         extraPlugins: extraPlugins,
         removePlugins: 'confirmBeforeReload,maximize,resize',
         toolbarLocation: 'bottom',
-        startupFocus : 'end',
+        startupFocus: 'end',
         autoGrow_onStartup: true,
         on: {
           blur: function () {
