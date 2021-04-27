@@ -23,9 +23,9 @@
       </div>
     </div>
     <div
-      v-show="!showManager"
+      v-show="!showManager && canEditManager"
       class="editManager"
-      @click="showManager = true">
+      @click="showManager_(true)">
       <a href="#" class="editManager">
         <i class="fas fa-pencil-alt uiIconProject"></i>
         {{ $t('label.editManager') }}
@@ -70,6 +70,9 @@ export default {
     };
   },
   computed: {
+    canEditManager() {
+      return !this.project.spaceName;
+    },
     searchOptions(){
       if (this.project.spaceDetails){
         return {
@@ -126,7 +129,7 @@ export default {
       }
       this.spaces = this.manager.filter(attendee => attendee.providerId === 'space');
       this.users = this.manager.filter(attendee => attendee.providerId === 'organization');
-      //this.$root.$emit('task-project-manager',this.manager);
+      this.$root.$emit('task-project-manager',this.manager);
       this.invitedAttendee = null;
     },
   },
@@ -141,6 +144,9 @@ export default {
   methods: {
     showManager_(e) {
       this.showManager=e;
+      if (e){
+        this.$emit('managerAssignmentsOpened');
+      }
     },
     reset() {
       if (this.manager && !this.manager.length>0) { // In case of edit existing event

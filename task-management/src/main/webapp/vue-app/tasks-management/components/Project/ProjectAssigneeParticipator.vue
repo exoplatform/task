@@ -25,7 +25,7 @@
     <div
       v-show="!showParticipant && canEditParticipant"
       class="editParticipant"
-      @click="showParticipant = true">
+      @click="showParticipant_(true)">
       <a class="editParticipant" href="#">
         <i class="fas fa-plus"></i>
         {{ $t('label.editParticipant') }}
@@ -70,7 +70,7 @@ export default {
   },
   computed: {
     canEditParticipant() {
-      return !this.project.spaceDetails;
+      return !(this.project.spaceDetails||this.project.spaceName);
     },
     searchOptions(){
       if (this.project.spaceDetails){
@@ -143,6 +143,9 @@ export default {
   methods: {
     showParticipant_(e) {
       this.showParticipant=e;
+      if (e){
+        this.$emit('participatorAssignmentsOpened');
+      }
     },
     reset() {
       if (this.participator && !this.participator.length>0) { // In case of edit existing event
