@@ -5,10 +5,23 @@
       <div class="noTasksProjectLabel"><span>{{ $t('label.noTasks') }}</span></div>
     </div>
   </div>
-  <div
-    v-else
-    id="gantt-chart"
-    class="gantt-chart-container">
+  <div v-else class="gantt-wrapper">
+    <div class="unscheduled-task-container">
+      <v-btn
+        :title="$t('label.noWorkPlan.tasks')"
+        class="unscheduled-task-btn"
+        fab
+        small
+        dark
+        @click="$root.$emit('displayTasksUnscheduledDrawer', unscheduledTaskList)">
+        <v-icon>mdi-calendar-range</v-icon>
+        <span class="unscheduled-task-badge">{{ unscheduledTaskList.length }}</span>
+      </v-btn>
+    </div>
+    <div 
+      id="gantt-chart"
+      class="gantt-chart-container">
+    </div>
   </div>
 </template>
 <script>
@@ -31,7 +44,8 @@ export default {
       tasksToDisplay: [],
       tasks: [],
       isGanttDisplayed: false,
-      ganttScale: 'Week'
+      ganttScale: 'Week',
+      unscheduledTaskList: []
     };
   },
   computed: {
@@ -48,6 +62,7 @@ export default {
       $('#gantt-chart').empty();
     });
     this.$root.$on('gantt-displayed', value => {
+      this.unscheduledTaskList = [];
       this.isGanttDisplayed = false;
       $('#gantt-chart').empty();
       if ( value && value.length ) {
@@ -59,6 +74,7 @@ export default {
       }
     });
     this.$root.$on('task-updated', task => {
+      this.unscheduledTaskList = [];
       this.tasks.forEach((taskItem, index) => {
         if (taskItem.id === task.id) {
           this.tasks[index].task = task;
@@ -76,7 +92,7 @@ export default {
   },
   methods: {
     getTasksToDisplay(tasksList) {
-      const GanttTasksList = [];
+      const ganttTasksList = [];
       if ( tasksList && tasksList.length ) {
         tasksList.forEach((item) => {
           const task ={
@@ -105,11 +121,13 @@ export default {
           task.custom_class=`bar_${item.task.priority}`;
           if (item.task.startDate != null || item.task.dueDate != null) {
             task.progress= 100;
-            GanttTasksList.push(task);
+            ganttTasksList.push(task);
+          } else {
+            this.unscheduledTaskList.push(item);
           }
         });
       }
-      return GanttTasksList;
+      return ganttTasksList;
     },
     dateFormat(date) {
       const dateValue = new Date(date);
@@ -254,6 +272,7 @@ export default {
           if (taskId) {
             self.openTaskDraweryId(taskId);
           }
+          $('.popup-wrapper').css('opacity', '0');
         },
         on_date_change: function(task, start, end) {
           const taskId = task.id.split('-')[1];

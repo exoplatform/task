@@ -188,6 +188,7 @@
         {{ $t('spacesList.button.showMore') }}
       </v-btn>
     </div>
+    <tasks-unscheduled-drawer :project="project" />
   </v-app>
 </template>
 <script>
