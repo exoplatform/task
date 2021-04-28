@@ -141,6 +141,12 @@
             :task="task"
             @labelsListOpened="closePriority(); closeStatus(); closeProjectsList();closeTaskDates();closeAssignements()" />
         </div>
+        <div class="taskAttachments d-flex">
+          <attachments-app
+            :entity-id="task.id"
+            entity-type="task"
+            :space-id="taskSpaceId" />
+        </div>
         <v-divider class="my-0" />
         <v-flex
           v-if="task.id!=null"
@@ -278,7 +284,10 @@ export default {
     },
     addBackArrow() {
       return this.showBackArrow;
-    }
+    },
+    taskSpaceId() {
+      return this.task && this.task.status && this.task.status.project && this.task.status.project.id;
+    },
   },
   watch: {
     taskId() {

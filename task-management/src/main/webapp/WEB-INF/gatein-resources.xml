@@ -379,6 +379,9 @@
       <depends>
         <module>userPopupPlugin</module>
       </depends>
+      <depends>
+        <module>AttachmentsApp</module>
+      </depends>
     </module>
   </portlet>
 
