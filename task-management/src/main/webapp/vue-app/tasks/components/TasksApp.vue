@@ -247,7 +247,8 @@ export default {
       this.displayMessage(message);
     });
     this.$root.$on('open-task-drawer', task => {
-      this.$refs.taskDrawer.open(task);
+      this.task=task;
+      this.$refs.taskDrawer.open(this.task);
     });
     this.itemsLimit = this.$parent.$data.itemsLimit;
     this.getMyOverDueTasks();
