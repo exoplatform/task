@@ -16,8 +16,7 @@
         flat>
         <div 
           ref="addProjectTitle" 
-          class="addProjectTitle d-flex align-center my-3"
-          @click="showManager = true,showParticipant = true">
+          class="addProjectTitle d-flex align-center my-3">
           <i class="uiIcon uiIconProject"></i>
           <input
             ref="autoFocusInput1"
@@ -28,115 +27,40 @@
             single-line
             @change="resetCustomValidity">
         </div>
-        <v-divider class="py-3" />
+        <v-divider class="my-4" />
         <div class="projectPermissionsUsers">
-          <div @click="showManager = true,showParticipant = true">
-            <p class="permisionLabel body-1">{{ $t('label.permission') }}</p>
-          </div>
-          <div class="listOfManager" @click="showParticipant = true">
-            <div class="listOfManageravatar">
-              <a
-                v-for="managerAvatar in avatarManagerToDisplay"
-                :key="managerAvatar.avatar"
-                href="#"
-                class="flex-nowrap flex-shrink-0 d-flex">
-                <div class="v-avatar pull-left my-auto">
-                  <img :src="managerAvatar.avatar">
-                </div>
-                <button
-                  type="button"
-                  class="peopleInfoIcon d-flex not-clickable primary-border-color ms-1 v-btn v-btn--flat v-btn--icon v-btn--round theme--light v-size--small primary--text"
-                  title="Space manager">
-                  <span class="v-btn__content">
-                    <span class="d-flex uiIconMemberAdmin primary--text"></span>
-                  </span>
-                </button>
-              </a>
-              <div class="seeMoreAvatars">
-                <div
-                  v-if="listOfManager.length > maxAvatarToShow"
-                  class="seeMoreItem"
-                  @click="$root.$emit('displayTasksAssigneeAndCoworker', listOfManager)">
-                  <v-avatar
-                    :size="iconSize">
-                    <img
-                      :src="listOfManager[maxAvatarToShow].avatar"
-                      :title="listOfManager[maxAvatarToShow].displayName">
-                  </v-avatar>
-                  <span class="seeMoreAvatarList">+{{ showMoreAvatarsNumber }}</span>
-                </div>
-              </div>
-            </div>
-
+          <div class="listOfManager">
             <div class="editManager">
-              <div
-                v-show="showManager"
-                class="editManager"
-                @click="showManager = false">
-                <a href="#" class="editManager">
-                  <i class="fas fa-pencil-alt uiIconProject"></i>
-                  {{ $t('label.editManager') }}
-                </a>
-                <label class="editManagerInfo">
-                  <i class="uiIconInformation uiIconProject"></i>
-                  {{ $t('label.editManagerInfo') }}
-                </label>
-              </div>
+              <div class="permisionLabel body-1"> {{ $t('label.projectManagers') }}</div>
+              <label class="editManagerInfo">
+                <i class="uiIconInformation uiIconProject"></i>
+                {{ $t('label.editManagerInfo') }}
+              </label>
               <project-assignee-manager
-                v-if="!showManager"
-                ref="assigneeManager"
+                ref="projectManager"
                 :project="project"
-                :manager="manager" />
+                :manager="manager"
+                @managerAssignmentsOpened="closeParticipantAssignement" />
             </div>
           </div>
-          <div class="listOfParticipant" @click="showManager = true">
-            <div class="listOfParticipantavatar">
-              <a
-                v-for="participant in avatarParticipantToDisplay"
-                :key="participant.avatar"
-                href="#"
-                class="flex-nowrap flex-shrink-0 d-flex">
-                <div class="v-avatar pull-left my-auto">
-                  <img :src="participant.avatar">
-                </div>
-              </a>
-              <div class="seeMoreAvatars">
-                <div
-                  v-if="listOfParticipant.length > maxAvatarToShow"
-                  class="seeMoreItem">
-                  <v-avatar
-                    :size="iconSize">
-                    <img
-                      :src="listOfParticipant[maxAvatarToShow].avatar"
-                      :title="listOfParticipant[maxAvatarToShow].displayName">
-                  </v-avatar>
-                  <span class="seeMoreAvatarList">+{{ showMoreAvatarsParticipantNumber }}</span>
-                </div>
-              </div>
-            </div>
+          <v-divider class="my-4" />
+          <div class="listOfParticipant">
             <div class="editParticipant">
-              <div
-                v-if="showParticipant"
-                class="editParticipant"
-                @click="showParticipant = false">
-                <a class="editParticipant" href="#">
-                  <i class="fas fa-plus"></i>
-                  {{ $t('label.editParticipant') }}
-                </a>
-                <label class="editParticipantInfo">
-                  <i class="uiIconInformation uiIconProject"></i>
-                  {{ $t('label.editParticipantInfo') }}
-                </label>
-              </div>
+              <div class="permisionLabel body-1"> {{ $t('label.projectParticipants') }}</div>
+              <label class="editParticipantInfo">
+                <i class="uiIconInformation uiIconProject"></i>
+                {{ $t('label.editParticipantInfo') }}
+              </label>
               <project-assignee-participator
-                v-if="!showParticipant"
+                ref="projectParticipator"
                 :project="project"
-                :participator="participator" />
+                :participator="participator"
+                @participatorAssignmentsOpened="closeManagerAssignement" />
             </div>
           </div>
         </div>
         <hr>
-        <div class="projectDescription" @click="showManager = true,showParticipant = true">
+        <div class="projectDescription">
           <v-label
             for="description">
             {{ $t('label.description') }}
@@ -194,9 +118,6 @@ export default {
       participator: [],
       postProject: false,
       project: {},
-      maxAvatarToShow: 3,
-      showManager: true,
-      showParticipant: true,
       labelsToAdd: [],
     };
   },
@@ -210,38 +131,6 @@ export default {
         return pureText.length> this.MESSAGE_MAX_LENGTH ;
       }
       return '';
-    },
-
-    avatarParticipantToDisplay () {
-      this.getProjectParticipant();
-      if (this.listOfParticipant.length > this.maxAvatarToShow) {
-        return this.listOfParticipant.slice(0, this.maxAvatarToShow - 1);
-      } else if (this.listOfParticipant.length>0){
-        return this.listOfParticipant;
-      } else {
-        return this.defaultParticipant;
-      }
-    },
-    currentUserAvatar() {
-      const urlAvatar = `/rest/v1/social/users/${eXo.env.portal.userName}/avatar`;
-      return [{avatar: urlAvatar}];
-    },
-    avatarManagerToDisplay () {
-      this.getProjectManagers();
-      if (this.listOfManager.length > this.maxAvatarToShow) {
-        return this.listOfManager.slice(0, this.maxAvatarToShow - 1);
-      } else if (this.listOfManager.length>0){
-        return this.listOfManager;
-      } else {
-        return this.currentUserAvatar;
-      }
-
-    },
-    showMoreAvatarsNumber() {
-      return this.listOfManager.length - this.maxAvatarToShow;
-    },
-    showMoreAvatarsParticipantNumber() {
-      return this.listOfParticipant.length - this.maxAvatarToShow;
     },
     labelDrawer(){
       if (typeof this.project.id !== 'undefined'){
@@ -260,7 +149,6 @@ export default {
       this.participator=participator;
     });
   },
- 
   methods: {
     addLabelOnCreate(label){
       this.labelsToAdd.push(label);
@@ -296,91 +184,10 @@ export default {
             this.projectInformation.description = this.project.description;
           }
           if (this.project && this.project.manager){
-            this.manager = this.project.manager;
-            const managerIdentity = this.project.managerIdentities;
-            if (this.project && this.project.space) {
-              this.manager = this.manager.map((item) => {
-                if (item.includes('manager:/spaces/')) {
-                  const spacePrettyName = item.substr((item.indexOf(/spaces/)+8)).slice(0,item.length);
-                  const spaceFullName = this.project.space.substr(0, this.project.space.indexOf(/spaces/)-2);
-                  return {
-                    id: `space:${spacePrettyName}`,
-                    remoteId: spacePrettyName,
-                    providerId: 'space',
-                    profile: {
-                      fullName: spaceFullName,
-                      originalName: spacePrettyName,
-                      avatarUrl: `/portal/rest/v1/social/spaces/${spacePrettyName}/avatar`,
-                    },
-                  };
-                } else {
-                  const managerIdentityElement = managerIdentity.filter(element => element.username === item);
-                  return {
-                    id: `organization:${item}`,
-                    remoteId: item,
-                    providerId: 'organization',
-                    profile: {
-                      fullName: managerIdentityElement[0].displayName,
-                      avatarUrl: managerIdentityElement[0].avatar,
-                    },
-                  };
-                }
-              });
-            } else {
-              this.manager = managerIdentity.map(user => ({
-                id: `organization:${user.username}`,
-                remoteId: user.username,
-                providerId: 'organization',
-                profile: {
-                  fullName: user.displayName,
-                  avatarUrl: user.avatar,
-                },
-              }));
-            }
+            this.manager = this.project.managersDetail;
           }
-
           if (this.project && this.project.participator && this.project.participator.length ){
-            this.participator = this.project.participator;
-            const participatorIdentity = this.project.participatorIdentities;
-            if (this.project && this.project.space) {
-              this.participator = this.participator.map((item) => {
-                if (item.includes('member:/spaces/')) {
-                  const spacePrettyName = item.substr((item.indexOf(/spaces/)+8)).slice(0,item.length);
-                  const spaceFullName = this.project.space.substr(0, this.project.space.indexOf(/spaces/)-2);
-                  return {
-                    id: `space:${spacePrettyName}`,
-                    remoteId: spacePrettyName,
-                    providerId: 'space',
-                    profile: {
-                      fullName: spaceFullName,
-                      originalName: spacePrettyName,
-                      avatarUrl: `/portal/rest/v1/social/spaces/${spacePrettyName}/avatar`,
-                    },
-                  };
-                } else {
-                  const participatorIdentityElement = participatorIdentity.filter(element => element.username === item);
-                  return {
-                    id: `organization:${item}`,
-                    remoteId: item,
-                    providerId: 'organization',
-                    profile: {
-                      fullName: participatorIdentityElement[0].displayName,
-                      avatarUrl: participatorIdentityElement[0].avatar,
-                    },
-                  };
-                }
-              });
-            } else {
-              this.participator = participatorIdentity.map(user => ({
-                id: `organization:${user.username}`,
-                remoteId: user.username,
-                providerId: 'organization',
-                profile: {
-                  fullName: user.displayName,
-                  avatarUrl: user.avatar,
-                },
-              }));
-            }
+            this.participator = this.project.participatorsDetail;
           }
           this.$refs.addProjectDrawer.open();
           window.setTimeout(() => this.$refs.addProjectTitle.querySelector('input').focus(), 200);
@@ -388,6 +195,11 @@ export default {
         });
       } else {
         this.project=project;
+        const urlPath = document.location.pathname;
+        if (urlPath.includes('g/:spaces')) {
+          const spaceName =urlPath.split(':')[2].split('/')[1];
+          this.project.spaceName=spaceName;
+        }
         this.manager=[];
         this.participator=[];
         this.projectInformation={
@@ -416,8 +228,14 @@ export default {
         }
       }
       this.$refs.addProjectDrawer.close();
-      this.showManager=true;
-      this.showParticipant=true;
+      this.$refs.projectManager.showManager_(false);
+      this.$refs.projectParticipator.showParticipant_(false);
+    },
+    closeParticipantAssignement(){
+      this.$refs.projectParticipator.showParticipant_(false);
+    },
+    closeManagerAssignement(){
+      this.$refs.projectManager.showManager_(false);
     },
     resetCustomValidity() {
       if (this.$refs.autoFocusInput1) {
@@ -450,9 +268,9 @@ export default {
           if (this.manager.filter(e => e.providerId === 'space').length > 0) {
             this.manager.forEach(manager_el => {
               if (manager_el.providerId ==='space') {
-                projects.spaceName=manager_el.profile.fullName;
-                projects.manager.push(`manager:/spaces/${manager_el.profile.originalName}`);
-                projects.participator.push(`member:/spaces/${manager_el.profile.originalName}`);
+                projects.spaceName=manager_el.profile.fullname;
+                projects.manager.push(`manager:/spaces/${manager_el.remoteId}`);
+                projects.participator.push(`member:/spaces/${manager_el.remoteId}`);
               } else {
                 projects.manager.push(manager_el.remoteId);
               }
@@ -475,6 +293,8 @@ export default {
             this.participator.forEach(participator_el => {
               if (participator_el.providerId !=='space') {
                 projects.participator.push(participator_el.remoteId);
+              } else {
+                projects.participator.push(`member:/spaces/${participator_el.remoteId}`);
               }
             });
           }
@@ -487,8 +307,8 @@ export default {
             this.$root.$emit('update-projects-list', {});
             this.postProject = false;
             this.$refs.addProjectDrawer.close();
-            this.showManager=true;
-            this.showParticipant=true;
+            this.$refs.projectManager.showManager_(false);
+            this.$refs.projectParticipator.showParticipant_(false);
             this.$root.$emit('show-alert',{type: 'success',message: this.$t('alert.success.project.updated')} );
           }).then(() => {
             this.project.managerIdentities = managers.map(user => ({
@@ -514,8 +334,8 @@ export default {
             this.$root.$emit('update-projects-list', {});
             this.postProject = false;
             this.$refs.addProjectDrawer.close();
-            this.showManager=true;
-            this.showParticipant=true;
+            this.$refs.projectManager.showManager_(false);
+            this.$refs.projectParticipator.showParticipant_(false);
             this.$root.$emit('show-alert',{type: 'success',message: this.$t('alert.success.project.created')} );
           })
             .catch(e => {
@@ -525,22 +345,6 @@ export default {
             });
         }
 
-      }
-    },
-    getProjectManagers() {
-      this.listOfManager=[];
-      if (this.project.managerIdentities) {
-        this.project.managerIdentities.forEach(user => {
-          this.listOfManager.push(user);
-        });
-      }
-    },
-    getProjectParticipant() {
-      this.listOfParticipant=[];
-      if (this.project.participatorIdentities) {
-        this.project.participatorIdentities.forEach(user => {
-          this.listOfParticipant.push(user);
-        });
       }
     },
   }
