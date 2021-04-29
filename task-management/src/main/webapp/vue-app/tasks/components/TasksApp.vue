@@ -226,14 +226,10 @@ export default {
   created(){
     this.$root.$on('task-updated',task => {
       this.task=task;
-      this.$root.$emit('open-task-drawer', this.task);
     });
     this.$root.$on('update-task-list', task => {
       this.retrieveTask(task);
-      if (task.id){
-        this.task=task;
-        this.$root.$emit('open-task-drawer', this.task);
-      }
+      this.task=task;
     });
     this.$root.$on('update-task-widget-list', task => {
       this.task=task;
@@ -241,7 +237,6 @@ export default {
       this.getMyTodayTasks();
       this.getMyTomorrowTasks();
       this.getMyUpcomingTasks();
-      this.$root.$emit('open-task-drawer', this.task);
     });
     this.$root.$on('show-alert', message => {
       this.displayMessage(message);
