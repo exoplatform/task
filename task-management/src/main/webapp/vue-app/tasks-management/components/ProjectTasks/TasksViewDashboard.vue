@@ -281,6 +281,7 @@ export default {
     },
     getTasksByProject(ProjectId,query) {
       const currentTab= this.taskViewTabName;
+      this.tasksList=[];
       if (localStorage.getItem(`filterStorage${ProjectId}+${currentTab}`)!==null){
         const localStorageSaveFilter = localStorage.getItem(`filterStorage${ProjectId}+${currentTab}`);
         if (localStorageSaveFilter.split('"')[10].split('}')[0].split(':')[1].split(',')[0] === ProjectId.toString() && localStorageSaveFilter.split('"')[13] === currentTab) {
