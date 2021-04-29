@@ -1640,12 +1640,48 @@
       margin-top: 8px;
     }
     .unscheduledTasksDrawer {
-      .drawerIcons {
-        margin-left: 0 ~'!important; /** orientation=rt */ ';
-        margin-right: 0 ~'!important; /** orientation=lt */ ';
+      .drawerHeader {
+        .drawerTitle {
+          padding: 0!important;
+          .titleAndFilter {
+            width: 100%;
+            text-align: left;
+            .unscheduledTasksFilter {
+              .v-text-field__slot input {
+                padding-bottom: 2px!important;
+              }
+              .v-input__icon.v-input__icon--clear button {
+                font-size: 16px!important;
+                padding-top: 15px!important;
+              }
+            }
+          }
+          .filter-btn .v-icon.v-icon::after {
+            display: none;
+          }
+        }
+        
+        .drawerIcons {
+          margin-left: 0 ~'!important; /** orientation=rt */ ';
+          margin-right: 0 ~'!important; /** orientation=lt */ ';
+        }
       }
+
       .drawerContent {
         padding: 8px 16px;
+        .noUnscheduledTasksFound {
+          text-align: center;
+          margin-top: 40%;
+          .noTasksIcon i {
+            font-size: 50px;
+            color: @greyColorDefault;
+            padding-bottom: 10px;
+          }
+          .noTasksLabel span {
+            font-size: 16px;
+            color: @greyColorLighten1Default;
+          }
+        }
       }
     }
 }
@@ -1672,7 +1708,6 @@
               position: absolute;
               bottom: 12px;
               right: -5px ~'; /** orientation=lt */ ';
-              left: -5px ~'; /** orientation=rt */ ';
               background: -webkit-linear-gradient(-45deg, transparent 0%, transparent 46%, white 46%, white 56%,transparent 56%, transparent 100%), -webkit-linear-gradient(45deg, transparent 0%, transparent 46%, white 46%, white 56%,transparent 56%, transparent 100%);
             }
           }
@@ -1683,7 +1718,6 @@
               position: absolute;
               bottom: 12px;
               right: -5px ~'; /** orientation=lt */ ';
-              left: -5px ~'; /** orientation=rt */ ';
               background: white;
             }
           }
