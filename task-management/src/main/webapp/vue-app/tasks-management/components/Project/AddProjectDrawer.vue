@@ -184,47 +184,7 @@ export default {
             this.projectInformation.description = this.project.description;
           }
           if (this.project && this.project.manager){
-            this.manager = this.project.manager;
-            const managerIdentity = this.project.managerIdentities;
-            if (this.project && this.project.space) {
-              this.manager = this.manager.map((item) => {
-                if (item.includes('manager:/spaces/')) {
-                  const spacePrettyName = item.substr((item.indexOf(/spaces/)+8)).slice(0,item.length);
-                  const spaceFullName = this.project.space.substr(0, this.project.space.indexOf(/spaces/)-2);
-                  return {
-                    id: `space:${spacePrettyName}`,
-                    remoteId: spacePrettyName,
-                    providerId: 'space',
-                    profile: {
-                      fullName: spaceFullName,
-                      originalName: spacePrettyName,
-                      avatarUrl: `/portal/rest/v1/social/spaces/${spacePrettyName}/avatar`,
-                    },
-                  };
-                } else {
-                  const managerIdentityElement = managerIdentity.filter(element => element.username === item);
-                  return {
-                    id: `organization:${item}`,
-                    remoteId: item,
-                    providerId: 'organization',
-                    profile: {
-                      fullName: managerIdentityElement[0].displayName,
-                      avatarUrl: managerIdentityElement[0].avatar,
-                    },
-                  };
-                }
-              });
-            } else {
-              this.manager = managerIdentity.map(user => ({
-                id: `organization:${user.username}`,
-                remoteId: user.username,
-                providerId: 'organization',
-                profile: {
-                  fullName: user.displayName,
-                  avatarUrl: user.avatar,
-                },
-              }));
-            }
+            this.manager = this.project.managersDetail;
           }
           if (this.project && this.project.participator && this.project.participator.length ){
             this.participator = this.project.participatorsDetail;

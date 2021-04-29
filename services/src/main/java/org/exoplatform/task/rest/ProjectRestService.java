@@ -318,6 +318,7 @@ public class ProjectRestService implements ResourceContainer {
       Set<String> projectParticipators = projectService.getParticipator(projectId);
       Set<String> participators = new LinkedHashSet();
     JSONArray participatorsDetail = new JSONArray();
+    JSONArray managersDetail = new JSONArray();
     JSONObject projectJson = new JSONObject();
 
     if (projectManagers.size() > 0) {
@@ -326,9 +327,31 @@ public class ProjectRestService implements ResourceContainer {
           if (index > -1) {
             String groupId = permission.substring(index + 1);
             space = spaceService.getSpaceByGroupId(groupId);
-            if(space!=null) managers.addAll(Arrays.asList(space.getManagers()));
+            if (space != null) {
+              managers.addAll(Arrays.asList(space.getManagers()));
+              JSONObject manager = new JSONObject();
+              manager.put("id", "space:"+space.getPrettyName());
+              manager.put("remoteId", space.getPrettyName());
+              manager.put("providerId", "space");
+              JSONObject profile = new JSONObject();
+              profile.put("fullName", space.getDisplayName());
+              profile.put("originalName", space.getPrettyName());
+              profile.put("avatarUrl", "/portal/rest/v1/social/spaces/"+space.getPrettyName()+"/avatar");
+              manager.put("profile", profile);
+              managersDetail.put(manager);
+            }
           } else {
             managers.add(permission);
+            User user_ = UserUtil.getUser(permission);
+            JSONObject manager = new JSONObject();
+            manager.put("id", "organization:"+permission);
+            manager.put("remoteId",permission );
+            manager.put("providerId", "organization");
+            JSONObject profile = new JSONObject();
+            profile.put("fullName", user_.getDisplayName());
+            profile.put("avatarUrl", user_.getAvatar());
+            manager.put("profile", profile);
+            managersDetail.put(manager);
           }
         }
       }
@@ -428,6 +451,7 @@ public class ProjectRestService implements ResourceContainer {
       projectJson.put("participatorsDetail", participatorsDetail);
       projectJson.put("hiddenOn", project.getHiddenOn());
       projectJson.put("manager", projectService.getManager(projectId));
+      projectJson.put("managersDetail", managersDetail);
       //projectJson.put("children", projectService.getSubProjects(projectId, 0, -1));
       projectJson.put("dueDate", project.getDueDate());
       projectJson.put("description", project.getDescription());
