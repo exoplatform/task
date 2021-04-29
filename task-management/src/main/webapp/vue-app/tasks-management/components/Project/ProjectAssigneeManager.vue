@@ -1,6 +1,39 @@
 <template>
   <v-flex class="user-suggester">
+    <div v-if="manager" class="identitySuggester no-border mt-0">
+      <div v-if="spaces.length">
+        <div class="mt-4">{{ $t('label.spaceManagers') }}</div>
+        <project-event-form-assignee-and-participator-item
+          v-for="attendee in spaces"
+          :key="attendee.id"
+          :attendee="attendee"
+          :project="project"
+          :removable="manager.length>1"
+          @remove-attendee="removeAttendee" />
+      </div>
+      <div v-if="spaces.length && users.length" class="mt-2 font-weight-bold">{{ $t('label.and') }}</div>
+      <div v-if="users.length">
+        <project-event-form-assignee-and-participator-item
+          v-for="attendee in users"
+          :key="attendee.id"
+          :attendee="attendee"
+          :project="project"
+          :removable="manager.length>1"
+          @remove-attendee="removeAttendee" />
+      </div>
+    </div>
+    <div
+      v-show="!showManager && canEditManager"
+      class="editManager"
+      @click="showManager_(true)">
+      <a href="#" class="editManager">
+        <i class="fas fa-pencil-alt uiIconProject"></i>
+        {{ $t('label.editManager') }}
+      </a>
+    </div>
+
     <exo-identity-suggester
+      v-show="showManager"
       ref="invitedAttendeeAutoComplete"
       v-model="invitedAttendee"
       :labels="participantSuggesterLabels"
@@ -8,19 +41,9 @@
       :ignore-items="ignoredMembers"
       :type-of-relations="relationsType"
       name="inviteAttendee"
-      include-users
-      include-spaces />
-    <div v-if="manager" class="identitySuggester no-border mt-0">
-      <project-event-form-assignee-and-participator-item
-        v-for="attendee in manager"
-        :key="attendee.id"
-        :attendee="attendee"
-        @remove-attendee="removeAttendee" />
-    </div>
+      include-users />
   </v-flex>
 </template>
-
-
 
 <script>
 export default {
@@ -32,15 +55,24 @@ export default {
     project: {
       type: Object,
       default: () => ({}),
+    },
+    showManager: {
+      type: Boolean,
+      default: false,
     }
   },
   data() {
     return {
       currentUser: null,
-      invitedAttendee: []
+      invitedAttendee: [],
+      users: [],
+      spaces: [],
     };
   },
   computed: {
+    canEditManager() {
+      return !this.project.spaceName;
+    },
     searchOptions(){
       if (this.project.spaceDetails){
         return {
@@ -74,6 +106,9 @@ export default {
     currentUser() {
       this.reset();
     },
+    project() {
+      this.reset();
+    },
     invitedAttendee() {
       if (!this.invitedAttendee) {
         this.$nextTick(this.$refs.invitedAttendeeAutoComplete.$refs.selectAutoComplete.deleteCurrentItem);
@@ -92,6 +127,8 @@ export default {
           this.$suggesterService.convertSuggesterItemToIdentity(this.invitedAttendee),
         );
       }
+      this.spaces = this.manager.filter(attendee => attendee.providerId === 'space');
+      this.users = this.manager.filter(attendee => attendee.providerId === 'organization');
       this.$root.$emit('task-project-manager',this.manager);
       this.invitedAttendee = null;
     },
@@ -105,6 +142,12 @@ export default {
     });
   },
   methods: {
+    showManager_(e) {
+      this.showManager=e;
+      if (e){
+        this.$emit('managerAssignmentsOpened');
+      }
+    },
     reset() {
       if (this.manager && !this.manager.length>0) { // In case of edit existing event
         // Add current user as default attendee
@@ -136,6 +179,9 @@ export default {
           }
         }
       }
+
+      this.spaces = this.manager.filter(attendee => attendee.providerId === 'space');
+      this.users = this.manager.filter(attendee => attendee.providerId === 'organization');
       this.$refs.invitedAttendeeAutoComplete.focus();
       this.$emit('initialized');
     },
@@ -147,6 +193,8 @@ export default {
       if (index >= 0) {
         this.manager.splice(index, 1);
       }
+      this.spaces = this.manager.filter(attendee => attendee.providerId === 'space');
+      this.users = this.manager.filter(attendee => attendee.providerId === 'organization');
       this.$root.$emit('task-project-manager',this.manager);
     },
   }

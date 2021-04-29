@@ -54,7 +54,6 @@
       <div
         class="d-flex taskStatusName  font-weight-bold text-color mb-1"
         v-else
-
         @click="editStatusMode(project.canManage)">
         <div
           class="statusName text-truncate"

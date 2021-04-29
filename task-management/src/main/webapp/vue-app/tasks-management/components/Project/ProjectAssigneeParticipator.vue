@@ -1,6 +1,38 @@
 <template>
   <v-flex class="user-suggester">
+    <div v-if="participator" class="identitySuggester no-border mt-0">
+      <div v-if="spaces.length">
+        <div class="mt-4">{{ $t('label.spaceMembers') }}</div>
+        <project-event-form-assignee-and-participator-item
+          v-for="attendee in spaces"
+          :key="attendee.id"
+          :attendee="attendee"
+          :project="project"
+          :removable="participator.length>1"
+          @remove-attendee="removeAttendee" />
+      </div>
+      <div v-if="spaces.length && users.length" class="mt-2 font-weight-bold">{{ $t('label.and') }}</div>
+      <div v-if="users.length">
+        <project-event-form-assignee-and-participator-item
+          v-for="attendee in users"
+          :key="attendee.id"
+          :attendee="attendee"
+          :project="project"
+          :removable="participator.length>1"
+          @remove-attendee="removeAttendee" />
+      </div>
+    </div>
+    <div
+      v-show="!showParticipant && canEditParticipant"
+      class="editParticipant"
+      @click="showParticipant_(true)">
+      <a class="editParticipant" href="#">
+        <i class="fas fa-plus"></i>
+        {{ $t('label.editParticipant') }}
+      </a>
+    </div>
     <exo-identity-suggester
+      v-show="showParticipant && canEditParticipant"
       ref="invitedAttendeeAutoComplete"
       v-model="invitedAttendee"
       :labels="participantSuggesterLabels"
@@ -9,14 +41,7 @@
       :type-of-relations="relationsType"
       name="inviteAttendee"
       include-users
-      include-spaces />
-    <div v-if="participator" class="identitySuggester no-border mt-0">
-      <project-event-form-assignee-and-participator-item
-        v-for="attendee in participator"
-        :key="attendee.id"
-        :attendee="attendee"
-        @remove-attendee="removeAttendee" />
-    </div>
+      :include-spaces="canEditParticipant" />
   </v-flex>
 </template>
 
@@ -38,9 +63,15 @@ export default {
     return {
       currentUser: null,
       invitedAttendee: [],
+      users: [],
+      spaces: [],
+      showParticipant: false,
     };
   },
   computed: {
+    canEditParticipant() {
+      return !(this.project.spaceDetails||this.project.spaceName);
+    },
     searchOptions(){
       if (this.project.spaceDetails){
         return {
@@ -59,7 +90,7 @@ export default {
     participantSuggesterLabels() {
       return {
         searchPlaceholder: this.$t('label.searchPlaceholder'),
-        placeholder: this.$t('label.inviteManagers'),
+        placeholder: this.$t('label.inviteParticipant'),
         noDataLabel: this.$t('label.noDataLabel'),
       };
     },
@@ -72,6 +103,9 @@ export default {
   },
   watch: {
     currentUser() {
+      this.reset();
+    },
+    project() {
       this.reset();
     },
     invitedAttendee() {
@@ -92,6 +126,8 @@ export default {
           this.$suggesterService.convertSuggesterItemToIdentity(this.invitedAttendee),
         );
       }
+      this.spaces = this.participator.filter(attendee => attendee.providerId === 'space');
+      this.users = this.participator.filter(attendee => attendee.providerId === 'organization');
       this.$root.$emit('task-project-participator',this.participator);
       this.invitedAttendee = null;
     },
@@ -105,6 +141,12 @@ export default {
     });
   },
   methods: {
+    showParticipant_(e) {
+      this.showParticipant=e;
+      if (e){
+        this.$emit('participatorAssignmentsOpened');
+      }
+    },
     reset() {
       if (this.participator && !this.participator.length>0) { // In case of edit existing event
         // Add current user as default attendee
@@ -135,6 +177,8 @@ export default {
           }
         }
       }
+      this.spaces = this.participator.filter(attendee => attendee.providerId === 'space');
+      this.users = this.participator.filter(attendee => attendee.providerId === 'organization');
       this.$refs.invitedAttendeeAutoComplete.focus();
       this.$emit('initialized');
     },
@@ -146,6 +190,8 @@ export default {
       if (index >= 0) {
         this.participator.splice(index, 1);
       }
+      this.spaces = this.participator.filter(attendee => attendee.providerId === 'space');
+      this.users = this.participator.filter(attendee => attendee.providerId === 'organization');
       this.$root.$emit('task-project-participator',this.participator);
     },
   }
