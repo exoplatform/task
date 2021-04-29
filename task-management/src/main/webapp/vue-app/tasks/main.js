@@ -8,13 +8,17 @@ Vue.component('task-details', TaskDetails);
 
 const vuetify = new Vuetify(eXo.env.portal.vuetifyPreset);
 
-window.Object.defineProperty(Vue.prototype, '$projectService', {
-  value: projectService,
-});
+if (!Vue.prototype.$projectService) {
+  window.Object.defineProperty(Vue.prototype, '$projectService', {
+    value: projectService,
+  });
+}
 
-window.Object.defineProperty(Vue.prototype, '$taskDrawerApi', {
-  value: taskDrawerApi,
-});
+if (!Vue.prototype.$taskDrawerApi) {
+  window.Object.defineProperty(Vue.prototype, '$taskDrawerApi', {
+    value: taskDrawerApi,
+  });
+}
 
 // getting language of user
 const lang = eXo && eXo.env && eXo.env.portal && eXo.env.portal.language || 'en';
