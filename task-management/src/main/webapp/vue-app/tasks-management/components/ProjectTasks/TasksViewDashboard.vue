@@ -229,6 +229,12 @@ export default {
     this.$featureService.isFeatureEnabled('tasks.gantt').then(enabled => this.allowGantt = enabled);
     this.$root.$on('update-task-list', () => {
       this.getTasksByProject(this.project.id,'');
+      if ( this.taskViewTabName === 'gantt' ) {
+        return this.$tasksService.getTasksByProjectId(this.project.id).then(data => {
+          this.allProjectTasks = data && data || [];
+          this.$root.$emit('refresh-gantt', this.allProjectTasks);
+        });
+      }
     });
     this.$root.$on('deleteTask', (event) => {
       if (event && event.detail) {
@@ -258,6 +264,7 @@ export default {
     },
     getAllProjectTasks(projectId) {
       return this.$tasksService.getTasksByProjectId(projectId).then(data => {
+        this.allProjectTasks = [];
         this.allProjectTasks = data && data || [];
         this.$root.$emit('gantt-displayed', this.allProjectTasks);
       });
