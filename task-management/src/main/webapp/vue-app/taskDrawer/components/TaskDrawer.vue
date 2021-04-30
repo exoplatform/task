@@ -145,7 +145,8 @@
           <attachments-app
             :entity-id="task.id"
             entity-type="task"
-            :space-id="taskSpaceId" />
+            :space-id="taskSpaceId">
+          </attachments-app>
         </div>
         <v-divider class="my-0" />
         <v-flex
@@ -286,7 +287,7 @@ export default {
       return this.showBackArrow;
     },
     taskSpaceId() {
-      return this.task && this.task.status && this.task.status.project && this.task.status.project.id;
+      return this.task && this.task.status && this.task.status.project && this.task.status.project.space && this.task.status.project.space.id;
     },
   },
   watch: {
