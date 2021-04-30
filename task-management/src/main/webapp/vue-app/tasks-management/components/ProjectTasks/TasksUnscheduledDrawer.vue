@@ -13,7 +13,8 @@
             v-model="keyword"
             :placeholder=" $t('label.filterTask') "
             class="unscheduledTasksFilter pa-0 me-3 my-auto"
-            clearable />
+            clearable
+            autofocus />
         </div>
         <div class="unscheduledTasksAction">
           <v-btn
