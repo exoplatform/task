@@ -179,6 +179,9 @@ export default {
         description: '',
         title: ''
       },
+      alert: false,
+      type: '',
+      message: '',
       priorityStatus: ['High', 'In Normal', 'Low', 'None', null],
     };
   },computed: {
@@ -221,11 +224,26 @@ export default {
     },
   },
   created(){
+    this.$root.$on('task-updated',task => {
+      this.task=task;
+    });
     this.$root.$on('update-task-list', task => {
       this.retrieveTask(task);
+      this.task=task;
+    });
+    this.$root.$on('update-task-widget-list', task => {
+      this.task=task;
+      this.getMyOverDueTasks();
+      this.getMyTodayTasks();
+      this.getMyTomorrowTasks();
+      this.getMyUpcomingTasks();
+    });
+    this.$root.$on('show-alert', message => {
+      this.displayMessage(message);
     });
     this.$root.$on('open-task-drawer', task => {
-      this.$refs.taskDrawer.open(task);
+      this.task=task;
+      this.$refs.taskDrawer.open(this.task);
     });
     this.itemsLimit = this.$parent.$data.itemsLimit;
     this.getMyOverDueTasks();
@@ -356,6 +374,12 @@ export default {
         }
       }
     },
+    displayMessage(message) {
+      this.message=message.message;
+      this.type=message.type;
+      this.alert = true;
+      window.setTimeout(() => this.alert = false, 5000);
+    }
   }
 };
 </script>
