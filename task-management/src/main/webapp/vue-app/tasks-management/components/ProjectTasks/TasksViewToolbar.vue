@@ -22,7 +22,6 @@
             <span>{{ $t('label.listView') }}</span>
           </v-tab>
           <v-tab
-            v-if="allowGantt"
             :href="taskGanttTabView"
             class="taskTabGantt"
             @change="changeTaskViewTab('gantt')">
@@ -85,10 +84,6 @@ export default {
     taskGanttTabView: {
       type: String,
       default: ''
-    },
-    allowGantt: {
-      type: Boolean,
-      default: false
     },
   },
   data () {
