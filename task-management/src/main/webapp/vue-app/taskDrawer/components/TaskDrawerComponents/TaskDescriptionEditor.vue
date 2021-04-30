@@ -131,6 +131,7 @@
           removePlugins: 'confirmBeforeReload,maximize,resize',
           toolbarLocation: 'bottom',
           autoGrow_onStartup: true,
+          startupFocus: self.inputVal=== '' ? true :'end',
           on: {
             blur: function (evt) {
               $(document.body).trigger('click');
