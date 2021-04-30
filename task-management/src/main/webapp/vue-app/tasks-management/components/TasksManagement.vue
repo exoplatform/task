@@ -141,8 +141,8 @@ export default {
       this.showTabs=true;
       this.tab='tab-2';
     }
-    if (urlPath.includes('g/:spaces')){
-      this.spaceName = urlPath.split('g/:spaces:')[1].split('/')[0];
+    if (eXo.env.portal.spaceName){
+      this.spaceName = eXo.env.portal.spaceName;
       this.tab='tab-2';
       this.showTabs=false;
     }
@@ -158,7 +158,7 @@ export default {
       this.showTabs=true;
       this.displayDetails=false;
       const urlPath = document.location.pathname;
-      if (urlPath.includes('g/:spaces')){
+      if (eXo.env.portal.spaceName){
         window.history.pushState('task', 'Task details', `${urlPath.split('tasks')[0]}tasks`); 
       } else {
         window.history.pushState('myprojects', 'My Projects', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/tasks/myProjects`);

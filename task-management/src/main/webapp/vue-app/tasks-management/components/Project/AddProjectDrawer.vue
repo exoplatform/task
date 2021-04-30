@@ -195,11 +195,7 @@ export default {
         });
       } else {
         this.project=project;
-        const urlPath = document.location.pathname;
-        if (urlPath.includes('g/:spaces')) {
-          const spaceName =urlPath.split(':')[2].split('/')[1];
-          this.project.spaceName=spaceName;
-        }
+        this.project.spaceName=eXo.env.portal.spaceName;
         this.manager=[];
         this.participator=[];
         this.projectInformation={
@@ -281,11 +277,7 @@ export default {
             });
           }
         } else {
-          const urlPath = document.location.pathname;
-          if (urlPath.includes('g/:spaces')) {
-            const spaceName =urlPath.split(':')[2].split('/')[1];
-            projects.spaceName=spaceName;
-          }
+          projects.spaceName=eXo.env.portal.spaceName;
         }
 
         if (this.participator && this.participator.length) {
