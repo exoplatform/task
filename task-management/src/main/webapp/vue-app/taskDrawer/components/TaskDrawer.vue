@@ -635,6 +635,7 @@ export default {
       this.oldTask= Object.assign({}, task);
       this.taskTitle_= task.title;
       this.task = task;
+      this.taskPriority='NONE';
       window.setTimeout(() => {
         document.dispatchEvent(new CustomEvent('loadTaskPriority', {
           detail: task
