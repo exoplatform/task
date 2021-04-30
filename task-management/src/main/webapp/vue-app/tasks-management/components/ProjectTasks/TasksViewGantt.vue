@@ -3,6 +3,11 @@
     <div class="noTasksProject">
       <div class="noTasksProjectIcon"><i class="uiIcon uiIconTask"></i></div>
       <div class="noTasksProjectLabel"><span>{{ $t('label.noTasks') }}</span></div>
+      <div class="addunscheduledTask">
+        <v-btn @click="$root.$emit('displayTasksUnscheduledDrawer', unscheduledTaskList)" text>
+          {{ $t('Unscheduled Tasks') }}
+        </v-btn>
+      </div>
     </div>
   </div>
   <div v-else class="gantt-wrapper">
@@ -45,15 +50,21 @@ export default {
       tasks: [],
       isGanttDisplayed: false,
       ganttScale: 'Week',
-      unscheduledTaskList: []
+      unscheduledTaskList: [],
+      ganttItems: []
     };
   },
   computed: {
     ganttTasks() {
-      return this.tasksToDisplay.length;
+      return this.ganttItems.length;
     },
     hideGantt() {
-      return this.tasksList && this.tasksList.length === 0;
+      return this.tasksList && this.tasksList.length === 0 || this.ganttTasks === 0;
+    }
+  },
+  watch: {
+    tasksList() {
+      this.ganttItems = this.getTasksToDisplay(this.tasksList);
     }
   },
   created() {
@@ -68,10 +79,19 @@ export default {
       if ( value && value.length ) {
         this.tasks = value;
         this.tasksToDisplay = this.getTasksToDisplay(this.tasks);
-        if ( this.isGanttDisplayed === false ) {
+        if ( this.isGanttDisplayed === false && this.ganttItems.length ) {
           this.initGanttChart(this.tasksToDisplay);
         }
       }
+    });
+    this.$root.$on('refresh-gantt', taskItems => {
+      this.unscheduledTaskList = [];
+      const tasksInGantt = this.getTasksToDisplay(taskItems);
+      if ( this.tasksToDisplay && this.tasksToDisplay.length && tasksInGantt.length > this.tasksToDisplay.length) {
+        this.tasksToDisplay.push(tasksInGantt[tasksInGantt.length-1]);
+        this.gantt.refresh(this.tasksToDisplay);
+      }
+      this.$root.$emit('refresh-unscheduled-gantt',this.unscheduledTaskList);
     });
     this.$root.$on('task-updated', task => {
       this.unscheduledTaskList = [];
@@ -81,7 +101,19 @@ export default {
         }
       });
       this.tasksToDisplay = this.getTasksToDisplay(this.tasks);
-      this.gantt.refresh(this.tasksToDisplay);
+      this.$root.$emit('refresh-unscheduled-gantt',this.unscheduledTaskList);
+      if (this.ganttTasks > 0 ) {
+        this.gantt.refresh(this.tasksToDisplay);
+      } /*else {
+        this.ganttItems = this.tasksToDisplay;
+        this.isGanttDisplayed = false;
+        this.$nextTick(() => {
+          $('#gantt-chart').empty();
+          if ( this.isGanttDisplayed === false ) {
+            this.initGanttChart(this.tasksToDisplay);
+          }
+        });
+      }*/
     });
   },
   mounted() {
@@ -93,6 +125,7 @@ export default {
   methods: {
     getTasksToDisplay(tasksList) {
       const ganttTasksList = [];
+      this.unscheduledTaskList = [];
       if ( tasksList && tasksList.length ) {
         tasksList.forEach((item) => {
           const task ={
@@ -238,7 +271,7 @@ export default {
     },
     initGanttChart(tasks) {
       const svgGantt = '<svg id="gantt"></svg>';
-      $('#gantt-chart').append(svgGantt);   
+      $('#gantt-chart').append(svgGantt);
       const self = this;
       /*global Gantt :true*/
       /*eslint no-undef: 2*/
