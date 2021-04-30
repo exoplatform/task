@@ -151,8 +151,7 @@ export default {
     reset() {
       if (this.manager && !this.manager.length>0) { // In case of edit existing event
         // Add current user as default attendee
-        const urlPath = document.location.pathname;
-        if (urlPath.includes('g/:spaces')) {
+        if (eXo.env.portal.spaceName) {
           this.manager = [{
             id: `space:${eXo.env.portal.spaceName}`,
             providerId: 'space',
@@ -182,7 +181,9 @@ export default {
 
       this.spaces = this.manager.filter(attendee => attendee.providerId === 'space');
       this.users = this.manager.filter(attendee => attendee.providerId === 'organization');
-      this.$refs.invitedAttendeeAutoComplete.focus();
+      if (this.$refs.invitedAttendeeAutoComplete) {
+        this.$refs.invitedAttendeeAutoComplete.focus();
+      }
       this.$emit('initialized');
     },
     removeAttendee(attendee) {
