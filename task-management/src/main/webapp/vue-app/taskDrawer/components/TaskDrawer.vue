@@ -635,6 +635,10 @@ export default {
       this.oldTask= Object.assign({}, task);
       this.taskTitle_= task.title;
       this.task = task;
+      this.taskCoworkers= null;
+      this.assignee= null;
+      this.taskStartDate= null;
+      this.taskDueDate= null;
       this.taskPriority='NONE';
       window.setTimeout(() => {
         document.dispatchEvent(new CustomEvent('loadTaskPriority', {
