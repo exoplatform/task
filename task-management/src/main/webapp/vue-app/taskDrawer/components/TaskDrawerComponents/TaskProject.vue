@@ -134,6 +134,7 @@
         return ( item.name.toLocaleLowerCase().indexOf(queryText.toLocaleLowerCase()) >-1 || item.name.toLocaleLowerCase().indexOf(queryText.toLocaleLowerCase()) > -1 );},
       updateTask() {
         updateTask(this.task.id, this.task);
+        this.$root.$emit('update-task-widget-list', this.task);
         },
       updateTaskProject(project) {
         getDefaultStatusByProjectId(project.id).then((status) => {
