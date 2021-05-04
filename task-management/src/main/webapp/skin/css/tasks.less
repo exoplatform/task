@@ -1163,8 +1163,11 @@
         }     
       }
     }
-
-    }
+}
+.TaskCommentItem .commentBody .taskContentComment ul li {
+  list-style-position: inside;
+  list-style-type: disc;
+}
 .projectAndTasksContainer {
       .noTasksProject {
         min-height: 50vh;
@@ -2127,6 +2130,10 @@
     }
   }
   .taskDescription {
+    ul li {
+      list-style-position: inside;
+      list-style-type: disc;
+    }
     [contentEditable=true]:empty:not(:focus):before{
       content:attr(data-text);
       color: @greyColorLighten1Default;

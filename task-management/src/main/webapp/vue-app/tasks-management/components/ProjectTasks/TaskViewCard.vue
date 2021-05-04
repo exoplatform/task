@@ -138,6 +138,15 @@
       }
     },
     created() {
+      this.$root.$on('update-completed-task',(value,id)=>{
+        if (this.task.id === id){
+          this.task.task.completed=value;
+          if (this.task.task.completed === true && !this.showCompletedTasks){
+            this.$emit('update-task-completed', this.task.task);
+            this.removeCompletedTask = true;
+          }
+        }
+      });
       this.getTaskAssigneeAndCoworkers();
     },
     methods: {
