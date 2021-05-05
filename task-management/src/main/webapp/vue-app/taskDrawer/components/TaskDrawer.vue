@@ -394,7 +394,9 @@
         if(value) {
           if (this.task.id != null) {
             this.task.priority = value;
-            updateTask(this.task.id, this.task);
+            updateTask(this.task.id, this.task).then( () => {
+              this.$root.$emit('update-task-widget-list', this.task);
+            });
           } else {
             this.taskPriority = value;
           }
@@ -422,8 +424,9 @@
         if(value && value!=='none') {
           if(this.task.id!=null){
             this.task.dueDate = value;
-            updateTask(this.task.id,this.task);
-            this.$root.$emit('update-task-widget-list', this.task);
+            updateTask(this.task.id,this.task).then( () => {
+              this.$root.$emit('update-task-widget-list', this.task);
+            });
           } else {
             this.taskDueDate = value;
           }
@@ -465,8 +468,10 @@
           } else {
             this.task.assignee = null
           }
-          updateTask(this.task.id,this.task);
-          this.$root.$emit('update-task-list', this.task);
+          updateTask(this.task.id,this.task).then( () => {
+            this.$root.$emit('update-task-list', this.task);
+          });
+
         } else {
           if(value) {
             this.assignee = value;
@@ -482,8 +487,9 @@
           } else {
             this.task.coworker = []
           }
-          updateTask(this.task.id,this.task);
-          this.$root.$emit('update-task-list', this.task);
+          updateTask(this.task.id,this.task).then( () => {
+            this.$root.$emit('update-task-list', this.task);
+          });
         } else {
           if (value && value.length) {
             this.taskCoworkers = value
