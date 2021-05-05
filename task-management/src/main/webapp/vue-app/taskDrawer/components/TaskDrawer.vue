@@ -65,116 +65,117 @@
         </div>
       </template>
       <template slot="content">
-        <div class="taskTitleAndMark d-flex">
-          <v-btn
-            id="check_btn"
-            class="ms-n2"
-            icon
-            dark
-            @click="updateCompleted">
-            <v-icon v-if="task.completed" class="markAsCompletedBtn">mdi-checkbox-marked-circle</v-icon>
-            <v-icon v-else class="markAsCompletedBtn">mdi-checkbox-blank-circle-outline</v-icon>
-          </v-btn>
-          <v-textarea
-            ref="autoFocusInput4"
-            v-model="task.title"
-            :class="{taskCompleted: task.completed}"
-            :placeholder="$t('label.tapTask.name')"
-            :autofocus="task && task.id === null"
-            type="text"
-            class="ps-0 pt-0 task-name"
-            auto-grow
-            rows="1"
-            row-height="13"
-            required
-            @change="updateTaskTitle()" />
-        </div>
-        <div
-          v-if="task && task && task.id"
-          :title="$t('tooltip.viewAllChanges')"
-          class="lastUpdatedTask pb-3"
-          @click="$root.$emit('displayTaskChanges')">
-          <span class="pe-2">{{ $t('label.task.lastUpdate') }}
-            {{ displayedDate(lastTaskChangesLog) }}
-            {{ $t('label.task.lastUpdateBy') }}
-            {{ lastTaskChangesLogAuthor }}</span>
-        </div>
-        <div class="taskAssignement ms-8 pb-3">
-          <task-assignment
-            :task="task"
-            @updateTaskAssignement="updateTaskAssignee($event)"
-            @updateTaskCoworker="updateTaskCoworker($event)"
-            @assignmentsOpened="closePriority(); closeStatus(); closeProjectsList();closeTaskDates();closeLabelsList()" />
-        </div>
-        <v-divider class="my-0" />
-        <div class="d-flex  pt-4 pb-2">
-          <div class="taskDates">
-            <task-form-date-pickers
-              :task="task"
-              :date-picker-top="datePickerTop"
-              @startDateChanged="updateTaskStartDate($event)"
-              @dueDateChanged="updateTaskDueDate($event)" />
+        <div class="taskDrawerDetails pa-4">
+          <div class="taskTitleAndMark d-flex">
+            <v-btn
+              id="check_btn"
+              class="ms-n2"
+              icon
+              dark
+              @click="updateCompleted">
+              <v-icon v-if="task.completed" class="markAsCompletedBtn">mdi-checkbox-marked-circle</v-icon>
+              <v-icon v-else class="markAsCompletedBtn">mdi-checkbox-blank-circle-outline</v-icon>
+            </v-btn>
+            <v-textarea
+              ref="autoFocusInput4"
+              v-model="task.title"
+              :class="{taskCompleted: task.completed}"
+              :placeholder="$t('label.tapTask.name')"
+              :autofocus="task && task.id === null"
+              type="text"
+              class="ps-0 pt-0 task-name"
+              auto-grow
+              rows="1"
+              row-height="13"
+              required
+              @change="updateTaskTitle()" />
           </div>
-          <div class="taskStatusAndPriority">
-            <task-priority
-              :task="task"
-              @updateTaskPriority="updateTaskPriority($event)"
-              @PriorityListOpened="closeStatus(); closeProjectsList(); closeLabelsList();closeTaskDates();closeAssignements()" />
-            <task-status
-              :task="task"
-              @statusListOpened="closePriority(); closeProjectsList();closeLabelsList();closeTaskDates();closeAssignements()"
-              @updateTaskStatus="updateTaskStatus($event)" />
+          <div
+            v-if="task && task && task.id"
+            :title="$t('tooltip.viewAllChanges')"
+            class="lastUpdatedTask pb-3"
+            @click="$root.$emit('displayTaskChanges')">
+            <span class="pe-2">{{ $t('label.task.lastUpdate') }}
+              {{ displayedDate(lastTaskChangesLog) }}
+              {{ $t('label.task.lastUpdateBy') }}
+              {{ lastTaskChangesLogAuthor }}</span>
           </div>
-        </div>
-        <v-divider class="my-0" />
-        <div class="taskDescription py-4">
-          <task-description-editor
-            :task="task"
-            v-model="task.description"
-            :value="task.description"
-            :placeholder="$t('editinline.taskDescription.empty')"
-            @addTaskDescription="addTaskDescription($event)" />
-        </div>
-        <div class="taskLabelsName mt-3 mb-3">
-          <task-labels
-            v-if="task.status && task.status.project"
-            :task="task"
-            @labelsListOpened="closePriority(); closeStatus(); closeProjectsList();closeTaskDates();closeAssignements()" />
-        </div>
-        <div class="taskAttachments d-flex">
-          <attachments-app
-            :entity-id="task.id"
-            entity-type="task"
-            :space-id="taskSpaceId">
-          </attachments-app>
-        </div>
-        <v-divider class="my-0" />
-        <v-flex
-          v-if="task.id!=null"
-          xs12
-          class="pt-2 taskCommentsAndChanges">
-          <div class="taskComments">
-            <div v-if="comments && comments.length" class="taskCommentNumber d-flex pb-3">
-              <span class="ViewAllCommentLabel" @click="$root.$emit('displayTaskComment')">{{ $t('comment.message.viewAllComment') }} ({{ comments.length }})</span>
-              <div
-                :title="$t('comment.message.addYourComment')"
-                class="addCommentBtn ps-3"
-                @click="openCommentDrawer">
-                <i class="uiIcon uiIconTaskAddComment"></i>
+          <div class="taskAssignement ms-8 pb-3">
+            <task-assignment
+              :task="task"
+              @updateTaskAssignement="updateTaskAssignee($event)"
+              @updateTaskCoworker="updateTaskCoworker($event)"
+              @assignmentsOpened="closePriority(); closeStatus(); closeProjectsList();closeTaskDates();closeLabelsList()" />
+          </div>
+          <v-divider class="my-0" />
+          <div class="d-flex  pt-4 pb-2">
+            <div class="taskDates">
+              <task-form-date-pickers
+                :task="task"
+                :date-picker-top="datePickerTop"
+                @startDateChanged="updateTaskStartDate($event)"
+                @dueDateChanged="updateTaskDueDate($event)" />
+            </div>
+            <div class="taskStatusAndPriority">
+              <task-priority
+                :task="task"
+                @updateTaskPriority="updateTaskPriority($event)"
+                @PriorityListOpened="closeStatus(); closeProjectsList(); closeLabelsList();closeTaskDates();closeAssignements()" />
+              <task-status
+                :task="task"
+                @statusListOpened="closePriority(); closeProjectsList();closeLabelsList();closeTaskDates();closeAssignements()"
+                @updateTaskStatus="updateTaskStatus($event)" />
+            </div>
+          </div>
+          <v-divider class="my-0" />
+          <div class="taskDescription py-4">
+            <task-description-editor
+              :task="task"
+              v-model="task.description"
+              :value="task.description"
+              :placeholder="$t('editinline.taskDescription.empty')"
+              @addTaskDescription="addTaskDescription($event)" />
+          </div>
+          <div class="taskLabelsName mt-3 mb-3">
+            <task-labels
+              v-if="task.status && task.status.project"
+              :task="task"
+              @labelsListOpened="closePriority(); closeStatus(); closeProjectsList();closeTaskDates();closeAssignements()" />
+          </div>
+          <div class="taskAttachments d-flex">
+            <attachments-app
+              :entity-id="task.id"
+              entity-type="task"
+              :space-id="taskSpaceId" />
+          </div>
+          <v-divider class="my-0" />
+          <v-flex
+            v-if="task.id!=null"
+            xs12
+            class="pt-2 taskCommentsAndChanges">
+            <div class="taskComments">
+              <div v-if="comments && comments.length" class="taskCommentNumber d-flex pb-3">
+                <span class="ViewAllCommentLabel" @click="$root.$emit('displayTaskComment')">{{ $t('comment.message.viewAllComment') }} ({{ comments.length }})</span>
+                <div
+                  :title="$t('comment.message.addYourComment')"
+                  class="addCommentBtn ps-3"
+                  @click="openCommentDrawer">
+                  <i class="uiIcon uiIconTaskAddComment"></i>
+                </div>
+              </div>
+              <div v-else class="taskCommentEmpty align-center pt-6 pb-3">
+                <i class="uiIcon uiIconComment"></i>
+                <span class="noCommentLabel">{{ $t('comment.message.noComment') }}</span>
+                <span class="ViewAllCommentText" @click="$root.$emit('displayTaskComment')">{{ $t('comment.message.addYourComment') }}</span>
+              </div>
+              <div v-if="comments && comments.length" class="pe-0 ps-0 TaskCommentItem">
+                <task-last-comment
+                  :task="task"
+                  :comment="comments[comments.length-1]" />
               </div>
             </div>
-            <div v-else class="taskCommentEmpty align-center pt-6 pb-3">
-              <i class="uiIcon uiIconComment"></i>
-              <span class="noCommentLabel">{{ $t('comment.message.noComment') }}</span>
-              <span class="ViewAllCommentText" @click="$root.$emit('displayTaskComment')">{{ $t('comment.message.addYourComment') }}</span>
-            </div>
-            <div v-if="comments && comments.length" class="pe-0 ps-0 TaskCommentItem">
-              <task-last-comment
-                :task="task"
-                :comment="comments[comments.length-1]" />
-            </div>
-          </div>
-        </v-flex>
+          </v-flex>
+        </div>
       </template>
       <template v-if="!task.id" slot="footer">
         <div class="d-flex">
@@ -252,7 +253,8 @@ export default {
       commentId: '',
       isDrawerClose: true,
       oldTask: {},
-      showBackArrow: false
+      showBackArrow: false,
+      taskSpace: {},
     };
   },
   computed: {
@@ -286,8 +288,17 @@ export default {
     addBackArrow() {
       return this.showBackArrow;
     },
+    taskStatus() {
+      return this.task && this.task.status;
+    },
+    taskProject() {
+      return this.taskStatus && this.taskStatus.project;
+    },
+    taskProjectId() {
+      return this.taskProject && this.taskProject.id;
+    },
     taskSpaceId() {
-      return this.task && this.task.status && this.task.status.project && this.task.status.project.space && this.task.status.project.space.id;
+      return this.taskSpace && this.taskSpace.id;
     },
   },
   watch: {
@@ -638,6 +649,16 @@ export default {
         });
       return this.comments;
     },
+    getTaskSpace() {
+      if (this.taskProjectId) {
+        this.$projectService.getProject(this.taskProjectId).then(
+          (project) => {
+            this.taskSpace = project.spaceDetails;
+          });
+      } else {
+        this.taskSpace = {};
+      }
+    },
     navigateTo(pagelink) {
       window.open(`${ eXo.env.portal.context }/${ eXo.env.portal.portalName }/${ pagelink }`, '_blank');
     },
@@ -677,6 +698,7 @@ export default {
       if (task.id != null) {
         this.retrieveTaskLogs();
         this.getTaskComments();
+        this.getTaskSpace();
         this.$root.$emit('set-url', {
           type: 'task',
           id: task.id
