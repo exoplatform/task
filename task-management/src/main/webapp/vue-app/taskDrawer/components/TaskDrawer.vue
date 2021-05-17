@@ -143,10 +143,10 @@
               @labelsListOpened="closePriority(); closeStatus(); closeProjectsList();closeTaskDates();closeAssignements()" />
           </div>
           <div class="taskAttachments d-flex">
-            <attachments-app
+            <attachment-app
               :entity-id="task.id"
-              entity-type="task"
-              :space-id="taskSpaceId" />
+              :space-id="taskSpaceId"
+              entity-type="task"/>
           </div>
           <v-divider class="my-0" />
           <v-flex
@@ -308,7 +308,6 @@ export default {
       }
     }
   },
-    
   created() {
     $(document).on('mousedown', () => {
       if (this.displayActionMenu) {
