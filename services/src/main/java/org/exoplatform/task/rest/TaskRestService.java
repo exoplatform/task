@@ -23,6 +23,7 @@ import org.exoplatform.task.service.*;
 import org.exoplatform.task.storage.CommentStorage;
 import org.exoplatform.task.storage.StatusStorage;
 import org.exoplatform.task.util.CommentUtil;
+import org.exoplatform.task.util.ResourceUtil;
 import org.exoplatform.task.util.TaskUtil;
 import org.exoplatform.task.util.UserUtil;
 import org.json.JSONArray;
@@ -891,7 +892,7 @@ public class TaskRestService implements ResourceContainer {
   @Produces(MediaType.APPLICATION_JSON)
   @ApiOperation(value = "Gets users to mention in comment", httpMethod = "GET", response = Response.class, notes = "This returns users to mention in comment")
   @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled") })
-  public Response findUsersToMention(@ApiParam(value = "Query", required = true) @PathParam("query") String query, @ApiParam(value = "Lang", required = true) @PathParam("lang") String lang) {
+  public Response findUsersToMention(@ApiParam(value = "Query", required = true) @PathParam("query") String query) {
     try {
     ListAccess<User> list = userService.findUserByName(query);
     JSONArray usersJsonArray = new JSONArray();
@@ -899,7 +900,7 @@ public class TaskRestService implements ResourceContainer {
       JSONObject userJson = new JSONObject();
       String fullName = user.getDisplayName();
       if(taskService.isExternal(user.getUsername())){
-        fullName += " " + "(" + TaskUtil.getResourceBundleLabel(new Locale(lang), "external.label.tag") + ")";
+        fullName += " " + "(" + TaskUtil.getResourceBundleLabel(new Locale(TaskUtil.getCurrentUserLanguage(user.getUsername())), "external.label.tag") + ")";
       }
       userJson.put("id", "@" + user.getUsername());
       userJson.put("name", fullName);

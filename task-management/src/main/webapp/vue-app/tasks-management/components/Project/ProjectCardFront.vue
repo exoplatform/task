@@ -134,8 +134,6 @@
               :username="manager.username"
               :title="manager.displayName"
               :avatar-url="manager.avatar"
-              :external="manager.external"
-              :retrieve-extra-information="false"
               :size="iconSize"
               :style="'background-image: url('+manager.avatar+')'"
               class="me-1 projectManagersAvatar" />

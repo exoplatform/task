@@ -24,8 +24,6 @@
               :fullname="taskAssigneeFullName"
               :avatar-url="taskAssigneeObj.profile.avatarUrl"
               :title="taskAssigneeObj.profile.fullName"
-              :external="taskAssigneeObj.profile.external"
-              :retrieve-extra-information="false"
               :size="24"
               :url="null"
               class="pe-2" />

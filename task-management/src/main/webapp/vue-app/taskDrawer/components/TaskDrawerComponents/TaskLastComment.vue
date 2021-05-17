@@ -7,6 +7,8 @@
         :username="comment.author.username"
         :avatar-url="comment.author.avatar"
         :title="comment.author.displayName"
+        :external="comment.author.external"
+        :retrieve-extra-information="false"
         :size="30"
         :url="comment.author.url" />
       <div class="commentContent ps-3 d-flex align-center">

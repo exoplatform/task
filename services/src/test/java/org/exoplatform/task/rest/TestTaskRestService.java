@@ -776,7 +776,7 @@ public class TestTaskRestService {
 
     when(userService.findUserByName("root")).thenReturn(lists);
     when(taskService.isExternal("root")).thenReturn(false);
-    Response response = taskRestService.findUsersToMention("root", Locale.ENGLISH.getLanguage());
+    Response response = taskRestService.findUsersToMention("root");
     assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
   }
 

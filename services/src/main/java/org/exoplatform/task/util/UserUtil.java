@@ -153,6 +153,8 @@ public final class UserUtil {
       return null;
     }
     Profile profile = id.getProfile();
-    return new org.exoplatform.task.model.User(userName,  profile.getEmail(),  null,  null, profile.getFullName(), profile.getAvatarUrl(), profile.getUrl());
+    org.exoplatform.task.model.User user = new org.exoplatform.task.model.User(userName,  profile.getEmail(),  null,  null, profile.getFullName(), profile.getAvatarUrl(), profile.getUrl());
+    user.setExternal(CommentUtil.isExternal(userName));
+    return user;
   }
 }

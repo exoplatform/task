@@ -26,9 +26,7 @@ import org.exoplatform.task.exception.UnAuthorizedOperationException;
 import org.exoplatform.task.service.UserService;
 import org.exoplatform.task.model.User;
 import org.exoplatform.task.service.*;
-import org.exoplatform.task.util.ProjectUtil;
-import org.exoplatform.task.util.StringUtil;
-import org.exoplatform.task.util.UserUtil;
+import org.exoplatform.task.util.*;
 import org.gatein.common.text.EntityEncoder;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -760,7 +758,11 @@ public class ProjectRestService implements ResourceContainer {
       JSONObject userJson = new JSONObject();
       try {
         userJson.put("id", "@" + userIdentity.getRemoteId());
-        userJson.put("name", userIdentity.getProfile().getFullName());
+        String fullName = userIdentity.getProfile().getFullName();
+        if(taskService.isExternal(userIdentity.getRemoteId())){
+          fullName += " " + "(" + TaskUtil.getResourceBundleLabel(new Locale(TaskUtil.getCurrentUserLanguage(userIdentity.getProfile().getId())), "external.label.tag") + ")";
+        }
+        userJson.put("name", fullName);
         userJson.put("avatar", userIdentity.getProfile().getAvatarUrl());
         userJson.put("type", "contact");
         usersJsonArray.put(userJson);

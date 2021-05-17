@@ -14,7 +14,7 @@
             :title="user.displayName"
             :fullname="user.displayName"
             :external="user.external"
-            :retrieve-extra-information="false"/>
+            :retrieve-extra-information="false" />
         </v-flex>
       </v-layout>
     </template>
