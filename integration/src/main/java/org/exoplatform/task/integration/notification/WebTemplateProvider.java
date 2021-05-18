@@ -38,6 +38,8 @@ import org.exoplatform.social.core.manager.IdentityManager;
 import org.exoplatform.social.core.service.LinkProvider;
 import org.exoplatform.social.notification.LinkProviderUtils;
 import org.exoplatform.task.service.UserService;
+import org.exoplatform.task.util.CommentUtil;
+import org.exoplatform.task.util.TaskUtil;
 import org.exoplatform.webui.utils.TimeConvertUtils;
 import org.gatein.common.text.EntityEncoder;
 
@@ -120,7 +122,11 @@ public class WebTemplateProvider extends TemplateProvider {
       EntityEncoder encoder = HTMLEntityEncoder.getInstance();
       Identity identity = CommonsUtils.getService(IdentityManager.class).getOrCreateIdentity(OrganizationIdentityProvider.NAME, creator, true);
       Profile profile = identity.getProfile();
-      templateContext.put("USER", encoder.encode(profile.getFullName().toString()));
+      String fullName = profile.getFullName();
+      if(CommentUtil.isExternal(identity.getRemoteId())) {
+        fullName += " " + "(" + TaskUtil.getResourceBundleLabel(new Locale(TaskUtil.getCurrentUserLanguage(identity.getRemoteId())), "external.label.tag") + ")";
+      }
+      templateContext.put("USER", encoder.encode(fullName));
       templateContext.put("AVATAR", profile.getAvatarUrl() != null ? profile.getAvatarUrl() : LinkProvider.PROFILE_DEFAULT_AVATAR_URL);
       templateContext.put("PROFILE_URL", LinkProviderUtils.getRedirectUrl("user", identity.getRemoteId()));
       //

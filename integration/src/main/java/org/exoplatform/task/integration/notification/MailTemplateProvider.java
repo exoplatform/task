@@ -39,6 +39,7 @@ import org.exoplatform.social.core.manager.IdentityManager;
 import org.exoplatform.social.notification.LinkProviderUtils;
 import org.exoplatform.task.service.UserService;
 import org.exoplatform.task.util.CommentUtil;
+import org.exoplatform.task.util.TaskUtil;
 import org.gatein.common.text.EntityEncoder;
 
 import java.io.IOException;
@@ -102,7 +103,11 @@ public class MailTemplateProvider extends TemplateProvider {
                                     .getOrCreateIdentity(OrganizationIdentityProvider.NAME, notificationCreator, true);
       Profile profile = author.getProfile();
       // creator
-      templateContext.put("USER", encoder.encode(profile.getFullName()));
+      String fullName = profile.getFullName();
+      if(CommentUtil.isExternal(author.getRemoteId())) {
+        fullName += " " + "(" + TaskUtil.getResourceBundleLabel(new Locale(TaskUtil.getCurrentUserLanguage(author.getRemoteId())), "external.label.tag") + ")";
+      }
+      templateContext.put("USER", encoder.encode(fullName));
       templateContext.put("AVATAR", LinkProviderUtils.getUserAvatarUrl(profile));
       templateContext.put("PROFILE_URL", LinkProviderUtils.getRedirectUrl("user", author.getRemoteId()));
       // receiver

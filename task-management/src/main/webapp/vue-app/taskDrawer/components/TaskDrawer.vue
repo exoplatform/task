@@ -271,7 +271,7 @@ export default {
       return this.logs && this.logs.length && this.logs[0].createdTime || '';
     },
     lastTaskChangesLogAuthor() {
-      return this.logs && this.logs.length && this.logs[0].authorFullName || '';
+      return this.logs && this.logs.length && ( this.logs[0].external ? `${this.logs[0].authorFullName} (${this.$t('label.external')})`  || '' : this.logs[0].authorFullName || '');
     },
     taskId() {
       return this.task && this.task.id;
