@@ -206,11 +206,26 @@
     },
   },
     created(){
+      this.$root.$on('task-updated',task => {
+        this.task=task;
+      });
+      this.$root.$on('update-task-list', task => {
+        this.retrieveTask(task);
+        this.task=task;
+      });
+      this.$root.$on('update-task-widget-list', task => {
+        this.task=task;
+        this.getMyOverDueTasks();
+        this.getMyTodayTasks();
+        this.getMyTomorrowTasks();
+        this.getMyUpcomingTasks();
+      });
       this.$root.$on('task-added', task => {
         this.retrieveTask(task);
       });
       this.$root.$on('open-task-drawer', task => {
-        this.$refs.taskDrawer.open(task);
+        this.task=task;
+        this.$refs.taskDrawer.open(this.task);
       });
       this.itemsLimit = this.$parent.$data.itemsLimit;
       this.getMyOverDueTasks();
