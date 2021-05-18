@@ -464,7 +464,9 @@
           } else {
             this.task.assignee = null
           }
-          updateTask(this.task.id,this.task);
+          updateTask(this.task.id,this.task).then( () => {
+            this.$root.$emit('update-task-assignee',value,this.task.id);
+          });
         } else {
           if(value) {
             this.assignee = value;
@@ -480,7 +482,9 @@
           } else {
             this.task.coworker = []
           }
-          updateTask(this.task.id,this.task);
+          updateTask(this.task.id,this.task).then( () => {
+            this.$root.$emit('update-task-coworker',value,this.task.id);
+          });
         } else {
           if (value && value.length) {
             this.taskCoworkers = value

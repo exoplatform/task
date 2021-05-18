@@ -162,7 +162,7 @@
         isPersonnalTask : this.task.status === null,
         labelList: '',
         isSpaceProject: this.task.space !== null,
-        maxAvatarToShow : 3,
+        maxAvatarToShow : 1,
         showCompleteTasks: false
       }
     },
@@ -183,6 +183,23 @@
       }
     },
     created() {
+      this.$root.$on('update-task-assignee',(value,id)=>{
+        this.updateTaskAssignee(value,id);
+      });
+      this.$root.$on('update-remove-task-labels',(value,id)=>{
+        this.updateRemoveTaskLabels(value,id);
+      });
+      this.$root.$on('update-task-labels',(value,id)=>{
+        this.updateTaskLabels(value,id);
+      });
+      this.$root.$on('update-task-comments',(value,id)=>{
+        this.updateTaskComments(value,id);
+      });
+      this.$root.$on('update-task-coworker',(value,id)=>{
+        this.updateTaskCoworker(value,id);
+      });
+      this.getTaskAssigneeAndCoworkers();
+
       this.$root.$on('update-completed-task', (value, id) => {
         if (this.task.id === id) {
           this.task.task.completed = value;
@@ -194,6 +211,65 @@
       });
     },
     methods: {
+      updateRemoveTaskLabels(value,id){
+        if (this.task.id === id){
+          this.task.labels=this.task.labels.filter(item => item.id !== value);
+        }
+      },
+      updateTaskLabels(value,id){
+        if (this.task.id === id){
+          this.task.labels.push(value);
+        }
+      },
+      updateTaskComments(value,id){
+        if (this.task.id === id){
+          this.task.commentCount=value;
+        }
+      },
+      updateTaskCoworker(value,id){
+        if (this.task.id === id){
+          if (value && value.length) {
+            this.task.coworker=[];
+            value.forEach((coworker) => {
+              this.$identityService.getIdentityByProviderIdAndRemoteId('organization',coworker).then(user => {
+                const taskCoworker = {
+                  id: `organization:${user.remoteId}`,
+                  username: user.remoteId,
+                  providerId: 'organization',
+                  displayName: user.profile.fullname,
+                  avatar: user.profile.avatar,
+                };
+                if (taskCoworker && !this.task.coworker.includes(taskCoworker)){
+                  this.task.coworker.push(taskCoworker);
+                }
+              });
+            }).then(() => {
+              this.getTaskAssigneeAndCoworkers();
+            });
+          } else {
+            this.task.coworker = [];
+          }
+        }
+      },
+      updateTaskAssignee(value,id){
+        if (this.task.id === id){
+          if (value===null){
+            this.task.assignee = null;
+          } else {
+            this.$identityService.getIdentityByProviderIdAndRemoteId('organization',value).then(user => {
+              this.task.assignee = {
+                id: `organization:${user.remoteId}`,
+                username: user.remoteId,
+                providerId: 'organization',
+                displayName: user.profile.fullname,
+                avatar: user.profile.avatar,
+              };})
+                .then(() => {
+                  this.getTaskAssigneeAndCoworkers();
+                });
+          }
+        }
+      },
       getTaskPriorityColor(priority) {
         switch(priority) {
           case "HIGH":
@@ -281,23 +357,17 @@
         }
       },
       getTaskAssigneeAndCoworkers() {
-        this.assigneeAndCoworkerArray=[]
-                if(this.task.assignee) {
-                  if (!this.assigneeAndCoworkerArray.some(assigneeAndCowoker => assigneeAndCowoker.username === this.task.assignee.username)) {
-
-                    this.assigneeAndCoworkerArray.push(this.task.assignee);
-                  }
-                }
-        if (this.task.coworker && this.task.coworker.length > 0 )
-        {
-          if(!  this.assigneeAndCoworkerArray.some(assigneeAndCowoker => assigneeAndCowoker.username === this.task.coworker.username)){
-
-            this.task.coworker.forEach((coworker) => {
-              if (coworker){
-                this.assigneeAndCoworkerArray.push(coworker);
-              }
-          })
-        }}
+        this.assigneeAndCoworkerArray=[];
+        if (this.task.assignee && !this.assigneeAndCoworkerArray.includes(this.task.assignee)) {
+          this.assigneeAndCoworkerArray.push(this.task.assignee);
+        }
+        if (this.task.coworker || this.task.coworker.length > 0) {
+          this.task.coworker.forEach((coworker) => {
+            if (coworker && !this.assigneeAndCoworkerArray.includes(coworker)){
+              this.assigneeAndCoworkerArray.push(coworker);
+            }
+          });
+        }
       },
       getTaskStatusLabel(status) {
         switch(status) {
