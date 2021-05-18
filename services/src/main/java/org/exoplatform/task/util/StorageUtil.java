@@ -42,6 +42,7 @@ public final class StorageUtil{
         changeLogEntry.setExternal(userService.loadUser(changeLog.getAuthor()).isExternal());
         if(changeLog.getActionName().equals("assign")||changeLog.getActionName().equals("unassign")){
             changeLogEntry.setTargetFullName(userService.loadUser(changeLog.getTarget()).getDisplayName());
+            changeLogEntry.setIsTargetFullNameExternal(CommentUtil.isExternal(userService.loadUser(changeLog.getTarget()).getUsername()));
         }
         return changeLogEntry;
     }

@@ -315,11 +315,16 @@ public class MailTemplateProvider extends TemplateProvider {
         Collections.reverse(creators);
 
         IdentityManager idManager = CommonsUtils.getService(IdentityManager.class);
-        Profile lastUser = idManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, creators.get(0), true).getProfile();
+        Identity identity = idManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, creators.get(0), true);
+        Profile lastUser = identity.getProfile();
+        String fullName = lastUser.getFullName();
+        if(CommentUtil.isExternal(identity.getRemoteId())) {
+            fullName += " " + "(" + TaskUtil.getResourceBundleLabel(new Locale(TaskUtil.getUserLanguage(identity.getRemoteId())), "external.label.tag") + ")";
+        }
         String lastProfileURL = LinkProviderUtils.getRedirectUrl("user", creators.get(0));
         String user = "<a href=\"" + lastProfileURL
             + "\" style=\"text-decoration: none; color: #2f5e92; font-family: 'HelveticaNeue Bold', Helvetica, Arial, sans-serif\">"
-            + encoder.encode(lastUser.getFullName()) + "</a>";
+            + encoder.encode(fullName) + "</a>";
 
         if (creators.size() <= 1) {
           templateContext.digestType(ElementType.DIGEST_ONE.getValue());
@@ -327,6 +332,10 @@ public class MailTemplateProvider extends TemplateProvider {
           templateContext.digestType(ElementType.DIGEST_MORE.getValue());
 
           lastUser = idManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, creators.get(1), true).getProfile();
+          String userFullName = lastUser.getFullName();
+          if(CommentUtil.isExternal(identity.getRemoteId())) {
+            userFullName += " " + "(" + TaskUtil.getResourceBundleLabel(new Locale(TaskUtil.getUserLanguage(identity.getRemoteId())), "external.label.tag") + ")";
+          }
           lastProfileURL = LinkProviderUtils.getRedirectUrl("user", creators.get(1));
 
           if (creators.size() == 2) {
@@ -336,7 +345,7 @@ public class MailTemplateProvider extends TemplateProvider {
           }
           user += " <a href=\"" + lastProfileURL
               + "\" style=\"text-decoration: none; color: #2f5e92; font-family: 'HelveticaNeue Bold', Helvetica, Arial, sans-serif\">"
-              + encoder.encode(lastUser.getFullName()) + "</a>";
+              + encoder.encode(userFullName) + "</a>";
 
           if (creators.size() == 3) {
             user += " " + TemplateUtils.getResourceBundle("Notification.label.one.other", locale, resourcePath);

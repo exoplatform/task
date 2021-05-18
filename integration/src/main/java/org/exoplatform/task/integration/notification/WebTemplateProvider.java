@@ -221,17 +221,24 @@ public class WebTemplateProvider extends TemplateProvider {
 
       Collections.reverse(creator);
       templateContext.put("TOTAL_USER", creator.size());
-      Profile lastUser = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, creator.get(0), true).getProfile();
-
+      Identity identity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, creator.get(0), true);
+      Profile lastUser = identity.getProfile();
+      String fullName = lastUser.getFullName();
+      if(CommentUtil.isExternal(identity.getRemoteId())) {
+        fullName += " " + "(" + TaskUtil.getResourceBundleLabel(new Locale(TaskUtil.getUserLanguage(identity.getRemoteId())), "external.label.tag") + ")";
+      }
       templateContext.put("AVATAR", lastUser.getAvatarUrl() != null ? lastUser.getAvatarUrl() : LinkProvider.PROFILE_DEFAULT_AVATAR_URL);
-      templateContext.put("USER", encoder.encode(lastUser.getFullName().toString()));
+      templateContext.put("USER", encoder.encode(fullName));
       templateContext.put("PROFILE_URL", LinkProviderUtils.getRedirectUrl("user", (String)lastUser.getProperty(Profile.USERNAME)));
 
       templateContext.put("COUNT_USER", creator.size() > 2 ? creator.size() - 2 : 0);
       if (creator.size() > 1) {
-        Profile lastUser2 = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, creator.get(1), true).getProfile();
-
-        templateContext.put("USER2", encoder.encode(lastUser2.getFullName().toString()));
+        Profile lastUser2 = identity.getProfile();
+        String fullName2 = lastUser2.getFullName();
+         if(CommentUtil.isExternal(identity.getRemoteId())) {
+           fullName2 += " " + "(" + TaskUtil.getResourceBundleLabel(new Locale(TaskUtil.getUserLanguage(identity.getRemoteId())), "external.label.tag") + ")";
+         }
+        templateContext.put("USER2", encoder.encode(fullName2));
         templateContext.put("PROFILE_URL2", LinkProviderUtils.getRedirectUrl("user", (String)lastUser2.getProperty(Profile.USERNAME)));
       }
 

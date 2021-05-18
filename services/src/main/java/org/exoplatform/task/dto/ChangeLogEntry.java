@@ -26,6 +26,8 @@ public class ChangeLogEntry implements Serializable {
 
     private boolean external;
 
+    private boolean isTargetFullNameExternal;
+
     private long createdTime = System.currentTimeMillis();
 
     public ChangeLogEntry() {
@@ -128,5 +130,11 @@ public class ChangeLogEntry implements Serializable {
 
     public void setExternal(boolean external) {
         this.external = external;
+    }
+
+    public boolean getIsTargetFullNameExternal() { return isTargetFullNameExternal; }
+
+    public void setIsTargetFullNameExternal(boolean isTargetFullNameExternal) {
+        this.isTargetFullNameExternal = isTargetFullNameExternal;
     }
 }

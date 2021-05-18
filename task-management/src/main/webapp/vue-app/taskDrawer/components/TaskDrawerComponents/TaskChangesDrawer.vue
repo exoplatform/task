@@ -103,9 +103,10 @@ export default {
     renderChangeHTML(item) {
       let str = '';
       if ( item.actionName === 'assign' || item.actionName === 'unassign') {
-        str = `<p class='changesItem assignDiv text-truncate mb-0' title='${item.authorFullName} ${this.$t(this.logMsg(item))} ${item.targetFullName}'>` +
+        const targetFullName = item.isTargetFullNameExternal ? `${item.targetFullName} (${this.$t('label.external')})` :  `${item.targetFullName}`;
+        str = `<p class='changesItem assignDiv text-truncate mb-0' title='${item.authorFullName} ${this.$t(this.logMsg(item))} ${targetFullName}'>` +
             `<span>${ this.$t(this.logMsg(item))}</span>`+
-            `<a href='/portal/dw/profile/${item.target}'> ${item.targetFullName} </a>`+
+            `<a href='/portal/dw/profile/${item.target}'> ${targetFullName} </a>`+
             '</p>';
       } else if ( item.actionName === 'edit_project' ) {
         str = `<p class='changesItem assignDiv text-truncate mb-0' title='${item.authorFullName} ${this.$t(this.logMsg(item))}  ${item.target}'>` +
