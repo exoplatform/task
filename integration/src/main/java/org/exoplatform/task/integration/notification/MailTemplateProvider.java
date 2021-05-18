@@ -105,7 +105,7 @@ public class MailTemplateProvider extends TemplateProvider {
       // creator
       String fullName = profile.getFullName();
       if(CommentUtil.isExternal(author.getRemoteId())) {
-        fullName += " " + "(" + TaskUtil.getResourceBundleLabel(new Locale(TaskUtil.getCurrentUserLanguage(author.getRemoteId())), "external.label.tag") + ")";
+        fullName += " " + "(" + TaskUtil.getResourceBundleLabel(new Locale(TaskUtil.getUserLanguage(author.getRemoteId())), "external.label.tag") + ")";
       }
       templateContext.put("USER", encoder.encode(fullName));
       templateContext.put("AVATAR", LinkProviderUtils.getUserAvatarUrl(profile));

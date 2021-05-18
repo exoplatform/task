@@ -124,7 +124,7 @@ public class WebTemplateProvider extends TemplateProvider {
       Profile profile = identity.getProfile();
       String fullName = profile.getFullName();
       if(CommentUtil.isExternal(identity.getRemoteId())) {
-        fullName += " " + "(" + TaskUtil.getResourceBundleLabel(new Locale(TaskUtil.getCurrentUserLanguage(identity.getRemoteId())), "external.label.tag") + ")";
+        fullName += " " + "(" + TaskUtil.getResourceBundleLabel(new Locale(TaskUtil.getUserLanguage(identity.getRemoteId())), "external.label.tag") + ")";
       }
       templateContext.put("USER", encoder.encode(fullName));
       templateContext.put("AVATAR", profile.getAvatarUrl() != null ? profile.getAvatarUrl() : LinkProvider.PROFILE_DEFAULT_AVATAR_URL);

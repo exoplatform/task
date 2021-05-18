@@ -760,7 +760,7 @@ public class ProjectRestService implements ResourceContainer {
         userJson.put("id", "@" + userIdentity.getRemoteId());
         String fullName = userIdentity.getProfile().getFullName();
         if(taskService.isExternal(userIdentity.getRemoteId())){
-          fullName += " " + "(" + TaskUtil.getResourceBundleLabel(new Locale(TaskUtil.getCurrentUserLanguage(userIdentity.getProfile().getId())), "external.label.tag") + ")";
+          fullName += " " + "(" + TaskUtil.getResourceBundleLabel(new Locale(TaskUtil.getUserLanguage(userIdentity.getProfile().getId())), "external.label.tag") + ")";
         }
         userJson.put("name", fullName);
         userJson.put("avatar", userIdentity.getProfile().getAvatarUrl());

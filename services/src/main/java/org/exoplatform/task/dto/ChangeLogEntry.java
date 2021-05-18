@@ -126,7 +126,7 @@ public class ChangeLogEntry implements Serializable {
 
     public boolean getExternal() { return external; }
 
-    public void setExternale(boolean external) {
+    public void setExternal(boolean external) {
         this.external = external;
     }
 }
