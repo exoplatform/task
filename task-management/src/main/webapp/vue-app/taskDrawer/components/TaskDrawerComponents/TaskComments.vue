@@ -224,7 +224,9 @@
                         this.comment.subComments = this.comment.subComments || [];
                         this.comment.subComments.push(comment)
                       })
-              );
+              ).then( () => {
+                this.$root.$emit('update-task-comments',this.comments.length,this.task.id);
+              });
               this.showEditor = false;
             },
             removeTaskComment: function () {

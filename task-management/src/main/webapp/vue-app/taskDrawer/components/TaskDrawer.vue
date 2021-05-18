@@ -470,8 +470,8 @@
           }
           updateTask(this.task.id,this.task).then( () => {
             this.$root.$emit('update-task-list', this.task);
+            this.$root.$emit('update-task-assignee',value,this.task.id);
           });
-
         } else {
           if(value) {
             this.assignee = value;
@@ -489,6 +489,7 @@
           }
           updateTask(this.task.id,this.task).then( () => {
             this.$root.$emit('update-task-list', this.task);
+            this.$root.$emit('update-task-coworker',value,this.task.id);
           });
         } else {
           if (value && value.length) {
