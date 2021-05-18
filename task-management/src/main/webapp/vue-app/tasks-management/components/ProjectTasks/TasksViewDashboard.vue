@@ -333,10 +333,19 @@
         })
       },
       updateStatus(status) {
+        if (status!=null){
          return this.$statusService.updateStatus(status).then(resp => {
            this.getStatusByProject(this.project.id)
-        })
-      },
+        }).then( () => {
+           this.getTasksByProject(this.project.id,'');
+         }).catch(e => {
+           console.error('Error when updating status', e);
+         });
+      } else {
+          this.getStatusByProject(this.project.id);
+          this.getTasksByProject(this.project.id,'');
+        }
+        },
       createStatus() {
         this.statusList.forEach(function (element, index) {
         if(!element.project){
