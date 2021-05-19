@@ -23,6 +23,7 @@ import org.exoplatform.task.service.*;
 import org.exoplatform.task.storage.CommentStorage;
 import org.exoplatform.task.storage.StatusStorage;
 import org.exoplatform.task.util.CommentUtil;
+import org.exoplatform.task.util.ResourceUtil;
 import org.exoplatform.task.util.TaskUtil;
 import org.exoplatform.task.util.UserUtil;
 import org.json.JSONArray;
@@ -772,11 +773,11 @@ public class TaskRestService implements ResourceContainer {
     List<CommentDto> comments = commentService.getCommentsWithSubs(id, offset, limit);
     List<CommentEntity> commentModelsList = new ArrayList<CommentEntity>();
     for (CommentDto comment : comments) {
-      CommentEntity commentModel = addCommentModel(comment, commentModelsList, TaskUtil.getCurrentUserLanguage(currentUser));
+      CommentEntity commentModel = addCommentModel(comment, commentModelsList, TaskUtil.getUserLanguage(currentUser));
       if (comment.getSubComments()!=null&&!comment.getSubComments().isEmpty()) {
         List<CommentEntity> subCommentsModelsList = new ArrayList<>();
         for (CommentDto subComment :comment.getSubComments()) {
-          addCommentModel(subComment, subCommentsModelsList, TaskUtil.getCurrentUserLanguage(currentUser));
+          addCommentModel(subComment, subCommentsModelsList, TaskUtil.getUserLanguage(currentUser));
         }
         commentModel.setSubComments(subCommentsModelsList);
       }
@@ -816,7 +817,7 @@ public class TaskRestService implements ResourceContainer {
     if (addedComment != null) {
       addedComment = commentService.getComment(addedComment.getId());
     }
-    CommentEntity commentEntity = new CommentEntity(addedComment, userService.loadUser(currentUser), CommentUtil.formatMention(commentText, TaskUtil.getCurrentUserLanguage(currentUser), userService));
+    CommentEntity commentEntity = new CommentEntity(addedComment, userService.loadUser(currentUser), CommentUtil.formatMention(commentText, TaskUtil.getUserLanguage(currentUser), userService));
     return Response.ok(commentEntity).build();
         } catch (Exception e) {
         LOG.error("Can't add Comment to Task {}", id, e);
@@ -853,7 +854,7 @@ public class TaskRestService implements ResourceContainer {
     if (addedComment != null) {
       addedComment = commentService.getComment(addedComment.getId());
     }
-    CommentEntity commentEntity = new CommentEntity(addedComment, userService.loadUser(currentUser), CommentUtil.formatMention(commentText, TaskUtil.getCurrentUserLanguage(currentUser), userService));
+    CommentEntity commentEntity = new CommentEntity(addedComment, userService.loadUser(currentUser), CommentUtil.formatMention(commentText, TaskUtil.getUserLanguage(currentUser), userService));
     return Response.ok(commentEntity).build();
         } catch (Exception e) {
         LOG.error("Can't add SubComment to Task {}", id, e);
@@ -886,12 +887,12 @@ public class TaskRestService implements ResourceContainer {
   }
 
   @GET
-  @Path("usersToMention/{query}/{lang}")
+  @Path("usersToMention/{query}")
   @RolesAllowed("users")
   @Produces(MediaType.APPLICATION_JSON)
   @ApiOperation(value = "Gets users to mention in comment", httpMethod = "GET", response = Response.class, notes = "This returns users to mention in comment")
   @ApiResponses(value = { @ApiResponse(code = 200, message = "Request fulfilled") })
-  public Response findUsersToMention(@ApiParam(value = "Query", required = true) @PathParam("query") String query, @ApiParam(value = "Lang", required = true) @PathParam("lang") String lang) {
+  public Response findUsersToMention(@ApiParam(value = "Query", required = true) @PathParam("query") String query) {
     try {
     ListAccess<User> list = userService.findUserByName(query);
     JSONArray usersJsonArray = new JSONArray();
@@ -899,7 +900,7 @@ public class TaskRestService implements ResourceContainer {
       JSONObject userJson = new JSONObject();
       String fullName = user.getDisplayName();
       if(taskService.isExternal(user.getUsername())){
-        fullName += " " + "(" + TaskUtil.getResourceBundleLabel(new Locale(lang), "external.label.tag") + ")";
+        fullName += " " + "(" + TaskUtil.getResourceBundleLabel(new Locale(TaskUtil.getUserLanguage(user.getUsername())), "external.label.tag") + ")";
       }
       userJson.put("id", "@" + user.getUsername());
       userJson.put("name", fullName);

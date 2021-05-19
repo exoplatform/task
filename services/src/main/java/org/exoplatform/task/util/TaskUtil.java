@@ -693,12 +693,12 @@ public final class TaskUtil {
   }
 
   /**
-   * Gets platform language of current user. In case of any errors return null.
+   * Gets platform language of user. In case of any errors return null.
    *
    * @param userId user Id
    * @return the platform language
    */
-  public static String getCurrentUserLanguage(String userId) {
+  public static String getUserLanguage(String userId) {
     LocaleContextInfo localeCtx = LocaleContextInfoUtils.buildLocaleContextInfo(userId);
     LocalePolicy localePolicy = ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(LocalePolicy.class);
     String lang = Locale.getDefault().getLanguage();

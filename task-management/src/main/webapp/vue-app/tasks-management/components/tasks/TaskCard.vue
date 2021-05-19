@@ -47,6 +47,8 @@
                 :username="userAvatar.username"
                 :title="userAvatar.displayName"
                 :avatar-url="userAvatar.avatar"
+                :external="userAvatar.external"
+                :retrieve-extra-information="false"
                 :size="iconSize"
                 :style="'background-image: url('+userAvatar.avatar+')'"
                 class="mx-1 taskWorkerAvatar" />

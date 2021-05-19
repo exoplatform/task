@@ -39,8 +39,10 @@ public final class StorageUtil{
         changeLogEntry.setTarget(changeLog.getTarget());
         changeLogEntry.setAuthorFullName(userService.loadUser(changeLog.getAuthor()).getDisplayName());
         changeLogEntry.setAuthorAvatarUrl(userService.loadUser(changeLog.getAuthor()).getAvatar());
+        changeLogEntry.setExternal(userService.loadUser(changeLog.getAuthor()).isExternal());
         if(changeLog.getActionName().equals("assign")||changeLog.getActionName().equals("unassign")){
             changeLogEntry.setTargetFullName(userService.loadUser(changeLog.getTarget()).getDisplayName());
+            changeLogEntry.setIsTargetFullNameExternal(CommentUtil.isExternal(userService.loadUser(changeLog.getTarget()).getUsername()));
         }
         return changeLogEntry;
     }

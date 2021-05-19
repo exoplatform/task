@@ -29,6 +29,8 @@
         :username="user.username"
         :title="user.displayName"
         :avatar-url="user.avatar"
+        :external="user.external"
+        :retrieve-extra-information="false"
         :size="iconSize"
         :style="'background-image: url('+user.avatar+')'"
         class="mx-1 taskWorkerAvatar" />

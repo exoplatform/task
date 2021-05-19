@@ -12,7 +12,9 @@
           <exo-user-avatar
             :username="user.username"
             :title="user.displayName"
-            :fullname="user.displayName" />
+            :fullname="user.displayName"
+            :external="user.external"
+            :retrieve-extra-information="false" />
         </v-flex>
       </v-layout>
     </template>

@@ -39,6 +39,7 @@ import org.exoplatform.social.core.manager.IdentityManager;
 import org.exoplatform.social.notification.LinkProviderUtils;
 import org.exoplatform.task.service.UserService;
 import org.exoplatform.task.util.CommentUtil;
+import org.exoplatform.task.util.TaskUtil;
 import org.gatein.common.text.EntityEncoder;
 
 import java.io.IOException;
@@ -102,7 +103,11 @@ public class MailTemplateProvider extends TemplateProvider {
                                     .getOrCreateIdentity(OrganizationIdentityProvider.NAME, notificationCreator, true);
       Profile profile = author.getProfile();
       // creator
-      templateContext.put("USER", encoder.encode(profile.getFullName()));
+      String fullName = profile.getFullName();
+      if(CommentUtil.isExternal(author.getRemoteId())) {
+        fullName += " " + "(" + TaskUtil.getResourceBundleLabel(new Locale(TaskUtil.getUserLanguage(author.getRemoteId())), "external.label.tag") + ")";
+      }
+      templateContext.put("USER", encoder.encode(fullName));
       templateContext.put("AVATAR", LinkProviderUtils.getUserAvatarUrl(profile));
       templateContext.put("PROFILE_URL", LinkProviderUtils.getRedirectUrl("user", author.getRemoteId()));
       // receiver
@@ -310,11 +315,16 @@ public class MailTemplateProvider extends TemplateProvider {
         Collections.reverse(creators);
 
         IdentityManager idManager = CommonsUtils.getService(IdentityManager.class);
-        Profile lastUser = idManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, creators.get(0), true).getProfile();
+        Identity identity = idManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, creators.get(0), true);
+        Profile lastUser = identity.getProfile();
+        String fullName = lastUser.getFullName();
+        if(CommentUtil.isExternal(identity.getRemoteId())) {
+            fullName += " " + "(" + TaskUtil.getResourceBundleLabel(new Locale(TaskUtil.getUserLanguage(identity.getRemoteId())), "external.label.tag") + ")";
+        }
         String lastProfileURL = LinkProviderUtils.getRedirectUrl("user", creators.get(0));
         String user = "<a href=\"" + lastProfileURL
             + "\" style=\"text-decoration: none; color: #2f5e92; font-family: 'HelveticaNeue Bold', Helvetica, Arial, sans-serif\">"
-            + encoder.encode(lastUser.getFullName()) + "</a>";
+            + encoder.encode(fullName) + "</a>";
 
         if (creators.size() <= 1) {
           templateContext.digestType(ElementType.DIGEST_ONE.getValue());
@@ -322,6 +332,10 @@ public class MailTemplateProvider extends TemplateProvider {
           templateContext.digestType(ElementType.DIGEST_MORE.getValue());
 
           lastUser = idManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, creators.get(1), true).getProfile();
+          String userFullName = lastUser.getFullName();
+          if(CommentUtil.isExternal(identity.getRemoteId())) {
+            userFullName += " " + "(" + TaskUtil.getResourceBundleLabel(new Locale(TaskUtil.getUserLanguage(identity.getRemoteId())), "external.label.tag") + ")";
+          }
           lastProfileURL = LinkProviderUtils.getRedirectUrl("user", creators.get(1));
 
           if (creators.size() == 2) {
@@ -331,7 +345,7 @@ public class MailTemplateProvider extends TemplateProvider {
           }
           user += " <a href=\"" + lastProfileURL
               + "\" style=\"text-decoration: none; color: #2f5e92; font-family: 'HelveticaNeue Bold', Helvetica, Arial, sans-serif\">"
-              + encoder.encode(lastUser.getFullName()) + "</a>";
+              + encoder.encode(userFullName) + "</a>";
 
           if (creators.size() == 3) {
             user += " " + TemplateUtils.getResourceBundle("Notification.label.one.other", locale, resourcePath);

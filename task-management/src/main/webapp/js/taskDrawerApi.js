@@ -300,7 +300,7 @@ export function removeTaskComment(commentId) {
 
 export function findUsersToMention(projectId, query) {
   const fetchUrl = projectId ? `/portal/rest/projects/projectParticipants/${projectId}/${query}` :
-    `/portal/rest/tasks/usersToMention/${query}/${eXo.env.portal.language}`;
+    `/portal/rest/tasks/usersToMention/${query}`;
   return fetch(fetchUrl, {
     method: 'GET',
     credentials: 'include',
