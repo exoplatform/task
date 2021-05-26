@@ -150,8 +150,15 @@
     },
     created() {
       this.getTaskAssigneeAndCoworkers();
+      this.$root.$on('update-task-comments',(value,id)=>{this.updateTaskComments(value,id);
+      });
     },
     methods: {
+      updateTaskComments(value,id){
+        if (this.task.id === id){
+          this.task.commentCount=value;
+        }
+      },
       getTaskPriorityColor(priority) {
         switch (priority) {
           case "HIGH":
