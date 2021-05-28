@@ -22,12 +22,14 @@ import org.exoplatform.task.domain.Label;
 
 public interface LabelHandler extends GenericDAO<Label, Long> {
   /**
-   * @param username
-   * @return
+   * @param username user name
+   * @return List of labels
    */
   ListAccess<Label> findLabelsByUser(String username);
   
-  ListAccess<Label> findLabelsByTask(long taskId, String username);
+  ListAccess<Label> findLabelsByProject(long projectId);
+
+  ListAccess<Label> findLabelsByTask(long taskId, long projectId);
 
   ListAccess<Label> findLabels(LabelQuery query);
 }

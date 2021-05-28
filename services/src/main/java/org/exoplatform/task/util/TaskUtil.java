@@ -269,10 +269,10 @@ public final class TaskUtil {
   }
 
 
-  public static Map<GroupKey, List<TaskEntity>> groupTasks(List<TaskEntity> tasks, String groupBy, String username, TimeZone userTimezone, LabelService labelService, UserService userService) throws EntityNotFoundException {
+  public static Map<GroupKey, List<TaskEntity>> groupTasks(List<TaskEntity> tasks, String groupBy, Identity userId, TimeZone userTimezone, LabelService labelService, UserService userService) throws EntityNotFoundException {
     Map<GroupKey, List<TaskEntity>> maps = new TreeMap<GroupKey, List<TaskEntity>>();
     for(TaskEntity task : tasks) {
-      for (GroupKey key : getGroupName(task, groupBy, username, userTimezone, labelService, userService)) {
+      for (GroupKey key : getGroupName(task, groupBy, userId, userTimezone, labelService, userService)) {
         List<TaskEntity> list = maps.entrySet().stream()
           .filter(group -> group.getKey().getName().equals(key.getName()))
           .map(Map.Entry::getValue)
@@ -318,7 +318,7 @@ public final class TaskUtil {
     }
   }
 
-  private static GroupKey[] getGroupName(TaskEntity task, String groupBy, String username, TimeZone userTimezone, LabelService labelService, UserService userService) throws EntityNotFoundException {
+  private static GroupKey[] getGroupName(TaskEntity task, String groupBy, Identity userId, TimeZone userTimezone, LabelService labelService, UserService userService) throws EntityNotFoundException {
     if("project".equalsIgnoreCase(groupBy)) {
       StatusDto s = task.getStatus();
       if(s == null) {
@@ -366,8 +366,8 @@ public final class TaskUtil {
       }
       return new GroupKey[] {new GroupKey(DateUtil.getDueDateLabel(calendar), dueDate, calendar == null ? Integer.MAX_VALUE : (int)calendar.getTimeInMillis())};
 
-    } else if (TaskUtil.LABEL.equalsIgnoreCase(groupBy)) {
-      List<LabelDto> labels = labelService.findLabelsByTask(task.getId(), username,0,-1);
+    } else if (TaskUtil.LABEL.equalsIgnoreCase(groupBy)&&(task.getStatus()!=null && task.getStatus().getProject()!=null)) {
+      List<LabelDto> labels = labelService.findLabelsByTask(task.getTask(), task.getStatus().getProject().getId(),userId,0,-1);
       if (labels.isEmpty()) {
         return new GroupKey[] {new GroupKey("No Label", null, Integer.MAX_VALUE)};
       } else {
@@ -430,7 +430,7 @@ public final class TaskUtil {
     return false;
   }
   
-  public static TaskDto saveTaskField(TaskDto task, String username, String param, String[] values, TimeZone timezone, TaskService taskService, LabelService labelService, StatusService statusService)
+  public static TaskDto saveTaskField(TaskDto task, Identity userId, String param, String[] values, TimeZone timezone, TaskService taskService, LabelService labelService, StatusService statusService)
       throws EntityNotFoundException, ParameterEntityException {
 
     if (timezone == null) {
@@ -571,20 +571,21 @@ public final class TaskUtil {
         }
 
         Set<Long> persisted = new HashSet<Long>();
-        List<LabelDto> labels = labelService.findLabelsByTask(task.getId(), username,0,-1);
-        for(LabelDto label : labels) {
+      if (task.getStatus()!=null && task.getStatus().getProject()!=null) {
+        List<LabelDto> labels = labelService.findLabelsByTask(task, task.getStatus().getProject().getId(),userId, 0, -1);
+        for (LabelDto label : labels) {
           if (!ids.contains(label.getId())) {
             labelService.removeTaskFromLabel(task, label.getId());
           } else {
             persisted.add(label.getId());
           }
         }
-
+      }
         //
         for (String label : labelsToCreate) {
           LabelDto l = new LabelDto();
           l.setName(label);
-          l.setUsername(username);
+          l.setUsername(userId.getUserId());
           l = labelService.createLabel(l);
           ids.add(l.getId());
         }
@@ -692,11 +693,12 @@ public final class TaskUtil {
   }
 
   /**
-   * Gets platform language of current user. In case of any errors return null.
+   * Gets platform language of user. In case of any errors return null.
    *
+   * @param userId user Id
    * @return the platform language
    */
-  public static String getCurrentUserLanguage(String userId) {
+  public static String getUserLanguage(String userId) {
     LocaleContextInfo localeCtx = LocaleContextInfoUtils.buildLocaleContextInfo(userId);
     LocalePolicy localePolicy = ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(LocalePolicy.class);
     String lang = Locale.getDefault().getLanguage();
@@ -711,9 +713,9 @@ public final class TaskUtil {
    * 
    * Added for tests using a specific instance of taskService
    * 
-   * @param taskService
-   * @param taskId
-   * @return
+   * @param taskService TaskService instance
+   * @param taskId Task Id
+   * @return List of Coworkers
    */
   public static Set<String> getCoworker(TaskService taskService, long taskId) {
     return taskService.getCoworker(taskId);

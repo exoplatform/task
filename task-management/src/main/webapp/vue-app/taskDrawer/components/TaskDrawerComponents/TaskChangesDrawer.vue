@@ -7,10 +7,10 @@
     <v-container fill-height class="pa-0">
       <v-layout column>
         <v-flex class="mx-0 drawerHeader flex-grow-0">
-          <v-list-item class="pr-0">
+          <v-list-item class="pe-0">
             <v-list-item-content class="drawerTitle d-flex text-header-title text-truncate">
               <i class="uiIcon uiArrowBAckIcon" @click="closeDrawer"></i>
-              <span class="pl-2">{{ $t('label.changes') }}</span>
+              <span class="ps-2">{{ $t('label.changes') }}</span>
             </v-list-item-content>
             <v-list-item-action class="drawerIcons align-end d-flex flex-row">
               <v-btn icon>
@@ -25,7 +25,7 @@
             <v-list-item
               v-for="(item, i) in logs"
               :key="i"
-              class="pr-0">
+              class="pe-0">
               <v-list-item-content class="pt-1">
                 <div class="d-flex">
                   <exo-user-avatar
@@ -34,89 +34,96 @@
                     :avatar-url="item.authorAvatarUrl"
                     :size="30"
                     :url="null"
-                    class="changeUserAvatar"/>
-
-                  <p class="changesText mb-0 pl-1" v-html="renderChangeHTML(item)"></p>
+                    class="changeUserAvatar" />
+                  <p class="changesText mb-0 ps-1" v-html="renderChangeHTML(item)"></p>
                 </div>
                 <div>
-                  <div class="dateTime caption">
+                  <div class="dateTime caption changeItem">
                     <date-format :value="item.createdTime" :format="dateTimeFormat" />
                   </div>
                 </div>
               </v-list-item-content>
             </v-list-item>
           </v-list>
-
         </v-flex>
       </v-layout>
     </v-container>
   </div>
 </template>
 <script>
-  export default {
-    props: {
-      logs: {
-        type: Object,
-        default: () => {
-          return {};
-        }
-      },
-      task: {
-        type: Boolean,
-        default: false
-      },
-    },
-    data() {
-      return {
-        showTaskChangesDrawer: false,
-        dateTimeFormat: {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric'
-        },
-        currentUserName: eXo.env.portal.userName,
-        changeAuthor: {},
-        userAvatar: '',
-        avatarUrl:''
+export default {
+  props: {
+    logs: {
+      type: Object,
+      default: () => {
+        return {};
       }
     },
-    watch: {
-      userAvatar() {
-        this.avatarUrl = this.userAvatar;
-      }
+    task: {
+      type: Boolean,
+      default: false
     },
-    mounted() {
-      this.$root.$on('displayTaskChanges', taskChangesDrawer => {
-        this.showTaskChangesDrawer = true
-      });
-      this.$root.$on('hideTaskChanges', taskChangesDrawer => {
-        this.showTaskChangesDrawer = false
-      });
-    },
-    methods: {
-      closeDrawer() {
-        this.showTaskChangesDrawer = false
+  },
+  data() {
+    return {
+      showTaskChangesDrawer: false,
+      dateTimeFormat: {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
       },
-      logMsg(item) {
-        return `log.${ item.actionName }`
-      },
-      renderChangeHTML(item) {
-        let str = '';
-        if ( item.actionName === 'assign' || item.actionName === 'unassign') {
-          str = `<p class='changesItem assignDiv text-truncate mb-0' title='${item.authorFullName} ${this.$t(this.logMsg(item))} ${item.targetFullName}'>` +
-            `<span>${ this.$t(this.logMsg(item))}</span>`+
-            `<a href='/portal/dw/profile/${item.target}'> ${item.targetFullName} </a>`+
-            `</p>`
-        } else {
-          str = `<p class='changesItem mb-0'>` +
-            `<p class='text-truncate mb-0' title='${item.authorFullName} ${this.$t(this.logMsg(item))} ${item.target}'> ${ this.$t(this.logMsg(item))  }${item.target}</p>`+
-          `</p>`
-        }
-        return str;
-      },
+      currentUserName: eXo.env.portal.userName,
+      changeAuthor: {},
+      userAvatar: '',
+      avatarUrl: ''
+    };
+  },
+  watch: {
+    userAvatar() {
+      this.avatarUrl = this.userAvatar;
     }
-  };
+  },
+  mounted() {
+    this.$root.$on('displayTaskChanges', () => {
+      this.showTaskChangesDrawer = true;
+    });
+    this.$root.$on('hideTaskChanges', () => {
+      this.showTaskChangesDrawer = false;
+    });
+  },
+  methods: {
+    closeDrawer() {
+      this.showTaskChangesDrawer = false;
+    },
+    logMsg(item) {
+      return `log.${ item.actionName }`;
+    },
+    renderChangeHTML(item) {
+      let str = '';
+      if ( item.actionName === 'assign' || item.actionName === 'unassign') {
+        const targetFullName = item.isTargetFullNameExternal ? `${item.targetFullName} (${this.$t('label.external')})` :  `${item.targetFullName}`;
+        str = `<p class='changesItem assignDiv text-truncate mb-0' title='${item.authorFullName} ${this.$t(this.logMsg(item))} ${targetFullName}'>` +
+            `<span>${ this.$t(this.logMsg(item))}</span>`+
+            `<a href='/portal/dw/profile/${item.target}'> ${targetFullName} </a>`+
+            '</p>';
+      } else if ( item.actionName === 'edit_project' ) {
+        str = `<p class='changesItem assignDiv text-truncate mb-0' title='${item.authorFullName} ${this.$t(this.logMsg(item))}  ${item.target}'>` +
+            `<span>${ this.$t(this.logMsg(item))}</span>`+
+            `<a href='#'> ${item.target} </a>`+
+            '</p>';
+      } else if ( item.actionName === 'edit_priority' ) {
+        str = '<p class=\'changesItem mb-0\'>' +
+            `<p class='text-truncate mb-0' title='${item.authorFullName} ${this.$t(this.logMsg(item))} ${item.task.status.priority}'> ${ this.$t(this.logMsg(item)) } ${item.task.priority}</p>`+
+          '</p>';
+      } else {
+        str = '<p class=\'changesItem mb-0\'>' +
+            `<p class='text-truncate mb-0' title='${item.authorFullName} ${this.$t(this.logMsg(item))} ${item.target}'> ${ this.$t(this.logMsg(item)) } ${item.target}</p>`+
+          '</p>';
+      }
+      return str;
+    },
+  }
+};
 </script>
-<style>
-
-</style>

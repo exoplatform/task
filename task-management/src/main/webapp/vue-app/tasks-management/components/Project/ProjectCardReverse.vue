@@ -25,7 +25,7 @@
           <span class="text-body-2 totalLabel">{{ $t('exo.tasks.label.leftTasks') }}</span>
         </div>
       </div>
-      <div v-if="statistics.length < maxStatusToShow" class="projectStatusNumber pl-4">
+      <div v-if="statistics.length < maxStatusToShow" class="projectStatusNumber ps-4">
         <p 
           v-for="item in statistics" 
           :key="item.name" 
@@ -33,7 +33,6 @@
           <span class="caption text-truncate">{{ item.name }}</span>
           <span>{{ item.value }}</span>
         </p>
-        
       </div>
     </div>
     <div v-else class="noTasksProject">
@@ -44,71 +43,71 @@
   </v-card>
 </template>
 <script>
-  export default {
-    props: {
-      project: {
-        type: Object,
-        default: null,
-      }
-    },
-    data() {
-      return {
-        totalLeftTasks: 0,
-        statistics: [],
-        maxStatusToShow:7,
-        option : {
-          tooltip: {
-            trigger: 'item',
-            formatter: '{b}:<br/> {c} ({d}%)'
-          },
-            series: [
-              {
-                type: 'pie',
-                center: ['50%', '50%'],
-                radius: ['80%', '75%'],
-                avoidLabelOverlap: false,
-                label: {
-                  show: false,
-                  position: 'center'
-                },
-                emphasis: {
-                  label: {
-                    show: false,
-                    fontSize: '15',
-                    fontWeight: 'bold'
-                  }
-                },
-                labelLine: {
-                  show: false
-                },
-                data: [],
+export default {
+  props: {
+    project: {
+      type: Object,
+      default: null,
+    }
+  },
+  data() {
+    return {
+      totalLeftTasks: 0,
+      statistics: [],
+      maxStatusToShow: 7,
+      option: {
+        tooltip: {
+          trigger: 'item',
+          formatter: '{b}:<br/> {c} ({d}%)'
+        },
+        series: [
+          {
+            type: 'pie',
+            center: ['50%', '50%'],
+            radius: ['80%', '75%'],
+            avoidLabelOverlap: false,
+            label: {
+              show: false,
+              position: 'center'
+            },
+            emphasis: {
+              label: {
+                show: false,
+                fontSize: '15',
+                fontWeight: 'bold'
               }
-            ],
-          color: ['#476a9c', '#ffb441', '#bc4343', '#2eb58c']
+            },
+            labelLine: {
+              show: false
+            },
+            data: [],
           }
-        }
+        ],
+        color: ['#476a9c', '#ffb441', '#bc4343', '#2eb58c']
+      }
+    };
+  },
+
+  methods: {
+    initChart(option) {
+      const holder_chart = $(`#echartProjectTasks${this.project.id}`)[0];
+      if (holder_chart){
+        const chart = echarts.init(holder_chart);
+        chart.setOption(option, true);}
     },
-
-    methods :{
-      initChart(option,id) {
-          const holder_chart = $(`#echartProjectTasks${this.project.id}`)[0]
-          if(holder_chart){
-          const chart = echarts.init(holder_chart);
-          chart.setOption(option, true);}
-      },
-      getStats(project){
+    getStats(project){
       this.$projectService.getProjectStats(project.id).then(data => {
-          this.statistics = data.statusStats || [];
-          this.totalLeftTasks = data.totalNumberTasks || 0;
+        this.statistics = data.statusStats || [];
+        this.totalLeftTasks = data.totalNumberTasks || 0;
 
-                 if(this.statistics && this.statistics.length) {
-                   this.option.series[0].data=this.statistics
-                   window.setTimeout(() => {
-          this.initChart(this.option);
+        if (this.statistics && this.statistics.length) {
+          this.option.series[0].data=this.statistics;
+          window.setTimeout(() => {
+            this.initChart(this.option);
           },200);
-      }
-        })
-      }
+        }
+      });
     }
   }
+};
 </script>

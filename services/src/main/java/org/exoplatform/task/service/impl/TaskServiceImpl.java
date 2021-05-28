@@ -120,21 +120,18 @@ public class TaskServiceImpl implements TaskService {
     @ExoTransactional
     public void removeTask(long id) throws EntityNotFoundException {
         TaskDto task = getTask(id);// Can throw TaskNotFoundException
-
         taskStorage.delete(task);
+        LOG.info("Task {} removed", id);
     }
 
     @Override
     @ExoTransactional
     public TaskDto cloneTask(long id) throws EntityNotFoundException {
-
         TaskDto task = getTask(id);// Can throw TaskNotFoundException
-
         TaskDto newTask = task.clone();
         newTask.setId(0L);
         newTask.setCoworker(getCoworker(id));
         newTask.setTitle(Task.PREFIX_CLONE + newTask.getTitle());
-
         return createTask(newTask);
     }
 
@@ -371,8 +368,11 @@ public class TaskServiceImpl implements TaskService {
         } else if (projectId == ProjectUtil.TODO_PROJECT_ID) {
             defGroupBys =  Arrays.asList(TaskUtil.NONE, TaskUtil.PROJECT, TaskUtil.LABEL, TaskUtil.DUEDATE,TaskUtil.ASSIGNEE);
             defOrders =  Arrays.asList(TaskUtil.TITLE, TaskUtil.STATUS, TaskUtil.DUEDATE, TaskUtil.PRIORITY, TaskUtil.RANK);
-
-            taskQuery.setIsTodoOf(currIdentity.getUserId());
+            if (dueDate != null || !dueCategory.equals("")){
+                taskQuery.setAssigneeIsTodoOf(currIdentity.getUserId());
+            } else {
+                taskQuery.setIsTodoOf(currIdentity.getUserId());
+            }
 
             //TODO: process fiter here
             if ("overDue".equalsIgnoreCase(dueCategory)) {

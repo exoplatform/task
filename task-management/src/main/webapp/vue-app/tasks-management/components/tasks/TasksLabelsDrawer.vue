@@ -29,16 +29,18 @@
             v-bind="attrs"
             :color="`${item.color} lighten-3`"
             :input-value="selected"
-            class="pr-1"
+            class="pe-1"
             label
             small>
-            <span class="pr-2">
+            <span class="pe-2">
               {{ item.text }}
             </span>
             <v-icon
               x-small
-              class="pr-0"
-              @click="parent.selectItem(item)">close</v-icon>
+              class="pe-0"
+              @click="parent.selectItem(item)">
+              close
+            </v-icon>
           </v-chip>
         </template>
       </v-combobox>
@@ -47,120 +49,139 @@
 </template>
 
 <script>
-  import {getMyAllLabels, getTaskLabels} from '../../../taskDrawer/taskDrawerApi';
-  export default {
-    props: {
-      task: {
-        type: Object,
-        default: () => {
-          return {};
-        }
-      },
-    },
-    data() {
-      return {
-        index: -1,
-        items: [],
-        nonce: 1,
-        model: [],
-        x: 0,
-        search: null,
-        y: 0,
+export default {
+  props: {
+    task: {
+      type: Object,
+      default: () => {
+        return {};
       }
     },
-    watch: {
-      model(val, prev) {
-        if (val&&prev){
-          if (val.length === prev.length) {
-            this.search = null
-            return
-          }
-          this.model = val.map(v => {
-            if (typeof v === 'string') {
-              v = {
-                text: v,
-                name: v,
-              }
-              this.items.push(v)
-              this.nonce++
-            }
-            return v
-          })
-        }
-
-        this.$root.$emit('filter-task-labels',this.model);
-      },
-
+    projectId: {
+      type: Number,
+      default: 0
     },
-    created() {
+  },
+  data() {
+    return {
+      index: -1,
+      items: [],
+      nonce: 1,
+      model: [],
+      x: 0,
+      search: null,
+      y: 0,
+    };
+  },
+  watch: {
+    model(val, prev) {
+      if (val&&prev){
+        if (val.length === prev.length) {
+          this.search = null;
+          return;
+        }
+        this.model = val.map(v => {
+          if (typeof v === 'string') {
+            v = {
+              text: v,
+              name: v,
+            };
+            this.items.push(v);
+            this.nonce++;
+          }
+          return v;
+        });
+      }
+
+      this.$root.$emit('filter-task-labels',this.model);
+    },
+
+  },
+  created() {
+    const urlPath = document.location.pathname;
+    if (urlPath.includes('projectDetail')){
+      let projectId = urlPath.split('projectDetail/')[1].split(/[^0-9]/)[0];
+      projectId = projectId && Number(projectId) || 0;
+      this.getProjectLabels(projectId);
+      this.projectId=projectId;
+    } else {
       this.getMyAllLabels();
-      $(document).on('mousedown', () => {
-        if (this.$refs.selectLabel.isMenuActive) {
-          window.setTimeout(() => {
-            this.$refs.selectLabel.isMenuActive = false;
-          }, 200);
+    }
+    document.addEventListener('closeLabelsList',()=> {
+      setTimeout(() => {
+        if (typeof this.$refs.selectLabel !== 'undefined') {
+          this.$refs.selectLabel.isMenuActive = false;
         }
-      });
-      document.addEventListener('closeLabelsList',()=> {
-        setTimeout(() => {
-          if (typeof this.$refs.selectLabel !== 'undefined') {
-            this.$refs.selectLabel.isMenuActive = false;
-          }
-        }, 100);
-      });
-      document.addEventListener('loadTaskLabels', event => {
-        if (event && event.detail) {
-          const task = event.detail;
-          this.model = [];
-          if(task.id!=null) {
-            this.getTaskLabels();
-            getTaskLabels(task.id).then((labels) => {
-              this.model = labels.map(function (el) {
-                const o = Object.assign({}, el);
-                o.text = o.name;
-                return o;
-              });
-            })
-          }
+      }, 100);
+    });
+    document.addEventListener('loadTaskLabels', event => {
+      if (event && event.detail) {
+        const task = event.detail;
+        this.model = [];
+        if (task.id!=null) {
+          this.getTaskLabels();
+          this.$taskDrawerApi.getTaskLabels(task.id).then((labels) => {
+            this.model = labels.map(function (el) {
+              const o = Object.assign({}, el);
+              o.text = o.name;
+              return o;
+            });
+          });
         }
-      });
-      this.$root.$on('reset-filter-task-group-sort',tasks =>{
-        this.model = null;
+      }
+    });
+    document.addEventListener('loadFilterProjectLabels', event => {
+      if (event && event.detail) {
+        this.projectId=event.detail;
+        this.getProjectLabels(this.projectId);
+      }
+    });
+    this.$root.$on('reset-filter-task-group-sort',() =>{
+      this.model = null;
+    });
+  },
+  methods: {
+    filter(item, queryText, itemText) {
+      if (item.header) {
+        return false;
+      }
+      const hasValue = function (val) {
+        return val != null ? val : '';
+      };
+      const text = hasValue(itemText);
+      const query = hasValue(queryText);
+      return text.toString().toLowerCase().indexOf(query.toString().toLowerCase()) > -1;
+    },
+    getMyAllLabels() {
+      this.$taskDrawerApi.getMyAllLabels().then((labels) => {
+        this.items = labels.map(function (el) {
+          const o = Object.assign({}, el);
+          o.text = o.name;
+          return o;
+        });
       });
     },
-    methods: {
-      filter(item, queryText, itemText) {
-        if (item.header) {
-          return false
-        }
-        const hasValue = function (val) {
-          return val != null ? val : ''
-        };
-        const text = hasValue(itemText)
-        const query = hasValue(queryText)
-        return text.toString().toLowerCase().indexOf(query.toString().toLowerCase()) > -1
-      },
-      getMyAllLabels() {
-        getMyAllLabels().then((labels) => {
-          this.items = labels.map(function (el) {
-            const o = Object.assign({}, el);
-            o.text = o.name;
-            return o;
-          });
-        })
-      },
-      getTaskLabels() {
-        getTaskLabels(this.task.id).then((labels) => {
-          this.model = labels.map(function (el) {
-            const o = Object.assign({}, el);
-            o.text = o.name;
-            return o;
-          });
-        })
-      },
-      openLabelsList() {
-        this.$emit('labelsListOpened')
-      }
+    getTaskLabels() {
+      this.$taskDrawerApi.getTaskLabels(this.task.id).then((labels) => {
+        this.model = labels.map(function (el) {
+          const o = Object.assign({}, el);
+          o.text = o.name;
+          return o;
+        });
+      });
+    },
+    getProjectLabels(projectId) {
+      this.$taskDrawerApi.getProjectLabels(projectId).then((labels) => {
+        this.items = labels.map(function (el) {
+          const o = Object.assign({}, el);
+          o.text = o.name;
+          return o;
+        });
+      });
+    },
+    openLabelsList() {
+      this.$emit('labelsListOpened');
     }
   }
+};
 </script>

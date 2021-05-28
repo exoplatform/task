@@ -86,7 +86,7 @@ public interface TaskHandler extends GenericDAO<Task, Long> {
    * 
    * @param user username
    * @param query term to search in title or description
-   * @param limit
+   * @param limit term to limit results.
    * @return {@link List} of {@link Task}
    */
   List<Task> findTasks(String user, String query, int limit);

@@ -1,94 +1,23 @@
 <template>
-  <div
-    :id="'comment-'+comment.comment.id"
-    class="commentItem"
-    @mouseover="hover = true"
-    @mouseleave="hover = false">
-    <div class="commentHeader d-flex">
-      <exo-user-avatar
-        :username="comment.author.username"
-        :title="comment.author.displayName"
-        :size="30"
-        :url="comment.author.url"/>
-      <div class="commentContent pl-3 d-flex align-center">
-        <a
-          class="primary-color--text font-weight-bold subtitle-2 pr-2">{{ comment.author.displayName }} <span v-if="comment.author.external" class="externalTagClass">{{ ` (${$t('label.external')})` }}</span></a>
-        <span :title="absoluteTime()" class="dateTime caption font-italic d-block">{{ relativeTime }}</span>
-      </div>
-      <div class="removeCommentBtn">
-        <v-dialog
-          v-model="confirmDeleteComment"
-          width="500">
-          <template v-slot:activator="{ on }" >
-            <v-btn
-              v-show="showDeleteButtom"
-              :title="$t('label.remove')"
-              :size="32"
-              class="deleteComment"
-              icon
-              small
-              @click="confirmCommentDelete()"
-              v-on="on">
-              <i class="uiIconTrashMini uiIconLightGray "></i>
-            </v-btn>
-          </template>
-        </v-dialog>
-      </div>
-    </div>
-    <div class="commentBody ml-10 mt-1">
-      <div
-        class="taskContentComment"
-        v-html="comment.formattedComment"></div>
-      <v-btn
-        id="reply_btn"
-        depressed
-        text
-        small
-        color="primary"
-        @click="openEditor()">{{ $t('comment.message.Reply') }}
-      </v-btn>
-    </div>
-    <div class="py-0 TaskSubComments">
-      <div
-        v-for="(item, i) in comment.subComments"
-        :key="i"
-        class="TaskSubCommentItem pl-10 pr-0 pb-2">
-        <task-comments
-          :comment="item"
-          :task="task"
-          :sub="true"
-          :comments="comment.subComments"
-          @openSubEditor="openEditor()"/>
-      </div>
-      <div
-        v-focus
-        v-if="showEditor && !sub"
-        class="subComment subCommentEditor ml-10 d-flex align-start">
-        <exo-user-avatar
-          :username="currentUserName"
-          :avatar-url="currentUserAvatar"
-          :size="30"
-          :url="null"/>
-        <div class="editorContent ml-2">
-          <task-comment-editor
-            ref="subCommentEditor"
-            v-model="editorData"
-            :max-length="MESSAGE_MAX_LENGTH"
-            :placeholder="$t('task.placeholder').replace('{0}', MESSAGE_MAX_LENGTH)"
-            :task="task"
-            :id="id"
-            class="subComment subCommentEditor"
-            @subShowEditor="openEditor"/>
-          <v-btn
-            :disabled="postDisabled"
-            depressed
-            small
-            type="button" 
-            class="btn btn-primary ignore-vuetify-classes btnStyle mt-1 mb-2 commentBtn"
-            @click="addTaskSubComment(comment)">{{ $t('comment.label.comment') }}
-          </v-btn>
-        </div>
-      </div>
+  <div :id="'comment-'+comment.comment.id">
+    <task-comment-item
+      :comment="comment"
+      :comments="comments"
+      :can-delete="canDelete"
+      @openConfirmDeleteDialog="confirmCommentDelete($event)"
+      @openCommentEditor="commentActions($event)" />
+    <div class="editorContent commentEditorContainer" :class="comment.comment.id === lastComment && newCommentEditor && 'newCommentEditor'">
+      <task-comment-editor
+        ref="commentEditor"
+        :max-length="MESSAGE_MAX_LENGTH"
+        :placeholder="$t('task.placeholder').replace('{0}', MESSAGE_MAX_LENGTH)"
+        :task="task"
+        :show-comment-editor="comment.comment.id === lastComment"
+        :last-comment="lastComment"
+        :id="'commentContent-'+comment.comment.id"
+        :comment-id="comment.comment.id"
+        class="subComment subCommentEditor"
+        @addNewComment="addTaskComment($event)" />
     </div>
     <exo-confirm-dialog
       ref="CancelSavingCommentDialog"
@@ -96,186 +25,116 @@
       :title="$t('popup.confirmation')"
       :ok-label="$t('popup.delete')"
       :cancel-label="$t('popup.cancel')"
-      @ok="removeTaskComment()" />
+      persistent
+      @ok="removeTaskComment()"
+      @dialog-opened="$emit('confirmDialogOpened')"
+      @dialog-closed="$emit('confirmDialogClosed')" />
   </div>
 </template>
 
 <script>
-  import {addTaskSubComment, removeTaskComment, urlVerify} from '../../taskDrawerApi';
-
-    export default {
-        name: "TaskComments",
-        directives: {
-          focus: {
-            inserted: function (el) {
-              el.focus()
-            }
-          }
-        },
-        props: {
-          comment: {
-            type: Object,
-            default: () => {
-              return {};
-            }
-          },
-          comments: {
-            type: Object,
-            default: () => {
-              return {};
-            }
-          },
-          task: {
-            type: Object,
-            default: () => null
-          },
-          sub: {
-            type: Boolean,
-            default: false
-          },
-          closeEditor: {
-            type: Boolean,
-            default: false
-          },
-          isOpen:{
-            type: Boolean,
-            default: false
-          },
-          id: {
-            type: String,
-            default: ''
-          },
-          commentId: {
-            type: String,
-            default: ''
-          }
-        },
-        data() {
-            return {
-                hover: false,
-                editorData: '',
-                disabledComment: '',
-                confirmDeleteComment: false,
-                commentPlaceholder: this.$t('comment.message.addYourComment'),
-                showEditor : false,
-                currentUserName: eXo.env.portal.userName,
-                MESSAGE_MAX_LENGTH:1250,
-            }
-        },
-      computed: {
-            relativeTime() {
-                return this.getRelativeTime(this.comment.comment.createdTime.time)
-            },
-            showDeleteButtom() {
-                return this.hover && eXo.env.portal.userName === this.comment.author.username;
-            },
-           postDisabled: function () {
-           if (this.disabledComment) {
-             return true
-           } else if (this.editorData !== null && this.editorData!=='') {
-           let pureText = this.editorData ? this.editorData.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, '').trim() : '';
-           const div = document.createElement('div');
-           div.innerHTML = pureText;
-           pureText = div.textContent || div.innerText || '';
-           return pureText.length > this.MESSAGE_MAX_LENGTH;
-          }else {return true}
-        },
-        },
-        watch: {
-            editorData(val) {
-              this.disabledComment = val === '';
-            },
-            showEditor(val) {
-              this.$emit('showSubEditor', val);
-            },
-            closeEditor(val) {
-              if (val === true) {
-                this.showEditor = false
-              }
-            },
-          commentId() {
-              if( this.commentId === `comment-${this.comment.comment.id}` ) {
-                this.openSubEditor();
-              }
-          }
-        },
-      mounted() {
-          document.addEventListener('openSubComment', event => {
-            if (event && event.detail && event.detail === `comment-${this.comment.comment.id}`) {
-              this.commentId = event.detail;
-            }
-          })
-      },
-      methods: {
-          confirmCommentDelete: function () {
-            this.$refs.CancelSavingCommentDialog.open();
-          },
-          openEditor() {
-            if (this.isOpen) {
-              this.$emit('isOpen')
-                setTimeout(this.openSubEditor, 100)
-              } else {
-                this.openSubEditor()
-              }
-            },
-            openSubEditor() {
-              this.showEditor = true;
-              this.editorData = '';
-              if (this.sub) {
-                this.$emit('openSubEditor')
-              }
-            },
-            addTaskSubComment(commentItem) {
-              let subComment = this.$refs.subCommentEditor.getMessage();
-              subComment = this.urlVerify(subComment);
-              console.warn('this.comment.id',commentItem.comment.id);
-              addTaskSubComment(this.task.id, commentItem.comment.id, subComment).then((comment => {
-                        this.comment.subComments = this.comment.subComments || [];
-                        this.comment.subComments.push(comment)
-                      })
-              );
-              this.showEditor = false;
-            },
-            removeTaskComment: function () {
-              removeTaskComment(this.comment.comment.id);
-                for (let i = 0; i < this.comments.length; i++) {
-                    if (this.comments[i] === this.comment) {
-                        this.comments.splice(i, 1);
-                    }
-                }
-            },
-            getRelativeTime(previous) {
-                const msPerMinute = 60 * 1000;
-                const msPerHour = msPerMinute * 60;
-                const msPerDay = msPerHour * 24;
-                const msPerMaxDays = msPerDay * 2;
-                const elapsed = new Date().getTime() - previous;
-
-                if (elapsed < msPerMinute) {
-                    return this.$t('task.timeConvert.Less_Than_A_Minute');
-                } else if (elapsed === msPerMinute) {
-                    return this.$t('task.timeConvert.About_A_Minute');
-                } else if (elapsed < msPerHour) {
-                    return this.$t('task.timeConvert.About_?_Minutes').replace('{0}', Math.round(elapsed / msPerMinute));
-                } else if (elapsed === msPerHour) {
-                    return this.$t('task.timeConvert.About_An_Hour');
-                } else if (elapsed < msPerDay) {
-                    return this.$t('task.timeConvert.About_?_Hours').replace('{0}', Math.round(elapsed / msPerHour));
-                } else if (elapsed === msPerDay) {
-                    return this.$t('task.timeConvert.About_A_Day');
-                } else if (elapsed < msPerMaxDays) {
-                    return this.$t('task.timeConvert.About_?_Days').replace('{0}', Math.round(elapsed / msPerDay));
-                } else {
-                  return this.absoluteTime({dateStyle: "short"});
-                }
-            },
-            absoluteTime(options) {
-              const lang = eXo && eXo.env && eXo.env.portal && eXo.env.portal.language || 'en';
-              return new Date(this.comment.comment.createdTime.time).toLocaleString(lang, options).split("/").join("-");
-            },
-            urlVerify(text) {
-              return urlVerify(text);
-            }
-        }
+export default {
+  props: {
+    comment: {
+      type: Object,
+      default: () => {
+        return {};
+      }
+    },
+    comments: {
+      type: Object,
+      default: () => {
+        return {};
+      }
+    },
+    task: {
+      type: Object,
+      default: () => null
+    },
+    lastComment: {
+      type: String,
+      default: ''
+    },
+    showNewCommentEditor: {
+      type: Boolean,
+      default: false
     }
+  },
+  data() {
+    return {
+      MESSAGE_MAX_LENGTH: 1250,
+      lang: eXo.env.portal.language,
+      commentId: '',
+      commentToDelete: '',
+      dateTimeFormat: {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      },
+    };
+  },
+  mounted() {
+    this.$root.$on('showNewCommentEditor', () => {
+      this.lastComment = this.comments[this.comments.length-1].comment.id;
+      this.showNewCommentEditor = true;
+      this.$root.$emit('newCommentEditor', this.lastComment);
+    });
+  },
+  computed: {
+    newCommentEditor() {
+      return this.showNewCommentEditor;
+    }
+  },
+  methods: {
+    addTaskComment(commentId) {
+      let commentText = this.$refs.commentEditor.getMessage();
+      commentText = this.urlVerify(commentText);
+      if (this.newCommentEditor) {
+        this.$taskDrawerApi.addTaskComments(this.task.id,commentText).then(comment => {
+          this.comments.push(comment);
+        }).then( () => {
+          this.$root.$emit('update-task-comments',this.comments.length,this.task.id);
+        });
+      } else {
+        this.$taskDrawerApi.addTaskSubComment(this.task.id, commentId, commentText).then((comment => {
+          this.comment.subComments = this.comment.subComments || [];
+          this.comment.subComments.push(comment);
+        }));
+      }
+    },
+    removeTaskComment() {
+      this.$taskDrawerApi.removeTaskComment(this.commentToDelete);
+      this.comments.forEach((comment,index) => {
+        if ( comment === this.comment) {
+          if ( this.comment.comment.id === this.commentToDelete ) {
+            this.comments.splice(index, 1);
+          } else {
+            comment.subComments.forEach((subComment,index) => {
+              if ( subComment.comment.id === this.commentToDelete) {
+                this.comment.subComments.splice(index,1);
+              }
+            });
+          }
+        }
+      });
+      this.$emit('confirmDialogClosed');
+    },
+    displayCommentDate(dateTimeValue) {
+      return dateTimeValue && this.$dateUtil.formatDateObjectToDisplay(new Date(dateTimeValue), this.dateTimeFormat, this.lang) || '';
+    },
+    urlVerify(text) {
+      return this.$taskDrawerApi.urlVerify(text);
+    },
+    confirmCommentDelete (value) {
+      this.commentToDelete = value;
+      this.$refs.CancelSavingCommentDialog.open();
+    },
+    commentActions(value) {
+      this.showNewCommentEditor = false;
+      this.$nextTick().then(() => this.$root.$emit('showEditor', value));
+    }
+  }
+};
 </script>

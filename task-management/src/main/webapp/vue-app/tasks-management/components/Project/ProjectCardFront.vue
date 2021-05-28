@@ -34,21 +34,21 @@
         content-class="projectActionMenu"
         offset-y>
         <v-list class="pa-0" dense>
-          <v-list-item class="menu-list" @click="openEditDrawer()" >
+          <v-list-item class="menu-list" @click="openEditDrawer()">
             <v-list-item-title class="subtitle-2">
-              <i class="uiIcon uiIconEdit pr-1"></i>
+              <i class="uiIcon uiIconEdit pe-1"></i>
               <span>{{ $t('label.edit') }}</span>
             </v-list-item-title>
           </v-list-item>
           <v-list-item class="draftButton" @click="confirmDeleteProject()">
             <v-list-item-title class="subtitle-2">
-              <i class="uiIcon uiIconTrash pr-1"></i>
+              <i class="uiIcon uiIconTrash pe-1"></i>
               <span>{{ $t('label.delete') }}</span>
             </v-list-item-title>
           </v-list-item>
           <v-list-item class="clone" @click="confirmCloneProject()">
             <v-list-item-title class="subtitle-2">
-              <i class="uiIcon uiIconCloneNode pr-1"></i>
+              <i class="uiIcon uiIconCloneNode pe-1"></i>
               <span>{{ $t('label.clone') }}</span>
             </v-list-item-title>
           </v-list-item>
@@ -70,13 +70,13 @@
           <!--
          <v-list-item>
             <v-list-item-title class="subtitle-2">
-              <i class="uiIcon uiIconHide pr-1"></i>
+              <i class="uiIcon uiIconHide pe-1"></i>
               <span>{{ $t('label.hide') }}</span>
             </v-list-item-title>
           </v-list-item>
           <v-list-item>
             <v-list-item-title class="subtitle-2">
-              <i class="uiIcon uiIconStar pr-1"></i>
+              <i class="uiIcon uiIconStar pe-1"></i>
               <span>{{ $t('label.addAsFavorite') }}</span>
             </v-list-item-title>
           </v-list-item>
@@ -86,11 +86,13 @@
     </div>
     <div class="taskItemInfo pa-3">
       <div
-        :class="project && !project.space && 'largeDescriptionArea'"
+        :class="getClassDescription()"
         class="taskItemDescription"
         @click="showProjectTasksDetails(project)">
         <p
-          v-if="project.description">{{ getDescription() }}</p>
+          v-if="project.description">
+          {{ getDescription() }}
+        </p>
         <div v-else>
           <span class="noProjectDescription">{{ $t('label.noDescription') }}</span>
         </div>
@@ -99,7 +101,7 @@
         <div v-if="project.space">
           <v-list-item class="px-0">
             <v-list-item-avatar size="28" class="spaceAvatar py-1">
-              <v-img :src="getSpaceAvatarURL"/>
+              <v-img :src="getSpaceAvatarURL" />
             </v-list-item-avatar>
             <v-list-item-title class="body-2">
               <a href="#">{{ getSpaceName }}</a>
@@ -109,12 +111,12 @@
       </div>
     </div>
     <div class="SpaceAdmin">
-      <v-divider/>
+      <v-divider />
       <div class="spaceAdminContainer">
         <div class="spaceAdminWrapper">
           <v-list-item v-if="managerIdentities && managerIdentities.length === 1" class="px-0">
             <v-list-item-avatar size="28" class="userAvatar py-1">
-              <v-img :src="project.managerIdentities[0].avatar"/>
+              <v-img :src="project.managerIdentities[0].avatar" />
             </v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title class="body-2">
@@ -134,7 +136,7 @@
               :avatar-url="manager.avatar"
               :size="iconSize"
               :style="'background-image: url('+manager.avatar+')'"
-              class="mr-1 projectManagersAvatar"/>
+              class="me-1 projectManagersAvatar" />
             <div class="seeMoreAvatars">
               <div
                 v-if="managerIdentities.length > maxAvatarToShow"
@@ -143,7 +145,7 @@
                 <v-avatar
                   :size="iconSize"
                   :style="'background-image: url('+managerIdentities[maxAvatarToShow].avatar+')'"
-                  :title="managerIdentities[maxAvatarToShow].displayName"/>
+                  :title="managerIdentities[maxAvatarToShow].displayName" />
                 <span class="seeMoreAvatarList">+{{ showMoreAvatarsNumber }}</span>
               </div>
             </div>
@@ -169,118 +171,118 @@
   </v-card>
 </template>
 <script>
-  export default {
-    props: {
-      project: {
-        type: Object,
-        default: null,
+export default {
+  props: {
+    project: {
+      type: Object,
+      default: null,
+    }
+  },
+  data () {
+    return {
+      displayActionMenu: false,
+      waitTimeUntilCloseMenu: 200,
+      projectColors: [
+        { class: 'asparagus' },
+        { class: 'munsell_blue' },
+        { class: 'navy_blue' },
+        { class: 'purple' },
+        { class: 'red' },
+        { class: 'brown' },
+        { class: 'laurel_green' },
+        { class: 'sky_blue' },
+        { class: 'blue_gray' },
+        { class: 'light_purple' },
+        { class: 'hot_pink' },
+        { class: 'light_brown' },
+        { class: 'moss_green' },
+        { class: 'powder_blue' },
+        { class: 'light_blue' },
+        { class: 'pink' },
+        { class: 'Orange' },
+        { class: 'gray' },
+        { class: 'green' },
+        { class: 'baby_blue' },
+        { class: 'light_gray' },
+        { class: 'beige' },
+        { class: 'yellow' },
+        { class: 'plum' },
+      ],
+      managerIdentities: this.project && this.project.managerIdentities,
+      iconSize: 28,
+      maxAvatarToShow: 5
+    };
+  },
+  computed: {
+    avatarToDisplay () {
+      if (this.project.managerIdentities.length > this.maxAvatarToShow) {
+        return this.project.managerIdentities.slice(0, this.maxAvatarToShow-1);
+      } else {
+        return this.project.managerIdentities;
       }
     },
-    data () {
-      return {
-        displayActionMenu: false,
-        waitTimeUntilCloseMenu: 200,
-        projectColors: [
-          { class: 'asparagus' },
-          { class: 'munsell_blue' },
-          { class: 'navy_blue' },
-          { class: 'purple' },
-          { class: 'red' },
-          { class: 'brown' },
-          { class: 'laurel_green' },
-          { class: 'sky_blue' },
-          { class: 'blue_gray' },
-          { class: 'light_purple' },
-          { class: 'hot_pink' },
-          { class: 'light_brown' },
-          { class: 'moss_green' },
-          { class: 'powder_blue' },
-          { class: 'light_blue' },
-          { class: 'pink' },
-          { class: 'Orange' },
-          { class: 'gray' },
-          { class: 'green' },
-          { class: 'baby_blue' },
-          { class: 'light_gray' },
-          { class: 'beige' },
-          { class: 'yellow' },
-          { class: 'plum' },
-        ],
-        managerIdentities: this.project && this.project.managerIdentities,
-        iconSize: 28,
-        maxAvatarToShow : 5
+    showMoreAvatarsNumber() {
+      return this.managerIdentities.length - this.maxAvatarToShow;
+    },
+    getSpaceName(){
+      const str=this.project.space;
+      return str.substr(0, str.indexOf(/spaces/)-2);
+    },
+    getSpaceAvatarURL() {
+      const str=this.project.space;
+      return `/portal/rest/v1/social/spaces/${ (str.substr(str.indexOf(/spaces/)+8)).slice(0,-1) }/avatar`;
+    }
+  },
+  created() {
+    $(document).on('mousedown', () => {
+      if (this.displayActionMenu) {
+        window.setTimeout(() => {
+          this.displayActionMenu = false;
+        }, this.waitTimeUntilCloseMenu);
       }
+    });
+    this.$root.$on('update-projects-list-avatar',managerIdentities =>{
+      this.project.managerIdentities=managerIdentities;
+    });
+  },
+  methods: {
+    showProjectTasksDetails(project) {
+      document.dispatchEvent(new CustomEvent('showProjectTasks', {detail: project}));
     },
-    computed: {
-      avatarToDisplay () {
-        if(this.project.managerIdentities.length > this.maxAvatarToShow) {
-          return this.project.managerIdentities.slice(0, this.maxAvatarToShow-1);
-        } else {
-          return this.project.managerIdentities;
-        }
-      },
-      showMoreAvatarsNumber() {
-        return this.managerIdentities.length - this.maxAvatarToShow;
-      },
-      getSpaceName(){
-        const str=this.project.space
-        return str.substr(0, str.indexOf(/spaces/)-2);
-      },
-      getSpaceAvatarURL() {
-        const str=this.project.space;
-        return `/portal/rest/v1/social/spaces/${ (str.substr(str.indexOf(/spaces/)+8)).slice(0,-1) }/avatar`;
-      }
+    openEditDrawer() {
+      this.$emit('openDrawer');
     },
-    created() {
-      $(document).on('mousedown', () => {
-        if (this.displayActionMenu) {
-          window.setTimeout(() => {
-            this.displayActionMenu = false;
-          }, this.waitTimeUntilCloseMenu);
-        }
-      });
-      this.$root.$on('update-projects-list-avatar',managerIdentities =>{
-        this.project.managerIdentities=managerIdentities;
-      });
+    onCloseDrawer: function (drawer) {
+      this.drawer = drawer;
     },
-    methods : {
-      showProjectTasksDetails(project) {
-        document.dispatchEvent(new CustomEvent('showProjectTasks', {detail: project}));
-      },
-      openEditDrawer() {
-       this.$emit('openDrawer');
-      },
-      onCloseDrawer: function (drawer) {
-        this.drawer = drawer;
-      },
-      confirmDeleteProject: function () {
-        this.$refs.CancelSavingChangesDialog.open();
-      },
-      confirmCloneProject: function () {
-        this.$refs.CancelSavingChangesCloneDialog.open();
-      },
-      deleteProject() {
-        this.$projectService.deleteProjectInfo(this.project)
-                .then(() => this.$emit('refreshProjects'))
-                .then(this.$root.$emit('show-alert',{type:'success',message:this.$t('alert.success.project.deleted')} ))
-                .catch(e => {
-                    console.debug("Error updating project", e);
-                    this.$root.$emit('show-alert',{type:'error',message:this.$t('alert.error')} );
-                 });
-      },
-      cloneProject() {
-        this.$projectService.cloneProject(this.project)
-                .then(() => this.$emit('refreshProjects'))
-                .then(this.$root.$emit('show-alert',{type:'success',message:this.$t('alert.success.project.cloned')} ))
-                .catch(e => {
-                   console.debug("Error updating project", e);
-                   this.$root.$emit('show-alert',{type:'error',message:this.$t('alert.error')} );
-                })
-      },
+    confirmDeleteProject: function () {
+      this.$refs.CancelSavingChangesDialog.open();
+    },
+    confirmCloneProject: function () {
+      this.$refs.CancelSavingChangesCloneDialog.open();
+    },
+    deleteProject() {
+      this.$projectService.deleteProjectInfo(this.project)
+        .then(() => this.$emit('refreshProjects'))
+        .then(this.$root.$emit('show-alert',{type: 'success',message: this.$t('alert.success.project.deleted')} ))
+        .catch(e => {
+          console.error('Error updating project', e);
+          this.$root.$emit('show-alert',{type: 'error',message: this.$t('alert.error')} );
+        });
+    },
+    cloneProject() {
+      this.$projectService.cloneProject(this.project)
+        .then(() => this.$emit('refreshProjects'))
+        .then(this.$root.$emit('show-alert',{type: 'success',message: this.$t('alert.success.project.cloned')} ))
+        .catch(e => {
+          console.error('Error updating project', e);
+          this.$root.$emit('show-alert',{type: 'error',message: this.$t('alert.error')} );
+        });
+    },
     changeColorProject(project,color) {
       this.$projectService.updateProjectColor(project, color)
-              .then(() => this.$emit('projectChangeColor'))
-              .then(this.project.color = color);
+        .then(() => this.$emit('projectChangeColor'))
+        .then(this.project.color = color);
     },
     getDescription(){
       let text=this.project.description;
@@ -288,8 +290,16 @@
       div.innerHTML = text;
       text = div.textContent || div.innerText || '';
       return text;
-      }
     },
+    getClassDescription(){
+      if (this.project && !this.project.space){
+        return 'largeDescriptionArea';
+      } else if (this.project && this.project.space){
+        return 'largeDescriptionAreaSpace';
+      }
 
-  }
+    }
+  },
+
+};
 </script>

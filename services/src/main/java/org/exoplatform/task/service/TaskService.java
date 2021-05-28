@@ -27,7 +27,6 @@ public interface TaskService {
 
     /**
      * Create a new task.
-     *
      * @param task the given task.
      * @return the created task.
      */
@@ -37,7 +36,7 @@ public interface TaskService {
      * Update the task.
      *
      * @param task the given task.
-     * @return the updated task.
+     * @return TaskDto the updated task.
      */
     TaskDto updateTask(TaskDto task);
 
@@ -47,21 +46,24 @@ public interface TaskService {
      * Remove the task with given <code>taskId</code>
      *
      * @param taskId the given task id.
-     * @throws EntityNotFoundException when user is not authorized to remove task
+     * @throws EntityNotFoundException when task is not found.
      */
     void removeTask(long taskId) throws EntityNotFoundException;
 
     /**
      * Clone the task from a task with given <code>taskId</code>.
+     * @param taskId the task Id
+     * @return the cloned task.
+     * @throws EntityNotFoundException when task is not found.
      */
     TaskDto cloneTask(long taskId) throws EntityNotFoundException;
 
     /**
      * Return the task with given <code>taskId</code>.
      *
-     * @param taskId
+     * @param taskId the task Id
      * @return the given task.
-     * @throws EntityNotFoundException when user is not authorized to get task.
+     * @throws EntityNotFoundException when task is not found.
      */
     TaskDto getTask(long taskId) throws EntityNotFoundException;
 
@@ -97,7 +99,7 @@ public interface TaskService {
      * @param actionName the given action name.
      * @param target     the given target.
      * @return add task log.
-     * @throws EntityNotFoundException when user is not authorized to add taskLog.
+     * @throws EntityNotFoundException when task is not found.
      */
     ChangeLogEntry addTaskLog(long taskId, String username, String actionName, String target) throws EntityNotFoundException;
 
@@ -135,8 +137,10 @@ public interface TaskService {
      * of the task
      *
      * @param query term to search in title or description
+     * @param offset term to offset results.
      * @param limit term to limit results.
      * @return {@link List} of {@link TaskDto}
+     * @throws Exception when therer is an exception on get tasks.
      */
     List<TaskDto> findTasks(TaskQuery query, int offset, int limit) throws Exception;
 

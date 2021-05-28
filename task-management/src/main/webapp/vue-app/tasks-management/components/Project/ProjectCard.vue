@@ -7,13 +7,13 @@
           @openDrawer="openEditDrawer"
           @closed="onCloseDrawer"
           @refreshProjects="refreshProjects"
-          @flip="flipCard = true; flip()"/>
+          @flip="flipCard = true; flip()" />
       </div>
       <div class="tasksCardBack pa-3">
         <project-card-Reverse
           ref="reversCard"
           :project="project"
-          @flip="flipCard = false; flip()"/>
+          @flip="flipCard = false; flip()" />
       </div>
     </v-flex>
   </v-app>
@@ -29,24 +29,24 @@ export default {
   data () {
     return {
       flipCard: false,
-    }
+    };
   },
-  methods:{
+  methods: {
     openEditDrawer() {
-       this.$root.$emit('open-project-drawer', this.project)
+      this.$root.$emit('open-project-drawer', this.project);
     },
     onCloseDrawer: function(drawer){
       this.drawer = drawer;
     },
     refreshProjects: function(){
-      this.$emit('refreshProjects')
+      this.$emit('refreshProjects');
     },
     flip: function(){
-      if(this.flipCard){
+      if (this.flipCard){
         this.$refs.reversCard.getStats(this.project);
       }
     }
   }
-}
+};
 </script>
 
