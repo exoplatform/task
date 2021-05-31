@@ -236,6 +236,7 @@
                         this.comments.splice(i, 1);
                     }
                 }
+                this.$root.$emit('update-task-comments',this.comments.length,this.task.id);
             },
             getRelativeTime(previous) {
                 const msPerMinute = 60 * 1000;
