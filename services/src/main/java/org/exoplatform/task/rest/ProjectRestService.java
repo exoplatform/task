@@ -316,36 +316,39 @@ public class ProjectRestService implements ResourceContainer {
 
     if (projectManagers.size() > 0) {
       for (String permission : projectService.getManager(projectId)) {
-        int index = permission.indexOf(':');
-        if (index > -1) {
-          String groupId = permission.substring(index + 1);
-          space = spaceService.getSpaceByGroupId(groupId);
-          if (space != null) {
-            managers.addAll(Arrays.asList(space.getManagers()));
-            JSONObject manager = new JSONObject();
-            manager.put("id", "space:" + space.getPrettyName());
-            manager.put("remoteId", space.getPrettyName());
-            manager.put("providerId", "space");
-            JSONObject profile = new JSONObject();
-            profile.put("fullName", space.getDisplayName());
-            profile.put("originalName", space.getPrettyName());
-            profile.put("avatarUrl", "/portal/rest/v1/social/spaces/" + space.getPrettyName() + "/avatar");
-            manager.put("profile", profile);
-            managersDetail.put(manager);
-          }
-        } else {
-          User user_ = UserUtil.getUser(permission);
-          if (user_ != null) {
-            managers.add(permission);
-            JSONObject manager = new JSONObject();
-            manager.put("id", "organization:" + permission);
-            manager.put("remoteId", permission);
-            manager.put("providerId", "organization");
-            JSONObject profile = new JSONObject();
-            profile.put("fullName", user_.getDisplayName());
-            profile.put("avatarUrl", user_.getAvatar());
-            manager.put("profile", profile);
-            managersDetail.put(manager);
+        if (permission != null) {
+          int index = permission.indexOf(':');
+          if (index > -1) {
+            String groupId = permission.substring(index + 1);
+            space = spaceService.getSpaceByGroupId(groupId);
+            if (space != null) {
+              managers.addAll(Arrays.asList(space.getManagers()));
+              JSONObject manager = new JSONObject();
+              manager.put("id", "space:" + space.getPrettyName());
+              manager.put("remoteId", space.getPrettyName());
+              manager.put("providerId", "space");
+              JSONObject profile = new JSONObject();
+              profile.put("fullName", space.getDisplayName());
+              profile.put("originalName", space.getPrettyName());
+              profile.put("avatarUrl", "/portal/rest/v1/social/spaces/" + space.getPrettyName() + "/avatar");
+              manager.put("profile", profile);
+              managersDetail.put(manager);
+            }
+
+          } else {
+            User user_ = UserUtil.getUser(permission);
+            if (user_ != null) {
+              managers.add(permission);
+              JSONObject manager = new JSONObject();
+              manager.put("id", "organization:" + permission);
+              manager.put("remoteId", permission);
+              manager.put("providerId", "organization");
+              JSONObject profile = new JSONObject();
+              profile.put("fullName", user_.getDisplayName());
+              profile.put("avatarUrl", user_.getAvatar());
+              manager.put("profile", profile);
+              managersDetail.put(manager);
+            }
           }
         }
       }
@@ -353,38 +356,40 @@ public class ProjectRestService implements ResourceContainer {
 
     if (projectParticipators.size() > 0 && participatorParam) {
       for (String permission : projectParticipators) {
-        int index = permission.indexOf(':');
-        if (index > -1) {
-          String groupId = permission.substring(index + 1);
-          Space spaceP = spaceService.getSpaceByGroupId(groupId);
-          if (spaceP != null) {
-            participators.addAll(Arrays.asList(spaceP.getMembers()));
-            JSONObject participator = new JSONObject();
-            participator.put("id", "space:" + spaceP.getPrettyName());
-            participator.put("remoteId", spaceP.getPrettyName());
-            participator.put("providerId", "space");
-            JSONObject profile = new JSONObject();
-            profile.put("fullName", spaceP.getDisplayName());
-            profile.put("originalName", spaceP.getPrettyName());
-            profile.put("avatarUrl", "/portal/rest/v1/social/spaces/" + spaceP.getPrettyName() + "/avatar");
-            participator.put("profile", profile);
-            participatorsDetail.put(participator);
+        if (permission != null) {
+          int index = permission.indexOf(':');
+          if (index > -1) {
+            String groupId = permission.substring(index + 1);
+            Space spaceP = spaceService.getSpaceByGroupId(groupId);
+            if (spaceP != null) {
+              participators.addAll(Arrays.asList(spaceP.getMembers()));
+              JSONObject participator = new JSONObject();
+              participator.put("id", "space:" + spaceP.getPrettyName());
+              participator.put("remoteId", spaceP.getPrettyName());
+              participator.put("providerId", "space");
+              JSONObject profile = new JSONObject();
+              profile.put("fullName", spaceP.getDisplayName());
+              profile.put("originalName", spaceP.getPrettyName());
+              profile.put("avatarUrl", "/portal/rest/v1/social/spaces/" + spaceP.getPrettyName() + "/avatar");
+              participator.put("profile", profile);
+              participatorsDetail.put(participator);
+            } else {
+              projectParticipators.remove(permission);
+            }
           } else {
-            projectParticipators.remove(permission);
-          }
-        } else {
-          User user_ = UserUtil.getUser(permission);
-          if (user_ != null) {
-            participators.add(permission);
-            JSONObject participator = new JSONObject();
-            participator.put("id", "organization:" + permission);
-            participator.put("remoteId", permission);
-            participator.put("providerId", "organization");
-            JSONObject profile = new JSONObject();
-            profile.put("fullName", user_.getDisplayName());
-            profile.put("avatarUrl", user_.getAvatar());
-            participator.put("profile", profile);
-            participatorsDetail.put(participator);
+            User user_ = UserUtil.getUser(permission);
+            if (user_ != null) {
+              participators.add(permission);
+              JSONObject participator = new JSONObject();
+              participator.put("id", "organization:" + permission);
+              participator.put("remoteId", permission);
+              participator.put("providerId", "organization");
+              JSONObject profile = new JSONObject();
+              profile.put("fullName", user_.getDisplayName());
+              profile.put("avatarUrl", user_.getAvatar());
+              participator.put("profile", profile);
+              participatorsDetail.put(participator);
+            }
           }
         }
       }
