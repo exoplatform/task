@@ -353,6 +353,7 @@
         addTaskComments(this.task.id,comment).then(comment => {
           this.comments.push(comment);
           this.reset = !this.reset;
+          this.$root.$emit('update-task-comments',this.comments.length,this.task.id);
         });
       },
       getUserAvatar(username) {
