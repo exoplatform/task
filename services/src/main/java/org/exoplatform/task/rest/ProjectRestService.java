@@ -334,17 +334,19 @@ public class ProjectRestService implements ResourceContainer {
             managersDetail.put(manager);
           }
         } else {
-          managers.add(permission);
           User user_ = UserUtil.getUser(permission);
-          JSONObject manager = new JSONObject();
-          manager.put("id", "organization:" + permission);
-          manager.put("remoteId", permission);
-          manager.put("providerId", "organization");
-          JSONObject profile = new JSONObject();
-          profile.put("fullName", user_.getDisplayName());
-          profile.put("avatarUrl", user_.getAvatar());
-          manager.put("profile", profile);
-          managersDetail.put(manager);
+          if (user_ != null) {
+            managers.add(permission);
+            JSONObject manager = new JSONObject();
+            manager.put("id", "organization:" + permission);
+            manager.put("remoteId", permission);
+            manager.put("providerId", "organization");
+            JSONObject profile = new JSONObject();
+            profile.put("fullName", user_.getDisplayName());
+            profile.put("avatarUrl", user_.getAvatar());
+            manager.put("profile", profile);
+            managersDetail.put(manager);
+          }
         }
       }
     }
@@ -371,17 +373,19 @@ public class ProjectRestService implements ResourceContainer {
             projectParticipators.remove(permission);
           }
         } else {
-          participators.add(permission);
           User user_ = UserUtil.getUser(permission);
-          JSONObject participator = new JSONObject();
-          participator.put("id", "organization:" + permission);
-          participator.put("remoteId", permission);
-          participator.put("providerId", "organization");
-          JSONObject profile = new JSONObject();
-          profile.put("fullName", user_.getDisplayName());
-          profile.put("avatarUrl", user_.getAvatar());
-          participator.put("profile", profile);
-          participatorsDetail.put(participator);
+          if (user_ != null) {
+            participators.add(permission);
+            JSONObject participator = new JSONObject();
+            participator.put("id", "organization:" + permission);
+            participator.put("remoteId", permission);
+            participator.put("providerId", "organization");
+            JSONObject profile = new JSONObject();
+            profile.put("fullName", user_.getDisplayName());
+            profile.put("avatarUrl", user_.getAvatar());
+            participator.put("profile", profile);
+            participatorsDetail.put(participator);
+          }
         }
       }
 
