@@ -233,6 +233,15 @@ public class TestProjectRestService {
     assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
     assertNotNull(response.getEntity());
 
+    when(projectService.getManager(1)).thenReturn(new HashSet<>(Arrays.asList(null, "")));
+    when(projectService.getParticipator(1)).thenReturn(new HashSet<>(Arrays.asList(null, "")));
+
+    // When
+    response = projectRestService.getProjectById(1,true);
+    // Then
+    assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+    assertNotNull(response.getEntity());
+
   }
 
   @Test

@@ -29,6 +29,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.portal.config.UserACL;
 import org.exoplatform.services.organization.Group;
@@ -146,7 +147,7 @@ public final class UserUtil {
   }
 
   public static org.exoplatform.task.model.User getUser(String userName){
-    if(userName==null) return null;
+    if(StringUtils.isBlank(userName)) return null;
     IdentityManager identityManager = CommonsUtils.getService(IdentityManager.class);
     org.exoplatform.social.core.identity.model.Identity id = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME,userName);
     if(id==null){
