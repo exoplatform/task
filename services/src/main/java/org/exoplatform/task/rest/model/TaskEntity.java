@@ -63,8 +63,8 @@ public class TaskEntity {
     this.commentCount = commentCount;
     this.assignee = UserUtil.getUser(task.getAssignee());
     this.createdBy = UserUtil.getUser(task.getCreatedBy());
-    if(task.getCoworker()!=null) this.coworker = task.getCoworker().stream().map(user -> UserUtil.getUser(user)).collect(Collectors.toList());
-    if(task.getWatcher()!=null) this.watcher = task.getWatcher().stream().map(user -> UserUtil.getUser(user)).collect(Collectors.toList());
+    if(task.getCoworker()!=null) this.coworker = task.getCoworker().stream().map(UserUtil::getUser).collect(Collectors.toList());
+    if(task.getWatcher()!=null) this.watcher = task.getWatcher().stream().map(UserUtil::getUser).collect(Collectors.toList());
   }
 
 }
