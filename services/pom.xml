@@ -105,6 +105,11 @@
       <artifactId>liquibase-core</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.exoplatform.ecms</groupId>
+      <artifactId>ecms-core-services</artifactId>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
   <build>
     <plugins>

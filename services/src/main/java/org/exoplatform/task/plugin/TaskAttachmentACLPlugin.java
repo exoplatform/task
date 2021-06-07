@@ -21,6 +21,7 @@ import org.exoplatform.services.attachments.plugin.AttachmentACLPlugin;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.security.Identity;
+import org.exoplatform.services.security.IdentityRegistry;
 import org.exoplatform.social.core.manager.IdentityManager;
 import org.exoplatform.task.dto.ProjectDto;
 import org.exoplatform.task.dto.TaskDto;
@@ -37,9 +38,12 @@ public class TaskAttachmentACLPlugin extends AttachmentACLPlugin {
 
   private IdentityManager     identityManager;
 
-  public TaskAttachmentACLPlugin(TaskService taskService, IdentityManager identityManager) {
+  private IdentityRegistry    identityRegistry;
+
+  public TaskAttachmentACLPlugin(TaskService taskService, IdentityManager identityManager, IdentityRegistry identityRegistry) {
     this.taskService = taskService;
     this.identityManager = identityManager;
+    this.identityRegistry = identityRegistry;
   }
 
   @Override
@@ -48,7 +52,7 @@ public class TaskAttachmentACLPlugin extends AttachmentACLPlugin {
   }
 
   @Override
-  public boolean canView(Identity identity, String entityType, String entityId) {
+  public boolean canView(long userIdentityId, String entityType, String entityId) {
     if (!entityType.equals(TASK_ATTACHMENT_TYPE)) {
       throw new IllegalArgumentException("Entity type must be" + TASK_ATTACHMENT_TYPE);
     }
@@ -57,9 +61,12 @@ public class TaskAttachmentACLPlugin extends AttachmentACLPlugin {
       throw new IllegalArgumentException("Entity id must not be Empty");
     }
 
-    if (identity == null) {
+    if (userIdentityId < 0) {
       throw new IllegalArgumentException("User identity must not be null");
     }
+    org.exoplatform.social.core.identity.model.Identity userIdentity = identityManager.getIdentity(String.valueOf(userIdentityId));
+    String username = userIdentity.getRemoteId();
+    Identity identity = identityRegistry.getIdentity(username);
     boolean canView = false;
     try {
       TaskDto task = taskService.getTask(Long.parseLong(entityId));
@@ -75,7 +82,7 @@ public class TaskAttachmentACLPlugin extends AttachmentACLPlugin {
   }
 
   @Override
-  public boolean canDelete(Identity identity, String entityType, String entityId) {
+  public boolean canDelete(long userIdentityId, String entityType, String entityId) {
     if (!entityType.equals(TASK_ATTACHMENT_TYPE)) {
       throw new IllegalArgumentException("Entity type must be" + TASK_ATTACHMENT_TYPE);
     }
@@ -84,9 +91,13 @@ public class TaskAttachmentACLPlugin extends AttachmentACLPlugin {
       throw new IllegalArgumentException("Entity id must not be Empty");
     }
 
-    if (identity == null) {
-      throw new IllegalArgumentException("User identity must not be null");
+    if (userIdentityId <= 0) {
+      throw new IllegalArgumentException("User identity must be positive");
     }
+    org.exoplatform.social.core.identity.model.Identity userIdentity = identityManager.getIdentity(String.valueOf(userIdentityId));
+    String username = userIdentity.getRemoteId();
+    Identity identity = identityRegistry.getIdentity(username);
+
     boolean canDelete = false;
     try {
       TaskDto task = taskService.getTask(Long.parseLong(entityId));
