@@ -29,9 +29,9 @@ import org.exoplatform.task.service.TaskService;
 
 public class TaskAttachmentACLPlugin extends AttachmentACLPlugin {
 
-  private static final Log    LOG        = ExoLogger.getLogger(TaskAttachmentACLPlugin.class.getName());
+  private static final Log    LOG                  = ExoLogger.getLogger(TaskAttachmentACLPlugin.class.getName());
 
-  private static final String entityType = "task";
+  private static final String TASK_ATTACHMENT_TYPE = "task";
 
   private TaskService         taskService;
 
@@ -44,13 +44,13 @@ public class TaskAttachmentACLPlugin extends AttachmentACLPlugin {
 
   @Override
   public String getEntityType() {
-    return entityType;
+    return TASK_ATTACHMENT_TYPE;
   }
 
   @Override
   public boolean canView(Identity identity, String entityType, String entityId) {
-    if (!entityType.equals(TaskAttachmentACLPlugin.entityType)) {
-      throw new IllegalArgumentException("Entity type must be" + TaskAttachmentACLPlugin.entityType);
+    if (!entityType.equals(TASK_ATTACHMENT_TYPE)) {
+      throw new IllegalArgumentException("Entity type must be" + TASK_ATTACHMENT_TYPE);
     }
 
     if (StringUtils.isEmpty(entityId)) {
@@ -76,8 +76,8 @@ public class TaskAttachmentACLPlugin extends AttachmentACLPlugin {
 
   @Override
   public boolean canDelete(Identity identity, String entityType, String entityId) {
-    if (!entityType.equals(TaskAttachmentACLPlugin.entityType)) {
-      throw new IllegalArgumentException("Entity type must be" + TaskAttachmentACLPlugin.entityType);
+    if (!entityType.equals(TASK_ATTACHMENT_TYPE)) {
+      throw new IllegalArgumentException("Entity type must be" + TASK_ATTACHMENT_TYPE);
     }
 
     if (StringUtils.isEmpty(entityId)) {
