@@ -20,13 +20,10 @@ import org.apache.commons.lang.StringUtils;
 import org.exoplatform.services.attachments.plugin.AttachmentACLPlugin;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
-import org.exoplatform.services.security.Identity;
-import org.exoplatform.services.security.IdentityRegistry;
-import org.exoplatform.social.core.manager.IdentityManager;
-import org.exoplatform.task.dto.ProjectDto;
 import org.exoplatform.task.dto.TaskDto;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.service.TaskService;
+import org.exoplatform.task.util.TaskUtil;
 
 public class TaskAttachmentACLPlugin extends AttachmentACLPlugin {
 
@@ -36,15 +33,8 @@ public class TaskAttachmentACLPlugin extends AttachmentACLPlugin {
 
   private TaskService         taskService;
 
-  private IdentityManager     identityManager;
-
-  private IdentityRegistry    identityRegistry;
-
-  public TaskAttachmentACLPlugin(TaskService taskService, IdentityManager identityManager, IdentityRegistry identityRegistry) {
-    this.taskService = taskService;
-    this.identityManager = identityManager;
-    this.identityRegistry = identityRegistry;
-  }
+  public TaskAttachmentACLPlugin(TaskService taskService) {
+    this.taskService = taskService;  }
 
   @Override
   public String getEntityType() {
@@ -64,16 +54,11 @@ public class TaskAttachmentACLPlugin extends AttachmentACLPlugin {
     if (userIdentityId < 0) {
       throw new IllegalArgumentException("User identity must not be null");
     }
-    org.exoplatform.social.core.identity.model.Identity userIdentity = identityManager.getIdentity(String.valueOf(userIdentityId));
-    String username = userIdentity.getRemoteId();
-    Identity identity = identityRegistry.getIdentity(username);
+
     boolean canView = false;
     try {
       TaskDto task = taskService.getTask(Long.parseLong(entityId));
-      if (task.getStatus() != null) {
-        ProjectDto project = task.getStatus().getProject();
-        canView = project.canView(identity);
-      }
+      canView = TaskUtil.hasEditPermission(taskService, task);
     } catch (EntityNotFoundException e) {
       LOG.error("Can not find task with ID: " + entityId);
     }
@@ -94,25 +79,15 @@ public class TaskAttachmentACLPlugin extends AttachmentACLPlugin {
     if (userIdentityId <= 0) {
       throw new IllegalArgumentException("User identity must be positive");
     }
-    org.exoplatform.social.core.identity.model.Identity userIdentity = identityManager.getIdentity(String.valueOf(userIdentityId));
-    String username = userIdentity.getRemoteId();
-    Identity identity = identityRegistry.getIdentity(username);
 
     boolean canDelete = false;
     try {
       TaskDto task = taskService.getTask(Long.parseLong(entityId));
-      if (task.getStatus() != null) {
-        ProjectDto project = task.getStatus().getProject();
-        canDelete = project.canView(identity);
-      }
+      canDelete = TaskUtil.hasEditPermission(taskService, task);
     } catch (EntityNotFoundException e) {
       LOG.error("Can not find task with ID: " + entityId);
     }
 
     return canDelete;
-  }
-
-  private org.exoplatform.social.core.identity.model.Identity getIdentityById(String identityId) {
-    return identityManager.getIdentity(identityId);
   }
 }
