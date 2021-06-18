@@ -116,19 +116,6 @@
       <plugin>
         <groupId>com.jcabi</groupId>
         <artifactId>jcabi-maven-plugin</artifactId>
-        <!-- Workaround for bug https://github.com/jcabi/jcabi-aspects/issues/257 -->
-        <dependencies>
-          <dependency>
-            <groupId>org.aspectj</groupId>
-            <artifactId>aspectjtools</artifactId>
-            <version>1.9.1</version>
-          </dependency>
-          <dependency>
-            <groupId>org.aspectj</groupId>
-            <artifactId>aspectjweaver</artifactId>
-            <version>1.9.1</version>
-          </dependency>
-        </dependencies>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
