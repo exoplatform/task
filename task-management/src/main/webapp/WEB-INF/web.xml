@@ -6,31 +6,8 @@
          version="3.0">
   <display-name>task-management</display-name>
 
-  <!-- Run mode: prod, dev or live -->
-  <context-param>
-    <param-name>juzu.run_mode</param-name>
-    <param-value>${juzu.run_mode:prod}</param-value>
-  </context-param>
-
-  <!-- Injection container to use: guice, spring, cdi or weld -->
-  <context-param>
-    <param-name>juzu.inject</param-name>
-    <param-value>guice</param-value>
-  </context-param>
-
   <listener>
     <listener-class>org.exoplatform.container.web.PortalContainerConfigOwner</listener-class>
   </listener>
 
-  <servlet>
-    <servlet-name>AssetServlet</servlet-name>
-    <servlet-class>juzu.impl.asset.AssetServlet</servlet-class>
-    <load-on-startup>0</load-on-startup>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>AssetServlet</servlet-name>
-    <url-pattern>/assets/*</url-pattern>
-  </servlet-mapping>
-
-  <absolute-ordering/>
 </web-app>
