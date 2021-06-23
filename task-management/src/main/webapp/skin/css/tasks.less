@@ -581,6 +581,7 @@
             .taskCardFront {
               z-index: 2;
               transform: rotateY(0deg);
+              -webkit-backface-visibility: hidden;
               backface-visibility: hidden;
               position: absolute;
               top: 0;
@@ -835,6 +836,7 @@
             .tasksCardBack {
               transform: rotateY(180deg);
               backface-visibility: hidden;
+              -webkit-backface-visibility: hidden;
               position: absolute;
               top: 0;
               left: 0;
