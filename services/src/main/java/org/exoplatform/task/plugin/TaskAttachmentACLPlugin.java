@@ -43,31 +43,20 @@ public class TaskAttachmentACLPlugin extends AttachmentACLPlugin {
 
   @Override
   public boolean canView(long userIdentityId, String entityType, String entityId) {
-    if (!entityType.equals(TASK_ATTACHMENT_TYPE)) {
-      throw new IllegalArgumentException("Entity type must be" + TASK_ATTACHMENT_TYPE);
-    }
+    return isProjectParticipant(userIdentityId, entityType, entityId);
+  }
 
-    if (StringUtils.isEmpty(entityId)) {
-      throw new IllegalArgumentException("Entity id must not be Empty");
-    }
-
-    if (userIdentityId < 0) {
-      throw new IllegalArgumentException("User identity must not be null");
-    }
-
-    boolean canView = false;
-    try {
-      TaskDto task = taskService.getTask(Long.parseLong(entityId));
-      canView = TaskUtil.hasEditPermission(taskService, task);
-    } catch (EntityNotFoundException e) {
-      LOG.error("Can not find task with ID: " + entityId);
-    }
-
-    return canView;
+  @Override
+  public boolean canEdit(long userIdentityId, String entityType, String entityId) {
+    return isProjectParticipant(userIdentityId, entityType, entityId);
   }
 
   @Override
   public boolean canDelete(long userIdentityId, String entityType, String entityId) {
+    return isProjectParticipant(userIdentityId, entityType, entityId);
+  }
+
+  private boolean isProjectParticipant(long userIdentityId, String entityType, String entityId) {
     if (!entityType.equals(TASK_ATTACHMENT_TYPE)) {
       throw new IllegalArgumentException("Entity type must be" + TASK_ATTACHMENT_TYPE);
     }
@@ -80,14 +69,14 @@ public class TaskAttachmentACLPlugin extends AttachmentACLPlugin {
       throw new IllegalArgumentException("User identity must be positive");
     }
 
-    boolean canDelete = false;
+    boolean isParticipant = false;
     try {
       TaskDto task = taskService.getTask(Long.parseLong(entityId));
-      canDelete = TaskUtil.hasEditPermission(taskService, task);
+      isParticipant = TaskUtil.hasEditPermission(taskService, task);
     } catch (EntityNotFoundException e) {
       LOG.error("Can not find task with ID: " + entityId);
     }
 
-    return canDelete;
+    return isParticipant;
   }
 }
