@@ -52,7 +52,7 @@ public class TaskAttachmentACLPlugin extends AttachmentACLPlugin {
   }
 
   @Override
-  public boolean canDelete(long userIdentityId, String entityType, String entityId) {
+  public boolean canDetach(long userIdentityId, String entityType, String entityId) {
     return isProjectParticipant(userIdentityId, entityType, entityId);
   }
 
