@@ -75,15 +75,17 @@ export function deleteProjectInfo(project) {
 }
 
 export function cloneProject(project) {
-  document.dispatchEvent(new CustomEvent('displayTopBarLoading'));
-  return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/projects/cloneproject`, {
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    credentials: 'include',
-    method: 'POST',
-    body: JSON.stringify(project)
-  }).finally(() => document.dispatchEvent(new CustomEvent('hideTopBarLoading')));
+    return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/projects/cloneproject`, {
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+        method: 'POST',
+        body: JSON.stringify(project)
+    }).then((data) => {
+        return data.json();
+        return 'success';
+    });
 }
 
 export function updateProjectColor(project, color) {
