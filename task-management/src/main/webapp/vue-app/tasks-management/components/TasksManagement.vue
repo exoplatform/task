@@ -47,6 +47,7 @@ export default {
       spaceName: '',
       projectId: '',
       alert: false,
+      callEvent: true,
       type: '',
       message: '',
       task: {
@@ -70,12 +71,14 @@ export default {
 
       if (context.type==='task'){
         this.setTaskUrl(context.id);
+        this.callEvent = false;
       }
-      if (context.type==='project'){
+      if (context.type==='project' && this.callEvent===true){
         this.setProjectUrl(context.id);
       }
       if (context.type==='myProjects'){
         this.getMyProjects();
+        this.callEvent = true;
       }
     });
     this.$root.$on('open-task-drawer', task => {
