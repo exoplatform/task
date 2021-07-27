@@ -57,7 +57,7 @@ export default {
   },
   computed: {
     isDrawerClosed() {
-      return this.$refs.taskDrawer.$refs.addTaskDrawer.drawer===false;
+      return !this.$refs.taskDrawer.$refs.addTaskDrawer.drawer;
     }
   },
   created(){
