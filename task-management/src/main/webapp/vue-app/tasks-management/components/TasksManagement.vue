@@ -55,6 +55,11 @@ export default {
       }
     };
   },
+  computed: {
+    isDrawerClosed() {
+      return !this.$refs.taskDrawer.$refs.addTaskDrawer.drawer;
+    }
+  },
   created(){
     this.$root.$on('show-alert', message => {
       this.displayMessage(message);
@@ -71,7 +76,7 @@ export default {
       if (context.type==='task'){
         this.setTaskUrl(context.id);
       }
-      if (context.type==='project'){
+      if (context.type==='project' && this.isDrawerClosed ){
         this.setProjectUrl(context.id);
       }
       if (context.type==='myProjects'){
