@@ -47,7 +47,6 @@ export default {
       spaceName: '',
       projectId: '',
       alert: false,
-      callEvent: true,
       type: '',
       message: '',
       task: {
@@ -55,6 +54,11 @@ export default {
         default: () => ({}),
       }
     };
+  },
+  computed: {
+    isDrawerClosed() {
+      return this.$refs.taskDrawer.$refs.addTaskDrawer.drawer===false;
+    }
   },
   created(){
     this.$root.$on('show-alert', message => {
@@ -71,14 +75,12 @@ export default {
 
       if (context.type==='task'){
         this.setTaskUrl(context.id);
-        this.callEvent = false;
       }
-      if (context.type==='project' && this.callEvent===true){
+      if (context.type==='project' && this.isDrawerClosed ){
         this.setProjectUrl(context.id);
       }
       if (context.type==='myProjects'){
         this.getMyProjects();
-        this.callEvent = true;
       }
     });
     this.$root.$on('open-task-drawer', task => {
