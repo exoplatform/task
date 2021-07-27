@@ -141,8 +141,7 @@
     </div>
     <v-tabs-items
       v-show="!filterProjectActive"
-      v-if="!loadingTasks"
-      :key="id">
+      v-if="!loadingTasks">
       <div
         v-show="taskViewTabName == 'board'"
         style="display: block"
@@ -225,6 +224,14 @@ export default {
     }
   },
   created() {
+    this.$root.$on('updateTaskPriority', value => {
+      if (this.taskFilter.orderBy === 'priority') {
+        const tasksArrayIndex = this.tasksList.findIndex(tasksArray => tasksArray.findIndex(t => t.id === value.taskId) > -1);
+        this.$tasksService.filterTasksList(this.taskFilter,'','','',this.project.id).then(data => {
+          this.$set(this.tasksList, tasksArrayIndex, data.tasks[tasksArrayIndex]);
+        });
+      }
+    });
     this.$root.$on('refresh-tasks-list', () => {
       this.getTasksByProject(this.project.id,'');
       if ( this.taskViewTabName === 'gantt' ) {
@@ -237,11 +244,6 @@ export default {
     this.$root.$on('deleteTask', (event) => {
       if (event && event.detail) {
         this.tasksList = this.tasksList.filter((t) => t.id !== event.detail);
-      }
-    });
-    this.$root.$on('update-task-completed', (event) => {
-      if (event) {
-        window.setTimeout(() => this.getTasksByProject(this.project.id,''), 500);
       }
     });
   },
@@ -465,6 +467,9 @@ export default {
       });
     },
     getFilter(tasksFilter,ProjectId){
+      if (tasksFilter) {
+        this.taskFilter = tasksFilter;
+      }
       if (tasksFilter.groupBy==='status') {
         tasksFilter.groupBy = '';
         this.filterProjectActive=false;

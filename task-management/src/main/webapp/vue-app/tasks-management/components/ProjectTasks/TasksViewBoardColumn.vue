@@ -178,8 +178,7 @@ export default {
     },
     reRenderTasks() {
       this.draggableKey += 1;
-    }
-  
+    },  
   }
 };
 

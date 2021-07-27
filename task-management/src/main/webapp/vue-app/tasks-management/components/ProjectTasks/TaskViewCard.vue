@@ -1,10 +1,9 @@
 <template>
   <v-app
     id="taskCardItem"
-    class="taskBoardCardItem"
     :class="removeCompletedTask && 'completedTask' || ''">
     <v-card
-      :class="[getTaskPriorityColor(task.task.priority)]"
+      :class="[taskPriorityColor]"
       class="taskCard taskViewCard pa-2"
       flat>
       <div class="taskTitleId  d-flex justify-space-between">
@@ -15,8 +14,8 @@
             true-value="true"
             false-value="false" />
           <i 
-            :title="$t(getTaskCompletedTitle())" 
-            :class="getTaskCompleted()" 
+            :title="$t(taskCompletedTitle)" 
+            :class="taskCompletedClass" 
             @click="updateCompleted"></i>
         </div>
         <div class="taskTitle d-flex align-start" @click="openTaskDrawer()">
@@ -161,6 +160,36 @@ export default {
     },
     displayCardBottomSection() {
       return this.taskDueDate || (this.task.labels && this.task.labels.length) || (this.assigneeAndCoworkerArray && this.assigneeAndCoworkerArray.length) || this.task.commentCount;
+    },
+    taskCompletedClass() {
+      return this.task.task.completed === true ? 'uiIconValidate' : 'uiIconCircle';
+    },
+    taskCompletedTitle() {
+      return this.task.task.completed === true ? 'message.markAsUnCompleted' : 'message.markAsCompleted';
+    },
+    taskPriorityColor() {
+      switch (this.task.task.priority) {
+      case 'HIGH':
+        return 'taskHighPriority';
+      case 'NORMAL':
+        return 'taskNormalPriority';
+      case 'LOW':
+        return 'taskLowPriority';
+      default:
+        return 'taskNonePriority';
+      }
+    },
+  },
+  watch: {
+    taskCompletedClass: {
+      immediate: true,
+      handler() {
+        if (this.taskCompletedClass === 'uiIconValidate') {
+          this.showCompleteTasks = false;
+        } else {
+          this.showCompleteTasks = true;
+        }     
+      }
     }
   },
   created() {
@@ -173,7 +202,7 @@ export default {
         }
       }
     });
-    this.$root.$on('update-task-assignee',(value,id)=>{
+    this.$root.$on('update-task-assignee',(value,id) => {
       this.updateTaskAssignee(value,id);
     });
     this.$root.$on('update-remove-task-labels',(value,id)=>{
@@ -244,23 +273,12 @@ export default {
               providerId: 'organization',
               displayName: user.profile.fullname,
               avatar: user.profile.avatar,
-            };})
+            };
+          })
             .then(() => {
               this.getTaskAssigneeAndCoworkers();
             });
         }
-      }
-    },
-    getTaskPriorityColor(priority) {
-      switch (priority) {
-      case 'HIGH':
-        return 'taskHighPriority';
-      case 'NORMAL':
-        return 'taskNormalPriority';
-      case 'LOW':
-        return 'taskLowPriority';
-      case 'NONE':
-        return 'taskNonePriority';
       }
     },
     getTaskAssigneeAndCoworkers() {
@@ -301,29 +319,15 @@ export default {
     onCloseDrawer: function (drawer) {
       this.drawer = drawer;
     },
-    getTaskCompleted() {
-      if (this.task.task.completed === true) {
-        return 'uiIconValidate';
-      } else {
-        return 'uiIconCircle';
-      }
-    },
-    getTaskCompletedTitle() {
-      if (this.task.task.completed === true) {
-        return 'message.markAsUnCompleted';
-      } else {
-        return 'message.markAsCompleted';
-      }
-    },
     updateCompleted() {
 
       const task = {
         id: this.task.task.id,
-        showCompleteTasks: this.showCompleted(),
+        showCompleteTasks: this.showCompleteTasks,
       };
 
 
-      if (typeof task.id !== 'undefined') {
+      if (task.id) {
         return this.$tasksService.updateCompleted(task).then(task => {
           if (task.completed){
             this.$root.$emit('show-alert', {type: 'success',message: this.$t('alert.success.task.completed')});   
@@ -346,14 +350,6 @@ export default {
       }
 
 
-    },
-    showCompleted() {
-      if (this.getTaskCompleted() === 'uiIconValidate') {
-        this.showCompleteTasks = false;
-      } else {
-        this.showCompleteTasks = true;
-      }
-      return this.showCompleteTasks;
     },
     getTitleTaskClass() {
       if (this.task.task.completed === true) {
