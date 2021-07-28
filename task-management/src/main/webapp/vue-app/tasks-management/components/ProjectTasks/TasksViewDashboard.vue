@@ -203,6 +203,7 @@ export default {
       defaultAvatar: '/portal/rest/v1/social/users/default-image/avatar',
       keyword: null,
       loadingTasks: false,
+      taskFilter: null,
       taskViewTabName: 'board',
       deleteConfirmMessage: null,
       statusList: [],
@@ -232,6 +233,7 @@ export default {
           this.$root.$emit('refresh-gantt', this.allProjectTasks);
         });
       }
+      this.filterTaskDashboard(this.currentFilter);
     });
     this.$root.$on('deleteTask', (event) => {
       if (event && event.detail) {
@@ -286,18 +288,26 @@ export default {
         if (localStorageSaveFilter.split('"')[10].split('}')[0].split(':')[1].split(',')[0] === ProjectId.toString() && localStorageSaveFilter.split('"')[13] === currentTab) {
           this.groupBy = localStorageSaveFilter.split('"')[3];
           this.sortBy = localStorageSaveFilter.split('"')[7];
-          const tasksFilter = {
-            query: query,
-            groupBy: this.groupBy,
-            orderBy: this.sortBy,
-            offset: 0,
-            limit: 0,
-            showCompleteTasks: false,
-          };
-          if (this.groupBy==='completed'){
-            tasksFilter.showCompleteTasks=true;
+          if (this.taskFilter == null) {
+            const tasksFilter = {
+              query: query,
+              groupBy: this.groupBy,
+              orderBy: this.sortBy,
+              offset: 0,
+              limit: 0,
+              showCompleteTasks: false,
+            };
+            if (this.groupBy === 'completed') {
+              tasksFilter.showCompleteTasks = true;
+            }
+            return this.getFilter(tasksFilter, ProjectId);
           }
-          return this.getFilter(tasksFilter,ProjectId);
+          else {
+            if (this.groupBy === 'completed') {
+              this.taskFilter.showCompleteTasks = true;
+            }
+            return this.getFilter(this.taskFilter, ProjectId);
+          }
         }
       } else {
         this.getFilterProject(ProjectId,currentTab).then(() => {
@@ -329,20 +339,20 @@ export default {
     },
     filterTaskDashboard(e){
       this.loadingTasks = true;
-      const tasks=e.tasks;
+      this.taskFilter = e.tasks;
       this.filterAsCompleted = e.showCompleteTasks;
-      tasks.showCompleteTasks=e.showCompleteTasks;
-      if (tasks.groupBy==='completed'){
-        tasks.showCompleteTasks=true;
+      this.taskFilter.showCompleteTasks=e.showCompleteTasks;
+      if (this.taskFilter.groupBy==='completed'){
+        this.taskFilter.showCompleteTasks=true;
       }
-      if (tasks.groupBy==='none'){
+      if (this.taskFilter.groupBy==='none'){
         this.filterByStatus=false;
       }
-      if (tasks.groupBy==='status'){
-        tasks.groupBy='';
+      if (this.taskFilter.groupBy==='status'){
+        this.taskFilter.groupBy='';
         this.filterProjectActive=false;
         this.filterByStatus=true;
-        return this.$tasksService.filterTasksList(tasks,'','','',this.project.id).then(data => {
+        return this.$tasksService.filterTasksList(this.taskFilter,'','','',this.project.id).then(data => {
           this.filterProjectActive=false;
           this.filterByStatus=true;
           this.tasksList = data && data.tasks || [];
