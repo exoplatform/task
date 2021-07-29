@@ -68,7 +68,7 @@ export default {
       this.newTask.status=this.status;
       this.$taskDrawerApi.addTask(this.newTask).then( () => {
         this.closeForm();
-        this.$root.$emit('update-task-list', this.task);
+        this.$root.$emit('refresh-tasks-list', this.task);
         this.$root.$emit('show-alert', {
           type: 'success',
           message: this.$t('alert.success.task.created')
