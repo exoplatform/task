@@ -281,6 +281,7 @@ export default {
       if (this.$refs.taskDueDate && this.$refs.taskDueDate.menu) {
         this.$refs.taskDueDate.menu = false;
       }
+      window.setTimeout(() => this.$root.$emit('refresh-tasks-list'), 200);
     },
     resetStartDate() {
       this.startDate = null;
@@ -294,12 +295,14 @@ export default {
       const newDate = this.toDateObject(date);
       if ((!date && this.actualTask.startDate) || (date && !this.actualTask.startDate) || (this.actualTask.startDate && !this.datesEquals(newDate,this.actualTask.startDate))) {
         this.$emit('startDateChanged',newDate);
+        window.setTimeout(() => this.$root.$emit('refresh-tasks-list'), 200);
       }
     },
     emitDueDate(date) {
       const newDate = this.toDateObject(date);
       if ((!date && this.actualTask.dueDate) || (date && !this.actualTask.dueDate) || (this.actualTask.dueDate && !this.datesEquals(newDate,this.actualTask.dueDate))) {
         this.$emit('dueDateChanged',newDate);
+        window.setTimeout(() => this.$root.$emit('refresh-tasks-list'), 200);
       }
     },
     datesEquals(date1,date2){
