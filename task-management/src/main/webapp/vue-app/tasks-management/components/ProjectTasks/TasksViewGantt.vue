@@ -104,16 +104,7 @@ export default {
       this.$root.$emit('refresh-unscheduled-gantt',this.unscheduledTaskList);
       if (this.ganttTasks > 0 ) {
         this.gantt.refresh(this.tasksToDisplay);
-      } /*else {
-        this.ganttItems = this.tasksToDisplay;
-        this.isGanttDisplayed = false;
-        this.$nextTick(() => {
-          $('#gantt-chart').empty();
-          if ( this.isGanttDisplayed === false ) {
-            this.initGanttChart(this.tasksToDisplay);
-          }
-        });
-      }*/
+      }
     });
   },
   mounted() {

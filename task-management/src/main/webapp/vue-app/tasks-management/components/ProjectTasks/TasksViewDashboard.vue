@@ -225,7 +225,7 @@ export default {
     }
   },
   created() {
-    this.$root.$on('update-task-list', () => {
+    this.$root.$on('refresh-tasks-list', () => {
       this.getTasksByProject(this.project.id,'');
       if ( this.taskViewTabName === 'gantt' ) {
         return this.$tasksService.getTasksByProjectId(this.project.id).then(data => {
