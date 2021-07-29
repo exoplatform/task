@@ -15,6 +15,7 @@
       @open-quick-add="quickAddTask1=true"
       @add-column="addColumn" />
     <v-divider />
+    <div onmousedown="event.preventDefault ? event.preventDefault() : event.returnValue = false">
     <quick-add-card 
       :status="status"
       :quick-add-task="quickAddTask1"
@@ -22,7 +23,7 @@
       class="status-add-task" 
       @close-quick-form="quickAddTask1=false" />
     <draggable 
-      v-model="tasksList" 
+      v-model="tasksList"
       :move="checkMove"
       :animation="200"
       group="people"
@@ -53,7 +54,8 @@
           + {{ $t('label.addTask') }}
         </span>
       </v-btn>
-    </draggable>  
+    </draggable>
+    </div>
   </div>     
 </template>
 <script>
