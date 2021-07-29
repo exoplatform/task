@@ -233,7 +233,6 @@ export default {
           this.$root.$emit('refresh-gantt', this.allProjectTasks);
         });
       }
-      this.filterTaskDashboard(this.currentFilter);
     });
     this.$root.$on('deleteTask', (event) => {
       if (event && event.detail) {
