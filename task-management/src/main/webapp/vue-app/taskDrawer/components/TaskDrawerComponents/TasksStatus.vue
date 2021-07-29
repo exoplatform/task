@@ -74,7 +74,9 @@ export default {
             const status = projectStatuses.find(s => s.name === this.taskStatus);
             this.task.status = status;
             this.$emit('updateTaskStatus',status);
-          });
+          }).finally(() => {
+          window.setTimeout(() => this.$root.$emit('refresh-tasks-list'), 200);
+        });
       }
     },
     getStatusesByProjectId(task) {
