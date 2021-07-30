@@ -26,9 +26,10 @@
       v-model="tasksList"
       :move="checkMove"
       :animation="200"
-      group="people"
       ghost-class="ghost-card"
       class="draggable-palceholder taskBoardColumn"
+      handle=".taskBoardCardItem"
+      :group="{ name: 'status' }"
       :class="filterNoActive && 'taskBoardNoFilterColumn'"
       @start="drag=true"
       @end="drag=false">

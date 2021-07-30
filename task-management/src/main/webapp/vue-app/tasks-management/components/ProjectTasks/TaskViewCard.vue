@@ -1,6 +1,7 @@
 <template>
   <v-app
     id="taskCardItem"
+    class="taskBoardCardItem"
     :class="removeCompletedTask && 'completedTask' || ''">
     <v-card
       :class="[getTaskPriorityColor(task.task.priority)]"
