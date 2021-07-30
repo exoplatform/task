@@ -28,9 +28,10 @@
       ghost-class="ghost-card"
       class="draggable-palceholder taskBoardColumn"
       handle=".taskBoardCardItem"
-      :options="{group:'status'}"
+      :group="{ name: 'status' }"
       :class="filterNoActive && 'taskBoardNoFilterColumn'"
-      @end="drag=true">
+      @start="drag=true"
+      @end="drag=false">
       <task-view-card
         v-for="taskItem in tasksList"
         :key="taskItem.task.id"
@@ -43,17 +44,19 @@
         :quick-add-task="quickAddTask"
         :task-title="taskTitle"
         @close-quick-form="quickAddTask=false" />
-      <v-btn 
-        v-if="!quickAddTask"
-        class="btn px-2 quickAddNewTaskButton"
-        @click="quickAddTask=true">
-        <v-icon dark class="d-block d-sm-none">mdi-plus</v-icon>
-        <span class="d-none font-weight-regular d-sm-inline">
-          + {{ $t('label.addTask') }}
-        </span>
-      </v-btn>
-    </draggable>
-  </div>     
+
+        <v-btn 
+          v-if="!quickAddTask"
+          class="btn px-2 quickAddNewTaskButton"
+          @click="quickAddTask=true">
+          <v-icon dark class="d-block d-sm-none">mdi-plus</v-icon>
+          <span class="d-none font-weight-regular d-sm-inline">
+            + {{ $t('label.addTask') }}
+          </span>
+        </v-btn>
+      </draggable>
+    </div>     
+  </div>
 </template>
 <script>
 
