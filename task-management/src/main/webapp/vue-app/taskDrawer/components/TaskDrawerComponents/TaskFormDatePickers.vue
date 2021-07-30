@@ -9,7 +9,50 @@
         :placeholder="$t('label.startDate')"
         :max-value="maximumStartDate"
         class="flex-grow-1 my-auto"
-        @input="emitStartDate(startDate)" />
+        @input="emitStartDate(startDate)">
+        <template slot="footer">
+          <div class="dateFooter">
+            <v-btn-toggle
+                class="d-flex justify-space-between"
+                tile
+                color="primary"
+                background-color="primary"
+                group>
+              <v-btn
+                  value="left"
+                  class="my-0"
+                  small
+                  @click="addBtnStartDate()">
+                {{ $t('label.today') }}
+              </v-btn>
+
+              <v-btn
+                  value="center"
+                  class="my-0"
+                  small
+                  @click="addBtnStartDate(1)">
+                {{ $t('label.tomorrow') }}
+              </v-btn>
+
+              <v-btn
+                  value="right"
+                  class="my-0"
+                  small
+                  @click="addBtnStartDate(7)">
+                {{ $t('label.nextweek') }}
+              </v-btn>
+
+              <v-btn
+                  value="right"
+                  class="my-0"
+                  small
+                  @click="resetStartDate()">
+                {{ $t('label.none') }}
+              </v-btn>
+            </v-btn-toggle>
+          </div>
+        </template>
+      </date-picker>
     </div>
     <div class="taskDueDateCalender d-flex align-center">
       <i class="uiIconDueDate uiIconBlue"></i>
@@ -218,12 +261,32 @@ export default {
         this.$refs.taskDueDate.menu = false;
       }
     },
+    addBtnStartDate(days) {
+      if (days) {
+        const date = new Date();
+        date.setDate(date.getDate() + days);
+        this.startDate = date;
+      } else {
+        this.startDate = new Date();
+      }
+      if (this.$refs.taskStartDate && this.$refs.taskStartDate.menu) {
+        this.$refs.taskStartDate.menu = false;
+      }
+    },
     resetDueDate() {
       this.dueDate = null;
       this.$emit('dueDateChanged','none');
       if (this.$refs.taskDueDate && this.$refs.taskDueDate.menu) {
         this.$refs.taskDueDate.menu = false;
       }
+    },
+    resetStartDate() {
+      this.startDate = null;
+      this.$emit('startDateChanged','none');
+      if (this.$refs.taskStartDate && this.$refs.taskStartDate.menu) {
+        this.$refs.taskStartDate.menu = false;
+      }
+      window.setTimeout(() => this.$root.$emit('refresh-tasks-list'), 200);
     },
     emitStartDate(date) {
       const newDate = this.toDateObject(date);
