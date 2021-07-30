@@ -68,12 +68,8 @@ export default {
     getTasksByStatus(items ,statusName) {
       const tasksByStatus = [];
       items.forEach((item) => {
-        if (item.task) {
-          if (item.task.status) {
-            if (item.task.status.name === statusName) {
-              tasksByStatus.push(item);
-            }
-          }
+        if (item && item.task && item.task.status && item.task.status.name === statusName) {
+          tasksByStatus.push(item);
         }
       });
       return tasksByStatus;
