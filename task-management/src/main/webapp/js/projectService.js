@@ -79,7 +79,7 @@ export function cloneProject(project) {
         method: 'POST',
         body: JSON.stringify(project)
     }).then((data) => {
-        return data.json();
+        return 'success';
     });
 }
 
