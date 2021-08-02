@@ -22,7 +22,7 @@
       class="status-add-task" 
       @close-quick-form="quickAddTask1=false" />
     <draggable 
-      v-model="tasksList" 
+      :list="tasksList" 
       :move="checkMove"
       :animation="200"
       ghost-class="ghost-card"

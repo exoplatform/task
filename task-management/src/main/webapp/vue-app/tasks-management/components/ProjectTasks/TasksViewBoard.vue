@@ -7,8 +7,8 @@
         <v-row class="ma-0 border-box-sizing tasksViewBoardRowContainer">
           <div v-if="project.canManage">
             <draggable
+             v-model="statusList"
               :move="checkMoveStatus"
-              :list="statusList"
               :animation="200"
               ghost-class="ghost-card"
               class="d-flex"
