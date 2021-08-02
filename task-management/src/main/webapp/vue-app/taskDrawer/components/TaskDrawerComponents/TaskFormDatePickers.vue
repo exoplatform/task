@@ -13,40 +13,40 @@
         <template slot="footer">
           <div class="dateFooter">
             <v-btn-toggle
-                class="d-flex justify-space-between"
-                tile
-                color="primary"
-                background-color="primary"
-                group>
+              class="d-flex justify-space-between"
+              tile
+              color="primary"
+              background-color="primary"
+              group>
               <v-btn
-                  value="left"
-                  class="my-0"
-                  small
-                  @click="addBtnStartDate()">
+                value="left"
+                class="my-0"
+                small
+                @click="addBtnStartDate()">
                 {{ $t('label.today') }}
               </v-btn>
 
               <v-btn
-                  value="center"
-                  class="my-0"
-                  small
-                  @click="addBtnStartDate(1)">
+                value="center"
+                class="my-0"
+                small
+                @click="addBtnStartDate(1)">
                 {{ $t('label.tomorrow') }}
               </v-btn>
 
               <v-btn
-                  value="right"
-                  class="my-0"
-                  small
-                  @click="addBtnStartDate(7)">
+                value="right"
+                class="my-0"
+                small
+                @click="addBtnStartDate(7)">
                 {{ $t('label.nextweek') }}
               </v-btn>
 
               <v-btn
-                  value="right"
-                  class="my-0"
-                  small
-                  @click="resetStartDate()">
+                value="right"
+                class="my-0"
+                small
+                @click="resetStartDate()">
                 {{ $t('label.none') }}
               </v-btn>
             </v-btn-toggle>
