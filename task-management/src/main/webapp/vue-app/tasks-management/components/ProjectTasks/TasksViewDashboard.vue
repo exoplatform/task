@@ -225,10 +225,19 @@ export default {
   },
   created() {
     this.$root.$on('updateTaskPriority', value => {
+      
       if (this.taskFilter.orderBy === 'priority') {
-        const tasksArrayIndex = this.tasksList.findIndex(tasksArray => tasksArray.findIndex(t => t.id === value.taskId) > -1);
         this.$tasksService.filterTasksList(this.taskFilter,'','','',this.project.id).then(data => {
-          this.$set(this.tasksList, tasksArrayIndex, data.tasks[tasksArrayIndex]);
+          if (Array.isArray(data.tasks[0])) {
+            const tasksArrayIndex = this.tasksList.findIndex(tasksArray => tasksArray.findIndex(t => t.id === value.taskId) > -1);
+            this.$set(this.tasksList, tasksArrayIndex, data.tasks[tasksArrayIndex]);
+          } else {
+            const taskOldIndex = this.tasksList.findIndex(t => t.id === value.taskId);
+            const taskNewIndex = data.tasks.findIndex(task => task.id === value.taskId);
+
+            this.tasksList.splice(taskOldIndex, 1);
+            this.tasksList.splice(taskNewIndex, 0, data.tasks[taskNewIndex]); 
+          }
         });
       }
     });
