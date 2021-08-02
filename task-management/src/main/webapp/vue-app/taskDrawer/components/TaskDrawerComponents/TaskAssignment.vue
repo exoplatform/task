@@ -272,12 +272,10 @@ export default {
         if (value.remoteId !== this.currentUser && this.task.assignee !== value.remoteId) {
           this.taskAssigneeObj = value;
           this.$emit('updateTaskAssignment', value.remoteId);
-          window.setTimeout(() => this.$root.$emit('refresh-tasks-list'), 200);
         }
         else {
           if ( this.task.id ===null ) {
             this.$emit('updateTaskAssignment', this.taskAssigneeObj.remoteId);
-            window.setTimeout(() => this.$root.$emit('refresh-tasks-list'), 200);
           }
         }
       }
@@ -300,7 +298,6 @@ export default {
     removeAssignee() {
       this.taskAssigneeObj = {};
       this.$emit('updateTaskAssignment', null);
-      window.setTimeout(() => this.$root.$emit('refresh-tasks-list'), 200);
     },
   }
 };

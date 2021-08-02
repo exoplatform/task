@@ -148,7 +148,6 @@ export default {
       return this.task && this.task.task.dueDate && this.task.task.dueDate.time;
     },
     avatarToDisplay () {
-      this.getTaskAssigneeAndCoworkers();
       if (this.assigneeAndCoworkerArray.length > this. maxAvatarToShow) {
         return this.assigneeAndCoworkerArray.slice(0, this.maxAvatarToShow-1);
       } else {
@@ -252,12 +251,11 @@ export default {
                 this.task.coworker.push(taskCoworker);
               }
             });
-          }).then(() => {
-            this.getTaskAssigneeAndCoworkers();
           });
         } else {
           this.task.coworker = [];
         }
+        this.$root.$emit('task-assignee-coworker-updated', this.task);
       }
     },
     updateTaskAssignee(value,id){
@@ -274,11 +272,9 @@ export default {
               displayName: user.profile.fullname,
               avatar: user.profile.avatar,
             };
-          })
-            .then(() => {
-              this.getTaskAssigneeAndCoworkers();
-            });
+          });
         }
+        this.$root.$emit('task-assignee-coworker-updated', this.task);
       }
     },
     getTaskAssigneeAndCoworkers() {
