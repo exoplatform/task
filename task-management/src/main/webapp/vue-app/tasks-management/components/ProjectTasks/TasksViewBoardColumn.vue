@@ -15,7 +15,8 @@
       @open-quick-add="quickAddTask1=true"
       @add-column="addColumn" />
     <v-divider />
-    <quick-add-card 
+    <div v-on:mousedown="cancelDrag">
+    <quick-add-card
       :status="status"
       :quick-add-task="quickAddTask1"
       :task-title="taskTitle1"
@@ -33,6 +34,7 @@
       @start="drag=true"
       @end="drag=false">
       <task-view-card
+        :id="idViewCard"
         v-for="taskItem in tasksList"
         :key="taskItem.task.id"
         :task="taskItem"
@@ -95,6 +97,7 @@ export default {
       quickAddTask: false,
       quickAddTask1: false,
       taskTitle: '',
+      idViewCard: `DatePicker${parseInt(Math.random() * 10000)}`,
       taskTitle1: '',
       drag: false,
       task: null,
@@ -114,6 +117,11 @@ export default {
       }},
   },
   methods: {
+    cancelDrag() {
+      if (event.target && !$(event.target).parents(`#${this.idViewCard}`).length) {
+        return event.preventDefault ? event.preventDefault() : event.returnValue = false;
+      }
+    },
     updateTaskCompleted(e){
       this.$emit('updateTaskCompleted', e);
     },
