@@ -103,7 +103,7 @@
           <div class="taskAssignement ms-8 pb-3">
             <task-assignment
               :task="task"
-              @updateTaskAssignement="updateTaskAssignee($event)"
+              @updateTaskAssignment="updateTaskAssignee($event)"
               @updateTaskCoworker="updateTaskCoworker($event)"
               @assignmentsOpened="closePriority(); closeStatus(); closeProjectsList();closeTaskDates();closeLabelsList()" />
           </div>
@@ -419,12 +419,13 @@ export default {
       }
     },
     updateTaskPriority(value) {
-      if (value && this.oldTask.priority!==value) {
+      if (value.priority && this.oldTask.priority !== value.priority) {
         if (this.task.id != null) {
-          this.task.priority = value;
+          this.task.priority = value.priority;
           this.$taskDrawerApi.updateTask(this.task.id, this.task).then( () => {
             this.oldTask.priority = this.task.priority;
             this.$root.$emit('task-updated', this.task);
+            this.$root.$emit('updateTaskPriority',value);
             this.$root.$emit('show-alert', {
               type: 'success',
               message: this.$t('alert.success.task.priority')
@@ -437,7 +438,7 @@ export default {
             });
           });
         } else {
-          this.taskPriority = value;
+          this.taskPriority = value.priority;
         }
       }
     },
@@ -534,9 +535,8 @@ export default {
         this.labelsToAdd.forEach(item => {
           this.$taskDrawerApi.addTaskToLabel(task.id, item);
         });
-        this.$emit('addTask', this.task);
-        this.$root.$emit('refresh-tasks-list', this.task);
         
+        this.$root.$emit('task-added', task);
         this.$root.$emit('show-alert', {
           type: 'success',
           message: this.$t('alert.success.task.created')

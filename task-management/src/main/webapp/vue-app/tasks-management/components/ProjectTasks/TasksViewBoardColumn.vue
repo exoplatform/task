@@ -23,9 +23,10 @@
         class="status-add-task" 
         @close-quick-form="quickAddTask1=false" />
       <draggable 
-        v-model="tasksList" 
+        v-model="tasksList"
         :move="checkMove"
         :animation="200"
+        :key="draggableKey"
         ghost-class="ghost-card"
         class="draggable-palceholder taskBoardColumn"
         handle=".taskBoardCardItem"
@@ -56,7 +57,7 @@
             + {{ $t('label.addTask') }}
           </span>
         </v-btn>
-      </draggable>  
+      </draggable>
     </div>     
   </div>
 </template>
@@ -103,10 +104,14 @@ export default {
       drag: false,
       task: null,
       newStatus: null,
+      draggableKey: 1,
     };
   },
-  created(){
+  created() {
     this.$root.$on('close-quick-task-form', () => {
+      this.closeForm();
+    });
+    this.$root.$on('task-assignee-updated', () => {
       this.closeForm();
     });
   },
@@ -123,8 +128,14 @@ export default {
         return event.preventDefault ? event.preventDefault() : event.returnValue = false;
       }
     },
-    updateTaskCompleted(e){
-      this.$emit('updateTaskCompleted', e);
+    updateTaskCompleted(task) {
+      if (!this.showCompletedTasks && task.completed) {
+        const index = this.tasksList.findIndex(taskEl => taskEl.id === task.id);
+        this.tasksList.splice(index, 1);
+        setTimeout(() => {
+          this.reRenderTasks();
+        }, 500);
+      }
     },
     checkMove(evt){
       if (evt){
@@ -159,8 +170,10 @@ export default {
       this.quickAddTask1=false;
       this.taskTitle='';
       this.taskTitle1='';
-    }
-  
+    },
+    reRenderTasks() {
+      this.draggableKey += 1;
+    },  
   }
 };
 

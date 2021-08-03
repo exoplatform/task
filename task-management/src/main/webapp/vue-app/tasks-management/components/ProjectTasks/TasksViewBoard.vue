@@ -10,6 +10,7 @@
               :move="checkMoveStatus"
               :list="statusList"
               :animation="200"
+              group="people"
               ghost-class="ghost-card"
               class="d-flex"
               @start="dragStatus=true"
@@ -119,12 +120,8 @@ export default {
     getTasksByStatus(items ,statusName) {
       const tasksByStatus = [];
       items.forEach((item) => {
-        if (item.task) {
-          if (item.task.status) {
-            if (item.task.status.name === statusName) {
-              tasksByStatus.push(item);
-            }
-          }
+        if (item.task && item.task.status && item.task.status.name === statusName) {
+          tasksByStatus.push(item);
         }
       });
       return tasksByStatus;
