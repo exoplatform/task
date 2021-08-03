@@ -535,9 +535,8 @@ export default {
         this.labelsToAdd.forEach(item => {
           this.$taskDrawerApi.addTaskToLabel(task.id, item);
         });
-        this.$emit('addTask', this.task);
-        this.$root.$emit('refresh-tasks-list', this.task);
         
+        this.$root.$emit('task-added', task);
         this.$root.$emit('show-alert', {
           type: 'success',
           message: this.$t('alert.success.task.created')
