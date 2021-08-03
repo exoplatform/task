@@ -223,8 +223,7 @@ export default {
             },
           };
         });
-        this.$emit('updateTaskAssignement', this.currentUser);
-        window.setTimeout(() => this.$root.$emit('refresh-tasks-list'), 200);
+        this.$emit('updateTaskAssignment', this.currentUser);
       }
     },
     setMeAsCoworker() {
@@ -272,13 +271,11 @@ export default {
       if (value && value.id) {
         if (value.remoteId !== this.currentUser && this.task.assignee !== value.remoteId) {
           this.taskAssigneeObj = value;
-          this.$emit('updateTaskAssignement', value.remoteId);
-          window.setTimeout(() => this.$root.$emit('refresh-tasks-list'), 200);
+          this.$emit('updateTaskAssignment', value.remoteId);
         }
         else {
           if ( this.task.id ===null ) {
-            this.$emit('updateTaskAssignement', this.taskAssigneeObj.remoteId);
-            window.setTimeout(() => this.$root.$emit('refresh-tasks-list'), 200);
+            this.$emit('updateTaskAssignment', this.taskAssigneeObj.remoteId);
           }
         }
       }
@@ -300,8 +297,7 @@ export default {
     },
     removeAssignee() {
       this.taskAssigneeObj = {};
-      this.$emit('updateTaskAssignement', null);
-      window.setTimeout(() => this.$root.$emit('refresh-tasks-list'), 200);
+      this.$emit('updateTaskAssignment', null);
     },
   }
 };
