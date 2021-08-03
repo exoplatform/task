@@ -23,9 +23,10 @@
         class="status-add-task" 
         @close-quick-form="quickAddTask1=false" />
       <draggable 
-        v-model="tasksList" 
+        v-model="tasksList"
         :move="checkMove"
         :animation="200"
+        :key="draggableKey"
         ghost-class="ghost-card"
         class="draggable-palceholder taskBoardColumn"
         handle=".taskBoardCardItem"
