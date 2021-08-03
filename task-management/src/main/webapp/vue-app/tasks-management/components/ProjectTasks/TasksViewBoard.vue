@@ -10,6 +10,7 @@
               :move="checkMoveStatus"
               :list="statusList"
               :animation="200"
+              group="people"
               ghost-class="ghost-card"
               class="d-flex"
               @start="dragStatus=true"
