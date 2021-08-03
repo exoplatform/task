@@ -224,6 +224,63 @@ export default {
     }
   },
   created() {
+    this.$root.$on('task-added', task => {
+      this.$tasksService.filterTasksList(this.taskFilter,'','','',this.project.id).then(data => {
+        if (Array.isArray(data.tasks[0])) {
+          const tasksArrayIndex = data.tasks.findIndex(tasksArray => tasksArray.findIndex(t => t.id === task.id) > -1);
+
+          this.$set(this.tasksList, tasksArrayIndex, data.tasks[tasksArrayIndex]);
+        } else {
+          const taskIndex = data.tasks.findIndex(t => t.id === task.id);          
+          this.tasksList.splice(taskIndex, 0, data.tasks[taskIndex]);
+        }
+      });
+      setTimeout(() => {
+        this.$tasksService.filterTasksList(this.taskFilter,'','','',this.project.id).then(data => {
+          if (Array.isArray(data.tasks[0])) {
+            const tasksArrayIndex = this.tasksList.findIndex(tasksArray => tasksArray.findIndex(t => t.id === task.id) > -1);
+
+            this.$set(this.tasksList, tasksArrayIndex, data.tasks[tasksArrayIndex]);
+          }
+        });
+      }, 1000);
+    });
+    
+    this.$root.$on('task-assignee-coworker-updated', task => {
+      this.$tasksService.filterTasksList(this.taskFilter,'','','',this.project.id).then(data => {
+        if (Array.isArray(data.tasks[0])) {
+          const tasksArrayOldIndex = this.tasksList.findIndex(tasksArray => tasksArray.findIndex(t => t.id === task.id) > -1);
+          const tasksArrayNewIndex = data.tasks.findIndex(tasksArray => tasksArray.findIndex(t => t.id === task.id) > -1);          
+          
+          this.$set(this.tasksList, tasksArrayOldIndex, data.tasks[tasksArrayOldIndex]);
+          this.$set(this.tasksList, tasksArrayNewIndex, data.tasks[tasksArrayNewIndex]);
+        } else {
+          const taskOldIndex = this.tasksList.findIndex(t => t.id === task.id);
+          const taskNewIndex = data.tasks.findIndex(t => t.id === task.id);
+
+          this.tasksList.splice(taskOldIndex, 1);
+          this.tasksList.splice(taskNewIndex, 0, data.tasks[taskNewIndex]);
+        }
+      });
+    });
+    
+    this.$root.$on('updateTaskPriority', value => {
+      
+      if (this.taskFilter.orderBy === 'priority') {
+        this.$tasksService.filterTasksList(this.taskFilter,'','','',this.project.id).then(data => {
+          if (Array.isArray(data.tasks[0])) {
+            const tasksArrayIndex = this.tasksList.findIndex(tasksArray => tasksArray.findIndex(t => t.id === value.taskId) > -1);
+            this.$set(this.tasksList, tasksArrayIndex, data.tasks[tasksArrayIndex]);
+          } else {
+            const taskOldIndex = this.tasksList.findIndex(t => t.id === value.taskId);
+            const taskNewIndex = data.tasks.findIndex(task => task.id === value.taskId);
+
+            this.tasksList.splice(taskOldIndex, 1);
+            this.tasksList.splice(taskNewIndex, 0, data.tasks[taskNewIndex]); 
+          }
+        });
+      }
+    });
     this.$root.$on('refresh-tasks-list', () => {
       this.getTasksByProject(this.project.id,'');
       if ( this.taskViewTabName === 'gantt' ) {
