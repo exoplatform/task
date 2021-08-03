@@ -111,11 +111,6 @@ export default {
     this.$root.$on('close-quick-task-form', () => {
       this.closeForm();
     });
-    this.$root.$on('task-added', task => {
-      if (task.status.id === this.status.id) {
-        this.tasksList.push(task);
-      }
-    });
     this.$root.$on('task-assignee-updated', () => {
       this.closeForm();
     });

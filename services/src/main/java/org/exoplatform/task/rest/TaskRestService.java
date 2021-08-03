@@ -350,7 +350,6 @@ public class TaskRestService implements ResourceContainer {
       @ApiResponse(code = 404, message = "Resource not found") })
   public Response addTask(@ApiParam(value = "task object to be updated", required = true) TaskDto task) {
 
-    Identity currentUser = ConversationState.getCurrent().getIdentity();
     if (task == null) {
       return Response.status(Response.Status.BAD_REQUEST).build();
     }
@@ -379,7 +378,7 @@ public class TaskRestService implements ResourceContainer {
       task.setStatus(statusService.getDefaultStatus(projectId));
     }
     task = taskService.createTask(task);
-    return Response.ok(getTaskDetails(task, currentUser)).build();
+    return Response.ok(task).build();
         } catch (Exception e) {
         LOG.error("Can't add Task", e);
         return Response.serverError().entity(e.getMessage()).build();
@@ -926,7 +925,6 @@ public class TaskRestService implements ResourceContainer {
           @ApiResponse(code = 404, message = "Resource not found") })
   public Response updateCompleted(@ApiParam(value = "Task id", required = true) @PathParam("idTask") long idTask,
                                   @ApiParam(value = "showCompleteTasks", defaultValue = "false") @QueryParam("showCompleteTasks") boolean showCompleteTasks) {
-    Identity currentUser = ConversationState.getCurrent().getIdentity();
     try {
     TaskDto task = taskService.getTask(idTask);
     if (!TaskUtil.hasEditPermission(taskService,task)) {
@@ -935,7 +933,7 @@ public class TaskRestService implements ResourceContainer {
     task.setCompleted(showCompleteTasks);
     taskService.updateTask(task);
 
-    return Response.ok(getTaskDetails(task, currentUser)).build();
+    return Response.ok(task).build();
         } catch (Exception e) {
         LOG.error("Can't set task {} as Completed", idTask, e);
         return Response.serverError().entity(e.getMessage()).build();

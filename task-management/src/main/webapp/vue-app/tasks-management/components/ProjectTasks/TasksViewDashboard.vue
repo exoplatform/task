@@ -216,7 +216,7 @@ export default {
     };
   },
   watch: {
-    project(){
+    project() {
       this.getStatusByProject(this.project.id);
       this.tasksList=[];
       this.getTasksByProject(this.project.id,'');
@@ -224,6 +224,28 @@ export default {
     }
   },
   created() {
+    this.$root.$on('task-added', task => {
+      this.$tasksService.filterTasksList(this.taskFilter,'','','',this.project.id).then(data => {
+        if (Array.isArray(data.tasks[0])) {
+          const tasksArrayIndex = data.tasks.findIndex(tasksArray => tasksArray.findIndex(t => t.id === task.id) > -1);
+
+          this.$set(this.tasksList, tasksArrayIndex, data.tasks[tasksArrayIndex]);
+        } else {
+          const taskIndex = data.tasks.findIndex(t => t.id === task.id);          
+          this.tasksList.splice(taskIndex, 0, data.tasks[taskIndex]);
+        }
+      });
+      setTimeout(() => {
+        this.$tasksService.filterTasksList(this.taskFilter,'','','',this.project.id).then(data => {
+          if (Array.isArray(data.tasks[0])) {
+            const tasksArrayIndex = this.tasksList.findIndex(tasksArray => tasksArray.findIndex(t => t.id === task.id) > -1);
+
+            this.$set(this.tasksList, tasksArrayIndex, data.tasks[tasksArrayIndex]);
+          }
+        });
+      }, 1000);
+    });
+    
     this.$root.$on('task-assignee-coworker-updated', task => {
       this.$tasksService.filterTasksList(this.taskFilter,'','','',this.project.id).then(data => {
         if (Array.isArray(data.tasks[0])) {
