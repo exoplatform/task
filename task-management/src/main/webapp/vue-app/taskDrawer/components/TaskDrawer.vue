@@ -103,7 +103,7 @@
           <div class="taskAssignement ms-8 pb-3">
             <task-assignment
               :task="task"
-              @updateTaskAssignement="updateTaskAssignee($event)"
+              @updateTaskAssignment="updateTaskAssignee($event)"
               @updateTaskCoworker="updateTaskCoworker($event)"
               @assignmentsOpened="closePriority(); closeStatus(); closeProjectsList();closeTaskDates();closeLabelsList()" />
           </div>
@@ -371,10 +371,10 @@ export default {
         } else if (!this.taskTitleValid){
           this.$root.$emit('show-alert', {type: 'error',message: this.$t('alert.error.title.length')});
         } else if (this.task.id != null) {
-          this.$root.$emit('task-updated', this.task);
           this.$taskDrawerApi.updateTask(this.task.id, this.task).then(() => {
             this.taskTitle_ = this.task.title;
             this.oldTask.title = this.task.title;
+            this.$root.$emit('task-updated', this.task);
             this.$root.$emit('show-alert', {
               type: 'success',
               message: this.$t('alert.success.task.title')
@@ -418,13 +418,13 @@ export default {
       }
     },
     updateTaskPriority(value) {
-      if (value && this.oldTask.priority!==value) {
+      if (value.priority && this.oldTask.priority !== value.priority) {
         if (this.task.id != null) {
-          this.task.priority = value;
+          this.task.priority = value.priority;
           this.$taskDrawerApi.updateTask(this.task.id, this.task).then( () => {
             this.oldTask.priority = this.task.priority;
-            this.$root.$emit('update-task-list', this.task);
             this.$root.$emit('task-updated', this.task);
+            this.$root.$emit('updateTaskPriority',value);
             this.$root.$emit('show-alert', {
               type: 'success',
               message: this.$t('alert.success.task.priority')
@@ -437,7 +437,7 @@ export default {
             });
           });
         } else {
-          this.taskPriority = value;
+          this.taskPriority = value.priority;
         }
       }
     },
@@ -523,24 +523,6 @@ export default {
         });
       }
     },
-    updateTask() {
-      if (this.task.id != null) {
-        this.$taskDrawerApi.updateTask(this.task.id, this.task).then( () => {
-          this.$root.$emit('update-task-list', this.task);
-          this.$root.$emit('show-alert', {
-            type: 'success',
-            message: this.$t('alert.success.task.updated')
-          });
-        })
-          .catch(e => {
-            console.error('Error when updating task', e);
-            this.$root.$emit('show-alert', {
-              type: 'error',
-              message: this.$t('alert.error')
-            });
-          });
-      }
-    },
     addTask() {
       document.dispatchEvent(new CustomEvent('onAddTask'));
       this.task.coworker = this.taskCoworkers;
@@ -552,8 +534,8 @@ export default {
         this.labelsToAdd.forEach(item => {
           this.$taskDrawerApi.addTaskToLabel(task.id, item);
         });
-        this.$emit('addTask', this.task);
-        this.$root.$emit('update-task-list', this.task);
+        
+        this.$root.$emit('task-added', task);
         this.$root.$emit('show-alert', {
           type: 'success',
           message: this.$t('alert.success.task.created')
@@ -578,7 +560,6 @@ export default {
         }
         this.$taskDrawerApi.updateTask(this.task.id, this.task).then( () => {
           this.oldTask.assignee=this.task.assignee;
-          this.$root.$emit('update-task-list', this.task);
           this.$root.$emit('show-alert', {
             type: 'success',
             message: this.$t('alert.success.task.assignee')
@@ -609,7 +590,6 @@ export default {
         }
         this.$taskDrawerApi.updateTask(this.task.id, this.task).then( () => {
           this.oldTask.coworker = this.task.coworker;
-          this.$root.$emit('update-task-list', this.task);
           this.$root.$emit('show-alert', {
             type: 'success',
             message: this.$t('alert.success.task.coworker')
@@ -732,7 +712,7 @@ export default {
           type: 'success',
           message: this.$t('alert.success.task.cloned') 
         });
-        this.$root.$emit('update-task-list', this.task);
+        this.$root.$emit('refresh-tasks-list');
         this.$root.$emit('open-task-drawer', task);
       }).catch(e => {
         console.error('Error when cloning task', e);
@@ -748,7 +728,7 @@ export default {
         method: 'DELETE',
         credentials: 'include',
       }).then( () => {
-        this.$root.$emit('update-task-list', this.task);
+        this.$root.$emit('refresh-tasks-list', this.task);
         this.$root.$emit('show-alert', {
           type: 'success',
           message: this.$t('alert.success.task.deleted') 
