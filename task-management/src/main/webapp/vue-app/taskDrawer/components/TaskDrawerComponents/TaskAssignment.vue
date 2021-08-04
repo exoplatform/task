@@ -223,7 +223,7 @@ export default {
             },
           };
         });
-        this.$emit('updateTaskAssignement', this.currentUser);
+        this.$emit('updateTaskAssignment', this.currentUser);
       }
     },
     setMeAsCoworker() {
@@ -270,11 +270,11 @@ export default {
       if (value && value.id) {
         if (value.remoteId !== this.currentUser && this.task.assignee !== value.remoteId) {
           this.taskAssigneeObj = value;
-          this.$emit('updateTaskAssignement', value.remoteId);
+          this.$emit('updateTaskAssignment', value.remoteId);
         }
         else {
           if ( this.task.id ===null ) {
-            this.$emit('updateTaskAssignement', this.taskAssigneeObj.remoteId);
+            this.$emit('updateTaskAssignment', this.taskAssigneeObj.remoteId);
           }
         }
       }
@@ -294,7 +294,7 @@ export default {
     },
     removeAssignee() {
       this.taskAssigneeObj = {};
-      this.$emit('updateTaskAssignement', null);
+      this.$emit('updateTaskAssignment', null);
     },
   }
 };
