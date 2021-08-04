@@ -8,6 +8,7 @@
         :default-value="false"
         :placeholder="$t('label.startDate')"
         :max-value="maximumStartDate"
+        width="100%"
         class="flex-grow-1 my-auto"
         @input="emitStartDate(startDate)">
         <template slot="footer">
@@ -62,6 +63,7 @@
         :default-value="false"
         :placeholder="$t('label.dueDate')"
         :min-value="minimumEndDate"
+        width="100%"
         class="flex-grow-1 my-auto"
         @input="emitDueDate(dueDate)">
         <template slot="footer">
