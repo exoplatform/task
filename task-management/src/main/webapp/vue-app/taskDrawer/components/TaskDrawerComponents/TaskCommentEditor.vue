@@ -83,6 +83,7 @@ export default {
       charsCount: 0,
       disabledComment: '',
       currentUserName: eXo.env.portal.userName,
+      MESSAGE_MAX_LENGTH: 1250,
       currentCommentId: ''
     };
   },
