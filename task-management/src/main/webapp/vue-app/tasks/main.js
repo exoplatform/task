@@ -18,13 +18,13 @@ export function init(itemsLimit) {
   exoi18n.loadLanguageAsync(lang, url)
     .then(i18n => {
       // init Vue app when locale ressources are ready
-      new Vue({
+      Vue.createApp({
         data: {
           itemsLimit: itemsLimit
         },
         render: h => h(tasksApp),
         i18n,
         vuetify,
-      }).$mount('#tasks');
+      }, '#tasks', 'Tasks Widget');
     });
 }
