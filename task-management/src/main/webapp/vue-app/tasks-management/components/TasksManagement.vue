@@ -123,7 +123,7 @@ export default {
           window.setTimeout(() => {
             this.$refs.taskDrawer.open(this.task);
           }, 200);
-        });
+        }).finally(() => this.$root.$applicationLoaded());
       }
     } else if (urlPath.includes('projectDetail')){
       let projectId = urlPath.split('projectDetail/')[1].split(/[^0-9]/)[0];
@@ -133,7 +133,7 @@ export default {
         this.showTabs=false;
         this.$projectService.getProject(projectId).then(data => {
           document.dispatchEvent(new CustomEvent('showProjectTasks', {detail: data}));
-        });
+        }).finally(() => this.$root.$applicationLoaded());
         this.displayDetails=true;
         this.tab='tab-2';
       }

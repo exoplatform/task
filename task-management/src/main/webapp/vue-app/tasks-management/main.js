@@ -44,10 +44,10 @@ const url = `${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/i18n/bundle/
 export function init() {
   exoi18n.loadLanguageAsync(lang, url).then(i18n => {
     // init Vue app when locale ressources are ready
-    new Vue({
+    Vue.createApp({
       template: '<tasks-management></tasks-management>',
       i18n,
       vuetify,
-    }).$mount('#tasksManagement');
+    }, '#tasksManagement', 'Tasks');
   });
 }

@@ -289,7 +289,10 @@ export default {
           this.limitToFetch += this.pageSize;
         }
       })
-        .finally(() => this.loadingTasks = false);
+        .finally(() => {
+          this.loadingTasks = false;
+          this.$root.$applicationLoaded();
+        });
     },
     getTasksByPrimary(primaryfilter) { 
       this.primaryfilter=primaryfilter;         
