@@ -123,7 +123,10 @@ export default {
           this.limitToFetch += this.pageSize;
         }
       })
-        .finally(() => this.loadingProjects = false);
+        .finally(() => {
+          this.loadingProjects = false;
+          this.$root.$applicationLoaded();
+        });
     },
     resetSearch() {
       if (this.limitToFetch !== this.originalLimitToFetch) {

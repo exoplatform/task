@@ -246,10 +246,12 @@ export default {
       this.$refs.taskDrawer.open(this.task);
     });
     this.itemsLimit = this.$parent.$data.itemsLimit;
-    this.getMyOverDueTasks();
-    this.getMyTodayTasks();
-    this.getMyTomorrowTasks();
-    this.getMyUpcomingTasks();
+    Promise.all([
+      this.getMyOverDueTasks(),
+      this.getMyTodayTasks(),
+      this.getMyTomorrowTasks(),
+      this.getMyUpcomingTasks()
+    ]).finally(() => this.$root.$applicationLoaded());
   },
   methods: {
     getMyOverDueTasks() {
@@ -259,7 +261,7 @@ export default {
         limit: 0,
         showCompleteTasks: false,
       };
-      filterTasksList(task,'','priority','','-2').then(
+      return filterTasksList(task,'','priority','','-2').then(
         (data) => {
           this.tasksOverdue = data.tasks;
           this.tasksOverdue=this.tasksOverdue.sort((a, b) => {
@@ -278,7 +280,7 @@ export default {
         limit: 0,
         showCompleteTasks: false,
       };
-      filterTasksList(task,'','priority','','-2').then(
+      return filterTasksList(task,'','priority','','-2').then(
         (data) => {
           this.tasksToday = data.tasks;
           this.tasksToday=this.tasksToday.sort((a, b) => {
@@ -289,14 +291,15 @@ export default {
           this.loadingTasks = false;
         }
       );
-    },getMyTomorrowTasks() {
+    },
+    getMyTomorrowTasks() {
       const task = {
         dueCategory: 'tomorrow',
         offset: 0,
         limit: 0,
         showCompleteTasks: false,
       };
-      filterTasksList(task,'','priority','','-2').then(
+      return filterTasksList(task,'','priority','','-2').then(
         (data) => {
           this.tasksTomorrow = data.tasks;
           this.tasksTomorrow=this.tasksTomorrow.sort((a, b) => {
@@ -307,13 +310,14 @@ export default {
           this.loadingTasks = false;
         }
       );
-    },getMyUpcomingTasks() {
+    },
+    getMyUpcomingTasks() {
       const task = {
         dueCategory: 'upcoming',
         offset: 0,
         showCompleteTasks: false,
       };
-      filterTasksList(task,'','priority','','-2').then(
+      return filterTasksList(task,'','priority','','-2').then(
         (data) => {
           this.tasksUpcoming = data.tasks;
           this.tasksUpcoming=this.tasksUpcoming.sort((a, b) => {
