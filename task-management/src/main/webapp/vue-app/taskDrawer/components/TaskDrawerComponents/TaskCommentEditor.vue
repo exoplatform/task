@@ -82,6 +82,7 @@ export default {
       inputVal: this.value,
       charsCount: 0,
       disabledComment: '',
+      MESSAGE_MAX_LENGTH: 1250,
       currentUserName: eXo.env.portal.userName,
       currentCommentId: ''
     };
