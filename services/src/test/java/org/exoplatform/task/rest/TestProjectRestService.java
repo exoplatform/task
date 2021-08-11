@@ -12,8 +12,11 @@ import javax.ws.rs.ext.RuntimeDelegate;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
 import org.exoplatform.social.core.manager.IdentityManager;
+import org.exoplatform.social.core.space.SpaceUtils;
 import org.exoplatform.social.core.space.model.Space;
+import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.rest.model.PaginatedTaskList;
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -173,6 +176,29 @@ public class TestProjectRestService {
     // Then
     assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
     assertNotNull(response.getEntity());
+
+    // get projects by space name
+    Space space = new Space();
+    space.setDisplayName("space1");
+    space.setPrettyName("space1");
+    space.setGroupId(SpaceUtils.SPACE_GROUP + "/" + space.getPrettyName());
+    when(spaceService.getSpaceByDisplayName("space1")).thenReturn(space);
+
+    List<ProjectDto> projects = Arrays.asList(project1, project2);
+
+    List<String> memberships = Arrays.asList("manager:/spaces/space1", "member:/spaces/space1");
+    when(projectService.findProjects(anyList(), anyString(), any(OrderBy.class), anyInt(), anyInt())).thenReturn(projects);
+    when(projectService.countProjects(memberships, "")).thenReturn(2);
+
+    // When
+    response = projectRestService.getProjects("", "space1", "ALL", -1, -1, false);
+
+    // Then
+    assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+    assertNotNull(response.getEntity());
+    JSONObject jsonObject = new JSONObject(response.getEntity().toString());
+    String projectNumber = jsonObject.getString("projectNumber");
+    assertEquals("2", projectNumber);
   }
 
   @Test
