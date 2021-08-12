@@ -182,7 +182,7 @@ public class TestProjectRestService {
     space.setDisplayName("space1");
     space.setPrettyName("space1");
     space.setGroupId(SpaceUtils.SPACE_GROUP + "/" + space.getPrettyName());
-    when(spaceService.getSpaceByDisplayName("space1")).thenReturn(space);
+    when(spaceService.getSpaceByPrettyName("space1")).thenReturn(space);
 
     List<ProjectDto> projects = Arrays.asList(project1, project2);
 
