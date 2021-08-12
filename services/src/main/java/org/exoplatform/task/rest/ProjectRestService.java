@@ -125,7 +125,7 @@ public class ProjectRestService implements ResourceContainer {
         projectNumber = projectService.countNotEmptyProjects(memberships, query);
       } else {
         if (StringUtils.isNoneEmpty(spaceName)) {
-          Space space = spaceService.getSpaceByDisplayName(spaceName);
+          Space space = spaceService.getSpaceByPrettyName(spaceName);
           if (space != null) {
             memberships.addAll(UserUtil.getSpaceMemberships(space.getGroupId()));
           }
