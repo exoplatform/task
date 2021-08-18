@@ -14,40 +14,40 @@
         <template slot="footer">
           <div class="dateFooter">
             <v-btn-toggle
-                class="d-flex justify-space-between"
-                tile
-                color="primary"
-                background-color="primary"
-                group>
+              class="d-flex justify-space-between"
+              tile
+              color="primary"
+              background-color="primary"
+              group>
               <v-btn
-                  value="left"
-                  class="my-0"
-                  small
-                  @click="addBtnStartDate()">
+                value="left"
+                class="my-0"
+                small
+                @click="addBtnStartDate()">
                 {{ $t('label.today') }}
               </v-btn>
 
               <v-btn
-                  value="center"
-                  class="my-0"
-                  small
-                  @click="addBtnStartDate(1)">
+                value="center"
+                class="my-0"
+                small
+                @click="addBtnStartDate(1)">
                 {{ $t('label.tomorrow') }}
               </v-btn>
 
               <v-btn
-                  value="right"
-                  class="my-0"
-                  small
-                  @click="addBtnStartDate(7)">
+                value="right"
+                class="my-0"
+                small
+                @click="addBtnStartDate(7)">
                 {{ $t('label.nextweek') }}
               </v-btn>
 
               <v-btn
-                  value="right"
-                  class="my-0"
-                  small
-                  @click="resetStartDate()">
+                value="right"
+                class="my-0"
+                small
+                @click="resetStartDate()">
                 {{ $t('label.none') }}
               </v-btn>
             </v-btn-toggle>
@@ -281,6 +281,7 @@ export default {
       if (this.$refs.taskDueDate && this.$refs.taskDueDate.menu) {
         this.$refs.taskDueDate.menu = false;
       }
+      window.setTimeout(() => this.$root.$emit('refresh-tasks-list'), 200);
     },
     resetStartDate() {
       this.startDate = null;
@@ -294,12 +295,14 @@ export default {
       const newDate = this.toDateObject(date);
       if ((!date && this.actualTask.startDate) || (date && !this.actualTask.startDate) || (this.actualTask.startDate && !this.datesEquals(newDate,this.actualTask.startDate))) {
         this.$emit('startDateChanged',newDate);
+        window.setTimeout(() => this.$root.$emit('refresh-tasks-list'), 200);
       }
     },
     emitDueDate(date) {
       const newDate = this.toDateObject(date);
       if ((!date && this.actualTask.dueDate) || (date && !this.actualTask.dueDate) || (this.actualTask.dueDate && !this.datesEquals(newDate,this.actualTask.dueDate))) {
         this.$emit('dueDateChanged',newDate);
+        window.setTimeout(() => this.$root.$emit('refresh-tasks-list'), 200);
       }
     },
     datesEquals(date1,date2){
