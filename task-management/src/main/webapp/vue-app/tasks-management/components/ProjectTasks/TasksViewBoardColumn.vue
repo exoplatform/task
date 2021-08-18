@@ -32,7 +32,6 @@
         handle=".taskBoardCardItem"
         :group="{ name: 'status' }"
         :class="filterNoActive && 'taskBoardNoFilterColumn'"
-        @start="drag=true"
         @end="drag=false">
         <task-view-card
           :id="idViewCard"
@@ -117,7 +116,7 @@ export default {
   },
   watch: {
     drag(val) {
-      if (!val&&this.task&&this.newStatus&&this.task.status.id !== this.newStatus){
+      if (val&&this.task&&this.newStatus&&this.task.status.id !== this.newStatus){
         this.$emit('updateTaskStatus', this.task,this.newStatus);
         Array.from(document.getElementsByClassName('draggable-palceholder')).forEach(element => element.style.backgroundColor= '#FFFFFF');
       }},
@@ -143,6 +142,7 @@ export default {
         Array.from(evt.to.parentElement.getElementsByClassName('draggable-palceholder')).forEach(element => element.style.backgroundColor= '#f2f2f2');
         this.task = evt.draggedContext.element.task;
         this.newStatus = evt.to.parentElement.id;
+        this.drag = true;
       }
     },
     deleteStatus(status) {
