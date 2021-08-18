@@ -223,7 +223,8 @@ export default {
             },
           };
         });
-        this.$emit('updateTaskAssignment', this.currentUser);
+        this.$emit('updateTaskAssignement', this.currentUser);
+        window.setTimeout(() => this.$root.$emit('refresh-tasks-list'), 200);
       }
     },
     setMeAsCoworker() {
@@ -262,6 +263,7 @@ export default {
             this.taskCoworkerObj.push(taskCoworker);
           }).then(() => {
             this.$emit('updateTaskCoworker',this.taskCoworkers );
+            window.setTimeout(() => this.$root.$emit('refresh-tasks-list'), 200);
           });
         }
       }
@@ -270,11 +272,13 @@ export default {
       if (value && value.id) {
         if (value.remoteId !== this.currentUser && this.task.assignee !== value.remoteId) {
           this.taskAssigneeObj = value;
-          this.$emit('updateTaskAssignment', value.remoteId);
+          this.$emit('updateTaskAssignement', value.remoteId);
+          window.setTimeout(() => this.$root.$emit('refresh-tasks-list'), 200);
         }
         else {
           if ( this.task.id ===null ) {
-            this.$emit('updateTaskAssignment', this.taskAssigneeObj.remoteId);
+            this.$emit('updateTaskAssignement', this.taskAssigneeObj.remoteId);
+            window.setTimeout(() => this.$root.$emit('refresh-tasks-list'), 200);
           }
         }
       }
@@ -285,16 +289,19 @@ export default {
           this.taskCoworkers.push(value[value.length-1].remoteId);
           this.$emit('updateTaskCoworker',this.taskCoworkers );
           this.taskCoworkerObj.push(value[value.length-1]);
+          window.setTimeout(() => this.$root.$emit('refresh-tasks-list'), 200);
         }
       }
     },
     removeCoworker(value) {
       this.taskCoworkers.splice(this.taskCoworkers.findIndex(taskCoworker => taskCoworker === value.remoteId), 1);
       this.$emit('updateTaskCoworker',this.taskCoworkers);
+      window.setTimeout(() => this.$root.$emit('refresh-tasks-list'), 200);
     },
     removeAssignee() {
       this.taskAssigneeObj = {};
-      this.$emit('updateTaskAssignment', null);
+      this.$emit('updateTaskAssignement', null);
+      window.setTimeout(() => this.$root.$emit('refresh-tasks-list'), 200);
     },
   }
 };
