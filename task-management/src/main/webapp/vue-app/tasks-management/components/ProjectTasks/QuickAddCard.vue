@@ -66,7 +66,7 @@ export default {
     addTask() {
       this.newTask.title=this.taskTitle;
       this.newTask.status=this.status;
-      this.$taskDrawerApi.addTask(this.newTask).then( () => {
+      this.$taskDrawerApi.addTask(this.newTask).then( addedTask => {
         this.closeForm();
         this.$root.$emit('task-added', addedTask);
         this.$root.$emit('show-alert', {
