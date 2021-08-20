@@ -22,11 +22,7 @@ import static org.exoplatform.task.dao.condition.Conditions.TASK_MENTIONED_USERS
 import static org.exoplatform.task.dao.condition.Conditions.TASK_PARTICIPATOR;
 import static org.exoplatform.task.dao.condition.Conditions.TASK_PROJECT;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import javax.persistence.*;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -517,9 +513,10 @@ public class TaskDAOImpl extends CommonJPADAO<Task, Long> implements TaskHandler
     }
 
     @Override
-    public List<Task> findTasks(String user, String term, int limit) {
+    public List<Task> findTasks(String user, List<String> memberships, String term, int limit) {
       Query query = getEntityManager().createNamedQuery("Task.findTasks", Task.class);
       query.setParameter("userName", user);
+      query.setParameter("memberships", memberships);
       query.setParameter("term", "%" + term.replaceAll("%", "").toLowerCase() + "%");
       if (limit > 0) {
         query.setMaxResults(limit);

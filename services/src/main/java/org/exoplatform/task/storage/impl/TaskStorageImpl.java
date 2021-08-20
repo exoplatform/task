@@ -237,8 +237,8 @@ public class TaskStorageImpl implements TaskStorage {
      * @return {@link List} of {@link Task}
      */
     @Override
-    public List<TaskDto> findTasks(String user, String query, int limit) {
-        List<Task> taskEntities = daoHandler.getTaskHandler().findTasks(user, query, limit);
+    public List<TaskDto> findTasks(String user, List<String> memberships, String query, int limit) {
+        List<Task> taskEntities = daoHandler.getTaskHandler().findTasks(user, memberships, query, limit);
         return taskEntities.stream().map((Task taskEntity) -> StorageUtil.taskToDto(taskEntity,projectStorage)).collect(Collectors.toList());
     }
 
