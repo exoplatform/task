@@ -109,11 +109,12 @@ public interface TaskStorage {
      * the task
      *
      * @param user  username
+     * @param memberships memberships
      * @param query term to search in title or description
      * @param limit term to limit results.
      * @return {@link List} of {@link TaskDto}
      */
-    List<TaskDto> findTasks(String user, String query, int limit);
+    List<TaskDto> findTasks(String user, List<String> memberships, String query, int limit);
 
     /**
      * Count tasks assigned to a user using a search term to find in title or

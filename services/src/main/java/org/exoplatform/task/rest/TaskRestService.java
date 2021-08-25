@@ -2,7 +2,6 @@ package org.exoplatform.task.rest;
 
 import io.swagger.annotations.*;
 import org.apache.commons.lang3.StringUtils;
-import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -12,8 +11,6 @@ import org.exoplatform.services.security.Identity;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
 import org.exoplatform.task.dao.TaskQuery;
-import org.exoplatform.task.domain.Project;
-import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.dto.*;
 import org.exoplatform.task.service.UserService;
 import org.exoplatform.task.model.GroupKey;
@@ -21,18 +18,14 @@ import org.exoplatform.task.model.User;
 import org.exoplatform.task.rest.model.*;
 import org.exoplatform.task.service.*;
 import org.exoplatform.task.storage.CommentStorage;
-import org.exoplatform.task.storage.StatusStorage;
 import org.exoplatform.task.util.CommentUtil;
-import org.exoplatform.task.util.ResourceUtil;
 import org.exoplatform.task.util.TaskUtil;
 import org.exoplatform.task.util.UserUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.annotation.security.RolesAllowed;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.URLDecoder;
@@ -129,6 +122,8 @@ public class TaskRestService implements ResourceContainer {
       try {
       Identity currentId = ConversationState.getCurrent().getIdentity();
       String currentUser = currentId.getUserId();
+      List<String> memberships = new LinkedList<>();
+      memberships.addAll(UserUtil.getMemberships(currentId));
 
     long tasksSize;
     List<TaskDto> tasks = null;
@@ -174,7 +169,7 @@ public class TaskRestService implements ResourceContainer {
       }
       }
     } else {
-      tasks = taskService.findTasks(currentUser, query, limit);
+      tasks = taskService.findTasksByMemberShips(currentUser, memberships, query, limit);
       tasksSize = taskService.countTasks(currentUser, query);
     }
         return Response.ok(new PaginatedTaskList(tasks.stream().map(task -> getTaskDetails((TaskDto) task, currentId)).collect(Collectors.toList()),tasksSize)).build();
