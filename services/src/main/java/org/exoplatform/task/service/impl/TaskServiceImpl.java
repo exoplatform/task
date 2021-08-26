@@ -253,14 +253,19 @@ public class TaskServiceImpl implements TaskService {
 
 
     @Override
-    public List<TaskDto> findTasks(String user, String query, int limit) {
+    public List<TaskDto> findTasksByMemberShips(String user, List<String> memberships, String query, int limit) {
         if (StringUtils.isBlank(user)) {
             throw new IllegalArgumentException("user parameter is mandatory");
         }
         if (StringUtils.isBlank(query)) {
             throw new IllegalArgumentException("query parameter is mandatory");
         }
-        return taskStorage.findTasks(user, query, limit);
+        return taskStorage.findTasks(user, memberships, query, limit);
+    }
+
+    @Override
+    public List<TaskDto> findTasks(String user, String query, int limit) {
+        return findTasksByMemberShips(user,new ArrayList<>(), query, limit);
     }
 
     @Override
