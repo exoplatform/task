@@ -135,7 +135,7 @@ import org.exoplatform.task.service.TaskBuilder;
     @NamedQuery(
         name = "Task.findTasks",
         query = "SELECT ta FROM TaskTask ta " +
-            "WHERE (ta.assignee = :userName OR ta.createdBy = :userName OR :userName in (select co FROM ta.coworker co)) " +
+            "WHERE (ta.assignee = :userName OR ta.createdBy = :userName OR :userName in (select co FROM ta.coworker co) OR (SELECT participator FROM TaskProject p LEFT JOIN p.participator participator where p.id = ta.status.project.id) IN (:memberships) ) " +
             "AND (lower(ta.title) LIKE lower(:term)  OR lower(ta.description) LIKE :term) " +
             "ORDER BY ta.createdTime DESC"
     ),

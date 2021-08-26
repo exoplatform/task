@@ -23,6 +23,7 @@ import static org.mockito.Mockito.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -49,7 +50,6 @@ import org.exoplatform.task.TestDtoUtils;
 import org.exoplatform.task.TestUtils;
 import org.exoplatform.task.dao.CommentHandler;
 import org.exoplatform.task.dao.DAOHandler;
-import org.exoplatform.task.dao.StatusHandler;
 import org.exoplatform.task.dao.TaskHandler;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.dto.TaskDto;
@@ -190,7 +190,7 @@ public class TaskServiceTest {
     assertEquals(newAssignee, taskCaptor.getValue().getAssignee());
 
     taskService.findTasks(newAssignee, newAssignee, 1);
-    verify(taskHandler, times(1)).findTasks(newAssignee,newAssignee,1);
+    verify(taskHandler, times(1)).findTasks(newAssignee,new ArrayList<>(),newAssignee,1);
 
   }
 
@@ -304,7 +304,7 @@ public class TaskServiceTest {
     assertEquals(newAssignee, taskCaptor.getValue().getAssignee());
 
     taskService.findTasks(newAssignee, newAssignee, 1);
-    verify(taskHandler, times(1)).findTasks(newAssignee,newAssignee,1);
+    verify(taskHandler, times(1)).findTasks(newAssignee,new ArrayList<>(),newAssignee,1);
 
     assertEquals(task.getId(), taskCaptor.getValue().getId());
 

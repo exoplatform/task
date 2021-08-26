@@ -80,6 +80,8 @@ public interface TaskService {
 
     Long countCollaboratedTasks(String user);
 
+    List<TaskDto> findTasksByMemberShips(String user, List<String> memberships, String query, int limit);
+
     List<TaskDto> findTasks(String user, String query, int limit);
 
 

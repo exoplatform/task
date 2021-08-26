@@ -28,7 +28,6 @@ import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.social.core.space.spi.SpaceService;
 import org.exoplatform.task.TestUtils;
-import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.dto.ProjectDto;
 import org.exoplatform.task.dto.StatusDto;
 import org.exoplatform.task.dto.TaskDto;

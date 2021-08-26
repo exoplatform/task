@@ -782,25 +782,27 @@ public class TestTaskDAO extends AbstractTest {
   @Test
   public void testFindTasks() throws Exception {
     String user="john";
+    List<String> memberships = Arrays.asList("manager:/spaces/space1", "member:/spaces/space1");
     Task task = newTaskInstance("What is Lorem Ipsum?", "Lorem Ipsum is simply dummy text of the printing", user);
     tDAO.create(task);
+    ConversationState.setCurrent(new ConversationState(new Identity(user)));
 
-    List<Task> tasks = tDAO.findTasks(user, "Lorem", 10);
+    List<Task> tasks = tDAO.findTasks(user,memberships, "Lorem", 10);
     assertEquals(1, tasks.size());
 
-    tasks = tDAO.findTasks(user, "lorem", 10);
+    tasks = tDAO.findTasks(user,memberships, "lorem", 10);
     assertEquals(1, tasks.size());
 
-    tasks = tDAO.findTasks(user, "simply", 10);
+    tasks = tDAO.findTasks(user,memberships, "simply", 10);
     assertEquals(1, tasks.size());
 
-    tasks = tDAO.findTasks("root", "simply", 10);
+    tasks = tDAO.findTasks("root",memberships, "simply", 10);
     assertEquals(1, tasks.size());
 
-    tasks = tDAO.findTasks("mary", "simply", 10);
+    tasks = tDAO.findTasks("mary",memberships, "simply", 10);
     assertEquals(0, tasks.size());
 
-    tasks = tDAO.findTasks(user, "example", 10);
+    tasks = tDAO.findTasks(user,memberships, "example", 10);
     assertEquals(0, tasks.size());
   }
 
