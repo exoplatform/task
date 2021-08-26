@@ -30,7 +30,7 @@
         ghost-class="ghost-card"
         class="draggable-palceholder taskBoardColumn"
         handle=".taskBoardCardItem"
-        :group="{ name: 'status' }"
+        :options="{group:'people'}"
         :class="filterNoActive && 'taskBoardNoFilterColumn'"
         @start="drag=true"
         @end="drag=false">
