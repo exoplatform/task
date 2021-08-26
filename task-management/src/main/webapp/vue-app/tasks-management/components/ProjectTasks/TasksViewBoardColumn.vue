@@ -30,10 +30,9 @@
         ghost-class="ghost-card"
         class="draggable-palceholder taskBoardColumn"
         handle=".taskBoardCardItem"
-        :options="{group:'people'}"
+        :options="{group:'status'}"
         :class="filterNoActive && 'taskBoardNoFilterColumn'"
-        @start="drag=true"
-        @end="drag=false">
+        @end="drag=true">
         <task-view-card
           :id="idViewCard"
           v-for="taskItem in tasksList"
@@ -117,9 +116,10 @@ export default {
   },
   watch: {
     drag(val) {
-      if (!val&&this.task&&this.newStatus&&this.task.status.id !== this.newStatus){
+      if (val&&this.task&&this.newStatus&&this.task.status.id !== this.newStatus){
         this.$emit('updateTaskStatus', this.task,this.newStatus);
         Array.from(document.getElementsByClassName('draggable-palceholder')).forEach(element => element.style.backgroundColor= '#FFFFFF');
+        this.drag = false;
       }},
   },
   methods: {
@@ -142,7 +142,7 @@ export default {
         Array.from(document.getElementsByClassName('draggable-palceholder')).forEach(element => element.style.backgroundColor= '#FFFFFF');
         Array.from(evt.to.parentElement.getElementsByClassName('draggable-palceholder')).forEach(element => element.style.backgroundColor= '#f2f2f2');
         this.task = evt.draggedContext.element.task;
-        this.newStatus = evt.to.parentElement.id;
+        this.newStatus = evt.relatedContext.component.$parent.status.name;
       }
     },
     deleteStatus(status) {
