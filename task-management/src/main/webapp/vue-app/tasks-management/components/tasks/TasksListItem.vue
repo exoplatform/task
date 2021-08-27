@@ -214,6 +214,11 @@ export default {
       this.updateTaskCoworker(value,id);
     });
     this.getTaskAssigneeAndCoworkers();
+    this.$root.$on('update-task-project', task => {
+      if (this.task.task.status && this.task.task.id===task.id){
+        this.isPersonnalTask=false;
+      }
+    });
   },
   methods: {
     updateRemoveTaskLabels(value,id){

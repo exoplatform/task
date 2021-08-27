@@ -64,7 +64,15 @@ export default {
       tasksStatsStartValue: 0
     };
   },
+  created(){
+    this.$root.$on('update-task-project', task =>{
+      this.updateTaskProject(task);
+    });
+  },
   methods: {
+    updateTaskProject(task){
+      this.tasksList = this.tasksList.filter(item => item.id !== task.id);
+    },
     getTasksByStatus(items ,statusName) {
       const tasksByStatus = [];
       items.forEach((item) => {
