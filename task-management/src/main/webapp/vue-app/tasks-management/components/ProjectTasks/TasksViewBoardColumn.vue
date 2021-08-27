@@ -15,35 +15,37 @@
       @open-quick-add="quickAddTask1=true"
       @add-column="addColumn" />
     <v-divider />
-    <quick-add-card 
-      :status="status"
-      :quick-add-task="quickAddTask1"
-      :task-title="taskTitle1"
-      class="status-add-task" 
-      @close-quick-form="quickAddTask1=false" />
-    <draggable 
-      v-model="tasksList" 
-      :move="checkMove"
-      :animation="200"
-      ghost-class="ghost-card"
-      class="draggable-palceholder taskBoardColumn"
-      handle=".taskBoardCardItem"
-      :group="{ name: 'status' }"
-      :class="filterNoActive && 'taskBoardNoFilterColumn'"
-      @start="drag=true"
-      @end="drag=false">
-      <task-view-card
-        v-for="taskItem in tasksList"
-        :key="taskItem.task.id"
-        :task="taskItem"
-        :show-completed-tasks="showCompletedTasks"
-        @update-task-completed="updateTaskCompleted" />
+    <div @mousedown="cancelDrag">
+      <quick-add-card
+        :status="status"
+        :quick-add-task="quickAddTask1"
+        :task-title="taskTitle1"
+        class="status-add-task" 
+        @close-quick-form="quickAddTask1=false" />
+      <draggable 
+        v-model="tasksList"
+        :move="checkMove"
+        :animation="200"
+        :key="draggableKey"
+        ghost-class="ghost-card"
+        class="draggable-palceholder taskBoardColumn"
+        handle=".taskBoardCardItem"
+        :options="{group:'status'}"
+        :class="filterNoActive && 'taskBoardNoFilterColumn'"
+        @end="drag=true">
+        <task-view-card
+          :id="idViewCard"
+          v-for="taskItem in tasksList"
+          :key="taskItem.task.id"
+          :task="taskItem"
+          :show-completed-tasks="showCompletedTasks"
+          @update-task-completed="updateTaskCompleted" />
     
-      <quick-add-card 
-        :status="status" 
-        :quick-add-task="quickAddTask"
-        :task-title="taskTitle"
-        @close-quick-form="quickAddTask=false" />
+        <quick-add-card 
+          :status="status" 
+          :quick-add-task="quickAddTask"
+          :task-title="taskTitle"
+          @close-quick-form="quickAddTask=false" />
 
         <v-btn 
           v-if="!quickAddTask"
@@ -114,9 +116,10 @@ export default {
   },
   watch: {
     drag(val) {
-      if (!val&&this.task&&this.newStatus&&this.task.status.id !== this.newStatus){
+      if (val&&this.task&&this.newStatus&&this.task.status.name !== this.newStatus){
         this.$emit('updateTaskStatus', this.task,this.newStatus);
         Array.from(document.getElementsByClassName('draggable-palceholder')).forEach(element => element.style.backgroundColor= '#FFFFFF');
+        this.drag = false;
       }},
   },
   methods: {
@@ -139,7 +142,7 @@ export default {
         Array.from(document.getElementsByClassName('draggable-palceholder')).forEach(element => element.style.backgroundColor= '#FFFFFF');
         Array.from(evt.to.parentElement.getElementsByClassName('draggable-palceholder')).forEach(element => element.style.backgroundColor= '#f2f2f2');
         this.task = evt.draggedContext.element.task;
-        this.newStatus = evt.to.parentElement.id;
+        this.newStatus = evt.relatedContext.component.$parent.status.name;
       }
     },
     deleteStatus(status) {
