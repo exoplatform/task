@@ -148,6 +148,8 @@ export default {
         this.task.status = status;
         this.updateTask();
         this.projectModel = project;
+      }).then( () => {
+        this.$root.$emit('update-task-project', this.task);
       });
     },
     deleteProject(event) {
