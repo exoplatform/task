@@ -116,7 +116,7 @@ export default {
   },
   watch: {
     drag(val) {
-      if (val&&this.task&&this.newStatus&&this.task.status.id !== this.newStatus){
+      if (val&&this.task&&this.newStatus&&this.task.status.name !== this.newStatus){
         this.$emit('updateTaskStatus', this.task,this.newStatus);
         Array.from(document.getElementsByClassName('draggable-palceholder')).forEach(element => element.style.backgroundColor= '#FFFFFF');
         this.drag = false;
