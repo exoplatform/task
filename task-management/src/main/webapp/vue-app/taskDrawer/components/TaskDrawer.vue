@@ -713,7 +713,7 @@ export default {
           type: 'success',
           message: this.$t('alert.success.task.cloned') 
         });
-        this.$root.$emit('refresh-tasks-list');
+        this.$root.$emit('task-added', task);
         this.$root.$emit('open-task-drawer', task);
       }).catch(e => {
         console.error('Error when cloning task', e);
@@ -729,7 +729,9 @@ export default {
         method: 'DELETE',
         credentials: 'include',
       }).then( () => {
-        this.$root.$emit('refresh-tasks-list', this.task);
+        this.$root.$emit('deleteTask', {
+          detail: this.task.id
+        });
         this.$root.$emit('show-alert', {
           type: 'success',
           message: this.$t('alert.success.task.deleted') 
