@@ -223,7 +223,7 @@ export default {
             },
           };
         });
-        this.$emit('updateTaskAssignement', this.currentUser);
+        this.$emit('updateTaskAssignment', this.currentUser);
         window.setTimeout(() => this.$root.$emit('refresh-tasks-list'), 200);
       }
     },

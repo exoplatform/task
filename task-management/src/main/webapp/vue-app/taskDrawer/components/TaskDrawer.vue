@@ -103,7 +103,7 @@
           <div class="taskAssignement ms-8 pb-3">
             <task-assignment
               :task="task"
-              @updateTaskAssignement="updateTaskAssignee($event)"
+              @updateTaskAssignment="updateTaskAssignee($event)"
               @updateTaskCoworker="updateTaskCoworker($event)"
               @assignmentsOpened="closePriority(); closeStatus(); closeProjectsList();closeTaskDates();closeLabelsList()" />
           </div>
