@@ -276,31 +276,23 @@ export default {
       this.tasksList=[];
       this.filterProjectActive=false;
       this.groupName=null;
-      if (localStorage.getItem(`filterStorage${ProjectId}+${currentTab}`)!==null){
-        const localStorageSaveFilter = localStorage.getItem(`filterStorage${ProjectId}+${currentTab}`);
-        if (localStorageSaveFilter.split('"')[10].split('}')[0].split(':')[1].split(',')[0] === ProjectId.toString() && localStorageSaveFilter.split('"')[13] === currentTab) {
-          this.groupBy = localStorageSaveFilter.split('"')[3];
-          this.sortBy = localStorageSaveFilter.split('"')[7];
-          if (this.taskFilter == null) {
-            const tasksFilter = {
-              query: query,
-              groupBy: this.groupBy,
-              orderBy: this.sortBy,
-              offset: 0,
-              limit: 0,
-              showCompleteTasks: false,
-            };
-            if (this.groupBy === 'completed') {
-              tasksFilter.showCompleteTasks = true;
-            }
-            return this.getFilter(tasksFilter, ProjectId);
+      const projectFilter = JSON.parse(localStorage.getItem(`filterStorage${ProjectId}+${currentTab}`));
+      if (projectFilter){
+        if (projectFilter['projectId'] === ProjectId && projectFilter['tabView'] === currentTab) {
+          this.groupBy = projectFilter['groupBy'];
+          this.sortBy = projectFilter['sortBy'];
+          const tasksFilter = {
+            query: query,
+            groupBy: this.groupBy,
+            orderBy: this.sortBy,
+            offset: 0,
+            limit: 0,
+            showCompleteTasks: false,
+          };
+          if (this.groupBy === 'completed') {
+            tasksFilter.showCompleteTasks = true;
           }
-          else {
-            if (this.groupBy === 'completed') {
-              this.taskFilter.showCompleteTasks = true;
-            }
-            return this.getFilter(this.taskFilter, ProjectId);
-          }
+          return this.getFilter(tasksFilter, ProjectId);
         }
       } else {
         this.getFilterProject(ProjectId,currentTab).then(() => {
