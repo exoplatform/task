@@ -337,7 +337,7 @@ export default {
         this.taskFilter.groupBy='';
         this.filterProjectActive=false;
         this.filterByStatus=true;
-        return this.$tasksService.filterTasksList(this.taskFilter,'','','',this.project.id).then(data => {
+        return this.$tasksService.filterTasksList(this.taskFilter,'','',e.filterLabels.labels,this.project.id).then(data => {
           this.filterProjectActive=false;
           this.filterByStatus=true;
           this.tasksList = data && data.tasks || [];
