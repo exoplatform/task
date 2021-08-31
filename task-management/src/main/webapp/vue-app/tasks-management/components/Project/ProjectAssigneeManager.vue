@@ -184,7 +184,7 @@ export default {
       if (this.$refs.invitedAttendeeAutoComplete) {
         this.$refs.invitedAttendeeAutoComplete.focus();
       }
-      this.$emit('initialized');
+      this.$root.$emit('task-project-manager',this.manager);
     },
     removeAttendee(attendee) {
       const index = this.manager.findIndex(addedAttendee => {
