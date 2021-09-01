@@ -20,7 +20,7 @@
             v-if="taskAssigneeObj && taskAssigneeObj.profile && taskAssigneeObj.profile.fullName" 
             class="assigneeName">
             <exo-user-avatar
-              :username="taskAssigneeObj.profile.remoteId"
+              :username="taskAssigneeObj.remoteId"
               :fullname="taskAssigneeFullName"
               :avatar-url="taskAssigneeObj.profile.avatarUrl"
               :title="taskAssigneeObj.profile.fullName"
