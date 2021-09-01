@@ -374,7 +374,6 @@ export default {
           this.$taskDrawerApi.updateTask(this.task.id, this.task).then(() => {
             this.taskTitle_ = this.task.title;
             this.oldTask.title = this.task.title;
-            this.$root.$emit('refresh-tasks-list', this.task);
             this.$root.$emit('task-updated', this.task);
             this.$root.$emit('show-alert', {
               type: 'success',
@@ -535,9 +534,8 @@ export default {
         this.labelsToAdd.forEach(item => {
           this.$taskDrawerApi.addTaskToLabel(task.id, item);
         });
-        this.$emit('addTask', this.task);
-        this.$root.$emit('refresh-tasks-list', this.task);
         
+        this.$root.$emit('task-added', task);
         this.$root.$emit('show-alert', {
           type: 'success',
           message: this.$t('alert.success.task.created')
@@ -714,7 +712,7 @@ export default {
           type: 'success',
           message: this.$t('alert.success.task.cloned') 
         });
-        this.$root.$emit('task-added', task);
+        this.$root.$emit('refresh-tasks-list');
         this.$root.$emit('open-task-drawer', task);
       }).catch(e => {
         console.error('Error when cloning task', e);

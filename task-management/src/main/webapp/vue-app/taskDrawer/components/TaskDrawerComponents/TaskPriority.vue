@@ -100,10 +100,11 @@ export default {
     },
     updateTaskPriority() {
       this.priorityDefaultColor = this.getTaskPriorityColor(this.priority);
-      this.$emit('updateTaskPriority',{
-        priority: this.priority
-      });
-      window.setTimeout(() => this.$root.$emit('refresh-tasks-list'), 200);
+      const value = {
+        'priority': this.priority,
+        'taskId': this.task.id,
+      };
+      this.$emit('updateTaskPriority',value);
     },
   }
 };
