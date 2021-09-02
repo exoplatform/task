@@ -16,6 +16,7 @@
           :animation="200"
           class="draggable-palceholder"
           ghost-class="ghost-card"
+          :options="{group:'status'}"
           @start="drag=true"
           @end="drag=false">
           <task-view-list-item
