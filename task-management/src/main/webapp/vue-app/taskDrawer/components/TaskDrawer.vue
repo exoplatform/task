@@ -424,7 +424,7 @@ export default {
           this.$taskDrawerApi.updateTask(this.task.id, this.task).then( () => {
             this.oldTask.priority = this.task.priority;
             this.$root.$emit('task-updated', this.task);
-            this.$root.$emit('updateTaskPriority',value);
+            this.$root.$emit('task-priority-updated',value);
             this.$root.$emit('show-alert', {
               type: 'success',
               message: this.$t('alert.success.task.priority')
@@ -486,7 +486,7 @@ export default {
     },
     updateTaskDueDate(value) {
       if (value && value !== 'none' && (!this.oldTask.dueDate || !this.datesEquals(this.oldTask.dueDate,value))) {
-        if (this.task.id != null) {
+        if (this.task.id !== null) {
           this.task.dueDate = value;
           this.$taskDrawerApi.updateTask(this.task.id, this.task).then(() => {
             this.oldTask.dueDate = this.task.dueDate;
@@ -502,7 +502,7 @@ export default {
               type: 'error',
               message: this.$t('alert.error')
             });
-          });
+          }).finally(() => this.$root.$emit('task-due-date-updated', this.task));
         } else {
           this.taskDueDate = value;
         }
@@ -520,7 +520,7 @@ export default {
             type: 'error',
             message: this.$t('alert.error')
           });
-        });
+        }).finally(() => this.$root.$emit('task-due-date-updated', this.task));
       }
     },
     addTask() {
@@ -712,7 +712,7 @@ export default {
           type: 'success',
           message: this.$t('alert.success.task.cloned') 
         });
-        this.$root.$emit('refresh-tasks-list');
+        this.$root.$emit('task-added', task);
         this.$root.$emit('open-task-drawer', task);
       }).catch(e => {
         console.error('Error when cloning task', e);
