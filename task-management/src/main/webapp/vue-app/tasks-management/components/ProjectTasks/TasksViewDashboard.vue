@@ -238,31 +238,7 @@ export default {
     });
 
     this.$root.$on('task-assignee-coworker-updated', task => {
-      this.$tasksService.filterTasksList(this.taskFilter, '', '', '', this.project.id).then(data => {
-        if (Array.isArray(data.tasks[0])) {
-          if (data.tasks.length !== this.tasksList.length) {
-            this.getTasksByProject(this.project.id, '');
-            if (this.taskViewTabName === 'gantt') {
-              return this.$tasksService.getTasksByProjectId(this.project.id).then(data => {
-                this.allProjectTasks = data && data || [];
-                this.$root.$emit('refresh-gantt', this.allProjectTasks);
-              });
-            }
-          } else {
-            const tasksArrayOldIndex = this.tasksList.findIndex(tasksArray => tasksArray.findIndex(t => t.id === task.id) > -1);
-            const tasksArrayNewIndex = data.tasks.findIndex(tasksArray => tasksArray.findIndex(t => t.id === task.id) > -1);
-
-            this.$set(this.tasksList, tasksArrayOldIndex, data.tasks[tasksArrayOldIndex]);
-            this.$set(this.tasksList, tasksArrayNewIndex, data.tasks[tasksArrayNewIndex]);
-          }
-        } else {
-          const taskOldIndex = this.tasksList.findIndex(t => t.id === task.id);
-          const taskNewIndex = data.tasks.findIndex(t => t.id === task.id);
-
-          this.tasksList.splice(taskOldIndex, 1);
-          this.tasksList.splice(taskNewIndex, 0, data.tasks[taskNewIndex]);
-        }
-      });
+      this.updateModifiedTask(task);
     });
     
     this.$root.$on('task-priority-updated', value => {
@@ -284,38 +260,14 @@ export default {
     });
 
     this.$root.$on('task-due-date-updated', task => {
-      this.$tasksService.filterTasksList(this.taskFilter, '', '', '', this.project.id).then(data => {
-        if (Array.isArray(data.tasks[0])) {
-          if (data.tasks.length !== this.tasksList.length) {
-            this.getTasksByProject(this.project.id, '');
-            if (this.taskViewTabName === 'gantt') {
-              return this.$tasksService.getTasksByProjectId(this.project.id).then(data => {
-                this.allProjectTasks = data && data || [];
-                this.$root.$emit('refresh-gantt', this.allProjectTasks);
-              });
-            }
-          } else {
-            const tasksArrayOldIndex = this.tasksList.findIndex(tasksArray => tasksArray.findIndex(t => t.id === task.id) > -1);
-            const tasksArrayNewIndex = data.tasks.findIndex(tasksArray => tasksArray.findIndex(t => t.id === task.id) > -1);
-
-            this.$set(this.tasksList, tasksArrayOldIndex, data.tasks[tasksArrayOldIndex]);
-            this.$set(this.tasksList, tasksArrayNewIndex, data.tasks[tasksArrayNewIndex]);
-          }
-        } else {
-          const taskOldIndex = this.tasksList.findIndex(t => t.id === task.id);
-          const taskNewIndex = data.tasks.findIndex(t => t.id === task.id);
-
-          this.tasksList.splice(taskOldIndex, 1);
-          this.tasksList.splice(taskNewIndex, 0, data.tasks[taskNewIndex]);
-        }
-      });
+      this.updateModifiedTask(task);
     });
     
     this.$root.$on('refresh-tasks-list', () => {
       this.getTasksByProject(this.project.id,'');
       if ( this.taskViewTabName === 'gantt' ) {
         return this.$tasksService.getTasksByProjectId(this.project.id).then(data => {
-          this.allProjectTasks = data && data || [];
+          this.allProjectTasks = data ? data : [];
           this.$root.$emit('refresh-gantt', this.allProjectTasks);
         });
       }
@@ -351,7 +303,7 @@ export default {
     getAllProjectTasks(projectId) {
       return this.$tasksService.getTasksByProjectId(projectId).then(data => {
         this.allProjectTasks = [];
-        this.allProjectTasks = data && data || [];
+        this.allProjectTasks = data ? data : [];
         this.$root.$emit('gantt-displayed', this.allProjectTasks);
       });
     },
@@ -593,6 +545,33 @@ export default {
         title: ''};
       this.$root.$emit('open-task-drawer', defaultTask);
     },
+    updateModifiedTask(task) {
+      this.$tasksService.filterTasksList(this.taskFilter, '', '', '', this.project.id).then(data => {
+        if (Array.isArray(data.tasks[0])) {
+          if (data.tasks.length !== this.tasksList.length) {
+            this.getTasksByProject(this.project.id, '');
+            if (this.taskViewTabName === 'gantt') {
+              return this.$tasksService.getTasksByProjectId(this.project.id).then(tasks => {
+                this.allProjectTasks = tasks ? tasks : [];
+                this.$root.$emit('refresh-gantt', this.allProjectTasks);
+              });
+            }
+          } else {
+            const tasksArrayOldIndex = this.tasksList.findIndex(tasksArray => tasksArray.findIndex(t => t.id === task.id) > -1);
+            const tasksArrayNewIndex = data.tasks.findIndex(tasksArray => tasksArray.findIndex(t => t.id === task.id) > -1);
+
+            this.$set(this.tasksList, tasksArrayOldIndex, data.tasks[tasksArrayOldIndex]);
+            this.$set(this.tasksList, tasksArrayNewIndex, data.tasks[tasksArrayNewIndex]);
+          }
+        } else {
+          const taskOldIndex = this.tasksList.findIndex(t => t.id === task.id);
+          const taskNewIndex = data.tasks.findIndex(t => t.id === task.id);
+
+          this.tasksList.splice(taskOldIndex, 1);
+          this.tasksList.splice(taskNewIndex, 0, data.tasks[taskNewIndex]);
+        }
+      });
+    }
   }
 };
 </script>
