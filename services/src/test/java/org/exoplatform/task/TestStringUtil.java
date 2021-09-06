@@ -19,14 +19,14 @@
 
 package org.exoplatform.task;
 
+import org.exoplatform.task.util.StringUtil;
+import org.junit.Assert;
+import org.junit.Test;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-
-import org.exoplatform.task.util.StringUtil;
-import org.junit.Assert;
-import org.junit.Test;
 
 public class TestStringUtil {
   private static String[] elems = new String[] {"b", "i", "font", "s", "u", "o", "sup", "sub", "ins", "del", "strong",
@@ -133,25 +133,57 @@ public class TestStringUtil {
     String encoded = StringUtil.encodeInjectedHtmlTag(input.toString());
     Assert.assertEquals("abcdabcd", encoded);
   }
-  
+
   private void buildTag(StringBuilder builder, String[] elems, List<String> attrs, boolean hasCloseTag) {
+    String rowTag = "tr";
+    List<String> tableColumnTags = List.of("td", "th");
+    List<String> tableGroupTags = List.of("thead", "tbody", "tfoot", "colgroup");
+    boolean openedTableTag = false;
+    boolean openedTableGroupTag = false;
+    boolean openedTrTag = false;
+
     for (String elem : elems) {
+
+      if (!openedTableTag && !openedTableGroupTag && tableColumnTags.contains(elem) || elem.equals(rowTag)) {
+        openedTableTag = true;
+        openedTableGroupTag = true;
+
+        builder.append("<").append("table").append(">").append("<").append("tbody").append(">");
+      }
+
+      if (!openedTrTag && !elem.equals(rowTag) && tableColumnTags.contains(elem)) {
+        builder.append("<").append(rowTag).append(">");
+        openedTrTag = true;
+      }
+
+      if (openedTableTag && openedTableGroupTag && tableGroupTags.contains(elem)) {
+        if (openedTrTag) {
+          builder.append("</").append(rowTag).append(">");
+          openedTrTag = false;
+        }
+        builder.append("</").append("tbody").append(">");
+        openedTableGroupTag = false;
+      }
+
       builder.append("<").append(elem).append(" ");
       for (String att : attrs) {
         builder.append(att).append(" ");
       }
       if (attrs.size() > 0) {
-        builder.deleteCharAt(builder.length() - 1);        
+        builder.deleteCharAt(builder.length() - 1);
       }
       if (hasCloseTag) {
         builder.append(">");
         if (!tables.contains(elem)) {
-          builder.append("abcd");          
+          builder.append("abcd");
         }
         builder.append("</").append(elem).append(">");
       } else {
         builder.append(" />");
       }
-    }    
+    }
+    if (openedTableTag) {
+      builder.append("</table>");
+    }
   }
 }
