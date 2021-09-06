@@ -14,7 +14,8 @@
               xl="3"
               class="pa-0 projectItem">
               <task-card
-                :task="task" />
+                :task="task"
+                :show-completed-tasks="showCompletedTasks" />
             </v-col>
           </v-row>
         </v-container>
@@ -28,7 +29,11 @@ export default {
     tasks: {
       type: Array,
       default: () =>[],
-    }
+    },
+    showCompletedTasks: {
+      type: Boolean,
+      default: false,
+    },
   },
 
 };

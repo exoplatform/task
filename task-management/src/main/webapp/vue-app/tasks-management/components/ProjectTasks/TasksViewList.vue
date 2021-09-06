@@ -14,9 +14,8 @@
                 :status="status"
                 :project="project"
                 :tasks-list="getTasksByStatus(tasksList,status.name)"
-                :show-completed-tasks="filterTaskCompleted"
+                :show-completed-tasks="showCompletedTasks"
                 :filter-by-status="filterByStatus"
-                @updateTaskCompleted="updateTaskCompleted"
                 @updateTaskStatus="updateTaskStatus" />
             </div>
           </div>
@@ -24,9 +23,8 @@
           <div v-else class="pt-0 px-3 projectTaskItem">
             <tasks-view-list-column
               :tasks-list="tasksList"
-              :show-completed-tasks="filterTaskCompleted"
+              :show-completed-tasks="showCompletedTasks"
               :filter-by-status="filterByStatus"
-              @updateTaskCompleted="updateTaskCompleted"
               @updateTaskStatus="updateTaskStatus" />
           </div>
         </div>
@@ -46,7 +44,7 @@ export default {
       type: Array,
       default: () => []
     },
-    filterTaskCompleted: {
+    showCompletedTasks: {
       type: Boolean,
       default: false
     },
@@ -81,11 +79,6 @@ export default {
         }
       });
       return tasksByStatus;
-    },
-    updateTaskCompleted(e){
-      if ( !this.filterTaskCompleted ) {
-        this.$root.$emit('update-task-completed', e);
-      }
     },
     updateTaskStatus(task,newStatus){
       const status = this.statusList.find(s => s.id.toString() === newStatus || s.name === newStatus);

@@ -1,6 +1,6 @@
 <template>
   <div
-    :class="getTaskPriorityColor(task.task.priority)"
+    :class="[getTaskPriorityColor(task.task.priority), removeCompletedTask && 'completedTask' || '']"
     class="taskListItemView  px-4 py-3 d-flex align-center">
     <div class="taskCheckBox">
       <v-switch
@@ -154,7 +154,11 @@ export default {
     task: {
       type: Object,
       default: null
-    }
+    },
+    showCompletedTasks: {
+      type: Boolean,
+      default: false
+    },
   },
   data () {
     return {
@@ -170,7 +174,6 @@ export default {
       labelList: '',
       isSpaceProject: this.task.space !== null,
       maxAvatarToShow: 1,
-      showCompleteTasks: false
     };
   },
   computed: {
@@ -186,7 +189,18 @@ export default {
     },
     showMoreAvatarsNumber() {
       return this.assigneeAndCoworkerArray.length - this.maxAvatarToShow;
+    },
+    removeCompletedTask() {
+      return this.task.task.completed === true && !this.showCompletedTasks;
     }
+  },
+  watch: {
+    'task.assignee'() {
+      this.getTaskAssigneeAndCoworkers();
+    },
+    'task.coworker'() {
+      this.getTaskAssigneeAndCoworkers();
+    },
   },
   created() {
     this.$root.$on('update-completed-task',(value,id)=>{
@@ -301,31 +315,29 @@ export default {
     },
       
     updateCompleted() {
-
       const task = {
         id: this.task.task.id,
-        showCompleteTasks: this.showCompleted(),
+        isCompleted: !this.task.task.completed,
       };
-
-
-      if (typeof task.id !== 'undefined') {
-        return this.$tasksService.updateCompleted(task).then(task => {
-          if (task.completed){
-            this.$root.$emit('show-alert', {type: 'success',message: this.$t('alert.success.task.completed')});   
+      
+      if (task.id) {
+        return this.$tasksService.updateCompleted(task).then(updatedTask => {
+          if (updatedTask.completed) {
+            this.$root.$emit('show-alert', {type: 'success', message: this.$t('alert.success.task.completed')});
           } else {
-            this.$root.$emit('show-alert', {type: 'success',message: this.$t('alert.success.task.unCompleted')});
+            this.$root.$emit('show-alert', {type: 'success', message: this.$t('alert.success.task.unCompleted')});
           }
-          this.$root.$emit('update-cart', task);
-          this.$root.$emit('update-task-completed', task);
-        }).then(this.task.task.completed = task.showCompleteTasks)
-          .catch(e => {
-            console.error('Error updating project', e);
-            this.$root.$emit('show-alert', {
-              type: 'error',
-              message: this.$t('alert.error')
-            });
-            this.postProject = false;
+          this.$root.$emit('update-cart', updatedTask);
+          this.$root.$emit('update-task-completed', updatedTask);
+          this.task.task.completed = updatedTask.completed;
+        }).catch(e => {
+          console.error('Error updating project', e);
+          this.$root.$emit('show-alert', {
+            type: 'error',
+            message: this.$t('alert.error')
           });
+          this.postProject = false;
+        });
       }
 
 
@@ -353,14 +365,6 @@ export default {
       else {
         return 'message.markAsCompleted';
       }
-    },
-    showCompleted(){
-      if (this.getTaskCompleted()==='uiIconValidate'){
-        this.showCompleteTasks=false;
-      } else {
-        this.showCompleteTasks=true;
-      }
-      return this.showCompleteTasks;
     },
     getNameProject(){
       if (this.task.task.status){
