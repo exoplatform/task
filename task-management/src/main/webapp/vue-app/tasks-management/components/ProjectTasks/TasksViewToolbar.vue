@@ -51,12 +51,13 @@
         </v-btn>
       </v-scale-transition>
     </v-toolbar>
-    <task-filter-drawer
+    <tasks-filter-drawer
       ref="filterTasksDrawer"
       :project="project.id"
       :query="keyword"
       :status-list="statusList"
       :task-view-tab-name="taskViewTabName"
+      :show-completed-tasks="showCompletedTasks"
       @filter-num-changed="filterNumChanged"
       @filter-task="filterTasks"
       @reset-filter-task="resetFilterTask" />
@@ -84,6 +85,10 @@ export default {
     taskGanttTabView: {
       type: String,
       default: ''
+    },
+    showCompletedTasks: {
+      type: Boolean,
+      default: false
     },
   },
   data () {
@@ -134,11 +139,14 @@ export default {
       this.searchonkeyChange=true;
       this.$emit('reset-filter-task-dashboard');
     },
-    filterTasks(e){
-      this.searchonkeyChange=false;
-      this.showCompleteTasks=e.showCompleteTasks;
-      this.keyword=e.tasks.query;
-      this.$emit('filter-task-dashboard', { tasks: e.tasks,filterLabels: e.filterLabels,showCompleteTasks: e.showCompleteTasks });
+    filterTasks(e) {
+      this.searchonkeyChange = false;
+      this.keyword = e.tasks.query;
+      this.$emit('filter-task-dashboard', {
+        tasks: e.tasks,
+        filterLabels: e.filterLabels,
+        showCompletedTasks: e.showCompletedTasks
+      });
     },
     resetFields(activeField){
       this.$refs.filterTasksDrawer.resetFields(activeField);

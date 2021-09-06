@@ -374,7 +374,6 @@ export default {
           this.$taskDrawerApi.updateTask(this.task.id, this.task).then(() => {
             this.taskTitle_ = this.task.title;
             this.oldTask.title = this.task.title;
-            this.$root.$emit('refresh-tasks-list', this.task);
             this.$root.$emit('task-updated', this.task);
             this.$root.$emit('show-alert', {
               type: 'success',
@@ -395,19 +394,19 @@ export default {
     updateCompleted() {
       const task = {
         id: this.task.id,
-        showCompleteTasks: !this.task.completed,
+        showCompletedTasks: !this.task.completed,
       };
-      if (typeof task.id !== 'undefined') {
-        return this.$tasksService.updateCompleted(task).then(task => {
-          if (task.completed){
+      if (task.id) {
+        return this.$tasksService.updateCompleted(task).then(updatedTask => {
+          if (updatedTask.completed){
             this.$root.$emit('show-alert', {type: 'success',message: this.$t('alert.success.task.completed')});
           } else {
             this.$root.$emit('show-alert', {type: 'success',message: this.$t('alert.success.task.unCompleted')});
           }
-          this.$root.$emit('update-task-completed', task);
+          this.$root.$emit('update-task-completed', updatedTask);
         }).then( () => {
           this.$root.$emit('update-completed-task',this.task.completed,this.task.id);
-        }).then(this.task.completed = task.showCompleteTasks)
+        }).then(() => this.task.completed = task.showCompletedTasks)
           .catch(e => {
             console.error('Error updating project', e);
             this.$root.$emit('show-alert', {
@@ -425,7 +424,7 @@ export default {
           this.$taskDrawerApi.updateTask(this.task.id, this.task).then( () => {
             this.oldTask.priority = this.task.priority;
             this.$root.$emit('task-updated', this.task);
-            this.$root.$emit('updateTaskPriority',value);
+            this.$root.$emit('task-priority-updated',value);
             this.$root.$emit('show-alert', {
               type: 'success',
               message: this.$t('alert.success.task.priority')
@@ -487,7 +486,7 @@ export default {
     },
     updateTaskDueDate(value) {
       if (value && value !== 'none' && (!this.oldTask.dueDate || !this.datesEquals(this.oldTask.dueDate,value))) {
-        if (this.task.id != null) {
+        if (this.task.id !== null) {
           this.task.dueDate = value;
           this.$taskDrawerApi.updateTask(this.task.id, this.task).then(() => {
             this.oldTask.dueDate = this.task.dueDate;
@@ -498,12 +497,8 @@ export default {
             });
             this.$root.$emit('update-task-widget-list', this.task);
           }).catch(e => {
-            console.error('Error when updating task\'s due date', e);
-            this.$root.$emit('show-alert', {
-              type: 'error',
-              message: this.$t('alert.error')
-            });
-          });
+            this.logError(e);
+          }).finally(() => this.$root.$emit('task-due-date-updated', this.task));
         } else {
           this.taskDueDate = value;
         }
@@ -516,12 +511,8 @@ export default {
             message: this.$t('alert.success.task.duetDate')
           });
         }).catch(e => {
-          console.error('Error when updating task\'s due date', e);
-          this.$root.$emit('show-alert', {
-            type: 'error',
-            message: this.$t('alert.error')
-          });
-        });
+          this.logError(e);
+        }).finally(() => this.$root.$emit('task-due-date-updated', this.task));
       }
     },
     addTask() {
@@ -535,9 +526,8 @@ export default {
         this.labelsToAdd.forEach(item => {
           this.$taskDrawerApi.addTaskToLabel(task.id, item);
         });
-        this.$emit('addTask', this.task);
-        this.$root.$emit('refresh-tasks-list', this.task);
         
+        this.$root.$emit('task-added', task);
         this.$root.$emit('show-alert', {
           type: 'success',
           message: this.$t('alert.success.task.created')
@@ -724,7 +714,6 @@ export default {
       });
     },
     deleteConfirm() {
-      const idTask = this.task.id;
       return fetch(`${eXo.env.portal.context}/${eXo.env.portal.rest}/tasks/${this.task.id}`, {
         method: 'DELETE',
         credentials: 'include',
@@ -737,7 +726,7 @@ export default {
           message: this.$t('alert.success.task.deleted') 
         });
         document.dispatchEvent(new CustomEvent('deleteTask', {
-          detail: idTask
+          detail: this.task.id
         }));
       }).catch(e => {
         console.error('Error when deleting task', e);
@@ -790,7 +779,14 @@ export default {
       this.$refs.addTaskDrawer.close();
       this.$root.$emit('displayUnscheduledDrawer', '');
       this.showBackArrow = false;    
-    }
+    },
+    logError(e) {
+      console.error('Error when updating task\'s due date', e);
+      this.$root.$emit('show-alert', {
+        type: 'error',
+        message: this.$t('alert.error')
+      });
+    },
   }
 };
 </script>

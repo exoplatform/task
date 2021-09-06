@@ -25,7 +25,7 @@
                   class="draggable-palceholder"
                   :tasks-list="getTasksByStatus(tasksList,status.name)"
                   :index="index"
-                  :show-completed-tasks="filterTaskCompleted"
+                  :show-completed-tasks="showCompletedTasks"
                   :status-list-length="statusList.length"
                   :filter-no-active="filterNoActive"
                   @updateTaskCompleted="updateTaskCompleted"
@@ -50,7 +50,7 @@
                 :status="status"
                 :tasks-list="getTasksByStatus(tasksList,status.name)"
                 :index="index"
-                :show-completed-tasks="filterTaskCompleted"
+                :show-completed-tasks="showCompletedTasks"
                 :status-list-length="statusList.length"
                 :filter-no-active="filterNoActive"
                 @updateTaskCompleted="updateTaskCompleted"
@@ -83,14 +83,14 @@ export default {
       type: Number,
       default: 0
     },
-    filterTaskCompleted: {
+    showCompletedTasks: {
       type: Boolean,
       default: false
     },
     filterNoActive: {
       type: Boolean,
       default: false
-    }
+    },
   },
   data() {
     return {
@@ -134,7 +134,7 @@ export default {
       return tasksByStatus;
     },
     updateTaskCompleted(e){
-      if ( !this.filterTaskCompleted ) {
+      if ( !this.showCompletedTasks ) {
         this.$root.$emit('update-task-completed', e);
       }
     },
