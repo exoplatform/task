@@ -108,7 +108,15 @@ export default {
         Array.from(document.getElementsByClassName('draggable-palceholder')).forEach(element => element.style.backgroundColor= '#FFFFFF');
       }},
   },
+  created(){
+    this.$root.$on('update-task-project', task =>{
+      this.updateTaskProject(task);
+    });
+  },
   methods: {
+    updateTaskProject(task){
+      this.tasksList = this.tasksList.filter(item => item.id !== task.id);
+    },
     checkMoveStatus(evt){
       if (evt){
         Array.from(document.getElementsByClassName('draggable-palceholder')).forEach(element => element.style.backgroundColor= '#FFFFFF');

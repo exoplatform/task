@@ -68,6 +68,9 @@ export default {
     }
   },
   created() {
+    this.$root.$on('update-task-project', task =>{
+      this.updateTaskProject(task);
+    });
     this.$root.$on('hide-tasks-project', () => {
       this.isGanttDisplayed = false;
       $('#gantt-chart').empty();
@@ -114,6 +117,9 @@ export default {
     });
   },
   methods: {
+    updateTaskProject(task){
+      this.tasksList = this.tasksList.filter(item => item.id !== task.id);
+    },
     getTasksToDisplay(tasksList) {
       const ganttTasksList = [];
       this.unscheduledTaskList = [];
