@@ -141,7 +141,7 @@ export default {
     },
     updateTaskStatus(task,newStatus){
       // eslint-disable-next-line eqeqeq
-      const status = this.statusList.find(s => s.id == newStatus);
+      const status = this.statusList.find(s => s.name == newStatus);
       if (status){
         task.status = status;
         this.updateTask(task);
