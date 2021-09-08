@@ -591,7 +591,6 @@ export default {
           this.task.coworker = [];
         }
         this.$taskDrawerApi.updateTask(this.task.id, this.task).then( () => {
-          this.oldTask.coworker = this.task.coworker;
           this.$root.$emit('show-alert', {
             type: 'success',
             message: this.$t('alert.success.task.coworker')
