@@ -142,6 +142,9 @@ public class ResourceUtil {
     NodeContext<?> page = null;
     NavigationService navService = container.getComponentInstanceOfType(NavigationService.class);
     NavigationContext ctx = navService.loadNavigation(siteKey);
+    if (ctx == null || ctx.getData() == null || ctx.getData().getRootId() == null) {
+      return "#";
+    }
     Scope scope;
     if (siteKey.getType().equals(SiteType.GROUP)) {
       scope = Scope.GRANDCHILDREN;
