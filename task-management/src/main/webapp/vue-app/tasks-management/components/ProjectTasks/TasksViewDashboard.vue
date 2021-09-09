@@ -202,7 +202,7 @@ export default {
       defaultAvatar: '/portal/rest/v1/social/users/default-image/avatar',
       keyword: null,
       loadingTasks: false,
-      taskFilter: null,
+      taskFilter: {},
       taskViewTabName: 'board',
       deleteConfirmMessage: null,
       statusList: [],
@@ -342,10 +342,14 @@ export default {
         }
       } else {
         this.getFilterProject(ProjectId, currentTab).then(() => {
-          this.tasksFilter.query = query;
-          this.tasksFilter.offset = 0;
-          this.tasksFilter.limit = 0;
-          this.tasksFilter.showCompleteTasks = false;
+          this.tasksFilter = {
+            query: query,
+            groupBy: '',
+            orderBy: '',
+            offset: 0,
+            limit: 0,
+            showCompleteTasks: false,
+          };
           
           if (this.taskFilter.groupBy === 'completed') {
             this.tasksFilter.showCompleteTasks = true;
