@@ -1,6 +1,17 @@
 import tasksApp from './components/TasksApp.vue';
 import TaskDetails from './components/TaskDetails.vue';
 
+if (!localStorage.getItem('taskFilterStorageUpgraded')) {
+  localStorage.removeItem('primary-filter-tasks');
+  for (const property in localStorage) {
+    if (property.startsWith('filterStorage')) {
+      localStorage.removeItem(property);
+    }
+  }
+}
+localStorage.setItem('taskFilterStorageUpgraded', 'true');
+
+
 Vue.use(Vuetify);
 Vue.component('task-details', TaskDetails);
 

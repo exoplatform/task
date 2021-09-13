@@ -6,6 +6,16 @@ import * as projectService from '../../js/projectService.js';
 import * as statusService from '../../js/statusService.js';
 import * as taskDrawerApi from '../../js/taskDrawerApi.js';
 
+if (!localStorage.getItem('taskFilterStorageUpgraded')) {
+  localStorage.removeItem('primary-filter-tasks');
+  for (const property in localStorage) {
+    if (property.startsWith('filterStorage')) {
+      localStorage.removeItem(property);
+    }
+  }
+}
+localStorage.setItem('taskFilterStorageUpgraded', 'true');
+
 Vue.use(Vuetify);
 Vue.use(VueEllipsis);
 const vuetify = new Vuetify(eXo.env.portal.vuetifyPreset);

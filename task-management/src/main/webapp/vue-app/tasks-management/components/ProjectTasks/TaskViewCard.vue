@@ -140,8 +140,6 @@ export default {
       isPersonnalTask: this.task.task.status === null,
       drawer: null,
       maxAvatarToShow: 1,
-      showCompleteTasks: false,
-      removeCompletedTask: false
     };
   },
   computed: {
@@ -179,26 +177,16 @@ export default {
         return 'taskNonePriority';
       }
     },
-  },
-  watch: {
-    taskCompletedClass: {
-      immediate: true,
-      handler() {
-        if (this.taskCompletedClass === 'uiIconValidate') {
-          this.showCompleteTasks = false;
-        } else {
-          this.showCompleteTasks = true;
-        }     
-      }
+    removeCompletedTask() {
+      return this.task.task.completed === true && !this.showCompletedTasks;
     }
   },
   created() {
-    this.$root.$on('update-completed-task',(value,id)=>{
-      if (this.task.id === id){
-        this.task.task.completed=value;
-        if (this.task.task.completed === true && !this.showCompletedTasks){
+    this.$root.$on('update-completed-task', (value, id) => {
+      if (this.task.id === id) {
+        this.task.task.completed = value;
+        if (this.task.task.completed === true && !this.showCompletedTasks) {
           this.$emit('update-task-completed', this.task.task);
-          this.removeCompletedTask = true;
         }
       }
     });
@@ -317,33 +305,28 @@ export default {
       this.drawer = drawer;
     },
     updateCompleted() {
-
       const task = {
         id: this.task.task.id,
-        showCompleteTasks: this.showCompleteTasks,
+        isCompleted: !this.task.task.completed,
       };
-
-
+      
       if (task.id) {
-        return this.$tasksService.updateCompleted(task).then(task => {
-          if (task.completed){
-            this.$root.$emit('show-alert', {type: 'success',message: this.$t('alert.success.task.completed')});   
+        return this.$tasksService.updateCompleted(task).then(updatedTask => {
+          if (updatedTask.completed) {
+            this.$root.$emit('show-alert', {type: 'success', message: this.$t('alert.success.task.completed')});
           } else {
-            this.$root.$emit('show-alert', {type: 'success',message: this.$t('alert.success.task.unCompleted')});
-          }           
-          this.$emit('update-task-completed', task);
-          if ( task.completed === true && !this.showCompletedTasks) {
-            this.removeCompletedTask = true;
+            this.$root.$emit('show-alert', {type: 'success', message: this.$t('alert.success.task.unCompleted')});
           }
-        }).then(this.task.task.completed = task.showCompleteTasks)
-          .catch(e => {
-            console.error('Error updating project', e);
-            this.$root.$emit('show-alert', {
-              type: 'error',
-              message: this.$t('alert.error')
-            });
-            this.postProject = false;
+          this.$emit('update-task-completed', updatedTask);
+          this.task.task.completed = task.isCompleted;
+        }).catch(e => {
+          console.error('Error updating project', e);
+          this.$root.$emit('show-alert', {
+            type: 'error',
+            message: this.$t('alert.error')
           });
+          this.postProject = false;
+        });
       }
 
 

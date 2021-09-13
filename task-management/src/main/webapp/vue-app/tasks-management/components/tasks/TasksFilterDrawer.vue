@@ -28,7 +28,7 @@
                     v-model="groupBy" />
                   <tasks-sort-by-drawer
                     ref="filterSortTasksDrawer"
-                    v-model="sortBy" />
+                    v-model="orderBy" />
                 </v-card>
               </v-tab-item>
 
@@ -41,7 +41,7 @@
                     @scale-changed="changeScale" />
                   <tasks-sort-by-project-drawer
                     ref="filterSortTasksDrawer"
-                    v-model="sortBy" />
+                    v-model="orderBy" />
                 </v-card>
               </v-tab-item>
 
@@ -127,7 +127,7 @@
                         }}:</label>
                         <label class="switch">
                           <input
-                            v-model="showCompleteTasks"
+                            v-model="showCompletedTasks"
                             type="checkbox">
                           <div class="slider round"><span class="absolute-yes">{{ $t(`filter.task.showCompleted.yes`,"YES") }}</span></div>
                           <span class="absolute-no">{{ $t(`filter.task.showCompleted.no`) }}</span>
@@ -195,7 +195,7 @@ export default {
       type: String,
       default: ''
     },
-    sortBy: {
+    orderBy: {
       type: String,
       default: ''
     },
@@ -214,7 +214,11 @@ export default {
     statusList: {
       type: Array,
       default: () =>[],
-    }
+    },
+    showCompletedTasks: {
+      type: Boolean,
+      default: false,
+    },
   },
   data () {
     return {
@@ -231,7 +235,6 @@ export default {
       priority: [
         {name: ''},{name: 'NONE'},{name: 'LOW'},{name: 'NORMAL'},{name: 'HIGH'}
       ],
-      showCompleteTasks: false,
       labels: [],
     };
   },
@@ -273,25 +276,25 @@ export default {
           }));
         },
         200);
-        if (localStorage.getItem(`filterStorage${projectId}+${this.taskViewTabName}`) !== null) {
-          const localStorageSaveFilter = localStorage.getItem(`filterStorage${projectId}+${this.taskViewTabName}`);
-          if (localStorageSaveFilter.split('"')[10].split('}')[0].split(':')[1].split(',')[0] === projectId.toString()) {
-            this.groupBy = localStorageSaveFilter.split('"')[3];
-            this.sortBy = localStorageSaveFilter.split('"')[7];
+        if (localStorage.getItem(`filterStorage${projectId}+${this.taskViewTabName}`)) {
+          const localStorageSaveFilter = JSON.parse(localStorage.getItem(`filterStorage${projectId}+${this.taskViewTabName}`));
+          if (localStorageSaveFilter.projectId === projectId.toString()) {
+            this.groupBy = Boolean(localStorageSaveFilter.groupBy) && localStorageSaveFilter.groupBy || '';
+            this.orderBy = Boolean(localStorageSaveFilter.orderBy) && localStorageSaveFilter.orderBy || '';
           }
         }
       }
       else if (urlPath.includes('myTasks')){
-        if (localStorage.getItem('filterStorageNone+list') !== null) {
+        if (localStorage.getItem('filterStorageNone+list')) {
           const localStorageSaveFilter = localStorage.getItem('filterStorageNone+list');
           if (localStorageSaveFilter.split('"')[11] === 'None') {
             this.groupBy = localStorageSaveFilter.split('"')[3];
-            this.sortBy = localStorageSaveFilter.split('"')[7];
+            this.orderBy = localStorageSaveFilter.split('"')[7];
           }
         }
       }
       this.$root.$emit('reset-filter-task-group-sort',this.groupBy);
-      this.$root.$emit('reset-filter-task-sort',this.sortBy);
+      this.$root.$emit('reset-filter-task-sort',this.orderBy);
       this.$refs.filterTasksDrawer.open();
     },
     cancel() {
@@ -306,36 +309,35 @@ export default {
       } else {
         this.groupBy='none';
       }
-      this.sortBy='';
+      this.orderBy='';
       this.labels='';
-      this.showCompleteTasks=false;
+      this.showCompletedTasks=false;
       this.getFilterNumber();
       this.$root.$emit('reset-filter-task-group-sort',this.groupBy);
     },
     reset() {
-      this.query=this.task.query;
-      this.assignee=this.task.assignee;
-      this.dueDateSelected='';
-      this.prioritySelected='';
-      this.statusSelected='';
-      if (this.taskViewTabName === 'list'){
-        this.groupBy='status';
+      this.query = this.task.query;
+      this.assignee = this.task.assignee;
+      this.dueDateSelected = '';
+      this.prioritySelected = '';
+      this.statusSelected = '';
+      if (this.taskViewTabName === 'list') {
+        this.groupBy = 'status';
       } else {
-        this.groupBy='';
+        this.groupBy = '';
       }
-      this.sortBy='';
-      this.labels='';
-      this.showCompleteTasks=false;
+      this.orderBy = '';
+      this.labels = '';
+      this.showCompletedTasks = false;
       this.getFilterNumber();
       const jsonToSave = {
         groupBy: this.groupBy,
-        sortBy: this.sortBy,
+        orderBy: this.orderBy,
         projectId: this.project || 'None',
-        tabView: this.taskViewTabName!==''? this.taskViewTabName : 'list',
+        tabView: this.taskViewTabName !== '' ? this.taskViewTabName : 'list',
       };
-      this.saveValueFilterInStorage(JSON.parse(JSON.stringify(jsonToSave)));
-      localStorage.setItem(`filterStorage${jsonToSave.projectId}+${jsonToSave.tabView}`,JSON.stringify(jsonToSave));
-      this.$root.$emit('reset-filter-task-group-sort',this.groupBy);
+      this.saveValueFilterInStorage(jsonToSave);      
+      this.$root.$emit('reset-filter-task-group-sort', this.groupBy);
       this.$emit('reset-filter-task');
     },
     resetFields(source) {
@@ -345,14 +347,14 @@ export default {
       this.prioritySelected='';
       this.statusSelected='';
       this.groupBy='';
-      this.sortBy='';
+      this.orderBy='';
       this.labels='';
-      this.showCompleteTasks=false;
+      this.showCompletedTasks=false;
       this.$root.$emit('reset-filter-task-group-sort',this.groupBy);
       this.getFilterNumber(source);
     },
-    filterTasks(){
-      if ( this.taskViewTabName === 'gantt' ) {
+    filterTasks() {
+      if (this.taskViewTabName === 'gantt') {
         this.cancel();
       } else {
         const tasks = {
@@ -361,41 +363,41 @@ export default {
           statusId: this.statusSelected,
           dueDate: this.dueDateSelected,
           priority: this.prioritySelected,
-          showCompleteTasks: this.showCompleteTasks,
+          showCompletedTasks: this.showCompletedTasks,
           groupBy: this.groupBy,
-          orderBy: this.sortBy,
+          orderBy: this.orderBy,
         };
         const filterGroupSort = {
           groupBy: this.groupBy,
-          sortBy: this.sortBy,
+          orderBy: this.orderBy,
         };
         const filterLabels = {
           labels: [],
         };
-        if (this.labels){
+        if (this.labels) {
           this.labels.forEach(user => {
             filterLabels.labels.push(user.id);
           });
         }
-        if (this.assignee){
+        if (this.assignee) {
           tasks.assignee = this.assignee.remoteId;
         }
         const jsonToSave = {
           groupBy: this.groupBy,
-          sortBy: this.sortBy,
+          orderBy: this.orderBy,
           projectId: this.project || 'None',
-          tabView: (this.taskViewTabName!==''? this.taskViewTabName : 'list'),
+          tabView: (this.taskViewTabName !== '' ? this.taskViewTabName : 'list'),
         };
-        this.saveValueFilterInStorage(JSON.parse(JSON.stringify(jsonToSave)));
-        if (this.project){
-          this.$emit('filter-task',{ tasks,filterLabels,showCompleteTasks: this.showCompleteTasks });
+        this.saveValueFilterInStorage(jsonToSave);
+        if (this.project) {
+          this.$emit('filter-task', {tasks, filterLabels, showCompletedTasks: this.showCompletedTasks});
           this.getFilterNumber();
-          if (this.$refs.filterTasksDrawer){
+          if (this.$refs.filterTasksDrawer) {
             this.$refs.filterTasksDrawer.close();
           }
         } else {
-          this.$emit('filter-task-query', tasks,filterGroupSort,filterLabels);
-       
+          this.$emit('filter-task-query', tasks, filterGroupSort, filterLabels);
+
           this.getFilterNumber();
           this.$refs.filterTasksDrawer.close();
         }
@@ -421,15 +423,20 @@ export default {
       if (this.labels&&this.labels.length>0){
         filtersnumber++;
       }
-      if (this.showCompleteTasks){
+      if (this.showCompletedTasks){
         filtersnumber++;
       }
       this.$emit('filter-num-changed',filtersnumber,source);
     },
-    saveValueFilterInStorage(value){
+    saveValueFilterInStorage(value) {
       this.$projectService.saveFilterSettings(value).then((response) => {
-        if (response){
-          localStorage.setItem(`filterStorage${value.projectId}+${value.tabView}`,JSON.stringify(value));
+        if (response) {
+          value.showCompletedTasks = this.showCompletedTasks;
+          if (this.project) {
+            localStorage.setItem(`filterStorage${value.projectId}+${value.tabView}`, JSON.stringify(value));
+          } else {
+            localStorage.setItem('filterStorageNone+list', JSON.stringify(value));
+          }
         }
       });
     },

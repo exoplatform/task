@@ -65,7 +65,7 @@ const components = {
   'tasks-list-item': TasksListItem,
   'tasks-cards-list': TasksCardsList,
   'task-card': TaskCard,
-  'task-filter-drawer': TasksFilterDrawer,
+  'tasks-filter-drawer': TasksFilterDrawer,
   'tasks-assignee-coworker-drawer': TasksAssigneeAndCoworkerDrawer,
   'tasks-group-drawer': TasksGroupDrawer,
   'tasks-sort-by-drawer': TasksSortByDrawer,

@@ -5,7 +5,8 @@
       :key="task.id"
       class="tasksListItem">
       <tasks-list-item
-        :task="task" />
+        :task="task"
+        :show-completed-tasks="showCompletedTasks" />
     </div>
   </v-app>
 </template>
@@ -15,7 +16,11 @@ export default {
     tasks: {
       type: Array,
       default: () => [],
-    }
+    },
+    showCompletedTasks: {
+      type: Boolean,
+      default: false,
+    },    
   },
 };
 

@@ -14,9 +14,9 @@ export function getMyTasksList(type, query, offset, limit) {
   }).finally(() => document.dispatchEvent(new CustomEvent('hideTopBarLoading')));
 }
 
-export function filterTasksList(tasks, groupBy, sortBy, filterLabelIds, projectId) {
+export function filterTasksList(tasks, groupBy, orderBy, filterLabelIds, projectId) {
   document.dispatchEvent(new CustomEvent('displayTopBarLoading'));
-  return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/tasks/filter?projectId=${projectId || tasks.projectId || -2}&query=${tasks.query || ''}&dueDate=${tasks.dueDate || ''}&priority=${tasks.priority || ''}&statusId=${tasks.statusId || ''}&showCompleted=${tasks.showCompleteTasks || ''}&assignee=${tasks.assignee || ''}&watcher=${tasks.watcher || ''}&coworker=${tasks.coworker || ''}&groupBy=${groupBy || tasks.groupBy || ''}&orderBy=${sortBy || tasks.orderBy || ''}&dueCategory=${tasks.dueCategory || ''}&filterLabelIds=${filterLabelIds || tasks.filterLabelIds || ''}&offset=${tasks.offset || 0}&limit=${tasks.limit|| 0}`, {
+  return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/tasks/filter?projectId=${projectId || tasks.projectId || -2}&query=${tasks.query || ''}&dueDate=${tasks.dueDate || ''}&priority=${tasks.priority || ''}&statusId=${tasks.statusId || ''}&showCompletedTasks=${tasks.showCompletedTasks || ''}&assignee=${tasks.assignee || ''}&watcher=${tasks.watcher || ''}&coworker=${tasks.coworker || ''}&groupBy=${groupBy || tasks.groupBy || ''}&orderBy=${orderBy || tasks.orderBy || ''}&dueCategory=${tasks.dueCategory || ''}&filterLabelIds=${filterLabelIds || tasks.filterLabelIds || ''}&offset=${tasks.offset || 0}&limit=${tasks.limit|| 0}`, {
     method: 'GET',
     credentials: 'include',
   }).then(resp => {
@@ -97,7 +97,7 @@ export function getTasksByProjectId(projectId) {
 
 export function updateCompleted(task) {
   document.dispatchEvent(new CustomEvent('displayTopBarLoading'));
-  return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/tasks/updateCompleted/${task.id}?&showCompleteTasks=${task.showCompleteTasks}`, {
+  return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/tasks/updateCompleted/${task.id}?&isCompleted=${task.isCompleted}`, {
     headers: {
       'Content-Type': 'application/json'
     },

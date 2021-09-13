@@ -130,10 +130,8 @@ export default {
     },
     updateTaskCompleted(task) {
       if (!this.showCompletedTasks && task.completed) {
-        const index = this.tasksList.findIndex(taskEl => taskEl.id === task.id);
-        this.tasksList.splice(index, 1);
         setTimeout(() => {
-          this.reRenderTasks();
+          this.$root.$emit('task-isCompleted-updated', task);
         }, 500);
       }
     },

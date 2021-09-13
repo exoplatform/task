@@ -394,7 +394,7 @@ export default {
     updateCompleted() {
       const task = {
         id: this.task.id,
-        showCompleteTasks: !this.task.completed,
+        showCompletedTasks: !this.task.completed,
       };
       if (typeof task.id !== 'undefined') {
         return this.$tasksService.updateCompleted(task).then(task => {
@@ -406,7 +406,7 @@ export default {
           this.$root.$emit('update-task-completed', task);
         }).then( () => {
           this.$root.$emit('update-completed-task',this.task.completed,this.task.id);
-        }).then(this.task.completed = task.showCompleteTasks)
+        }).then(this.task.completed = task.showCompletedTasks)
           .catch(e => {
             console.error('Error updating project', e);
             this.$root.$emit('show-alert', {
@@ -722,7 +722,6 @@ export default {
       });
     },
     deleteConfirm() {
-      const idTask = this.task.id;
       return fetch(`${eXo.env.portal.context}/${eXo.env.portal.rest}/tasks/${this.task.id}`, {
         method: 'DELETE',
         credentials: 'include',
@@ -735,7 +734,7 @@ export default {
           message: this.$t('alert.success.task.deleted') 
         });
         document.dispatchEvent(new CustomEvent('deleteTask', {
-          detail: idTask
+          detail: this.task.id
         }));
       }).catch(e => {
         console.error('Error when deleting task', e);

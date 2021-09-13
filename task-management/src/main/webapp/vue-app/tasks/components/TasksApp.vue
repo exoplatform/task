@@ -260,7 +260,7 @@ export default {
         dueCategory: 'overDue',
         offset: 0,
         limit: 0,
-        showCompleteTasks: false,
+        showCompletedTasks: false,
       };
       return filterTasksList(task,'','priority','','-2').then(
         (data) => {
@@ -279,7 +279,7 @@ export default {
         dueCategory: 'today',
         offset: 0,
         limit: 0,
-        showCompleteTasks: false,
+        showCompletedTasks: false,
       };
       return filterTasksList(task,'','priority','','-2').then(
         (data) => {
@@ -298,7 +298,7 @@ export default {
         dueCategory: 'tomorrow',
         offset: 0,
         limit: 0,
-        showCompleteTasks: false,
+        showCompletedTasks: false,
       };
       return filterTasksList(task,'','priority','','-2').then(
         (data) => {
@@ -316,7 +316,7 @@ export default {
       const task = {
         dueCategory: 'upcoming',
         offset: 0,
-        showCompleteTasks: false,
+        showCompletedTasks: false,
       };
       return filterTasksList(task,'','priority','','-2').then(
         (data) => {
