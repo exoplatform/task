@@ -283,12 +283,11 @@ public final class TaskUtil {
       }
     }
 
-    Comparator<GroupKey> byKey = (GroupKey o1, GroupKey o2)-> o1.getName().compareTo(o2.getName());
-    LinkedHashMap<GroupKey, List<TaskEntity>> sortedMap = maps.entrySet().stream()
-            .sorted(Map.Entry.<GroupKey,List<TaskEntity>>comparingByKey(byKey))
-            .collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue,(e1,e2)->e1,LinkedHashMap::new));
+    Comparator<GroupKey> byKey = Comparator.comparing(GroupKey::getName);
 
-    return sortedMap;
+    return maps.entrySet().stream()
+            .sorted(Map.Entry.comparingByKey(byKey))
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
   }
 
   public static String buildTaskURL(TaskDto task) {
