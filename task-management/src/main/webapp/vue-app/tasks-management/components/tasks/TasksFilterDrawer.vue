@@ -267,36 +267,29 @@ export default {
     open() {
       const urlPath = document.location.pathname;
       this.getTabView();
-      if (urlPath.includes('projectDetail')) {
-        let projectId = urlPath.split('projectDetail/')[1].split(/[^0-9]/)[0];
-        projectId = projectId ? Number(projectId) : 0;
+      const projectId = urlPath.includes('projectDetail') && urlPath.split('projectDetail/')[1].split(/[^0-9]/)[0] ?
+        Number(urlPath.split('projectDetail/')[1].split(/[^0-9]/)[0]) : 0;
+      if (projectId > 0) {
         window.setTimeout(() => {
           document.dispatchEvent(new CustomEvent('loadFilterProjectLabels', {
             detail: projectId
           }));
         }, 200);
 
-        const localStorageSaveFilter = localStorage.getItem(`filterStorage${projectId}+${this.taskViewTabName}`) ?
-          JSON.parse(localStorage.getItem(`filterStorage${projectId}+${this.taskViewTabName}`)) : null;
-
-        this.groupBy = localStorageSaveFilter && localStorageSaveFilter.projectId === projectId && localStorageSaveFilter.groupBy ?
-          localStorageSaveFilter.groupBy : '';
-
-        this.orderBy = localStorageSaveFilter && localStorageSaveFilter.projectId === projectId && localStorageSaveFilter.orderBy ?
-          localStorageSaveFilter.orderBy : '';
-
-      } else if (urlPath.includes('myTasks')) {
-        const localStorageSaveFilter = localStorage.getItem('filterStorageNone+list') ? JSON.parse(localStorage.getItem('filterStorageNone+list')) : null;
-
-        this.groupBy = localStorageSaveFilter && localStorageSaveFilter.projectId === 'None' && localStorageSaveFilter.groupBy ?
-          localStorageSaveFilter.groupBy : '';
-
-        this.orderBy = localStorageSaveFilter && localStorageSaveFilter.projectId === 'None' && localStorageSaveFilter.orderBy ?
-          localStorageSaveFilter.orderBy : '';
-
       }
-      this.$root.$emit('reset-filter-task-group-sort',this.groupBy);
-      this.$root.$emit('reset-filter-task-sort',this.orderBy);
+      const filterStorageProperty = projectId > 0 ? `filterStorage${projectId}+${this.taskViewTabName}` : 'filterStorageNone+list';
+
+      const localStorageSaveFilter = localStorage.getItem(filterStorageProperty) ?
+        JSON.parse(localStorage.getItem(filterStorageProperty)) : null;
+
+      this.groupBy = projectId > 0 && localStorageSaveFilter && localStorageSaveFilter.projectId === projectId && localStorageSaveFilter.groupBy ||
+      localStorageSaveFilter && localStorageSaveFilter.projectId === 'None' && localStorageSaveFilter.groupBy ? localStorageSaveFilter.groupBy : '';
+
+      this.orderBy = projectId > 0 && localStorageSaveFilter && localStorageSaveFilter.projectId === projectId && localStorageSaveFilter.orderBy ||
+      localStorageSaveFilter && localStorageSaveFilter.projectId === 'None' && localStorageSaveFilter.orderBy ? localStorageSaveFilter.orderBy : '';
+      
+      this.$root.$emit('reset-filter-task-group-sort', this.groupBy);
+      this.$root.$emit('reset-filter-task-sort', this.orderBy);
       this.$refs.filterTasksDrawer.open();
     },
     cancel() {
