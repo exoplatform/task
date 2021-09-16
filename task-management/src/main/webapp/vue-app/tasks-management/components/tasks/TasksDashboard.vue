@@ -194,12 +194,7 @@ export default {
     }
 
     this.$root.$on('task-added', task => {
-      let filterTasks;
-      if (this.filterActive) {
-        filterTasks = this.taskQueryFilter;
-      } else {
-        filterTasks = this.filterTasks;
-      }
+      const filterTasks = this.filterActive ? this.taskQueryFilter : this.filterTasks;
 
       return this.$tasksService.filterTasksList(filterTasks, this.groupBy, this.orderBy, this.labels).then(data => {
         if (this.filterActive) {
@@ -220,12 +215,7 @@ export default {
     });
 
     this.$root.$on('task-assignee-coworker-updated', () => {
-      let filterTasks;
-      if (this.filterActive) {
-        filterTasks = this.taskQueryFilter;
-      } else {
-        filterTasks = this.filterTasks;
-      }
+      const filterTasks = this.filterActive ? this.taskQueryFilter : this.filterTasks;
 
       this.$tasksService.filterTasksList(filterTasks, this.groupBy, this.orderBy, this.labels).then(data => {
         if (this.filterActive) {
@@ -238,12 +228,7 @@ export default {
 
     this.$root.$on('task-priority-updated', value => {
       if (this.orderBy === 'priority') {
-        let filterTasks;
-        if (this.filterActive) {
-          filterTasks = this.taskQueryFilter;
-        } else {
-          filterTasks = this.filterTasks;
-        }
+        const filterTasks = this.filterActive ? this.taskQueryFilter : this.filterTasks;
 
         this.$tasksService.filterTasksList(filterTasks, this.groupBy, this.orderBy, this.labels).then(data => {
           if (this.filterActive) {
@@ -268,12 +253,7 @@ export default {
 
     this.$root.$on('task-due-date-updated', () => {
       if (this.groupBy === 'dueDate' || this.orderBy === 'dueDate') {
-        let filterTasks;
-        if (this.filterActive) {
-          filterTasks = this.taskQueryFilter;
-        } else {
-          filterTasks = this.filterTasks;
-        }
+        const filterTasks = this.filterActive ? this.taskQueryFilter : this.filterTasks;
 
         this.$tasksService.filterTasksList(filterTasks, this.groupBy, this.orderBy, this.labels).then(data => {
           if (this.filterActive) {
@@ -355,7 +335,7 @@ export default {
           this.tasks = [];
           this.filterActive = false;
         } else {
-          if (!this.primaryFilter === 'ASSIGNED') {
+          if (this.primaryFilter !== 'ASSIGNED') {
             this.filterTasks.assignee = e.assignee;
           }
           if (!(this.primaryFilter === 'OVERDUE' || this.primaryFilter === 'TODAY' || this.primaryFilter === 'TOMORROW' || this.primaryFilter === 'UPCOMING')) {

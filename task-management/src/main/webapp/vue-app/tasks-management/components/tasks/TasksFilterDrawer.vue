@@ -269,27 +269,31 @@ export default {
       this.getTabView();
       if (urlPath.includes('projectDetail')) {
         let projectId = urlPath.split('projectDetail/')[1].split(/[^0-9]/)[0];
-        projectId = projectId && Number(projectId) || 0;
+        projectId = projectId ? Number(projectId) : 0;
         window.setTimeout(() => {
           document.dispatchEvent(new CustomEvent('loadFilterProjectLabels', {
             detail: projectId
           }));
         }, 200);
-        if (localStorage.getItem(`filterStorage${projectId}+${this.taskViewTabName}`)) {
-          const localStorageSaveFilter = JSON.parse(localStorage.getItem(`filterStorage${projectId}+${this.taskViewTabName}`));
-          if (localStorageSaveFilter.projectId === projectId) {
-            this.groupBy = Boolean(localStorageSaveFilter.groupBy) && localStorageSaveFilter.groupBy || '';
-            this.orderBy = Boolean(localStorageSaveFilter.orderBy) && localStorageSaveFilter.orderBy || '';
-          }
-        }
+
+        const localStorageSaveFilter = localStorage.getItem(`filterStorage${projectId}+${this.taskViewTabName}`) ?
+          JSON.parse(localStorage.getItem(`filterStorage${projectId}+${this.taskViewTabName}`)) : null;
+
+        this.groupBy = localStorageSaveFilter && localStorageSaveFilter.projectId === projectId && localStorageSaveFilter.groupBy ?
+          localStorageSaveFilter.groupBy : '';
+
+        this.orderBy = localStorageSaveFilter && localStorageSaveFilter.projectId === projectId && localStorageSaveFilter.orderBy ?
+          localStorageSaveFilter.orderBy : '';
+
       } else if (urlPath.includes('myTasks')) {
-        if (localStorage.getItem('filterStorageNone+list')) {
-          const localStorageSaveFilter = JSON.parse(localStorage.getItem('filterStorageNone+list'));
-          if (localStorageSaveFilter.projectId === 'None') {
-            this.groupBy = Boolean(localStorageSaveFilter.groupBy) && localStorageSaveFilter.groupBy || '';
-            this.orderBy = Boolean(localStorageSaveFilter.orderBy) && localStorageSaveFilter.orderBy || '';
-          }
-        }
+        const localStorageSaveFilter = localStorage.getItem('filterStorageNone+list') ? JSON.parse(localStorage.getItem('filterStorageNone+list')) : null;
+
+        this.groupBy = localStorageSaveFilter && localStorageSaveFilter.projectId === 'None' && localStorageSaveFilter.groupBy ?
+          localStorageSaveFilter.groupBy : '';
+
+        this.orderBy = localStorageSaveFilter && localStorageSaveFilter.projectId === 'None' && localStorageSaveFilter.orderBy ?
+          localStorageSaveFilter.orderBy : '';
+
       }
       this.$root.$emit('reset-filter-task-group-sort',this.groupBy);
       this.$root.$emit('reset-filter-task-sort',this.orderBy);
