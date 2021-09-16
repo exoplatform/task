@@ -312,16 +312,7 @@ export default {
     this.$root.$on('task-due-date-updated', task => {
       this.updateModifiedTask(task);
     });
-
-    this.$root.$on('refresh-tasks-list', () => {
-      this.getTasksByProject(this.project.id, '');
-      if (this.taskViewTabName === 'gantt') {
-        return this.$tasksService.getTasksByProjectId(this.project.id).then(data => {
-          this.allProjectTasks = data ? data : [];
-          this.$root.$emit('refresh-gantt', this.allProjectTasks);
-        });
-      }
-    });
+    
     this.$root.$on('deleteTask', (event) => {
       if (event && event.detail) {
         const taskId = event.detail;
@@ -371,9 +362,9 @@ export default {
       const currentTab = this.taskViewTabName;
       this.tasksList = [];
       this.filterProjectActive = false;
-      this.groupName = null;
-      const projectFilter = JSON.parse(localStorage.getItem(`filterStorage${ProjectId}+${currentTab}`));
-      if (projectFilter) {
+      this.groupName = null;      
+      if (localStorage.getItem(`filterStorage${ProjectId}+${currentTab}`)) {
+        const projectFilter = JSON.parse(localStorage.getItem(`filterStorage${ProjectId}+${currentTab}`));
         if (projectFilter.projectId && projectFilter.projectId === ProjectId && projectFilter.tabView && projectFilter.tabView === currentTab) {
           this.tasksFilter = {
             query: query,

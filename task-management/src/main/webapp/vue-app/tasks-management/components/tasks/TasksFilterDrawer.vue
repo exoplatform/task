@@ -267,29 +267,27 @@ export default {
     open() {
       const urlPath = document.location.pathname;
       this.getTabView();
-      if (urlPath.includes('projectDetail')){
+      if (urlPath.includes('projectDetail')) {
         let projectId = urlPath.split('projectDetail/')[1].split(/[^0-9]/)[0];
         projectId = projectId && Number(projectId) || 0;
         window.setTimeout(() => {
           document.dispatchEvent(new CustomEvent('loadFilterProjectLabels', {
             detail: projectId
           }));
-        },
-        200);
+        }, 200);
         if (localStorage.getItem(`filterStorage${projectId}+${this.taskViewTabName}`)) {
           const localStorageSaveFilter = JSON.parse(localStorage.getItem(`filterStorage${projectId}+${this.taskViewTabName}`));
-          if (localStorageSaveFilter.projectId === projectId.toString()) {
+          if (localStorageSaveFilter.projectId === projectId) {
             this.groupBy = Boolean(localStorageSaveFilter.groupBy) && localStorageSaveFilter.groupBy || '';
             this.orderBy = Boolean(localStorageSaveFilter.orderBy) && localStorageSaveFilter.orderBy || '';
           }
         }
-      }
-      else if (urlPath.includes('myTasks')){
+      } else if (urlPath.includes('myTasks')) {
         if (localStorage.getItem('filterStorageNone+list')) {
-          const localStorageSaveFilter = localStorage.getItem('filterStorageNone+list');
-          if (localStorageSaveFilter.split('"')[11] === 'None') {
-            this.groupBy = localStorageSaveFilter.split('"')[3];
-            this.orderBy = localStorageSaveFilter.split('"')[7];
+          const localStorageSaveFilter = JSON.parse(localStorage.getItem('filterStorageNone+list'));
+          if (localStorageSaveFilter.projectId === 'None') {
+            this.groupBy = Boolean(localStorageSaveFilter.groupBy) && localStorageSaveFilter.groupBy || '';
+            this.orderBy = Boolean(localStorageSaveFilter.orderBy) && localStorageSaveFilter.orderBy || '';
           }
         }
       }

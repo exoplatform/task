@@ -1,16 +1,6 @@
 import './initComponents.js';
 import '../taskDrawer/initComponents.js';
 
-if (!localStorage.getItem('taskFilterStorageUpgraded')) {
-  localStorage.removeItem('primary-filter-tasks');
-  for (const property in localStorage) {
-    if (property.startsWith('filterStorage')) {
-      localStorage.removeItem(property);
-    }
-  }
-}
-localStorage.setItem('taskFilterStorageUpgraded', 'true');
-
 Vue.use(Vuetify);
 
 export function formatSearchResult(results, term) {

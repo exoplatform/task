@@ -227,11 +227,7 @@ export default {
     this.$root.$on('task-updated',task => {
       this.task=task;
     });
-
-    this.$root.$on('refresh-tasks-list', task => {
-      this.retrieveTask(task);
-      this.task=task;
-    });
+    
     this.$root.$on('update-task-widget-list', task => {
       this.task=task;
       this.getMyOverDueTasks();
