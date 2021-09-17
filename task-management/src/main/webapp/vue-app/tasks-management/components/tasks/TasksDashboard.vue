@@ -144,7 +144,17 @@ export default {
       groupBy: null,
       orderBy: null,
       labels: [],
-      taskQueryFilter: null,
+      taskQueryFilter: {
+        query: '',
+        assignee: '',
+        statusId: '',
+        dueDate: '',
+        priority: '',
+        projectId: -2,
+        showCompletedTasks: this.showCompletedTasks,
+        groupBy: '',
+        orderBy: '',
+      },
       filterTasks: {
         query: '',
         assignee: '',
@@ -174,115 +184,34 @@ export default {
     },
   },
   created() {
-    if (localStorage.getItem('filterStorageNone+list')) {
-      const storedFilter = JSON.parse(localStorage.getItem('filterStorageNone+list'));
-      this.showCompletedTasks = storedFilter.showCompletedTasks;
-      this.filterTasks.showCompletedTasks = this.showCompletedTasks;
-      this.groupBy = storedFilter.groupBy;
-      this.orderBy = storedFilter.orderBy;
-      this.taskQueryFilter = {
-        query: '',
-        assignee: '',
-        statusId: '',
-        dueDate: '',
-        priority: '',
-        projectId: -2,
-        showCompletedTasks: this.showCompletedTasks,
-        groupBy: '',
-        orderBy: '',
-      };
-    }
+    this.groupBy = localStorage.getItem('filterStorageNone+list') ?
+      JSON.parse(localStorage.getItem('filterStorageNone+list')).groupBy : false;
 
-    this.$root.$on('task-added', task => {
-      const filterTasks = this.filterActive ? this.taskQueryFilter : this.filterTasks;
+    this.orderBy = localStorage.getItem('filterStorageNone+list') ?
+      JSON.parse(localStorage.getItem('filterStorageNone+list')).orderBy : false;
 
-      return this.$tasksService.filterTasksList(filterTasks, this.groupBy, this.orderBy, this.labels).then(data => {
-        if (this.filterActive) {
-          if (!this.filterTaskQueryResult.length > 0) {
-            this.filterTaskQueryResult = data;
-          }
-          
-          const tasksArrayIndex = data.tasks.findIndex(tasksArray => tasksArray.findIndex(t => t.id === task.id) > -1);
-          this.$set(this.filterTaskQueryResult, tasksArrayIndex, data.tasks[tasksArrayIndex]);
+    this.showCompletedTasks = localStorage.getItem('filterStorageNone+list') ?
+      JSON.parse(localStorage.getItem('filterStorageNone+list')).showCompletedTasks : false;
+    this.filterTasks.showCompletedTasks = this.showCompletedTasks;
 
-        } else {
-          const taskIndex = data.tasks.findIndex(t => t.id === task.id);
-          this.tasks.splice(taskIndex, 0, data.tasks[taskIndex]);
-
-        }
-      });
-
+    this.$root.$on('task-added', () => {
+      this.updateTasksList();
     });
 
     this.$root.$on('task-assignee-coworker-updated', () => {
-      const filterTasks = this.filterActive ? this.taskQueryFilter : this.filterTasks;
-
-      this.$tasksService.filterTasksList(filterTasks, this.groupBy, this.orderBy, this.labels).then(data => {
-        if (this.filterActive) {
-          this.filterTaskQueryResult = data;
-        } else {
-          this.tasks = data.tasks;
-        }
-      });
+      this.updateTasksList();
     });
 
-    this.$root.$on('task-priority-updated', value => {
-      if (this.orderBy === 'priority') {
-        const filterTasks = this.filterActive ? this.taskQueryFilter : this.filterTasks;
-
-        this.$tasksService.filterTasksList(filterTasks, this.groupBy, this.orderBy, this.labels).then(data => {
-          if (this.filterActive) {
-            if (!this.filterTaskQueryResult.length > 0) {
-              this.filterTaskQueryResult = data;
-              const tasksArrayIndex = data.tasks.findIndex(tasksArray => tasksArray.findIndex(t => t.id === value.taskId) > -1);
-              this.$set(this.filterTaskQueryResult, tasksArrayIndex, data.tasks[tasksArrayIndex]);              
-            }
-
-          } else {
-            const taskOldIndex = this.tasks.findIndex(t => t.id === value.taskId);
-            const taskNewIndex = data.tasks.findIndex(task => task.id === value.taskId);
-
-            this.tasks.splice(taskOldIndex, 1);
-            this.tasks.splice(taskNewIndex, 0, data.tasks[taskNewIndex]);
-
-          }
-
-        });
-      }
+    this.$root.$on('task-priority-updated', () => {
+      this.updateTasksList();
     });
 
     this.$root.$on('task-due-date-updated', () => {
-      if (this.groupBy === 'dueDate' || this.orderBy === 'dueDate') {
-        const filterTasks = this.filterActive ? this.taskQueryFilter : this.filterTasks;
-
-        this.$tasksService.filterTasksList(filterTasks, this.groupBy, this.orderBy, this.labels).then(data => {
-          if (this.filterActive) {
-            this.filterTaskQueryResult = data;
-          } else {
-            this.tasks = data.tasks;
-          }
-
-        });
-      }
+      this.updateTasksList();
     });
 
-    this.$root.$on('deleteTask', (event) => {
-      if (event && event.detail) {
-        const taskId = event.detail;
-        if (this.filterActive) {
-          if (!this.filterTaskQueryResult.length > 0) {
-            return this.$tasksService.filterTasksList(this.taskQueryFilter, this.groupBy, this.orderBy, this.labels).then(data => {
-              this.filterTaskQueryResult = data;
-            });
-          }
-          const targetTasksArrayIndex = this.filterTaskQueryResult.findIndex(tasksArray => tasksArray.findIndex(t => t.id === taskId) > -1);
-          const updatedArray = this.filterTaskQueryResult[targetTasksArrayIndex].filter(t => t.id !== taskId);
-          this.$set(this.filterTaskQueryResult, targetTasksArrayIndex, updatedArray);
-
-        } else {
-          this.tasks = this.tasks.filter(t => t.id !== taskId);
-        }
-      }
+    this.$root.$on('deleteTask', () => {
+      this.updateTasksList();
     });
 
     this.$root.$on('update-cart', (event) => {
@@ -293,7 +222,7 @@ export default {
 
     this.$root.$on('update-task-completed', (event) => {
       if (event && !this.showCompletedTasks) {
-        window.setTimeout(() => this.searchTasks(), 500);
+        window.setTimeout(() => this.updateTasksList(), 500);
       }
     });
   },
@@ -304,7 +233,6 @@ export default {
         this.filterTasks.query=this.keyword;
         this.resetSearch();
         this.searchTasks();
-        return;
       }
     },
     resetFilterTaskDashboard(){
@@ -350,16 +278,16 @@ export default {
         }
       }
     },
-    searchTasks(tasks) {
-      if (!tasks) {
-        tasks = this.filterTasks;
+    searchTasks(tasksFilter) {
+      if (!tasksFilter) {
+        tasksFilter = this.filterTasks;
       }
       this.loadingTasks = true;
-      if (tasks.assignee) {
-        tasks.projectId = -3;
+      if (tasksFilter.assignee) {
+        tasksFilter.projectId = -3;
       }
       
-      return this.$tasksService.filterTasksList(tasks,this.groupBy,this.orderBy,this.labels).then(data => {
+      return this.$tasksService.filterTasksList(tasksFilter,this.groupBy,this.orderBy,this.labels).then(data => {
         if (data.projectName){
           this.filterTaskQueryResult = data;
           this.filterActive=true;
@@ -447,7 +375,6 @@ export default {
           this.orderBy = localStorageSavedFilter.orderBy;
         } else {
           this.getFilterProject().then(() => {
-            //todo move to init (created)
             const jsonToSave = {
               groupBy: this.groupBy,
               orderBy: this.orderBy,
@@ -511,10 +438,10 @@ export default {
       return name;
     },
     showDetailsTask(id){
-      const uiIconMiniArrowDown = document.querySelector(`#${`uiIconMiniArrowDown${id}`}`);
-      const uiIconMiniArrowRight = document.querySelector(`#${`uiIconMiniArrowRight${id}`}`);
+      const uiIconMiniArrowDown = document.querySelector(`#uiIconMiniArrowDown${id}`);
+      const uiIconMiniArrowRight = document.querySelector(`#uiIconMiniArrowRight${id}`);
 
-      const detailsTask = document.querySelector(`#${`taskView${id}`}`);
+      const detailsTask = document.querySelector(`#taskView${id}`);
       if (detailsTask.style.display !== 'none') {
         detailsTask.style.display = 'none';
         uiIconMiniArrowDown.style.display = 'none';
@@ -535,6 +462,17 @@ export default {
         } else {
           this.groupBy = 'none';
           this.orderBy = '';
+        }
+      });
+    },
+    updateTasksList() {
+      const filterTasks = this.filterActive ? this.taskQueryFilter : this.filterTasks;
+      this.$tasksService.filterTasksList(filterTasks, this.groupBy, this.orderBy, this.labels).then(data => {
+
+        if (this.filterActive) {
+          this.filterTaskQueryResult = data;
+        } else {
+          this.tasks = data.tasks;
         }
       });
     },
