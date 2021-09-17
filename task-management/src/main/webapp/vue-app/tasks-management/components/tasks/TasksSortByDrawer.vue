@@ -10,7 +10,7 @@
       </v-label>
     </form>
     <v-radio-group
-      v-model="sortBy"
+      v-model="orderBy"
       mandatory>
       <v-radio
         :label="$t('label.task.status')"
@@ -40,20 +40,20 @@ export default {
   },
   data() {
     return {
-      sortBy: this.value,
+      orderBy: this.value,
     };
   },
   watch: {
-    sortBy(val) {
+    orderBy(val) {
       this.$emit('input', val);
     },
   },
   created() {
     this.$root.$on('reset-filter-task-group-sort', () =>{
-      this.sortBy = '';
+      this.orderBy = '';
     });
-    this.$root.$on('reset-filter-task-sort',sortBy =>{
-      this.sortBy = sortBy;
+    this.$root.$on('reset-filter-task-sort',orderBy =>{
+      this.orderBy = orderBy;
     });
   }
 };
