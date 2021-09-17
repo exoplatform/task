@@ -394,19 +394,19 @@ export default {
     updateCompleted() {
       const task = {
         id: this.task.id,
-        showCompleteTasks: !this.task.completed,
+        showCompletedTasks: !this.task.completed,
       };
-      if (typeof task.id !== 'undefined') {
-        return this.$tasksService.updateCompleted(task).then(task => {
-          if (task.completed){
+      if (task.id) {
+        return this.$tasksService.updateCompleted(task).then(updatedTask => {
+          if (updatedTask.completed){
             this.$root.$emit('show-alert', {type: 'success',message: this.$t('alert.success.task.completed')});
           } else {
             this.$root.$emit('show-alert', {type: 'success',message: this.$t('alert.success.task.unCompleted')});
           }
-          this.$root.$emit('update-task-completed', task);
+          this.$root.$emit('update-task-completed', updatedTask);
         }).then( () => {
           this.$root.$emit('update-completed-task',this.task.completed,this.task.id);
-        }).then(this.task.completed = task.showCompleteTasks)
+        }).then(() => this.task.completed = task.showCompletedTasks)
           .catch(e => {
             console.error('Error updating project', e);
             this.$root.$emit('show-alert', {
@@ -497,11 +497,7 @@ export default {
             });
             this.$root.$emit('update-task-widget-list', this.task);
           }).catch(e => {
-            console.error('Error when updating task\'s due date', e);
-            this.$root.$emit('show-alert', {
-              type: 'error',
-              message: this.$t('alert.error')
-            });
+            this.logError(e);
           }).finally(() => this.$root.$emit('task-due-date-updated', this.task));
         } else {
           this.taskDueDate = value;
@@ -515,11 +511,7 @@ export default {
             message: this.$t('alert.success.task.duetDate')
           });
         }).catch(e => {
-          console.error('Error when updating task\'s due date', e);
-          this.$root.$emit('show-alert', {
-            type: 'error',
-            message: this.$t('alert.error')
-          });
+          this.logError(e);
         }).finally(() => this.$root.$emit('task-due-date-updated', this.task));
       }
     },
@@ -722,7 +714,6 @@ export default {
       });
     },
     deleteConfirm() {
-      const idTask = this.task.id;
       return fetch(`${eXo.env.portal.context}/${eXo.env.portal.rest}/tasks/${this.task.id}`, {
         method: 'DELETE',
         credentials: 'include',
@@ -735,7 +726,7 @@ export default {
           message: this.$t('alert.success.task.deleted') 
         });
         document.dispatchEvent(new CustomEvent('deleteTask', {
-          detail: idTask
+          detail: this.task.id
         }));
       }).catch(e => {
         console.error('Error when deleting task', e);
@@ -788,7 +779,14 @@ export default {
       this.$refs.addTaskDrawer.close();
       this.$root.$emit('displayUnscheduledDrawer', '');
       this.showBackArrow = false;    
-    }
+    },
+    logError(e) {
+      console.error('Error when updating task\'s due date', e);
+      this.$root.$emit('show-alert', {
+        type: 'error',
+        message: this.$t('alert.error')
+      });
+    },
   }
 };
 </script>

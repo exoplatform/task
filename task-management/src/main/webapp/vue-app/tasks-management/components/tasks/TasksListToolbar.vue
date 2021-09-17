@@ -69,9 +69,10 @@
         </v-btn>
       </v-scale-transition>
     </v-toolbar>
-    <task-filter-drawer
+    <tasks-filter-drawer
       ref="filterTasksDrawer"
       :query="keyword"
+      :show-completed-tasks="showCompletedTasks"
       @filter-num-changed="filterNumChanged"
       @filter-task="filterTasks"
       @reset-filter-task="resetFilterTask"
@@ -88,6 +89,10 @@ export default {
     taskListTab: {
       type: String,
       default: ''
+    },
+    showCompletedTasks: {
+      type: Boolean,
+      default: false
     },
   },
   data () {
@@ -117,7 +122,8 @@ export default {
       this.awaitingSearch = true;  
       this.searchOnKeyChange= true;
     },
-  },created() {
+  },
+  created() {
     this.primaryFilterSelected = localStorage.getItem('primary-filter-tasks');
     localStorage.setItem('primary-filter-tasks', 'ALL');
   },
@@ -131,16 +137,14 @@ export default {
     resetFilterTask(){
       this.$emit('reset-filter-task-dashboard');
     },
-    filterTaskquery(e,filterGroupSort,filterLabels){
-      this.searchOnKeyChange=false;
-      this.showCompleteTasks=e.showCompleteTasks;
-      this.keyword=e.query;
-      this.$emit('filter-task-query',e,filterGroupSort,filterLabels);
+    filterTaskquery(e, filterGroupSort, filterLabels) {
+      this.searchOnKeyChange = false;
+      this.keyword = e.query;
+      this.$emit('filter-task-query', e, filterGroupSort, filterLabels);
     },
-    filterTasks(e){
-      this.tasks=e.tasks.tasks;
-      this.showCompleteTasks=e.showCompleteTasks;
-      this.$emit('filter-task-dashboard', { tasks: this.tasks,showCompleteTasks: this.showCompleteTasks });
+    filterTasks(e) {
+      this.tasks = e.tasks.tasks;
+      this.$emit('filter-task-dashboard', {tasks: this.tasks, showCompletedTasks: this.showCompletedTasks});
     },
     openDrawer() {
       this.$refs.filterTasksDrawer.open();

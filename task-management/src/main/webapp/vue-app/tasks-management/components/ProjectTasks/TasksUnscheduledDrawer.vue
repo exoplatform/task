@@ -39,7 +39,8 @@
       <task-view-card
         v-for="taskItem in filtredTasks"
         :key="taskItem.task.id"
-        :task="taskItem" />
+        :task="taskItem"
+        :show-completed-tasks="showCompletedTasks" />
     </template>
     <template v-else slot="content">
       <div class="noUnscheduledTasksFound">
@@ -55,7 +56,11 @@ export default {
     project: {
       type: String,
       default: ''
-    }
+    },
+    showCompletedTasks: {
+      type: Boolean,
+      default: false
+    },
   },
   data: () => ({
     unscheduledTasks: [],
