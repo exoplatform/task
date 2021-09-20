@@ -2542,7 +2542,7 @@
         padding-left: 10px ~'!important; /** orientation=rt */ ';
         padding-left: 5px ~'!important; /** orientation=lt */ ';
         padding-right: 5px ~'!important; /** orientation=rt */ ';
-        border: none;
+        border: none!important;
         box-shadow: none;
         &::placeholder {
           font-size: 16px!important;
@@ -4025,7 +4025,7 @@
   .gantt-grid {
     max-height: calc(~"100vh - 250px")!important;
     height: calc(~"100vh - 250px")!important;
-    overflow: scroll;
+    overflow: hidden;
     position: relative;
     &::-webkit-scrollbar {
       height: 6px;
@@ -4054,7 +4054,7 @@
   }
   
   .gantt-dates {
-    overflow: auto;
+    overflow: hidden;
     height: 50px;
   }
   
