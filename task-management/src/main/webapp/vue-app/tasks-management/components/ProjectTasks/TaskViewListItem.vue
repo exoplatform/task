@@ -136,6 +136,14 @@ export default {
       return this.task.task.completed === true && !this.showCompletedTasks;
     }
   },
+  watch: {
+    'task.assignee'() {
+      this.getTaskAssigneeAndCoworkers();
+    },
+    'task.coworker'() {
+      this.getTaskAssigneeAndCoworkers();
+    },
+  },
   created() {
     this.getTaskAssigneeAndCoworkers();
     this.$root.$on('update-completed-task',(value,id)=>{
