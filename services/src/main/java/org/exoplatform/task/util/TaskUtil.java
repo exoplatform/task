@@ -19,26 +19,23 @@ package org.exoplatform.task.util;
 
 import java.text.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import org.exoplatform.portal.localization.LocaleContextInfoUtils;
 import org.exoplatform.services.resources.LocaleContextInfo;
 import org.exoplatform.services.resources.LocalePolicy;
 import org.exoplatform.services.resources.ResourceBundleService;
 import org.exoplatform.task.dto.*;
-import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.StatusService;
 import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.service.UserService;
 import org.exoplatform.task.rest.model.TaskEntity;
 import org.exoplatform.task.service.LabelService;
-import org.gatein.common.text.EntityEncoder;
-import org.exoplatform.commons.utils.HTMLEntityEncoder;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.container.*;
 import org.exoplatform.portal.mop.SiteKey;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
-import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.task.dao.TaskQuery;
@@ -285,7 +282,12 @@ public final class TaskUtil {
         list.add(task);
       }
     }
-    return maps;
+
+    Comparator<GroupKey> byKey = Comparator.comparing(GroupKey::getName);
+
+    return maps.entrySet().stream()
+            .sorted(Map.Entry.comparingByKey(byKey))
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
   }
 
   public static String buildTaskURL(TaskDto task) {
