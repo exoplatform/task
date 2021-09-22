@@ -227,11 +227,7 @@ export default {
     this.$root.$on('task-updated',task => {
       this.task=task;
     });
-
-    this.$root.$on('refresh-tasks-list', task => {
-      this.retrieveTask(task);
-      this.task=task;
-    });
+    
     this.$root.$on('update-task-widget-list', task => {
       this.task=task;
       this.getMyOverDueTasks();
@@ -260,7 +256,7 @@ export default {
         dueCategory: 'overDue',
         offset: 0,
         limit: 0,
-        showCompleteTasks: false,
+        showCompletedTasks: false,
       };
       return filterTasksList(task,'','priority','','-2').then(
         (data) => {
@@ -279,7 +275,7 @@ export default {
         dueCategory: 'today',
         offset: 0,
         limit: 0,
-        showCompleteTasks: false,
+        showCompletedTasks: false,
       };
       return filterTasksList(task,'','priority','','-2').then(
         (data) => {
@@ -298,7 +294,7 @@ export default {
         dueCategory: 'tomorrow',
         offset: 0,
         limit: 0,
-        showCompleteTasks: false,
+        showCompletedTasks: false,
       };
       return filterTasksList(task,'','priority','','-2').then(
         (data) => {
@@ -316,7 +312,7 @@ export default {
       const task = {
         dueCategory: 'upcoming',
         offset: 0,
-        showCompleteTasks: false,
+        showCompletedTasks: false,
       };
       return filterTasksList(task,'','priority','','-2').then(
         (data) => {

@@ -14,15 +14,16 @@
           v-model="tasksList"
           :move="checkMove"
           :animation="200"
+          :key="draggableKey"
           class="draggable-palceholder"
           ghost-class="ghost-card"
           :options="{group:'status'}"
           @start="drag=true"
           @end="drag=false">
           <task-view-list-item
-            v-for="tasks in tasksList"
-            :key="tasks.task.id"
-            :task="tasks"
+            v-for="taskListItem in tasksList"
+            :key="taskListItem.task.id"
+            :task="taskListItem"
             :show-completed-tasks="showCompletedTasks"
             @update-task-completed="updateTaskCompleted" />
         </draggable>
@@ -62,6 +63,7 @@ export default {
       drag: false,
       task: null,
       newStatus: null,
+      draggableKey: 1,
     };
   },
   watch: {
@@ -73,8 +75,12 @@ export default {
     },
   },
   methods: {
-    updateTaskCompleted(e){
-      this.$emit('updateTaskCompleted', e);
+    updateTaskCompleted(task) {
+      if (!this.showCompletedTasks && task.completed) {
+        setTimeout(() => {
+          this.$root.$emit('task-isCompleted-updated', task);
+        }, 500);
+      }
     },
     checkMove(evt){
       if (evt){
@@ -84,6 +90,9 @@ export default {
         this.newStatus = evt.to.parentElement.id;
       }
 
+    },
+    reRenderTasks() {
+      this.draggableKey += 1;
     },
   }
 };

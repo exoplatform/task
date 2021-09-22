@@ -14,23 +14,27 @@ export function getUserInformations(userName) {
 }
 
 export function updateTask(taskId, task) {
-  document.dispatchEvent(new CustomEvent('displayTopBarLoading'));
-  return fetch(`/portal/rest/tasks/${taskId}`, {
-    method: 'PUT',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(task),
-  }).then(resp => {
-    if (!resp || !resp.ok) {
-      return resp.text().then((text) => {
-        throw new Error(text);
-      });
-    } else {
-      return resp.json();
-    }
-  }).finally(() => document.dispatchEvent(new CustomEvent('hideTopBarLoading')));
+  if (taskId) {
+    document.dispatchEvent(new CustomEvent('displayTopBarLoading'));
+    return fetch(`/portal/rest/tasks/${taskId}`, {
+      method: 'PUT',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(task),
+    }).then(resp => {
+      if (!resp || !resp.ok) {
+        return resp.text().then((text) => {
+          throw new Error(text);
+        });
+      } else {
+        return resp.json();
+      }
+    }).finally(() => document.dispatchEvent(new CustomEvent('hideTopBarLoading')));
+  } else {
+    return Promise.resolve();
+  }
 }
 
 export function addTask(task) {
