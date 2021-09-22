@@ -196,7 +196,7 @@ public class TaskRestService implements ResourceContainer {
                               @ApiParam(value = "assignee term", required = false) @QueryParam("assignee") String assignee,
                               @ApiParam(value = "coworker term", required = false) @QueryParam("coworker") String coworker,
                               @ApiParam(value = "watchers term", required = false) @QueryParam("watcher") String watcher,
-                              @ApiParam(value = "showCompleted term", defaultValue = "false") @QueryParam("showCompleted") boolean showCompleted,
+                              @ApiParam(value = "showCompletedTasks term", defaultValue = "false") @QueryParam("showCompletedTasks") boolean showCompletedTasks,
                               @ApiParam(value = "statusId term", required = false) @QueryParam("statusId") String statusId,
                               @ApiParam(value = "space_group_id term", required = false) @QueryParam("space_group_id") String space_group_id,
                               @ApiParam(value = "groupBy term", required = false) @QueryParam("groupBy") String groupBy,
@@ -235,7 +235,7 @@ public class TaskRestService implements ResourceContainer {
       statusIdLong=statusDto.getId();
     }
     ViewState.Filter filter = new ViewState.Filter(listId);
-    filter.updateFilterData(filterLabelIds, statusId, dueDate, priority, assignee, coworker, watcher, showCompleted, query);
+    filter.updateFilterData(filterLabelIds, statusId, dueDate, priority, assignee, coworker, watcher, showCompletedTasks, query);
 
     ProjectDto project = null;
     boolean noProjPermission = false;
@@ -919,13 +919,13 @@ public class TaskRestService implements ResourceContainer {
           @ApiResponse(code = 400, message = "Invalid query input"), @ApiResponse(code = 403, message = "Unauthorized operation"),
           @ApiResponse(code = 404, message = "Resource not found") })
   public Response updateCompleted(@ApiParam(value = "Task id", required = true) @PathParam("idTask") long idTask,
-                                  @ApiParam(value = "showCompleteTasks", defaultValue = "false") @QueryParam("showCompleteTasks") boolean showCompleteTasks) {
+                                  @ApiParam(value = "isCompleted", defaultValue = "false") @QueryParam("isCompleted") boolean isCompleted) {
     try {
     TaskDto task = taskService.getTask(idTask);
     if (!TaskUtil.hasEditPermission(taskService,task)) {
       return Response.status(Response.Status.FORBIDDEN).build();
     }
-    task.setCompleted(showCompleteTasks);
+    task.setCompleted(isCompleted);
     taskService.updateTask(task);
 
     return Response.ok(task).build();

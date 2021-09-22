@@ -47,7 +47,6 @@ export default {
       if (event && event.detail) {
         this.project =  event.detail;
         window.setTimeout(() => {
-          //this.displayDetails = true;
           this.$root.$emit('set-url', {type: 'project',id: this.project.id});
         }, 200);
       }
