@@ -28,7 +28,7 @@
   </parent>
   <groupId>org.exoplatform.addons.task</groupId>
   <artifactId>task-management-parent</artifactId>
-  <version>3.3.0-20210929</version>
+  <version>3.3.x-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>eXo Add-on:: Task management</name>
   <description>Task management add-on</description>
@@ -41,15 +41,15 @@
   <scm>
     <connection>scm:git:git://github.com/exoplatform/task.git</connection>
     <developerConnection>scm:git:git@github.com:exoplatform/task.git</developerConnection>
-    <tag>3.3.0-20210929</tag>
+    <tag>HEAD</tag>
     <url>https://github.com/exoplatform/task</url>
   </scm>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <org.exoplatform.social.version>6.3.0-20210929</org.exoplatform.social.version>
-    <addon.exo.gamification.version>2.3.0-20210929</addon.exo.gamification.version>
-    <addon.exo.ecms.version>6.3.0-20210929</addon.exo.ecms.version>
-    <org.juzu.version>1.2.0</org.juzu.version>
+    <org.exoplatform.social.version>6.3.x-SNAPSHOT</org.exoplatform.social.version>
+    <addon.exo.gamification.version>2.3.x-SNAPSHOT</addon.exo.gamification.version>
+    <addon.exo.ecms.version>6.3.x-SNAPSHOT</addon.exo.ecms.version>
+    <org.juzu.version>1.2.x-SNAPSHOT</org.juzu.version>
     <org.antlr.version>3.4</org.antlr.version>
     <org.webjars.jquery-ui.version>1.11.4</org.webjars.jquery-ui.version>
     <org.webjars.x-editable-bootstrap.version>1.4.6</org.webjars.x-editable-bootstrap.version>
