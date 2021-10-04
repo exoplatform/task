@@ -5,7 +5,7 @@
       :class="showMobileTaskFilter && 'toolbarLarge'"
       flat
       class="tasksToolbar pb-3">
-      <v-toolbar-title>
+      <v-toolbar-title v-if="canCreateProject">
         <v-btn
           class="btn px-2 btn-primary addNewProjectButton"
           @click="openDrawer">
@@ -77,13 +77,27 @@ export default {
       default: 'ALL',
     },
   },
+  computed: {
+    canCreateProject() {
+      return this.currentSpace && this.currentSpace.isManager;
+    },
+  },
   data () {
     return {
+      currentSpace: null,
       projectFilter: [
         {name: 'ALL'},{name: 'MANAGED'},{name: 'COLLABORATED'},{name: 'WITH_TASKS'}
       ],
       showMobileTaskFilter: false,
     };
+  },
+  created() {
+    if (this.spaceName) {
+      return this.$spaceService.getSpaceByPrettyName(this.spaceName, 'identity')
+        .then((space) => {
+          this.currentSpace = space;
+        });
+    }
   },
   watch: {
     keyword() {
