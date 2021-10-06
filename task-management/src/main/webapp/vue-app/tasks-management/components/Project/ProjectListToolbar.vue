@@ -5,7 +5,7 @@
       :class="showMobileTaskFilter && 'toolbarLarge'"
       flat
       class="tasksToolbar pb-3">
-      <v-toolbar-title>
+      <v-toolbar-title v-if="enableCreateButton">
         <v-btn
           class="btn px-2 btn-primary addNewProjectButton"
           @click="openDrawer">
@@ -83,6 +83,7 @@ export default {
         {name: 'ALL'},{name: 'MANAGED'},{name: 'COLLABORATED'},{name: 'WITH_TASKS'}
       ],
       showMobileTaskFilter: false,
+      enableCreateButton: false,
     };
   },
   watch: {
@@ -93,12 +94,24 @@ export default {
       this.$emit('filter-changed', this.projectFilterSelected);
     }
   },
+  created() {
+    this.canCreateProject();
+  },
   mounted() {
     $('#widthTmpSelectOption').html($('#filterTaskSelect option:selected').text());
     const widthElem = $('#widthTmpSelectTaskFilter').width() + 40;
     $('#filterTaskSelect').width(widthElem);
   },
   methods: {
+    canCreateProject() {
+      if (eXo.env.portal.spaceId) {
+        return this.$projectService.canCreateProject().then(canCreateProject => {
+          this.enableCreateButton = canCreateProject;
+        });
+      } else {
+        this.enableCreateButton = true;
+      }
+    },
     openDrawer() {
       this.$root.$emit('open-project-drawer', {});
     },

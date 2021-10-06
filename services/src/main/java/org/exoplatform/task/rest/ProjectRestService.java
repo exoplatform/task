@@ -2,6 +2,7 @@ package org.exoplatform.task.rest;
 
 import io.swagger.annotations.*;
 import org.apache.commons.lang3.StringUtils;
+import org.exoplatform.common.http.HTTPStatus;
 import org.exoplatform.commons.utils.HTMLEntityEncoder;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.log.ExoLogger;
@@ -12,6 +13,7 @@ import org.exoplatform.services.security.Identity;
 import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
 import org.exoplatform.social.core.manager.IdentityManager;
 import org.exoplatform.social.core.profile.ProfileFilter;
+import org.exoplatform.social.core.space.SpaceUtils;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
 import org.exoplatform.social.core.identity.SpaceMemberFilterListAccess.Type;
@@ -33,7 +35,9 @@ import org.json.JSONObject;
 
 import javax.annotation.security.RolesAllowed;
 import javax.persistence.NonUniqueResultException;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.*;
@@ -757,6 +761,37 @@ public class ProjectRestService implements ResourceContainer {
     } catch (Exception e) {
       LOG.error("Can't get Project Participants {}", idProject, e);
       return Response.serverError().entity(e.getMessage()).build();
+    }
+  }
+
+  @GET
+  @Path("canCreateProject/{spaceId}")
+  @Produces(MediaType.TEXT_PLAIN)
+  @RolesAllowed("users")
+  @ApiOperation(value = "check if the current user can create a project in the given space", httpMethod = "GET", response = Response.class, notes = "This checks if the current user can create a project in the given space", consumes = "application/json")
+  @ApiResponses(
+          value = {@ApiResponse(code = HTTPStatus.OK, message = "Request fulfilled"),
+                  @ApiResponse(code = HTTPStatus.BAD_REQUEST, message = "Invalid query input"),
+                  @ApiResponse(code = HTTPStatus.UNAUTHORIZED, message = "Unauthorized operation"),
+                  @ApiResponse(code = HTTPStatus.INTERNAL_ERROR, message = "Internal server error")}
+  )
+  public Response canCreateProject(@Context HttpServletRequest request,
+                                   @ApiParam(value = "space id", required = true) @PathParam("spaceId") String spaceId) {
+    try {
+      if (StringUtils.isBlank(spaceId)) {
+        return Response.status(Response.Status.BAD_REQUEST).build();
+      }
+      Space space = spaceService.getSpaceById(spaceId);
+      if (space == null) {
+        return Response.status(Response.Status.NOT_FOUND).build();
+      }
+
+      String authenticatedUser = request.getRemoteUser();
+
+      return Response.ok(String.valueOf(SpaceUtils.isSpaceManagerOrSuperManager(authenticatedUser, space.getGroupId()))).build();
+    } catch (Exception e) {
+      LOG.error("Error when checking if the authenticated user can create a project", e);
+      return Response.serverError().build();
     }
   }
 
