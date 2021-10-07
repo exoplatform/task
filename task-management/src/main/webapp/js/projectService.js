@@ -40,19 +40,6 @@ export function getProject(id, participatorParam) {
   });
 }
 
-export function canCreateProject() {
-  return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/projects/canCreateProject/${eXo.env.portal.spaceId}`, {
-    method: 'GET',
-    credentials: 'include',
-  }).then(resp => {
-    if (!resp || !resp.ok) {
-      throw new Error('Server indicates an error while sending request');
-    } else {
-      return resp.json();
-    }
-  });
-}
-
 export function addProject(project) {
   document.dispatchEvent(new CustomEvent('displayTopBarLoading'));
   return fetch(`${tasksConstants.PORTAL}/${tasksConstants.PORTAL_REST}/projects/createproject`, {

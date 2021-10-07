@@ -83,7 +83,7 @@ export default {
         {name: 'ALL'},{name: 'MANAGED'},{name: 'COLLABORATED'},{name: 'WITH_TASKS'}
       ],
       showMobileTaskFilter: false,
-      enableCreateButton: false,
+      currentSpace: false,
     };
   },
   watch: {
@@ -95,7 +95,12 @@ export default {
     }
   },
   created() {
-    this.canCreateProject();
+    this.retrieveCurrentSpace();
+  },
+  computed: {
+    enableCreateButton() {
+      return eXo.env.portal.spaceId ? this.currentSpace && this.currentSpace.canEdit : true;
+    }
   },
   mounted() {
     $('#widthTmpSelectOption').html($('#filterTaskSelect option:selected').text());
@@ -103,13 +108,11 @@ export default {
     $('#filterTaskSelect').width(widthElem);
   },
   methods: {
-    canCreateProject() {
+    retrieveCurrentSpace() {
       if (eXo.env.portal.spaceId) {
-        return this.$projectService.canCreateProject().then(canCreateProject => {
-          this.enableCreateButton = canCreateProject;
+        return this.$spaceService.getSpaceById(eXo.env.portal.spaceId).then(space => {
+          this.currentSpace = space;
         });
-      } else {
-        this.enableCreateButton = true;
       }
     },
     openDrawer() {
