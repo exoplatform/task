@@ -87,6 +87,7 @@ export default {
           document.getElementById('taskDescriptionId').classList.add('taskDescription');
         }
       }
+      this.saveDescription(this.inputVal);
     },
     reset() {
       CKEDITOR.instances['descriptionContent'].destroy(true);
