@@ -288,6 +288,10 @@ export default {
       });
     });
 
+    this.$root.$on('task-description-updated', task => {
+      this.updateModifiedTask(task);
+    });
+
     this.$root.$on('task-assignee-coworker-updated', task => {
       this.updateModifiedTask(task);
     });
