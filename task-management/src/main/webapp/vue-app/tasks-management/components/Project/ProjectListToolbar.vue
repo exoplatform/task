@@ -5,7 +5,7 @@
       :class="showMobileTaskFilter && 'toolbarLarge'"
       flat
       class="tasksToolbar pb-3">
-      <v-toolbar-title>
+      <v-toolbar-title v-if="enableCreateButton">
         <v-btn
           class="btn px-2 btn-primary addNewProjectButton"
           @click="openDrawer">
@@ -83,6 +83,7 @@ export default {
         {name: 'ALL'},{name: 'MANAGED'},{name: 'COLLABORATED'},{name: 'WITH_TASKS'}
       ],
       showMobileTaskFilter: false,
+      currentSpace: false,
     };
   },
   watch: {
@@ -93,12 +94,27 @@ export default {
       this.$emit('filter-changed', this.projectFilterSelected);
     }
   },
+  created() {
+    this.retrieveCurrentSpace();
+  },
+  computed: {
+    enableCreateButton() {
+      return eXo.env.portal.spaceId ? this.currentSpace && this.currentSpace.canEdit : true;
+    }
+  },
   mounted() {
     $('#widthTmpSelectOption').html($('#filterTaskSelect option:selected').text());
     const widthElem = $('#widthTmpSelectTaskFilter').width() + 40;
     $('#filterTaskSelect').width(widthElem);
   },
   methods: {
+    retrieveCurrentSpace() {
+      if (eXo.env.portal.spaceId) {
+        return this.$spaceService.getSpaceById(eXo.env.portal.spaceId).then(space => {
+          this.currentSpace = space;
+        });
+      }
+    },
     openDrawer() {
       this.$root.$emit('open-project-drawer', {});
     },
