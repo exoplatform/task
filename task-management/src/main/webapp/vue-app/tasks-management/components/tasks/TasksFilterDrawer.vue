@@ -352,6 +352,9 @@ export default {
       if (this.taskViewTabName === 'gantt') {
         this.cancel();
       } else {
+        if (this.groupBy === 'completed') {
+          this.showCompletedTasks = true;
+        }
         const tasks = {
           query: this.query,
           assignee: '',
@@ -458,7 +461,6 @@ export default {
     changeScale(value) {
       this.$root.$emit('scale-value-changed', value);
     }
-
   }
 };
 </script>
