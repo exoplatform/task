@@ -119,6 +119,7 @@ export default {
                 type: 'success',
                 message: this.$t('alert.success.task.description')
               });
+              this.$root.$emit('task-description-updated', this.task);
             }).catch(e => {
               console.error('Error when updating task\'s descriprion', e);
               this.$root.$emit('show-alert',{type: 'error',message: this.$t('alert.error')} );
