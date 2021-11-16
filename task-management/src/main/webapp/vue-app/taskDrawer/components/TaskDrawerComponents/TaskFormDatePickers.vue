@@ -69,7 +69,7 @@
         <template slot="footer">
           <div class="dateFooter">
             <v-btn-toggle
-              class="d-flex justify-space-between"
+              class="d-flex flex-wrap justify-space-between"
               tile
               color="primary"
               background-color="primary"
