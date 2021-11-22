@@ -35,7 +35,7 @@
                     :size="30"
                     :url="null"
                     class="changeUserAvatar" />
-                  <p class="changesText mb-0 ps-1" v-html="renderChangeHTML(item)"></p>
+                  <p class="changesText mb-0 mt-3 ps-1" v-html="renderChangeHTML(item)"></p>
                 </div>
                 <div>
                   <div class="dateTime caption changeItem">
