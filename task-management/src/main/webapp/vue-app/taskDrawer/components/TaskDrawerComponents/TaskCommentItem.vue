@@ -94,14 +94,18 @@ export default {
         hour: '2-digit',
         minute: '2-digit',
       },
+      controleTime: ''
     };
+  },
+  created() {
+    this.interval = setInterval(() => this.getRelativeTime(this.comment.comment.createdTime.time), 1000);
   },
   computed: {
     showDeleteButtom() {
       return this.hover && eXo.env.portal.userName === this.comment.author.username;
     },
     relativeTime() {
-      return this.getRelativeTime(this.comment.comment.createdTime.time);
+      return this.controleTime;
     },
   },
   methods: {
@@ -114,23 +118,22 @@ export default {
       const msPerDay = msPerHour * 24;
       const msPerMaxDays = msPerDay * 2;
       const elapsed = new Date().getTime() - previous;
-
       if (elapsed < msPerMinute) {
-        return this.$t('task.timeConvert.Less_Than_A_Minute');
+        return this.controleTime = this.$t('task.timeConvert.Less_Than_A_Minute');
       } else if (elapsed === msPerMinute) {
-        return this.$t('task.timeConvert.About_A_Minute');
+        return this.controleTime = this.$t('task.timeConvert.About_A_Minute');
       } else if (elapsed < msPerHour) {
-        return this.$t('task.timeConvert.About_?_Minutes').replace('{0}', Math.round(elapsed / msPerMinute));
+        return this.controleTime = this.$t('task.timeConvert.About_?_Minutes').replace('{0}', Math.round(elapsed / msPerMinute));
       } else if (elapsed === msPerHour) {
-        return this.$t('task.timeConvert.About_An_Hour');
+        return this.controleTime = this.$t('task.timeConvert.About_An_Hour');
       } else if (elapsed < msPerDay) {
-        return this.$t('task.timeConvert.About_?_Hours').replace('{0}', Math.round(elapsed / msPerHour));
+        return this.controleTime = this.$t('task.timeConvert.About_?_Hours').replace('{0}', Math.round(elapsed / msPerHour));
       } else if (elapsed === msPerDay) {
-        return this.$t('task.timeConvert.About_A_Day');
+        return this.controleTime = this.$t('task.timeConvert.About_A_Day');
       } else if (elapsed < msPerMaxDays) {
-        return this.$t('task.timeConvert.About_?_Days').replace('{0}', Math.round(elapsed / msPerDay));
+        return this.controleTime =  this.$t('task.timeConvert.About_?_Days').replace('{0}', Math.round(elapsed / msPerDay));
       } else {
-        return this.displayCommentDate(this.comment.comment.createdTime.time);
+        return this.controleTime = this.displayCommentDate(this.comment.comment.createdTime.time);
       }
     },
   },
