@@ -63,7 +63,10 @@
         <div class="uiTaskNumber">{{ tasksNumber }}</div>
       </div>
     </div>
-    <div class="taskNumberAndActions d-flex align-center mb-1" @click="editStatus = false">
+    <div
+      :title="tooltipAddTask"
+      class="taskNumberAndActions d-flex align-center mb-1"
+      @click="editStatus = false">
       <!-- <span v-if="tasksNumber < maxTasksToShow" class="caption">{{ tasksNumber }}</span>
       <div v-else class="showTasksPagination">
         <span class="caption">
@@ -197,6 +200,9 @@ export default {
     },
     limitStatusLabel() {
       return this.$t('label.status.name.rules');
+    },
+    tooltipAddTask(){
+      return this.$t('label.addTask');
     }
   },
   created() {
