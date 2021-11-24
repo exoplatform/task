@@ -64,7 +64,6 @@
       </div>
     </div>
     <div
-      :title="tooltipAddTask"
       class="taskNumberAndActions d-flex align-center mb-1"
       @click="editStatus = false">
       <!-- <span v-if="tasksNumber < maxTasksToShow" class="caption">{{ tasksNumber }}</span>
@@ -84,6 +83,7 @@
       <i
         icon
         small
+        :title="tooltipAddTask"
         class="uiIconSocSimplePlus d-flex"
         @click="openTaskDrawer()">
       </i>
