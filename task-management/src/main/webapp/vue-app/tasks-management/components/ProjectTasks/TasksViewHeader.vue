@@ -63,7 +63,9 @@
         <div class="uiTaskNumber">{{ tasksNumber }}</div>
       </div>
     </div>
-    <div class="taskNumberAndActions d-flex align-center mb-1" @click="editStatus = false">
+    <div
+      class="taskNumberAndActions d-flex align-center mb-1"
+      @click="editStatus = false">
       <!-- <span v-if="tasksNumber < maxTasksToShow" class="caption">{{ tasksNumber }}</span>
       <div v-else class="showTasksPagination">
         <span class="caption">
@@ -81,6 +83,7 @@
       <i
         icon
         small
+        :title="this.$t('label.addTask')"
         class="uiIconSocSimplePlus d-flex"
         @click="openTaskDrawer()">
       </i>
@@ -197,7 +200,7 @@ export default {
     },
     limitStatusLabel() {
       return this.$t('label.status.name.rules');
-    }
+    },
   },
   created() {
     $(document).on('mousedown', () => {
