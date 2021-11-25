@@ -83,7 +83,7 @@
       <i
         icon
         small
-        :title="tooltipAddTask"
+        :title="this.$t('label.addTask')"
         class="uiIconSocSimplePlus d-flex"
         @click="openTaskDrawer()">
       </i>
@@ -201,9 +201,6 @@ export default {
     limitStatusLabel() {
       return this.$t('label.status.name.rules');
     },
-    tooltipAddTask(){
-      return this.$t('label.addTask');
-    }
   },
   created() {
     $(document).on('mousedown', () => {
