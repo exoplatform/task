@@ -12,6 +12,8 @@ import TaskCommentsDrawer from './components/TaskDrawerComponents/TaskCommentsDr
 import TaskChangesDrawer from './components/TaskDrawerComponents/TaskChangesDrawer.vue';
 import TaskCommentItem from './components/TaskDrawerComponents/TaskCommentItem.vue';
 import TaskLastComment from './components/TaskDrawerComponents/TaskLastComment.vue';
+import TaskSubCommentItem from './components/TaskDrawerComponents/TaskSubCommentItem.vue';
+
 
 const components = {
   'task-drawer': TaskDrawer,
@@ -28,6 +30,7 @@ const components = {
   'task-changes-drawer': TaskChangesDrawer,
   'task-comment-item': TaskCommentItem,
   'task-last-comment': TaskLastComment,
+  'task-subcomment-item': TaskSubCommentItem,
 };
 
 for (const key in components) {

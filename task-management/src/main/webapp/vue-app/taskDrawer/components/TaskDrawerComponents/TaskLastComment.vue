@@ -35,37 +35,7 @@
       <div
         v-for="(item, i) in comment.subComments"
         :key="i">
-        <div class="TaskSubCommentItem ps-10 pe-0 pb-2">
-          <div class="commentItem">
-            <div class="commentHeader d-flex">
-              <exo-user-avatar
-                :username="item.author.username"
-                :avatar-url="item.author.avatar"
-                :title="item.author.displayName"
-                :size="30"
-                :url="item.author.url" />
-              <div class="commentContent ps-3 d-flex align-center">
-                <a
-                  class="primary-color--text font-weight-bold subtitle-2 pe-2">{{ item.author.displayName }} <span v-if="lastSubComment.author.external" class="externalTagClass">{{ ` (${$t('label.external')})` }}</span></a>
-                <span :title="displayCommentDate" class="dateTime caption font-italic d-block">{{ relativeTime }}</span>
-              </div>
-            </div>
-            <div class="commentBody ms-10 mt-1">
-              <div
-                class="taskContentComment"
-                v-html="item.formattedComment"></div>
-              <v-btn
-                id="reply_btn"
-                depressed
-                text
-                small
-                color="primary"
-                @click="openCommentDrawer">
-                {{ $t('comment.message.Reply') }}
-              </v-btn>
-            </div>
-          </div>
-        </div>
+        <task-subcomment-item :subcomment="item" :commentid="comment.comment.id" />
       </div>
     </div>
   </div>
@@ -99,10 +69,15 @@ export default {
   computed: {
     relativeTime() {
       return this.getRelativeTime(this.comment.comment.createdTime.time);
-    },
-    lastSubComment() {
+    }
+    /*  relativeTimeSubComment(){
+      return this.getRelativeTime(this.comment.comment.createdTime.time);
+    }, */
+    ,
+    /*  lastSubComment() {
+      console.log((this.comment.subComments && this.comment.subComments[this.comment.subComments.length-1]));
       return this.comment.subComments && this.comment.subComments[this.comment.subComments.length-1];
-    },
+    }, */
     id() {
       return `comment-${this.comment.comment.id}`;
     }
@@ -137,7 +112,7 @@ export default {
       return dateTimeValue && this.$dateUtil.formatDateObjectToDisplay(new Date(dateTimeValue), this.dateTimeFormat, this.lang) || '';
     },
     openCommentDrawer() {
-      this.$root.$emit('displayTaskComment', this.comment.comment.id );
+      this.$root.$emit('displayTaskComment', this.comment.comment.id);
     }
   }
 
