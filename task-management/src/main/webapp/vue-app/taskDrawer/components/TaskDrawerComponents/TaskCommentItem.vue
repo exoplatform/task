@@ -19,7 +19,7 @@
             class="primary-color--text font-weight-bold subtitle-2 pe-2">{{ comment.author.displayName }} <span v-if="comment.author.external" class="externalTagClass">{{ ` (${$t('label.external')})` }}</span></a>
           <span :title="displayCommentDate" class="dateTime caption font-italic d-block">{{ relativeTime }}</span>
         </div>
-        <div class="removeCommentBtn">
+        <div class="removeCommentBtn" v-if="!replyLastComment">
           <v-btn
             v-show="showDeleteButtom"
             :title="$t('label.remove')"
@@ -43,7 +43,7 @@
           text
           small
           color="primary"
-          @click="$emit('openCommentEditor',comment.comment.id)">
+          @click="replyComment">
           {{ $t('comment.message.Reply') }}
         </v-btn>
       </div>
@@ -72,9 +72,18 @@ export default {
         return {};
       }
     },
+    replyLastComment: {
+      type: Boolean,
+      default: false
+    }
+    ,
     showOnly: {
       type: Boolean,
       default: true
+    },
+    lastCommentId: {
+      type: String,
+      default: ''
     },
     comments: {
       type: Object,
@@ -133,6 +142,16 @@ export default {
         return this.displayCommentDate(this.comment.comment.createdTime.time);
       }
     },
+    replyComment()
+    {
+      if (this.replyLastComment)
+      {
+        this.$root.$emit('displayTaskComment', this.lastCommentId);
+      }
+      else {
+        this.$emit('openCommentEditor',this.comment.comment.id);
+      }
+    }
   },
 };
 </script>

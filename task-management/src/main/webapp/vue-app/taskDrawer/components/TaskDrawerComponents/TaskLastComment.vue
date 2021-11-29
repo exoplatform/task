@@ -34,8 +34,14 @@
     <div v-if="comment.subComments && comment.subComments.length" class="py-0 TaskSubComments">
       <div
         v-for="(item, i) in comment.subComments"
-        :key="i">
-        <task-subcomment-item :subcomment="item" :commentid="comment.comment.id" />
+        :key="i"
+        class="TaskSubCommentItem pe-0 pb-2">
+        <task-comment-item 
+          :comment="item"
+          :comments="comment.subComments"
+          :avatar-size="30"
+          :reply-last-comment="true"
+          :last-comment-id="comment.comment.id" /> 
       </div>
     </div>
   </div>
