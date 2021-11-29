@@ -75,15 +75,10 @@ export default {
   computed: {
     relativeTime() {
       return this.getRelativeTime(this.comment.comment.createdTime.time);
-    }
-    /*  relativeTimeSubComment(){
-      return this.getRelativeTime(this.comment.comment.createdTime.time);
-    }, */
-    ,
-    /*  lastSubComment() {
-      console.log((this.comment.subComments && this.comment.subComments[this.comment.subComments.length-1]));
+    },
+    lastSubComment() {
       return this.comment.subComments && this.comment.subComments[this.comment.subComments.length-1];
-    }, */
+    },
     id() {
       return `comment-${this.comment.comment.id}`;
     }
@@ -118,7 +113,7 @@ export default {
       return dateTimeValue && this.$dateUtil.formatDateObjectToDisplay(new Date(dateTimeValue), this.dateTimeFormat, this.lang) || '';
     },
     openCommentDrawer() {
-      this.$root.$emit('displayTaskComment', this.comment.comment.id);
+      this.$root.$emit('displayTaskComment', this.comment.comment.id );
     }
   }
 
