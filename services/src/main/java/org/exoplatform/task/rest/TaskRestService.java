@@ -807,6 +807,7 @@ public class TaskRestService implements ResourceContainer {
       return Response.status(Response.Status.FORBIDDEN).build();
     }
     commentText = commentText.replaceAll(PERCENT_ENCODED_REGEX, "%25");
+    commentText = commentText.replaceAll("\\+", "%2b");
     commentText = URLDecoder.decode(commentText, "UTF-8");
     CommentDto addedComment = commentService.addComment(task, currentUser, commentText);
     if (addedComment != null) {
@@ -844,6 +845,7 @@ public class TaskRestService implements ResourceContainer {
     }
 
     commentText = commentText.replaceAll(PERCENT_ENCODED_REGEX, "%25");
+    commentText = commentText.replaceAll("\\+", "%2b");
     commentText = URLDecoder.decode(commentText, "UTF-8");
     CommentDto addedComment = commentService.addComment(task, commentId, currentUser, commentText);
     if (addedComment != null) {
