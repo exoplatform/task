@@ -19,7 +19,7 @@
             class="primary-color--text font-weight-bold subtitle-2 pe-2">{{ comment.author.displayName }} <span v-if="comment.author.external" class="externalTagClass">{{ ` (${$t('label.external')})` }}</span></a>
           <span :title="displayCommentDate" class="dateTime caption font-italic d-block">{{ relativeTime }}</span>
         </div>
-        <div class="removeCommentBtn" v-if="!replyLastComment">
+        <div class="removeCommentBtn">
           <v-btn
             v-show="showDeleteButtom"
             :title="$t('label.remove')"
@@ -107,7 +107,7 @@ export default {
   },
   computed: {
     showDeleteButtom() {
-      return this.hover && eXo.env.portal.userName === this.comment.author.username;
+      return this.hover && !this.replyLastComment && eXo.env.portal.userName === this.comment.author.username;
     },
     relativeTime() {
       return this.getRelativeTime(this.comment.comment.createdTime.time);
