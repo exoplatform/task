@@ -43,7 +43,7 @@
           text
           small
           color="primary"
-          @click="$emit('openCommentEditor',comment.comment.id)">
+          @click="replyComment">
           {{ $t('comment.message.Reply') }}
         </v-btn>
       </div>
@@ -72,9 +72,18 @@ export default {
         return {};
       }
     },
+    replyLastComment: {
+      type: Boolean,
+      default: false
+    }
+    ,
     showOnly: {
       type: Boolean,
       default: true
+    },
+    lastCommentId: {
+      type: String,
+      default: ''
     },
     comments: {
       type: Object,
@@ -98,7 +107,7 @@ export default {
   },
   computed: {
     showDeleteButtom() {
-      return this.hover && eXo.env.portal.userName === this.comment.author.username;
+      return this.hover && !this.replyLastComment && eXo.env.portal.userName === this.comment.author.username;
     },
     relativeTime() {
       return this.getRelativeTime(this.comment.comment.createdTime.time);
@@ -133,6 +142,16 @@ export default {
         return this.displayCommentDate(this.comment.comment.createdTime.time);
       }
     },
+    replyComment()
+    {
+      if (this.replyLastComment)
+      {
+        this.$root.$emit('displayTaskComment', this.lastCommentId);
+      }
+      else {
+        this.$emit('openCommentEditor',this.comment.comment.id);
+      }
+    }
   },
 };
 </script>
