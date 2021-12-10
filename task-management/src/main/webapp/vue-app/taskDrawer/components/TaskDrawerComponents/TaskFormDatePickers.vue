@@ -78,7 +78,7 @@
                 value="left"
                 class="my-0"
                 small
-                :disabled="testToday"                
+                :disabled="startDate > checkDate.today"                
                 @click="addBtnDate()">
                 {{ $t('label.today') }}
               </v-btn>
@@ -87,7 +87,7 @@
                 value="center"
                 class="my-0"
                 small
-                :disabled="testTomorrow"                
+                :disabled="startDate > checkDate.tomorrow"                
                 @click="addBtnDate(1)">
                 {{ $t('label.tomorrow') }}
               </v-btn>
@@ -96,7 +96,7 @@
                 value="right"
                 class="my-0"
                 small
-                :disabled="testNextWeek"                
+                :disabled="startDate > checkDate.nextWeek"                
                 @click="addBtnDate(7)">
                 {{ $t('label.nextweek') }}
               </v-btn>
@@ -134,11 +134,7 @@ export default {
     },
   },
   data () {
-    return {
-      today: new Date(),
-      tomorrow: new Date(),
-      nextWeek: new Date(),
-      isGreater: false,    
+    return {    
       startDate: null,
       dueDate: null,
       actualDueDate: {},
@@ -153,25 +149,13 @@ export default {
     };
   },
   computed: {
-    testToday() {
-      if (this.startDate > this.today){
-        return !this.isGreater;
-      } else {
-        return this.isGreater;}
-    },
-    testTomorrow() {
-      this.tomorrow.setDate(this.today.getDate() + 1);
-      if (this.startDate > this.tomorrow){
-        return !this.isGreater;
-      } else {
-        return this.isGreater;}
-    },
-    testNextWeek() {
-      this.nextWeek.setDate(this.today.getDate() + 7);
-      if (this.startDate > this.nextWeek){
-        return !this.isGreater;
-      } else {
-        return this.isGreater;}
+    checkDate() {
+      const today = new Date();
+      const tomorrow = new Date();
+      const nextWeek = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      nextWeek.setDate(nextWeek.getDate() + 7);
+      return { today, tomorrow, nextWeek };
     },  
     minimumEndDate() {
       if (!this.startDate) {
