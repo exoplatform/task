@@ -148,7 +148,7 @@ export default {
       dateItem: ''
     };
   },
-  computed: { 
+  computed: {
     minimumEndDate() {
       if (!this.startDate) {
         return null;
