@@ -134,7 +134,7 @@ export default {
     },
   },
   data () {
-    return {    
+    return {
       startDate: null,
       dueDate: null,
       actualDueDate: {},
