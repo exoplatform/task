@@ -14,7 +14,7 @@
       <div class="commentContent ps-3 d-flex align-center">
         <a
           class="primary-color--text font-weight-bold subtitle-2 pe-2">{{ comment.author.displayName }} <span v-if="comment.author.external" class="externalTagClass">{{ ` (${$t('label.external')})` }}</span></a>
-        <span :title="displayCommentDate" class="dateTime caption font-italic d-block">{{ relativeTime }}</span>
+        <span :title="displayCommentDate(comment.comment.createdTime.time)" class="dateTime caption font-italic d-block">{{ relativeTime }}</span>
       </div>
     </div>
     <div class="commentBody ms-10 mt-1">
