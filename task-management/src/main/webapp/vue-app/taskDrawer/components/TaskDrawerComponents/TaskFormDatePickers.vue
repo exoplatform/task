@@ -78,7 +78,7 @@
                 value="left"
                 class="my-0"
                 small
-                :disabled="startDate > checkDate.today"                
+                :disabled="startDate > checkDate()"                
                 @click="addBtnDate()">
                 {{ $t('label.today') }}
               </v-btn>
@@ -87,7 +87,7 @@
                 value="center"
                 class="my-0"
                 small
-                :disabled="startDate > checkDate.tomorrow"                
+                :disabled="startDate > checkDate(1)"                
                 @click="addBtnDate(1)">
                 {{ $t('label.tomorrow') }}
               </v-btn>
@@ -96,7 +96,7 @@
                 value="right"
                 class="my-0"
                 small
-                :disabled="startDate > checkDate.nextWeek"                
+                :disabled="startDate > checkDate(7)"                
                 @click="addBtnDate(7)">
                 {{ $t('label.nextweek') }}
               </v-btn>
@@ -148,15 +148,7 @@ export default {
       dateItem: ''
     };
   },
-  computed: {
-    checkDate() {
-      const today = new Date();
-      const tomorrow = new Date();
-      const nextWeek = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      nextWeek.setDate(nextWeek.getDate() + 7);
-      return { today, tomorrow, nextWeek };
-    },  
+  computed: { 
     minimumEndDate() {
       if (!this.startDate) {
         return null;
@@ -200,6 +192,14 @@ export default {
     });
   },
   methods: {
+    checkDate(days) {
+      if (!days) {
+        days=0;
+      }
+      const date = new Date();
+      date.setDate(date.getDate() + days);
+      return date;
+    },  
     reset() {
       if (this.actualTask.id!=null) {
         this.startDate = null;
