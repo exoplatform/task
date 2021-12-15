@@ -26,7 +26,7 @@
               v-for="(item, i) in logs"
               :key="i"
               class="pe-0">
-              <v-list-item-content class="pt-1">
+              <v-list-item-content class="pt-1 my-n6">
                 <div class="d-flex">
                   <exo-user-avatar
                     :username="item.author"
@@ -38,7 +38,7 @@
                   <p class="changesText mt-6 ps-1" v-html="renderChangeHTML(item)"></p>
                 </div>
                 <div>
-                  <div class="dateTime caption px-10 my-n3">
+                  <div class="dateTime caption px-10 my-n6">
                     <date-format :value="item.createdTime" :format="dateTimeFormat" />
                   </div>
                 </div>
