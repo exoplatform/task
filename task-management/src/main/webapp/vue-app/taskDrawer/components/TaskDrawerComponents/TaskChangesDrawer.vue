@@ -116,9 +116,7 @@ export default {
       } else if ( item.actionName === 'edit_priority' ) {
         str = `<p class='text-truncate my-auto text-color ms-1 subtitle-2' title='${item.authorFullName} ${this.$t(this.logMsg(item))} ${item.task.status.priority}'> ${ this.$t(this.logMsg(item)) } ${item.task.priority}</p>`;
       } else {
-        str = '<p>' +
-            `<p class='text-truncate my-auto text-color ml-1' title='${item.authorFullName} ${this.$t(this.logMsg(item))} ${item.target}'> ${ this.$t(this.logMsg(item)) } ${item.target}</p>`+
-          '</p>';
+        str = `<p class='text-truncate my-auto text-color ms-1 subtitle-2' title='${item.authorFullName} ${this.$t(this.logMsg(item))} ${item.target}'> ${ this.$t(this.logMsg(item)) } ${item.target}</p>`;
       }
       return str;
     },
