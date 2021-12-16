@@ -26,7 +26,7 @@
               v-for="(item, i) in logs"
               :key="i"
               class="pe-0">
-              <v-list-item-content class="pt-1 my-n6">
+              <v-list-item-content class="mt-n1">
                 <div class="d-flex">
                   <exo-user-avatar
                     :username="item.author"
@@ -35,10 +35,10 @@
                     :size="30"
                     :url="null"
                     class="changeUserAvatar" />
-                  <p class="changesText mt-6 ps-1" v-html="renderChangeHTML(item)"></p>
+                  <div class="p-2 bd-highlight" v-html="renderChangeHTML(item)"></div>
                 </div>
                 <div>
-                  <div class="dateTime caption px-10 my-n6">
+                  <div class="dateTime caption px-10 my-n3">
                     <date-format :value="item.createdTime" :format="dateTimeFormat" />
                   </div>
                 </div>
@@ -104,22 +104,22 @@ export default {
       let str = '';
       if ( item.actionName === 'assign' || item.actionName === 'unassign') {
         const targetFullName = item.isTargetFullNameExternal ? `${item.targetFullName} (${this.$t('label.external')})` :  `${item.targetFullName}`;
-        str = `<p class='text-truncate mb-3' title='${item.authorFullName} ${this.$t(this.logMsg(item))} ${targetFullName}'>` +
+        str = `<p><p class='text-truncate my-auto text-color ml-1' title='${item.authorFullName} ${this.$t(this.logMsg(item))} ${targetFullName}'>` +
             `<span>${ this.$t(this.logMsg(item))}</span>`+
             `<a href='/portal/dw/profile/${item.target}'> ${targetFullName} </a>`+
-            '</p>';
+            '</p></p>';
       } else if ( item.actionName === 'edit_project' ) {
-        str = `<p class='text-truncate mb-3' title='${item.authorFullName} ${this.$t(this.logMsg(item))}  ${item.target}'>` +
+        str = `<p><p class='text-truncate my-auto text-color ml-1' title='${item.authorFullName} ${this.$t(this.logMsg(item))}  ${item.target}'>` +
             `<span>${ this.$t(this.logMsg(item))}</span>`+
             `<a href='#'> ${item.target} </a>`+
-            '</p>';
+            '</p></p>';
       } else if ( item.actionName === 'edit_priority' ) {
-        str = '<p class=\'mb-0\'>' +
-            `<p class='text-truncate mb-3' title='${item.authorFullName} ${this.$t(this.logMsg(item))} ${item.task.status.priority}'> ${ this.$t(this.logMsg(item)) } ${item.task.priority}</p>`+
+        str = '<p>' +
+            `<p class='text-truncate my-auto text-color ml-1' title='${item.authorFullName} ${this.$t(this.logMsg(item))} ${item.task.status.priority}'> ${ this.$t(this.logMsg(item)) } ${item.task.priority}</p>`+
           '</p>';
       } else {
-        str = '<p class=\'mb-0\'>' +
-            `<p class='text-truncate mb-3' title='${item.authorFullName} ${this.$t(this.logMsg(item))} ${item.target}'> ${ this.$t(this.logMsg(item)) } ${item.target}</p>`+
+        str = '<p>' +
+            `<p class='text-truncate my-auto text-color ml-1' title='${item.authorFullName} ${this.$t(this.logMsg(item))} ${item.target}'> ${ this.$t(this.logMsg(item)) } ${item.target}</p>`+
           '</p>';
       }
       return str;
