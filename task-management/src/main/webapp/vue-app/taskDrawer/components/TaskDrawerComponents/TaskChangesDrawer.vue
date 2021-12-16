@@ -35,7 +35,7 @@
                     :size="30"
                     :url="null"
                     class="changeUserAvatar" />
-                  <div class="p-2 bd-highlight" v-html="renderChangeHTML(item)"></div>
+                  <div class="d-flex" v-html="renderChangeHTML(item)"></div>
                 </div>
                 <div>
                   <div class="dateTime caption px-10 my-n3">
