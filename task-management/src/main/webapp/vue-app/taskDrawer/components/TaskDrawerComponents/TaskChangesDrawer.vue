@@ -112,7 +112,7 @@ export default {
         str = `<p class='text-truncate my-auto text-color ms-1 subtitle-2' title='${item.authorFullName} ${this.$t(this.logMsg(item))}  ${item.target}'>` +
             `<span>${ this.$t(this.logMsg(item))}</span>`+
             `<a href='#'> ${item.target} </a>`+
-            '</p></p>';
+            '</p>';
       } else if ( item.actionName === 'edit_priority' ) {
         str = `<p class='text-truncate my-auto text-color ms-1 subtitle-2' title='${item.authorFullName} ${this.$t(this.logMsg(item))} ${item.task.status.priority}'> ${ this.$t(this.logMsg(item)) } ${item.task.priority}</p>`;
       } else {
