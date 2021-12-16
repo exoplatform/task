@@ -104,7 +104,7 @@ export default {
       let str = '';
       if ( item.actionName === 'assign' || item.actionName === 'unassign') {
         const targetFullName = item.isTargetFullNameExternal ? `${item.targetFullName} (${this.$t('label.external')})` :  `${item.targetFullName}`;
-        str = `<p><p class='text-truncate my-auto text-color ml-1' title='${item.authorFullName} ${this.$t(this.logMsg(item))} ${targetFullName}'>` +
+        str = `<p class='text-truncate my-auto text-color ms-1 subtitle-2' title='${item.authorFullName} ${this.$t(this.logMsg(item))} ${targetFullName}'>` +
             `<span>${ this.$t(this.logMsg(item))}</span>`+
             `<a href='/portal/dw/profile/${item.target}'> ${targetFullName} </a>`+
             '</p></p>';
