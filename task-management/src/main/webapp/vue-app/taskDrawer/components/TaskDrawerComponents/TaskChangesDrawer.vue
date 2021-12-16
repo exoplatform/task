@@ -107,7 +107,7 @@ export default {
         str = `<p class='text-truncate my-auto text-color ms-1 subtitle-2' title='${item.authorFullName} ${this.$t(this.logMsg(item))} ${targetFullName}'>` +
             `<span>${ this.$t(this.logMsg(item))}</span>`+
             `<a href='/portal/dw/profile/${item.target}'> ${targetFullName} </a>`+
-            '</p></p>';
+            '</p>';
       } else if ( item.actionName === 'edit_project' ) {
         str = `<p><p class='text-truncate my-auto text-color ml-1' title='${item.authorFullName} ${this.$t(this.logMsg(item))}  ${item.target}'>` +
             `<span>${ this.$t(this.logMsg(item))}</span>`+
