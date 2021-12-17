@@ -28,7 +28,7 @@
   </parent>
   <groupId>org.exoplatform.addons.task</groupId>
   <artifactId>task-management-parent</artifactId>
-  <version>3.3.x-SNAPSHOT</version>
+  <version>3.3.0-20211216-2</version>
   <packaging>pom</packaging>
   <name>eXo Add-on:: Task management</name>
   <description>Task management add-on</description>
@@ -41,7 +41,7 @@
   <scm>
     <connection>scm:git:git://github.com/exoplatform/task.git</connection>
     <developerConnection>scm:git:git@github.com:exoplatform/task.git</developerConnection>
-    <tag>HEAD</tag>
+    <tag>3.3.0-20211216-2</tag>
     <url>https://github.com/exoplatform/task</url>
   </scm>
   <properties>
