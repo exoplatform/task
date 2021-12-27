@@ -24,7 +24,7 @@
   <parent>
     <artifactId>task-management-parent</artifactId>
     <groupId>org.exoplatform.addons.task</groupId>
-    <version>3.3.x-SNAPSHOT</version>
+    <version>3.3.0-20211227</version>
   </parent>
   <artifactId>task-management-integration</artifactId>
   <packaging>jar</packaging>
