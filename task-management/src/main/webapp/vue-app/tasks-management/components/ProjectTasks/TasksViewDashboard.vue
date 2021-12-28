@@ -297,23 +297,28 @@ export default {
     });
 
     this.$root.$on('task-priority-updated', value => {
-      if (this.tasksFilter.orderBy === 'priority') {
-        this.$tasksService.filterTasksList(this.tasksFilter, '', '', '', this.project.id).then(data => {
-          if (Array.isArray(data.tasks[0])) {
-            const tasksArrayIndex = this.tasksList.findIndex(tasksArray => tasksArray.findIndex(t => t.id === value.taskId) > -1);
-            this.$set(this.tasksList, tasksArrayIndex, data.tasks[tasksArrayIndex]);
-          } else {
-            const taskOldIndex = this.tasksList.findIndex(t => t.id === value.taskId);
-            const taskNewIndex = data.tasks.findIndex(task => task.id === value.taskId);
+      //if (this.tasksFilter.orderBy === 'priority') {
+      this.$tasksService.filterTasksList(this.tasksFilter, '', '', '', this.project.id).then(data => {
+        if (Array.isArray(data.tasks[0])) {
+          const tasksArrayIndex = this.tasksList.findIndex(tasksArray => tasksArray.findIndex(t => t.id === value.taskId) > -1);
+          this.$set(this.tasksList, tasksArrayIndex, data.tasks[tasksArrayIndex]);
+        } else {
+          const taskOldIndex = this.tasksList.findIndex(t => t.id === value.taskId);
+          const taskNewIndex = data.tasks.findIndex(task => task.id === value.taskId);
 
-            this.tasksList.splice(taskOldIndex, 1);
-            this.tasksList.splice(taskNewIndex, 0, data.tasks[taskNewIndex]);
-          }
-        });
-      }
+          this.tasksList.splice(taskOldIndex, 1);
+          this.tasksList.splice(taskNewIndex, 0, data.tasks[taskNewIndex]);
+        }
+      });
+      //}
     });
-
+    this.$root.$on('task-start-date-updated', task => {
+      this.updateModifiedTask(task);
+    });
     this.$root.$on('task-due-date-updated', task => {
+      this.updateModifiedTask(task);
+    });
+    this.$root.$on('update-task-status', task => {
       this.updateModifiedTask(task);
     });
     
