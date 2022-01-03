@@ -424,7 +424,7 @@ export default {
           this.$taskDrawerApi.updateTask(this.task.id, this.task).then( () => {
             this.oldTask.priority = this.task.priority;
             this.$root.$emit('task-updated', this.task);
-            this.$root.$emit('task-priority-updated',value);
+            this.$root.$emit('task-priority-updated',this.task);
             this.$root.$emit('show-alert', {
               type: 'success',
               message: this.$t('alert.success.task.priority')
@@ -447,6 +447,7 @@ export default {
           this.task.status = value;
           this.$taskDrawerApi.updateTask(this.task.id, this.task).then( () => {
             this.oldTask.status = this.task.status;
+            this.$root.$emit('task-status-updated',this.task);
             this.$root.$emit('show-alert', {
               type: 'success',
               message: this.$t('alert.success.task.status')
@@ -468,6 +469,7 @@ export default {
           this.$taskDrawerApi.updateTask(this.task.id, this.task).then( () => {
             this.oldTask.startDate = this.task.startDate;
             this.$root.$emit('task-updated', this.task);
+            this.$root.$emit('task-start-date-updated', this.task);
             this.$root.$emit('show-alert', {
               type: 'success',
               message: this.$t('alert.success.task.startDate')
@@ -502,6 +504,7 @@ export default {
           this.$taskDrawerApi.updateTask(this.task.id, this.task).then(() => {
             this.oldTask.dueDate = this.task.dueDate;
             this.$root.$emit('task-updated', this.task);
+            this.$root.$emit('task-due-date-updated', this.task);
             this.$root.$emit('show-alert', {
               type: 'success',
               message: this.$t('alert.success.task.duetDate')
