@@ -487,7 +487,6 @@ export default {
       } else if (value === 'none' && this.oldTask.startDate) {
         this.task.startDate = null;
         this.$taskDrawerApi.updateTask(this.task.id, this.task).then(() => {
-          this.oldTask.startDate = this.task.startDate;
           this.$root.$emit('show-alert', {
             type: 'success',
             message: this.$t('alert.success.task.startDate')
