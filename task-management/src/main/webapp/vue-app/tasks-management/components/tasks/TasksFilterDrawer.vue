@@ -15,8 +15,8 @@
               <v-tabs
                 v-model="tab">
                 <v-tab class="text-capitalize">{{ $t('label.filter.groupandsort') }}</v-tab>
-                <v-tab class="text-capitalize">{{ $t('label.filter.filter') }}</v-tab>
-                <v-tab class="text-capitalize">{{ $t('label.filter.label') }}</v-tab>
+                <v-tab v-if="taskViewTabName != 'gantt'" class="text-capitalize">{{ $t('label.filter.filter') }}</v-tab>
+                <v-tab v-if="taskViewTabName != 'gantt'" class="text-capitalize">{{ $t('label.filter.label') }}</v-tab>
               </v-tabs>
             </v-toolbar>
 
@@ -40,6 +40,7 @@
                     :task-view-tab-name="taskViewTabName"
                     @scale-changed="changeScale" />
                   <tasks-sort-by-project-drawer
+                    v-if="taskViewTabName != 'gantt'"
                     ref="filterSortTasksDrawer"
                     v-model="orderBy" />
                 </v-card>
