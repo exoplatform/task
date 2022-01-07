@@ -394,7 +394,7 @@ export default {
     updateCompleted() {
       const task = {
         id: this.task.id,
-        showCompletedTasks: !this.task.completed,
+        isCompleted: !this.task.completed,
       };
       if (task.id) {
         return this.$tasksService.updateCompleted(task).then(updatedTask => {
@@ -404,9 +404,10 @@ export default {
             this.$root.$emit('show-alert', {type: 'success',message: this.$t('alert.success.task.unCompleted')});
           }
           this.$root.$emit('update-task-completed', updatedTask);
-        }).then( () => {
-          this.$root.$emit('update-completed-task',this.task.completed,this.task.id);
-        }).then(() => this.task.completed = task.showCompletedTasks)
+        }).then(() => this.task.completed = task.isCompleted)
+          .then( () => {
+            this.$root.$emit('update-completed-task',this.task.completed,this.task.id);
+          })
           .catch(e => {
             console.error('Error updating project', e);
             this.$root.$emit('show-alert', {
