@@ -492,9 +492,14 @@ export default {
             type: 'success',
             message: this.$t('alert.success.task.startDate')
           });
+          this.$root.$emit('task-start-date-updated', this.task);
         }).catch(e => {
           console.error(e);
-        }).finally(() => this.$root.$emit('task-start-date-updated', this.task));
+          this.$root.$emit('show-alert', {
+            type: 'error',
+            message: 'Error message to find'
+          });
+        });
       }
     },
     updateTaskDueDate(value) {
