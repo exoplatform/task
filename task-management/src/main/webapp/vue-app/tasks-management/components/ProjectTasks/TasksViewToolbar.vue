@@ -33,6 +33,7 @@
       <v-spacer />
       <v-scale-transition>
         <v-text-field
+          v-if="taskViewTabName != 'gantt'"
           v-model="keyword"
           :placeholder=" $t('label.filterTask') "
           prepend-inner-icon="fa-filter"
