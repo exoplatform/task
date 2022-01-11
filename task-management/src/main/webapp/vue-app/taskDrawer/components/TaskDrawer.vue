@@ -494,10 +494,9 @@ export default {
           });
           this.$root.$emit('task-start-date-updated', this.task);
         }).catch(e => {
-          console.error(e);
           this.$root.$emit('show-alert', {
             type: 'error',
-            message: 'Error message to find'
+            message: this.$t('alert.error')
           });
         });
       }
