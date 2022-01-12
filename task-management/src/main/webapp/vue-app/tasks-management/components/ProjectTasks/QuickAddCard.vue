@@ -13,8 +13,7 @@
       rows="1"
       row-height="13"
       required 
-      @keyup="checkImput($event)"
-      @blur="closeForm" />
+      @keyup="checkImput($event)"/>
     <div class="d-md-none">
       <v-spacer />
       <v-btn
