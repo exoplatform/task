@@ -149,7 +149,7 @@ export default {
       }
     },
     reset() {
-      if (this.manager && this.manager.length>0) { 
+      if (this.manager && !this.manager.length>0) { 
         // Add current user as default attendee
         if (eXo.env.portal.spaceName) {
           this.manager = [{
