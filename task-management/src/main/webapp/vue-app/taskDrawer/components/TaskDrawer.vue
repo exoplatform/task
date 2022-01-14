@@ -493,7 +493,8 @@ export default {
             message: this.$t('alert.success.task.startDate')
           });
           this.$root.$emit('task-start-date-updated', this.task);
-        }).catch(() => {
+        }).catch(e => {
+          console.error('Error has occurred while removing the start date ' , e);
           this.$root.$emit('show-alert', {
             type: 'error',
             message: this.$t('alert.error')
