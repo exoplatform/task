@@ -493,7 +493,7 @@ export default {
             message: this.$t('alert.success.task.startDate')
           });
           this.$root.$emit('task-start-date-updated', this.task);
-        }).catch(e => {
+        }).catch(() => {
           this.$root.$emit('show-alert', {
             type: 'error',
             message: this.$t('alert.error')
