@@ -492,9 +492,14 @@ export default {
             type: 'success',
             message: this.$t('alert.success.task.startDate')
           });
+          this.$root.$emit('task-start-date-updated', this.task);
         }).catch(e => {
-          console.error(e);
-        }).finally(() => this.$root.$emit('task-start-date-updated', this.task));
+          console.error('Error has occurred while removing the start date ' , e);
+          this.$root.$emit('show-alert', {
+            type: 'error',
+            message: this.$t('alert.error')
+          });
+        });
       }
     },
     updateTaskDueDate(value) {
