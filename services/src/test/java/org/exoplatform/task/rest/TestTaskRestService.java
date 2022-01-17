@@ -96,7 +96,6 @@ public class TestTaskRestService {
     when(taskService.countOverdueTasks("root")).thenReturn(Long.valueOf(overdueTasks.size()));
     when(taskService.getIncomingTasks("root", 0, 20)).thenReturn(incomingTasks);
     when(taskService.countIncomingTasks("root")).thenReturn(incomingTasks.size());
-    when(taskService.findTasks(eq("root"), eq("searchTerm"), anyInt())).thenReturn(Collections.singletonList(task4));
     when(taskService.countTasks(eq("root"), eq("searchTerm"))).thenReturn(1L);
 
     // When
@@ -156,7 +155,6 @@ public class TestTaskRestService {
     ProjectDto project1 = new ProjectDto();
     project1.setName("project1");
     when(projectService.getProject(project1.getId())).thenReturn(project1);
-    when(taskService.findTasks(taskQuery,0,-1)).thenReturn(tasks);
     // When
     Response response = taskRestService.getTasksByProjectId(project1.getId(),0,-1,false,false, false);
     // Then
@@ -476,7 +474,6 @@ public class TestTaskRestService {
     label3.setId(0);
     label3.setProject(project);
 
-    when(labelService.createLabel(label1)).thenReturn(label1);
     when(projectService.getProject(project.getId())).thenReturn(project);
     when(taskService.getTask(1)).thenReturn(task);
 
@@ -592,7 +589,6 @@ public class TestTaskRestService {
 
 
     when(projectService.getProject(project.getId())).thenReturn(project);
-    when(labelService.createLabel(label1)).thenReturn(label1);
     when(taskService.getTask(1)).thenReturn(task);
 
     // When
@@ -639,7 +635,6 @@ public class TestTaskRestService {
     label1.setProject(project);
 
     when(projectService.getProject(project.getId())).thenReturn(project);
-    when(labelService.getLabel(1)).thenReturn(label1);
 
     // When
     Response response = taskRestService.addLabel(label1);
@@ -731,7 +726,6 @@ public class TestTaskRestService {
     assertNotNull(commentModel);
     assertEquals(commentModel.getFormattedComment(), CommentUtil.formatMention("x <= 2", Locale.ENGLISH.getLanguage(), userService));
 
-    when(commentService.getComment(comment.getId())).thenReturn(comment);
     response = taskRestService.getTaskComments(3, 0, 1);
     assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
 
@@ -756,7 +750,6 @@ public class TestTaskRestService {
     ProjectDto project1 = new ProjectDto();
     project1.setName("project1");
 
-    when(projectService.getProject(project1.getId())).thenReturn(project1);
 
     final User user = TestUtils.getUser();
     ListAccess<User> lists = new ListAccess<User>() {
@@ -913,7 +906,6 @@ public class TestTaskRestService {
 
     TasksList tasksList = new TasksList(Collections.singletonList(task2),1);
     when(taskService.filterTasks("exo",-2,"exo",labelIDs,null,null,assignee,coworkers, watchers,null,null,root,null,null,null,false,true,false,false,null,null,0,0)).thenReturn(tasksList);
-    when(taskService.countTasks(any())).thenReturn(1);
     // When
     Response response = taskRestService.filterTasks(null, -2, "exo",null, null, null, null, null, false,null,null,null,null,null,null,null,0,0,false,false);
 
@@ -924,7 +916,6 @@ public class TestTaskRestService {
     assertEquals(1, tasks.getTasksNumber());
 
     when(taskService.filterTasks("exo",-2,"exo",labelIDs,null,null,assignee,coworkers, watchers,null,null,root,null,null,null,false,true,false,false,"priority","project",0,0)).thenReturn(tasksList);
-    when(taskService.countTasks(any())).thenReturn(1);
 
     Response response1 = taskRestService.filterTasks(null, -2, "exo",null, null, null, null, null, false,null,null,"project","priority",null,null,null,0,0,false,false);
 

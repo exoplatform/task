@@ -16,27 +16,23 @@
 */
 package org.exoplatform.task;
 
-import liquibase.Liquibase;
-import liquibase.database.Database;
-import liquibase.database.DatabaseFactory;
-import liquibase.database.jvm.JdbcConnection;
-import liquibase.exception.LiquibaseException;
-import liquibase.resource.ClassLoaderResourceAccessor;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.exoplatform.social.core.identity.model.Profile;
 import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
 import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.dto.*;
+import org.exoplatform.task.dto.CommentDto;
+import org.exoplatform.task.dto.LabelDto;
+import org.exoplatform.task.dto.ProjectDto;
+import org.exoplatform.task.dto.StatusDto;
+import org.exoplatform.task.dto.TaskDto;
+import org.exoplatform.task.dto.UserSettingDto;
 import org.exoplatform.task.model.User;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Created by The eXo Platform SAS
@@ -45,9 +41,6 @@ import java.util.Set;
  * 4/15/15
  */
 public class TestUtils {
-
-  private static Connection conn;
-  private static Liquibase liquibase;
 
   public static long EXISTING_TASK_ID = 1;
   public static long UNEXISTING_TASK_ID = 2;
@@ -63,49 +56,6 @@ public class TestUtils {
 
   public static long EXISTING_LABEL_ID = 1;
   public static long UNEXISTING_LABEL_ID = 2;
-
-  public static void initH2DB() throws SQLException,
-      ClassNotFoundException, LiquibaseException {
-
-    Class.forName("org.h2.Driver");
-    conn = DriverManager.getConnection("jdbc:h2:target/h2-db", "sa", "");
-
-    initDB();
-  }
-
-  public static void initHSQLDB() throws LiquibaseException, SQLException,
-      ClassNotFoundException {
-
-    Class.forName("org.hsqldb.jdbcDriver");
-    conn = DriverManager.getConnection("jdbc:hsqldb:file:target/hsql-db", "sa", "");
-
-    initDB();
-  }
-
-  private static void initDB() throws LiquibaseException {
-    Database database = DatabaseFactory.getInstance()
-        .findCorrectDatabaseImplementation(new JdbcConnection(conn));
-
-    liquibase = new Liquibase("db/changelog/task.db.changelog-1.0.0.xml", new ClassLoaderResourceAccessor(), database);
-    liquibase.update((String)null);
-    liquibase = new Liquibase("db/changelog/task.db.changelog-1.1.0.xml", new ClassLoaderResourceAccessor(), database);
-    liquibase.update((String)null);
-    liquibase = new Liquibase("db/changelog/task.db.changelog-1.3.0.xml", new ClassLoaderResourceAccessor(), database);
-    liquibase.update((String)null);
-    liquibase = new Liquibase("db/changelog/task.db.changelog-2.1.0.xml", new ClassLoaderResourceAccessor(), database);
-    liquibase.update((String)null);
-    liquibase = new Liquibase("db/changelog/task.db.changelog-3.0.0.xml", new ClassLoaderResourceAccessor(), database);
-    liquibase.update((String)null);
-    liquibase = new Liquibase("db/changelog/task.db.changelog-3.1.0.xml", new ClassLoaderResourceAccessor(), database);
-    liquibase.update((String)null);
-    liquibase = new Liquibase("db/changelog/task.db.changelog-3.2.0.xml", new ClassLoaderResourceAccessor(), database);
-    liquibase.update((String)null);
-  }
-
-  public static void closeDB() throws LiquibaseException, SQLException {
-    liquibase.rollback(1000, null);
-    conn.close();
-  }
 
   public static Task getDefaultTask() {
     return getDefaultTaskWithId(EXISTING_TASK_ID);
