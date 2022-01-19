@@ -116,7 +116,6 @@ public class TaskServiceTest {
     // TestUtils.EXISTING_TASK_ID (find(id) return null otherwise)
     when(taskHandler.find(TestUtils.EXISTING_TASK_ID)).thenReturn(TestUtils.getDefaultTask());
     when(statusService.getStatus(TestUtils.EXISTING_STATUS_ID)).thenReturn(TestUtils.getDefaultStatusDto());
-    when(commentHandler.find(TestUtils.EXISTING_COMMENT_ID)).thenReturn(TestUtils.getDefaultComment());
     when(daoHandler.getTaskHandler().getTaskWithCoworkers(1)).thenReturn(TestUtils.getDefaultTask());
 
     Identity root = new Identity("root");

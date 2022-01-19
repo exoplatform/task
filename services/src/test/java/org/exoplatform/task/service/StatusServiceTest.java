@@ -96,8 +96,6 @@ public class StatusServiceTest {
         when(daoHandler.getProjectHandler()).thenReturn(projectHandler);
 
         //Mock some DAO methods
-        when(taskHandler.find(TestUtils.EXISTING_TASK_ID)).thenReturn(TestUtils.getDefaultTask());
-        when(statusHandler.find(TestUtils.EXISTING_STATUS_ID)).thenReturn(TestUtils.getDefaultStatus());
         when(daoHandler.getStatusHandler().findHighestRankStatusByProject(TestUtils.EXISTING_TASK_ID)).thenReturn(TestUtils.getDefaultStatus());
 
     }
@@ -151,7 +149,6 @@ public class StatusServiceTest {
         participator.add("Tib");
         ProjectQuery query = new ProjectQuery();
         query.setId(project.getId());
-        when(daoHandler.getProjectHandler().selectProjectField(query, "participator")).thenReturn(Collections.singletonList(participator));
         when(statusHandler.find(s2.getId())).thenReturn(s2);
         when(statusHandler.getStatuses(project.getId())).thenReturn(Arrays.asList(s1, s2)).thenReturn(Arrays.asList(s1));
 

@@ -68,16 +68,6 @@
       <groupId>org.exoplatform.social</groupId>
       <artifactId>social-component-core</artifactId>
       <scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>chromattic.apt</artifactId>
-          <groupId>org.chromattic</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>chromattic.core</artifactId>
-          <groupId>org.chromattic</groupId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.exoplatform.social</groupId>

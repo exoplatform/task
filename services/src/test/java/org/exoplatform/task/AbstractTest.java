@@ -40,18 +40,6 @@ import org.exoplatform.container.component.RequestLifeCycle;
  */
 public class AbstractTest {
 
-  @BeforeClass
-  public static void createTable() throws SQLException,
-          ClassNotFoundException, LiquibaseException {
-    TestUtils.initH2DB();
-  }
-
-  @AfterClass
-  public static void destroy() throws LiquibaseException, SQLException {
-    TestUtils.closeDB();
-  }
-
-
   @Before
   public void initializeContainerAndStartRequestLifecycle() {
     PortalContainer container = PortalContainer.getInstance();

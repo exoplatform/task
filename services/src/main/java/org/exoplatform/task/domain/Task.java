@@ -156,7 +156,7 @@ public class Task {
   public static final String PREFIX_CLONE = "Copy of ";
 
   @Id
-  @SequenceGenerator(name="SEQ_TASK_TASKS_TASK_ID", sequenceName="SEQ_TASK_TASKS_TASK_ID")
+  @SequenceGenerator(name="SEQ_TASK_TASKS_TASK_ID", sequenceName="SEQ_TASK_TASKS_TASK_ID", allocationSize = 1)
   @GeneratedValue(strategy=GenerationType.AUTO, generator="SEQ_TASK_TASKS_TASK_ID")
   @Column(name = "TASK_ID")
   private long        id;

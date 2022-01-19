@@ -105,14 +105,9 @@ public class CommentServiceTest {
     statusService = new StatusServiceImpl(daoHandler, statusStorage, projectStorage, listenerService);
     commentService = new CommentServiceImpl(taskStorage, commentStorage, daoHandler, listenerService);
     // Mock DAO handler to return Mocked DAO
-    when(daoHandler.getTaskHandler()).thenReturn(taskHandler);
-    when(daoHandler.getStatusHandler()).thenReturn(statusHandler);
-    when(daoHandler.getLabelHandler()).thenReturn(labelHandler);
     when(daoHandler.getCommentHandler()).thenReturn(commentHandler);
 
     // Mock some DAO methods
-    when(taskHandler.find(TestUtils.EXISTING_TASK_ID)).thenReturn(TestUtils.getDefaultTask());
-    when(statusStorage.getStatus(TestUtils.EXISTING_STATUS_ID)).thenReturn(TestUtils.getDefaultStatusDto());
     when(commentHandler.find(TestUtils.EXISTING_COMMENT_ID)).thenReturn(TestUtils.getDefaultComment());
   }
 
@@ -183,8 +178,6 @@ public class CommentServiceTest {
     newComment.setAuthor(username);
     newComment.setComment(comment);
     newComment.setCreatedTime(new Date());
-    when(userService.loadUser(eq(username))).thenReturn(new User(username, null, null, null, null, null, null));
-    when(userService.loadUser(eq(authorSubComment))).thenReturn(new User(authorSubComment, null, null, null, null, null, null));
     UserSettingDto userSettingDto= TestUtils.getDefaultUserSettingDto();
     assertEquals ("user",userSettingDto.getUsername());
     assertEquals (true,userSettingDto.isShowHiddenLabel());
