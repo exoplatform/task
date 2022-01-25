@@ -104,16 +104,10 @@ public class LabelServiceTest {
         labelService = new LabelServiceImpl(labelStorage, daoHandler, projectStorage, listenerService);
         taskService =new TaskServiceImpl(taskStorage, daoHandler, listenerService);
         // Mock DAO handler to return Mocked DAO
-        when(daoHandler.getTaskHandler()).thenReturn(taskHandler);
-        when(daoHandler.getStatusHandler()).thenReturn(statusHandler);
         when(daoHandler.getLabelHandler()).thenReturn(labelHandler);
 
         // Mock some DAO methods
-        when(taskHandler.find(TestUtils.EXISTING_TASK_ID)).thenReturn(TestUtils.getDefaultTask());
-        when(statusHandler.find(TestUtils.EXISTING_STATUS_ID)).thenReturn(TestUtils.getDefaultStatus());
         when(labelHandler.find(TestUtils.EXISTING_LABEL_ID)).thenReturn(StorageUtil.labelToEntity(TestUtils.getDefaultLabel()));
-        when(daoHandler.getStatusHandler()
-                .findHighestRankStatusByProject(TestUtils.EXISTING_TASK_ID)).thenReturn(TestUtils.getDefaultStatus());
     }
 
     @After

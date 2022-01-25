@@ -45,7 +45,7 @@ import javax.persistence.Table;
 public class ChangeLog implements Comparable<ChangeLog> {
 
   @Id
-  @SequenceGenerator(name="SEQ_TASK_CHANGE_LOG_ID", sequenceName="SEQ_TASK_CHANGE_LOG_ID")
+  @SequenceGenerator(name="SEQ_TASK_CHANGE_LOG_ID", sequenceName="SEQ_TASK_CHANGE_LOG_ID", allocationSize = 1)
   @GeneratedValue(strategy= GenerationType.AUTO, generator="SEQ_TASK_CHANGE_LOG_ID")
   @Column(name = "CHANGE_LOG_ID")
   private long id;
