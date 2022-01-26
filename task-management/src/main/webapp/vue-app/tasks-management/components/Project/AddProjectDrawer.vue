@@ -265,8 +265,8 @@ export default {
             this.manager.forEach(manager_el => {
               if (manager_el.providerId ==='space') {
                 projects.spaceName = eXo.env.portal.spaceName;
-                projects.manager.push(`manager:/spaces/${eXo.env.portal.spaceGroup}`);
-                projects.participator.push(`member:/spaces/${eXo.env.portal.spaceGroup}`);
+                projects.manager.push(`manager:${manager_el.profile.originalName}`);
+                projects.participator.push(`member:${manager_el.profile.originalName}`);
               } else {
                 projects.manager.push(manager_el.remoteId);
               }
