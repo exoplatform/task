@@ -22,12 +22,16 @@
 
 package org.exoplatform.task.dao.jpa;
 
+import org.apache.commons.collections.CollectionUtils;
+
 import org.exoplatform.commons.api.persistence.ExoTransactional;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.task.dao.CommentHandler;
 import org.exoplatform.task.domain.Comment;
 
 import javax.persistence.TypedQuery;
+
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -36,6 +40,29 @@ import java.util.Set;
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
 public class CommentDAOImpl extends CommonJPADAO<Comment, Long> implements CommentHandler {
+
+  @Override
+  public void delete(Comment entity) {
+    List<Comment> comments = getSubComments(Collections.singletonList(entity));
+    if (CollectionUtils.isNotEmpty(comments)) {
+      comments.forEach(super::delete);
+    }
+    if (find(entity.getId()) != null) {
+      super.delete(entity);
+    }
+  }
+
+  @Override
+  public void deleteAll(List<Comment> comments) {
+    comments.forEach(this::delete);
+  }
+
+  @Override
+  @ExoTransactional
+  public void deleteAll() {
+    List<Comment> comments = findAll();
+    comments.forEach(this::delete);
+  }
 
   @Override
   @ExoTransactional
