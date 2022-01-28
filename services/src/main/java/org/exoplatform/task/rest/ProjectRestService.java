@@ -328,7 +328,7 @@ public class ProjectRestService implements ResourceContainer {
               manager.put("providerId", "space");
               JSONObject profile = new JSONObject();
               profile.put("fullName", space.getDisplayName());
-              profile.put("originalName", space.getPrettyName());
+              profile.put("originalName", space.getGroupId());
               profile.put("avatarUrl", "/portal/rest/v1/social/spaces/" + space.getPrettyName() + "/avatar");
               manager.put("profile", profile);
               managersDetail.put(manager);
