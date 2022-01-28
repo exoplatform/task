@@ -44,12 +44,18 @@ import javax.persistence.Table;
 @ExoEntity
 @Table(name = "TASK_STATUS")
 @NamedQueries({
-    @NamedQuery(name = "Status.findLowestRankStatusByProject",
-        query = "SELECT s FROM TaskStatus s WHERE s.rank = (SELECT MIN(s2.rank) FROM TaskStatus s2 " +
-            "WHERE s2.project.id = :projectId) AND s.project.id = :projectId)"),
-    @NamedQuery(name = "Status.findHighestRankStatusByProject",
-            query = "SELECT s FROM TaskStatus s WHERE s.rank = (SELECT MAX(s2.rank) FROM TaskStatus s2 " +
-                "WHERE s2.project.id = :projectId) AND s.project.id = :projectId)"),
+    @NamedQuery(
+        name = "Status.findLowestRankStatusByProject",
+        query = "SELECT s FROM TaskStatus s WHERE"
+            + " s.project.id = :projectId"
+            + " AND s.rank = (SELECT MIN(s2.rank) FROM TaskStatus s2 WHERE s2.project.id = :projectId)"
+    ),
+    @NamedQuery(
+        name = "Status.findHighestRankStatusByProject",
+        query = "SELECT s FROM TaskStatus s WHERE"
+            + " s.project.id = :projectId"
+            + " AND s.rank = (SELECT MAX(s2.rank) FROM TaskStatus s2 WHERE s2.project.id = :projectId)"
+    ),
     @NamedQuery(name = "Status.findByName",
                 query = "SELECT s FROM TaskStatus s WHERE s.name = :name AND s.project.id = :projectID"),
     @NamedQuery(name = "Status.findStatusByProject",
@@ -58,7 +64,7 @@ import javax.persistence.Table;
         })
 public class Status implements Comparable<Status>{
   @Id
-  @SequenceGenerator(name="SEQ_TASK_STATUS_STATUS_ID", sequenceName="SEQ_TASK_STATUS_STATUS_ID")
+  @SequenceGenerator(name="SEQ_TASK_STATUS_STATUS_ID", sequenceName="SEQ_TASK_STATUS_STATUS_ID", allocationSize = 1)
   @GeneratedValue(strategy=GenerationType.AUTO, generator="SEQ_TASK_STATUS_STATUS_ID")
   @Column(name = "STATUS_ID")
   private long id;

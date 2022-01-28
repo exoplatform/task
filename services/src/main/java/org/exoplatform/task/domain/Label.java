@@ -42,7 +42,7 @@ import org.exoplatform.commons.api.persistence.ExoEntity;
 })
 public class Label {
   @Id
-  @SequenceGenerator(name="SEQ_TASK_LABELS_LABEL_ID", sequenceName="SEQ_TASK_LABELS_LABEL_ID")
+  @SequenceGenerator(name="SEQ_TASK_LABELS_LABEL_ID", sequenceName="SEQ_TASK_LABELS_LABEL_ID", allocationSize = 1)
   @GeneratedValue(strategy=GenerationType.AUTO, generator="SEQ_TASK_LABELS_LABEL_ID")
   @Column(name = "LABEL_ID")
   private long      id;

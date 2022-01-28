@@ -2,20 +2,24 @@ package org.exoplatform.task.rest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.when;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.RuntimeDelegate;
 
-import org.exoplatform.commons.utils.ListAccess;
-import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
-import org.exoplatform.social.core.manager.IdentityManager;
-import org.exoplatform.social.core.space.SpaceUtils;
-import org.exoplatform.social.core.space.model.Space;
-import org.exoplatform.task.dao.OrderBy;
-import org.exoplatform.task.rest.model.PaginatedTaskList;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,17 +27,28 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.rest.impl.RuntimeDelegateImpl;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
+import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
+import org.exoplatform.social.core.manager.IdentityManager;
+import org.exoplatform.social.core.space.SpaceUtils;
+import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
 import org.exoplatform.task.TestUtils;
+import org.exoplatform.task.dao.OrderBy;
 import org.exoplatform.task.dto.ProjectDto;
 import org.exoplatform.task.dto.StatusDto;
 import org.exoplatform.task.dto.TaskDto;
-import org.exoplatform.task.service.UserService;
 import org.exoplatform.task.model.User;
-import org.exoplatform.task.service.*;
+import org.exoplatform.task.rest.model.PaginatedTaskList;
+import org.exoplatform.task.service.CommentService;
+import org.exoplatform.task.service.LabelService;
+import org.exoplatform.task.service.ProjectService;
+import org.exoplatform.task.service.StatusService;
+import org.exoplatform.task.service.TaskService;
+import org.exoplatform.task.service.UserService;
 import org.exoplatform.task.storage.ProjectStorage;
 import org.exoplatform.task.storage.StatusStorage;
 
@@ -108,7 +123,6 @@ public class TestProjectRestService {
     when(taskService.countOverdueTasks("root")).thenReturn(Long.valueOf(overdueTasks.size()));
     when(taskService.getIncomingTasks("root", 0, 20)).thenReturn(incomingTasks);
     when(taskService.countIncomingTasks("root")).thenReturn(incomingTasks.size());
-    when(taskService.findTasks(eq("root"), eq("searchTerm"), anyInt())).thenReturn(Collections.singletonList(task4));
     when(taskService.countTasks(eq("root"), eq("searchTerm"))).thenReturn(1L);
 
     // When
@@ -222,9 +236,6 @@ public class TestProjectRestService {
     status.setId(Long.valueOf(1));
     status.setName("status 1");
 
-    when(projectService.getProject(1L)).thenReturn(project);
-    when(statusService.getDefaultStatus(1L)).thenReturn(status);
-    when(projectService.getManager(1)).thenReturn(manager);
     // When
     Response response = projectRestService.getDefaultStatusByProjectId(3);
     assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
@@ -366,7 +377,6 @@ public class TestProjectRestService {
     projectDto.setName("john");
     projectService.updateProject(projectDto);
 
-    when(projectService.updateProject(any())).thenReturn(projectDto);
     when(projectService.getProject(projectDto.getId())).thenReturn(projectDto);
     response = projectRestService.updateProject(projectDto.getId(), projectDto);
     assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -374,7 +384,6 @@ public class TestProjectRestService {
     Identity root = new Identity("root");
     ConversationState.setCurrent(new ConversationState(john));
 
-    when(projectService.updateProject(any())).thenReturn(projectDto);
     when(projectService.getProject(projectDto.getId())).thenReturn(projectDto);
     response = projectRestService.updateProject(projectDto.getId(), projectDto);
     assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -472,7 +481,6 @@ public class TestProjectRestService {
     ProjectDto project1 = new ProjectDto();
     project1.setName("project1");
 
-    when(projectService.getProject(project1.getId())).thenReturn(project1);
 
     final User user = TestUtils.getUser();
     ListAccess<User> lists = new ListAccess<User>() {
@@ -520,8 +528,6 @@ public class TestProjectRestService {
     project1.setId(1L);
     project1.setParticipator(projectParticipator);
 
-    when(projectService.getProject(project1.getId())).thenReturn(project1);
-    when(identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME,"userA")).thenReturn(userAIdentity);
 
     //when
     Response response = projectRestService.getProjectParticipants(1L, "userA", false);
@@ -619,7 +625,6 @@ public class TestProjectRestService {
     projectDto.setManager(manager);
 
     when(projectService.getProject(projectDto.getId())).thenReturn(projectDto);
-    when(projectService.updateProject(projectDto)).thenReturn(projectDto1);
 
     Response response1 = projectRestService.changeProjectColor(projectDto.getId(), "red");
     assertEquals(Response.Status.OK.getStatusCode(), response1.getStatus());

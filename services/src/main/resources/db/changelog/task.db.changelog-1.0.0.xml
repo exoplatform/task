@@ -475,4 +475,13 @@
     <dropColumn tableName="TASK_TASKS" columnName="CALENDAR_INTEGRATED"></dropColumn>
   </changeSet>
 
+  <changeSet author="task" id="1.0.0-33" dbms="hsqldb">
+    <createSequence sequenceName="SEQ_TASK_PROJECTS_PROJECT_ID" startValue="1" />
+    <createSequence sequenceName="SEQ_TASK_STATUS_STATUS_ID" startValue="1" />
+    <createSequence sequenceName="SEQ_TASK_TASKS_TASK_ID" startValue="1" />
+    <createSequence sequenceName="SEQ_TASK_COMMENTS_COMMENT_ID" startValue="1" />
+    <createSequence sequenceName="SEQ_TASK_CHANGE_LOG_ID" startValue="1" />
+    <createSequence sequenceName="SEQ_TASK_LABELS_LABEL_ID" startValue="1" />
+  </changeSet>
+
 </databaseChangeLog>

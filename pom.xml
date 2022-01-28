@@ -24,7 +24,7 @@
   <parent>
     <artifactId>addons-parent-pom</artifactId>
     <groupId>org.exoplatform.addons</groupId>
-    <version>15-M02</version>
+    <version>15-M03</version>
   </parent>
   <groupId>org.exoplatform.addons.task</groupId>
   <artifactId>task-management-parent</artifactId>
@@ -45,21 +45,10 @@
     <url>https://github.com/exoplatform/task</url>
   </scm>
   <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <org.exoplatform.social.version>6.3.x-SNAPSHOT</org.exoplatform.social.version>
     <addon.exo.gamification.version>2.3.x-SNAPSHOT</addon.exo.gamification.version>
     <addon.exo.ecms.version>6.3.x-SNAPSHOT</addon.exo.ecms.version>
-    <org.juzu.version>1.2.x-SNAPSHOT</org.juzu.version>
-    <org.antlr.version>3.4</org.antlr.version>
-    <org.webjars.jquery-ui.version>1.11.4</org.webjars.jquery-ui.version>
-    <org.webjars.x-editable-bootstrap.version>1.4.6</org.webjars.x-editable-bootstrap.version>
-    <org.webjars.bootstrap-datepicker.version>1.4.0</org.webjars.bootstrap-datepicker.version>
-    <org.webjars.selectize.js.version>0.12.1</org.webjars.selectize.js.version>
-    <org.webjars.select2.version>3.5.2</org.webjars.select2.version>
-    <mockito.version>2.0.13-beta</mockito.version>
-    <h2database.version>1.2.145</h2database.version>
-    <org.lombok.version>1.18.2</org.lombok.version>
-  
+
     <!-- Sonar properties -->
     <sonar.organization>exoplatform</sonar.organization>
   </properties>
@@ -77,13 +66,6 @@
         <groupId>org.exoplatform.addons.gamification</groupId>
         <artifactId>gamification</artifactId>
         <version>${addon.exo.gamification.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.juzu</groupId>
-        <artifactId>juzu-parent</artifactId>
-        <version>${org.juzu.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -114,59 +96,7 @@
         <artifactId>task-management-config</artifactId>
         <version>${project.version}</version>
       </dependency>
-
-      <dependency>
-        <groupId>org.projectlombok</groupId>
-        <artifactId>lombok</artifactId>
-        <version>${org.lombok.version}</version>
-        <scope>provided</scope>
-      </dependency>
-      <!--juzu-plugins-less4j:1.1.0 requires less4j:1.4.0 which is not compatible with antlr 3.5-->
-      <dependency>
-        <groupId>org.antlr</groupId>
-        <artifactId>antlr-runtime</artifactId>
-        <version>${org.antlr.version}</version>
-        <scope>provided</scope>
-      </dependency>
-      <!-- JS libraries -->
-      <dependency>
-        <groupId>org.webjars</groupId>
-        <artifactId>x-editable-bootstrap</artifactId>
-        <version>${org.webjars.x-editable-bootstrap.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.webjars</groupId>
-        <artifactId>bootstrap-datepicker</artifactId>
-        <version>${org.webjars.bootstrap-datepicker.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.webjars</groupId>
-        <artifactId>selectize.js</artifactId>
-        <version>${org.webjars.selectize.js.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.webjars</groupId>
-        <artifactId>select2</artifactId>
-        <version>${org.webjars.select2.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.webjars</groupId>
-        <artifactId>jquery-ui</artifactId>
-        <version>${org.webjars.jquery-ui.version}</version>
-      </dependency>
       <!-- Tests -->
-      <dependency>
-        <groupId>org.mockito</groupId>
-        <artifactId>mockito-core</artifactId>
-        <version>${mockito.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>com.h2database</groupId>
-        <artifactId>h2</artifactId>
-        <version>${h2database.version}</version>
-        <scope>test</scope>
-      </dependency>
       <dependency>
         <groupId>org.exoplatform.ecms</groupId>
         <artifactId>ecms</artifactId>

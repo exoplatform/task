@@ -101,16 +101,12 @@ public class ProjectServiceTest {
         statusStorage = new StatusStorageImpl(daoHandler, projectStorage);
         projectService = new ProjectServiceImpl(statusService, taskService, daoHandler, projectStorage, listenerService);
         //Mock DAO handler to return Mocked DAO
-        when(daoHandler.getTaskHandler()).thenReturn(taskHandler);
         when(daoHandler.getProjectHandler()).thenReturn(projectHandler);
-        when(daoHandler.getStatusHandler()).thenReturn(statusHandler);
 
         //Mock some DAO methods
         when(projectHandler.create(any(Project.class))).thenReturn(TestUtils.getDefaultProject());
         when(projectHandler.update(any(Project.class))).thenReturn(TestUtils.getDefaultProject());
         //Mock taskHandler.find(id) to return default task for id = TestUtils.EXISTING_TASK_ID (find(id) return null otherwise)
-        when(taskHandler.find(TestUtils.EXISTING_TASK_ID)).thenReturn(TestUtils.getDefaultTask());
-        when(statusHandler.find(TestUtils.EXISTING_STATUS_ID)).thenReturn(TestUtils.getDefaultStatus());
         when(projectHandler.find(TestUtils.EXISTING_PROJECT_ID)).thenReturn(TestUtils.getDefaultProject());
 
     }
@@ -317,7 +313,6 @@ public class ProjectServiceTest {
         };
 
         when(projectHandler.find(3L)).thenReturn(projectParent);
-        when(projectHandler.findSubProjects(projectParent)).thenReturn(projectChilds);
 
         projectService.removeProject(3L, false);
         verify(projectHandler, times(1)).removeProject(eq(3L), eq(false));

@@ -51,7 +51,7 @@ public class Comment {
   private static final Pattern pattern = Pattern.compile("@([^\\s]+)|@([^\\s]+)$");
 
   @Id
-  @SequenceGenerator(name="SEQ_TASK_COMMENTS_COMMENT_ID", sequenceName="SEQ_TASK_COMMENTS_COMMENT_ID")
+  @SequenceGenerator(name="SEQ_TASK_COMMENTS_COMMENT_ID", sequenceName="SEQ_TASK_COMMENTS_COMMENT_ID", allocationSize = 1)
   @GeneratedValue(strategy=GenerationType.AUTO, generator="SEQ_TASK_COMMENTS_COMMENT_ID")
   @Column(name = "COMMENT_ID")
   private long id;
