@@ -245,6 +245,7 @@
         .cke_bottom .cke_button_icon {
           filter: opacity(0.4);
         }
+
         .projectDescription {
           .tooManyChars {
             color: #bc4343!important;
@@ -2682,6 +2683,31 @@
     }
   }
   .taskDescription {
+
+    .activityCharsCount{
+      position: absolute;
+      bottom: 3px;
+      font-size: 15px;
+      right: 10px ~'; /** orientation=lt */ ';
+      left: 3px ~'; /** orientation=rt */ ';
+      color: #adadad;
+
+      .uiIconMessageLength {
+        font-size: 14px;
+        color: #2eb58c;
+        &:before {
+          content: "\e910";
+        }
+      }
+    }
+
+    .tooManyChars {
+      color: #bc4343!important;
+    }
+    .tooManyChars .uiIconMessageLength {
+      color: #bc4343!important;
+    }
+
     ul li {
       list-style-position: inside;
       list-style-type: disc;
@@ -2709,13 +2735,6 @@
       border-left: none ~'; /** orientation=rt */ ';
     }
 
-    .activityCharsCount.tooManyChars {
-      display: none;
-      /*position: absolute;
-      bottom: 8px;
-      right: 10px;
-      color: @greyColorLighten1;*/
-    }
     .cke_bottom.cke_reset_all {
       background-color: transparent;
       height: 30px!important;
