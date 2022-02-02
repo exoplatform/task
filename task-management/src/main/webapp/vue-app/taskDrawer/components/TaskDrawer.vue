@@ -142,12 +142,16 @@
               :task="task"
               @labelsListOpened="closePriority(); closeStatus(); closeProjectsList();closeTaskDates();closeAssignements()" />
           </div>
-          <div class="taskAttachments d-flex">
-            <attachment-app
-              :entity-id="task.id"
-              :space-id="taskSpaceId"
-              entity-type="task" />
-          </div>
+          <extension-registry-components
+            :params="{
+              taskId: task.id,
+              spaceId: taskSpaceId,
+            }"
+            name="TaskDrawer"
+            type="task-drawer-action"
+            element="div"
+            element-class="overflow-hidden"
+            class="d-flex" />
           <v-divider class="my-0" />
           <v-flex
             v-if="task.id!=null"

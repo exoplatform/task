@@ -47,7 +47,6 @@
   <properties>
     <org.exoplatform.social.version>6.3.x-SNAPSHOT</org.exoplatform.social.version>
     <addon.exo.gamification.version>2.3.x-SNAPSHOT</addon.exo.gamification.version>
-    <addon.exo.ecms.version>6.3.x-SNAPSHOT</addon.exo.ecms.version>
 
     <!-- Sonar properties -->
     <sonar.organization>exoplatform</sonar.organization>
@@ -93,16 +92,9 @@
       </dependency>
       <dependency>
         <groupId>org.exoplatform.addons.task</groupId>
-        <artifactId>task-management-config</artifactId>
+        <artifactId>task-management-packaging</artifactId>
         <version>${project.version}</version>
-      </dependency>
-      <!-- Tests -->
-      <dependency>
-        <groupId>org.exoplatform.ecms</groupId>
-        <artifactId>ecms</artifactId>
-        <version>${addon.exo.ecms.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
+        <type>zip</type>
       </dependency>
     </dependencies>
   </dependencyManagement>

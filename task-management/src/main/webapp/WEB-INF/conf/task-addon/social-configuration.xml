@@ -119,19 +119,4 @@
     </component-plugin>
   </external-component-plugins>
   
-  <external-component-plugins>
-    <target-component>org.exoplatform.commons.api.ui.PlugableUIService</target-component>
-    <component-plugin profiles="chat">
-      <name>taskPopup</name>
-      <set-method>addPlugin</set-method>
-      <type>org.exoplatform.task.integration.chat.ChatPopupPlugin</type>
-      <init-params>
-        <value-param>
-          <name>type</name>
-          <value>chat_extension_popup</value>
-        </value-param>
-      </init-params>
-    </component-plugin>
-  </external-component-plugins>
-
 </configuration>

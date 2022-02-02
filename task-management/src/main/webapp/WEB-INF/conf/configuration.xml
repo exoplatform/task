@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.exoplatform.org/xml/ns/kernel_1_2.xsd http://www.exoplatform.org/xml/ns/kernel_1_2.xsd"
                xmlns="http://www.exoplatform.org/xml/ns/kernel_1_2.xsd">
+
   <import>war:/conf/task-addon/application-configuration.xml</import>
   <import>war:/conf/task-addon/social-configuration.xml</import>
   <import>war:/conf/task-addon/notification/task-notification-plugin.xml</import>
   <import>war:/conf/task-addon/dynamic-container-configuration.xml</import>
-  <import>war:/conf/task-addon/app-center-configuration.xml</import>
   <import>war:/conf/task-addon/search-configuration.xml</import>
   <import>war:/conf/task-addon/spaces-templates-configuration.xml</import>
 
+  <import profiles="app-center">war:/conf/task-addon/app-center-configuration.xml</import>
   <import profiles="gamification">war:/conf/task-addon/gamification-integration-configuration.xml</import>
+
 </configuration>

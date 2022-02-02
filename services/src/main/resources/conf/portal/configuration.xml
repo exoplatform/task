@@ -110,13 +110,4 @@
     </component-plugin>
   </external-component-plugins>
 
-  <external-component-plugins>
-    <target-component>org.exoplatform.services.attachments.service.AttachmentService</target-component>
-    <component-plugin profiles="ecms">
-      <name>TaskAttachmentACLPlugin</name>
-      <set-method>addACLPlugin</set-method>
-      <type>org.exoplatform.task.plugin.TaskAttachmentACLPlugin</type>
-    </component-plugin>
-  </external-component-plugins>
-
 </configuration>

@@ -3,7 +3,7 @@
     <div
       v-if="(!projects || !projects.length) && !loadingProjects"
       class="noTasksProject">
-      <div class="noTasksProjectIcon"><i class="uiIcon uiIconEcmsClipboard"></i></div>
+      <div class="noTasksProjectIcon"><i class="uiIcon uiIconClipboard"></i></div>
       <div class="noTasksProjectLabel"><span>{{ $t('label.noProjects') }}</span></div>
     </div>
     <div v-else>

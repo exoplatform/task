@@ -6,7 +6,7 @@
   
   <external-component-plugins>
     <target-component>org.exoplatform.commons.api.notification.service.setting.PluginSettingService</target-component>
-    <component-plugin profiles="all">
+    <component-plugin>
       <name>notification.groups</name>
       <set-method>registerGroupConfig</set-method>
       <type>org.exoplatform.commons.api.notification.plugin.GroupProviderPlugin</type>
@@ -329,7 +329,7 @@
   <!-- template channel register -->
   <external-component-plugins>
     <target-component>org.exoplatform.commons.api.notification.channel.ChannelManager</target-component>
-    <component-plugin profiles="all">
+    <component-plugin>
       <name>mail.channel.task.template</name>
       <set-method>registerTemplateProvider</set-method>
       <type>org.exoplatform.task.integration.notification.MailTemplateProvider</type>
@@ -340,7 +340,7 @@
         </value-param>
       </init-params>
     </component-plugin>
-    <component-plugin profiles="all">
+    <component-plugin>
       <name>web.channel.task.template</name>
       <set-method>registerTemplateProvider</set-method>
       <type>org.exoplatform.task.integration.notification.WebTemplateProvider</type>
@@ -351,7 +351,7 @@
         </value-param>
       </init-params>
     </component-plugin>
-    <component-plugin profiles="all">
+    <component-plugin>
       <name>web.channel.task.template</name>
       <set-method>registerTemplateProvider</set-method>
       <type>org.exoplatform.task.integration.notification.PushTemplateProvider</type>
