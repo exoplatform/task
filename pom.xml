@@ -45,8 +45,8 @@
     <url>https://github.com/exoplatform/task</url>
   </scm>
   <properties>
-    <org.exoplatform.social.version>6.3.x-SNAPSHOT</org.exoplatform.social.version>
-    <addon.exo.gamification.version>2.3.x-SNAPSHOT</addon.exo.gamification.version>
+    <org.exoplatform.social.version>6.3.0-20220203</org.exoplatform.social.version>
+    <addon.exo.gamification.version>2.3.0-20220203</addon.exo.gamification.version>
 
     <!-- Sonar properties -->
     <sonar.organization>exoplatform</sonar.organization>
