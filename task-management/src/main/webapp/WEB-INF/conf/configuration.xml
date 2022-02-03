@@ -10,6 +10,8 @@
   <import>war:/conf/task-addon/spaces-templates-configuration.xml</import>
 
   <import profiles="app-center">war:/conf/task-addon/app-center-configuration.xml</import>
+  <import profiles="analytics">war:/conf/task-addon/analytics-configuration.xml</import>
+
   <import profiles="gamification">war:/conf/task-addon/gamification-integration-configuration.xml</import>
 
 </configuration>

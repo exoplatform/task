@@ -30,12 +30,17 @@
   <packaging>jar</packaging>
   <name>eXo Add-on:: Task Management - Integration</name>
   <properties>
-    <exo.test.coverage.ratio>0.10</exo.test.coverage.ratio>
+    <exo.test.coverage.ratio>0.09</exo.test.coverage.ratio>
   </properties>
   <dependencies>
     <dependency>
       <groupId>org.exoplatform.addons.task</groupId>
       <artifactId>task-management-services</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.addons.analytics</groupId>
+      <artifactId>analytics-api</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
