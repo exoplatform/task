@@ -27,13 +27,6 @@
     <css-path>/skin/css/tasks.css</css-path>
   </portlet-skin>
 
-  <javascript>
-    <param>
-      <js-module>taskChatPlugin</js-module>
-      <js-path>/js/TaskChatPlugin.js</js-path>
-    </param>
-  </javascript>
-
   <module>
     <name>taskLocale</name>
     <supported-locale>ar</supported-locale>
