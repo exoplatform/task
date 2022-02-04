@@ -156,6 +156,10 @@ public class TaskQuery extends Query implements Cloneable {
     add(lte(TASK_START_DATE, endDate));
   }
 
+  public void setCreatedBy(String creator) {
+    add(eq(TASK_CREATOR, creator));
+  }
+
   public void setMemberships(List<String> permissions) {
     add(Conditions.or(in(TASK_PARTICIPATOR, permissions), in(TASK_MANAGER, permissions)));
   }
