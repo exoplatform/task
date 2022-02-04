@@ -37,7 +37,7 @@
           <description>Search connector for tasks</description>
           <object type="org.exoplatform.social.core.search.SearchConnector">
             <field name="name">
-              <string>task</string>
+              <string>tasks</string>
             </field>
             <field name="uri">
               <string><![CDATA[/portal/rest/tasks?limit={limit}&q={keyword}]]></string>
