@@ -41,7 +41,7 @@
             <div
               :class="assigneeAndCoworkerArray && !assigneeAndCoworkerArray.length && task && task.labels && !task.labels.length && 'hideTaskAssignee'"
               class="taskAssignee d-flex flex-nowrap">
-              <exo-user-avatar
+              <!-- <exo-user-avatar
                 v-for="userAvatar in avatarToDisplay"
                 :key="userAvatar"
                 :username="userAvatar.username"
@@ -51,8 +51,21 @@
                 :retrieve-extra-information="false"
                 :size="iconSize"
                 :style="'background-image: url('+userAvatar.avatar+')'"
-                class="mx-1 taskWorkerAvatar" />
-              <div class="seeMoreAvatars">
+                class="mx-1 taskWorkerAvatar" /> -->
+              <!-- <exo-user
+                v-for="user in avatarToDisplay"
+                :key="user"
+                :identity="user"
+                :size="iconSize"
+                class="mx-auto"
+                popover
+                avatar /> -->
+              <exo-user-avatars-list
+                :users="avatarToDisplay"
+                :max="1"
+                :icon-size="26"
+                @open-detail="$root.$emit('displayTasksAssigneeAndCoworker', assigneeAndCoworkerArray)" />
+              <!-- <div class="seeMoreAvatars">
                 <div
                   v-if="assigneeAndCoworkerArray.length > maxAvatarToShow"
                   class="seeMoreItem"
@@ -66,7 +79,7 @@
                   </v-avatar>
                   <span class="seeMoreAvatarList">+{{ showMoreAvatarsNumber }}</span>
                 </div>
-              </div>
+              </div> -->
             </div>
           </div>
           <div
@@ -146,11 +159,7 @@ export default {
       return this.task && this.task.task.dueDate && this.task.task.dueDate.time;
     },
     avatarToDisplay () {
-      if (this.assigneeAndCoworkerArray.length > this. maxAvatarToShow) {
-        return this.assigneeAndCoworkerArray.slice(0, this.maxAvatarToShow-1);
-      } else {
-        return this.assigneeAndCoworkerArray;
-      }
+      return this.assigneeAndCoworkerArray;
     },
     showMoreAvatarsNumber() {
       return this.assigneeAndCoworkerArray.length - this.maxAvatarToShow;

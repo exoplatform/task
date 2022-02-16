@@ -7,16 +7,14 @@
       @mouseover="hover = true"
       @mouseleave="hover = false">
       <div class="commentHeader d-flex">
-        <exo-user-avatar
-          :username="comment.author.username"
-          :title="comment.author.displayName"
-          :external="comment.author.external"
-          :retrieve-extra-information="false"
+        <exo-user 
+          :profile-ix="comment.author.username"
+          :extra-class="'position-relative'"
           :size="30"
-          :url="comment.author.url" />
-        <div class="commentContent ps-3 d-flex align-center">
-          <a
-            class="primary-color--text font-weight-bold subtitle-2 pe-2">{{ comment.author.displayName }} <span v-if="comment.author.external" class="externalTagClass">{{ ` (${$t('label.external')})` }}</span></a>
+          bold-title
+          link-style
+          popover />
+        <div class="commentContent d-flex align-center">
           <span :title="displayCommentDate" class="dateTime caption font-italic d-block">{{ relativeTime }}</span>
         </div>
         <div class="removeCommentBtn">
@@ -93,7 +91,7 @@ export default {
         day: 'numeric',
         hour: '2-digit',
         minute: '2-digit',
-      },
+      }
     };
   },
   computed: {
@@ -132,7 +130,7 @@ export default {
       } else {
         return this.displayCommentDate(this.comment.comment.createdTime.time);
       }
-    },
+    }
   },
 };
 </script>

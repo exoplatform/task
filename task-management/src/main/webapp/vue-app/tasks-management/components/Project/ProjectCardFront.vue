@@ -114,41 +114,23 @@
       <v-divider />
       <div class="spaceAdminContainer">
         <div class="spaceAdminWrapper">
-          <v-list-item v-if="managerIdentities && managerIdentities.length === 1" class="px-0">
-            <v-list-item-avatar size="28" class="userAvatar py-1">
-              <v-img :src="project.managerIdentities[0].avatar" />
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title class="body-2">
-                <a :href="project.managerIdentities[0].url">{{ project.managerIdentities[0].displayName }}</a>
-              </v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
+          <exo-user 
+            v-if="avatarToDisplay && avatarToDisplay.length === 1"
+            :identity="avatarToDisplay[0]"
+            :size="28"
+            :extra-class="'my-2'"
+            link-style
+            popover />
           <div
             v-else
             :class="showAllAvatarList && 'AllManagerAvatar'"
             class="managerAvatarsList d-flex flex-nowrap my-2">
-            <exo-user-avatar
-              v-for="manager in avatarToDisplay"
-              :key="manager"
-              :username="manager.username"
-              :title="manager.displayName"
-              :avatar-url="manager.avatar"
-              :size="iconSize"
-              :style="'background-image: url('+manager.avatar+')'"
-              class="me-1 projectManagersAvatar" />
-            <div class="seeMoreAvatars">
-              <div
-                v-if="managerIdentities.length > maxAvatarToShow"
-                class="seeMoreItem"
-                @click="$root.$emit('displayProjectManagers', managerIdentities)">
-                <v-avatar
-                  :size="iconSize"
-                  :style="'background-image: url('+managerIdentities[maxAvatarToShow].avatar+')'"
-                  :title="managerIdentities[maxAvatarToShow].displayName" />
-                <span class="seeMoreAvatarList">+{{ showMoreAvatarsNumber }}</span>
-              </div>
-            </div>
+            <exo-user-avatars-list
+              :users="avatarToDisplay"
+              :max="5"
+              :icon-size="28"
+              avatar-overlay-position
+              @open-detail="$root.$emit('displayProjectManagers', avatarToDisplay)" />
           </div>
         </div>
       </div>
@@ -209,20 +191,12 @@ export default {
         { class: 'plum' },
       ],
       managerIdentities: this.project && this.project.managerIdentities,
-      iconSize: 28,
-      maxAvatarToShow: 5
+      projectManagers: [],
     };
   },
   computed: {
     avatarToDisplay () {
-      if (this.project.managerIdentities.length > this.maxAvatarToShow) {
-        return this.project.managerIdentities.slice(0, this.maxAvatarToShow-1);
-      } else {
-        return this.project.managerIdentities;
-      }
-    },
-    showMoreAvatarsNumber() {
-      return this.managerIdentities.length - this.maxAvatarToShow;
+      return this.projectManagers;
     },
     getSpaceName(){
       const str=this.project.space;
@@ -241,6 +215,14 @@ export default {
         }, this.waitTimeUntilCloseMenu);
       }
     });
+    if ( this.managerIdentities && this.managerIdentities.length) {
+      this.managerIdentities.forEach((identity) => {
+        this.$userService.getUser(identity.username)
+          .then(user => {
+            this.projectManagers.push(user);
+          });
+      });
+    }
     this.$root.$on('update-projects-list-avatar',managerIdentities =>{
       this.project.managerIdentities=managerIdentities;
     });
@@ -297,8 +279,7 @@ export default {
       } else if (this.project && this.project.space){
         return 'largeDescriptionAreaSpace';
       }
-
-    }
+    },
   },
 
 };

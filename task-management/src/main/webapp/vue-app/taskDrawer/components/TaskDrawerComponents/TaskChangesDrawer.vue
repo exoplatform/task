@@ -28,10 +28,8 @@
               class="pe-0">
               <v-list-item-content class="pt-1">
                 <div class="d-flex">
-                  <exo-user-avatar
-                    :username="item.author"
-                    :fullname="item.authorFullName"
-                    :avatar-url="item.authorAvatarUrl"
+                  <exo-user
+                    :profile-id="item.author"
                     :size="30"
                     :url="null"
                     class="changeUserAvatar" />

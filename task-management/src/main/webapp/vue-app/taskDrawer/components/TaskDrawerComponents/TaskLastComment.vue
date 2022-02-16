@@ -3,18 +3,15 @@
     :id="id"
     class="commentItem">
     <div class="commentHeader d-flex">
-      <exo-user-avatar
-        :username="comment.author.username"
-        :avatar-url="comment.author.avatar"
-        :title="comment.author.displayName"
-        :external="comment.author.external"
-        :retrieve-extra-information="false"
+      <exo-user 
+        :profile-id="comment.author.username"
         :size="30"
-        :url="comment.author.url" />
+        :extra-class="'position-relative'"
+        bold-title
+        link-style
+        popover />
       <div class="commentContent ps-3 d-flex align-center">
-        <a
-          class="primary-color--text font-weight-bold subtitle-2 pe-2">{{ comment.author.displayName }} <span v-if="comment.author.external" class="externalTagClass">{{ ` (${$t('label.external')})` }}</span></a>
-        <span :title="displayCommentDate" class="dateTime caption font-italic d-block">{{ relativeTime }}</span>
+        <span :title="displayCommentDate" class="dateTime caption font-italic d-block text-sub-title">{{ relativeTime }}</span>
       </div>
     </div>
     <div class="commentBody ms-10 mt-1">
@@ -38,16 +35,15 @@
         <div class="TaskSubCommentItem ps-10 pe-0 pb-2">
           <div class="commentItem">
             <div class="commentHeader d-flex">
-              <exo-user-avatar
-                :username="item.author.username"
-                :avatar-url="item.author.avatar"
-                :title="item.author.displayName"
+              <exo-user
+                :profile-id="item.author.username"
                 :size="30"
-                :url="item.author.url" />
+                :extra-class="'position-relative'"
+                bold-title
+                link-style
+                popover />
               <div class="commentContent ps-3 d-flex align-center">
-                <a
-                  class="primary-color--text font-weight-bold subtitle-2 pe-2">{{ item.author.displayName }} <span v-if="lastSubComment.author.external" class="externalTagClass">{{ ` (${$t('label.external')})` }}</span></a>
-                <span :title="displayCommentDate" class="dateTime caption font-italic d-block">{{ relativeTime }}</span>
+                <span :title="displayCommentDate" class="dateTime caption font-italic d-block text-sub-title">{{ relativeTime }}</span>
               </div>
             </div>
             <div class="commentBody ms-10 mt-1">
@@ -93,19 +89,16 @@ export default {
         day: 'numeric',
         hour: '2-digit',
         minute: '2-digit',
-      },
+      }
     };
   },
   computed: {
     relativeTime() {
       return this.getRelativeTime(this.comment.comment.createdTime.time);
     },
-    lastSubComment() {
-      return this.comment.subComments && this.comment.subComments[this.comment.subComments.length-1];
-    },
     id() {
       return `comment-${this.comment.comment.id}`;
-    }
+    },
   },
   methods: {
     getRelativeTime(previous) {
