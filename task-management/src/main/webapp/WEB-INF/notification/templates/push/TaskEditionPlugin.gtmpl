@@ -1,0 +1,64 @@
+<%
+/**
+ * This file is part of the Meeds project (https://meeds.io/).
+ * Copyright (C) 2022 Meeds Association
+ * contact@meeds.io
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
+%>
+<%
+String msg = "";
+String profileUrl =  USER;
+if(ACTION_NAME=="edit_workplan") {
+//Task Schedule
+if ( COUNT != null && Integer.parseInt ( COUNT ) > 1 ) {
+msg = _ctx.appRes ( "Notification.message.more.TaskSchedulePlugin", profileUrl, COUNT );
+} else {
+msg = _ctx .appRes ( "Notification.message.TaskSchedulePlugin", profileUrl );
+}
+} else if (ACTION_NAME=="edit_description"){
+//Description
+if (COUNT != null && Integer.parseInt(COUNT) > 1) {
+msg = _ctx.appRes("Notification.message.more.TaskDescriptionPlugin", profileUrl, COUNT);
+} else {
+msg = _ctx.appRes("Notification.message.TaskDescriptionPlugin", profileUrl);
+}
+} else if(ACTION_NAME=="edit_title")
+{
+if ( COUNT != null && Integer.parseInt ( COUNT ) > 1 ) {
+msg = _ctx.appRes ( "Notification.message.more.TaskTitlePlugin", profileUrl, COUNT );
+} else {
+msg = _ctx.appRes ( "Notification.message.TaskTitlePlugin", profileUrl );
+}
+} else if (ACTION_NAME=="edit_status"){
+
+if (COUNT != null && Integer.parseInt(COUNT) > 1) {
+msg = _ctx.appRes("Notification.message.more.TaskStatusPlugin", profileUrl, COUNT);
+} else {
+msg = _ctx.appRes("Notification.message.TaskStatusPlugin", profileUrl);
+}
+}else if (ACTION_NAME=="edit_priority") {
+if (COUNT != null && Integer.parseInt(COUNT) > 1) {
+msg = _ctx.appRes("Notification.message.more.TaskPriorityPlugin", profileUrl, COUNT);
+} else {
+msg = _ctx.appRes("Notification.message.TaskPriorityPlugin", profileUrl);
+}
+}
+if (PROJECT_NAME != null && !PROJECT_NAME.isEmpty()) {
+msg += " " + _ctx.appRes("Notification.message.inProject", "<b>" + PROJECT_NAME + "</b>");
+}
+%>
+$msg
+<%if (TASK_TITLE != null && !TASK_TITLE.isEmpty()) {%>
+$TASK_TITLE
+<%} %>
