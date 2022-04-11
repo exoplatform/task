@@ -35,7 +35,8 @@ import java.util.*;
        @TemplateConfig(pluginId=TaskDueDatePlugin.ID, template="war:/notification/templates/push/TaskDueDatePlugin.gtmpl"),
        @TemplateConfig(pluginId=TaskCompletedPlugin.ID, template="war:/notification/templates/push/TaskCompletedPlugin.gtmpl"),
        @TemplateConfig(pluginId=TaskCommentPlugin.ID, template="war:/notification/templates/push/TaskCommentPlugin.gtmpl"),
-       @TemplateConfig(pluginId=TaskMentionPlugin.ID, template="war:/notification/templates/push/TaskMentionPlugin.gtmpl")
+       @TemplateConfig(pluginId=TaskMentionPlugin.ID, template="war:/notification/templates/push/TaskMentionPlugin.gtmpl"),
+       @TemplateConfig(pluginId=TaskEditionPlugin.ID, template="war:/notification/templates/push/TaskEditionPlugin.gtmpl")
    }
 )
 public class PushTemplateProvider extends WebTemplateProvider {
